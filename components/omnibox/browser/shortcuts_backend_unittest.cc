@@ -225,6 +225,7 @@ void ShortcutsBackendTest::ClearShortcutsMap() {
 // types.
 TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
   struct Cases {
+    std::u16string search_terms;
     std::string input_contents_class;
     std::string input_description_class;
     AutocompleteMatch::Type input_type;
@@ -233,28 +234,42 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
     AutocompleteMatch::Type output_type;
   };
   auto cases = std::to_array<Cases>({
-      {"0,1,4,0", "0,3,4,1", AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+      {u"test", "0,1,4,0", "0,3,4,1", AutocompleteMatchType::URL_WHAT_YOU_TYPED,
        "0,1,4,0", "0,1", AutocompleteMatchType::HISTORY_URL},
-      {"0,3,5,1", "0,2,5,0", AutocompleteMatchType::NAVSUGGEST, "0,1", "0,0",
-       AutocompleteMatchType::HISTORY_URL},
-      {"0,1", "0,0,11,2,15,0", AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, "",
+      {u"test", "0,3,5,1", "0,2,5,0", AutocompleteMatchType::NAVSUGGEST, "0,1",
+       "0,0", AutocompleteMatchType::HISTORY_URL},
+      {u"test", "0,1", "0,0,11,2,15,0",
+       AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, "", "",
+       AutocompleteMatchType::SEARCH_HISTORY},
+      {u"test", "0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST, "", "",
+       AutocompleteMatchType::SEARCH_HISTORY},
+      {u"test", "0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, "",
        "", AutocompleteMatchType::SEARCH_HISTORY},
-      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST, "", "",
+      {u"test", "0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_TAIL, "",
+       "", AutocompleteMatchType::SEARCH_HISTORY},
+      {u"test", "0,1", "0,0",
+       AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED, "", "",
        AutocompleteMatchType::SEARCH_HISTORY},
-      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, "", "",
-       AutocompleteMatchType::SEARCH_HISTORY},
-      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_TAIL, "", "",
-       AutocompleteMatchType::SEARCH_HISTORY},
-      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED, "", "",
-       AutocompleteMatchType::SEARCH_HISTORY},
-      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_PROFILE, "", "",
+      {u"test", "0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_PROFILE, "",
+       "", AutocompleteMatchType::SEARCH_HISTORY},
+      {u"", "0,1", "0,0", AutocompleteMatchType::CLIPBOARD_TEXT, "0,1", "0,0",
        AutocompleteMatchType::SEARCH_HISTORY},
   });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
-    ShortcutsDatabase::Shortcut::MatchCore match_core(MatchCoreForTesting(
-        std::string(), cases[i].input_contents_class,
-        cases[i].input_description_class, cases[i].input_type));
+    AutocompleteMatch match;
+    match.contents_class = AutocompleteMatch::ClassificationsFromString(
+        cases[i].input_contents_class);
+    match.description_class = AutocompleteMatch::ClassificationsFromString(
+        cases[i].input_description_class);
+    match.type = cases[i].input_type;
+    match.search_terms_args =
+        cases[i].search_terms.empty()
+            ? nullptr
+            : std::make_unique<TemplateURLRef::SearchTermsArgs>(
+                  cases[i].search_terms);
+
+    ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
     EXPECT_EQ(match_core.contents_class, cases[i].output_contents_class)
         << ":i:" << i << ":type:" << cases[i].input_type;
     EXPECT_EQ(match_core.description_class, cases[i].output_description_class)
@@ -267,6 +282,7 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
 // Verifies that creating MatchCores strips keywords and sanitizes match types.
 TEST_F(ShortcutsBackendTest, SanitizeMatchCore_Keyword) {
   struct Cases {
+    std::u16string search_terms;
     std::u16string input_fill_into_edit;
     AutocompleteMatch::Type input_type;
     std::u16string input_keyword;
@@ -277,20 +293,28 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore_Keyword) {
     ui::PageTransition output_page_transition;
   };
   auto cases = std::to_array<Cases>({
-      {u"foo http://foo.com/search?bar=franklin+d+roosevelt",
+      {u"franklin d roosevelt",
+       u"foo http://foo.com/search?bar=franklin+d+roosevelt",
        AutocompleteMatchType::NAVSUGGEST, u"foo", ui::PAGE_TRANSITION_KEYWORD,
        u"http://foo.com/search?bar=franklin+d+roosevelt",
        AutocompleteMatchType::HISTORY_URL, u"", ui::PAGE_TRANSITION_GENERATED},
-      {u"http://foo.com/search?bar=franklin+d+roosevelt",
+      {u"franklin d roosevelt",
+       u"http://foo.com/search?bar=franklin+d+roosevelt",
        AutocompleteMatchType::NAVSUGGEST, u"foo", ui::PAGE_TRANSITION_GENERATED,
        u"http://foo.com/search?bar=franklin+d+roosevelt",
        AutocompleteMatchType::HISTORY_URL, u"", ui::PAGE_TRANSITION_GENERATED},
-      {u"foo franklin d roosevelt", AutocompleteMatchType::SEARCH_SUGGEST,
-       u"foo", ui::PAGE_TRANSITION_KEYWORD, u"franklin d roosevelt",
+      {u"franklin d roosevelt", u"foo franklin d roosevelt",
+       AutocompleteMatchType::SEARCH_SUGGEST, u"foo",
+       ui::PAGE_TRANSITION_KEYWORD, u"franklin d roosevelt",
        AutocompleteMatchType::SEARCH_HISTORY, u"foo",
        ui::PAGE_TRANSITION_GENERATED},
-      {u"franklin d roosevelt", AutocompleteMatchType::SEARCH_SUGGEST, u"foo",
+      {u"franklin d roosevelt", u"franklin d roosevelt",
+       AutocompleteMatchType::SEARCH_SUGGEST, u"foo",
        ui::PAGE_TRANSITION_GENERATED, u"franklin d roosevelt",
+       AutocompleteMatchType::SEARCH_HISTORY, u"foo",
+       ui::PAGE_TRANSITION_GENERATED},
+      {u"", u"franklin d roosevelt", AutocompleteMatchType::SEARCH_SUGGEST,
+       u"foo", ui::PAGE_TRANSITION_GENERATED, u"franklin d roosevelt",
        AutocompleteMatchType::SEARCH_HISTORY, u"foo",
        ui::PAGE_TRANSITION_GENERATED},
   });
@@ -303,10 +327,10 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore_Keyword) {
     match.type = cases[i].input_type;
     match.transition = cases[i].input_page_transition;
     match.search_terms_args =
-        AutocompleteMatch::IsSearchType(match.type)
-            ? std::make_unique<TemplateURLRef::SearchTermsArgs>(
-                  u"franklin d roosevelt")
-            : nullptr;
+        cases[i].search_terms.empty()
+            ? nullptr
+            : std::make_unique<TemplateURLRef::SearchTermsArgs>(
+                  cases[i].search_terms);
 
     ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
     EXPECT_EQ(match_core.fill_into_edit, cases[i].output_fill_into_edit)
