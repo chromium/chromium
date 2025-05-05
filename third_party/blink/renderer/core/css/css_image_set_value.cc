@@ -113,12 +113,9 @@ StyleImage* CSSImageSetValue::CachedImage(
   return cached_image_.Get();
 }
 
-StyleImage* CSSImageSetValue::CacheImage(
-    StyleImage* style_image,
-    const float device_scale_factor,
-    bool is_origin_clean) {
-  cached_image_ =
-      MakeGarbageCollected<StyleImageSet>(style_image, this, is_origin_clean);
+StyleImage* CSSImageSetValue::CacheImage(StyleImage* style_image,
+                                         const float device_scale_factor) {
+  cached_image_ = MakeGarbageCollected<StyleImageSet>(style_image, this);
   cached_device_scale_factor_ = device_scale_factor;
   return cached_image_.Get();
 }

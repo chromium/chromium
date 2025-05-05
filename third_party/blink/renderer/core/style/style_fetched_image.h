@@ -46,7 +46,7 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   StyleFetchedImage(ImageResourceContent* image,
                     const Document& document,
                     bool is_lazyload_possibly_deferred,
-                    bool origin_clean,
+                    bool is_from_origin_clean_style_sheet,
                     bool is_ad_related,
                     const KURL& url,
                     const float override_image_resolution = 0.0f);
@@ -91,7 +91,9 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
   void Trace(Visitor*) const override;
 
-  bool IsOriginClean() const override { return origin_clean_; }
+  bool IsFromOriginCleanStyleSheet() const override {
+    return is_from_origin_clean_style_sheet_;
+  }
 
  private:
   bool IsEqual(const StyleImage&) const override;
@@ -115,7 +117,7 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   // A value of zero indicates no override.
   const float override_image_resolution_;
 
-  const bool origin_clean_;
+  const bool is_from_origin_clean_style_sheet_;
 
   // Whether this was created by an ad-related CSSParserContext.
   const bool is_ad_related_;

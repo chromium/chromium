@@ -143,9 +143,7 @@ StyleImage* StyleImageLoader::Load(
     StyleImage* style_image =
         ResolveImageSet(*image_set_value, image_request_behavior, cross_origin,
                         length_resolver);
-    return image_set_value->CacheImage(
-        style_image, device_scale_factor_,
-        !style_image || style_image->IsOriginClean());
+    return image_set_value->CacheImage(style_image, device_scale_factor_);
   }
 
   NOTREACHED();

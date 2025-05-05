@@ -32,11 +32,8 @@
 namespace blink {
 
 StyleImageSet::StyleImageSet(StyleImage* best_fit_image,
-                             CSSImageSetValue* image_set_value,
-                             bool is_origin_clean)
-    : best_fit_image_(best_fit_image),
-      image_set_value_(image_set_value),
-      is_origin_clean_(is_origin_clean) {
+                             CSSImageSetValue* image_set_value)
+    : best_fit_image_(best_fit_image), image_set_value_(image_set_value) {
   is_image_resource_set_ = true;
 }
 
@@ -89,6 +86,10 @@ bool StyleImageSet::ErrorOccurred() const {
 
 bool StyleImageSet::IsAccessAllowed(String& failing_url) const {
   return !best_fit_image_ || best_fit_image_->IsAccessAllowed(failing_url);
+}
+
+bool StyleImageSet::IsFromOriginCleanStyleSheet() const {
+  return !best_fit_image_ || best_fit_image_->IsFromOriginCleanStyleSheet();
 }
 
 NaturalSizingInfo StyleImageSet::GetNaturalSizingInfo(
