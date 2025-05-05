@@ -765,10 +765,6 @@ source_set("platform_base") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-
-  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
-  # absl::HexStringToBytes have been removed.
-  cflags = [ "-Wno-deprecated-declarations" ]
   sources = [
     "src/internal/platform/base64_utils.cc",
     "src/internal/platform/bluetooth_utils.cc",
