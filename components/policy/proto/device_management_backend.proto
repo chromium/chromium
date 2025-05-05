@@ -4908,8 +4908,8 @@ enum DeviceManagementErrorDetail {
 //   * The Authorization header isn't used for enterprise_check,
 //     enterprise_psm_check, device_initial_enrollment_state or
 //     certificate_based_register requests.
-//     It is also not used for register requests and check_android_management
-//     requests - for these requests, the OAuth token is passed in the "oauth"
+//     It is also not used for register requests
+//     - for these requests, the OAuth token is passed in the "oauth"
 //     HTTP query parameter.
 //
 // DeviceManagementRequest should only contain one request which matches the
