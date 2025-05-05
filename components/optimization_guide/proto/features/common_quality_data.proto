@@ -243,7 +243,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2;
 }
 
-// Next ID: 25
+// Next ID: 27
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -297,9 +297,21 @@ message ContentAttributes {
   // properties of the page.
   repeated AnnotatedRole annotated_roles = 15;
 
-  // A text "label" for the content node, e.g. for a "Submit" button this would
-  // be "Submit".
+  // A textual description of the content node from sources that may not be part
+  // of the tree because the content is not rendered. For example, `aria-label`
+  // and `aria-labelledby` attributes.
   string label = 16;
+
+  // If this is a label node associated with an input node using `for`, provides
+  // the DOM node ID of the input node. This will match the
+  // `common_ancestor_dom_node_id` of the ContentNode of the input node, if it
+  // exists.
+  //
+  // Note: The label may be an ancestor of the input node.
+  int32 label_for_dom_node_id = 25;
+
+  // The role of this ContentNode derived from the aria-role attribute.
+  AXRole aria_role = 26;
 
   reserved 5, 6, 7, 17, 18, 1, 22;
 }
@@ -372,13 +384,8 @@ message InteractionInfo {
   // behavior. It also checks for whether the node has a click handler.
   bool is_clickable = 10;
 
-  // If this is a label node associated with an input node using `for`, provides
-  // the DOM node ID of the input node. This will match the
-  // `common_ancestor_dom_node_id` of the ContentNode of the input node, if it
-  // exists.
-  //
-  // Note: The label may be an ancestor of the input node.
-  int32 for_dom_node_id = 11;
+  // Use the same field on ContentAttribute instead.
+  int32 for_dom_node_id = 11 [deprecated = true];
 
   // The z-order of the content node relative to other nodes in the same
   // Document. A higher value means the node is in front of other nodes with
@@ -544,6 +551,10 @@ message SelectOption {
   // Whether the option is selected.
   // Not set for FormsAI purposes, but used in PCA.
   bool is_selected = 3;
+
+  // Whether the option is disabled.
+  // Not set for FormsAI purposes, but used in PCA.
+  bool is_disabled = 4;
 }
 
 message TableData {
