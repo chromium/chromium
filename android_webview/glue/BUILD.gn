@@ -77,7 +77,6 @@ android_library("glue_java") {
     "java/src/com/android/webview/chromium/WebResourceErrorAdapter.java",
     "java/src/com/android/webview/chromium/WebResourceRequestAdapter.java",
     "java/src/com/android/webview/chromium/WebStorageAdapter.java",
-    "java/src/com/android/webview/chromium/WebViewCachedFlags.java",
     "java/src/com/android/webview/chromium/WebViewChromium.java",
     "java/src/com/android/webview/chromium/WebViewChromiumAwInit.java",
     "java/src/com/android/webview/chromium/WebViewChromiumFactoryProvider.java",

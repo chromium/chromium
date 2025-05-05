@@ -912,7 +912,6 @@ robolectric_binary("android_webview_junit_tests") {
     "../junit/src/org/chromium/android_webview/robolectric/ShouldInterceptRequestMediatorTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/SupportLibTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/WebAddressParserTest.java",
-    "../junit/src/org/chromium/android_webview/robolectric/WebViewCachedFlagsTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/common/FlagOverrideHelperTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/common/services/ServiceNamesTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/metrics/AwMetricsUtilsTest.java",
