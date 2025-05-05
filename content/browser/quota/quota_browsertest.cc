@@ -237,10 +237,7 @@ IN_PROC_BROWSER_TEST_F(QuotaBrowserTest, StorageEstimateWithStaticQuota) {
 
   EXPECT_EQ(true, EvalJs(shell(), R"(
         navigator.storage.estimate().then(
-          (result)=> {
-            return result.quota <= 10 * 1024 * 1024 * 1024 &&
-                   result.quota % (1024 * 1024 * 1024) == 0;
-          },
+          (result)=>{ return result.quota == 10 * 1024 * 1024 * 1024; },
           ()=>{ return false; });)"));
 }
 

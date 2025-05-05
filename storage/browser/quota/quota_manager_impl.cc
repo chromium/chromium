@@ -135,19 +135,6 @@ base::FilePath CreateMediaLicenseBucketPath(const base::FilePath& profile_path,
   return bucket_directory.Append(kMediaLicenseDirectory);
 }
 
-int64_t CalculateReportedQuota(int64_t total_space_bytes, int64_t usage_bytes) {
-  // This is equivalent to ceil(total_space / QuotaManagerImpl::kGbytes).
-  int64_t rounded_total_space_gib =
-      (total_space_bytes + QuotaManagerImpl::kGBytes - 1) /
-      QuotaManagerImpl::kGBytes;
-  // Generally, we report a quota value of 10 GiB. However, if there is less
-  // than 10 GiB of disk space, the quota value we report is disk space rounded
-  // up to the nearest 1 GiB.
-  return usage_bytes +
-         std::min(10 * QuotaManagerImpl::kGBytes,
-                  rounded_total_space_gib * QuotaManagerImpl::kGBytes);
-}
-
 }  // namespace
 
 // Heuristics: assuming average cloud server allows a few Gigs storage
@@ -1234,38 +1221,16 @@ void QuotaManagerImpl::GetUsageAndReportedQuotaWithBreakdown(
     HandleGetUsageAndQuotaRequest(
         storage_key,
         base::BindOnce(
-            [](base::WeakPtr<QuotaManagerImpl> weak_this,
-               UsageAndQuotaWithBreakdownCallback callback,
+            [](UsageAndQuotaWithBreakdownCallback callback,
                blink::mojom::QuotaStatusCode status, int64_t usage,
                int64_t quota, bool is_override_enabled,
                blink::mojom::UsageBreakdownPtr usage_breakdown) {
               DCHECK(callback);
-              if (!weak_this) {
-                std::move(callback).Run(blink::mojom::QuotaStatusCode::kUnknown,
-                                        0, 0, std::move(usage_breakdown));
-                return;
-              }
-              if (status != blink::mojom::QuotaStatusCode::kOk) {
-                std::move(callback).Run(status, 0, 0,
-                                        std::move(usage_breakdown));
-                return;
-              }
-              weak_this->GetDiskAvailabilityAndTempPoolSize(base::BindOnce(
-                  [](UsageAndQuotaWithBreakdownCallback callback,
-                     blink::mojom::QuotaStatusCode status, int64_t usage,
-                     blink::mojom::UsageBreakdownPtr usage_breakdown,
-                     int64_t total_space, int64_t available_space,
-                     int64_t temp_pool_size) {
-                    int64_t reported_quota =
-                        CalculateReportedQuota(total_space, usage);
-
-                    std::move(callback).Run(status, usage, reported_quota,
-                                            std::move(usage_breakdown));
-                  },
-                  std::move(callback), status, usage,
-                  std::move(usage_breakdown)));
+              int64_t reported_quota = usage + 10 * QuotaManagerImpl::kGBytes;
+              std::move(callback).Run(status, usage, reported_quota,
+                                      std::move(usage_breakdown));
             },
-            weak_factory_.GetWeakPtr(), std::move(callback)));
+            std::move(callback)));
     return;
   }
 
@@ -1345,57 +1310,25 @@ void QuotaManagerImpl::GetBucketUsageAndReportedQuota(
               UsageAndQuotaInfoGatherer* helper = new UsageAndQuotaInfoGatherer(
                   weak_this.get(), bucket, weak_this->is_incognito_,
                   base::BindOnce(
-                      [](base::WeakPtr<QuotaManagerImpl> weak_this,
-                         UsageAndQuotaCallback callback,
+                      [](UsageAndQuotaCallback callback,
                          const BucketInfo& bucket, bool is_storage_unlimited,
                          blink::mojom::QuotaStatusCode status, int64_t usage,
                          int64_t quota, bool is_override_enabled,
                          blink::mojom::UsageBreakdownPtr usage_breakdown) {
                         DCHECK(callback);
 
-                        if (!weak_this) {
-                          std::move(callback).Run(
-                              blink::mojom::QuotaStatusCode::kUnknown, 0, 0);
-                          return;
-                        }
-
-                        // If storage is unlimited, return the real quota value.
-                        if (is_storage_unlimited) {
-                          std::move(callback).Run(status, usage, quota);
-                          return;
-                        }
-
-                        // If there was a requested bucket quota, return that
-                        // value regardless of whether it was capped at the
+                        // For limited storage cases, return static quota for
+                        // buckets with default quota, otherwise return the
+                        // requested quota regardless of if it was capped at the
                         // StorageKey quota or not.
-                        if (bucket.quota > 0) {
-                          std::move(callback).Run(status, usage, bucket.quota);
-                          return;
-                        }
+                        int64_t reported_quota = is_storage_unlimited ? quota
+                                                 : bucket.quota > 0
+                                                     ? bucket.quota
+                                                     : usage + 10 * kGBytes;
 
-                        if (status != blink::mojom::QuotaStatusCode::kOk) {
-                          std::move(callback).Run(status, 0, 0);
-                          return;
-                        }
-
-                        weak_this->GetDiskAvailabilityAndTempPoolSize(
-                            base::BindOnce(
-                                [](UsageAndQuotaCallback callback,
-                                   blink::mojom::QuotaStatusCode status,
-                                   int64_t usage, int64_t total_space,
-                                   int64_t available_space,
-                                   int64_t temp_pool_size) {
-                                  int64_t reported_quota =
-                                      CalculateReportedQuota(total_space,
-                                                             usage);
-
-                                  std::move(callback).Run(status, usage,
-                                                          reported_quota);
-                                },
-                                std::move(callback), status, usage));
+                        std::move(callback).Run(status, usage, reported_quota);
                       },
-                      weak_this, std::move(callback), bucket,
-                      is_storage_unlimited));
+                      std::move(callback), bucket, is_storage_unlimited));
               helper->Start();
             },
             weak_factory_.GetWeakPtr(), std::move(callback)));
