@@ -345,6 +345,11 @@ void SigninMetricsService::OnErrorStateOfRefreshTokenUpdatedForAccount(
   return;
 }
 
+void SigninMetricsService::Shutdown() {
+  identity_manager_scoped_observation_.Reset();
+  KeyedService::Shutdown();
+}
+
 void SigninMetricsService::HandleSyncErrors(
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
