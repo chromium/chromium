@@ -589,6 +589,10 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      name: "BackForwardCacheRestorationPerformanceEntry",
+      status: "experimental",
+    },
+    {
       name: "BackForwardCacheUpdateNotRestoredReasonsName",
       status: "stable",
     },

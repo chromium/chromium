@@ -2554,19 +2554,6 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   if (restoring_from_bfcache) {
     DCHECK(dispatching_pageshow);
     DCHECK(page_restore_params);
-    // Increment the navigation counter on the main frame and all nested frames
-    // in its frame tree.
-    // Navigation Id increment should happen before a
-    // BackForwardCacheRestoration instance is created which happens inside the
-    // DispatchPageshow method.
-    for (Frame* frame = page->MainFrame(); frame;
-         frame = frame->Tree().TraverseNext()) {
-      auto* local_frame = DynamicTo<LocalFrame>(frame);
-      if (local_frame && local_frame->View()) {
-        DCHECK(local_frame->DomWindow());
-        local_frame->DomWindow()->GenerateNewNavigationId();
-      }
-    }
 
     DispatchPersistedPageshow(page_restore_params->navigation_start);
 
@@ -2718,7 +2705,7 @@ void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
   for (Frame* frame = GetPage()->MainFrame(); frame;
        frame = frame->Tree().TraverseNext()) {
     auto* local_frame = DynamicTo<LocalFrame>(frame);
-    // Record the metics.
+    // Record the metrics.
     if (local_frame && local_frame->View()) {
       Document* document = local_frame->GetDocument();
       if (document) {
@@ -2735,9 +2722,20 @@ void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
       auto pageshow_start_time = base::TimeTicks::Now();
       LocalDOMWindow* window = frame->DomWindow()->ToLocalDOMWindow();
 
+      // The new navigation ID must be generated before the
+      // back-forward-cache-restoration performance entry is added to the
+      // window's performance (see below), but also prior to dispatching the
+      // pageshow event, in case some of the event listeners want to use the
+      // new navigation ID to identify the navigation.
+      if (RuntimeEnabledFeatures::
+              BackForwardCacheRestorationPerformanceEntryEnabled(window)) {
+        window->GenerateNewNavigationId();
+      }
+
       window->DispatchPersistedPageshowEvent(navigation_start);
 
-      if (RuntimeEnabledFeatures::NavigationIdEnabled(window)) {
+      if (RuntimeEnabledFeatures::
+              BackForwardCacheRestorationPerformanceEntryEnabled(window)) {
         auto pageshow_end_time = base::TimeTicks::Now();
 
         WindowPerformance* performance =
