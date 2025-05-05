@@ -4,8 +4,8 @@
 
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 
-#include "components/password_manager/core/browser/password_manager.h"
-#include "third_party/abseil-cpp/absl/memory/memory.h"
+#import "components/password_manager/core/browser/password_manager.h"
+#import "third_party/abseil-cpp/absl/memory/memory.h"
 
 // static
 IOSPasswordManagerDriver*

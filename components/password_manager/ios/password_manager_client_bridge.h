@@ -6,10 +6,11 @@
 #define COMPONENTS_PASSWORD_MANAGER_IOS_PASSWORD_MANAGER_CLIENT_BRIDGE_H_
 
 #import <Foundation/Foundation.h>
-#include <memory>
-#include <string>
 
-#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#import <memory>
+#import <string>
+
+#import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 
 class GURL;
 enum class CredentialProviderPromoTrigger;
