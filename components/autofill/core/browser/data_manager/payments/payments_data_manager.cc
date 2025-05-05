@@ -515,6 +515,12 @@ void PaymentsDataManager::OnAccountsCookieDeletedByUserAction() {
   prefs::ClearSyncTransportOptIns(pref_service_);
 }
 
+void PaymentsDataManager::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  CHECK_EQ(identity_manager, identity_manager_);
+  identity_observer_.Reset();
+}
+
 void PaymentsDataManager::Refresh() {
   LoadCreditCards();
   LoadCreditCardCloudTokenData();

@@ -117,6 +117,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // signin::IdentityManager::Observer:
   void OnAccountsCookieDeletedByUserAction() override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // Reloads all payments data from the database.
   void Refresh();
