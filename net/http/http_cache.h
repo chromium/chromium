@@ -532,6 +532,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
       int64_t upload_data_identifier,
       bool is_subframe_document_resource,
       bool is_mainframe_navigation,
+      bool is_shared_resource,
       std::optional<url::Origin> initiator);
 
   // Creates a WorkItem and sets it as the |pending_op|'s writer, or adds it to

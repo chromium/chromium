@@ -345,6 +345,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     force_main_frame_for_same_site_cookies_ = value;
   }
 
+  // Indicates if the resource is a well-known pervasive static resource
+  // that should use a shared cache.
+  bool is_shared_resource() const { return is_shared_resource_; }
+  void set_is_shared_resource(bool value) { is_shared_resource_ = value; }
+
   // Overrides pertaining to cookie settings for this particular request.
   CookieSettingOverrides& cookie_setting_overrides() {
     return cookie_setting_overrides_;
@@ -1081,6 +1086,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   bool force_ignore_site_for_cookies_ = false;
   bool force_main_frame_for_same_site_cookies_ = false;
+  bool is_shared_resource_ = false;
   CookieSettingOverrides cookie_setting_overrides_;
 
   std::optional<url::Origin> initiator_;

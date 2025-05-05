@@ -322,6 +322,16 @@ BASE_DECLARE_FEATURE(kDeviceBoundSessionAccessObserverSharedRemote);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kCSPScriptSrcV2);
 
+// When enabled, fetches for "pervasive" scripts that match one of the
+// configured patterns will use a shared, single-keyed cache.
+// See https://chromestatus.com/feature/5202380930678784
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kCacheSharingForPervasiveScripts);
+
+// newline-delimited list of URL patterns for "pervasive" scripts.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(std::string, kPervasiveScriptURLPatterns);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

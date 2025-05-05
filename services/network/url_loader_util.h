@@ -46,6 +46,7 @@ class URLLoaderFactoryParams;
 
 struct ResourceRequest;
 class ResourceRequestBody;
+class SharedResourceChecker;
 
 namespace url_loader_util {
 
@@ -105,7 +106,8 @@ void MaybeRecordSharedDictionaryUsedResponseMetrics(
 void ConfigureUrlRequest(const ResourceRequest& request,
                          const mojom::URLLoaderFactoryParams& factory_params,
                          const cors::OriginAccessList& origin_access_list,
-                         net::URLRequest& url_request);
+                         net::URLRequest& url_request,
+                         SharedResourceChecker& shared_resource_checker);
 
 // Sets credential-related flags (`allow_credentials`, `send_client_certs`)
 // on the `url_request` based on the request's properties and security context.

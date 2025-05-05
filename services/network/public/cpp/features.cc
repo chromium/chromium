@@ -594,4 +594,15 @@ BASE_FEATURE(kDeviceBoundSessionAccessObserverSharedRemote,
 
 BASE_FEATURE(kCSPScriptSrcV2, "ScriptSrcV2", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCacheSharingForPervasiveScripts,
+             "CacheSharingForPervasiveScripts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This is a newline-delimited list of pervasive script URL Patterns.
+BASE_FEATURE_PARAM(std::string,
+                   kPervasiveScriptURLPatterns,
+                   &kCacheSharingForPervasiveScripts,
+                   /*name=*/"url_patterns",
+                   /*default_value=*/"");
+
 }  // namespace network::features

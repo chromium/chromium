@@ -131,6 +131,7 @@ class SCTAuditingHandler;
 class SQLiteTrustTokenPersister;
 class SessionCleanupCookieStore;
 class SharedDictionaryManager;
+class SharedResourceChecker;
 class WebSocketFactory;
 class WebTransport;
 class DeviceBoundSessionManager;
@@ -677,6 +678,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return shared_dictionary_manager_.get();
   }
 
+  SharedResourceChecker* GetSharedResourceChecker() {
+    return shared_resource_checker_.get();
+  }
+
   // Returns the current same-origin-policy exceptions.  For more details see
   // network::mojom::NetworkContextParams::cors_origin_access_list and
   // network::mojom::NetworkContext::SetCorsOriginAccessListsForOrigin.
@@ -1073,6 +1078,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   // Manager for device bound sessions.
   std::unique_ptr<DeviceBoundSessionManager> device_bound_session_manager_;
+
+  // Used only when network::features::kCacheSharingForPervasiveScripts is
+  // enabled to determine if a given request is for a well-known
+  // pervasive script.
+  // See https://chromestatus.com/feature/5202380930678784
+  // This needs to be ordered after cookie_manager_ as it maintains a reference
+  // to the cookie settings object from cookie_manager_.
+  std::unique_ptr<SharedResourceChecker> shared_resource_checker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

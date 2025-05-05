@@ -455,6 +455,7 @@ void URLRequestHttpJob::Start() {
 #if BUILDFLAG(ENABLE_REPORTING)
   request_info_.reporting_upload_depth = request_->reporting_upload_depth();
 #endif
+  request_info_.is_shared_resource = request_->is_shared_resource();
 
   CookieStore* cookie_store = request()->context()->cookie_store();
   const CookieAccessDelegate* delegate =

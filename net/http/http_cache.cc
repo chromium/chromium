@@ -655,6 +655,7 @@ std::string HttpCache::GenerateCacheKey(
     int64_t upload_data_identifier,
     bool is_subframe_document_resource,
     bool is_mainframe_navigation,
+    bool is_shared_resource,
     std::optional<url::Origin> initiator) {
   // The first character of the key may vary depending on whether or not sending
   // credentials is permitted for this request. This only happens if the
@@ -666,7 +667,7 @@ std::string HttpCache::GenerateCacheKey(
                                   : '1';
 
   std::string isolation_key;
-  if (IsSplitCacheEnabled()) {
+  if (!is_shared_resource && IsSplitCacheEnabled()) {
     // Prepend the key with |kDoubleKeyPrefix| = "_dk_" to mark it as
     // double-keyed (and makes it an invalid url so that it doesn't get
     // confused with a single-keyed entry). Separate the origin and url
@@ -729,7 +730,8 @@ HttpCache::GenerateCacheKeyForRequestWithAlternateURL(
   return GenerateCacheKey(
       url, request->load_flags, request->network_isolation_key,
       upload_data_identifier, request->is_subframe_document_resource,
-      request->is_main_frame_navigation, request->initiator);
+      request->is_main_frame_navigation, request->is_shared_resource,
+      request->initiator);
 }
 
 // static

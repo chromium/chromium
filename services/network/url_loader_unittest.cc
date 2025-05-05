@@ -99,6 +99,7 @@
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/cookie_settings.h"
 #include "services/network/file_opener_for_upload.h"
 #include "services/network/observer_wrapper.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
@@ -118,6 +119,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
+#include "services/network/shared_resource_checker.h"
 #include "services/network/shared_storage/shared_storage_header_utils.h"
 #include "services/network/shared_storage/shared_storage_request_helper.h"
 #include "services/network/shared_storage/shared_storage_test_url_loader_network_observer.h"
@@ -672,6 +674,8 @@ struct URLLoaderOptions {
       mojo::PendingRemote<mojom::URLLoaderClient> url_loader_client) {
     DCHECK(!used);
     used = true;
+    shared_resource_checker =
+        std::make_unique<SharedResourceChecker>(cookie_settings);
     return std::make_unique<URLLoader>(
         context, std::move(delete_callback), std::move(url_loader_receiver),
         options, request, std::move(url_loader_client),
@@ -685,7 +689,8 @@ struct URLLoaderOptions {
         ObserverWrapper(std::move(url_loader_network_observer)),
         ObserverWrapper(std::move(devtools_observer)),
         ObserverWrapper(std::move(device_bound_session_observer)),
-        std::move(accept_ch_frame_observer), shared_storage_writable_eligible);
+        std::move(accept_ch_frame_observer), shared_storage_writable_eligible,
+        *shared_resource_checker);
   }
 
   int32_t options = mojom::kURLLoadOptionNone;
@@ -711,6 +716,8 @@ struct URLLoaderOptions {
   mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer =
       mojo::NullRemote();
   bool shared_storage_writable_eligible = false;
+  CookieSettings cookie_settings;
+  std::unique_ptr<SharedResourceChecker> shared_resource_checker;
 
  private:
   bool used = false;

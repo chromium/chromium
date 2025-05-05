@@ -11820,6 +11820,24 @@ TEST_F(HttpCacheTestSplitCacheFeatureEnabled,
   EXPECT_EQ(base::Seconds(10000), response.headers->GetMaxAgeValue().value());
 }
 
+TEST_F(HttpCacheTestSplitCacheFeatureEnabled, SharedResourceUsesSharedCache) {
+  SchemefulSite site(GURL("http://foo.com"));
+  MockHttpRequest request(kSimpleGET_Transaction);
+  NetworkIsolationKey general_partition_nik(site, site);
+  request.network_isolation_key = general_partition_nik;
+  request.network_anonymization_key =
+      NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          general_partition_nik);
+
+  std::string cache_key = *HttpCache::GenerateCacheKeyForRequest(&request);
+  EXPECT_EQ("1/0/_dk_http://foo.com http://foo.com http://www.google.com/",
+            cache_key);
+
+  request.is_shared_resource = true;
+  cache_key = *HttpCache::GenerateCacheKeyForRequest(&request);
+  EXPECT_EQ("1/0/http://www.google.com/", cache_key);
+}
+
 TEST_F(HttpCacheTest, NonSplitCache) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(

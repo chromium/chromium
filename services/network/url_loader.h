@@ -104,6 +104,7 @@ class KeepaliveStatisticsRecorder;
 class NetToMojoPendingBuffer;
 class ScopedThrottlingToken;
 class SharedDictionaryManager;
+class SharedResourceChecker;
 class SlopBucket;
 class TrustTokenUrlLoaderInterceptor;
 
@@ -180,7 +181,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           device_bound_session_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
-      bool shared_storage_writable_eligible);
+      bool shared_storage_writable_eligible,
+      SharedResourceChecker& shared_resource_checker);
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;

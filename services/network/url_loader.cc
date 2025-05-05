@@ -117,6 +117,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
+#include "services/network/shared_resource_checker.h"
 #include "services/network/shared_storage/shared_storage_request_helper.h"
 #include "services/network/slop_bucket.h"
 #include "services/network/ssl_private_key_proxy.h"
@@ -358,7 +359,8 @@ URLLoader::URLLoader(
     ObserverWrapper<mojom::DeviceBoundSessionAccessObserver>
         device_bound_session_observer,
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
-    bool shared_storage_writable_eligible)
+    bool shared_storage_writable_eligible,
+    SharedResourceChecker& shared_resource_checker)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
@@ -482,7 +484,8 @@ URLLoader::URLLoader(
   // UserData, as `ConfigureUrlRequest` might internally retrieve data (e.g.,
   // PermissionsPolicy) via the `url_request_`'s UserData pointer.
   url_loader_util::ConfigureUrlRequest(request, *factory_params_,
-                                       *origin_access_list_, *url_request_);
+                                       *origin_access_list_, *url_request_,
+                                       shared_resource_checker);
   if (context.ShouldRequireIsolationInfo()) {
     DCHECK(!url_request_->isolation_info().IsEmpty());
   }
