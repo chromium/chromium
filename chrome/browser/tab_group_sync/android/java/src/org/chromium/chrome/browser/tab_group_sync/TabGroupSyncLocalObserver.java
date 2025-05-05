@@ -261,18 +261,14 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+            public void willMoveTabOutOfGroup(Tab movedTab, @Nullable Token destinationTabGroupId) {
                 if (!mIsObserving) return;
-                LogUtils.log(TAG, "didMoveTabOutOfGroup, prevFilterIndex = " + prevFilterIndex);
+                LogUtils.log(TAG, "willMoveTabOutOfGroup, tab id = " + movedTab.getId());
 
                 // Remove tab from the synced group.
-                Tab prevRoot = mTabGroupModelFilter.getRepresentativeTabAt(prevFilterIndex);
-                assert prevRoot != null;
-                LocalTabGroupId tabGroupId =
-                        TabGroupSyncUtils.getLocalTabGroupId(
-                                mTabGroupModelFilter, prevRoot.getRootId());
-                if (tabGroupId == null) return;
-                mRemoteTabGroupMutationHelper.removeTab(tabGroupId, movedTab.getId());
+                LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(movedTab);
+                if (localTabGroupId == null) return;
+                mRemoteTabGroupMutationHelper.removeTab(localTabGroupId, movedTab.getId());
             }
 
             @Override
