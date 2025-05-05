@@ -100,7 +100,7 @@ update [IsAllowlistedPermissionType()](https://source.chromium.org/chromium/chro
       [WEB_VIEW_PERMISSION_TYPE_MEDIA](https://source.chromium.org/search?q=WEB_VIEW_PERMISSION_TYPE_MEDIA&ss=chromium%2Fchromium%2Fsrc) to guide how to do this in
       Controlled Frame.
     * Add permission type to
-      [controlled_frame_permissions_unittest.cc](//chrome/browser/controlled_frame/controlled_frame_permissions_unittest.cc).
+      [controlled_frame_permissions_unittest.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/controlled_frame/controlled_frame_permissions_unittest.cc).
 
 ### Add ContentSettingsType
 1. In [content_settings_types.h](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.h)
@@ -133,7 +133,7 @@ update
     * Example of disabling:
       * [controlledframe: Disable Web Serial for <webview> & <controlledframe> crrev.com/c/5838413](https://chromium-review.googlesource.com/c/chromium/src/+/5838413)
     * Add your new ContentSettingsType to
-      [controlled_frame_permissions_unittest.cc](//chrome/browser/controlled_frame/controlled_frame_permissions_unittest.cc).
+      [controlled_frame_permissions_unittest.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/controlled_frame/controlled_frame_permissions_unittest.cc).
 
 ### UI-less ContentSettingsType
 If you add a new [ContentSettingsType](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.h;l=17;drc=0c2e6d2e27af976e1b28eebd7dacc7a0296bb1cc)
