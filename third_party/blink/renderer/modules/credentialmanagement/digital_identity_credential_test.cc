@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_create_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_creation_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_get_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_provider.h"
@@ -43,7 +43,8 @@ using testing::AllOf;
 using testing::SizeIs;
 using testing::WithArg;
 
-// `arg` must be of type std::vector<blink::mojom::DigitalCredentialRequestPtr>
+// `arg` must be of type
+// std::vector<blink::mojom::DigitalCredentialGetRequestPtr>
 MATCHER(FirstRequestDataContainsString, "") {
   return arg[0]->data->is_str();
 }
@@ -64,12 +65,13 @@ class MockDigitalIdentityRequest : public mojom::DigitalIdentityRequest {
     receiver_.Bind(std::move(receiver));
   }
 
-  MOCK_METHOD(void,
-              Get,
-              (std::vector<blink::mojom::DigitalCredentialRequestPtr> requests,
-               blink::mojom::GetRequestFormat format,
-               GetCallback callback),
-              (override));
+  MOCK_METHOD(
+      void,
+      Get,
+      (std::vector<blink::mojom::DigitalCredentialGetRequestPtr> requests,
+       blink::mojom::GetRequestFormat format,
+       GetCallback callback),
+      (override));
 
   void Create(
       std::vector<blink::mojom::DigitalCredentialCreateRequestPtr> requests,
@@ -108,7 +110,7 @@ CredentialRequestOptions* CreateLegacyGetValidOptions() {
 }
 
 CredentialRequestOptions* CreateGetOptionsWithRequests(
-    const HeapVector<Member<DigitalCredentialRequest>>& requests) {
+    const HeapVector<Member<DigitalCredentialGetRequest>>& requests) {
   DigitalCredentialRequestOptions* digital_credential_request =
       DigitalCredentialRequestOptions::Create();
   digital_credential_request->setRequests(requests);
@@ -119,7 +121,7 @@ CredentialRequestOptions* CreateGetOptionsWithRequests(
 
 CredentialRequestOptions* CreateValidGetOptions(ScriptState* script_state) {
   v8::Local<v8::Context> context = script_state->GetContext();
-  DigitalCredentialRequest* request = DigitalCredentialRequest::Create();
+  DigitalCredentialGetRequest* request = DigitalCredentialGetRequest::Create();
   request->setProtocol("openid4vp");
   v8::Local<v8::Object> request_data =
       v8::Object::New(script_state->GetIsolate());
@@ -130,7 +132,7 @@ CredentialRequestOptions* CreateValidGetOptions(ScriptState* script_state) {
 
   request->setData(MakeGarbageCollected<V8UnionObjectOrString>(
       ScriptObject(script_state->GetIsolate(), request_data)));
-  HeapVector<Member<DigitalCredentialRequest>> requests;
+  HeapVector<Member<DigitalCredentialGetRequest>> requests;
   requests.push_back(request);
   return CreateGetOptionsWithRequests(requests);
 }
@@ -301,11 +303,11 @@ TEST_F(DigitalIdentityCredentialTest,
 
   // malformed request that uses the modern format with the legacy string
   // request data format.
-  DigitalCredentialRequest* request = DigitalCredentialRequest::Create();
+  DigitalCredentialGetRequest* request = DigitalCredentialGetRequest::Create();
   request->setProtocol("openid4vp");
   request->setData(
       MakeGarbageCollected<V8UnionObjectOrString>(String("request")));
-  HeapVector<Member<DigitalCredentialRequest>> requests;
+  HeapVector<Member<DigitalCredentialGetRequest>> requests;
   requests.push_back(request);
 
   // The request will dropped at the rendered layer since it uses the modern

@@ -395,7 +395,7 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
 // is malformed, specifically if the request is using a mix between the legacy
 // and modern request formats.
 std::optional<Value> BuildGetRequest(
-    const std::vector<blink::mojom::DigitalCredentialRequestPtr>&
+    const std::vector<blink::mojom::DigitalCredentialGetRequestPtr>&
         digital_credential_requests,
     GetRequestFormat format) {
   const std::string request_key =
@@ -435,7 +435,7 @@ Value BuildCreateRequest(
 }
 
 void DigitalIdentityRequestImpl::Get(
-    std::vector<blink::mojom::DigitalCredentialRequestPtr>
+    std::vector<blink::mojom::DigitalCredentialGetRequestPtr>
         digital_credential_requests,
     GetRequestFormat format,
     GetCallback callback) {

@@ -16,7 +16,7 @@ union RequestData {
 };
 
 // The specification of the request to digital credentials.
-struct DigitalCredentialRequest {
+struct DigitalCredentialGetRequest {
   string protocol;
   RequestData data;
 };
@@ -54,7 +54,7 @@ enum RequestDigitalIdentityStatus {
 // This interface is called from a renderer process and is implemented in the
 // browser process.
 interface DigitalIdentityRequest {
-  // Requests a token to be generated, given an array of DigitalCredentialRequest's.
+  // Requests a token to be generated, given an array of DigitalCredentialGetRequest's.
   // Returns:
   // - Status of the request.
   // - Raw content of the token.
@@ -62,7 +62,7 @@ interface DigitalIdentityRequest {
   //
   // Does not support concurrent requests. Throws an error on a new request if
   // there is a pending request.
-  Get(array<DigitalCredentialRequest> digital_credential_requests, GetRequestFormat format) =>
+  Get(array<DigitalCredentialGetRequest> digital_credential_requests, GetRequestFormat format) =>
       (RequestDigitalIdentityStatus status,
       string? protocol,
       mojo_base.mojom.Value? token);
