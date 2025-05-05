@@ -551,25 +551,9 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
       continue;
     }
 
-    // TODO: crbug.com/40227496 - Simplify the `switch` statement once
-    // kAutofillFixValueSemantics is launched.
-    // TODO: crbug.com/40227496 - Update the comments when the experiments are
-    // launched.
-    switch (reason) {
-      case RetrieveFromCacheReason::kFormCacheUpdateAfterParsing:
-      case RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing:
-        field->set_initial_value(cached_field->value(ValueSemantics::kInitial),
-                                 /*pass_key=*/{});
-        break;
-      case RetrieveFromCacheReason::kFormImport:
-        field->set_initial_value(cached_field->value(ValueSemantics::kInitial),
-                                 /*pass_key=*/{});
-        break;
-    }
-
+    field->set_initial_value(cached_field->value(ValueSemantics::kInitial),
+                             /*pass_key=*/{});
     field->set_server_predictions(cached_field->server_predictions());
-
-    // Preserve state whether the field was autofilled before.
     if (reason == RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing ||
         reason == RetrieveFromCacheReason::kFormCacheUpdateAfterParsing) {
       field->set_is_autofilled(cached_field->is_autofilled());
