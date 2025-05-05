@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
@@ -712,6 +713,13 @@ void CanvasRenderingContext2D::drawElement(Element* element,
   CHECK(layout_box->IsStacked());
   PaintLayer* layer = layout_box->EnclosingLayer();
 
+  auto box_rect = gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->Size()));
+  // TODO(https://issues.chromium.org/379143301): Figure out the actual painted
+  // rect of the element plus its descendants, and use that instead of the
+  // box's size.
+  OverriddenCullRectScope cull_rect_scope(*layer, CullRect(box_rect),
+                                          /*disable_expansion*/ true);
+
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
   paint_layer_painter.Paint(builder.Context(), PaintFlag::kPlacedElement);
 
@@ -725,14 +733,10 @@ void CanvasRenderingContext2D::drawElement(Element* element,
   cc::PaintImage paint_image =
       PaintImageBuilder::WithDefault()
           .set_id(PaintImage::GetNextId())
-          .set_paint_record(
-              std::move(paint_record),
-              gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->Size())),
-              PaintImage::GetNextId())
+          .set_paint_record(std::move(paint_record), box_rect,
+                            PaintImage::GetNextId())
           .TakePaintImage();
 
-  // TODO(https://issues.chromium.org/379143301): Figure out the actual visual
-  // rect of the element.
   WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
            CanvasPerformanceMonitor::DrawType::kOther);
 

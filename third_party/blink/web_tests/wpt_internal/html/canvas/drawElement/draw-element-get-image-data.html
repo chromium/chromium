@@ -20,9 +20,6 @@
 
 <script>
 promise_test(async () => {
-  // TODO(crbug.com/415092116): This shouldn't be necessary.
-  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-
   let ctx = canvas.getContext('2d');
   ctx.fillStyle = "rgb(3, 4, 5)";
   ctx.fillRect(0, 0, 200, 200);
