@@ -204408,6 +204408,19 @@
         {}
        ]
       ],
+      "letter-spacing-cursive-001.html": [
+       "5700c600981ab815e2ecf33577a6408d8e54dee1",
+       [
+        null,
+        [
+         [
+          "/css/css-text/letter-spacing/reference/letter-spacing-cursive-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "letter-spacing-end-of-line-001.html": [
        "645ef10509803cb86b31c7250928c007acb21431",
        [
@@ -319403,14 +319416,6 @@
       []
      ]
     },
-    "idlharness.https.any-expected.txt": [
-     "7b7ead423930dcd066c60cacf6093b88e6cef03d",
-     []
-    ],
-    "idlharness.https.any.worker-expected.txt": [
-     "7b7ead423930dcd066c60cacf6093b88e6cef03d",
-     []
-    ],
     "import_export": {
      "ec_importKey_failures_fixtures.js": [
       "a2d25e816cbd7354105cfde9e46ffdffbeb38e23",
@@ -364798,6 +364803,10 @@
        ],
        "letter-spacing-control-chars-001.ref.html": [
         "977d8211457a6e7b4976b596be91068cdf518869",
+        []
+       ],
+       "letter-spacing-cursive-001-ref.html": [
+        "720c9491b4d8cfdba5c2279dacdc297d495c2b67",
         []
        ],
        "letter-spacing-end-of-line-001-ref.html": [
@@ -464934,7 +464943,7 @@
      ]
     ],
     "idlharness.https.any.js": [
-     "ae65eb49f2120e1a6d7222a7c0ecc9836c4ff5a8",
+     "5ddf7eab6dba2116d0d3bbc6826b176463107eb0",
      [
       "WebCryptoAPI/idlharness.https.any.html",
       {
@@ -496995,6 +497004,13 @@
      ],
      "inherit-initial.html": [
       "8d8dfef38d57088a93ac4266040011cd356e7b21",
+      [
+       null,
+       {}
+      ]
+     ],
+     "inline-style-background.html": [
+      "11451f8cefd3e725b017b263dded4bf9a806d785",
       [
        null,
        {}
@@ -564234,7 +564250,7 @@
      ]
     ],
     "lfedcm-identity.create-store-collect.tentative.sub.https.html": [
-     "54226aff9ae9974a9810865b6806c930b7677260",
+     "553bc40989e4c23b6e331c658734ed08a466ba5c",
      [
       null,
       {
