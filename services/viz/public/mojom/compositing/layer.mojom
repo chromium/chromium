@@ -24,8 +24,11 @@ import "ui/gfx/mojom/transform.mojom";
 
 // Some properties on the Layer are rarely set, and so are bundled
 // under a single optional field.
+// NOTE: This struct's default values should be kept in sync with those of the
+// C++-level RareProperties struct.
+// TODO(crbug.com/408008599): Enforce this via struct_traits.
 struct RareProperties {
-  cc.mojom.FilterQuality filter_quality;
+  cc.mojom.FilterQuality filter_quality = cc.mojom.FilterQuality.kLow;
 };
 
 // Extra fields in a cc::MirrorLayerImpl that has been added to a tree or
