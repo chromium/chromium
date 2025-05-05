@@ -13,6 +13,8 @@ import org.junit.runners.model.Statement;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.List;
+
 /**
  * Test rule for batched Public Transit tests.
  *
@@ -73,6 +75,11 @@ public class BatchedPublicTransitRule<T extends Station<?>> implements TestRule 
     public @Nullable T getHomeStation() {
         TransitAsserts.assertCurrentStationType(
                 mHomeStationType, "getting base station", /* allowNull= */ true);
-        return (T) TrafficControl.getActiveStation();
+        List<Station<?>> activeStations = TrafficControl.getActiveStations();
+        if (activeStations.isEmpty()) {
+            return null;
+        } else {
+            return (T) activeStations.get(0);
+        }
     }
 }

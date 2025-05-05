@@ -512,6 +512,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.app") {
   sources = [
     "//chrome/android/java/src/org/chromium/chrome/browser/app/feed/NavigationRecorderTest.java",
     "src/org/chromium/chrome/browser/app/ContextMenuDragTest.java",
+    "src/org/chromium/chrome/browser/app/appmenu/MultiWindowAppMenuTest.java",
     "src/org/chromium/chrome/browser/app/appmenu/OverviewAppMenuTest.java",
     "src/org/chromium/chrome/browser/app/appmenu/TabbedAppMenuPTTest.java",
     "src/org/chromium/chrome/browser/app/appmenu/TabbedAppMenuTest.java",
