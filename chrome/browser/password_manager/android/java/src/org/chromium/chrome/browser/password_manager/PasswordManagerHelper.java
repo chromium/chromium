@@ -400,7 +400,7 @@ public class PasswordManagerHelper {
             @PasswordCheckReferrer int referrer,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable String accountEmail,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
         assert accountEmail == null || !accountEmail.isEmpty();
 
         // TODO(crbug.com/40945093): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
@@ -510,7 +510,7 @@ public class PasswordManagerHelper {
      */
     public void getWeakCredentialsCount(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
@@ -549,7 +549,7 @@ public class PasswordManagerHelper {
      */
     public void getReusedCredentialsCount(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
@@ -670,7 +670,7 @@ public class PasswordManagerHelper {
             LoadingModalDialogCoordinator loadingDialogCoordinator,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Context context,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
         PasswordCheckupClientHelper checkupClient;
         try {
             checkupClient = getPasswordCheckupClientHelper();
@@ -686,6 +686,7 @@ public class PasswordManagerHelper {
                     // dialog to download the CSV.
                     return;
                 }
+                assert settingsCustomTabLauncher != null;
                 showPwmUnavailableOrDownloadCsvDialog(
                         context, modalDialogManagerSupplier, settingsCustomTabLauncher);
                 return;

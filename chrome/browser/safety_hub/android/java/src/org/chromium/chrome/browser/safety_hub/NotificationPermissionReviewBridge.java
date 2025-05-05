@@ -8,18 +8,21 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
 import java.util.Arrays;
 import java.util.List;
 
+@NullMarked
 public class NotificationPermissionReviewBridge {
     interface Observer {
         void notificationPermissionsChanged();
     }
 
-    private static ProfileKeyedMap<NotificationPermissionReviewBridge> sProfileMap;
+    private static @Nullable ProfileKeyedMap<NotificationPermissionReviewBridge> sProfileMap;
 
     private final Profile mProfile;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
@@ -57,7 +60,7 @@ public class NotificationPermissionReviewBridge {
     }
 
     /** Reverts the action of ignoring the given origin for notification permission review. */
-    void undoIgnoreOriginForNotificationPermissionReview(String origin) {
+    void undoIgnoreOriginForNotificationPermissionReview(@Nullable String origin) {
         NotificationPermissionReviewBridgeJni.get()
                 .undoIgnoreOriginForNotificationPermissionReview(mProfile, origin);
         notifyNotificationPermissionsChanged();
@@ -77,7 +80,7 @@ public class NotificationPermissionReviewBridge {
     }
 
     /** Allows the notification permission for the given origin. */
-    void allowNotificationPermissionForOrigin(String origin) {
+    void allowNotificationPermissionForOrigin(@Nullable String origin) {
         NotificationPermissionReviewBridgeJni.get()
                 .allowNotificationPermissionForOrigin(mProfile, origin);
         notifyNotificationPermissionsChanged();
@@ -119,10 +122,12 @@ public class NotificationPermissionReviewBridge {
                 @JniType("Profile*") Profile profile, @JniType("std::string") String origin);
 
         void undoIgnoreOriginForNotificationPermissionReview(
-                @JniType("Profile*") Profile profile, @JniType("std::string") String origin);
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") @Nullable String origin);
 
         void allowNotificationPermissionForOrigin(
-                @JniType("Profile*") Profile profile, @JniType("std::string") String origin);
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") @Nullable String origin);
 
         void resetNotificationPermissionForOrigin(
                 @JniType("Profile*") Profile profile, @JniType("std::string") String origin);

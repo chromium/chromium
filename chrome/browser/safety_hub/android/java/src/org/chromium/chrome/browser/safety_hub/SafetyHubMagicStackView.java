@@ -14,11 +14,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Container view for the Safety Hub Magic Stack module. */
+@NullMarked
 class SafetyHubMagicStackView extends LinearLayout {
     private TextView mHeaderView;
     private TextView mTitleView;

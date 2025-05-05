@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
  * DataSource for the Safety Hub local password module. Listens to changes of local passwords and
  * their state, and notifies its observer of the current module type.
  */
+@NullMarked
 public class SafetyHubLocalPasswordsDataSource
         implements SafetyHubFetchService.Observer, PasswordStoreBridge.PasswordStoreObserver {
     interface Observer {
@@ -53,10 +54,10 @@ public class SafetyHubLocalPasswordsDataSource
         int HAS_REUSED_PASSWORDS = 5;
     };
 
-    @NonNull private final SafetyHubModuleDelegate mModuleDelegate;
-    @NonNull private final PrefService mPrefService;
-    @NonNull private final SafetyHubFetchService mSafetyHubFetchService;
-    @Nullable private final PasswordStoreBridge mPasswordStoreBridge;
+    private final SafetyHubModuleDelegate mModuleDelegate;
+    private final PrefService mPrefService;
+    private final SafetyHubFetchService mSafetyHubFetchService;
+    private final @Nullable PasswordStoreBridge mPasswordStoreBridge;
     private final ObserverList<Observer> mObservers;
 
     private int mCompromisedPasswordCount;
@@ -68,9 +69,9 @@ public class SafetyHubLocalPasswordsDataSource
     private boolean mLocalPasswordCountsAvailable;
 
     SafetyHubLocalPasswordsDataSource(
-            @NonNull SafetyHubModuleDelegate moduleDelegate,
-            @NonNull PrefService prefService,
-            @NonNull SafetyHubFetchService safetyHubFetchService,
+            SafetyHubModuleDelegate moduleDelegate,
+            PrefService prefService,
+            SafetyHubFetchService safetyHubFetchService,
             @Nullable PasswordStoreBridge passwordStoreBridge) {
         mModuleDelegate = moduleDelegate;
         mPrefService = prefService;

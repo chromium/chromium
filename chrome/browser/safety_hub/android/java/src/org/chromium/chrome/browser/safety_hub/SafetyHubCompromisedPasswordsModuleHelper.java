@@ -9,10 +9,13 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 
 /** Helper for the {@link SafetyHubPasswordsModule} for the has compromised passwords state. */
+@NullMarked
 public class SafetyHubCompromisedPasswordsModuleHelper implements SafetyHubModuleHelper {
     private final Context mContext;
     private final SafetyHubModuleDelegate mModuleDelegate;
@@ -101,7 +104,7 @@ public class SafetyHubCompromisedPasswordsModuleHelper implements SafetyHubModul
     }
 
     @Override
-    public String getSecondaryButtonText() {
+    public @Nullable String getSecondaryButtonText() {
         if (mUnifiedModule
                 && !(mAccountCompromisedPasswordsCount > 0
                         && mLocalCompromisedPasswordsCount > 0)) {
@@ -111,7 +114,7 @@ public class SafetyHubCompromisedPasswordsModuleHelper implements SafetyHubModul
     }
 
     @Override
-    public View.OnClickListener getSecondaryButtonListener() {
+    public View.@Nullable OnClickListener getSecondaryButtonListener() {
         if (mUnifiedModule
                 && !(mAccountCompromisedPasswordsCount > 0
                         && mLocalCompromisedPasswordsCount > 0)) {

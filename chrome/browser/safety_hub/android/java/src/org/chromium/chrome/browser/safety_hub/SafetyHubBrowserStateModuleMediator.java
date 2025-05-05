@@ -8,6 +8,7 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.components.browser_ui.settings.CardPreference;
 
@@ -17,6 +18,7 @@ import java.util.List;
  * Mediator for the Safety Hub browser state module. Populates the {@link CardPreference} with the
  * user's browser state, which is based in all the other modules.
  */
+@NullMarked
 public class SafetyHubBrowserStateModuleMediator {
     private final CardPreference mPreference;
     private final List<SafetyHubModuleMediator> mModuleMediators;

@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** View Binder for the {@link SafetyHubModuleProperties}. */
+@NullMarked
 public class SafetyHubModuleViewBinder {
     public static void bindProperties(
             PropertyModel model,

@@ -10,11 +10,11 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.Preference;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.PermissionsModuleInteractions;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -25,10 +25,11 @@ import org.chromium.components.favicon.LargeIconBridge;
  * Safety Hub subpage that displays a list of all revoked permissions alongside their supported
  * actions.
  */
+@NullMarked
 public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
         implements Preference.OnPreferenceClickListener, UnusedSitePermissionsBridge.Observer {
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
-    private LargeIconBridge mLargeIconBridge;
+    private @Nullable LargeIconBridge mLargeIconBridge;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -61,7 +62,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
                     Snackbar.UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS,
                     new SnackbarManager.SnackbarController() {
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
                             mUnusedSitePermissionsBridge.restoreRevokedPermissionsReviewList(
                                     (PermissionsData[]) actionData);
                             recordRevokedPermissionsInteraction(
@@ -79,7 +80,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
     }
 
     @Override
-    public boolean onPreferenceClick(@NonNull Preference preference) {
+    public boolean onPreferenceClick(Preference preference) {
         if (preference instanceof SafetyHubPermissionsPreference) {
             PermissionsData permissionsData =
                     ((SafetyHubPermissionsPreference) preference).getPermissionsData();
@@ -91,7 +92,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
                     Snackbar.UMA_SAFETY_HUB_REGRANT_SINGLE_PERMISSION,
                     new SnackbarManager.SnackbarController() {
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
                             mUnusedSitePermissionsBridge.undoRegrantPermissions(
                                     (PermissionsData) actionData);
                             recordRevokedPermissionsInteraction(

@@ -9,10 +9,13 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 
 /** Helper for the {@link SafetyHubAccountPasswordsModule} for the has no passwords state. */
+@NullMarked
 public class SafetyHubAccountPasswordsNoPasswordsModuleHelper implements SafetyHubModuleHelper {
     private final Context mContext;
     private final SafetyHubModuleDelegate mModuleDelegate;
@@ -34,12 +37,12 @@ public class SafetyHubAccountPasswordsNoPasswordsModuleHelper implements SafetyH
     }
 
     @Override
-    public String getPrimaryButtonText() {
+    public @Nullable String getPrimaryButtonText() {
         return null;
     }
 
     @Override
-    public View.OnClickListener getPrimaryButtonListener() {
+    public View.@Nullable OnClickListener getPrimaryButtonListener() {
         return null;
     }
 

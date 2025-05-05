@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -12,6 +11,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
@@ -28,6 +29,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import java.util.concurrent.TimeUnit;
 
 /** Manages the scheduling of Safety Hub fetch jobs. */
+@NullMarked
 public class SafetyHubFetchService implements SigninManager.SignInStateObserver, Destroyable {
     interface Observer {
         void accountPasswordCountsChanged();
@@ -50,9 +52,9 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      * The current state of updates for Chrome. This can change during runtime and may be {@code
      * null} if the status hasn't been determined yet.
      */
-    private @Nullable UpdateStatusProvider.UpdateStatus mUpdateStatus;
+    private UpdateStatusProvider.@Nullable UpdateStatus mUpdateStatus;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private final SigninManager mSigninManager;
+    private final @Nullable SigninManager mSigninManager;
 
     /**
      * Passwords fetch service for account passwords. Should only be used if the user is signed-in.
@@ -271,7 +273,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
     /**
      * @return The last fetched update status from Omaha if available.
      */
-    public UpdateStatusProvider.UpdateStatus getUpdateStatus() {
+    public UpdateStatusProvider.@Nullable UpdateStatus getUpdateStatus() {
         return mUpdateStatus;
     }
 

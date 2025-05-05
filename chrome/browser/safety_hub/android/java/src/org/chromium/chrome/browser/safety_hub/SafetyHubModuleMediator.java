@@ -9,12 +9,16 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Interface for the Safety Hub modules' mediators. */
+@NullMarked
 interface SafetyHubModuleMediator {
     /**
      * Order reflects state severity. Lowest being the most severe state and highest being the
@@ -63,6 +67,7 @@ interface SafetyHubModuleMediator {
         int NUM_ENTRIES = 7;
     }
 
+    @Initializer
     public void setUpModule();
 
     public void updateModule();
@@ -97,7 +102,7 @@ interface SafetyHubModuleMediator {
         }
     }
 
-    default Drawable getIcon(Context context) {
+    default @Nullable Drawable getIcon(Context context) {
         switch (getModuleState()) {
             case ModuleState.SAFE:
                 return SettingsUtils.getTintedIcon(

@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 
@@ -16,6 +18,7 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleStat
  * Helper for the {@link SafetyHubAccountPasswordsModule} for the unavailable compromised passwords
  * count state.
  */
+@NullMarked
 public class SafetyHubAccountPasswordsUnavailableCompromisedPasswordsModuleHelper
         implements SafetyHubModuleHelper {
     private final Context mContext;
@@ -39,12 +42,12 @@ public class SafetyHubAccountPasswordsUnavailableCompromisedPasswordsModuleHelpe
     }
 
     @Override
-    public String getPrimaryButtonText() {
+    public @Nullable String getPrimaryButtonText() {
         return null;
     }
 
     @Override
-    public View.OnClickListener getPrimaryButtonListener() {
+    public View.@Nullable OnClickListener getPrimaryButtonListener() {
         return null;
     }
 

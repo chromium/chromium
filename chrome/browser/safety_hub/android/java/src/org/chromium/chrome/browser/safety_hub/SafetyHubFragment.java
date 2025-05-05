@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.getDashboardModuleTypeForModuleOption;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordModuleState;
@@ -23,6 +24,9 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
@@ -43,6 +47,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Fragment containing Safety hub. */
+@NullMarked
 public class SafetyHubFragment extends SafetyHubBaseFragment
         implements SafetyHubModuleMediatorDelegate {
     private static final String PREF_UNIFIED_PASSWORDS = "passwords_unified";
@@ -76,12 +81,12 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     private SafetyHubModuleDelegate mDelegate;
-    private CallbackController mCallbackController;
+    private @Nullable CallbackController mCallbackController;
     private List<SafetyHubModuleMediator> mModuleMediators;
-    private SafetyHubBrowserStateModuleMediator mBrowserStateModuleMediator;
+    private @Nullable SafetyHubBrowserStateModuleMediator mBrowserStateModuleMediator;
 
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         if (ChromeFeatureList.sSafetyHubAndroidOrganicSurvey.isEnabled()) {
             mCallbackController = new CallbackController();
             PostTask.postDelayedTask(
@@ -327,6 +332,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     @Override
     public void onUpdateNeeded() {
+        assumeNonNull(mBrowserStateModuleMediator);
         // `mBrowserStateModuleMediator` needs to be updated after all the other modules change, as
         // it depends on them.
         mBrowserStateModuleMediator.updateModule();
@@ -351,6 +357,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         return false;
     }
 
+    @Initializer
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {
         mDelegate = safetyHubModuleDelegate;
     }
@@ -363,6 +370,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                     getDashboardModuleTypeForModuleOption(moduleMediator.getOption()),
                     event);
         }
+        assumeNonNull(mBrowserStateModuleMediator);
         @ModuleState
         int browserState =
                 mBrowserStateModuleMediator.isBrowserStateSafe()

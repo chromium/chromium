@@ -8,6 +8,8 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.NotificationsModuleInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
@@ -24,6 +26,7 @@ import java.util.List;
  * SafetyHubExpandablePreference} with the notification permissions review state. It also listens to
  * changes of this service, and updates the preference to reflect these.
  */
+@NullMarked
 public class SafetyHubNotificationsModuleMediator
         implements SafetyHubModuleMediator, NotificationPermissionReviewBridge.Observer {
     private final NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
@@ -133,7 +136,7 @@ public class SafetyHubNotificationsModuleMediator
                 .getString(R.string.safety_hub_notifications_review_warning_summary);
     }
 
-    private String getPrimaryButtonText() {
+    private @Nullable String getPrimaryButtonText() {
         return mNotificationPermissionsForReviewCount == 0
                 ? null
                 : mPreference
@@ -141,7 +144,7 @@ public class SafetyHubNotificationsModuleMediator
                         .getString(R.string.safety_hub_notifications_reset_all_button);
     }
 
-    private View.OnClickListener getPrimaryButtonListener() {
+    private View.@Nullable OnClickListener getPrimaryButtonListener() {
         if (mNotificationPermissionsForReviewCount == 0) {
             return null;
         }
@@ -160,7 +163,8 @@ public class SafetyHubNotificationsModuleMediator
                     Snackbar.UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS,
                     new SnackbarManager.SnackbarController() {
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
+                            assert actionData != null : "Action data should be non-null.";
                             mNotificationPermissionReviewBridge.bulkAllowNotificationPermissions(
                                     (List<NotificationPermissions>) actionData);
                             recordNotificationsInteraction(

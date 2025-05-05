@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
@@ -23,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
  * DataSource for the Safety Hub password module. Listens to changes of passwords and their state,
  * and notifies its observer of the current module type.
  */
+@NullMarked
 public class SafetyHubAccountPasswordsDataSource
         implements SafetyHubFetchService.Observer,
                 PasswordStoreBridge.PasswordStoreObserver,
@@ -63,11 +65,11 @@ public class SafetyHubAccountPasswordsDataSource
     private final Profile mProfile;
     private final PrefService mPrefService;
     private final SafetyHubFetchService mSafetyHubFetchService;
-    private final SigninManager mSigninManager;
+    private @Nullable final SigninManager mSigninManager;
     private final SafetyHubModuleDelegate mModuleDelegate;
     private final ObserverList<Observer> mObservers;
 
-    @Nullable private PasswordStoreBridge mPasswordStoreBridge;
+    private @Nullable PasswordStoreBridge mPasswordStoreBridge;
 
     private int mCompromisedPasswordCount;
     private int mWeakPasswordCount;
@@ -78,7 +80,7 @@ public class SafetyHubAccountPasswordsDataSource
             SafetyHubModuleDelegate moduleDelegate,
             PrefService prefService,
             SafetyHubFetchService safetyHubFetchService,
-            SigninManager signinManager,
+            @Nullable SigninManager signinManager,
             Profile profile) {
         mPrefService = prefService;
         mSafetyHubFetchService = safetyHubFetchService;
@@ -97,6 +99,7 @@ public class SafetyHubAccountPasswordsDataSource
                 mPasswordStoreBridge.addObserver(this, true);
             }
         }
+        assert mSigninManager != null : "SigninManager should not be null.";
         mSigninManager.addSignInStateObserver(this);
     }
 
@@ -200,7 +203,7 @@ public class SafetyHubAccountPasswordsDataSource
         return SafetyHubUtils.isSignedIn(mProfile);
     }
 
-    public String getAccountEmail() {
+    public @Nullable String getAccountEmail() {
         assert mProfile != null
                 : "A null Profile was detected in" + " SafetyHubAccountPasswordsDataSource";
         return SafetyHubUtils.getAccountEmail(mProfile);
@@ -208,7 +211,9 @@ public class SafetyHubAccountPasswordsDataSource
 
     public void destroy() {
         mSafetyHubFetchService.removeObserver(this);
-        mSigninManager.removeSignInStateObserver(this);
+        if (mSigninManager != null) {
+            mSigninManager.removeSignInStateObserver(this);
+        }
         if (mPasswordStoreBridge != null) {
             mPasswordStoreBridge.removeObserver(this);
         }

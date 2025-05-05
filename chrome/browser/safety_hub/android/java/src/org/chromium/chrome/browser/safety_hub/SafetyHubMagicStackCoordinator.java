@@ -6,9 +6,8 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
@@ -19,15 +18,16 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the Safety Hub Magic Stack module. */
+@NullMarked
 class SafetyHubMagicStackCoordinator implements ModuleProvider {
     private final SafetyHubMagicStackMediator mMediator;
 
     SafetyHubMagicStackCoordinator(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull ModuleDelegate moduleDelegate,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Context context,
+            Profile profile,
+            TabModelSelector tabModelSelector,
+            ModuleDelegate moduleDelegate,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         PropertyModel model = new PropertyModel(SafetyHubMagicStackViewProperties.ALL_KEYS);
         mMediator =
                 new SafetyHubMagicStackMediator(

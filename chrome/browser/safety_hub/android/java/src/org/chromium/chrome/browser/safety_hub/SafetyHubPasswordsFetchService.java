@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
@@ -20,13 +20,14 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Manages fetching and setting the password information for Safety Hub. */
+@NullMarked
 public class SafetyHubPasswordsFetchService {
     private static final long CHECKUP_COOL_DOWN_PERIOD_IN_MS =
             60 * TimeUtils.MILLISECONDS_PER_MINUTE;
 
-    @NonNull private final PrefService mPrefService;
-    @NonNull private final PasswordManagerHelper mPasswordManagerHelper;
-    @NonNull private final AccountManagerFacade mAccountManagerFacade;
+    private final PrefService mPrefService;
+    private final PasswordManagerHelper mPasswordManagerHelper;
+    private final AccountManagerFacade mAccountManagerFacade;
 
     /**
      * These booleans indicate if the specific type of passwords count has returned. They are used

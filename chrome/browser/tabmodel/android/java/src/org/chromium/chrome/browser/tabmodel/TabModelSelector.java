@@ -71,7 +71,7 @@ public interface TabModelSelector {
     int getCurrentTabId();
 
     /** Returns a supplier for the current tab in the current model. */
-    ObservableSupplier<Tab> getCurrentTabSupplier();
+    ObservableSupplier<@Nullable Tab> getCurrentTabSupplier();
 
     /**
      * Returns a supplier for the current tab count in the current model. This will update as the

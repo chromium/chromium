@@ -10,11 +10,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
@@ -35,12 +34,13 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** An implementation of {@link SafetyHubModuleDelegate} */
+@NullMarked
 public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     private static final int INVALID_PASSWORD_COUNT = -1;
-    private final @NonNull Profile mProfile;
-    private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final @NonNull SigninAndHistorySyncActivityLauncher mSigninLauncher;
-    private final @NonNull SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    private final Profile mProfile;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
+    private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     /**
      * @param profile A supplier for {@link Profile} that owns the data being deleted.
@@ -50,10 +50,10 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
      *     article in a CCT.
      */
     public SafetyHubModuleDelegateImpl(
-            @NonNull Profile profile,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull SigninAndHistorySyncActivityLauncher signinLauncher,
-            @NonNull SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            Profile profile,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            SigninAndHistorySyncActivityLauncher signinLauncher,
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mProfile = profile;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSigninLauncher = signinLauncher;
@@ -160,8 +160,8 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
                                 HistorySyncConfig.OptInMode.NONE)
                         .build();
         // Open the sign-in page.
-        @Nullable
-        Intent intent =
+
+        @Nullable Intent intent =
                 mSigninLauncher.createBottomSheetSigninIntentOrShowError(
                         context, mProfile, config, SigninAccessPoint.SAFETY_CHECK);
         if (intent != null) {

@@ -8,9 +8,9 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
@@ -23,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * SafetyHubExpandablePreference} with the update check state. It also listens to changes of this
  * state, and updates the preference to reflect these.
  */
+@NullMarked
 public class SafetyHubUpdateCheckModuleMediator
         implements SafetyHubModuleMediator, SafetyHubFetchService.Observer {
     private final SafetyHubFetchService mSafetyHubFetchService;
@@ -32,7 +33,7 @@ public class SafetyHubUpdateCheckModuleMediator
 
     private PropertyModel mModel;
 
-    @Nullable private UpdateStatusProvider.UpdateStatus mUpdateStatus;
+    private UpdateStatusProvider.@Nullable UpdateStatus mUpdateStatus;
 
     SafetyHubUpdateCheckModuleMediator(
             SafetyHubExpandablePreference preference,
@@ -115,7 +116,7 @@ public class SafetyHubUpdateCheckModuleMediator
         return false;
     }
 
-    public UpdateStatusProvider.UpdateStatus getUpdateStatus() {
+    public UpdateStatusProvider.@Nullable UpdateStatus getUpdateStatus() {
         return mSafetyHubFetchService.getUpdateStatus();
     }
 
@@ -136,7 +137,7 @@ public class SafetyHubUpdateCheckModuleMediator
         }
     }
 
-    private String getSummary() {
+    private @Nullable String getSummary() {
         if (mUpdateStatus == null) {
             return mPreference.getContext().getString(R.string.safety_hub_unavailable_summary);
         }
@@ -163,7 +164,7 @@ public class SafetyHubUpdateCheckModuleMediator
         }
     }
 
-    private String getPrimaryButtonText() {
+    private @Nullable String getPrimaryButtonText() {
         if (mUpdateStatus == null) {
             return null;
         }
@@ -179,7 +180,7 @@ public class SafetyHubUpdateCheckModuleMediator
         }
     }
 
-    private View.OnClickListener getPrimaryButtonListener() {
+    private View.@Nullable OnClickListener getPrimaryButtonListener() {
         if (mUpdateStatus == null) {
             return null;
         }
@@ -198,7 +199,7 @@ public class SafetyHubUpdateCheckModuleMediator
         }
     }
 
-    private String getSecondaryButtonText() {
+    private @Nullable String getSecondaryButtonText() {
         if (mUpdateStatus == null) {
             return mPreference.getContext().getString(R.string.safety_hub_go_to_google_play_button);
         }
@@ -216,7 +217,7 @@ public class SafetyHubUpdateCheckModuleMediator
         }
     }
 
-    private View.OnClickListener getSecondaryButtonListener() {
+    private View.@Nullable OnClickListener getSecondaryButtonListener() {
         if (mUpdateStatus == null) {
             return v -> {
                 mModuleDelegate.openGooglePlayStore(mPreference.getContext());

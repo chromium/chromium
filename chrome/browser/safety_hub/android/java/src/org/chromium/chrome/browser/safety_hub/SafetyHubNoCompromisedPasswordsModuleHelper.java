@@ -9,9 +9,8 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 
@@ -65,7 +64,7 @@ public class SafetyHubNoCompromisedPasswordsModuleHelper implements SafetyHubMod
     }
 
     @Override
-    public @Nullable View.OnClickListener getPrimaryButtonListener() {
+    public View.@Nullable OnClickListener getPrimaryButtonListener() {
         return null;
     }
 
