@@ -699,17 +699,6 @@ BASE_FEATURE(kAutofillGreekRegexes,
              "AutofillGreekRegexes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, votes are uploaded already when the AutofillDriver becomes
-// inactive, i.e., the underlying frame enters the bfcache. Otherwise, a
-// bfcached AutofillDriver and its votes may stay around until the WebContents
-// is destroyed, by which time it's too late to send the votes because of its
-// asynchronicity.
-// TODO(crbug.com/374086145): Remove when launched.
-COMPONENT_EXPORT(AUTOFILL)
-BASE_FEATURE(kAutofillVoteWhenInactive,
-             "AutofillVoteWhenInactive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, a HaTS survey is shown after the successful first time creation
 // flow.
 COMPONENT_EXPORT(AUTOFILL)

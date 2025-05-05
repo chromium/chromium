@@ -162,9 +162,7 @@ void VotesUploader::OnAutofillDriverStateChanged(
     case kInactive:
       if (old_state == kActive) {
         // Case (1): The frame has become inactive (i.e., entered bfcache).
-        if (base::FeatureList::IsEnabled(features::kAutofillVoteWhenInactive)) {
-          delayed_flush_queued_votes_for_frame(driver.GetFrameToken());
-        }
+        delayed_flush_queued_votes_for_frame(driver.GetFrameToken());
       }
       break;
     case kActive:
