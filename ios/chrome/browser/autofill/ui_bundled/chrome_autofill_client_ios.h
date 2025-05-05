@@ -93,6 +93,8 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   ValuablesDataManager* GetValuablesDataManager() override;
   EntityDataManager* GetEntityDataManager() override;
   FieldClassificationModelHandler*
+  GetAutofillFieldClassificationModelHandler() override;
+  FieldClassificationModelHandler*
   GetPasswordManagerFieldClassificationModelHandler() override;
   SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;

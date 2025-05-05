@@ -4,6 +4,7 @@ include_rules = [
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/webdata_services/model",
   "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/optimization_guide/model",
 ]
 
 specific_include_rules = {

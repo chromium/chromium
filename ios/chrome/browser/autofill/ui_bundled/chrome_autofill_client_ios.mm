@@ -77,6 +77,7 @@
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#import "ios/chrome/browser/autofill/model/ios_autofill_field_classification_model_handler_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
 #endif
 
@@ -157,6 +158,17 @@ ValuablesDataManager* ChromeAutofillClientIOS::GetValuablesDataManager() {
 }
 
 EntityDataManager* ChromeAutofillClientIOS::GetEntityDataManager() {
+  return nullptr;
+}
+
+FieldClassificationModelHandler*
+ChromeAutofillClientIOS::GetAutofillFieldClassificationModelHandler() {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
+    return IOSAutofillFieldClassificationModelHandlerFactory::GetForProfile(
+        profile_);
+  }
+#endif
   return nullptr;
 }
 

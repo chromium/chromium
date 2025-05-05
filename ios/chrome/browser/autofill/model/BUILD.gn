@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 source_set("model") {
   sources = [
     "address_normalizer_factory.h",
@@ -26,6 +28,12 @@ source_set("model") {
     "validation_rules_storage_factory.cc",
     "validation_rules_storage_factory.h",
   ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "ios_autofill_field_classification_model_handler_factory.h",
+      "ios_autofill_field_classification_model_handler_factory.mm",
+    ]
+  }
   deps = [
     ":features",
     ":model_shared",
@@ -66,6 +74,9 @@ source_set("model") {
     "//ui/base",
     "//url",
   ]
+  if (build_with_tflite_lib) {
+    deps += [ "//ios/chrome/browser/optimization_guide/model" ]
+  }
   public_deps = [ ":constants" ]
   frameworks = [ "QuartzCore.framework" ]
 }
