@@ -31,6 +31,7 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -2655,7 +2656,10 @@ public class StripLayoutHelper
                         } else {
                             mMultiStepTabCloseAnimRunning = false;
                             mNewTabButtonAnimRunning = false;
+
                             // Resize the tabs appropriately.
+                            // TODO(crbug.com/375468032): also respect "allowUndo" here.
+                            // This is for when there is only one tab to close.
                             computeAndUpdateTabWidth(
                                     /* animate= */ true,
                                     /* deferAnimations= */ false,
@@ -2785,7 +2789,6 @@ public class StripLayoutHelper
         resetDelayedReorderState();
     }
 
-    /** Handle view click */
     @Override
     public void onClick(long time, StripLayoutView view, int motionEventButtonState) {
         if (view instanceof StripLayoutTab tab) {
@@ -2796,7 +2799,8 @@ public class StripLayoutHelper
             if (button.getType() == ButtonType.NEW_TAB) {
                 handleNewTabClick();
             } else if (button.getType() == ButtonType.TAB_CLOSE) {
-                handleCloseButtonClick((StripLayoutTab) button.getParentView(), time);
+                handleCloseButtonClick(
+                        (StripLayoutTab) button.getParentView(), motionEventButtonState);
             }
         }
     }
@@ -2870,11 +2874,13 @@ public class StripLayoutHelper
      * </ol>
      *
      * @param tab the {@link StripLayoutTab} to close.
-     * @param time the time of the click action.
+     * @param motionEventButtonState {@link MotionEvent#getButtonState()} at the moment of the click
+     *     if the click is detected via motion events; otherwise, this parameter is {@link
+     *     MotionEventUtils#MOTION_EVENT_BUTTON_NONE}.
      * @see #handleCloseTab(StripLayoutTab, boolean)
      */
     @VisibleForTesting
-    void handleCloseButtonClick(final StripLayoutTab tab, long time) {
+    void handleCloseButtonClick(StripLayoutTab tab, int motionEventButtonState) {
         // Placeholder tabs are expected to have invalid tab ids.
         if (tab == null || tab.isDying() || tab.getTabId() == Tab.INVALID_TAB_ID) return;
         RecordUserAction.record("MobileToolbarCloseTab");
@@ -2907,7 +2913,12 @@ public class StripLayoutHelper
                             && tabClosureParams.tabs.get(0) == realTab;
                     handleCloseTab(tab, tabClosureParams.allowUndo);
                 };
-        TabClosureParams params = TabClosureParams.closeTab(realTab).allowUndo(true).build();
+
+        // Allow undo of tab closure only when the click wasn't from a button on peripherals like
+        // mouses, trackpads, etc.
+        boolean allowUndo = (motionEventButtonState == MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+
+        TabClosureParams params = TabClosureParams.closeTab(realTab).allowUndo(allowUndo).build();
         mTabGroupModelFilter
                 .getTabModel()
                 .getTabRemover()
