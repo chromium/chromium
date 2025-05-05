@@ -88,6 +88,8 @@ source_set("discover_feed_app_agent_profile_helper") {
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/content_notification/model:util",
     "//ios/chrome/browser/ntp/shared/metrics:constants",
+    "//ios/chrome/browser/push_notification/model:profile_service",
+    "//ios/chrome/browser/push_notification/model:profile_service_factory",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",

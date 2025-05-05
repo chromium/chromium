@@ -16,7 +16,8 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
-#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -122,19 +123,16 @@ bool IsGoogleDefaultSearchEngine(ProfileIOS* profile) {
       IsContentNotificationProvisionalEnabled(
           isUserSignedIn, IsGoogleDefaultSearchEngine(profile),
           profile->GetPrefs())) {
-    std::vector<PushNotificationClientId> clientIds = {
-        PushNotificationClientId::kContent,
-        PushNotificationClientId::kSports,
-    };
-
     // This method does not show an UI prompt to the user as provisional
     // notifications are authorized without any user input if the user hasn't
     // previously disabled notifications.
-    [ProvisionalPushNotificationUtil
-        enrollUserToProvisionalNotificationsForClientIds:std::move(clientIds)
-                             clientEnabledForProvisional:YES
-                                         withAuthService:authService
-                                   deviceInfoSyncService:nil];
+    ProvisionalPushNotificationServiceFactory::GetForProfile(profile)
+        ->EnrollUserToProvisionalNotifications(
+            ProvisionalPushNotificationService::ClientIdState::kEnabled,
+            {
+                PushNotificationClientId::kContent,
+                PushNotificationClientId::kSports,
+            });
   }
 }
 

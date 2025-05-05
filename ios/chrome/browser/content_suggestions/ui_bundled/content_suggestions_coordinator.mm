@@ -108,7 +108,8 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
-#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -294,15 +295,15 @@ using segmentation_platform::TipIdentifier;
   //
   // TODO(crbug.com/366182129): Move Safety Check provisional notification
   // enrollment to `SafetyCheckNotificationClient` once
-  // `ProvisionalPushNotificationUtil` circular dependencies are fixed.
+  // `ProvisionalPushNotificationService` circular dependencies are fixed.
   if (IsSafetyCheckNotificationsEnabled() &&
       ProvisionalSafetyCheckNotificationsEnabled()) {
-    [ProvisionalPushNotificationUtil
-        enrollUserToProvisionalNotificationsForClientIds:
-            {PushNotificationClientId::kSafetyCheck}
-                             clientEnabledForProvisional:NO
-                                         withAuthService:self.authService
-                                   deviceInfoSyncService:nil];
+    if (ProvisionalPushNotificationService* service =
+            ProvisionalPushNotificationServiceFactory::GetForProfile(profile)) {
+      service->EnrollUserToProvisionalNotifications(
+          ProvisionalPushNotificationService::ClientIdState::kDisabled,
+          {PushNotificationClientId::kSafetyCheck});
+    }
   }
 
   favicon::LargeIconService* largeIconService =

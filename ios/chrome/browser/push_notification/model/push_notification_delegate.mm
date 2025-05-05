@@ -33,7 +33,8 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_settings_action.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
-#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
@@ -998,12 +999,10 @@ void ProcessIncomingNotification(
     GetApplicationContext()->GetPushNotificationService()->SetPreference(
         gaiaID, PushNotificationClientId::kSendTab, true);
   } else {
-    [ProvisionalPushNotificationUtil
-        enrollUserToProvisionalNotificationsForClientIds:
-            {PushNotificationClientId::kSendTab}
-                             clientEnabledForProvisional:YES
-                                         withAuthService:authService
-                                   deviceInfoSyncService:deviceInfoSyncService];
+    ProvisionalPushNotificationServiceFactory::GetForProfile(profile)
+        ->EnrollUserToProvisionalNotifications(
+            ProvisionalPushNotificationService::ClientIdState::kEnabled,
+            {PushNotificationClientId::kSendTab});
   }
 }
 
