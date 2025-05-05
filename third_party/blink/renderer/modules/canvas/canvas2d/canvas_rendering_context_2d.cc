@@ -692,6 +692,26 @@ void CanvasRenderingContext2D::drawElement(Element* element,
                                            double x,
                                            double y,
                                            ExceptionState& exception_state) {
+  DrawElementInternal(element, x, y, std::nullopt, std::nullopt,
+                      exception_state);
+}
+
+void CanvasRenderingContext2D::drawElement(Element* element,
+                                           double x,
+                                           double y,
+                                           double dwidth,
+                                           double dheight,
+                                           ExceptionState& exception_state) {
+  DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
+}
+
+void CanvasRenderingContext2D::DrawElementInternal(
+    Element* element,
+    double x,
+    double y,
+    std::optional<double> dwidth,
+    std::optional<double> dheight,
+    ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasElementDrawImageEnabled());
   if (!IsDrawElementEligible(element, exception_state)) {
     return;
@@ -736,11 +756,22 @@ void CanvasRenderingContext2D::drawElement(Element* element,
           .set_paint_record(std::move(paint_record), box_rect,
                             PaintImage::GetNextId())
           .TakePaintImage();
-
   WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
            CanvasPerformanceMonitor::DrawType::kOther);
 
-  GetOrCreatePaintCanvas()->drawImage(paint_image, x, y);
+  cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
+  if (dwidth && dheight) {
+    canvas->save();
+    canvas->translate(x, y);
+    canvas->scale(*dwidth / box_rect.width(), *dheight / box_rect.height());
+    canvas->translate(-x, -y);
+  }
+
+  canvas->drawImage(paint_image, x, y);
+
+  if (dwidth && dheight) {
+    canvas->restore();
+  }
 }
 
 void CanvasRenderingContext2D::PaintPlacedElements() {

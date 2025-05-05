@@ -186,6 +186,12 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                    double x,
                    double y,
                    ExceptionState& exceptionState);
+  void drawElement(Element* element,
+                   double x,
+                   double y,
+                   double dwidth,
+                   double dheight,
+                   ExceptionState& exceptionState);
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
   ExecutionContext* GetTopExecutionContext() const override;
@@ -251,6 +257,12 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   FRIEND_TEST_ALL_PREFIXES(CanvasRenderingContext2DTestAccelerated,
                            PrepareMailboxWhenContextIsLostWithFailedRestore);
 
+  void DrawElementInternal(Element* element,
+                           double x,
+                           double y,
+                           std::optional<double> dwidth,
+                           std::optional<double> dheight,
+                           ExceptionState& exceptionState);
   // Handles a page visibility change that occurs when the canvas is paintable.
   // TODO(crbug.com/40280152): Fold this method into PageVisibilityChanged().
   void OnPageVisibilityChangeWhenPaintable();
