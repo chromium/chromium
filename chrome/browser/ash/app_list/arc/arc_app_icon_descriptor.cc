@@ -49,17 +49,3 @@ std::string ArcAppIconDescriptor::GetBackgroundIconName() const {
   return base::StringPrintf(kBackgroundIconNameTemplate,
                             GetScalePercent(scale_factor), dip_size);
 }
-
-bool ArcAppIconDescriptor::operator==(const ArcAppIconDescriptor& other) const {
-  return scale_factor == other.scale_factor && dip_size == other.dip_size;
-}
-
-bool ArcAppIconDescriptor::operator!=(const ArcAppIconDescriptor& other) const {
-  return !(*this == other);
-}
-
-bool ArcAppIconDescriptor::operator<(const ArcAppIconDescriptor& other) const {
-  if (dip_size != other.dip_size)
-    return dip_size < other.dip_size;
-  return static_cast<int>(scale_factor) < static_cast<int>(other.scale_factor);
-}
