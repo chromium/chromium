@@ -12,4 +12,6 @@ export enum OffscreenCommandType {
   ON_KEY_DOWN = 'onKeyDown',
   ON_KEY_UP = 'onKeyUp',
   ON_CLIPBOARD_DATA_CHANGED = 'onClipboardDataChanged',
+  ON_VOICES_CHANGED = 'onvoiceschanged',
+  SHOULD_SET_DEFAULT_VOICE = 'shouldSetDefaultVoice',
 }

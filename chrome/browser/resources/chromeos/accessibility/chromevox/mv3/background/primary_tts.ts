@@ -10,6 +10,7 @@ import {LocalStorage} from '/common/local_storage.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Msgs} from '../common/msgs.js';
+import {OffscreenCommandType} from '../common/offscreen_command_type.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {CharacterDictionary, Personality, PunctuationEcho, PunctuationEchoes, QueueMode, TtsAudioProperty, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
@@ -96,16 +97,12 @@ export class PrimaryTts extends AbstractTts {
     this.currentPunctuationEcho_ =
         SettingsManager.getNumber(TtsSettings.PUNCTUATION_ECHO);
 
+    chrome.runtime.onMessage.addListener(
+        (message: any|undefined, _sender: chrome.runtime.MessageSender,
+         _sendResponse: (value: any) => void) =>
+            this.handleMessageFromOffscreen_(message));
 
-    if (window.speechSynthesis) {
-      window.speechSynthesis.onvoiceschanged = () =>
-          this.updateVoice(SettingsManager.getString('voiceName'));
-    } else {
-      // SpeechSynthesis API is not available on chromecast. Call
-      // updateVoice to set the one and only voice as the current
-      // voice.
-      this.updateVoice('');
-    }
+    this.setDefaultVoiceIfChromecast_();
 
     SettingsManager.addListenerForKey(
         'voiceName', voiceName => this.updateVoice(voiceName));
@@ -134,6 +131,32 @@ export class PrimaryTts extends AbstractTts {
     // At runtime.
     chrome.settingsPrivate.onPrefsChanged.addListener(
         prefs => this.updateFromPrefs_(true, prefs));
+  }
+
+  /**
+   * Set the default voice if SpeechSynthesis is not available
+   * by requesting the offscreen document to check the existence
+   * of window.speechSynthesis.
+   * SpeechSynthesis is not available on chromecast.
+   */
+  private setDefaultVoiceIfChromecast_() {
+    const setDefault = (value: any) => {
+      if (value) {
+        this.updateVoice('');
+      }
+    };
+    chrome.runtime.sendMessage(
+        undefined, {command: OffscreenCommandType.SHOULD_SET_DEFAULT_VOICE},
+        undefined, setDefault);
+  }
+
+  private handleMessageFromOffscreen_(message: any|undefined) {
+    switch (message['command']) {
+      case OffscreenCommandType.ON_VOICES_CHANGED:
+        this.updateVoice(SettingsManager.getString('voiceName'));
+        break;
+    }
+    return false;
   }
 
   /**

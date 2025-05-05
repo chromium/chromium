@@ -11,6 +11,8 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import {OffscreenCommandType} from '../common/offscreen_command_type.js';
+
 import {Msgs} from './msgs.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
@@ -33,16 +35,27 @@ export class LocaleOutputHelper {
     this.lastSpokenLocale_ = this.currentLocale_;
     this.availableVoices_ = [];
 
-    const setAvailableVoices = (): void => {
-      chrome.tts.getVoices(voices => {
-        this.availableVoices_ = voices || [];
-      });
-    };
-    setAvailableVoices();
-    if (window.speechSynthesis) {
-      window.speechSynthesis.addEventListener(
-          'voiceschanged', setAvailableVoices, /* useCapture */ false);
+    this.setAvailableVoices_();
+
+    chrome.runtime.onMessage.addListener(
+        (message: any|undefined, _sender: chrome.runtime.MessageSender,
+         _sendResponse: (value: any) => void) =>
+            this.handleMessageFromOffscreen_(message));
+  }
+
+  private handleMessageFromOffscreen_(message: any|undefined) {
+    switch (message['command']) {
+      case OffscreenCommandType.ON_VOICES_CHANGED:
+        this.setAvailableVoices_();
+        break;
     }
+    return false;
+  }
+
+  private setAvailableVoices_(): void {
+    chrome.tts.getVoices(voices => {
+      this.availableVoices_ = voices || [];
+    });
   }
 
   /**
