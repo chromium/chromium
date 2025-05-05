@@ -256,23 +256,25 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
                   content::JsReplace(
                       R"js(
       () => {
-        window.scrollToError = null;
-        client.browser.scrollTo({selector: $1}).catch(e => {
-          window.scrollToError = e.reason;
-        });
+        window.scrollToPromise = client.browser.scrollTo({selector: $1});
       }
     )js",
                       std::move(selector).Run()),
                   InteractiveBrowserTestApi::ExecuteJsMode::kFireAndForget));
   }
 
-  // Should be used in combination with ScrollToAsync() above. Waits until
-  // the scrollTo call is rejected with an error other than kNotSupported.
+  // Should be used in combination with ScrollToAsync() above.
   auto WaitForScrollToError(mojom::ScrollToErrorReason error_reason) {
-    return Steps(WaitForJsResult(
-        kGlicContentsElementId, "() => window.scrollToError",
-        ::testing::AllOf(IsTruthy(),
-                         ::testing::Eq(static_cast<int>(error_reason)))));
+    return Steps(CheckJsResult(kGlicContentsElementId, R"js(
+          () => {
+            return new Promise(resolve => {
+              window.scrollToPromise.catch(e => {
+                resolve(e.reason);
+              });
+            });
+          }
+        )js",
+                               ::testing::Eq(static_cast<int>(error_reason))));
   }
 
   // Creates a new FakeAnnotationAgentContainer, and updates the remote
@@ -493,11 +495,24 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, SecondScrollToRequest) {
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached), InsertFakeAnnotationService(),
+      OpenGlicWindow(GlicWindowMode::kDetached),  //
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("Some text")),
       WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),
+      // Stores the first window.scrollToPromise in a new variable (because we
+      // set it again below when we call ScrollToAsync again).
+      ExecuteJs(kGlicContentsElementId,
+                "() => { window.firstPromise = window.scrollToPromise; }"),
       ScrollToAsync(ExactTextSelector("Some text again")),
-      WaitForScrollToError(mojom::ScrollToErrorReason::kNewerScrollToCall));
+      CheckJsResult(
+          kGlicContentsElementId, R"js(
+            () => {
+              return new Promise(resolve => {
+                window.firstPromise.catch(e => { resolve(e.reason); });
+              });
+            }
+          )js",
+          static_cast<int>(mojom::ScrollToErrorReason::kNewerScrollToCall)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
@@ -772,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
-                       AnnotationTaskRemovedWhenPanelClosed) {
+                       HighlightIsDroppedWhenPanelIsClosed) {
   RunTestSequence(
       InstrumentTab(kActiveTabId),  //
       NavigateWebContents(
@@ -792,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
-                       AnnotationTaskRemovedWhenPanelClosedBeforeAttachment) {
+                       ScrollToFailsWhenPanelIsClosedBeforeAttachment) {
   RunTestSequence(
       InstrumentTab(kActiveTabId),  //
       NavigateWebContents(
@@ -803,22 +818,30 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
       ScrollToAsync(ExactTextSelector("does not matter")),
       WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
       CloseGlicWindow(),                                              //
-      Check([&]() {
-        // At this point, the glic WebContents is already hidden. Unfortunately
-        // we can't use `WaitForScrollToError()` on a hidden contents.
-        return base::test::RunUntil([&]() {
-          return ExecJs(
-              glic_service()->host().webui_contents(),
-              content::JsReplace(
-                  "window.scrollToError === $1",
-                  static_cast<int>(mojom::ScrollToErrorReason::
-                                       kFocusedTabChangedOrNavigated)));
-        });
-      }));
+      // We cannot use `WaitForScrollError()` here as `kGlicContentsElementId`
+      // is already hidden and `CheckJsResult` doesn't work when the provided
+      // contents isn't visible.
+      CheckResult(
+          [&]() {
+            return content::EvalJs(glic_service()
+                                       ->host()
+                                       .webui_contents()
+                                       ->GetInnerWebContents()[0],
+                                   R"js(
+              new Promise(resolve => {
+                window.scrollToPromise.catch(e => {
+                  resolve(e.reason);
+                });
+              });
+            )js")
+                .ExtractInt();
+          },
+          static_cast<int>(
+              mojom::ScrollToErrorReason::kFocusedTabChangedOrNavigated)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
-                       AnnotationTaskRemovedWhenWebClientClosed) {
+                       HighlightIsDroppedWhenWebClientClosed) {
   RunTestSequence(
       InstrumentTab(kActiveTabId),  //
       NavigateWebContents(
