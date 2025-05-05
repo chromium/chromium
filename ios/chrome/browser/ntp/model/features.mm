@@ -14,7 +14,7 @@ BASE_FEATURE(kSetUpListInFirstRun,
 
 BASE_FEATURE(kSetUpListShortenedDuration,
              "SetUpListShortenedDuration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSetUpListWithoutSignInItem,
              "SetUpListWithoutSignInItem",
@@ -35,7 +35,7 @@ FirstRunVariationType GetSetUpListInFirstRunVariation() {
 
 base::TimeDelta SetUpListDurationPastFirstRun() {
   return base::Days(base::GetFieldTrialParamByFeatureAsInt(
-      kSetUpListShortenedDuration, kSetUpListDurationParam, 7));
+      kSetUpListShortenedDuration, kSetUpListDurationParam, 14));
 }
 
 }  // namespace set_up_list
