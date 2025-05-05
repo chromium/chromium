@@ -530,20 +530,17 @@ std::unique_ptr<UserScript> CopyDynamicScriptInfo(const UserScript& script) {
 ExtensionUserScriptLoader::ExtensionUserScriptLoader(
     BrowserContext* browser_context,
     const Extension& extension,
-    StateStore* state_store,
-    bool listen_for_extension_system_loaded)
+    StateStore* state_store)
     : ExtensionUserScriptLoader(
           browser_context,
           extension,
           state_store,
-          listen_for_extension_system_loaded,
           ExtensionSystem::Get(browser_context)->content_verifier()) {}
 
 ExtensionUserScriptLoader::ExtensionUserScriptLoader(
     BrowserContext* browser_context,
     const Extension& extension,
     StateStore* state_store,
-    bool listen_for_extension_system_loaded,
     scoped_refptr<ContentVerifier> content_verifier)
     : UserScriptLoader(
           browser_context,
@@ -553,15 +550,18 @@ ExtensionUserScriptLoader::ExtensionUserScriptLoader(
                       &extension)}),
       helper_(browser_context, extension.id(), state_store),
       content_verifier_(std::move(content_verifier)) {
-  if (listen_for_extension_system_loaded) {
-    ExtensionSystem::Get(browser_context)
-        ->ready()
-        .Post(FROM_HERE,
-              base::BindOnce(&ExtensionUserScriptLoader::OnExtensionSystemReady,
-                             weak_factory_.GetWeakPtr()));
-  } else {
-    SetReady(true);
-  }
+  // TODO(crbug.com/415850597): Could we immediately call
+  // OnExtensionSystemReady() if the ExtensionSystem is ready now to be more
+  // efficient?
+
+  // Wait for the extension system to be ready before declaring this loader
+  // ready. This ensures that other parts of the system (like the state store or
+  // content verifier) are available.
+  ExtensionSystem::Get(browser_context)
+      ->ready()
+      .Post(FROM_HERE,
+            base::BindOnce(&ExtensionUserScriptLoader::OnExtensionSystemReady,
+                           weak_factory_.GetWeakPtr()));
 }
 
 ExtensionUserScriptLoader::~ExtensionUserScriptLoader() = default;

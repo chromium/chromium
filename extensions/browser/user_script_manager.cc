@@ -248,12 +248,10 @@ ExtensionUserScriptLoader* UserScriptManager::CreateExtensionUserScriptLoader(
   // Inserts a new ExtensionUserScriptLoader and returns a ptr to it.
   ExtensionUserScriptLoader* loader =
       extension_script_loaders_
-          .emplace(extension->id(),
-                   std::make_unique<ExtensionUserScriptLoader>(
-                       browser_context_, *extension,
-                       ExtensionSystem::Get(browser_context_)
-                           ->dynamic_user_scripts_store(),
-                       /*listen_for_extension_system_loaded=*/true))
+          .emplace(extension->id(), std::make_unique<ExtensionUserScriptLoader>(
+                                        browser_context_, *extension,
+                                        ExtensionSystem::Get(browser_context_)
+                                            ->dynamic_user_scripts_store()))
           .first->second.get();
 
   loader->SetSourceEnabled(UserScript::Source::kDynamicUserScript,
