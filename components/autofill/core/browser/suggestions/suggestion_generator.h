@@ -24,7 +24,7 @@ class SuggestionGenerator {
   // Contains the structures used in order to generate various kind of
   // suggestions.
   using SuggestionData =
-      std::variant<EntityInstance, AutofillProfile, CreditCard>;
+      std::variant<EntityInstance, AutofillProfile, CreditCard, Iban>;
 
   // Obtains data for suggestions for a specific `FillingProduct` and calls
   // `callback` with that product along with the suggestions data.
@@ -43,9 +43,19 @@ class SuggestionGenerator {
       const FormStructure& form,
       const AutofillField& trigger_field,
       AutofillClient& client,
-      std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>
+      const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
           suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) = 0;
+
+  protected:
+   // Returns the vector of `SuggestionData` for a specific `FillingProduct`
+   // from the `suggestion_data` vector.
+   std::vector<SuggestionGenerator::SuggestionData>
+   GetSuggestionDataForFillingProduct(
+       const std::vector<
+           std::pair<FillingProduct, std::vector<SuggestionData>>>&
+           suggestion_data,
+       FillingProduct filling_product);
 };
 
 }  // namespace autofill

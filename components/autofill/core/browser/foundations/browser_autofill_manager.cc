@@ -123,6 +123,7 @@
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/single_fields/iban_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -1127,8 +1128,10 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
   // Suggestion generators lifespan should be limited to only when they are
   // needed.
-  CHECK(suggestion_generators_.empty());
+  suggestion_generators_.clear();
   // TODO(crbug.com/409962888): Populate `suggestion_generators_` here.
+  suggestion_generators_.emplace_back(
+      std::make_unique<IbanSuggestionGenerator>());
 
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);
@@ -1188,6 +1191,12 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
   // TODO(crbug.com/409962888): Add logic to discard/merge
   // `returned_suggestions` into a single list.
   std::vector<Suggestion> suggestions;
+  for (const auto& [filling_product, filling_suggestions] :
+       returned_suggestions) {
+    suggestions.insert(suggestions.end(), filling_suggestions.begin(),
+                       filling_suggestions.end());
+  }
+
   OnGenerateSuggestionsComplete(form, field, trigger_source, context, true,
                                 suggestions, std::nullopt);
   // Suggestion generators lifespan should be limited to only when they are
