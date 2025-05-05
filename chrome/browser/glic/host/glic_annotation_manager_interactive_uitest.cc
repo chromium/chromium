@@ -880,4 +880,42 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerWithScrollToDisabledUiTest,
                       kGlicContentsElementId,
                       "() => { return !(client.browser.scrollTo); }")));
 }
+
+class GlicAnnotationManagerWithEnforceDocumentIdUiTest
+    : public GlicAnnotationManagerUiTest {
+ public:
+  GlicAnnotationManagerWithEnforceDocumentIdUiTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicScrollTo,
+        {{"glic-scroll-to-enforce-document-id", "true"}});
+  }
+  ~GlicAnnotationManagerWithEnforceDocumentIdUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerWithEnforceDocumentIdUiTest,
+                       FailsWithNoDocumentId) {
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached),
+      ScrollToExpectingError(ExactTextSelector("Some text"),
+                             mojom::ScrollToErrorReason::kNotSupported));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerWithEnforceDocumentIdUiTest,
+                       SucceedsWithDocumentId) {
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached), GetPageContextFromFocusedTab(),
+      ScrollToWithDocumentId(ExactTextSelector("Some text")));
+}
+
 }  // namespace glic::test

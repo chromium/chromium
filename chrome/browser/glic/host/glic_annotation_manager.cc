@@ -134,10 +134,18 @@ void GlicAnnotationManager::ScrollTo(
         annotation_agent_container_->remote.BindNewPipeAndPassReceiver());
   }
 
+  // The caller currently only enforces if the documentId is set when DOMNodeId
+  // selector parameters are set. If this is configured to be true, we will
+  // always check that the documentId is set, and fail otherwise.
+  const bool fail_without_document_id =
+      features::kGlicScrollToEnforceDocumentId.Get();
+  if (fail_without_document_id && !params->document_id) {
+    std::move(callback).Run(glic::mojom::ScrollToErrorReason::kNotSupported);
+    return;
+  }
+
   // Verifies that the document_id parameter (if set) refers to the primary
   // document in the currently focused tab.
-  // TODO(crbug.com/404564333): We should eventually enforce that this is
-  // always set.
   if (params->document_id) {
     // We only support scrolling the currently focused tab's main frame.
     content::RenderFrameHost& rfh = focused_primary_page->GetMainDocument();

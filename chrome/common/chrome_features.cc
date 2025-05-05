@@ -477,6 +477,10 @@ BASE_FEATURE(kGlicDebugWebview,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicScrollTo, "GlicScrollTo", base::FEATURE_DISABLED_BY_DEFAULT);
+// Controls whether we enforce that documentId (a currently optional parameter)
+// is set (and fail the request if it's not).
+const base::FeatureParam<bool> kGlicScrollToEnforceDocumentId{
+    &kGlicScrollTo, "glic-scroll-to-enforce-document-id", false};
 
 // Controls whether the Glic UI container can be resized by the user
 BASE_FEATURE(kGlicUserResize,
