@@ -62,7 +62,9 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.lang.ref.WeakReference;
@@ -168,7 +170,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 R.id.share_group, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // Assert: verify divider and delete group menu item.
-        assertEquals(ListMenuItemType.DIVIDER, modelList.get(5).type);
+        verifyDivider(modelList.get(5));
         assertEquals(
                 R.id.delete_tab_group,
                 modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
@@ -400,7 +402,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     private void verifyNormalListItems(ModelList modelList, int closeGroupPosition) {
-        assertEquals(ListMenuItemType.DIVIDER, modelList.get(0).type);
+        verifyDivider(modelList.get(0));
         assertEquals(
                 R.id.open_new_tab_in_group,
                 modelList.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
@@ -412,7 +414,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     private void verifyCollaborationListItems(ModelList modelList, @MemberRole int memberRole) {
-        assertEquals(ListMenuItemType.DIVIDER, modelList.get(0).type);
+        verifyDivider(modelList.get(0));
         assertEquals(
                 R.id.open_new_tab_in_group,
                 modelList.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
@@ -429,7 +431,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 R.id.close_tab_group,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(0, modelList.get(4).model.get(ListMenuItemProperties.START_ICON_ID));
-        assertEquals(ListMenuItemType.DIVIDER, modelList.get(5).type);
+        verifyDivider(modelList.get(5));
 
         // Verify delete group or leave group depending on the member role.
         if (memberRole == MemberRole.OWNER) {
@@ -442,5 +444,17 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                     modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         }
         assertEquals(0, modelList.get(6).model.get(ListMenuItemProperties.START_ICON_ID));
+    }
+
+    private void verifyDivider(ListItem item) {
+        assertEquals(ListMenuItemType.DIVIDER, item.type);
+        assertEquals(
+                "Expected divider item to not have customization",
+                0,
+                item.model.get(ListSectionDividerProperties.LEFT_PADDING_DIMEN_ID));
+        assertEquals(
+                "Expected divider item to not have customization",
+                0,
+                item.model.get(ListSectionDividerProperties.RIGHT_PADDING_DIMEN_ID));
     }
 }

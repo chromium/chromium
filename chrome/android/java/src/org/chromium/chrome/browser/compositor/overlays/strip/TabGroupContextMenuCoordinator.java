@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
+
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
@@ -55,11 +57,8 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
-import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -293,7 +292,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         boolean hasCollaborationData =
                 TabShareUtils.isCollaborationIdValid(collaborationId)
                         && mCollaborationService.getServiceStatus().isAllowedToJoin();
-        itemList.add(getDivider());
+        itemList.add(buildMenuDivider(isIncognito));
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.open_new_tab_in_group_context_menu_item,
@@ -331,7 +330,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
 
         // Delete does not make sense for incognito since the tab group is not saved to sync.
         if ((mTabGroupSyncService != null) && !isIncognito && !hasCollaborationData) {
-            itemList.add(getDivider());
+            itemList.add(buildMenuDivider(isIncognito));
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
                             R.string.tab_grid_dialog_toolbar_delete_group,
@@ -362,7 +361,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         }
 
         if (memberRole == MemberRole.OWNER) {
-            itemList.add(getDivider());
+            itemList.add(buildMenuDivider(/* isIncognito= */ false));
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
                             R.string.tab_grid_dialog_toolbar_delete_group,
@@ -370,7 +369,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                             /* startIconId= */ 0,
                             /* enabled= */ true));
         } else if (memberRole == MemberRole.MEMBER) {
-            itemList.add(getDivider());
+            itemList.add(buildMenuDivider(/* isIncognito= */ false));
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
                             R.string.tab_grid_dialog_toolbar_leave_group,
@@ -546,22 +545,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             mTabGroupModelFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);
             mTabGroupModelFilter = null;
         }
-    }
-
-    private ListItem getDivider() {
-        PropertyModel.Builder builder =
-                new PropertyModel.Builder(ListSectionDividerProperties.ALL_KEYS)
-                        .with(
-                                ListSectionDividerProperties.LEFT_PADDING_DIMEN_ID,
-                                R.dimen.list_menu_item_horizontal_padding)
-                        .with(
-                                ListSectionDividerProperties.RIGHT_PADDING_DIMEN_ID,
-                                R.dimen.list_menu_item_horizontal_padding);
-        if (mTabModelSupplier.get().isIncognitoBranded()) {
-            builder.with(
-                    ListSectionDividerProperties.COLOR_ID, R.color.divider_line_bg_color_light);
-        }
-        return new ListItem(ListMenuItemType.DIVIDER, builder.build());
     }
 
     private static void recordUserAction(String action) {
