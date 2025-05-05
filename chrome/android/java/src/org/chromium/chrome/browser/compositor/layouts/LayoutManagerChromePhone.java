@@ -12,8 +12,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.phone.NewTabAnimationLayout;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
+import org.chromium.chrome.browser.hub.NewTabAnimationUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -98,7 +98,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
-        if (ChromeFeatureList.sShowNewTabAnimations.isEnabled()) {
+        if (NewTabAnimationUtils.isNewTabAnimationEnabled()) {
             // TODO(crbug.com/40282469): Change from getContentContainer() as it is z-indexed behind
             // the NTP.
             mSimpleAnimationLayout =
