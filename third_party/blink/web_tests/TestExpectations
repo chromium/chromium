@@ -2641,6 +2641,9 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac15 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
+[ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/error.py [ Failure ]
+[ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/invalid.py [ Failure ]
 crbug.com/415525027 [ Win10.20h2 ] external/wpt/fedcm/fedcm-button-and-other-account/fedcm-use-other-account-button-flow.tentative.https.html [ Timeout ]
 crbug.com/415382672 [ Mac15 ] external/wpt/css/css-overflow/scroll-marker-contain-005.tentative.html [ Failure ]
 crbug.com/415407103 [ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/view-transition-types-mutable-no-document-element-crashtest.html [ Crash ]
