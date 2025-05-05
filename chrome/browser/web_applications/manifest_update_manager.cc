@@ -317,8 +317,9 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
       base::BindOnce(&ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose,
                      weak_factory_.GetWeakPtr(), web_contents, url, app_id);
   if (base::FeatureList::IsEnabled(features::kWebAppEnableUpdateTokenParsing)) {
-    // fill in here to use the manifest_update_check_command_v2.cc or .h instead
-    // of the manifest_update_check_command.cc
+    // TODO(crbug.com/414851433): Remove ScheduleManifestUpdateCheck() and
+    // rename ScheduleManifestUpdateCheckV2 to ScheduleManifestUpdateCheck()
+    // instead.
     provider_->scheduler().ScheduleManifestUpdateCheckV2(
         url, app_id, check_time, web_contents,
         std::move(app_window_close_await_callback));

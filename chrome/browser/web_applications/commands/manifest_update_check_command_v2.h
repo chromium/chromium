@@ -8,7 +8,10 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class GURL;
 
@@ -19,6 +22,20 @@ class WebContents;
 namespace web_app {
 
 struct WebAppInstallInfo;
+
+// Used to uniquely identify an icon url for app updates.
+struct SizeAndPupose {
+  gfx::Size size;
+  apps::IconInfo::Purpose purpose;
+
+  bool operator<(const SizeAndPupose& other) const;
+  bool operator==(const SizeAndPupose& other) const;
+
+  struct absl_container_hash {
+    using is_transparent = void;
+    size_t operator()(const SizeAndPupose& key) const;
+  };
+};
 
 // Documentation: docs/webapps/manifest_update_process.md
 //
@@ -62,8 +79,49 @@ class ManifestUpdateCheckCommandV2
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
  private:
+  // Keys an icon's size and purpose to its URL. This is only done for manifest
+  // icons and do not include file handling, shortcut, or home tab icons. The
+  // creation is done in the
+  // ManifestUpdateCheckStage::kDownloadingNewManifestData and the
+  // ManifestUpdateCheckStage::kLoadingExistingManifestData stage.
+  absl::flat_hash_map<SizeAndPupose, GURL> CreateIconSizeAndPurposeMap(
+      const std::vector<apps::IconInfo>& icon_infos,
+      const std::vector<IconUrlWithSize>& icon_url_with_size);
+
+  // Stage: Download the new manifest data
+  // (ManifestUpdateCheckStage::kDownloadingNewManifestData).
+  void DownloadNewManifestData(base::OnceClosure next_step_callback);
+  void DownloadNewManifestJson(
+      WebAppDataRetriever::CheckInstallabilityCallback next_step_callback);
+  void StashNewManifestJson(base::OnceClosure next_step_callback,
+                            blink::mojom::ManifestPtr opt_manifest,
+                            bool valid_manifest_for_web_app,
+                            webapps::InstallableStatusCode installable_status);
+  void ValidateNewScopeExtensions(
+      OnDidGetWebAppOriginAssociations next_step_callback);
+  void StashValidatedScopeExtensions(
+      base::OnceClosure next_step_callback,
+      ScopeExtensions validated_scope_extensions);
+
+  // Stage: Loading existing manifest data from disk.
+  // (ManifestUpdateCheckStage::kLoadingExistingManifestData)
+  void LoadExistingManifestData(base::OnceClosure next_step_callback);
+  void LoadExistingAppIcons(
+      WebAppIconManager::ReadIconBitmapsCallback next_step_callback);
+  void StashExistingAppIcons(base::OnceClosure next_step_callback,
+                             IconBitmaps icon_bitmaps);
+  void LoadExistingShortcutsMenuIcons(
+      WebAppIconManager::ReadShortcutsMenuIconsCallback next_step_callback);
+  void StashExistingShortcutsMenuIcons(
+      base::OnceClosure next_step_callback,
+      ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
+
   // Stage: Update check complete.
   // (ManifestUpdateCheckStage::kComplete)
+  void CheckComplete();
+
+  const WebApp& GetWebApp() const;
+
   bool IsWebContentsDestroyed();
   void CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult check_result);
 
@@ -85,6 +143,11 @@ class ManifestUpdateCheckCommandV2
   // Temporary variables stored here while the update check progresses
   // asynchronously.
   std::unique_ptr<WebAppInstallInfo> new_install_info_;
+  IconBitmaps existing_app_icon_bitmaps_;
+  ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
+  absl::flat_hash_map<SizeAndPupose, GURL> new_icon_size_and_purpose_map;
+  absl::flat_hash_map<SizeAndPupose, GURL> existing_icon_size_and_purpose_map;
+  ManifestDataChanges manifest_data_changes_;
 
   // Debug info.
   ManifestUpdateCheckStage stage_ = ManifestUpdateCheckStage::kPendingAppLock;

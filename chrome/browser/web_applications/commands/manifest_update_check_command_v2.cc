@@ -33,6 +33,20 @@
 
 namespace web_app {
 
+bool SizeAndPupose::operator<(const SizeAndPupose& other) const {
+  return size.height() < other.size.height() &&
+         size.width() < other.size.width() && purpose < other.purpose;
+}
+
+bool SizeAndPupose::operator==(const SizeAndPupose& other) const {
+  return size == other.size && purpose == other.purpose;
+}
+
+size_t SizeAndPupose::absl_container_hash::operator()(
+    const SizeAndPupose& key) const {
+  return absl::HashOf(key.size.width(), key.size.height(), key.purpose);
+}
+
 ManifestUpdateCheckCommandV2::ManifestUpdateCheckCommandV2(
     const GURL& url,
     const webapps::AppId& app_id,
@@ -75,6 +89,248 @@ void ManifestUpdateCheckCommandV2::StartWithLock(
     return;
   }
   Observe(web_contents_.get());
+
+  // Runs a linear sequence of asynchronous and synchronous steps.
+  // This sequence can be early exited at any point by a call to
+  // CompleteCommandAndSelfDestruct().
+  RunChainedCallbacks(
+      base::BindOnce(&ManifestUpdateCheckCommandV2::DownloadNewManifestData,
+                     GetWeakPtr()),
+
+      base::BindOnce(&ManifestUpdateCheckCommandV2::LoadExistingManifestData,
+                     GetWeakPtr()),
+
+      base::BindOnce(&ManifestUpdateCheckCommandV2::CheckComplete,
+                     GetWeakPtr()));
+}
+
+absl::flat_hash_map<SizeAndPupose, GURL>
+ManifestUpdateCheckCommandV2::CreateIconSizeAndPurposeMap(
+    const std::vector<apps::IconInfo>& icon_infos,
+    const std::vector<IconUrlWithSize>& icon_url_with_size) {
+  absl::flat_hash_map<SizeAndPupose, GURL> icons_size_and_purpose_map;
+
+  for (const IconUrlWithSize& sized_url : icon_url_with_size) {
+    for (const apps::IconInfo& info : icon_infos) {
+      if (info.url == sized_url.url) {
+        SizeAndPupose key = {sized_url.size, info.purpose};
+        icons_size_and_purpose_map[key] = sized_url.url;
+        break;
+      }
+    }
+  }
+  return icons_size_and_purpose_map;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ManifestUpdateCheckStage::kDownloadingNewManifestData:
+////////////////////////////////////////////////////////////////////////////////
+void ManifestUpdateCheckCommandV2::DownloadNewManifestData(
+    base::OnceClosure next_step_callback) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kPendingAppLock);
+  stage_ = ManifestUpdateCheckStage::kDownloadingNewManifestData;
+
+  RunChainedCallbacks(
+      base::BindOnce(&ManifestUpdateCheckCommandV2::DownloadNewManifestJson,
+                     GetWeakPtr()),
+
+      base::BindOnce(&ManifestUpdateCheckCommandV2::StashNewManifestJson,
+                     GetWeakPtr()),
+
+      base::BindOnce(&ManifestUpdateCheckCommandV2::ValidateNewScopeExtensions,
+                     GetWeakPtr()),
+
+      base::BindOnce(
+          &ManifestUpdateCheckCommandV2::StashValidatedScopeExtensions,
+          GetWeakPtr()),
+
+      std::move(next_step_callback));
+}
+
+void ManifestUpdateCheckCommandV2::DownloadNewManifestJson(
+    WebAppDataRetriever::CheckInstallabilityCallback next_step_callback) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+
+  if (IsWebContentsDestroyed()) {
+    CompleteCommandAndSelfDestruct(
+        ManifestUpdateCheckResult::kWebContentsDestroyed);
+    return;
+  }
+
+  webapps::InstallableParams params;
+  params.valid_primary_icon = true;
+  params.installable_criteria =
+      webapps::InstallableCriteria::kValidManifestIgnoreDisplay;
+  data_retriever_->CheckInstallabilityAndRetrieveManifest(
+      web_contents_.get(), std::move(next_step_callback), params);
+}
+
+void ManifestUpdateCheckCommandV2::StashNewManifestJson(
+    base::OnceClosure next_step_callback,
+    blink::mojom::ManifestPtr opt_manifest,
+    bool valid_manifest_for_web_app,
+    webapps::InstallableStatusCode installable_status) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+
+  GetMutableDebugValue().Set(
+      "manifest_url", opt_manifest ? opt_manifest->manifest_url.spec() : "");
+  GetMutableDebugValue().Set("manifest_installable_result",
+                             base::ToString(installable_status));
+
+  if (installable_status != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
+    CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppNotEligible);
+    return;
+  }
+  DCHECK(opt_manifest);
+  CHECK(!new_install_info_);
+
+  new_install_info_ = std::make_unique<WebAppInstallInfo>(
+      CreateWebAppInfoFromManifest(*opt_manifest));
+
+  if (app_id_ !=
+      GenerateAppIdFromManifestId(new_install_info_->manifest_id())) {
+    CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppIdMismatch);
+    return;
+  }
+
+  std::vector<IconUrlWithSize> new_icon_url_with_size =
+      GetAppIconUrls(*new_install_info_);
+  new_icon_size_and_purpose_map = CreateIconSizeAndPurposeMap(
+      new_install_info_->manifest_icons, new_icon_url_with_size);
+
+  std::move(next_step_callback).Run();
+}
+
+void ManifestUpdateCheckCommandV2::ValidateNewScopeExtensions(
+    OnDidGetWebAppOriginAssociations next_step_callback) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+
+  if (IsWebContentsDestroyed()) {
+    CompleteCommandAndSelfDestruct(
+        ManifestUpdateCheckResult::kWebContentsDestroyed);
+    return;
+  }
+
+  CHECK(new_install_info_);
+  ScopeExtensions new_scope_extensions = new_install_info_->scope_extensions;
+
+  lock_->origin_association_manager().GetWebAppOriginAssociations(
+      new_install_info_->manifest_id(), std::move(new_scope_extensions),
+      std::move(next_step_callback));
+}
+
+void ManifestUpdateCheckCommandV2::StashValidatedScopeExtensions(
+    base::OnceClosure next_step_callback,
+    ScopeExtensions validated_scope_extensions) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+
+  if (IsWebContentsDestroyed()) {
+    CompleteCommandAndSelfDestruct(
+        ManifestUpdateCheckResult::kWebContentsDestroyed);
+    return;
+  }
+
+  new_install_info_->validated_scope_extensions =
+      std::make_optional(std::move(validated_scope_extensions));
+  std::move(next_step_callback).Run();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ManifestUpdateCheckStage::kLoadingExistingManifestData:
+////////////////////////////////////////////////////////////////////////////////
+
+void ManifestUpdateCheckCommandV2::LoadExistingManifestData(
+    base::OnceClosure next_step_callback) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+  stage_ = ManifestUpdateCheckStage::kLoadingExistingManifestData;
+
+  RunChainedCallbacks(
+      base::BindOnce(&ManifestUpdateCheckCommandV2::LoadExistingAppIcons,
+                     GetWeakPtr()),
+
+      base::BindOnce(&ManifestUpdateCheckCommandV2::StashExistingAppIcons,
+                     GetWeakPtr()),
+
+      base::BindOnce(
+          &ManifestUpdateCheckCommandV2::LoadExistingShortcutsMenuIcons,
+          GetWeakPtr()),
+
+      base::BindOnce(
+          &ManifestUpdateCheckCommandV2::StashExistingShortcutsMenuIcons,
+          GetWeakPtr()),
+
+      std::move(next_step_callback));
+}
+
+void ManifestUpdateCheckCommandV2::LoadExistingAppIcons(
+    WebAppIconManager::ReadIconBitmapsCallback next_step_callback) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
+
+  lock_->icon_manager().ReadAllIcons(app_id_, std::move(next_step_callback));
+}
+
+void ManifestUpdateCheckCommandV2::StashExistingAppIcons(
+    base::OnceClosure next_step_callback,
+    IconBitmaps icon_bitmaps) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
+
+  if (icon_bitmaps.empty()) {
+    CompleteCommandAndSelfDestruct(
+        ManifestUpdateCheckResult::kIconReadFromDiskFailed);
+    return;
+  }
+
+  existing_app_icon_bitmaps_ = std::move(icon_bitmaps);
+
+  std::vector<IconUrlWithSize> existing_icon_url_with_size;
+  for (const apps::IconInfo& icon_info : GetWebApp().manifest_icons()) {
+    IconUrlWithSize::Create(icon_info.url,
+                            gfx::Size(icon_info.square_size_px.value_or(0),
+                                      icon_info.square_size_px.value_or(0)));
+  }
+
+  existing_icon_size_and_purpose_map = CreateIconSizeAndPurposeMap(
+      GetWebApp().manifest_icons(), existing_icon_url_with_size);
+
+  std::move(next_step_callback).Run();
+}
+
+void ManifestUpdateCheckCommandV2::LoadExistingShortcutsMenuIcons(
+    WebAppIconManager::ReadShortcutsMenuIconsCallback next_step_callback) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
+
+  lock_->icon_manager().ReadAllShortcutsMenuIcons(
+      app_id_, std::move(next_step_callback));
+}
+
+void ManifestUpdateCheckCommandV2::StashExistingShortcutsMenuIcons(
+    base::OnceClosure next_step_callback,
+    ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
+
+  existing_shortcuts_menu_icon_bitmaps_ =
+      std::move(shortcuts_menu_icon_bitmaps);
+  std::move(next_step_callback).Run();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ManifestUpdateCheckStage::kComplete:
+////////////////////////////////////////////////////////////////////////////////
+
+void ManifestUpdateCheckCommandV2::CheckComplete() {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kResolvingIdentityChanges);
+  stage_ = ManifestUpdateCheckStage::kComplete;
+
+  ManifestUpdateCheckResult check_result =
+      manifest_data_changes_ ? ManifestUpdateCheckResult::kAppUpdateNeeded
+                             : ManifestUpdateCheckResult::kAppUpToDate;
+  CompleteCommandAndSelfDestruct(check_result);
+}
+
+const WebApp& ManifestUpdateCheckCommandV2::GetWebApp() const {
+  const WebApp* web_app = lock_->registrar().GetAppById(app_id_);
+  DCHECK(web_app);
+  return *web_app;
 }
 
 bool ManifestUpdateCheckCommandV2::IsWebContentsDestroyed() {
