@@ -232,8 +232,7 @@ struct CertProfile {
   // all functions that fail to compile because of it).
   static constexpr int kVersion = 7;
 
-  bool operator==(const CertProfile& other) const;
-  bool operator!=(const CertProfile& other) const;
+  friend bool operator==(const CertProfile&, const CertProfile&) = default;
 };
 
 struct CertProfileComparator {

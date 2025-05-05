@@ -251,20 +251,6 @@ std::optional<CertProfile> CertProfile::MakeFromValue(
   return result;
 }
 
-bool CertProfile::operator==(const CertProfile& other) const {
-  static_assert(kVersion == 7, "This function should be updated");
-  return ((profile_id == other.profile_id) && (name == other.name) &&
-          (policy_version == other.policy_version) &&
-          (is_va_enabled == other.is_va_enabled) &&
-          (renewal_period == other.renewal_period) &&
-          (protocol_version == other.protocol_version) &&
-          (key_type == other.key_type));
-}
-
-bool CertProfile::operator!=(const CertProfile& other) const {
-  return !(*this == other);
-}
-
 bool CertProfileComparator::operator()(const CertProfile& a,
                                        const CertProfile& b) const {
   static_assert(CertProfile::kVersion == 7, "This function should be updated");
