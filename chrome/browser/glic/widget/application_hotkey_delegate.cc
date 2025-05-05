@@ -108,7 +108,7 @@ bool ApplicationHotkeyDelegate::AcceleratorPressed(
   switch (hotkey) {
     case LocalHotkeyManager::Hotkey::kFocusToggle:
       window_controller_->FocusIfOpen();
-      base::UserMetricsAction("Glic.FocusHotKey");
+      base::RecordAction(base::UserMetricsAction("Glic.FocusHotKey"));
       return true;
     default:
       NOTREACHED()
