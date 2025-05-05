@@ -710,6 +710,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
   const base::Value::Dict* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
   const std::string* is_top_level = body->FindString("is_top_level");
+  const std::string* visibility_state = body->FindString("visibility_state");
 
   EXPECT_EQ("crash", *type);
   EXPECT_EQ(*url, main_url);
@@ -718,8 +719,51 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
   // extra CrashReportBody context bits to be present.
   if (GetParam()) {
     EXPECT_EQ("true", *is_top_level);
+    EXPECT_EQ("visible", *visibility_state);
   } else {
     EXPECT_EQ(nullptr, is_top_level);
+    EXPECT_EQ(nullptr, visibility_state);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
+                       CrashReportHiddenPage) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to reporting-enabled page.
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  // Hide the page.
+  contents->WasHidden();
+  EXPECT_EQ(contents->GetPrimaryMainFrame()->GetVisibilityState(),
+            content::PageVisibilityState::kHidden);
+
+  // Simulate the page being killed due to being unresponsive.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_HUNG);
+
+  upload_response()->WaitForRequest();
+  base::Value::List request =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify the contents of the report that we received.
+  const base::Value::Dict& report = request.begin()->GetDict();
+  const base::Value::Dict* body = report.FindDict("body");
+  const std::string* visibility_state = body->FindString("visibility_state");
+
+  // When the `kCrashReportingAPIMoreContextData` flag is enabled, expect the
+  // extra CrashReportBody context bits to be present.
+  if (GetParam()) {
+    EXPECT_EQ(*visibility_state, "hidden");
+  } else {
+    EXPECT_EQ(visibility_state, nullptr);
   }
 }
 

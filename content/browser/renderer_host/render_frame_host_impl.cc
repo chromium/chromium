@@ -15952,6 +15952,9 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   if (base::FeatureList::IsEnabled(
           blink::features::kCrashReportingAPIMoreContextData)) {
     body.Set("is_top_level", IsOutermostMainFrame() ? "true" : "false");
+    body.Set("visibility_state",
+             GetVisibilityState() == PageVisibilityState::kVisible ? "visible"
+                                                                   : "hidden");
   }
   if (!reason.empty()) {
     body.Set("reason", reason);
