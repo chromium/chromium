@@ -15,9 +15,8 @@ namespace content_settings {
 // Interface for the CookieControls observer.
 class CookieControlsObserver : public base::CheckedObserver {
  public:
-  // Called when the third-party cookie blocking status has changed or when
-  // cookie  setting was changed. Also called as part of UI initialization to
-  // trigger the update. Replaces previous `OnStatusChanged()` for the new UIs.
+  // Called when the state we display in the cookie controls UI has changed.
+  // Also called as part of UI initialization to trigger the update
   virtual void OnStatusChanged(
       // Whether Tracking Protection controls should be shown.
       bool controls_visible,
