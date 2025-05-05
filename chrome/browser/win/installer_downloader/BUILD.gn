@@ -1,0 +1,42 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win, "The installer downloader is for windows only")
+
+source_set("installer_downloader") {
+  friend = [ ":unit_tests" ]
+
+  public = [
+    "installer_downloader_controller.h",
+    "installer_downloader_feature.h",
+  ]
+
+  sources = [
+    "installer_downloader_controller.cc",
+    "installer_downloader_feature.cc",
+    "installer_downloader_model.h",
+    "installer_downloader_model_impl.cc",
+    "installer_downloader_model_impl.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//url:url" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "installer_downloader_controller_unittest.cc" ]
+
+  deps = [
+    ":installer_downloader",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

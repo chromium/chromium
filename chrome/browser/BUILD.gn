@@ -2580,6 +2580,10 @@ static_library("browser") {
     "//ui/webui",
   ]
 
+  if (is_win) {
+    deps += [ "//chrome/browser/win/installer_downloader" ]
+  }
+
   # Platforms that have a network diagnostics dialog. All others fall through
   # to the stub which is not implemented.
   if (is_chromeos) {

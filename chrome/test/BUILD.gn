@@ -7205,6 +7205,7 @@ test("unit_tests") {
       "//chrome/browser/os_crypt:unit_tests",
       "//chrome/browser/shortcuts",
       "//chrome/browser/win/conflicts:unit_tests",
+      "//chrome/browser/win/installer_downloader:unit_tests",
       "//chrome/chrome_elf:constants",
       "//chrome/common/notifications",
       "//chrome/install_static:install_static_util",

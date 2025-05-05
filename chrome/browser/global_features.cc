@@ -30,6 +30,10 @@
 #include "components/user_education/common/user_education_features.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
+#endif
+
 namespace {
 
 // This is the generic entry point for test code to stub out browser
@@ -79,6 +83,14 @@ void GlobalFeatures::Init() {
 #endif
 
   application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
+
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(
+          installer_downloader::kInstallerDownloader)) {
+    // TODO(crbug.com/414780983): Instantiate and initialize the installer
+    // downloader controller.
+  }
+#endif
 }
 
 void GlobalFeatures::Shutdown() {

@@ -1,0 +1,44 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_MODEL_H_
+#define CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_MODEL_H_
+
+#include <optional>
+
+#include "base/functional/callback_forward.h"
+
+class GURL;
+
+namespace base {
+class FilePath;
+}
+
+namespace installer_downloader {
+
+using CompletionCallback = base::OnceCallback<void()>;
+
+class InstallerDownloaderModel {
+ public:
+  virtual ~InstallerDownloaderModel() = default;
+
+  // Posts the OS / OneDrive probe to the ThreadPool and returns the installer
+  // download destination file path asynchronously on the calling sequence. The
+  // destination file path will be null if the user is not eligible.
+  virtual void CheckEligibility(
+      base::OnceCallback<void(const std::optional<base::FilePath>&)>
+          callback) = 0;
+
+  // Kicks off a **transient** download with DownloadManager. Completion is
+  // reported through `completion_callback`.
+  //
+  // TODO(crbug.com/412976021): Download payload.
+  virtual void StartDownload(const GURL& url,
+                             const base::FilePath& destination,
+                             CompletionCallback completion_callback) = 0;
+};
+
+}  // namespace installer_downloader
+
+#endif  // CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_MODEL_H_
