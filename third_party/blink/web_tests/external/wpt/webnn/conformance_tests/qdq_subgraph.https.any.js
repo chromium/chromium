@@ -366,47 +366,48 @@ const subgraphTests = [
       'inputs': {
         'inputA': {
           'data': [
-            49.1112174987793, 11.907459259033203,
-            21.115795135498047, 70.7490005493164,
+            49.1112174987793,    11.907459259033203,   21.115795135498047,
+            70.7490005493164,    94.51628112792969,   93.78905487060547,
+            11.178888320922852,  32.80592346191406,   83.31897735595703,
+            91.1207275390625,    0.11235756427049637, 15.397955894470215,
           ],
-          'descriptor': {shape: [2, 2], dataType: 'float32'},
+          'descriptor': {shape: [2, 3, 2], dataType: 'float32'},
           'constant': false
         },
         'inputAScale': {
-          'data': [0.3921568859368563],
+          'data': [0.003921568859368563],
           'descriptor': {shape: [1], dataType: 'float32'},
           'constant': true
         },
         'inputAZeroPoint': {
-          'data': [16],
+          'data': [127],
           'descriptor': {shape: [1], dataType: 'int8'},
           'constant': true
         },
         'inputB': {
           'data': [
-            21, 24,
-            8, 13
+            2,  17, 38, 41, 5, 3, 2, 17, 38, 41, 5, 3,
           ],
-          'descriptor': {shape: [2, 2], dataType: 'int8'},
+          'descriptor': {shape: [2, 3, 2], dataType: 'int8'},
           'constant': true
         },
         'inputBScale': {
-          'data': [0.3921568859368563],
+          'data': [0.003921568859368563],
           'descriptor': {shape: [1], dataType: 'float32'},
           'constant': true
         },
         'inputBZeroPoint': {
-          'data': [16],
+          'data': [127],
           'descriptor': {shape: [1], dataType: 'int8'},
           'constant': true
         },
         'outputScale': {
-          'data': [0.3921568859368563],
+          'data': [0.003921568859368563],
           'descriptor': {shape: [1], dataType: 'float32'},
           'constant': true
         },
         'outputZeroPoint': {
-          'data': [16],
+          'data': [127],
           'descriptor': {shape: [1], dataType: 'int8'},
           'constant': true
         },
@@ -437,24 +438,24 @@ const subgraphTests = [
           'outputs': 'dequantizedInputB'
         },
         {
-          'name': 'mul',
+          'name': 'add',
           'arguments': [
             {'inputA': 'dequantizedInputA'}, {'inputB': 'dequantizedInputB'}
           ],
-          'outputs': 'mulOutput'
+          'outputs': 'addOutput'
         },
         {
           'name': 'quantizeLinear',
           'arguments': [
-            {'input': 'mulOutput'},
+            {'input': 'addOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
-          'outputs': 'quantizedMulOutput'
+          'outputs': 'quantizedAddOutput'
         },
         {
           'name': 'dequantizeLinear',
           'arguments': [
-            {'input': 'quantizedMulOutput'},
+            {'input': 'quantizedAddOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
           'outputs': 'output'
@@ -463,10 +464,12 @@ const subgraphTests = [
       'expectedOutputs': {
         'output': {
           'data': [
-            43.529415130615234, 36.86274719238281,
-            -56.4705924987793, -51.372554779052734,
+            -0.4901961088180542, -0.43137258291244507, -0.3490196168422699,
+            -0.33725491166114807, -0.4784314036369324, -0.4862745404243469,
+            -0.4901961088180542, -0.43137258291244507, -0.3490196168422699,
+            -0.33725491166114807, -0.4784314036369324, -0.4862745404243469,
           ],
-          'descriptor': {shape: [2, 2], dataType: 'float32'}
+          'descriptor': {shape: [2, 3, 2], dataType: 'float32'}
         }
       }
     }
