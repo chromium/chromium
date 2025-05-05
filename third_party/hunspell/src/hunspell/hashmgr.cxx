@@ -92,16 +92,18 @@ HashMgr::HashMgr(const char* tpath, const char* apath, const char* key)
       flag_mode(FLAG_CHAR),
       complexprefixes(0),
       utf8(0),
-      forbiddenword(FORBIDDENWORD)  // forbidden word signing flag
+      forbiddenword(FORBIDDENWORD), // forbidden word signing flag
+      langnum(0),
+      csconv(NULL)
 {
-  langnum = 0;
-  csconv = 0;
 #ifdef HUNSPELL_CHROME_CLIENT
   // No tables to load, just the AF lines.
   load_config(NULL, NULL);
   int ec = LoadAFLines();
 #else
   load_config(apath, key);
+  if (!csconv)
+    csconv = get_current_cs(SPELL_ENCODING);
   int ec = load_tables(tpath, key);
 #endif
   if (ec) {
@@ -1136,8 +1138,6 @@ int HashMgr::load_config(const char* affpath, const char* key) {
       break;
   }
 
-  if (csconv == NULL)
-    csconv = get_current_cs(SPELL_ENCODING);
   delete afflst;
   return 0;
 }
@@ -1451,7 +1451,9 @@ bool HashMgr::parse_aliasm(const std::string& line, FileMgr* af) {
               else
                 reverseword(chunk);
             }
-            alias = mystrdup(chunk.c_str());
+            size_t sl = chunk.size() + 1;
+            alias = new char[sl];
+            memcpy(alias, chunk.c_str(), sl);
             break;
           }
           default:

@@ -142,9 +142,6 @@ LIBHUNSPELL_DLL_EXPORTED int u8_u16(std::vector<w_char>& dest,
 // remove end of line char(s)
 LIBHUNSPELL_DLL_EXPORTED void mychomp(std::string& s);
 
-// duplicate string
-LIBHUNSPELL_DLL_EXPORTED char* mystrdup(const char* s);
-
 // parse into tokens with char delimiter
 LIBHUNSPELL_DLL_EXPORTED std::string::const_iterator mystrsep(const std::string &str,
                                                               std::string::const_iterator& start);

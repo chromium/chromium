@@ -1963,6 +1963,16 @@ std::vector<std::string> HunspellImpl::suffix_suggest(const std::string& root_wo
 }
 
 namespace {
+  // using malloc because this is for the c-api where the callers
+  // expect to be able to use free
+  char* stringdup(const std::string& s) {
+    size_t sl = s.size() + 1;
+    char* d = (char*)malloc(sl);
+    if (d)
+      memcpy(d, s.c_str(), sl);
+    return d;
+  }
+
   int munge_vector(char*** slst, const std::vector<std::string>& items) {
     if (items.empty()) {
       *slst = NULL;
@@ -1970,7 +1980,7 @@ namespace {
     } else {
       *slst = new char*[items.size()];
       for (size_t i = 0; i < items.size(); ++i)
-        (*slst)[i] = mystrdup(items[i].c_str());
+        (*slst)[i] = stringdup(items[i]);
     }
     return items.size();
   }
@@ -1983,7 +1993,7 @@ int HunspellImpl::spell(const char* word, int* info, char** root) {
     if (sroot.empty()) {
       *root = NULL;
     } else {
-      *root = mystrdup(sroot.c_str());
+      *root = stringdup(sroot);
     }
   }
   return ret;
@@ -2002,7 +2012,7 @@ int HunspellImpl::suffix_suggest(char*** slst, const char* root_word) {
 void HunspellImpl::free_list(char*** slst, int n) {
   if (slst && *slst) {
     for (int i = 0; i < n; i++)
-      delete[] (*slst)[i];
+      free((*slst)[i]);
     delete[] *slst;
     *slst = NULL;
   }

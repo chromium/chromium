@@ -304,17 +304,6 @@ std::string::const_iterator mystrsep(const std::string &str,
   return sp;
 }
 
-// replaces strdup with ansi version
-char* mystrdup(const char* s) {
-  char* d = NULL;
-  if (s) {
-    size_t sl = strlen(s) + 1;
-    d = new char[sl];
-    memcpy(d, s, sl);
-  }
-  return d;
-}
-
 // remove cross-platform text line end characters
 void mychomp(std::string& s) {
   size_t k = s.size();

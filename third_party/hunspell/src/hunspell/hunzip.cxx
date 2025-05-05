@@ -50,15 +50,15 @@
 #define MAGIC_ENCRYPT "hz1"
 #define MAGICLEN (sizeof(MAGIC) - 1)
 
-int Hunzip::fail(const char* err, const char* par) {
-  fprintf(stderr, err, par);
+int Hunzip::fail(const char* err, const std::string& par) {
+  fprintf(stderr, err, par.c_str());
   return -1;
 }
 
 Hunzip::Hunzip(const char* file, const char* key)
     : bufsiz(0), lastbit(0), inc(0), inbits(0), outc(0) {
   in[0] = out[0] = line[0] = '\0';
-  filename = mystrdup(file);
+  filename = file;
   if (getcode(key) == -1)
     bufsiz = -1;
   else
@@ -71,10 +71,10 @@ int Hunzip::getcode(const char* key) {
   int allocatedbit = BASEBITREC;
   const char* enc = key;
 
-  if (!filename)
+  if (filename.empty())
     return -1;
 
-  myopen(fin, filename, std::ios_base::in | std::ios_base::binary);
+  myopen(fin, filename.c_str(), std::ios_base::in | std::ios_base::binary);
   if (!fin.is_open())
     return -1;
 
@@ -168,8 +168,6 @@ int Hunzip::getcode(const char* key) {
 }
 
 Hunzip::~Hunzip() {
-  if (filename)
-    free(filename);
 }
 
 int Hunzip::getbuf() {

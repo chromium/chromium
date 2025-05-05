@@ -66,7 +66,7 @@ class LIBHUNSPELL_DLL_EXPORTED Hunzip {
   Hunzip& operator=(const Hunzip&);
 
  protected:
-  char* filename;
+  std::string filename;
   std::ifstream fin;
   int bufsiz, lastbit, inc, inbits, outc;
   std::vector<bit> dec;     // code table
@@ -75,7 +75,7 @@ class LIBHUNSPELL_DLL_EXPORTED Hunzip {
   char line[BUFSIZE + 50];  // decoded line
   int getcode(const char* key);
   int getbuf();
-  int fail(const char* err, const char* par);
+  int fail(const char* err, const std::string& par);
 
  public:
   Hunzip(const char* filename, const char* key = NULL);
