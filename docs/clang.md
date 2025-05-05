@@ -34,9 +34,13 @@ If you're working on the plugin, you can build it locally like so:
     to test the plugin after making changes.
 1.  Build Chromium with clang as usual, but, if you use reclient, disable it.
 
+The local plugin will then be used for local builds until the next
+`gclient sync` restores the default toolchain.
+
 Since the plugin is rolled with clang changes, behavior changes to the plugin
-should be guarded by flags to make it easy to roll clang. A general outline:
-1.  Implement new plugin behavior behind a flag.
+should be guarded by flags to make it easy to roll clang without introducing
+unexpected breakage. A general outline:
+1.  Implement new plugin behavior behind a flag, disabled by default.
 1.  Wait for a compiler roll to bring in the flag.
 1.  Start passing the new flag in `GN` and verify the new behavior.
 1.  Enable the new plugin behavior unconditionally and update the plugin to
