@@ -69,8 +69,6 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
     private static final int DEFAULT_TAB_COUNT_FOR_RELAUNCH = 0;
 
-    static final String HISTOGRAM_SINGLE_INSTANCE_PER_TASK_CONFIGURED =
-            "Android.MultiInstance.IsSingleInstancePerTaskConfigured";
     static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW =
             "Android.MultiInstance.NumActivities.DesktopWindow";
     static final String HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW =
@@ -168,11 +166,6 @@ public class MultiWindowUtils implements ActivityStateListener {
             int launchMode = context.getPackageManager().getActivityInfo(comp, 0).launchMode;
             boolean isSingleInstancePerTaskConfigured =
                     launchMode == ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
-            if (sIsMultiInstanceApi31Enabled == null) {
-                RecordHistogram.recordBooleanHistogram(
-                        HISTOGRAM_SINGLE_INSTANCE_PER_TASK_CONFIGURED,
-                        isSingleInstancePerTaskConfigured);
-            }
             sIsMultiInstanceApi31Enabled = isSingleInstancePerTaskConfigured;
             return isSingleInstancePerTaskConfigured;
         } catch (PackageManager.NameNotFoundException e) {
