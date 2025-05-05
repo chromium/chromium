@@ -195,4 +195,15 @@ public interface TabWindowManager {
      * @param profile Used to scope access.
      */
     void keepAllTabModelsLoaded(MultiInstanceManager multiInstanceManager, Profile profile);
+
+    /**
+     * Tries to discern the correct window id that contains a tab group. This may be a like activity
+     * or in a headless tab model. If the requested tab group cannot be found, then
+     * INVALID_WINDOW_ID is returned.
+     *
+     * @param tabGroupId The group to look for.
+     * @return The window id that holds the given tab group.
+     */
+    @WindowId
+    int findWindowIdForTabGroup(Token tabGroupId);
 }

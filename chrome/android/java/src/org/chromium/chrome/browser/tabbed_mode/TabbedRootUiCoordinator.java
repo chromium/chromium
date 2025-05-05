@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -51,6 +52,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -160,6 +162,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.tasks.tab_management.FaviconResolver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResolverFactory;
@@ -1455,7 +1458,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 .getTabGroupModelFilter(false);
                 @TabId int rootId = filter.getRootIdFromTabGroupId(tabGroupId);
                 if (rootId == INVALID_TAB_ID) {
-                    // TODO(crbug.com/396019438): Try to switch windows.
+                    // This method is only supposed to be called when the tab group is in the local
+                    // model. However it's possible that something has recently changed. In which
+                    // case just be defensive and give up.
                     return;
                 }
 
@@ -1523,6 +1528,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         };
                 TabGroupFaviconCluster.createBitmapFrom(
                         savedTabGroup, mActivity, faviconResolver, cleanUpAndContinue);
+            }
+
+            @Override
+            public @WindowId int findWindowIdForTabGroup(@Nullable Token tabGroupId) {
+                return TabWindowManagerSingleton.getInstance().findWindowIdForTabGroup(tabGroupId);
+            }
+
+            @Override
+            public void launchIntentInMaybeClosedWindow(Intent intent, @WindowId int windowId) {
+                MultiWindowUtils.launchIntentInMaybeClosedWindow(mActivity, intent, windowId);
             }
         };
     }

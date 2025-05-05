@@ -59,6 +59,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -187,7 +188,7 @@ public class MultiInstanceManagerApi31UnitTest {
     private int mIncognitoTabCount;
     private ArrayList<Tab> mGroupedTabs;
 
-    private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
+    private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
 
     private static class TestMultiInstanceManagerApi31 extends MultiInstanceManagerApi31 {
@@ -1459,6 +1460,26 @@ public class MultiInstanceManagerApi31UnitTest {
                 "Access time for instance0 is not updated.", accessTime0 > instance0CreationTime);
         assertTrue(
                 "Access time for instance1 is not updated.", accessTime1 > instance1CreationTime);
+    }
+
+    @Test
+    public void launchIntentInMaybeClosedWindow_NewWindow() {
+        Intent intent = new Intent();
+        MultiInstanceManagerApi31.launchIntentInUnknown(
+                mTabbedActivityTask62, intent, INSTANCE_ID_2);
+        verify(mTabbedActivityTask62).startActivity(intent, null);
+        assertEquals(
+                INSTANCE_ID_2,
+                intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, INVALID_INSTANCE_ID));
+    }
+
+    @Test
+    public void launchIntentInMaybeClosedWindow_ExistingWindow() {
+        assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask63, true));
+        Intent intent = new Intent();
+        MultiInstanceManagerApi31.launchIntentInUnknown(
+                mTabbedActivityTask62, intent, INSTANCE_ID_1);
+        verify(mTabbedActivityTask63).onNewIntent(intent);
     }
 
     private void doTestOpenInstanceWithValidTask(boolean isActivityAlive) {

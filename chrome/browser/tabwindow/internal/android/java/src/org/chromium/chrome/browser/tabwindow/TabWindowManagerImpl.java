@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -605,6 +606,26 @@ public class TabWindowManagerImpl implements TabWindowManager {
                 tabModelSelectorList.toArray(new TabModelSelector[0]));
     }
 
+    @Override
+    public @WindowId int findWindowIdForTabGroup(Token tabGroupId) {
+        for (Map.Entry<TabModelSelector, @WindowId Integer> entry :
+                mSelectorsToWindowId.entrySet()) {
+            TabModelSelector selector = entry.getKey();
+            if (!selector.isTabStateInitialized()) continue;
+
+            TabGroupModelFilter filter =
+                    selector.getTabGroupModelFilterProvider()
+                            .getTabGroupModelFilter(/* isIncognito= */ false);
+            if (filter == null) continue;
+
+            if (TabGroupSyncUtils.isInCurrentWindow(filter, new LocalTabGroupId(tabGroupId))) {
+                return entry.getValue();
+            }
+        }
+
+        return INVALID_WINDOW_ID;
+    }
+
     private void onActivityStateChange(Activity activity, @ActivityState int newState) {
         if (newState == ActivityState.DESTROYED) {
             clearSelectorAndWindowIdAssignments(activity);
@@ -615,16 +636,28 @@ public class TabWindowManagerImpl implements TabWindowManager {
     private @WindowId int clearSelectorAndWindowIdAssignments(Activity activity) {
         if (!mActivityAssignments.containsKey(activity)) return INVALID_WINDOW_ID;
         TabModelSelector selector = mActivityAssignments.remove(activity);
-        Profile profile = selector == null ? null : selector.getCurrentModel().getProfile();
         @WindowId int windowId = getWindowIdForSelectorChecked(selector);
         if (windowId >= 0) {
             mWindowIdToSelectors.remove(windowId);
             mSelectorsToWindowId.remove(selector);
-            if (mKeepAllTabModelsLoaded && profile != null && mActivityAssignments.size() > 0) {
-                requestSelectorWithoutActivity(windowId, profile);
+            if (mKeepAllTabModelsLoaded) {
+                Profile profile = findActiveProfile();
+                if (profile != null) {
+                    requestSelectorWithoutActivity(windowId, profile);
+                }
             }
         }
         return windowId;
+    }
+
+    private @Nullable Profile findActiveProfile() {
+        for (TabModelSelector selector : mActivityAssignments.values()) {
+            Profile profile = selector.getModel(/* incognito= */ false).getProfile();
+            if (profile != null && !profile.isOffTheRecord()) {
+                return profile;
+            }
+        }
+        return null;
     }
 
     private boolean isPossiblyAnArchivedTab() {

@@ -4,18 +4,20 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import static org.chromium.chrome.browser.data_sharing.DataSharingIntentUtils.ACTION_EXTRA;
+import static org.chromium.chrome.browser.data_sharing.DataSharingIntentUtils.TAB_GROUP_SYNC_ID_EXTRA;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.intents.BrowserIntentUtils;
+import org.chromium.chrome.browser.data_sharing.DataSharingIntentUtils.Action;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -27,9 +29,6 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /** Sends notification for information update of Data Sharing service to user. */
 @NullMarked
 public class DataSharingNotificationManager {
@@ -38,25 +37,6 @@ public class DataSharingNotificationManager {
     private static final String TAG = "data_sharing";
     // TODO(b/329155961): Use the collaboration_id given by data sharing service.
     private static final int NOTIFICATION_ID = 5000;
-    public static final String ACTION_EXTRA = "org.chromium.chrome.browser.data_sharing.action";
-    public static final String INVITATION_URL_EXTRA =
-            "org.chromium.chrome.browser.data_sharing.invitation_url";
-    public static final String TAB_GROUP_SYNC_ID_EXTRA =
-            "org.chromium.chrome.browser.data_sharing.tab_group_sync_id";
-
-    @IntDef({Action.UNKNOWN, Action.INVITATION_FLOW, Action.MANAGE_TAB_GROUP})
-    @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting
-    /* package */ @interface Action {
-        /** Maybe from a parcelling error, expected to be no-oped. */
-        int UNKNOWN = 0;
-
-        /** Starts the invitation flow after opening the tab switcher. */
-        int INVITATION_FLOW = 1;
-
-        /** Opens the tab group dialog inside the tab switcher for the given tab group. */
-        int MANAGE_TAB_GROUP = 2;
-    }
 
     /** Receive data sharing notification click event. */
     public static final class Receiver extends BroadcastReceiver {
@@ -64,43 +44,15 @@ public class DataSharingNotificationManager {
         public void onReceive(Context context, Intent intent) {
             @Action int action = IntentUtils.safeGetIntExtra(intent, ACTION_EXTRA, Action.UNKNOWN);
             if (action == Action.INVITATION_FLOW) {
-                Intent invitationIntent = createInvitationIntent(context, GURL.emptyGURL());
+                Intent invitationIntent =
+                        DataSharingIntentUtils.createInvitationIntent(context, GURL.emptyGURL());
                 IntentUtils.safeStartActivity(context, invitationIntent);
             } else if (action == Action.MANAGE_TAB_GROUP) {
                 String syncId = IntentUtils.safeGetStringExtra(intent, TAB_GROUP_SYNC_ID_EXTRA);
-                Intent manageIntent = createManageIntent(context, syncId);
+                Intent manageIntent = DataSharingIntentUtils.createManageIntent(context, syncId);
                 IntentUtils.safeStartActivity(context, manageIntent);
             }
         }
-    }
-
-    /**
-     * Create an intent to launch the invitation flow.
-     *
-     * @param context The {@link Context} to use.
-     * @param url The URL associated with the invitation.
-     * @return The {@link Intent} to launch the invitation flow.
-     */
-    public static Intent createInvitationIntent(Context context, GURL url) {
-        Intent launchIntent = createdIntentShared(context, Action.INVITATION_FLOW);
-        launchIntent.putExtra(INVITATION_URL_EXTRA, url.getSpec());
-        return launchIntent;
-    }
-
-    private static Intent createManageIntent(Context context, @Nullable String syncId) {
-        Intent launchIntent = createdIntentShared(context, Action.MANAGE_TAB_GROUP);
-        launchIntent.putExtra(TAB_GROUP_SYNC_ID_EXTRA, syncId);
-        return launchIntent;
-    }
-
-    private static Intent createdIntentShared(Context context, @Action int action) {
-        Intent launchIntent = new Intent(Intent.ACTION_VIEW);
-        launchIntent.addCategory(Intent.CATEGORY_DEFAULT);
-        launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        launchIntent.setClassName(context, BrowserIntentUtils.CHROME_LAUNCHER_ACTIVITY_CLASS_NAME);
-        launchIntent.putExtra(ACTION_EXTRA, action);
-        IntentUtils.addTrustedIntentExtras(launchIntent);
-        return launchIntent;
     }
 
     public DataSharingNotificationManager(Context context) {

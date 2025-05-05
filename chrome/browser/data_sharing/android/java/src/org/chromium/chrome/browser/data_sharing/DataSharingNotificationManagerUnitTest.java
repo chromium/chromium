@@ -37,7 +37,7 @@ import org.robolectric.shadows.ShadowPendingIntent;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager.Action;
+import org.chromium.chrome.browser.data_sharing.DataSharingIntentUtils.Action;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -99,11 +99,9 @@ public class DataSharingNotificationManagerUnitTest {
 
         Intent intent = triggerPendingIntent(notification);
         @Action
-        int action =
-                intent.getIntExtra(DataSharingNotificationManager.ACTION_EXTRA, Action.UNKNOWN);
+        int action = intent.getIntExtra(DataSharingIntentUtils.ACTION_EXTRA, Action.UNKNOWN);
         assertEquals(Action.INVITATION_FLOW, action);
-        String actualUrl =
-                intent.getStringExtra(DataSharingNotificationManager.INVITATION_URL_EXTRA);
+        String actualUrl = intent.getStringExtra(DataSharingIntentUtils.INVITATION_URL_EXTRA);
         assertEquals(GURL.emptyGURL().getSpec(), actualUrl);
     }
 
@@ -132,12 +130,11 @@ public class DataSharingNotificationManagerUnitTest {
 
         Intent intent = triggerPendingIntent(notification);
         @Action
-        int action =
-                intent.getIntExtra(DataSharingNotificationManager.ACTION_EXTRA, Action.UNKNOWN);
+        int action = intent.getIntExtra(DataSharingIntentUtils.ACTION_EXTRA, Action.UNKNOWN);
         assertEquals(Action.MANAGE_TAB_GROUP, action);
         String syncId =
                 IntentUtils.safeGetStringExtra(
-                        intent, DataSharingNotificationManager.TAB_GROUP_SYNC_ID_EXTRA);
+                        intent, DataSharingIntentUtils.TAB_GROUP_SYNC_ID_EXTRA);
         assertEquals(SYNC_GROUP_ID1, syncId);
     }
 

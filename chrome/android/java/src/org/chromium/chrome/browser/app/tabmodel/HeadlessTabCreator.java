@@ -35,13 +35,13 @@ public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
     @Override
     public @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent) {
-        return createNewTab(loadUrlParams, /* title= */ null, type, parent, mTabModel.getCount());
+        return createNewTab(loadUrlParams, /* title= */ "", type, parent, mTabModel.getCount());
     }
 
     @Override
     public @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position) {
-        return createNewTab(loadUrlParams, /* title= */ null, type, /* parent= */ null, position);
+        return createNewTab(loadUrlParams, /* title= */ "", type, /* parent= */ null, position);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
     public @Nullable Tab launchUrl(String url, @TabLaunchType int type) {
         return createNewTab(
                 new LoadUrlParams(url),
-                /* title= */ null,
+                /* title= */ "",
                 type,
                 /* parent= */ null,
                 mTabModel.getCount());

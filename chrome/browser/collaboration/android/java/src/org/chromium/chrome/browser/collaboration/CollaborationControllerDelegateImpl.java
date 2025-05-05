@@ -616,9 +616,12 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     @CalledByNative
     void promoteTabGroup(String collaborationId, long resultCallback) {
         closeScreenIfNeeded();
-        mDataSharingTabManager.promoteTabGroup(collaborationId);
-        CollaborationControllerDelegateImplJni.get()
-                .runResultCallback(Outcome.SUCCESS, resultCallback);
+        boolean success =
+                mDataSharingTabManager.displayTabGroupAnywhere(
+                        collaborationId, /* isFromInviteFlow= */ true);
+        // TODO(https://crbug.com/415370145): Track outcomes in metrics.
+        @Outcome int outcome = success ? Outcome.SUCCESS : Outcome.FAILURE;
+        CollaborationControllerDelegateImplJni.get().runResultCallback(outcome, resultCallback);
     }
 
     /** Focus and show the current flow screen. */

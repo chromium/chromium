@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -819,11 +820,26 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     /**
      * Launch the given intent in an existing ChromeTabbedActivity instance.
+     *
      * @param intent The intent to launch.
      * @param instanceId ID of the instance to launch the intent in.
      */
     public static void launchIntentInInstance(Intent intent, int instanceId) {
-        MultiInstanceManagerApi31.launchIntentInInstance(intent, instanceId);
+        MultiInstanceManagerApi31.launchIntentInExistingActivity(intent, instanceId);
+    }
+
+    /**
+     * Launch an intent in another window. It it unknown to our caller if the other window currently
+     * exists in recent apps or not. This method will attempt to discern this and take the
+     * appropriate action.
+     *
+     * @param context The context used to launch the intent.
+     * @param intent The intent to launch.
+     * @param windowId The id to identify the target window/activity.
+     */
+    public static void launchIntentInMaybeClosedWindow(
+            Context context, Intent intent, @WindowId int windowId) {
+        MultiInstanceManagerApi31.launchIntentInUnknown(context, intent, windowId);
     }
 
     /**

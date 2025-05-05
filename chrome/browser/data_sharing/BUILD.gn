@@ -66,6 +66,7 @@ if (is_android) {
   android_library("data_sharing_public_java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
     sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingIntentUtils.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingMetrics.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupUtils.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupsDelegate.java",
@@ -88,7 +89,9 @@ if (is_android) {
       "//chrome/browser/share:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tab_group_sync:factory_java",
+      "//chrome/browser/tab_group_sync:java",
       "//chrome/browser/tabmodel:java",
+      "//chrome/browser/tabwindow:java",
       "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/bottomsheet/android:java",

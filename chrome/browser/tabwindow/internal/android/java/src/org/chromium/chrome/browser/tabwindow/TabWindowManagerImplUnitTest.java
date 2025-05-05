@@ -12,11 +12,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
 import android.content.Context;
@@ -36,6 +39,7 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -59,6 +63,8 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
@@ -77,6 +83,9 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
 public class TabWindowManagerImplUnitTest {
+    private static final Token GROUP_ID = new Token(12, 34);
+    private static final int TAB_ID = 2;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private final NextTabPolicySupplier mNextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
@@ -90,6 +99,11 @@ public class TabWindowManagerImplUnitTest {
     @Mock private TabModelSelector mArchivedTabModelSelector;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private TabModelSelectorFactory mTabModelSelectorFactory;
+    @Mock private Destroyable mDestroyable;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
 
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier;
     private AsyncTabParamsManager mAsyncTabParamsManager;
@@ -132,20 +146,7 @@ public class TabWindowManagerImplUnitTest {
                     }
                 };
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mAsyncTabParamsManager =
-                            AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
-                    int maxInstances =
-                            (Build.VERSION.SDK_INT >= VERSION_CODES.S
-                                    ? TabWindowManager.MAX_SELECTORS_S
-                                    : TabWindowManager.MAX_SELECTORS_LEGACY);
-                    mSubject =
-                            TabWindowManagerFactory.createInstance(
-                                    mockTabModelSelectorFactory,
-                                    mAsyncTabParamsManager,
-                                    maxInstances);
-                });
+        mSubject = createTabWindowManager(mockTabModelSelectorFactory);
     }
 
     private ActivityController<Activity> createActivity() {
@@ -156,6 +157,21 @@ public class TabWindowManagerImplUnitTest {
 
     private void destroyActivity(ActivityController<Activity> controller) {
         controller.destroy();
+    }
+
+    private TabWindowManager createTabWindowManager(
+            TabModelSelectorFactory tabModelSelectorFactory) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAsyncTabParamsManager =
+                            AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
+                    int maxInstances =
+                            (Build.VERSION.SDK_INT >= VERSION_CODES.S
+                                    ? TabWindowManager.MAX_SELECTORS_S
+                                    : TabWindowManager.MAX_SELECTORS_LEGACY);
+                    return TabWindowManagerFactory.createInstance(
+                            tabModelSelectorFactory, mAsyncTabParamsManager, maxInstances);
+                });
     }
 
     /** Test that a single {@link Activity} can request a {@link TabModelSelector}. */
@@ -376,10 +392,7 @@ public class TabWindowManagerImplUnitTest {
 
         destroyActivity(activityController0);
 
-        assertEquals(
-                "Still found model",
-                TabWindowManager.INVALID_WINDOW_ID,
-                mSubject.getIdForWindow(activity0));
+        assertEquals("Still found model", INVALID_WINDOW_ID, mSubject.getIdForWindow(activity0));
     }
 
     /**
@@ -407,10 +420,7 @@ public class TabWindowManagerImplUnitTest {
 
         destroyActivity(activityController0);
 
-        assertEquals(
-                "Still found model",
-                TabWindowManager.INVALID_WINDOW_ID,
-                mSubject.getIdForWindow(activity0));
+        assertEquals("Still found model", INVALID_WINDOW_ID, mSubject.getIdForWindow(activity0));
 
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
@@ -473,10 +483,7 @@ public class TabWindowManagerImplUnitTest {
 
         destroyActivity(activityController1);
 
-        assertEquals(
-                "Still found model",
-                TabWindowManager.INVALID_WINDOW_ID,
-                mSubject.getIdForWindow(activity1));
+        assertEquals("Still found model", INVALID_WINDOW_ID, mSubject.getIdForWindow(activity1));
 
         ActivityController<Activity> activityController2 = createActivity();
         Activity activity2 = activityController2.get();
@@ -740,7 +747,7 @@ public class TabWindowManagerImplUnitTest {
         // requested window id 0.
         assertEquals(
                 "Window Id for activity0 should be cleared.",
-                TabWindowManager.INVALID_WINDOW_ID,
+                INVALID_WINDOW_ID,
                 mSubject.getIdForWindow(activity0));
         assertEquals(
                 "Requested window id for activity1 should be used.",
@@ -1026,5 +1033,25 @@ public class TabWindowManagerImplUnitTest {
         // Shutting down the last activity shouldn't trigger any headless init.
         destroyActivity(activityController0);
         assertEquals(2, mSubject.getAllTabModelSelectors().size());
+    }
+
+    @Test
+    public void testFindWindowIdForTabGroup_found() {
+        when(mTabModelSelectorFactory.buildHeadlessSelector(anyInt(), any()))
+                .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+                .thenReturn(mTabGroupModelFilter);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(GROUP_ID)).thenReturn(TAB_ID);
+        TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
+        tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
+        assertEquals(1, tabWindowManager.findWindowIdForTabGroup(GROUP_ID));
+    }
+
+    @Test
+    public void testFindWindowIdForTabGroup_notFound() {
+        assertEquals(INVALID_WINDOW_ID, mSubject.findWindowIdForTabGroup(GROUP_ID));
     }
 }

@@ -106,7 +106,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
+import org.chromium.chrome.browser.data_sharing.DataSharingIntentUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -141,7 +141,6 @@ import org.chromium.chrome.browser.hub.HubShowPaneHelper;
 import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
-import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationManager;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationPresenceController;
 import org.chromium.chrome.browser.incognito.IncognitoProfileDestroyer;
@@ -254,7 +253,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManage
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabModelNotificationDotManager;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
@@ -295,8 +293,8 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
-import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -4170,10 +4168,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
         // TODO(crbug.com/369186228): Remove incognito early out.
         if (mTabModelSelector.isIncognitoSelected()) return;
 
-        if (IntentUtils.safeHasExtra(intent, DataSharingNotificationManager.INVITATION_URL_EXTRA)) {
+        if (IntentUtils.safeHasExtra(intent, DataSharingIntentUtils.INVITATION_URL_EXTRA)) {
             String urlString =
                     IntentUtils.safeGetStringExtra(
-                            intent, DataSharingNotificationManager.INVITATION_URL_EXTRA);
+                            intent, DataSharingIntentUtils.INVITATION_URL_EXTRA);
             GURL url = new GURL(urlString);
 
             DataSharingTabManager dataSharingTabManager =
@@ -4183,39 +4181,20 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     (onTabSwitcherShownRunnable) ->
                             doRunnableOnTabSwitcher(onTabSwitcherShownRunnable));
         } else if (IntentUtils.safeHasExtra(
-                intent, DataSharingNotificationManager.TAB_GROUP_SYNC_ID_EXTRA)) {
+                intent, DataSharingIntentUtils.TAB_GROUP_SYNC_ID_EXTRA)) {
             String syncId =
                     IntentUtils.safeGetStringExtra(
-                            intent, DataSharingNotificationManager.TAB_GROUP_SYNC_ID_EXTRA);
+                            intent, DataSharingIntentUtils.TAB_GROUP_SYNC_ID_EXTRA);
             Runnable openTabGroupDialogRunnable =
                     () -> {
+                        DataSharingTabManager dataSharingTabManager =
+                                mRootUiCoordinator.getDataSharingTabManager();
                         TabGroupSyncService tabGroupSyncService =
                                 TabGroupSyncServiceFactory.getForProfile(
                                         mTabModelProfileSupplier.get());
-                        TabGroupUiActionHandler tabGroupUiActionHandler =
-                                ((TabbedRootUiCoordinator) mRootUiCoordinator)
-                                        .getTabGroupSyncController();
-                        TabGroupModelFilter tabGroupModelFilter =
-                                mTabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(/* isIncognito= */ false);
-                        mHubManagerSupplier.onAvailable(
-                                (hubManager) -> {
-                                    PaneManager paneManager = hubManager.getPaneManager();
-                                    TabSwitcherPaneBase tabSwitcherPaneBase =
-                                            (TabSwitcherPaneBase)
-                                                    paneManager.getPaneForId(PaneId.TAB_SWITCHER);
-                                    Callback<Integer> requestOpenTabGroupDialog =
-                                            (rootId) ->
-                                                    tabSwitcherPaneBase.requestOpenTabGroupDialog(
-                                                            rootId);
-                                    TabSwitcherUtils.openTabGroupDialog(
-                                            syncId,
-                                            tabGroupSyncService,
-                                            tabGroupUiActionHandler,
-                                            tabGroupModelFilter,
-                                            requestOpenTabGroupDialog);
-                                });
+                        SavedTabGroup syncGroup = tabGroupSyncService.getGroup(syncId);
+                        dataSharingTabManager.displayTabGroupAnywhere(
+                                syncGroup.collaborationId, /* isFromInviteFlow= */ false);
                     };
             doRunnableOnTabSwitcher(openTabGroupDialogRunnable);
         }

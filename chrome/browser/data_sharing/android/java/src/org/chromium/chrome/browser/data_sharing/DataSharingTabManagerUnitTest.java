@@ -8,11 +8,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.ACCESS_TOKEN1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
 import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID1;
@@ -145,9 +147,7 @@ public class DataSharingTabManagerUnitTest {
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
 
         CollaborationControllerDelegateFactory collaborationControllerDelegateFactory =
-                (type, runnable) -> {
-                    return mCollaborationControllerDelegate;
-                };
+                (type, runnable) -> mCollaborationControllerDelegate;
 
         mDataSharingTabManager =
                 new DataSharingTabManager(
@@ -187,17 +187,6 @@ public class DataSharingTabManagerUnitTest {
         ParseUrlResult result =
                 new DataSharingService.ParseUrlResult(groupToken, ParseUrlStatus.SUCCESS);
         when(mDataSharingService.parseDataSharingUrl(any())).thenReturn(result);
-    }
-
-    private void setupTabGroupFilterForOpenGroupWithId() {
-        doReturn(mTabGroupModelFilterProvider)
-                .when(mTabModelSelector)
-                .getTabGroupModelFilterProvider();
-        doReturn(mTabGroupModelFilter)
-                .when(mTabGroupModelFilterProvider)
-                .getTabGroupModelFilter(anyBoolean());
-        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID1);
-        doReturn(TAB_GROUP_ROOT_ID).when(mTabGroupModelFilter).getRootIdFromTabGroupId(any());
     }
 
     @Test
@@ -319,7 +308,6 @@ public class DataSharingTabManagerUnitTest {
     @Test
     public void testShowRecentActivity() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        // mDataSharingTabManager.setFaviconHelperForTesting(mFaviconHelper);
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
         setupActivityLogItemsOnTheBackend();
         mDataSharingTabManager.showRecentActivity(mActivity, COLLABORATION_ID1);
@@ -327,13 +315,60 @@ public class DataSharingTabManagerUnitTest {
     }
 
     @Test
-    public void testPromoteTabGroup() {
+    public void testDisplayTabGroupAnywhere_local() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+                .thenReturn(mTabGroupModelFilter);
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(mSavedTabGroup);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(GROUP_ID)).thenReturn(TAB_GROUP_ROOT_ID);
 
-        setupTabGroupFilterForOpenGroupWithId();
+        mDataSharingTabManager.displayTabGroupAnywhere(
+                COLLABORATION_ID1, /* isFromInviteFlow= */ true);
 
-        mDataSharingTabManager.promoteTabGroup(COLLABORATION_ID1);
         verify(mDataSharingTabGroupsDelegate).openTabGroup(GROUP_ID);
+    }
+
+    @Test
+    public void testDisplayTabGroupAnywhere_hidden() {
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+                .thenReturn(mTabGroupModelFilter);
+        mSavedTabGroup.localId = null;
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(mSavedTabGroup);
+        doAnswer(
+                        invocation -> {
+                            mSavedTabGroup.localId = LOCAL_ID;
+                            return null;
+                        })
+                .when(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1);
+
+        mDataSharingTabManager.displayTabGroupAnywhere(
+                COLLABORATION_ID1, /* isFromInviteFlow= */ true);
+
+        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mDataSharingTabGroupsDelegate).openTabGroup(GROUP_ID);
+    }
+
+    @Test
+    public void testDisplayTabGroupAnywhere_otherWindow() {
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+                .thenReturn(mTabGroupModelFilter);
+        mSavedTabGroup.localId = LOCAL_ID;
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(mSavedTabGroup);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(GROUP_ID)).thenReturn(INVALID_TAB_ID);
+
+        when(mDataSharingTabGroupsDelegate.findWindowIdForTabGroup(GROUP_ID)).thenReturn(1);
+        mDataSharingTabManager.displayTabGroupAnywhere(
+                COLLABORATION_ID1, /* isFromInviteFlow= */ true);
+        verify(mDataSharingTabGroupsDelegate).launchIntentInMaybeClosedWindow(any(), eq(1));
     }
 
     private void setupActivityLogItemsOnTheBackend() {

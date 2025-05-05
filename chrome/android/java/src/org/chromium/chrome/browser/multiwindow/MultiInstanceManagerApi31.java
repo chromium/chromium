@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Pair;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -872,20 +874,44 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
      * Launch the given intent in an existing ChromeTabbedActivity instance.
      *
      * @param intent The intent to launch.
-     * @param instanceId ID of the instance to launch the intent in.
+     * @param windowId ID of the window to launch the intent in.
+     * @return Whether the intent was launched successfully.
      */
-    static void launchIntentInInstance(Intent intent, int instanceId) {
-        Activity activity = getActivityById(instanceId);
-        if (!(activity instanceof ChromeTabbedActivity)) return;
+    static boolean launchIntentInExistingActivity(Intent intent, @WindowId int windowId) {
+        Activity activity = getActivityById(windowId);
+        if (!(activity instanceof ChromeTabbedActivity)) return false;
         int taskId = activity.getTaskId();
-        if (taskId != INVALID_TASK_ID) {
-            // Launch the intent in the existing activity and bring the task to foreground if it is
-            // alive.
-            ((ChromeTabbedActivity) activity).onNewIntent(intent);
-            var activityManager =
-                    (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-            activityManager.moveTaskToFront(taskId, 0);
-        }
+        if (taskId == INVALID_TASK_ID) return false;
+
+        // Launch the intent in the existing activity and bring the task to foreground if it is
+        // alive.
+        ((ChromeTabbedActivity) activity).onNewIntent(intent);
+        var activityManager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+        activityManager.moveTaskToFront(taskId, 0);
+        return true;
+    }
+
+    /**
+     * Launch an intent in another window. It is unknown to our caller if the other window currently
+     * has a live task associated with it. This method will attempt to discern this and take the
+     * appropriate action.
+     *
+     * @param context The context used to launch the intent.
+     * @param intent The intent to launch.
+     * @param windowId The id to identify the target window/activity.
+     */
+    static void launchIntentInUnknown(Context context, Intent intent, @WindowId int windowId) {
+        // TODO(https://crbug.com/415375532): Remove the need for this to be a public method, and
+        // fold all of this functionality into a shared single public method with
+        // #launchIntentInExistingActivity.
+
+        if (launchIntentInExistingActivity(intent, windowId)) return;
+
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, windowId);
+        IntentUtils.safeStartActivity(context, intent);
     }
 
     /**

@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -316,9 +317,12 @@ public class CollaborationControllerDelegateImplUnitTest {
         createDelegate(FlowType.JOIN);
         long resultCallback = 1;
         String collaborationId = "collaboration";
+        when(mDataSharingTabManager.displayTabGroupAnywhere(
+                        collaborationId, /* isFromInviteFlow= */ true))
+                .thenReturn(true);
 
         mCollaborationControllerDelegateImpl.promoteTabGroup(collaborationId, resultCallback);
-        verify(mDataSharingTabManager).promoteTabGroup(collaborationId);
+
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), anyLong());
     }
