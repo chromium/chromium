@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -192,9 +194,13 @@ WebDatabase* AutofillWebDataBackendImpl::GetDatabase() {
 }
 
 void AutofillWebDataBackendImpl::CommitChanges() {
-  DCHECK(web_database_backend_->database()
-             ->GetSQLConnection()
-             ->HasActiveTransactions());
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  // TODO(crbug.com/410101523): Investigate the transaction errors. There should
+  // always be a pending sql transaction.
+  sql::Database* sql = web_database_backend_->database()->GetSQLConnection();
+  base::debug::Alias(&sql);
+  DCHECK(sql->is_open());
+  DCHECK(sql->HasActiveTransactions());
   web_database_backend_->database()->CommitTransaction();
   web_database_backend_->database()->BeginTransaction();
 }
