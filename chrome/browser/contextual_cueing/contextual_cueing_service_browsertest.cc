@@ -18,11 +18,15 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -48,13 +52,45 @@ class ContextualCueingServiceBrowserTestZSSFlag
     : public ContextualCueingServiceBrowserTest {
  public:
   ContextualCueingServiceBrowserTestZSSFlag() {
-    scoped_feature_list_.InitAndEnableFeature(kGlicZeroStateSuggestions);
+    scoped_feature_list_.InitWithFeatures(
+        {kGlicZeroStateSuggestions, features::kGlic,
+         features::kTabstripComboButton},
+        {});
   }
 
   void SetUpOnMainThread() override {
     browser()->profile()->GetPrefs()->SetBoolean(
         glic::prefs::kGlicTabContextEnabled, true);
   }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kGlicDev);
+  }
+};
+
+// A WebContentsObserver that asks for zero state suggestions every
+// DidFinishNavigation.
+class ZeroStateSuggestionsFetcher : public content::WebContentsObserver {
+ public:
+  explicit ZeroStateSuggestionsFetcher(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+  ~ZeroStateSuggestionsFetcher() override = default;
+
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    ContextualCueingService* service =
+        ContextualCueingServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+    service->GetContextualGlicZeroStateSuggestions(
+        web_contents(), /*is_fre=*/false, std::move(callback_));
+  }
+
+  void set_callback(GlicSuggestionsCallback callback) {
+    callback_ = std::move(callback);
+  }
+
+ private:
+  GlicSuggestionsCallback callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
@@ -114,6 +150,112 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "ZeroStateSuggestions",
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
+                       SuggestionsWaitForLoadedSignal) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // First page waits until after load before calling GetSuggestions.
+  {
+    base::HistogramTester histogram_tester;
+
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+    auto* service =
+        ContextualCueingServiceFactory::GetForProfile(browser()->profile());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+    service->GetContextualGlicZeroStateSuggestions(
+        web_contents, /*is_fre=*/true, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.ZeroStateSuggestions.ContentExtractionWait", 0);
+    histogram_tester.ExpectUniqueSample(
+        "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
+        "ZeroStateSuggestions",
+        1);
+  }
+
+  // Pretend that there is now something observing every navigation and fetching
+  // suggestions quickly.
+  auto fetcher = std::make_unique<ZeroStateSuggestionsFetcher>(web_contents);
+
+  // Simulate quick navigation in same web contents.
+  {
+    base::HistogramTester histogram_tester;
+
+    GURL new_url(embedded_test_server()->GetURL("/links.html"));
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+    fetcher->set_callback(future.GetCallback());
+    content::TestNavigationObserver observer(web_contents);
+    EXPECT_TRUE(ExecJs(web_contents, "location = '" + new_url.spec() + "';"));
+    observer.Wait();
+    EXPECT_EQ(observer.last_navigation_url(), new_url);
+    ASSERT_TRUE(future.Wait());
+
+    histogram_tester.ExpectUniqueSample(
+        "ContextualCueing.ZeroStateSuggestions.ContentExtractionWait", true, 1);
+    histogram_tester.ExpectUniqueSample(
+        "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
+        "ZeroStateSuggestions",
+        1);
+  }
+
+  // Simulate fragment navigation. Should just return from cache.
+  {
+    base::HistogramTester histogram_tester;
+
+    // Perform a same-document navigation to a fragment. `NavigateToURL()`
+    // automatically detects that the navigation should be same-document, since
+    // the URLs differ only by fragment.
+    GURL new_url(embedded_test_server()->GetURL("/links.html#ref"));
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+    fetcher->set_callback(future.GetCallback());
+    content::TestNavigationObserver observer(web_contents);
+    EXPECT_TRUE(ExecJs(web_contents, "location = '" + new_url.spec() + "';"));
+    observer.Wait();
+    EXPECT_EQ(observer.last_navigation_url(), new_url);
+    ASSERT_TRUE(future.Wait());
+
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 0);
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
+        "ZeroStateSuggestions",
+        0);
+  }
+
+  // Simulate same-doc navigation in same web contents.
+  {
+    base::HistogramTester histogram_tester;
+
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+    fetcher->set_callback(future.GetCallback());
+    std::string same_document_script = R"(
+      window.history.pushState({}, "", "form.html");
+    )";
+    ASSERT_THAT(content::EvalJs(web_contents, same_document_script),
+                content::EvalJsResult::IsOk());
+    ASSERT_TRUE(future.Wait());
+
+    histogram_tester.ExpectUniqueSample(
+        "ContextualCueing.ZeroStateSuggestions.ContentExtractionSameDocDelay",
+        true, 1);
+    histogram_tester.ExpectUniqueSample(
+        "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
+        "ZeroStateSuggestions",
+        1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,

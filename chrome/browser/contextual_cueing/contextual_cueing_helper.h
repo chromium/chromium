@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_HELPER_H_
 #define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_HELPER_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -43,6 +46,12 @@ class ContextualCueingHelper
   void OnFirstContentfulPaintInPrimaryMainFrame() override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
+  // Returns when the last primary main frame navigation was committed if the
+  // navigation was a same document navigation.
+  std::optional<base::TimeTicks> last_same_doc_navigation_committed() const {
+    return last_same_doc_navigation_committed_;
+  }
+
   tabs::GlicNudgeController* GetGlicNudgeController();
 
  private:
@@ -62,6 +71,9 @@ class ContextualCueingHelper
       base::expected<std::string, NudgeDecision> decision_result);
 
   bool IsBrowserBlockingNudges(ScopedNudgeDecisionRecorder* recorder);
+
+  // When the last same doc navigation was committed.
+  std::optional<base::TimeTicks> last_same_doc_navigation_committed_;
 
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =

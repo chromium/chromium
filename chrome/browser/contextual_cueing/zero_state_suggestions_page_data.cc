@@ -7,8 +7,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -69,7 +71,36 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
   optimization_guide_keyed_service_ =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
-  InitiatePageContentExtraction(/*has_first_contentful_paint=*/false);
+  base::TimeDelta initiate_page_content_extraction_delay;
+  if (auto* helper = ContextualCueingHelper::FromWebContents(web_contents)) {
+    std::optional<base::TimeTicks> last_same_doc_navigation_time =
+        helper->last_same_doc_navigation_committed();
+    if (last_same_doc_navigation_time) {
+      if (kReturnEmptyForSameDocumentNavigation.Get()) {
+        cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
+        return;
+      }
+
+      initiate_page_content_extraction_delay =
+          (kPageContentExtractionDelayForSameDocumentNavigation.Get() +
+           *last_same_doc_navigation_time) -
+          base::TimeTicks::Now();
+    }
+  }
+  if (initiate_page_content_extraction_delay.is_positive()) {
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "ContextualCueing.ZeroStateSuggestions.ContentExtractionSameDocDelay",
+        true);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ZeroStateSuggestionsPageData::InitiatePageContentExtraction,
+            weak_ptr_factory_.GetWeakPtr(),
+            /*has_first_contentful_paint=*/false),
+        initiate_page_content_extraction_delay);
+  } else {
+    InitiatePageContentExtraction(/*has_first_contentful_paint=*/false);
+  }
 }
 
 ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() = default;
@@ -83,6 +114,8 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction(
 
   if (!has_first_contentful_paint &&
       !page().GetMainDocument().IsDocumentOnLoadCompletedInMainFrame()) {
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "ContextualCueing.ZeroStateSuggestions.ContentExtractionWait", true);
     // Wait for signal from tab helper to initiate content extraction if not
     // loaded yet.
     return;

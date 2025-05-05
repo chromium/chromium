@@ -58,6 +58,14 @@ extern const base::FeatureParam<bool> kExtractInnerTextForZeroStateSuggestions;
 extern const base::FeatureParam<bool>
     kExtractAnnotatedPageContentForZeroStateSuggestions;
 
+// The amount of time to wait for extracting page content for same document
+// navigations.
+extern const base::FeatureParam<base::TimeDelta>
+    kPageContentExtractionDelayForSameDocumentNavigation;
+
+// Always return empty suggestions for same document navigations.
+extern const base::FeatureParam<bool> kReturnEmptyForSameDocumentNavigation;
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_FEATURES_H_

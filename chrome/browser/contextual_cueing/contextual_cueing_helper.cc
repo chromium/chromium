@@ -112,6 +112,11 @@ void ContextualCueingHelper::DidFinishNavigation(
     return;
   }
 
+  last_same_doc_navigation_committed_ =
+      navigation_handle->IsSameDocument()
+          ? std::make_optional(base::TimeTicks::Now())
+          : std::nullopt;
+
   // Ignore reloads.
   if (PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
                                ui::PAGE_TRANSITION_RELOAD)) {
@@ -340,9 +345,7 @@ void ContextualCueingHelper::MaybeCreateForWebContents(
 
   auto* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!optimization_guide_keyed_service ||
-      !optimization_guide_keyed_service
-           ->ShouldModelExecutionBeAllowedForUser()) {
+  if (!optimization_guide_keyed_service) {
     return;
   }
 
