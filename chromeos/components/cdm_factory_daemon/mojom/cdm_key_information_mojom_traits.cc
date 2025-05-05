@@ -80,8 +80,8 @@ bool StructTraits<chromeos::cdm::mojom::CdmKeyInformationDataView,
   if (!input.ReadStatus(&status))
     return false;
 
-  *output = std::make_unique<media::CdmKeyInformation>(
-      key_id.data(), key_id.size(), status, input.system_code());
+  *output = std::make_unique<media::CdmKeyInformation>(key_id, status,
+                                                       input.system_code());
   return true;
 }
 
