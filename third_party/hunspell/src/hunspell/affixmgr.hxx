@@ -303,7 +303,7 @@ class AffixMgr {
   int cpdrep_check(const std::string& word, int len);
   int cpdwordpair_check(const std::string& word, int len);
   int cpdpat_check(const std::string& word,
-                   int len,
+                   size_t len,
                    hentry* r1,
                    hentry* r2,
                    const char affixed);
@@ -314,7 +314,7 @@ class AffixMgr {
                    char all);
   int cpdcase_check(const std::string& word, int len);
   inline int candidate_check(const std::string& word);
-  void setcminmax(int* cmin, int* cmax, const char* word, int len);
+  void setcminmax(size_t* cmin, size_t* cmax, const char* word, size_t len);
   struct hentry* compound_check(const std::string& word,
                                 short wordnum,
                                 short numsyllable,

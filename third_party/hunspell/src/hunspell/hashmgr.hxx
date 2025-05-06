@@ -145,6 +145,7 @@ class HashMgr {
   struct hentry* walk_hashtable(int& col, struct hentry* hp) const;
 
   int add(const std::string& word);
+  int add_with_flags(const std::string& word, const std::string& flags, const std::string& desc);
   int add_with_affix(const std::string& word, const std::string& pattern);
   int remove(const std::string& word);
   int decode_flags(unsigned short** result, const std::string& flags, FileMgr* af) const;

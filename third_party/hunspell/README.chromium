@@ -1,6 +1,6 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
-Version: v1.7.2
+Version: 0dd94ed
 CPEPrefix: cpe:/a:hunspell_project:hunspell:1.7.2
 License: MPL-1.1
 License File: COPYING.MPL
@@ -8,7 +8,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-This is a partial copy of Hunspell v1.7.2 with the following changes:
+This is a partial copy of Hunspell 0dd94ed with the following changes:
 * Move README.md onto the README symlink.
 * Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
   LineIterator.
@@ -26,6 +26,7 @@ The patch is in google.patch.
 * Fix string OOB write in reverse_condition in src/hunspell/affixmgr.cxx
   Upstream issue: https://github.com/hunspell/hunspell/issues/714
 * Improve performance of HashMgr::InitHashEntry when BDICT file is used.
+* Remove NULL default values for const std::string& args because they don't compile.
 
 Chromium-specific changes are in google.patch. To update the patch, follow these
 steps.
@@ -34,7 +35,7 @@ steps.
 2) Checkout hunspell:
    $ git clone https://github.com/hunspell/hunspell.git
    $ cd hunspell
-   $ git checkout v1.7.2
+   $ git checkout 0dd94ed
 3) Apply Hunspell patches and make a throwaway commit:
    $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/speed-up-hunspell-inner-loop.patch
    $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/WaE-overflow-in-expression.patch

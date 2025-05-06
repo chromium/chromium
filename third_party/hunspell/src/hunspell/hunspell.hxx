@@ -208,6 +208,8 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
 
   int add(const std::string& word);
 
+  int add_with_flags(const std::string& word, const std::string& flags, const std::string& desc);
+
   /* add word to the run-time dictionary with affix flags of
    * the example (a dictionary word): Hunspell will recognize
    * affixed forms of the new word, too.

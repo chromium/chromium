@@ -267,7 +267,7 @@ int HashMgr::add_word(const std::string& in_word,
   }
 
   // limit of hp->blen
-  if (word->size() > std::numeric_limits<unsigned char>::max()) {
+  if (word->size() > std::numeric_limits<unsigned short>::max()) {
     HUNSPELL_WARNING(stderr, "error: word len %ld is over max limit\n", word->size());
     delete desc_copy;
     delete word_copy;
@@ -293,8 +293,8 @@ int HashMgr::add_word(const std::string& in_word,
 
   int i = hash(hpw, word->size());
 
-  hp->blen = (unsigned char)word->size();
-  hp->clen = (unsigned char)wcl;
+  hp->blen = (unsigned short)word->size();
+  hp->clen = (unsigned short)wcl;
   hp->alen = (short)al;
   hp->astr = aff;
   hp->next = NULL;
@@ -593,6 +593,16 @@ int HashMgr::add(const std::string& word) {
   return 0;
 }
 
+int HashMgr::add_with_flags(const std::string& word, const std::string& flags, const std::string& desc) {
+  remove_forbidden_flag(word);
+  int captype;
+  unsigned short *df;
+  int al = decode_flags(&df, flags, NULL);
+  int wcl = get_clen_and_captype(word, &captype);
+  add_word(word, wcl, df, al, &desc, false, captype);
+  return add_hidden_capitalized_word(word, wcl, df, al, &desc, captype);
+}
+
 int HashMgr::add_with_affix(const std::string& word, const std::string& example) {
   // detect captype and modify word length for UTF-8 encoding
   struct hentry* dp = lookup(example.c_str(), example.size());
@@ -809,7 +819,7 @@ int HashMgr::hash(const char* word, size_t len) const {
     return 0;
 #else
   unsigned long hv = 0;
-  int i = 0;
+  size_t i = 0;
   while (i < 4 && i < len)
     hv = (hv << 8) | word[i++];
   while (i < len) {
@@ -829,7 +839,7 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
   switch (flag_mode) {
     case FLAG_LONG: {  // two-character flags (1x2yZz -> 1x 2y Zz)
       len = flags.size();
-      if ((len & 1) == 1)
+      if ((len & 1) == 1 && af != NULL)
         HUNSPELL_WARNING(stderr, "error: line %d: bad flagvector\n",
                          af->getlinenum());
       len >>= 1;
@@ -838,7 +848,7 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
         unsigned short flag = ((unsigned short)((unsigned char)flags[i << 1]) << 8) |
                               ((unsigned short)((unsigned char)flags[(i << 1) | 1]));
 
-        if (flag >= DEFAULTFLAGS) {
+        if (flag >= DEFAULTFLAGS && af != NULL) {
           HUNSPELL_WARNING(stderr,
                            "error: line %d: flag id %d is too large (max: %d)\n",
                            af->getlinenum(), flag, DEFAULTFLAGS - 1);
@@ -858,14 +868,14 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
       for (size_t p = 0; p < flags.size(); ++p) {
         if (flags[p] == ',') {
           int i = atoi(src);
-          if (i >= DEFAULTFLAGS) {
+          if (i >= DEFAULTFLAGS && af != NULL) {
             HUNSPELL_WARNING(
                 stderr, "error: line %d: flag id %d is too large (max: %d)\n",
                 af->getlinenum(), i, DEFAULTFLAGS - 1);
              i = 0;
 	  }
           *dest = (unsigned short)i;
-          if (*dest == 0)
+          if (*dest == 0 && af != NULL)
             HUNSPELL_WARNING(stderr, "error: line %d: 0 is wrong flag id\n",
                              af->getlinenum());
           src = flags.c_str() + p + 1;
@@ -972,7 +982,7 @@ bool HashMgr::decode_flags(std::vector<unsigned short>& result, const std::strin
       result.resize(origsize + len);
       memcpy(result.data() + origsize, w.data(), len * sizeof(short));
 #else
-      result.reserve(origsize + len);	
+      result.reserve(origsize + len);
       for (const w_char wc : w) result.push_back((unsigned short)wc);
 #endif
       break;
@@ -992,7 +1002,8 @@ unsigned short HashMgr::decode_flag(const std::string& f) const {
   int i;
   switch (flag_mode) {
     case FLAG_LONG:
-      s = ((unsigned short)((unsigned char)f[0]) << 8) | ((unsigned short)((unsigned char)f[1]));
+      if (f.size() >= 2)
+        s = ((unsigned short)((unsigned char)f[0]) << 8) | ((unsigned short)((unsigned char)f[1]));
       break;
     case FLAG_NUM:
       i = atoi(f.c_str());
@@ -1011,7 +1022,8 @@ unsigned short HashMgr::decode_flag(const std::string& f) const {
       break;
     }
     default:
-      s = (unsigned char)f[0];
+      if (!f.empty())
+        s = (unsigned char)f[0];
   }
   if (s == 0)
     HUNSPELL_WARNING(stderr, "error: 0 is wrong flag id\n");

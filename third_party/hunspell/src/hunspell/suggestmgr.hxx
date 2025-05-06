@@ -155,7 +155,7 @@ class SuggestMgr {
   int extrachar(std::vector<std::string>&, const std::string&, int, int&);
   int badcharkey(std::vector<std::string>&, const std::string&, int, int&);
   int badchar(std::vector<std::string>&, const std::string&, int, int&);
-  bool twowords(std::vector<std::string>&, const std::string&, int, bool, int&);
+  bool twowords(std::vector<std::string>&, const std::string&, int, bool);
 
   void capchars_utf(std::vector<std::string>&, const std::vector<w_char>&, int, int&);
   int doubletwochars_utf(std::vector<std::string>&, const std::vector<w_char>&, int, int&);
