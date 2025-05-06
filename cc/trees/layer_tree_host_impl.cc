@@ -3587,16 +3587,7 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
       "Frame Sequence Number", ack.frame_id.sequence_number);
   frame_rate_estimator_.DidNotProduceFrame();
   if (layer_tree_frame_sink_) {
-    static const bool feature_allowed = base::FeatureList::IsEnabled(
-        features::kThrottleFrameRateOnManyDidNotProduceFrame);
-    if (feature_allowed) {
-      viz::BeginFrameAck adjust_ack = ack;
-      adjust_ack.preferred_frame_interval =
-          frame_rate_estimator_.GetPreferredInterval();
-      layer_tree_frame_sink_->DidNotProduceFrame(adjust_ack, reason);
-    } else {
-      layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
-    }
+    layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
   }
   // While scrolling, we save all event metrics. It is possible that this
   // results in a 0 delta scroll, which has no damage. We take the metrics here

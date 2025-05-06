@@ -175,12 +175,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kTreeAnimationsInViz);
 // away rather than piggy-backing on the next BeginMainFrame.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSendExplicitDecodeRequestsImmediately);
 
-// Whether frame rate should be throttled when there were many "did not produce
-// frame" recently.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleFrameRateOnManyDidNotProduceFrame);
-CC_BASE_EXPORT extern const base::FeatureParam<int>
-    kNumDidNotProduceFrameBeforeThrottle;
-
 // When enabled, the CC tree priority will be switched to
 // NEW_CONTENT_TAKES_PRIORITY during long scroll that cause checkerboarding.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNewContentForCheckerboardedScrolls);

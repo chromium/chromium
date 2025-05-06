@@ -21,7 +21,7 @@ namespace cc {
 // InputPriorityMode in the next 250ms(kInputPriorityDelay) if
 // NotifyInputEvent() is called and exit after the delay. Throttling is
 // disabled in InputPriorityMode despite other conditions.
-// 1. In video conference mode:
+// * In video conference mode:
 // The frame rate will be throttled to half of the default when：
 //   Video conference mode is set and
 //   the last drawn consecutive_frames_with_min_delta_ <
@@ -29,13 +29,6 @@ namespace cc {
 // The throttling will be stopped when:
 //   Video conference mode is unset or
 //   the last drawn consecutive_frames_with_min_delta_ >= 4.
-// 2. In consecutive didNotProduceFrame
-// mode(features::kThrottleFrameRateOnManyDidNotProduceFrame):
-// The frame rate will be throttled to half of the default when：
-//   The num_did_not_produce_frame_since_last_draw_ >
-//   4(kNumDidNotProduceFrameBeforeThrottle).
-// The throttling will be stopped when:
-//   There's a drawn frame.
 class CC_EXPORT FrameRateEstimator {
  public:
   explicit FrameRateEstimator(base::SequencedTaskRunner* task_runner);
@@ -50,9 +43,6 @@ class CC_EXPORT FrameRateEstimator {
 
  private:
   void OnExitInputPriorityMode();
-
-  // Number of "did not produce frame" since the last draw.
-  uint64_t num_did_not_produce_frame_since_last_draw_ = 0;
 
   // Whether videoconference mode is enabled. In this mode, frame rate is
   // reduced when there is no recent input and many frames with a small
