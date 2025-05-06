@@ -87,6 +87,16 @@ chromium-metrics-reviews@google.com.
   <variant name="DrawAndSwap"/>
 </variants>
 
+<histogram name="Compositing.Animation.MissingPropertyNodeForElementId"
+    enum="PropertyMutation" expires_after="2026-01-31">
+  <owner>kevers@chromium.org</owner>
+  <owner>animations-dev@chromium.org</owner>
+  <summary>
+    Tally failures resulting from missing a map entry from element id to
+    property node.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Browser.LayersUpdateTime" units="microseconds"
     expires_after="2025-09-14">
   <owner>pdr@chromium.org</owner>

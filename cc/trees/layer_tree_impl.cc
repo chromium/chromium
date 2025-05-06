@@ -1081,20 +1081,27 @@ ElementListType LayerTreeImpl::GetElementTypeForAnimation() const {
   return IsActiveTree() ? ElementListType::ACTIVE : ElementListType::PENDING;
 }
 
+void LayerTreeImpl::ValidateEffectTreeeMapping(ElementId element_id,
+                                               PropertyMutation mutation) {
+  auto count = property_trees()->effect_tree().element_id_to_node_index().count(
+      element_id);
+
+  if (count != 1) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Compositing.Animation.MissingPropertyNodeForElementId", mutation);
+  }
+}
+
 void LayerTreeImpl::SetTransformMutated(ElementId element_id,
                                         const gfx::Transform& transform) {
-  DCHECK_EQ(1u,
-            property_trees()->transform_tree().element_id_to_node_index().count(
-                element_id));
+  ValidateEffectTreeeMapping(element_id, PropertyMutation::kTransform);
   if (property_trees()->transform_tree_mutable().OnTransformAnimated(element_id,
                                                                      transform))
     set_needs_update_draw_properties();
 }
 
 void LayerTreeImpl::SetOpacityMutated(ElementId element_id, float opacity) {
-  DCHECK_EQ(1u,
-            property_trees()->effect_tree().element_id_to_node_index().count(
-                element_id));
+  ValidateEffectTreeeMapping(element_id, PropertyMutation::kOpacity);
   if (property_trees()->effect_tree_mutable().OnOpacityAnimated(element_id,
                                                                 opacity))
     set_needs_update_draw_properties();
@@ -1102,9 +1109,7 @@ void LayerTreeImpl::SetOpacityMutated(ElementId element_id, float opacity) {
 
 void LayerTreeImpl::SetFilterMutated(ElementId element_id,
                                      const FilterOperations& filters) {
-  DCHECK_EQ(1u,
-            property_trees()->effect_tree().element_id_to_node_index().count(
-                element_id));
+  ValidateEffectTreeeMapping(element_id, PropertyMutation::kFilter);
   if (property_trees()->effect_tree_mutable().OnFilterAnimated(element_id,
                                                                filters))
     set_needs_update_draw_properties();
@@ -1113,9 +1118,7 @@ void LayerTreeImpl::SetFilterMutated(ElementId element_id,
 void LayerTreeImpl::SetBackdropFilterMutated(
     ElementId element_id,
     const FilterOperations& backdrop_filters) {
-  DCHECK_EQ(1u,
-            property_trees()->effect_tree().element_id_to_node_index().count(
-                element_id));
+  ValidateEffectTreeeMapping(element_id, PropertyMutation::kBackdropFilter);
   if (property_trees()->effect_tree_mutable().OnBackdropFilterAnimated(
           element_id, backdrop_filters))
     set_needs_update_draw_properties();
