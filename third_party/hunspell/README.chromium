@@ -36,16 +36,12 @@ steps.
    $ git clone https://github.com/hunspell/hunspell.git
    $ cd hunspell
    $ git checkout 6d7d19f
-3) Apply Hunspell patches and make a throwaway commit:
-   $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/speed-up-hunspell-inner-loop.patch
-   $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/WaE-overflow-in-expression.patch
-   $ git commit -am "Apply Hunspell-specific patches"
-4) Apply the existing patch:
+3) Apply the existing patch:
    $ patch -p1 -i $CHROMIUM_HUNSPELL/google.patch
-5) Make your new changes inside the git hunspell directory.
-6) Generate the updated patch:
+4) Make your new changes inside the git hunspell directory.
+5) Generate the updated patch:
    $ git diff > $CHROMIUM_HUNSPELL/google.patch
-7) Copy the patched source to Chromium:
+6) Copy the patched source to Chromium:
    $ cp -r src/ README.md COPYING* license* $CHROMIUM_HUNSPELL
    $ rm -r $CHROMIUM_HUNSPELL/src/Makefile.am \
        $CHROMIUM_HUNSPELL/src/hunspell/utf_info.hxx \
@@ -53,7 +49,7 @@ steps.
        $CHROMIUM_HUNSPELL/src/parsers/.gitignore \
        $CHROMIUM_HUNSPELL/src/parsers/Makefile.am \
        $CHROMIUM_HUNSPELL/src/tools/
-8) In the Chromium src folder:
+7) In the Chromium src folder:
    $ git add third_party/hunspell
 
 All dictionaries used by Chromium has been checked in to the
