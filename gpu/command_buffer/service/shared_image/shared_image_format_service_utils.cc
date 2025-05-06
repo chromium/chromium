@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "build/buildflag.h"
-#include "components/crash/core/common/crash_key.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
@@ -532,11 +531,6 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
     return wgpu::TextureFormat::R10X6BG10X6Biplanar444Unorm;
   }
 
-  // Unknown format: crash, surfacing the format.
-  static crash_reporter::CrashKeyString<256> crash_key(
-      "SIFServiceUtils ToDawnFormat error");
-  crash_reporter::ScopedCrashKeyString crash_key_scope(&crash_key,
-                                                       format.ToString());
   NOTREACHED() << "Unsupported format: " << format.ToString();
 }
 
