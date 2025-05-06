@@ -5289,6 +5289,26 @@ TEST_F(BrowserAutofillManagerTest, DontSaveCvcInAutocompleteHistory) {
         test_fields[i].expected_field_type != CREDIT_CARD_VERIFICATION_CODE);
   }
 }
+// Test that autofilled loyalty card fields are forced to !should_autocomplete.
+TEST_F(BrowserAutofillManagerTest,
+       DontSaveAutofilledLoyaltyCardsInAutocompleteHistory) {
+  FormData form_seen_by_ahm;
+  EXPECT_CALL(single_field_fill_router(), OnWillSubmitForm(_, _, true))
+      .WillOnce(SaveArg<0>(&form_seen_by_ahm));
+
+  // Set up form.
+  FormData form = test::GetFormData({.fields = {
+                                         {.role = LOYALTY_MEMBERSHIP_ID},
+                                     }});
+  manager().AddSeenForm(form, {LOYALTY_MEMBERSHIP_ID});
+  // Mark the loyalty card field as autofilled.
+  test_api(form).field(0).set_is_autofilled(true);
+  test_api(form).field(0).set_value(u"LOYALTYCARDNUMBER");
+
+  FormSubmitted(form);
+  ASSERT_EQ(form.fields().size(), form_seen_by_ahm.fields().size());
+  EXPECT_FALSE(test_api(form_seen_by_ahm).field(0).should_autocomplete());
+}
 
 TEST_F(BrowserAutofillManagerTest, DontOfferToSavePaymentsCard) {
   FormData form;

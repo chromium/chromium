@@ -614,6 +614,13 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
       // saved.
       fields_for_autocomplete.back().set_should_autocomplete(false);
     }
+
+    if (autofill_field->Type().GetStorableType() == LOYALTY_MEMBERSHIP_ID &&
+        autofill_field->is_autofilled()) {
+      // Only store loyalty cards values in Autocomplete if they were filled
+      // manually.
+      fields_for_autocomplete.back().set_should_autocomplete(false);
+    }
     const std::u16string& value = autofill_field->value_for_import();
     if (plus_address_delegate &&
         (plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value)) ||
