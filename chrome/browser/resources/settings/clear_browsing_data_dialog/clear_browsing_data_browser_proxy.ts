@@ -14,6 +14,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 // Keep in sync with the respective enum in
 // components/browsing_data/core/browsing_data_utils.h, and leave out values
 // that are not available on Desktop.
+// LINT.IfChange(TimePeriod)
 export enum TimePeriod {
   LAST_HOUR = 0,
   LAST_DAY = 1,
@@ -24,6 +25,26 @@ export enum TimePeriod {
   LAST_15_MINUTES = 6,
   TIME_PERIOD_LAST = LAST_15_MINUTES
 }
+// LINT.ThenChange(/components/browsing_data/core/browsing_data_utils.h:TimePeriod)
+
+// Keep in sync with the respective enum in
+// components/browsing_data/core/browsing_data_utils.h, and leave out values
+// that are not available on Desktop.
+// This enum represents ClearBrowsingDataDialogV2 and does not match the
+// datatypes in the old dialog.
+// LINT.IfChange(BrowsingDataType)
+export enum BrowsingDataType {
+  HISTORY = 0,
+  CACHE = 1,
+  SITE_DATA = 2,
+  // PASSWORDS = 3, Not used on Desktop.
+  FORM_DATA = 4,
+  SITE_SETTINGS = 5,
+  DOWNLOADS = 6,
+  HOSTED_APPS_DATA = 7,
+  // TABS = 8, Not used on Desktop.
+}
+// LINT.ThenChange(/components/browsing_data/core/browsing_data_utils.h:BrowsingDataType)
 
 /**
  * ClearBrowsingDataResult contains any possible follow-up notices that should

@@ -20,6 +20,9 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
+import {BrowsingDataType} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_dialog_v2.html.js';
 
 export interface SettingsClearBrowsingDataDialogV2Element {
@@ -30,6 +33,70 @@ export interface SettingsClearBrowsingDataDialogV2Element {
     showMoreButton: CrButtonElement,
     manageOtherGoogleDataRow: HTMLElement,
   };
+}
+
+/**
+ * The list of all available Browsing Data types in the default order they
+ * should appear in the dialog.
+ */
+const ALL_BROWSING_DATATYPES_LIST: BrowsingDataType[] = [
+  BrowsingDataType.HISTORY,
+  BrowsingDataType.SITE_DATA,
+  BrowsingDataType.CACHE,
+  BrowsingDataType.DOWNLOADS,
+  BrowsingDataType.FORM_DATA,
+  BrowsingDataType.SITE_SETTINGS,
+  BrowsingDataType.HOSTED_APPS_DATA,
+];
+
+/** The list of Browsing Data types that should be expanded by default. */
+const DEFAULT_BROWSING_DATATYPES_LIST: BrowsingDataType[] = [
+  BrowsingDataType.HISTORY,
+  BrowsingDataType.SITE_DATA,
+  BrowsingDataType.CACHE,
+];
+
+interface BrowsingDataTypeOption {
+  label: string;
+  pref: chrome.settingsPrivate.PrefObject;
+}
+
+function getDataTypeLabel(datatypes: BrowsingDataType) {
+  switch (datatypes) {
+    case BrowsingDataType.HISTORY:
+      return loadTimeData.getString('clearBrowsingHistory');
+    case BrowsingDataType.CACHE:
+      return loadTimeData.getString('clearCache');
+    case BrowsingDataType.SITE_DATA:
+      return loadTimeData.getString('clearCookies');
+    case BrowsingDataType.FORM_DATA:
+      return loadTimeData.getString('clearFormData');
+    case BrowsingDataType.SITE_SETTINGS:
+      return loadTimeData.getString('siteSettings');
+    case BrowsingDataType.DOWNLOADS:
+      return loadTimeData.getString('clearDownloadHistory');
+    case BrowsingDataType.HOSTED_APPS_DATA:
+      return loadTimeData.getString('clearHostedAppData');
+  }
+}
+
+export function getDataTypePrefName(datatypes: BrowsingDataType) {
+  switch (datatypes) {
+    case BrowsingDataType.HISTORY:
+      return 'browser.clear_data.browsing_history';
+    case BrowsingDataType.CACHE:
+      return 'browser.clear_data.cache';
+    case BrowsingDataType.SITE_DATA:
+      return 'browser.clear_data.cookies';
+    case BrowsingDataType.FORM_DATA:
+      return 'browser.clear_data.form_data';
+    case BrowsingDataType.SITE_SETTINGS:
+      return 'browser.clear_data.site_settings';
+    case BrowsingDataType.DOWNLOADS:
+      return 'browser.clear_data.download_history';
+    case BrowsingDataType.HOSTED_APPS_DATA:
+      return 'browser.clear_data.hosted_apps_data';
+  }
 }
 
 const SettingsClearBrowsingDataDialogV2ElementBase = PrefsMixin(PolymerElement);
@@ -50,10 +117,49 @@ export class SettingsClearBrowsingDataDialogV2Element extends
         type: Boolean,
         value: false,
       },
+
+      expandedBrowsingDataTypeOptionsList_: Array,
+
+      moreBrowsingDataTypeOptionsList_: Array,
     };
   }
 
   declare private dataTypesExpanded_: boolean;
+  declare private expandedBrowsingDataTypeOptionsList_:
+      BrowsingDataTypeOption[];
+  declare private moreBrowsingDataTypeOptionsList_: BrowsingDataTypeOption[];
+
+  override ready() {
+    super.ready();
+
+    this.setUpDataTypeOptionLists_();
+  }
+
+  private setUpDataTypeOptionLists_() {
+    const expandedOptionsList: BrowsingDataTypeOption[] = [];
+    const moreOptionsList: BrowsingDataTypeOption[] = [];
+
+    ALL_BROWSING_DATATYPES_LIST.forEach((datatype) => {
+      const datatypeOption = {
+        label: getDataTypeLabel(datatype),
+        pref: this.getPref(getDataTypePrefName(datatype)),
+      };
+
+      if (this.shouldDataTypeBeExpanded_(datatype)) {
+        expandedOptionsList.push(datatypeOption);
+      } else {
+        moreOptionsList.push(datatypeOption);
+      }
+    });
+
+    this.expandedBrowsingDataTypeOptionsList_ = expandedOptionsList;
+    this.moreBrowsingDataTypeOptionsList_ = moreOptionsList;
+  }
+
+  private shouldDataTypeBeExpanded_(datatype: BrowsingDataType) {
+    return DEFAULT_BROWSING_DATATYPES_LIST.includes(datatype) ||
+        this.getPref(getDataTypePrefName(datatype)).value;
+  }
 
   private onCancelClick_() {
     this.$.deleteBrowsingDataDialog.close();
@@ -65,7 +171,11 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
   private onShowMoreClick_() {
     this.dataTypesExpanded_ = true;
-    // TODO(crbug.com/397187800): Handle checkbox expansion.
+  }
+
+  private shouldHideShowMoreButton_() {
+    return this.dataTypesExpanded_ || !this.moreBrowsingDataTypeOptionsList_ ||
+        this.moreBrowsingDataTypeOptionsList_.length === 0;
   }
 }
 

@@ -64,39 +64,23 @@
     <settings-clear-browsing-data-time-picker prefs="{{prefs}}">
     </settings-clear-browsing-data-time-picker>
     <div id="checkboxContainer">
-      <settings-checkbox id="browsingCheckbox"
-          pref="{{prefs.browser.clear_data.browsing_history}}" no-set-pref>
-        <div class="checkbox-title">$i18n{clearBrowsingHistory}</div>
-      </settings-checkbox>
-      <settings-checkbox id="cookiesCheckbox"
-          class="cookies-checkbox"
-          pref="{{prefs.browser.clear_data.cookies}}" no-set-pref>
-        <div class="checkbox-title">$i18n{clearCookies}</div>
-      </settings-checkbox>
-      <settings-checkbox id="cacheCheckbox"
-          class="cache-checkbox"
-          pref="{{prefs.browser.clear_data.cache}}" no-set-pref>
-        <div class="checkbox-title">$i18n{clearCache}</div>
-      </settings-checkbox>
-      <settings-checkbox id="downloadCheckbox"
-          pref="{{prefs.browser.clear_data.download_history}}" no-set-pref>
-        <div class="checkbox-title">$i18n{clearDownloadHistory}</div>
-      </settings-checkbox>
-      <settings-checkbox
-          pref="{{prefs.browser.clear_data.form_data}}" no-set-pref>
-        <div class="checkbox-title">$i18n{clearFormData}</div>
-      </settings-checkbox>
-      <settings-checkbox
-          pref="{{prefs.browser.clear_data.site_settings}}" no-set-pref>
-        <div class="checkbox-title">$i18n{siteSettings}</div>
-      </settings-checkbox>
-      <settings-checkbox
-          pref="{{prefs.browser.clear_data.hosted_apps_data}}" no-set-pref>
-        <div class="checkbox-title">$i18n{clearHostedAppData}</div>
-      </settings-checkbox>
+      <template is="dom-repeat"
+          items="[[expandedBrowsingDataTypeOptionsList_]]">
+        <settings-checkbox pref="[[item.pref]]" no-set-pref>
+          <div class="checkbox-title">[[item.label]]</div>
+        </settings-checkbox>
+      </template>
+      <template is="dom-if" if="[[dataTypesExpanded_]]">
+        <template is="dom-repeat" items="[[moreBrowsingDataTypeOptionsList_]]">
+          <settings-checkbox pref="[[item.pref]]" no-set-pref>
+            <div class="checkbox-title">[[item.label]]</div>
+          </settings-checkbox>
+        </template>
+      </template>
     </div>
     <cr-button id="showMoreButton" on-click="onShowMoreClick_"
-        hidden="[[dataTypesExpanded_]]">
+        hidden="[[shouldHideShowMoreButton_(
+            dataTypesExpanded_, moreBrowsingDataTypeOptionsList_)]]">
       $i18n{clearBrowsingDataShowMore}
       <cr-icon icon="cr:expand-more" aria-hidden="true" role="presentation">
       </cr-icon>
