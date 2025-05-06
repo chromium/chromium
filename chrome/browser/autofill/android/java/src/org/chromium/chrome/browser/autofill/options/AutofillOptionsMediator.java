@@ -96,7 +96,6 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
                                 restartConfirmationModel,
                                 DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                 return;
-            case ModalDialogProperties.ButtonType.TITLE_ICON:
             case ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL:
                 assert false : "Unhandled button click!";
         }
