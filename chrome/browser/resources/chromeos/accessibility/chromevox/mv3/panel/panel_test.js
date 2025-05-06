@@ -22,6 +22,8 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
     globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
     globalThis.RoleType = chrome.automation.RoleType;
 
+    // TODO(crbug.com/388867840): Replace with chrome.runtime.sendMessage to
+    // panel.html
     const panel = this.getPanel().instance;
     const original = panel.exec_.bind(panel);
     panel.exec_ = (command) => {

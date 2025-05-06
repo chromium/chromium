@@ -36,6 +36,9 @@ ChromeVoxPanelTestBase = class extends ChromeVoxE2ETest {
     return this.getPanelWindow().Panel;
   }
 
+
+  // TODO(crbug.com/388867840): Replace with chrome.runtime.sendMessage to
+  // panel.html
   async waitForMenu(menuMsg) {
     const menuManager = this.getPanel().instance.menuManager_;
 

@@ -30,6 +30,9 @@ const $ = (id: string): HTMLElement | null => document.getElementById(id);
 type AsyncCallback = () => Promise<void>;
 type SessionState = chrome.loginState.SessionState;
 
+type MessageSender = chrome.runtime.MessageSender;
+type SendResponse = (value: any) => void;
+
 /** Class to manage the panel. */
 export class Panel implements PanelInterface {
   private menuManager_ = new MenuManager();
@@ -57,6 +60,11 @@ export class Panel implements PanelInterface {
   }
 
   private initListeners_(): void {
+    chrome.runtime.onMessage.addListener(
+        (message: any|undefined, _sender: MessageSender,
+         sendResponse: SendResponse) =>
+            this.handleMessageFromServiceWorker_(message, sendResponse));
+
     chrome.loginState.getSessionState(
         (state: SessionState) => this.updateSessionState_(state));
     chrome.loginState.onSessionStateChanged.addListener(
@@ -81,8 +89,7 @@ export class Panel implements PanelInterface {
     window.addEventListener(
         'storage', (event: StorageEvent) => this.onStorageChanged_(event),
         false);
-    window.addEventListener(
-        'message', (message: MessageEvent) => this.onMessage_(message), false);
+
     window.addEventListener('blur', event => this.onBlur_(event), false);
     window.addEventListener('hashchange', () => this.onHashChange_(), false);
 
@@ -160,6 +167,16 @@ export class Panel implements PanelInterface {
       this.speechContainer_!.style.visibility = 'visible';
       this.brailleContainer_!.style.visibility = 'hidden';
     }
+  }
+
+  private handleMessageFromServiceWorker_(
+      message: any|undefined, sendResponse: SendResponse): boolean {
+    if (message.type == PanelCommandType.IS_PANEL_INITIALIZED) {
+      sendResponse(true);
+    } else {
+      this.exec_({type: message.type, data: message.data} as PanelCommand)
+    }
+    return false;
   }
 
   /**
@@ -591,11 +608,6 @@ export class Panel implements PanelInterface {
     if (this.originalStickyState_) {
       BackgroundBridge.CommandHandler.onCommand(Command.TOGGLE_STICKY_MODE);
     }
-  }
-
-  private onMessage_(message: MessageEvent): void {
-    const command = JSON.parse(message.data) as PanelCommand;
-    this.exec_(command);
   }
 
   private async onPanLeft_(): Promise<void> {
