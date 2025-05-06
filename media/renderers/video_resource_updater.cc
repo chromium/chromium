@@ -886,65 +886,54 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
     int bits_per_channel,
     const gfx::ColorSpace& input_frame_color_space,
     bool& texture_needs_rgb_conversion_out) {
-  // TODO(crbug.com/332564976, hitawala): Simplify this format conversion
-  // process.
   if (software_compositor()) {
     return viz::SinglePlaneFormat::kBGRA_8888;
   }
-
-  viz::SharedImageFormat output_si_format;
   if (IsFrameFormat32BitRGB(input_frame_format)) {
-    texture_needs_rgb_conversion_out = false;
-    output_si_format = GetRGBSharedImageFormat(input_frame_format);
-  } else if (input_frame_format == PIXEL_FORMAT_Y16) {
+    return GetRGBSharedImageFormat(input_frame_format);
+  }
+
+  if (input_frame_format == PIXEL_FORMAT_Y16) {
     // Unable to display directly as yuv planes so convert it to RGB.
     texture_needs_rgb_conversion_out = true;
-  } else if (context_provider_->ContextCapabilities()
-                 .disable_one_component_textures) {
+    return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
+  }
+  const auto& caps = context_provider_->ContextCapabilities();
+  if (caps.disable_one_component_textures) {
     // If GPU compositing is enabled, we need to convert texture to RGB if one
     // component textures are disabled.
     texture_needs_rgb_conversion_out = true;
-  } else {
-    // Can be composited directly from yuv planes.
-    output_si_format = YuvSharedImageFormat(bits_per_channel);
+    return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
+  }
 
-    // Some YUV resources have different sized planes. If we lack the proper
-    // SharedImageFormat just convert to RGB. We could do something better like
-    // unpacking to I420/I016, but texture_rg and r16 support should be pretty
-    // universal and we expect these frames to be rare.
-    if (input_frame_format == PIXEL_FORMAT_NV12) {
-      if (output_si_format != viz::SinglePlaneFormat::kR_8) {
-        texture_needs_rgb_conversion_out = true;
-      }
-    } else {
-      DCHECK_EQ(VideoFrame::BytesPerElement(input_frame_format, 0),
-                VideoFrame::BytesPerElement(input_frame_format, 1));
-    }
-
-    // If it is multiplanar and does not need RGB conversion, go through
-    // RasterDecoder WritePixelsYUV path.
-    if (!texture_needs_rgb_conversion_out) {
-      // Get the supported channel format for the `output_si_format`'s first
-      // plane.
-      auto channel_format = SupportedMultiPlaneChannelFormat(output_si_format);
-      // Now get the multiplanar shared image format for `input_frame_format`.
-      output_si_format =
-          VideoPixelFormatToMultiPlanarSharedImageFormat(input_frame_format);
-      if (output_si_format.channel_format() != channel_format) {
-        // If the requested channel format is not supported, use the supported
-        // channel format and downsample later if needed.
-        output_si_format = viz::SharedImageFormat::MultiPlane(
-            output_si_format.plane_config(), output_si_format.subsampling(),
-            channel_format);
-      }
+  // Get the multiplanar shared image format for `input_frame_format`.
+  auto yuv_si_format =
+      VideoPixelFormatToMultiPlanarSharedImageFormat(input_frame_format);
+  if (yuv_si_format.plane_config() ==
+      viz::SharedImageFormat::PlaneConfig::kY_UV) {
+    // Only 8-bit formats are supported with UV planes for software decoding.
+    CHECK_EQ(yuv_si_format.channel_format(),
+             viz::SharedImageFormat::ChannelFormat::k8);
+    const auto& shared_image_caps =
+        context_provider_->SharedImageInterface()->GetCapabilities();
+    // Two channel formats are supported only with texture_rg.
+    if (!caps.texture_rg || shared_image_caps.disable_r8_shared_images) {
+      texture_needs_rgb_conversion_out = true;
+      return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
     }
   }
 
-  if (texture_needs_rgb_conversion_out) {
-    output_si_format = PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
+  // Get the supported channel format for `yuv_si_format`'s first plane.
+  auto channel_format =
+      SupportedMultiPlaneChannelFormat(YuvSharedImageFormat(bits_per_channel));
+  if (yuv_si_format.channel_format() != channel_format) {
+    // If the requested channel format is not supported, use the supported
+    // channel format and downsample later if needed.
+    yuv_si_format = viz::SharedImageFormat::MultiPlane(
+        yuv_si_format.plane_config(), yuv_si_format.subsampling(),
+        channel_format);
   }
-
-  return output_si_format;
+  return yuv_si_format;
 }
 
 void VideoResourceUpdater::TransferRGBPixelsToPaintCanvas(
