@@ -41,7 +41,7 @@ BASE_FEATURE(kUncachedGattDiscoveryForGattConnection,
 // Serial.
 BASE_FEATURE(kBluetoothRfcommAndroid,
              "BluetoothRfcommAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
