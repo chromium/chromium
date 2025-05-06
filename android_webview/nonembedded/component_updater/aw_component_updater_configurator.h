@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/configurator.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patcher.h"
@@ -65,7 +66,7 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
   GetProtocolHandlerFactory() const override;
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  std::optional<base::FilePath> GetCrxCachePath() const override;
+  scoped_refptr<update_client::CrxCache> GetCrxCache() const override;
   bool IsConnectionMetered() const override;
 
  protected:
@@ -81,6 +82,7 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
+  scoped_refptr<update_client::CrxCache> crx_cache_;
 };
 
 scoped_refptr<update_client::Configurator> MakeAwComponentUpdaterConfigurator(

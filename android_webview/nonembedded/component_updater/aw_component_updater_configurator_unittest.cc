@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
@@ -43,6 +44,7 @@ class AwComponentUpdaterConfiguratorTest : public testing::Test {
   base::CommandLine* GetCommandLine() { return cmdline_.get(); }
 
  private:
+  base::test::TaskEnvironment environment_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<base::CommandLine> cmdline_;
 };

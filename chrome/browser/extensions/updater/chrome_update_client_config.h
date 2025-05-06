@@ -25,15 +25,12 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GURL;
 
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace content {
 class BrowserContext;
 }
 
 namespace update_client {
+class CrxCache;
 class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class ProtocolHandlerFactory;
@@ -87,7 +84,7 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   GetProtocolHandlerFactory() const override;
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  std::optional<base::FilePath> GetCrxCachePath() const override;
+  scoped_refptr<update_client::CrxCache> GetCrxCache() const override;
   bool IsConnectionMetered() const override;
 
  protected:
@@ -112,6 +109,7 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
   std::optional<GURL> url_override_;
+  scoped_refptr<update_client::CrxCache> crx_cache_;
 };
 
 }  // namespace extensions

@@ -21,6 +21,7 @@
 #import "components/services/patch/in_process_file_patcher.h"
 #import "components/services/unzip/in_process_unzipper.h"
 #import "components/update_client/activity_data_service.h"
+#import "components/update_client/crx_cache.h"
 #import "components/update_client/crx_downloader_factory.h"
 #import "components/update_client/net/network_chromium.h"
 #import "components/update_client/patch/patch_impl.h"
@@ -71,7 +72,7 @@ class IOSConfigurator : public update_client::Configurator {
   GetProtocolHandlerFactory() const override;
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  std::optional<base::FilePath> GetCrxCachePath() const override;
+  scoped_refptr<update_client::CrxCache> GetCrxCache() const override;
   bool IsConnectionMetered() const override;
 
  private:
@@ -83,6 +84,7 @@ class IOSConfigurator : public update_client::Configurator {
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
+  scoped_refptr<update_client::CrxCache> crx_cache_;
 
   ~IOSConfigurator() override = default;
 };
@@ -98,7 +100,13 @@ IOSConfigurator::IOSConfigurator(const base::CommandLine* cmdline)
             ApplicationContext* context = GetApplicationContext();
             return context ? context->GetLocalState() : nullptr;
           }),
-          nullptr)) {}
+          nullptr)) {
+  base::FilePath path;
+  bool result = base::PathService::Get(base::DIR_CACHE, &path);
+  crx_cache_ = base::MakeRefCounted<update_client::CrxCache>(
+      result ? std::optional<base::FilePath>(path.AppendASCII("ios_crx_cache"))
+             : std::nullopt);
+}
 
 base::TimeDelta IOSConfigurator::InitialDelay() const {
   return configurator_impl_.InitialDelay();
@@ -227,12 +235,8 @@ update_client::UpdaterStateProvider IOSConfigurator::GetUpdaterStateProvider()
   return configurator_impl_.GetUpdaterStateProvider();
 }
 
-std::optional<base::FilePath> IOSConfigurator::GetCrxCachePath() const {
-  base::FilePath path;
-  if (!base::PathService::Get(base::DIR_CACHE, &path)) {
-    return std::nullopt;
-  }
-  return path.Append(FILE_PATH_LITERAL("ios_crx_cache"));
+scoped_refptr<update_client::CrxCache> IOSConfigurator::GetCrxCache() const {
+  return crx_cache_;
 }
 
 bool IOSConfigurator::IsConnectionMetered() const {

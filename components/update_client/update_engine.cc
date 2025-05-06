@@ -62,7 +62,6 @@ base::Value::Dict MakeEvent(UpdateClient::PingParams ping_params,
 
 UpdateContext::UpdateContext(
     scoped_refptr<Configurator> config,
-    scoped_refptr<CrxCache> crx_cache,
     bool is_foreground,
     bool is_install,
     const std::vector<std::string>& ids,
@@ -72,7 +71,6 @@ UpdateContext::UpdateContext(
     bool is_update_check_only,
     base::RepeatingCallback<int64_t(const base::FilePath&)> get_available_space)
     : config(config),
-      crx_cache_(crx_cache),
       is_foreground(is_foreground),
       is_install(is_install),
       ids(ids),
@@ -99,8 +97,7 @@ UpdateEngine::UpdateEngine(
     : config_(config),
       update_checker_factory_(update_checker_factory),
       ping_manager_(ping_manager),
-      notify_observers_callback_(notify_observers_callback),
-      crx_cache_(base::MakeRefCounted<CrxCache>(config->GetCrxCachePath())) {}
+      notify_observers_callback_(notify_observers_callback) {}
 
 UpdateEngine::~UpdateEngine() = default;
 
@@ -154,7 +151,7 @@ base::RepeatingClosure UpdateEngine::InvokeOperation(
 
   scoped_refptr<UpdateContext> update_context =
       base::MakeRefCounted<UpdateContext>(
-          config_, crx_cache_, is_foreground, is_install, ids,
+          config_, is_foreground, is_install, ids,
           crx_state_change_callback
               ? base::BindRepeating(
                     [](UpdateClient::CrxStateChangeCallback a,

@@ -222,8 +222,8 @@ int AppUninstall::Initialize() {
       CreateScopedLock(kSetupMutex, updater_scope(), kWaitForSetupLock);
   global_prefs_ = CreateGlobalPrefs(updater_scope());
   if (global_prefs_) {
-    config_ = base::MakeRefCounted<Configurator>(global_prefs_,
-                                                 CreateExternalConstants());
+    config_ = base::MakeRefCounted<Configurator>(
+        global_prefs_, CreateExternalConstants(), updater_scope());
   }
   return kErrorOk;
 }

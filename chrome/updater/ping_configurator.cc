@@ -20,6 +20,7 @@
 #include "chrome/updater/ping_persisted_data.h"
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/protocol_handler.h"
@@ -67,7 +68,7 @@ class PingConfigurator : public update_client::Configurator {
   GetProtocolHandlerFactory() const override;
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  std::optional<base::FilePath> GetCrxCachePath() const override;
+  scoped_refptr<update_client::CrxCache> GetCrxCache() const override;
   bool IsConnectionMetered() const override;
 
  private:
@@ -223,9 +224,9 @@ update_client::UpdaterStateProvider PingConfigurator::GetUpdaterStateProvider()
   NOTREACHED();
 }
 
-std::optional<base::FilePath> PingConfigurator::GetCrxCachePath() const {
+scoped_refptr<update_client::CrxCache> PingConfigurator::GetCrxCache() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return {};
+  NOTREACHED();
 }
 
 bool PingConfigurator::IsConnectionMetered() const {

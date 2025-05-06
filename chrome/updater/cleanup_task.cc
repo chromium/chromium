@@ -5,6 +5,7 @@
 #include "chrome/updater/cleanup_task.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/files/file_enumerator.h"
@@ -21,8 +22,11 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/app_uninstall.h"
+#include "chrome/updater/configurator.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
+#include "components/update_client/crx_cache.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/util/win_util.h"
@@ -75,7 +79,8 @@ void CleanupOldUpdaterVersions(UpdaterScope scope) {
 
 }  // namespace
 
-CleanupTask::CleanupTask(UpdaterScope scope) : scope_(scope) {}
+CleanupTask::CleanupTask(UpdaterScope scope, scoped_refptr<Configurator> config)
+    : scope_(scope), config_(config) {}
 
 CleanupTask::~CleanupTask() = default;
 
@@ -94,7 +99,13 @@ void CleanupTask::Run(base::OnceClosure callback) {
 #endif  // IS_MAC
           },
           scope_),
-      std::move(callback));
+      base::BindOnce(
+          [](scoped_refptr<Configurator> config, base::OnceClosure callback) {
+            config->GetCrxCache()->RemoveIfNot(
+                config->GetUpdaterPersistedData()->GetAppIds(),
+                std::move(callback));
+          },
+          config_, std::move(callback)));
 }
 
 }  // namespace updater

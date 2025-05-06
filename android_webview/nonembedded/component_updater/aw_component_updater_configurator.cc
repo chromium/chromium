@@ -18,6 +18,7 @@
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patch/in_process_patcher.h"
@@ -44,7 +45,13 @@ AwComponentUpdaterConfigurator::AwComponentUpdaterConfigurator(
           base::BindRepeating(
               [](PrefService* pref_service) { return pref_service; },
               pref_service),
-          nullptr)) {}
+          nullptr)) {
+  base::FilePath path;
+  crx_cache_ = base::MakeRefCounted<update_client::CrxCache>(
+      base::android::GetCacheDirectory(&path)
+          ? std::optional<base::FilePath>(path.AppendASCII("webview_crx_cache"))
+          : std::nullopt);
+}
 
 AwComponentUpdaterConfigurator::~AwComponentUpdaterConfigurator() = default;
 
@@ -201,13 +208,9 @@ scoped_refptr<update_client::Configurator> MakeAwComponentUpdaterConfigurator(
                                                               pref_service);
 }
 
-std::optional<base::FilePath> AwComponentUpdaterConfigurator::GetCrxCachePath()
-    const {
-  base::FilePath path;
-  return base::android::GetCacheDirectory(&path)
-             ? std::optional<base::FilePath>(
-                   path.AppendASCII(("webview_crx_cache")))
-             : std::nullopt;
+scoped_refptr<update_client::CrxCache>
+AwComponentUpdaterConfigurator::GetCrxCache() const {
+  return crx_cache_;
 }
 
 bool AwComponentUpdaterConfigurator::IsConnectionMetered() const {

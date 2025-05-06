@@ -34,6 +34,7 @@
 #include "components/services/patch/content/patch_service.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
@@ -183,7 +184,14 @@ ChromeUpdateClientConfig::ChromeUpdateClientConfig(
           base::BindRepeating(&extensions::GetPrefService, context_),
           std::make_unique<ExtensionActivityDataService>(
               ExtensionPrefs::Get(context)))),
-      url_override_(url_override) {}
+      url_override_(url_override) {
+  base::FilePath path;
+  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
+  crx_cache_ = base::MakeRefCounted<update_client::CrxCache>(
+      result ? std::optional<base::FilePath>(
+                   path.AppendASCII("extensions_crx_cache"))
+             : std::nullopt);
+}
 
 ChromeUpdateClientConfig::~ChromeUpdateClientConfig() = default;
 
@@ -380,13 +388,9 @@ void ChromeUpdateClientConfig::SetChromeUpdateClientConfigFactoryForTesting(
   GetFactoryCallback() = factory;
 }
 
-std::optional<base::FilePath> ChromeUpdateClientConfig::GetCrxCachePath()
+scoped_refptr<update_client::CrxCache> ChromeUpdateClientConfig::GetCrxCache()
     const {
-  base::FilePath path;
-  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
-  return result ? std::optional<base::FilePath>(
-                      path.AppendASCII("extensions_crx_cache"))
-                : std::nullopt;
+  return crx_cache_;
 }
 
 bool ChromeUpdateClientConfig::IsConnectionMetered() const {

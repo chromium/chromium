@@ -34,6 +34,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patch/in_process_patcher.h"
 #include "components/update_client/patcher.h"
@@ -64,13 +65,14 @@ update_client::InProcessUnzipperFactory::SymlinkOption unzipper_symlink_option =
 
 Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
                            scoped_refptr<ExternalConstants> external_constants,
+                           UpdaterScope scope,
                            bool is_ceca_experiment_enabled)
     : prefs_(prefs),
       external_constants_(external_constants),
       persisted_data_(base::MakeRefCounted<PersistedData>(
-          GetUpdaterScope(),
+          scope,
           prefs->GetPrefService(),
-          std::make_unique<ActivityDataService>(GetUpdaterScope()))),
+          std::make_unique<ActivityDataService>(scope))),
       policy_service_(
           base::MakeRefCounted<PolicyService>(external_constants,
                                               persisted_data_,
@@ -80,6 +82,8 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
               unzipper_symlink_option)),
       patch_factory_(
           base::MakeRefCounted<update_client::InProcessPatcherFactory>()),
+      crx_cache_(base::MakeRefCounted<update_client::CrxCache>(
+          GetCrxCacheDirectory(scope))),
       is_managed_device_([] {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
         return base::IsManagedOrEnterpriseDevice();
@@ -279,9 +283,9 @@ update_client::UpdaterStateProvider Configurator::GetUpdaterStateProvider()
   });
 }
 
-std::optional<base::FilePath> Configurator::GetCrxCachePath() const {
+scoped_refptr<update_client::CrxCache> Configurator::GetCrxCache() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return updater::GetCrxCacheDirectory(GetUpdaterScope());
+  return crx_cache_;
 }
 
 bool Configurator::IsConnectionMetered() const {

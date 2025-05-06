@@ -30,6 +30,7 @@ class SharedURLLoaderFactory;
 
 namespace update_client {
 
+class CrxCache;
 class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class PatchChromiumFactory;
@@ -107,7 +108,7 @@ class TestConfigurator : public Configurator {
       const override;
   std::optional<bool> IsMachineExternallyManaged() const override;
   UpdaterStateProvider GetUpdaterStateProvider() const override;
-  std::optional<base::FilePath> GetCrxCachePath() const override;
+  scoped_refptr<CrxCache> GetCrxCache() const override;
   bool IsConnectionMetered() const override;
 
   void SetOnDemandTime(base::TimeDelta seconds);
@@ -153,6 +154,7 @@ class TestConfigurator : public Configurator {
   std::optional<bool> is_machine_externally_managed_;
   bool is_network_connection_metered_;
   base::ScopedTempDir crx_cache_root_temp_dir_;
+  scoped_refptr<CrxCache> crx_cache_;
 };
 
 }  // namespace update_client

@@ -112,7 +112,7 @@ void UpdateCheckerImpl::CheckForUpdates(
       &UpdateCheckerImpl::CheckForUpdatesHelper, weak_factory_.GetWeakPtr(),
       context, config_->UpdateUrl(), additional_attributes);
 
-  context->crx_cache_->ListHashesByAppId(base::BindOnce(
+  context->config->GetCrxCache()->ListHashesByAppId(base::BindOnce(
       [](base::OnceCallback<void(const std::multimap<std::string, std::string>&,
                                  const UpdaterStateAttributes&,
                                  const std::set<std::string>&)>
