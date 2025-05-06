@@ -106,6 +106,7 @@ ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() = default;
 
 
 void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
+  const GURL url = GetUrl();
 
   if (content_extraction_initiated_) {
     // Do not re-fetch content.
@@ -134,7 +135,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
       optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
       base::StringPrintf("ZeroStateSuggestionsPageData: Initiating page "
                          "content extraction for %s.",
-                         GetUrl().spec()));
+                         url.spec()));
 
   if (kExtractAnnotatedPageContentForZeroStateSuggestions.Get()) {
     blink::mojom::AIPageContentOptionsPtr ai_page_content_options;
@@ -162,6 +163,35 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     OnReceivedInnerText(/*result=*/nullptr);
+  }
+
+  OPTIMIZATION_GUIDE_LOG(
+      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+      base::StringPrintf("ZeroStateSuggestionsPageData: Starting request for "
+                         "optimization metadata for %s.",
+                         url.spec()));
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  bool can_request_metadata =
+      optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile->IsOffTheRecord(), profile->GetPrefs());
+  if (can_request_metadata) {
+    optimization_guide_keyed_service_->CanApplyOptimization(
+        web_contents->GetLastCommittedURL(),
+        optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+        base::BindOnce(
+            &ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    optimization_guide_keyed_service_->CanApplyOptimizationOnDemand(
+        {web_contents->GetLastCommittedURL()},
+        {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS},
+        optimization_guide::proto::RequestContext::
+            CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS,
+        base::BindRepeating(&ZeroStateSuggestionsPageData::
+                                OnReceivedOptimizationMetadataOnDemand,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -238,7 +268,7 @@ void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata(
   optimization_decision_ = decision;
   optimization_metadata_ = metadata;
 
-  ProcessSuggestionsIfComplete();
+  RequestSuggestionsIfComplete();
 }
 
 bool ZeroStateSuggestionsPageData::
@@ -270,7 +300,8 @@ bool ZeroStateSuggestionsPageData::
 }
 
 void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
-  bool work_done = inner_text_done_ && annotated_page_content_done_;
+  bool work_done = inner_text_done_ && annotated_page_content_done_ &&
+                   optimization_metadata_done_;
   bool has_page_context = inner_text_result_ || annotated_page_content_;
   if (!work_done) {
     return;
@@ -281,16 +312,25 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
     base::UmaHistogramTimes(
         "ContextualCueing.GlicSuggestions.PageContextFetchlatency.Total",
         base::TimeTicks::Now() - page_context_begin_time_);
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true);
   }
-
-  LOCAL_HISTOGRAM_BOOLEAN(
-      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true);
 
   if (!suggestions_request_) {
     return;
   }
 
   const GURL url = GetUrl();
+  if (ReturnSuggestionsFromOptimizationMetadataIfPossible()) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+        base::StringPrintf("ZeroStateSuggestionsPageData: Suggestions for %s "
+                           "returned from optimization metadata.",
+                           url.spec()));
+    return;
+  }
+
   if (!has_page_context) {
     OPTIMIZATION_GUIDE_LOG(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
@@ -302,39 +342,6 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
     suggestions_callbacks_.Notify(std::nullopt);
     cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
     return;
-  }
-
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()));
-  if (!optimization_metadata_done_) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        base::StringPrintf("ZeroStateSuggestionsPageData: Starting request for "
-                           "optimization metadata for %s.",
-                           url.spec()));
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    bool can_request_metadata =
-        optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
-            profile->IsOffTheRecord(), profile->GetPrefs());
-    if (can_request_metadata) {
-      optimization_guide_keyed_service_->CanApplyOptimization(
-          web_contents->GetLastCommittedURL(),
-          optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
-          base::BindOnce(
-              &ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata,
-              weak_ptr_factory_.GetWeakPtr()));
-    } else {
-      optimization_guide_keyed_service_->CanApplyOptimizationOnDemand(
-          {web_contents->GetLastCommittedURL()},
-          {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS},
-          optimization_guide::proto::RequestContext::
-              CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS,
-          base::BindRepeating(&ZeroStateSuggestionsPageData::
-                                  OnReceivedOptimizationMetadataOnDemand,
-                              weak_ptr_factory_.GetWeakPtr()));
-    }
   }
 
   OPTIMIZATION_GUIDE_LOG(
@@ -349,6 +356,9 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
   if (!url.is_empty() && url.is_valid()) {
     page_context->set_url(url.spec());
   }
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()));
   page_context->set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
 
   if (annotated_page_content_) {
@@ -377,25 +387,19 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
 
   // Clear out suggestions request as it's been fulfilled.
   suggestions_request_ = std::nullopt;
-  mes_suggestions_result_ = std::make_unique<
-      optimization_guide::OptimizationGuideModelExecutionResult>(
-      std::move(result));
-  mes_suggestions_done_ = true;
 
   base::TimeDelta suggestions_duration = base::TimeTicks::Now() - begin_time_;
-  if (!mes_suggestions_result_->response.has_value()) {
+  if (!result.response.has_value()) {
     OPTIMIZATION_GUIDE_LOG(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
         optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        base::StringPrintf(
-            "ZeroStateSuggestionsPageData: Failed to get "
-            "suggestions for %s after %ld ms. Error: %d",
-            url.spec(), suggestions_duration.InMilliseconds(),
-            static_cast<int>(
-                mes_suggestions_result_->response.error().error())));
+        base::StringPrintf("ZeroStateSuggestionsPageData: Failed to get "
+                           "suggestions for %s after %ld ms. Error: %d",
+                           url.spec(), suggestions_duration.InMilliseconds(),
+                           static_cast<int>(result.response.error().error())));
     suggestions_callbacks_.Notify(std::nullopt);
 
-    if (!mes_suggestions_result_->response.error().transient()) {
+    if (!result.response.error().transient()) {
       // Cache empty suggestions if error is not transient.
       cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
     }
@@ -410,32 +414,10 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
                          "suggestions for %s after %ld ms.",
                          url.spec(), suggestions_duration.InMilliseconds()));
 
-  ProcessSuggestionsIfComplete();
-}
-
-void ZeroStateSuggestionsPageData::ProcessSuggestionsIfComplete() {
-  const GURL url = GetUrl();
-
-  // Do not wait for model execution service if optimization metadata has
-  // enough information.
-  if (ReturnSuggestionsFromOptimizationMetadataIfPossible()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        base::StringPrintf("ZeroStateSuggestionsPageData: Suggestions for %s "
-                           "returned from optimization metadata.",
-                           url.spec()));
-    return;
-  }
-
-  if (!optimization_metadata_done_ || !mes_suggestions_done_) {
-    return;
-  }
-
   std::optional<optimization_guide::proto::ZeroStateSuggestionsResponse>
       response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::ZeroStateSuggestionsResponse>(
-          mes_suggestions_result_->response.value());
+          result.response.value());
   if (!response) {
     OPTIMIZATION_GUIDE_LOG(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
@@ -459,7 +441,6 @@ void ZeroStateSuggestionsPageData::ProcessSuggestionsIfComplete() {
                            i + 1, response->suggestions(i).label()));
   }
   suggestions_callbacks_.Notify(suggestions);
-
   cached_suggestions_ = suggestions;
 }
 
