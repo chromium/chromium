@@ -84,6 +84,7 @@ android_library("java") {
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/util:java",
+    "//components/android_autofill/browser:features_java",
     "//components/autofill/android:autofill_features_java",
     "//components/autofill/android:autofill_java",
     "//components/autofill/android:autofill_java_resources",

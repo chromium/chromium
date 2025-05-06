@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFact
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
+import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -486,10 +487,14 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         }
 
         recordWebContentsStateOnLaunch(WebContentsState.NO_WEBCONTENTS);
-        return WebContentsFactory.createWebContentsWithWarmRenderer(
+
+        Profile profile =
                 ProfileProvider.getOrCreateProfile(
-                        mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord()),
+                        mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord());
+        return WebContentsFactory.createWebContentsWithWarmRenderer(
+                profile,
                 /* initiallyHidden= */ false,
+                AutofillClientProviderUtils.isAutofillEnabledForCct(profile),
                 mIntentDataProvider.getTargetNetwork());
     }
 

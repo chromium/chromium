@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -39,12 +40,17 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
+import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetId;
 
@@ -53,7 +59,11 @@ import org.chromium.net.NetId;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowUrlUtilities.class})
-@Features.EnableFeatures({ChromeFeatureList.CCT_PREWARM_TAB, ChromeFeatureList.CCT_EARLY_NAV})
+@Features.EnableFeatures({
+    ChromeFeatureList.CCT_PREWARM_TAB,
+    ChromeFeatureList.CCT_EARLY_NAV,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME
+})
 public class CustomTabActivityTabControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -65,6 +75,7 @@ public class CustomTabActivityTabControllerUnitTest {
 
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock private Network mNetwork;
+    @Mock private UserPrefsJni mMockUserPrefsJni;
 
     @Mock private CookiesFetcher.Natives mCookiesFetcherJni;
 
@@ -73,6 +84,12 @@ public class CustomTabActivityTabControllerUnitTest {
     @Before
     public void setUp() {
         when(env.intentDataProvider.getTargetNetwork()).thenReturn((long) NetId.INVALID);
+
+        // Ensure the test can read the Autofill pref. Assume it's turned off by default.
+        AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
+        UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
+        doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());
 
         mTabController = env.createTabController();
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
@@ -201,6 +218,25 @@ public class CustomTabActivityTabControllerUnitTest {
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
                         /* initializeRenderer= */ eq(true),
+                        /* usesPlatformAutofill= */ eq(false),
+                        /* targetNetwork= */ anyLong(),
+                        any()))
+                .thenReturn(webContents);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        assertEquals(webContents, env.webContentsCaptor.getValue());
+    }
+
+    @Test
+    public void usesWebContentsCreatedWithWarmRenderer_whenUsersOptInto3pAutofill() {
+        AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                AndroidAutofillAvailabilityStatus.AVAILABLE);
+        WebContents webContents = mock(WebContents.class);
+        when(env.mWebContentsFactoryJni.createWebContents(
+                        /* profile= */ any(),
+                        /* initiallyHidden= */ anyBoolean(),
+                        /* initializeRenderer= */ eq(true),
+                        /* usesPlatformAutofill= */ eq(true),
                         /* targetNetwork= */ anyLong(),
                         any()))
                 .thenReturn(webContents);
@@ -219,6 +255,7 @@ public class CustomTabActivityTabControllerUnitTest {
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
                         /* initializeRenderer= */ eq(true),
+                        /* usesPlatformAutofill= */ eq(false),
                         /* targetNetwork= */ not(eq(TEST_TARGET_NETWORK)),
                         any());
         verify(env.mWebContentsFactoryJni)
@@ -226,6 +263,7 @@ public class CustomTabActivityTabControllerUnitTest {
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
                         /* initializeRenderer= */ eq(true),
+                        /* usesPlatformAutofill= */ eq(false),
                         /* targetNetwork= */ eq(TEST_TARGET_NETWORK),
                         any());
     }
@@ -238,6 +276,7 @@ public class CustomTabActivityTabControllerUnitTest {
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
                         /* initializeRenderer= */ eq(true),
+                        /* usesPlatformAutofill= */ eq(false),
                         /* targetNetwork= */ eq(TEST_TARGET_NETWORK),
                         any()))
                 .thenReturn(webContents);

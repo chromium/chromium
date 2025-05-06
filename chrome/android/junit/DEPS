@@ -19,6 +19,7 @@ include_rules = [
   "+chrome/browser/ui/android/theme/java",
   "+chrome/browser/ui/messages/android/java",
   "+chrome/browser/xsurface/android",
+  "+components/android_autofill/browser/java/src/org/chromium/components/autofill",
   "+components/autofill/android/java/src/org/chromium/components/autofill",
   "+components/background_task_scheduler/android",
   "+components/bookmarks/common/android",
