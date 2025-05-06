@@ -18073,25 +18073,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name = "IDS_CHROMELABS_ENABLED_WITH_VARIATION_NAME" desc="Label for combobox option for an enabled variation that will have a description describing what variation is enabled in the placeholder.">
       Enabled – <ph name="VARIATION_NAME">$1<ex>tabs shrink to pinned tab width</ex></ph>
     </message>
-    <!-- ChromeLabs Tab Scrolling -->
-    <message name="IDS_TAB_SCROLLING_EXPERIMENT_NAME" desc="Name for Tab Scrolling experiment">
-      Tab Scrolling
-    </message>
-    <message name="IDS_TAB_SCROLLING_EXPERIMENT_DESCRIPTION" desc="Description for Tab Scrolling experiment">
-      Enables tab strip to scroll left and right when full.
-    </message>
-    <message name="IDS_TABS_SHRINK_TO_PINNED_TAB_WIDTH" desc="Label describing tab behavior will shrink to pinned tab width">
-      Tabs shrink to pinned tab width
-    </message>
-    <message name="IDS_TABS_SHRINK_TO_MEDIUM_WIDTH" desc="Label describing tab behavior will shrink to medium width">
-      Tabs shrink to a medium width
-    </message>
-    <message name="IDS_TABS_SHRINK_TO_LARGE_WIDTH" desc="Label describing tab behavior will shrink to large width">
-      Tabs shrink to a large width
-    </message>
-    <message name="IDS_TABS_DO_NOT_SHRINK" desc="Label describing tab behavior will not shrink">
-      Tabs don't shrink
-    </message>
     <!-- Lens Region Search bubble dialog -->
     <message name="IDS_LENS_REGION_SEARCH_BUBBLE_TEXT" desc="Text that is shown in the Lens Region Search education bubble when starting the feature. Informs the user to drag over the screen to select a region to search with Google Lens.">
       Select an area to search with Lens
