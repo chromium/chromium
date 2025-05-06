@@ -19,6 +19,7 @@ import android.os.health.SystemHealthManager;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -32,6 +33,7 @@ import org.chromium.build.annotations.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -198,15 +200,16 @@ public class PowerMonitor {
     }
 
     @CalledByNative
-    private static long getTotalEnergyConsumed() {
+    private static @JniType("std::vector<PowerMonitorReading>") List<PowerMonitorReading>
+            getTotalEnergyConsumed() {
         ThreadUtils.assertOnBackgroundThread();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            return 0;
+            return Collections.emptyList();
         }
         CountDownLatch ready = new CountDownLatch(1);
         class TotalEnergyReceiver
                 implements OutcomeReceiver<PowerMonitorReadings, RuntimeException> {
-            private long mTotalEnergy;
+            private final List<PowerMonitorReading> mTotalEnergyConsumed = new ArrayList<>();
 
             @Override
             public void onResult(PowerMonitorReadings readings) {
@@ -215,14 +218,15 @@ public class PowerMonitor {
                 for (android.os.PowerMonitor monitor : sPowerMonitors) {
                     long consumed = readings.getConsumedEnergy(monitor);
                     if (consumed != PowerMonitorReadings.ENERGY_UNAVAILABLE) {
-                        mTotalEnergy += consumed;
+                        mTotalEnergyConsumed.add(
+                                new PowerMonitorReading(monitor.getName(), consumed));
                     }
                 }
                 ready.countDown();
             }
 
-            public long getTotalEnergy() {
-                return mTotalEnergy;
+            public List<PowerMonitorReading> getTotalEnergyConsumed() {
+                return mTotalEnergyConsumed;
             }
         }
 
@@ -235,7 +239,7 @@ public class PowerMonitor {
                         SYSTEM_HEALTH_MANAGER_ERROR_HISTOGRAM,
                         SystemHealthManagerError.NO_POWER_MONITORS,
                         SystemHealthManagerError.COUNT);
-                return 0;
+                return Collections.emptyList();
             }
             // If power monitors are not empty, the system health manager and the task runner are
             // initialized.
@@ -251,16 +255,16 @@ public class PowerMonitor {
                     SYSTEM_HEALTH_MANAGER_ERROR_HISTOGRAM,
                     SystemHealthManagerError.GET_POWER_MONITOR_READINGS_INTERRUPTED,
                     SystemHealthManagerError.COUNT);
-            return 0;
+            return Collections.emptyList();
         }
         if (!isReady) {
             RecordHistogram.recordEnumeratedHistogram(
                     SYSTEM_HEALTH_MANAGER_ERROR_HISTOGRAM,
                     SystemHealthManagerError.GET_POWER_MONITOR_READINGS_TIMEOUT,
                     SystemHealthManagerError.COUNT);
-            return 0;
+            return Collections.emptyList();
         }
-        return receiver.getTotalEnergy();
+        return receiver.getTotalEnergyConsumed();
     }
 
     @CalledByNative

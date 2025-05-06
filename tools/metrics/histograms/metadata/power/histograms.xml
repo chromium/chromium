@@ -149,6 +149,23 @@ chromium-metrics-reviews@google.com.
   <variant name="WorkerProcess" summary=""/>
 </variants>
 
+<variants name="Subsystem">
+<!-- LINT.IfChange(SubsystemSuffix) -->
+
+  <variant name="" summary="all subsystems combined"/>
+  <variant name=".Cpu" summary="CPU (all cores)"/>
+  <variant name=".Display" summary="Display"/>
+  <variant name=".Gpu" summary="GPU"/>
+  <variant name=".Other"
+      summary="Subsystems which aren't CPUs, GPUs, or display."/>
+<!-- LINT.ThenChange(/content/browser/android/battery_metrics.cc:SubsystemSuffix) -->
+
+<!--
+  Variants indicating a device's subsystem for power attribution (e.g. CPU, display, etc.)
+-->
+
+</variants>
+
 <variants name="UsageScenario">
 <!--
   Variants describing the usage scenario for a time interval. Consider updating
@@ -1342,14 +1359,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Power.ForegroundEnergyConsumedPerScenario.30Seconds{Exclusive}{LoadingScenario}{InputScenario}"
+    name="Power.ForegroundEnergyConsumedPerScenario.30Seconds{Exclusive}{LoadingScenario}{InputScenario}{Subsystem}"
     units="uWh" expires_after="2026-04-15">
   <owner>kraskevich@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
     Similar to Power.ForegroundBatteryDrain.30Seconds, with additional Chrome
-    usage scenario classification: {LoadingScenario} and {InputScenario}.
-    {Exclusive}
+    usage scenario classification: {LoadingScenario} and {InputScenario}, and
+    device's subsystem classification: {Subsystem} {Exclusive}
 
     This metric uses a more accurate (but less widely supported) underlying API
     https://developer.android.com/reference/android/os/health/SystemHealthManager.
@@ -1360,6 +1377,7 @@ chromium-metrics-reviews@google.com.
   <token key="Exclusive" variants="Exclusive"/>
   <token key="LoadingScenario" variants="LoadingScenario"/>
   <token key="InputScenario" variants="InputScenario"/>
+  <token key="Subsystem" variants="Subsystem"/>
 </histogram>
 
 <histogram name="Power.HasPreciseBatteryDischargeGranularity" enum="Boolean"

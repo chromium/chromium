@@ -4,12 +4,14 @@
 
 #include "base/power_monitor/power_monitor_device_source.h"
 
+#include "base/android/scoped_java_ref.h"
 #include "base/power_monitor/energy_monitor_android.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/power_monitor/power_observer.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_jni/PowerMonitorReading_jni.h"
 #include "base/base_jni/PowerMonitor_jni.h"
 
 namespace base {
@@ -83,9 +85,16 @@ int GetRemainingBatteryCapacity() {
   return base::android::Java_PowerMonitor_getRemainingBatteryCapacity(env);
 }
 
-int64_t GetTotalEnergyConsumed() {
+std::vector<PowerMonitorReading> GetTotalEnergyConsumed() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return base::android::Java_PowerMonitor_getTotalEnergyConsumed(env);
+}
+
+PowerMonitorReading FromJavaPowerMonitorReading(
+    JNIEnv* env,
+    const JavaRef<jobject>& jobject) {
+  return {Java_PowerMonitorReading_getConsumer(env, jobject),
+          Java_PowerMonitorReading_getTotalEnergy(env, jobject)};
 }
 
 // Note: Android does not have the concept of suspend / resume as it's known by
