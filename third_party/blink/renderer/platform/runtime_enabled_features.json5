@@ -2518,6 +2518,16 @@
       origin_trial_feature_name: "HTMLInterestTargetAttribute",
       origin_trial_allows_third_party: true,
     },
+    // Enables the "context menu item only" behavior mode for the
+    // `interesttarget` API. In this mode, the context menu is displayed in the
+    // "normal" location, but an additional line item is added to the menu which
+    // allows the user to show interest. This is enabled by default, but depends
+    // on HTMLInterestTargetAttribute.
+    {
+      name: "HTMLInterestTargetContextMenuItemOnly",
+      status: "stable",
+      depends_on: ["HTMLInterestTargetAttribute"],
+    },
     {
       // A flag, just for local testing to make the
       // HTML parser yield more often and take longer to resume.

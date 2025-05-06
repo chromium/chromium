@@ -1152,6 +1152,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // popover that is the target of an interest invoker that has partial
   // interest.
   bool IsInPartialInterestPopover() const;
+  // Used in some situations (e.g. mobile device context menu activation) to
+  // immediately show interest in an element, ignoring any show delays that may
+  // be set on the element. If the element is not an interest invoker, nothing
+  // happens.
+  void ShowInterestNow();
 
   // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
   // found in "element_inner_text.cc".

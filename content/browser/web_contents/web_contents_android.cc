@@ -921,6 +921,10 @@ void WebContentsAndroid::SetContextMenuInsets(JNIEnv* env,
   web_contents()->SetContextMenuInsets(rect);
 }
 
+void WebContentsAndroid::ShowInterestInElement(JNIEnv* env, int nodeID) {
+  web_contents()->ShowInterestInElement(nodeID);
+}
+
 void WebContentsAndroid::NotifyRendererPreferenceUpdate(JNIEnv* env) {
   web_contents_->OnWebPreferencesChanged();
 }

@@ -767,6 +767,13 @@ void RenderWidgetHostViewAndroid::NotifyContextMenuInsetsObservers(
       .NotifyContextMenuInsetsObservers(safe_area);
 }
 
+void RenderWidgetHostViewAndroid::ShowInterestInElement(int nodeID) {
+  // TODO(crbug.com/326681249): This only works if the link is in the main frame
+  // for this tab. Need to find a way to pass the frame back and forth to the
+  // browser, so this can work in iframes.
+  host()->frame_tree()->GetMainFrame()->GetPage().ShowInterestInElement(nodeID);
+}
+
 viz::SurfaceId RenderWidgetHostViewAndroid::GetFallbackSurfaceIdForTesting()
     const {
   return delegated_frame_host_->GetFallbackSurfaceIdForTesting();  // IN-TEST

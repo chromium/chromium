@@ -63,5 +63,7 @@ void EventHandlerAndroid::NotifyVirtualKeyboardOverlayRect(
 
 void EventHandlerAndroid::NotifyContextMenuInsetsObservers(const gfx::Rect&) {}
 
+void EventHandlerAndroid::ShowInterestInElement(int) {}
+
 void EventHandlerAndroid::OnPointerLockRelease() {}
 }  // namespace ui

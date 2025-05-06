@@ -183,6 +183,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.FORWARD,
             Action.RELOAD,
             Action.INSPECT_ELEMENT,
+            Action.SHOW_INTEREST_IN_ELEMENT,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -234,7 +235,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int FORWARD = 45;
             int RELOAD = 46;
             int INSPECT_ELEMENT = 47;
-            int NUM_ENTRIES = 48;
+            int SHOW_INTEREST_IN_ELEMENT = 48;
+            int NUM_ENTRIES = 49;
         }
     }
 
@@ -341,6 +343,15 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (FirstRunStatus.getFirstRunFlowComplete()
                     && !isEmptyUrl(mParams.getUrl())
                     && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
+                if (mParams.getOpenedFromInterestTarget()
+                        && mParams.getInterestTargetNodeID() != 0) {
+                    // This is a context menu for a link with `interesttarget`. If the node ID is
+                    // valid, then we should add a context menu item to show interest in the link.
+                    // There is a static_assert in ContextMenuController::ShowContextMenu() that
+                    // ensures "zero" means invalid. This item will only be created if the
+                    // HTMLInterestTargetAttribute flag is enabled.
+                    linkGroup.add(createListItem(Item.SHOW_INTEREST_IN_ELEMENT));
+                }
                 if (mMode == ContextMenuMode.NORMAL) {
                     if (ChromeFeatureList.sSwapNewTabAndNewTabInGroupAndroid.isEnabled()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
@@ -832,6 +843,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             recordContextMenuSelection(ContextMenuUma.Action.INSPECT_ELEMENT);
             mNativeDelegate.inspectElement(
                     mParams.getTriggeringTouchXDp(), mParams.getTriggeringTouchYDp());
+        } else if (itemId == R.id.contextmenu_show_interest_in_element) {
+            recordContextMenuSelection(ContextMenuUma.Action.SHOW_INTEREST_IN_ELEMENT);
+            WebContents webContents = mItemDelegate.getWebContents();
+            webContents.showInterestInElement(mParams.getInterestTargetNodeID());
         } else {
             assert false;
         }

@@ -713,6 +713,15 @@ void ViewAndroid::NotifyContextMenuInsetsObservers(const gfx::Rect& safe_area) {
   }
 }
 
+void ViewAndroid::ShowInterestInElement(int nodeID) {
+  if (event_handler_) {
+    event_handler_->ShowInterestInElement(nodeID);
+  }
+  for (ViewAndroid* child : children_) {
+    child->ShowInterestInElement(nodeID);
+  }
+}
+
 template <typename E>
 bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
                           const E& event,

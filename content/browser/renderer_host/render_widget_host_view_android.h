@@ -261,6 +261,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override;
   void NotifyContextMenuInsetsObservers(const gfx::Rect&) override;
+  void ShowInterestInElement(int) override;
   void OnPointerLockRelease() override;
 
   // ui::ViewAndroidObserver implementation:

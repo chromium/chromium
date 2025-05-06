@@ -73,6 +73,7 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_share_link" />
     <item type="id" name="contextmenu_direct_share_link" />
     <item type="id" name="contextmenu_read_later" />
+    <item type="id" name="contextmenu_show_interest_in_element" />
 
     <!--Image Group -->
     <item type="id" name="contextmenu_load_original_image" />

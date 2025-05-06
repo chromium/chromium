@@ -140,6 +140,7 @@ class WebContentsViewAndroid : public WebContentsView,
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override;
   void NotifyContextMenuInsetsObservers(const gfx::Rect&) override;
+  void ShowInterestInElement(int nodeID) override;
 
   void SetFocus(bool focused);
   void set_device_orientation(int orientation) {

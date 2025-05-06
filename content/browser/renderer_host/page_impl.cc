@@ -380,6 +380,10 @@ void PageImpl::NotifyContextMenuInsetsObservers(const gfx::Rect& safe_area) {
       safe_area);
 }
 
+void PageImpl::ShowInterestInElement(int nodeID) {
+  GetMainDocument().GetAssociatedLocalFrame()->ShowInterestInElement(nodeID);
+}
+
 void PageImpl::SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode) {
   if (virtual_keyboard_mode_ == mode) {
     return;

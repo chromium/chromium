@@ -575,6 +575,10 @@ void LocalFrameMojoHandler::NotifyContextMenuInsetsObservers(
   frame_->NotifyContextMenuInsetsObservers(safe_area);
 }
 
+void LocalFrameMojoHandler::ShowInterestInElement(int nodeID) {
+  frame_->ShowInterestInElement(nodeID);
+}
+
 void LocalFrameMojoHandler::AddMessageToConsole(
     mojom::blink::ConsoleMessageLevel level,
     const WTF::String& message,

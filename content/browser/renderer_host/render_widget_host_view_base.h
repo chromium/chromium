@@ -195,6 +195,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override {}
   void NotifyContextMenuInsetsObservers(const gfx::Rect&) override {}
+  void ShowInterestInElement(int) override {}
   bool IsHTMLFormPopup() const override;
 
   // This only needs to be overridden by RenderWidgetHostViewBase subclasses

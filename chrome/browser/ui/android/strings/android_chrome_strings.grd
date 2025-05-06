@@ -3220,6 +3220,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_INSPECT_ELEMENT" desc="This string is shown in the context menu to inspect an element in a web page using the developer tools. [CHAR_LIMIT=30]">
         Inspect
       </message>
+      <message name="IDS_CONTEXTMENU_SHOW_INTEREST_IN_ELEMENT" desc="This string is shown in the context menu for requesting additional information about the web link the user long-pressed. [CHAR_LIMIT=30]">
+        More info about link from site
+      </message>
 
       <!-- Swipe refresh -->
       <message name="IDS_ACCESSIBILITY_SWIPE_REFRESH" desc="Content description for the swipe refresh action.">

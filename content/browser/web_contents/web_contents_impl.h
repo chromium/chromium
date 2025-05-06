@@ -1491,6 +1491,9 @@ class CONTENT_EXPORT WebContentsImpl
   // Called by WebContentsAndroid to send the context menu insets over to
   // the RenderWidgetHostView, and on to the Page.
   void SetContextMenuInsets(gfx::Rect);
+  // Called by WebContentsAndroid to instruct the web contents to "show
+  // interest" in the referenced element.
+  void ShowInterestInElement(int nodeID);
 #endif
 
   // Notify observers that the viewport fit value changed. This is called by

@@ -47,6 +47,7 @@ public class ContextMenuParams {
     private final boolean mOpenedFromHighlight;
 
     private final boolean mOpenedFromInterestTarget;
+    private final int mInterestTargetNodeID;
 
     private final @Nullable AdditionalNavigationParams mAdditionalNavigationParams;
 
@@ -173,6 +174,16 @@ public class ContextMenuParams {
     }
 
     /**
+     * @return Only valid if `getOpenedFromInterestTarget()` is true, and only non-zero if the
+     *     `HTMLInterestTargetContextMenuItemOnly` feature is enabled. With that feature enabled,
+     *     this returns the DOMNodeID for the element that should be "shown interest" in case the
+     *     "show interest" menu item is chosen by the user.
+     */
+    public int getInterestTargetNodeID() {
+        return mInterestTargetNodeID;
+    }
+
+    /**
      * @return The additional navigation params associated with this Context Menu.
      */
     public @Nullable AdditionalNavigationParams getAdditionalNavigationParams() {
@@ -196,6 +207,7 @@ public class ContextMenuParams {
             int sourceType,
             boolean openedFromHighlight,
             boolean openedFromInterestTarget,
+            int interestTargetNodeID,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         mNativePtr = nativePtr;
         mPageUrl = pageUrl;
@@ -222,6 +234,7 @@ public class ContextMenuParams {
         mSourceType = sourceType;
         mOpenedFromHighlight = openedFromHighlight;
         mOpenedFromInterestTarget = openedFromInterestTarget;
+        mInterestTargetNodeID = interestTargetNodeID;
         mAdditionalNavigationParams = additionalNavigationParams;
     }
 
@@ -243,6 +256,7 @@ public class ContextMenuParams {
             int sourceType,
             boolean openedFromHighlight,
             boolean openedFromInterestTarget,
+            int interestTargetNodeID,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         // TODO(crbug.com/40549331): Convert Referrer to use GURL.
         Referrer referrer =
@@ -265,6 +279,7 @@ public class ContextMenuParams {
                 sourceType,
                 openedFromHighlight,
                 openedFromInterestTarget,
+                interestTargetNodeID,
                 additionalNavigationParams);
     }
 }

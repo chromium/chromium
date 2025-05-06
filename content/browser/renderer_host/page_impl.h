@@ -216,6 +216,10 @@ class CONTENT_EXPORT PageImpl : public Page {
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
   void NotifyContextMenuInsetsObservers(const gfx::Rect&);
 
+  // This call will "show interest" in the Element with the provided DOMNodeID,
+  // which is presumed to have an `interesttarget` attribute.
+  void ShowInterestInElement(int);
+
   void SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode);
   ui::mojom::VirtualKeyboardMode virtual_keyboard_mode() const {
     return virtual_keyboard_mode_;

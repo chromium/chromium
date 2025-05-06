@@ -2515,6 +2515,13 @@ void WebContentsImpl::SetContextMenuInsets(gfx::Rect safe_area) {
   }
 }
 
+void WebContentsImpl::ShowInterestInElement(int nodeID) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ShowInterestInElement");
+  if (auto* rwhv = GetRenderWidgetHostView()) {
+    rwhv->ShowInterestInElement(nodeID);
+  }
+}
+
 #endif
 
 const std::u16string& WebContentsImpl::GetTitle() {

@@ -354,6 +354,9 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     public void setContextMenuInsets(Rect insets) {}
 
     @Override
+    public void showInterestInElement(int nodeID) {}
+
+    @Override
     public void notifyRendererPreferenceUpdate() {}
 
     @Override

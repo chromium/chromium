@@ -7316,6 +7316,15 @@ bool Element::IsInPartialInterestPopover() const {
   return false;
 }
 
+void Element::ShowInterestNow() {
+  Element* target = InterestTargetElement();
+  LOG(ERROR) << "Interest in element " << this << ", with target " << target;
+  if (!target) {
+    return;
+  }
+  GainOrLoseInterest(this, target, InterestState::kFullInterest);
+}
+
 bool Element::IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const {
   FocusableState focusable_state = Element::IsFocusableState(update_behavior);
   if (focusable_state == FocusableState::kNotFocusable) {

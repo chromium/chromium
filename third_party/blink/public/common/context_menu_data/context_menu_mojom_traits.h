@@ -187,6 +187,11 @@ struct BLINK_COMMON_EXPORT
     return r.opened_from_interest_target;
   }
 
+  static int interest_target_node_id(
+      const blink::UntrustworthyContextMenuParams& r) {
+    return r.interest_target_node_id;
+  }
+
   static std::optional<blink::mojom::FormControlType> form_control_type(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.form_control_type;

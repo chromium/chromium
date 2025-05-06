@@ -385,6 +385,10 @@ class CORE_EXPORT LocalFrame final
   // rect is empty, the insets should be removed.
   void NotifyContextMenuInsetsObservers(const gfx::Rect&) const;
 
+  // This call will "show interest" in the Element with the provided DOMNodeID,
+  // which is presumed to have an `interesttarget` attribute.
+  void ShowInterestInElement(int) const;
+
   // Bubbles a logical scroll to the parent frame, if one exists. For a local
   // frame, this will continue the scroll synchronously. For remote frames and
   // frame tree boundaries, this will IPC the scroll via the browser process.
