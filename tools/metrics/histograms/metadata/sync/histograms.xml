@@ -443,12 +443,11 @@ chromium-metrics-reviews@google.com.
   <owner>droger@chromium.org</owner>
   <summary>
     Records how the current gaia ID (user) compares to the last gaia ID known to
-    have turned Sync the feature on within the same profile, if any. Recorded
-    during the initial merge procedure for bookmarks, triggered when bookmark
-    Sync is first started (most notably when Sync was just turned on or the
-    bookmark toggle in Sync settings changed from off to on). The metric is not
-    recorded when bookmark Sync starts in transport mode. Recorded on desktop
-    platforms only, excluding ChromeOS.
+    have turned Sync the feature on within the same profile, if any.
+
+    Recorded on desktop platforms (excluding ChromeOS) only when bookmark sync
+    (legacy Full Sync) is turned on and after account bookmarks are downloaded
+    from the Sync server.
   </summary>
 </histogram>
 
