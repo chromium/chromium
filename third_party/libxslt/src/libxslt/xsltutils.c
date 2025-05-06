@@ -2019,6 +2019,54 @@ xsltClearSourceNodeFlags(xmlNodePtr node, int flags) {
 }
 
 /**
+ * xsltGetSourceNodeValue:
+ * @node:  Node from source document
+ *
+ * Returns the associated 28 bit unsigned value for a source node,
+ * or 0 if node does not have an associated value.
+ */
+int
+xsltGetSourceNodeValue(xmlNodePtr node) {
+    switch (node->type) {
+        case XML_DOCUMENT_NODE:
+        case XML_HTML_DOCUMENT_NODE:
+            return (((xmlDocPtr) node)->extra & XSLT_SOURCE_NODE_VALUE_MASK);
+
+        case XML_ATTRIBUTE_NODE:
+            return (((xmlAttrPtr) node)->extra & XSLT_SOURCE_NODE_VALUE_MASK);
+
+        default:
+            return 0;
+    }
+}
+
+/**
+ * xsltSetSourceNodeValue:
+ * @node:  Node from source document
+ * @value:  28 bit unsigned value to associate with the node.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+xsltSetSourceNodeValue(xmlNodePtr node, int value) {
+    switch (node->type) {
+        case XML_DOCUMENT_NODE:
+        case XML_HTML_DOCUMENT_NODE:
+            ((xmlDocPtr) node)->extra &= ~XSLT_SOURCE_NODE_VALUE_MASK;
+            ((xmlDocPtr) node)->extra |= (value & XSLT_SOURCE_NODE_VALUE_MASK);
+            return 0;
+
+        case XML_ATTRIBUTE_NODE:
+            ((xmlAttrPtr) node)->extra &= ~XSLT_SOURCE_NODE_VALUE_MASK;
+            ((xmlAttrPtr) node)->extra |= (value & XSLT_SOURCE_NODE_VALUE_MASK);
+            return 0;
+
+        default:
+            return -1;
+    }
+}
+
+/**
  * xsltGetPSVIPtr:
  * @cur:  Node
  *

@@ -760,7 +760,7 @@ xsltGenerateIdFunction(xmlXPathParserContextPtr ctxt, int nargs){
     }
 
     if (xsltGetSourceNodeFlags(cur) & XSLT_SOURCE_NODE_HAS_ID) {
-        id = (unsigned long) (size_t) *psviPtr;
+        id = (unsigned long) xsltGetSourceNodeValue(cur);
     } else {
         if (cur->type == XML_TEXT_NODE && cur->line == USHRT_MAX) {
             /* Text nodes store big line numbers in psvi. */
@@ -772,7 +772,7 @@ xsltGenerateIdFunction(xmlXPathParserContextPtr ctxt, int nargs){
             goto out;
         }
 
-        if (tctxt->currentId == ULONG_MAX) {
+        if (tctxt->currentId == XSLT_SOURCE_NODE_VALUE_MAX) {
             xsltTransformError(tctxt, NULL, NULL,
                     "generate-id(): id overflow\n");
             ctxt->error = XPATH_MEMORY_ERROR;
@@ -780,7 +780,7 @@ xsltGenerateIdFunction(xmlXPathParserContextPtr ctxt, int nargs){
         }
 
         id = ++tctxt->currentId;
-        *psviPtr = (void *) (size_t) id;
+        xsltSetSourceNodeValue(cur, id);
         xsltSetSourceNodeFlags(tctxt, cur, XSLT_SOURCE_NODE_HAS_ID);
     }
 

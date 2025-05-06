@@ -1,0 +1,114 @@
+diff --git a/third_party/libxslt/src/libxslt/functions.c b/third_party/libxslt/src/libxslt/functions.c
+index 72a58dc4d6592..309af458c22f7 100644
+--- a/third_party/libxslt/src/libxslt/functions.c
++++ b/third_party/libxslt/src/libxslt/functions.c
+@@ -760,7 +760,7 @@ xsltGenerateIdFunction(xmlXPathParserContextPtr ctxt, int nargs){
+     }
+ 
+     if (xsltGetSourceNodeFlags(cur) & XSLT_SOURCE_NODE_HAS_ID) {
+-        id = (unsigned long) (size_t) *psviPtr;
++        id = (unsigned long) xsltGetSourceNodeValue(cur);
+     } else {
+         if (cur->type == XML_TEXT_NODE && cur->line == USHRT_MAX) {
+             /* Text nodes store big line numbers in psvi. */
+@@ -772,7 +772,7 @@ xsltGenerateIdFunction(xmlXPathParserContextPtr ctxt, int nargs){
+             goto out;
+         }
+ 
+-        if (tctxt->currentId == ULONG_MAX) {
++        if (tctxt->currentId == XSLT_SOURCE_NODE_VALUE_MAX) {
+             xsltTransformError(tctxt, NULL, NULL,
+                     "generate-id(): id overflow\n");
+             ctxt->error = XPATH_MEMORY_ERROR;
+@@ -780,7 +780,7 @@ xsltGenerateIdFunction(xmlXPathParserContextPtr ctxt, int nargs){
+         }
+ 
+         id = ++tctxt->currentId;
+-        *psviPtr = (void *) (size_t) id;
++        xsltSetSourceNodeValue(cur, id);
+         xsltSetSourceNodeFlags(tctxt, cur, XSLT_SOURCE_NODE_HAS_ID);
+     }
+ 
+diff --git a/third_party/libxslt/src/libxslt/xsltutils.c b/third_party/libxslt/src/libxslt/xsltutils.c
+index 0155e7fc5a89f..aec8be4ad077c 100644
+--- a/third_party/libxslt/src/libxslt/xsltutils.c
++++ b/third_party/libxslt/src/libxslt/xsltutils.c
+@@ -2018,6 +2018,54 @@ xsltClearSourceNodeFlags(xmlNodePtr node, int flags) {
+     }
+ }
+ 
++/**
++ * xsltGetSourceNodeValue:
++ * @node:  Node from source document
++ *
++ * Returns the associated 28 bit unsigned value for a source node,
++ * or 0 if node does not have an associated value.
++ */
++int
++xsltGetSourceNodeValue(xmlNodePtr node) {
++    switch (node->type) {
++        case XML_DOCUMENT_NODE:
++        case XML_HTML_DOCUMENT_NODE:
++            return (((xmlDocPtr) node)->extra & XSLT_SOURCE_NODE_VALUE_MASK);
++
++        case XML_ATTRIBUTE_NODE:
++            return (((xmlAttrPtr) node)->extra & XSLT_SOURCE_NODE_VALUE_MASK);
++
++        default:
++            return 0;
++    }
++}
++
++/**
++ * xsltSetSourceNodeValue:
++ * @node:  Node from source document
++ * @value:  28 bit unsigned value to associate with the node.
++ *
++ * Returns 0 on success, -1 on error.
++ */
++int
++xsltSetSourceNodeValue(xmlNodePtr node, int value) {
++    switch (node->type) {
++        case XML_DOCUMENT_NODE:
++        case XML_HTML_DOCUMENT_NODE:
++            ((xmlDocPtr) node)->extra &= ~XSLT_SOURCE_NODE_VALUE_MASK;
++            ((xmlDocPtr) node)->extra |= (value & XSLT_SOURCE_NODE_VALUE_MASK);
++            return 0;
++
++        case XML_ATTRIBUTE_NODE:
++            ((xmlAttrPtr) node)->extra &= ~XSLT_SOURCE_NODE_VALUE_MASK;
++            ((xmlAttrPtr) node)->extra |= (value & XSLT_SOURCE_NODE_VALUE_MASK);
++            return 0;
++
++        default:
++            return -1;
++    }
++}
++
+ /**
+  * xsltGetPSVIPtr:
+  * @cur:  Node
+diff --git a/third_party/libxslt/src/libxslt/xsltutils.h b/third_party/libxslt/src/libxslt/xsltutils.h
+index d15d22726afaa..1e753eebadd98 100644
+--- a/third_party/libxslt/src/libxslt/xsltutils.h
++++ b/third_party/libxslt/src/libxslt/xsltutils.h
+@@ -263,6 +263,8 @@ XSLTPUBFUN xmlXPathCompExprPtr XSLTCALL
+ #define XSLT_SOURCE_NODE_HAS_ID     2u
+ #define XSLT_SOURCE_NODE_SHIFT_16   12u
+ #define XSLT_SOURCE_NODE_SHIFT_32   28u
++#define XSLT_SOURCE_NODE_VALUE_MASK ((1 << XSLT_SOURCE_NODE_SHIFT_32) - 1)
++#define XSLT_SOURCE_NODE_VALUE_MAX  XSLT_SOURCE_NODE_VALUE_MASK
+ int
+ xsltGetSourceNodeFlags(xmlNodePtr node);
+ int
+@@ -270,6 +272,10 @@ xsltSetSourceNodeFlags(xsltTransformContextPtr ctxt, xmlNodePtr node,
+                        int flags);
+ int
+ xsltClearSourceNodeFlags(xmlNodePtr node, int flags);
++int
++xsltSetSourceNodeValue(xmlNodePtr node, int value);
++int
++xsltGetSourceNodeValue(xmlNodePtr node);
+ void **
+ xsltGetPSVIPtr(xmlNodePtr cur);
+ /** DOC_ENABLE */
