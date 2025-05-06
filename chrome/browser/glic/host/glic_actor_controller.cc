@@ -101,6 +101,18 @@ void GlicActorController::StopTask() {
   actor_coordinator_->StopTask();
 }
 
+bool GlicActorController::IsActorCoordinatorActingOnTab(
+    const content::WebContents* tab) const {
+  return actor_coordinator_ && actor_coordinator_->HasTaskForTab(tab);
+}
+
+actor::ActorCoordinator& GlicActorController::GetActorCoordinatorForTesting() {
+  if (!actor_coordinator_) {
+    actor_coordinator_ = std::make_unique<actor::ActorCoordinator>(profile_);
+  }
+  return *actor_coordinator_;
+}
+
 void GlicActorController::OnTaskStarted(
     const optimization_guide::proto::BrowserAction& action,
     const mojom::GetTabContextOptions& options,

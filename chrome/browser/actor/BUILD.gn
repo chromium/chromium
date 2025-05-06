@@ -92,6 +92,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "actor_coordinator_browsertest.cc",
     "site_policy_browsertest.cc",
     "tools/tools_browsertest.cc",
   ]
@@ -99,6 +100,7 @@ source_set("browser_tests") {
     ":actor",
     ":test_support",
     "//base/test:test_support",
+    "//chrome/browser/glic:glic",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui",

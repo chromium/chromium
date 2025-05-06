@@ -77,6 +77,9 @@ class ActorCoordinator {
   // Returns true if a task is currently active.
   bool HasTask() const;
 
+  // Returns true if a task is currently active in `tab`.
+  bool HasTaskForTab(const content::WebContents* tab) const;
+
   // Starts new task with an existing tab, for testing only. Intended for unit
   // tests that do not use a browser and actual navigation.
   void StartTaskForTesting(tabs::TabInterface* tab);

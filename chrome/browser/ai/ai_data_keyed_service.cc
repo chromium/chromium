@@ -935,6 +935,15 @@ void AiDataKeyedService::ExecuteAction(
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
+bool AiDataKeyedService::IsActorCoordinatorActingOnTab(
+    const content::WebContents* tab) const {
+#if BUILDFLAG(ENABLE_GLIC)
+  return actor_coordinator_ && actor_coordinator_->HasTaskForTab(tab);
+#else
+  return false;
+#endif
+}
+
 #if BUILDFLAG(ENABLE_GLIC)
 void AiDataKeyedService::OnTaskCreated(
     base::OnceCallback<void(optimization_guide::proto::BrowserStartTaskResult)>

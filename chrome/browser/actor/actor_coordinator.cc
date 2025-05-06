@@ -169,6 +169,11 @@ bool ActorCoordinator::HasTask() const {
   return !!task_state_;
 }
 
+bool ActorCoordinator::HasTaskForTab(const content::WebContents* tab) const {
+  return HasTask() && task_state_->HasTab() &&
+         task_state_->tab->GetContents() == tab;
+}
+
 void ActorCoordinator::StartTaskForTesting(tabs::TabInterface* tab) {
   CHECK(tab);
   CHECK(!task_state_);

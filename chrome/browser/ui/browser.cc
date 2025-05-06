@@ -299,6 +299,13 @@
 #include "ui/ozone/public/platform_session_manager.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/ai/ai_data_keyed_service.h"          // nogncheck
+#include "chrome/browser/ai/ai_data_keyed_service_factory.h"  // nogncheck
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#endif
+
 using base::UserMetricsAction;
 using content::NavigationController;
 using content::NavigationEntry;
@@ -449,6 +456,26 @@ base::FunctionRef<bool(const Browser*)> MaybeLazyIsFullscreen(
   // In the control branch, eagerly evaluate ShouldHideUIForFullscreen.
   return browser->ShouldHideUIForFullscreen() ? &AlwaysReturnTrue
                                               : &AlwaysReturnFalse;
+}
+
+bool IsActorCoordinatorActingOnTab(Profile* profile,
+                                   const content::WebContents* tab) {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic::GlicEnabling::IsEnabledByFlags()) {
+    if (const auto* glic_service = glic::GlicKeyedService::Get(profile);
+        glic_service && glic_service->IsActorCoordinatorActingOnTab(tab)) {
+      return true;
+    }
+  }
+  // TODO(https://crbug.com/411462297): Deduplicate ownership of
+  // ActorCoordinators.
+  if (const auto* ai_data_service =
+          AiDataKeyedServiceFactory::GetAiDataKeyedService(profile);
+      ai_data_service && ai_data_service->IsActorCoordinatorActingOnTab(tab)) {
+    return true;
+  }
+#endif
+  return false;
 }
 
 }  // namespace
@@ -2330,10 +2357,18 @@ bool Browser::IsWebContentsCreationOverridden(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url) {
-  return window_container_type ==
-             content::mojom::WindowContainerType::BACKGROUND &&
-         ShouldCreateBackgroundContents(source_site_instance, opener_url,
-                                        frame_name);
+  if (IsActorCoordinatorActingOnTab(
+          profile(), content::WebContents::FromRenderFrameHost(opener))) {
+    // If an ActorCoordinator is acting on the opener, prevent it from creating
+    // a new WebContents. We'll instead force the navigation to happen in the
+    // same tab.
+    return true;
+  }
+
+  return (window_container_type ==
+              content::mojom::WindowContainerType::BACKGROUND &&
+          ShouldCreateBackgroundContents(source_site_instance, opener_url,
+                                         frame_name));
 }
 
 WebContents* Browser::CreateCustomWebContents(
@@ -2345,6 +2380,23 @@ WebContents* Browser::CreateCustomWebContents(
     const GURL& target_url,
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
+  if (auto* opener_contents = content::WebContents::FromRenderFrameHost(opener);
+      IsActorCoordinatorActingOnTab(profile(), opener_contents)) {
+    // If an ActorCoordinator is acting on the opener, we force the navigation
+    // to happen in the same tab.
+    content::NavigationController::LoadURLParams params(target_url);
+    params.initiator_frame_token = opener->GetFrameToken();
+    params.initiator_process_id = opener->GetProcess()->GetDeprecatedID();
+    params.initiator_origin = opener->GetLastCommittedOrigin();
+    params.source_site_instance = source_site_instance;
+    params.transition_type = ui::PAGE_TRANSITION_LINK;
+    params.is_renderer_initiated = true;
+    opener_contents->GetController().LoadURLWithParams(params);
+    VLOG(1) << "Actor treated window open as same tab navigation. "
+            << target_url;
+    return nullptr;
+  }
+
   BackgroundContents* background_contents = CreateBackgroundContents(
       source_site_instance, opener, opener_url, is_new_browsing_instance,
       frame_name, target_url, partition_config, session_storage_namespace);

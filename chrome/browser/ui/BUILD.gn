@@ -5732,6 +5732,7 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/browser/actor",
+      "//chrome/browser/ai:ai",
       "//chrome/browser/background/glic",
       "//chrome/browser/glic",
       "//chrome/browser/glic:impl",

@@ -386,6 +386,17 @@ void GlicKeyedService::StopActorTask() {
   actor_controller_->StopTask();
 }
 
+bool GlicKeyedService::IsActorCoordinatorActingOnTab(
+    const content::WebContents* tab) const {
+  return actor_controller_ &&
+         actor_controller_->IsActorCoordinatorActingOnTab(tab);
+}
+
+actor::ActorCoordinator& GlicKeyedService::GetActorCoordinatorForTesting() {
+  CHECK(actor_controller_);
+  return actor_controller_->GetActorCoordinatorForTesting();  // IN-TEST
+}
+
 void GlicKeyedService::CaptureScreenshot(
     mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   screenshot_capturer_->CaptureScreenshot(

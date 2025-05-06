@@ -21,6 +21,10 @@ class BrowserWindowInterface;
 class Profile;
 class ProfileManager;
 
+namespace actor {
+class ActorCoordinator;
+}  // namespace actor
+
 namespace contextual_cueing {
 class ContextualCueingService;
 }  // namespace contextual_cueing
@@ -195,6 +199,13 @@ class GlicKeyedService : public KeyedService {
       mojom::WebClientHandler::ActInFocusedTabCallback callback);
 
   void StopActorTask();
+
+  // Returns true if the associated ActorCoordinator is active on the given
+  // `tab`. This can be used by callers to customize certain behaviour that
+  // might interfere with the ActorCoordinator.
+  bool IsActorCoordinatorActingOnTab(const content::WebContents* tab) const;
+
+  actor::ActorCoordinator& GetActorCoordinatorForTesting();
 
   void CaptureScreenshot(
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
