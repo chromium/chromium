@@ -370,7 +370,18 @@ async def test_params_error_empty_object(bidi_session, top_context):
         )
 
 
-async def test_params_error_invalid_value(bidi_session, top_context):
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_error_type_invalid_type(bidi_session, top_context, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            error={
+                "type": value
+            },
+        )
+
+
+async def test_params_error_type_invalid_value(bidi_session, top_context):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_geolocation_override(
             contexts=[top_context["context"]],
