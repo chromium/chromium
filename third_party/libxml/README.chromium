@@ -20,6 +20,7 @@ Modifications:
   aren't implemented or don't work on several platforms.
 - counted_by.patch: Work around __counted_by__ supported in a cronet toolchain
   with a pre-release clang.
+- xml-attr-extra.patch: add an `extra` member to struct _xmlAttr.
 - Add helper classes in the chromium/ subdirectory.
 - Delete various unused files, see chromium/roll.py
 - Disable various unused libxml features:
