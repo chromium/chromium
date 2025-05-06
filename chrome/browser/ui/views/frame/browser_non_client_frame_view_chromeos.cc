@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
@@ -1051,11 +1050,6 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
         gfx::RoundedCornersF(0, window_radii.upper_right(), 0, 0));
     caption_button_container_->layer()->SetIsFastRoundedCorner(/*enable=*/true);
   }
-
-  // Ensure that browser scrims match window rounding.
-  browser_view()->window_scrim_view()->SetRoundedCorners(window_radii);
-  browser_view()->contents_scrim_view()->SetRoundedCorners(gfx::RoundedCornersF(
-      0, 0, window_radii.lower_right(), window_radii.lower_left()));
 
   GetWidget()->client_view()->UpdateWindowRoundedCorners(window_radii);
 }
