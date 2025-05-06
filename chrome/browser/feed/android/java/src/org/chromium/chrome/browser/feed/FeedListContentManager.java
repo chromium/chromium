@@ -11,9 +11,10 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.xsurface.ListContentManager;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
@@ -30,6 +31,7 @@ import java.util.Map;
  * Implementation of ListContentManager that manages a list of feed contents that are supported by
  * either native view or external surface controlled view.
  */
+@NullMarked
 public class FeedListContentManager implements ListContentManager {
     /** Encapsulates the content of an item stored and managed by ListContentManager. */
     public abstract static class FeedContent {
@@ -95,7 +97,7 @@ public class FeedListContentManager implements ListContentManager {
 
     /** For the content that is supported by the native view. */
     public static class NativeViewContent extends FeedContent {
-        private View mNativeView;
+        private @Nullable View mNativeView;
         private int mResId;
         // An unique ID for this NativeViewContent. This is initially 0, and assigned by
         // FeedListContentManager when needed.

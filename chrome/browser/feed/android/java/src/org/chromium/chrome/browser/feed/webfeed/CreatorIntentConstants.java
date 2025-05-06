@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.feed.webfeed;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** CreatorIntentConstants strings used in the intent of launching CreatorActivity */
+@NullMarked
 public final class CreatorIntentConstants {
     public static final String CREATOR_WEB_FEED_ID = "CREATOR_WEB_FEED_ID";
     public static final String CREATOR_URL = "CREATOR_URL";

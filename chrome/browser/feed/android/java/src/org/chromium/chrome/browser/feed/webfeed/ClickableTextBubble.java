@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.LoadingView;
@@ -52,6 +54,7 @@ import org.chromium.ui.widget.RectProvider;
  *
  * }</pre>
  */
+@NullMarked
 public class ClickableTextBubble extends TextBubble {
     private final Context mContext;
     private final LoadingView mLoadingView;
@@ -77,7 +80,7 @@ public class ClickableTextBubble extends TextBubble {
             RectProvider anchorRectProvider,
             @DrawableRes int imageDrawableId,
             boolean isAccessibilityEnabled,
-            View.OnTouchListener onTouchListener,
+            View.@Nullable OnTouchListener onTouchListener,
             boolean inverseColor) {
         super(
                 context,

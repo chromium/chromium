@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.feed;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.PaginationResult;
@@ -19,13 +20,14 @@ import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverL
 
 /** JNI bridge making reliability logging methods available to native code. */
 @JNINamespace("feed::android")
+@NullMarked
 public class FeedReliabilityLoggingBridge {
     private final long mNativePtr;
     private FeedLaunchReliabilityLogger mLaunchLogger;
     private @Nullable FeedUserInteractionReliabilityLogger mUserInteractionLogger;
-    private DiscoverAboveTheFoldRenderResult mRenderResult;
+    private @Nullable DiscoverAboveTheFoldRenderResult mRenderResult;
     private boolean mRenderingStarted;
-    private DiscoverLaunchResult mLaunchResult;
+    private @Nullable DiscoverLaunchResult mLaunchResult;
 
     public FeedReliabilityLoggingBridge() {
         // mLaunchLogger should be null until FeedStream.bind() calls setLogger(). We don't expect
@@ -33,7 +35,8 @@ public class FeedReliabilityLoggingBridge {
         mNativePtr = FeedReliabilityLoggingBridgeJni.get().init(this);
     }
 
-    public void setLogger(FeedReliabilityLogger logger) {
+    @Initializer
+    public void setLogger(@Nullable FeedReliabilityLogger logger) {
         if (logger != null) {
             mLaunchLogger = logger.getLaunchLogger();
             mUserInteractionLogger = logger.getUserInteractionLogger();

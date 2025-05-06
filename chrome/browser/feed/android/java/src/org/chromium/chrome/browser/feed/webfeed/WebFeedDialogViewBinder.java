@@ -12,11 +12,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Class responsible for binding the model and the view for the WebFeed dialog. */
+@NullMarked
 class WebFeedDialogViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (ILLUSTRATION == propertyKey) {

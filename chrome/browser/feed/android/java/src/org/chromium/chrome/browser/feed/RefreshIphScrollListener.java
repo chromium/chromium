@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.ScrollListener.ScrollState;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -21,6 +22,7 @@ import org.chromium.components.feature_engagement.TriggerState;
  * 2) The last feed content fetch is 5 minutes old.
  * 3) The user has scrolled up to the top.
  */
+@NullMarked
 public class RefreshIphScrollListener implements ScrollListener {
     @VisibleForTesting static final long FETCH_TIME_AGE_THREASHOLD_MS = 5 * 60 * 1000; // 5 minutes.
 

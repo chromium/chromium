@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.feed;
 import android.app.Activity;
 import android.view.MotionEvent;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** The delegate of the {@link FeedSurfaceProvider} creator needs to implement. */
+@NullMarked
 public interface FeedSurfaceDelegate {
     /**
      * Creates {@link FeedSurfaceLifecycleManager} for the specified {@link FeedSurfaceCoordinator}

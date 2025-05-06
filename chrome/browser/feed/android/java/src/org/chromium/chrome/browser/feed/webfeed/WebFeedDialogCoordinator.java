@@ -13,10 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
@@ -29,6 +31,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The coordinator for the WebFeed modal dialog. */
+@NullMarked
 class WebFeedDialogCoordinator {
     private final WebFeedDialogMediator mMediator;
 
@@ -66,7 +69,8 @@ class WebFeedDialogCoordinator {
      * @param title The title of the Web Feed that was just followed.
      * @param isActive Whether the followed site is active (has content available).
      */
-    void initialize(Context context, FeedLauncher feedLauncher, String title, boolean isActive) {
+    void initialize(
+            Context context, FeedLauncher feedLauncher, @Nullable String title, boolean isActive) {
         Runnable positiveAction =
                 () -> {
                     FeedServiceBridge.reportOtherUserAction(
@@ -92,7 +96,10 @@ class WebFeedDialogCoordinator {
      * @param isActive Whether the followed site is active (has content available).
      */
     void initializeForInFollowingFollow(
-            Context context, @Nullable Runnable activeAction, String title, boolean isActive) {
+            Context context,
+            @Nullable Runnable activeAction,
+            @Nullable String title,
+            boolean isActive) {
         Runnable positiveAction =
                 () -> {
                     FeedServiceBridge.reportOtherUserAction(
@@ -109,11 +116,12 @@ class WebFeedDialogCoordinator {
                 /* hasCloseAction= */ false);
     }
 
+    @Initializer
     private void initializeInternal(
             Context context,
             Runnable positiveAction,
             int positiveActionLabelId,
-            String title,
+            @Nullable String title,
             boolean isActive,
             boolean hasCloseAction) {
         mContext = context;
@@ -135,7 +143,7 @@ class WebFeedDialogCoordinator {
     private WebFeedDialogContents buildDialogContents(
             Runnable positiveAction,
             int positiveActionLabelId,
-            String title,
+            @Nullable String title,
             boolean isActive,
             boolean hasCloseAction) {
         RecordHistogram.recordEnumeratedHistogram(

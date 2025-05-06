@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.feed;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.feature_engagement.Tracker;
 
 /** Delegate to provide necessary checks for bubble (IPH) triggering in feeds. */
+@NullMarked
 public interface FeedBubbleDelegate {
     /** Gets the feature engagement tracker. */
     Tracker getFeatureEngagementTracker();

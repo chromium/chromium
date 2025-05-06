@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.feed.webfeed;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Data properties for the WebFeed modal dialog. */
+@NullMarked
 final class WebFeedDialogProperties {
     // Illustration drawable resource id for the WebFeed dialog.
     static final PropertyModel.ReadableIntPropertyKey ILLUSTRATION =

@@ -10,10 +10,12 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 
 /** Implementation of xsurface's ImageFetchClient. Calls through to the native network stack. */
 @JNINamespace("feed")
+@NullMarked
 public class FeedImageFetchClient implements ImageFetchClient {
     private static class HttpResponseImpl implements ImageFetchClient.HttpResponse {
         private int mStatus;

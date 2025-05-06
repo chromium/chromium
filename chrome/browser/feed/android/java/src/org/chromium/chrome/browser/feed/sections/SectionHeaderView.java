@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.feed.sections;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -16,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
@@ -25,6 +27,9 @@ import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -49,6 +54,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  *
  * <p>This view can be inflated from one of two layouts, hence many @Nullables.
  */
+@NullMarked
 public class SectionHeaderView extends LinearLayout {
     /** OnTabSelectedListener that delegates calls to the SectionHeadSelectedListener. */
     private static class SectionHeaderTabListener implements TabLayout.OnTabSelectedListener {
@@ -106,9 +112,9 @@ public class SectionHeaderView extends LinearLayout {
         // Whether the tab has unread content.
         public boolean hasUnreadContent;
         // Null when unread indicator isn't shown.
-        @Nullable public UnreadIndicator unreadIndicator;
+        public @Nullable UnreadIndicator unreadIndicator;
         // The text to show on the unreadIndicator, if any.
-        public String unreadIndicatorText;
+        public @Nullable String unreadIndicatorText;
         // The tab's displayed text.
         public String text = "";
         public boolean shouldAnimateIndicator;
@@ -118,7 +124,7 @@ public class SectionHeaderView extends LinearLayout {
     private @Nullable ImageView mLeadingStatusIndicator;
     private @Nullable TabLayout mTabLayout;
     private TextView mTitleView;
-    private ListMenuButton mMenuView;
+    private @MonotonicNonNull ListMenuButton mMenuView;
 
     private @Nullable SectionHeaderTabListener mTabListener;
     private ViewGroup mContent;
@@ -146,7 +152,8 @@ public class SectionHeaderView extends LinearLayout {
 
         TabLayout.Tab tab = mTabLayout.getTabAt(index);
 
-        ImageView optionsIndicatorView = tab.view.findViewById(R.id.options_indicator);
+        ImageView optionsIndicatorView =
+                assumeNonNull(tab).view.findViewById(R.id.options_indicator);
         // Skip setting visibility if indicator isn't visible.
         if (optionsIndicatorView == null || optionsIndicatorView.getVisibility() != View.VISIBLE) {
             return;
@@ -172,7 +179,7 @@ public class SectionHeaderView extends LinearLayout {
 
         tab.view.setOnLongClickListener(
                 v -> {
-                    mTabListener.onTabReselected(tab);
+                    assumeNonNull(mTabListener).onTabReselected(tab);
                     return true;
                 });
 
@@ -181,7 +188,7 @@ public class SectionHeaderView extends LinearLayout {
                 AccessibilityActionCompat.ACTION_LONG_CLICK,
                 getResources().getString(actionTitleId),
                 (view, arguments) -> {
-                    mTabListener.onTabReselected(tab);
+                    assumeNonNull(mTabListener).onTabReselected(tab);
                     return true;
                 });
     }
@@ -192,12 +199,13 @@ public class SectionHeaderView extends LinearLayout {
 
         mTitleView = findViewById(R.id.header_title);
 
-        mMenuView = findViewById(R.id.header_menu);
+        ListMenuButton menuView = findViewById(R.id.header_menu);
         if (mIsNewTabPageCustomizationEnabled) {
             // When NTP Customization is turned on, the section header menu is no longer visible.
             // It's relocated to the NTP Customization Discover Feed bottom sheet.
-            mMenuView.setVisibility(View.INVISIBLE);
-            mMenuView = null;
+            menuView.setVisibility(View.INVISIBLE);
+        } else {
+            mMenuView = menuView;
         }
 
         mLeadingStatusIndicator = findViewById(R.id.section_status_indicator);
@@ -241,6 +249,7 @@ public class SectionHeaderView extends LinearLayout {
             // touch target needs to be adjusted. This is a bit chatty during animations, but it
             // should
             // also be fairly cheap.
+            assert mMenuView != null;
             mMenuView.addOnLayoutChangeListener(
                     (View v,
                             int left,
@@ -371,8 +380,7 @@ public class SectionHeaderView extends LinearLayout {
         }
     }
 
-    @Nullable
-    private TabLayout.Tab getTabAt(int index) {
+    private TabLayout.@Nullable Tab getTabAt(int index) {
         return mTabLayout != null ? mTabLayout.getTabAt(index) : null;
     }
 
@@ -382,7 +390,7 @@ public class SectionHeaderView extends LinearLayout {
      */
     void setActiveTab(int index) {
         TabLayout.Tab tab = getTabAt(index);
-        if (tab != null && mTabLayout.getSelectedTabPosition() != index) {
+        if (tab != null && assumeNonNull(mTabLayout).getSelectedTabPosition() != index) {
             mTabLayout.selectTab(tab);
         }
     }
@@ -396,6 +404,7 @@ public class SectionHeaderView extends LinearLayout {
 
     /** Sets the delegate for the gear/settings icon. */
     void setMenuDelegate(ModelList listItems, ListMenu.Delegate listMenuDelegate) {
+        assumeNonNull(mMenuView);
         mMenuView.setOnClickListener(
                 (v) -> {
                     displayMenu(listItems, listMenuDelegate);
@@ -454,7 +463,7 @@ public class SectionHeaderView extends LinearLayout {
         mTextsEnabled = enabled;
         if (mTabLayout != null) {
             for (int i = 0; i < mTabLayout.getTabCount(); i++) {
-                applyTabState(mTabLayout.getTabAt(i));
+                applyTabState(assertNonNull(mTabLayout.getTabAt(i)));
             }
             mTabLayout.setEnabled(enabled);
         }
@@ -484,6 +493,7 @@ public class SectionHeaderView extends LinearLayout {
 
     /** Shows an IPH on the feed header menu button. */
     public void showMenuIph(UserEducationHelper helper) {
+        assert mMenuView != null;
         final ViewRectProvider rectProvider =
                 new ViewRectProvider(mMenuView) {
                     // ViewTreeObserver.OnPreDrawListener implementation.
@@ -556,7 +566,7 @@ public class SectionHeaderView extends LinearLayout {
                                 FeatureConstants.WEB_FEED_AWARENESS_FEATURE,
                                 R.string.web_feed_awareness,
                                 R.string.web_feed_awareness)
-                        .setAnchorView(getTabAt(tabIndex).view)
+                        .setAnchorView(assumeNonNull(getTabAt(tabIndex)).view)
                         .setOnShowCallback(scroller)
                         .build());
     }
@@ -587,6 +597,7 @@ public class SectionHeaderView extends LinearLayout {
             return;
         }
 
+        assert mMenuView != null;
         BasicListMenu listMenu =
                 BrowserUiListMenuUtils.getBasicListMenu(
                         mMenuView.getContext(), listItems, listMenuDelegate);
@@ -613,7 +624,9 @@ public class SectionHeaderView extends LinearLayout {
     }
 
     private TabState getTabState(TabLayout.Tab tab) {
-        return (TabState) tab.getTag();
+        TabState tabState = (TabState) tab.getTag();
+        assert tabState != null;
+        return tabState;
     }
 
     /** Updates the view for changes made to TabState or mTextsEnabled. */
@@ -648,7 +661,7 @@ public class SectionHeaderView extends LinearLayout {
                 state.unreadIndicator =
                         new UnreadIndicator(tab.view.findViewById(android.R.id.text1));
             }
-            state.unreadIndicator.mNewBadge.setText(state.unreadIndicatorText);
+            assumeNonNull(state.unreadIndicator).mNewBadge.setText(state.unreadIndicatorText);
             if (state.shouldAnimateIndicator) {
                 state.unreadIndicator.mNewBadge.startAnimation();
             }

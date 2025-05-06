@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.feed.webfeed;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Controller for showing Web Feed snackbars or the post-Follow educational dialog. */
+@NullMarked
 public class WebFeedSnackbarController {
     /**
      * A helper interface for exposing a method to launch the feed.
@@ -85,9 +87,9 @@ public class WebFeedSnackbarController {
     void showPostFollowHelp(
             Tab tab,
             WebFeedBridge.FollowResults results,
-            @Nullable byte[] followId,
-            GURL url,
-            String fallbackTitle,
+            byte @Nullable [] followId,
+            @Nullable GURL url,
+            @Nullable String fallbackTitle,
             int webFeedChangeReason) {
         if (results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
             if (results.metadata != null) {
@@ -136,7 +138,7 @@ public class WebFeedSnackbarController {
             byte[] followId,
             @Nullable Tab tab,
             @Nullable GURL url,
-            String title,
+            @Nullable String title,
             int webFeedChangeReason) {
         if (requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
             showUnfollowSuccessSnackbar(followId, tab, url, title, webFeedChangeReason);
@@ -157,7 +159,7 @@ public class WebFeedSnackbarController {
      * @param url URL currently being visited (if not on the NTP).
      */
     public void showPostSuccessfulFollowHelp(
-            String title,
+            @Nullable String title,
             boolean isActive,
             @StreamKind int followFromFeed,
             @Nullable Tab tab,
@@ -190,11 +192,14 @@ public class WebFeedSnackbarController {
     }
 
     private void showPostSuccessfulSnackbar(
-            String title, @StreamKind int followFromFeed, @Nullable Tab tab, @Nullable GURL url) {
+            @Nullable String title,
+            @StreamKind int followFromFeed,
+            @Nullable Tab tab,
+            @Nullable GURL url) {
         PinnedSnackbarController snackbarController =
                 new PinnedSnackbarController() {
                     @Override
-                    public void onAction(Object actionData) {
+                    public void onAction(@Nullable Object actionData) {
                         super.onAction(actionData);
                         @FeedUserActionType
                         int userActionType =
@@ -224,7 +229,11 @@ public class WebFeedSnackbarController {
     }
 
     private void showUnfollowSuccessSnackbar(
-            byte[] followId, @Nullable Tab tab, GURL url, String title, int webFeedChangeReason) {
+            byte[] followId,
+            @Nullable Tab tab,
+            @Nullable GURL url,
+            @Nullable String title,
+            int webFeedChangeReason) {
         PinnedSnackbarController snackbarController =
                 new FollowActionSnackbarController(
                         followId,
@@ -247,8 +256,8 @@ public class WebFeedSnackbarController {
             int requestStatus,
             byte[] followId,
             @Nullable Tab tab,
-            GURL url,
-            String title,
+            @Nullable GURL url,
+            @Nullable String title,
             int webFeedChangeReason) {
         int failureMessage = R.string.web_feed_unfollow_generic_failure_snackbar_message;
         if (requestStatus == WebFeedSubscriptionRequestStatus.FAILED_OFFLINE) {
@@ -258,7 +267,7 @@ public class WebFeedSnackbarController {
         PinnedSnackbarController snackbarController =
                 new PinnedSnackbarController() {
                     @Override
-                    public void onAction(Object actionData) {
+                    public void onAction(@Nullable Object actionData) {
                         super.onAction(actionData);
                         FeedServiceBridge.reportOtherUserAction(
                                 StreamKind.UNKNOWN,
@@ -324,7 +333,7 @@ public class WebFeedSnackbarController {
             implements SnackbarController, FeedSurfaceTracker.Observer {
         Tab mPinnedTab;
         private GURL mPinnedUrl;
-        private TabObserver mTabObserver;
+        private @Nullable TabObserver mTabObserver;
 
         PinnedSnackbarController() {
             FeedSurfaceTracker.getInstance().addObserver(this);
@@ -332,13 +341,13 @@ public class WebFeedSnackbarController {
         }
 
         @Override
-        public void onAction(Object actionData) {
+        public void onAction(@Nullable Object actionData) {
             unregisterObservers();
             mActiveControllers.remove(this);
         }
 
         @Override
-        public void onDismissNoAction(Object actionData) {
+        public void onDismissNoAction(@Nullable Object actionData) {
             unregisterObservers();
             mActiveControllers.remove(this);
         }
@@ -350,6 +359,7 @@ public class WebFeedSnackbarController {
         }
 
         /** Watch the current tab. Hide the snackbar if the current tab's URL changes. */
+        @Initializer
         void pinToUrl(Tab tab, GURL url) {
             assert mTabObserver == null;
             mPinnedUrl = url;
@@ -394,16 +404,16 @@ public class WebFeedSnackbarController {
      * {@link WebFeedBridge#followFromId} if an ID is available.
      */
     private class FollowActionSnackbarController extends PinnedSnackbarController {
-        private final byte[] mFollowId;
-        private final GURL mUrl;
-        private final String mTitle;
+        private final byte @Nullable [] mFollowId;
+        private final @Nullable GURL mUrl;
+        private final @Nullable String mTitle;
         private final @FeedUserActionType int mUserActionType;
         private final int mWebFeedChangeReason;
 
         FollowActionSnackbarController(
-                byte[] followId,
-                GURL url,
-                String title,
+                byte @Nullable [] followId,
+                @Nullable GURL url,
+                @Nullable String title,
                 @FeedUserActionType int userActionType,
                 int webFeedChangeReason) {
             mFollowId = followId;
@@ -414,7 +424,7 @@ public class WebFeedSnackbarController {
         }
 
         @Override
-        public void onAction(Object actionData) {
+        public void onAction(@Nullable Object actionData) {
             super.onAction(actionData);
 
             // The snackbar should not be showing if canRetryFollow() returns false.
@@ -454,14 +464,14 @@ public class WebFeedSnackbarController {
         }
     }
 
-    private static boolean isFollowIdValid(byte[] followId) {
+    private static boolean isFollowIdValid(byte @Nullable [] followId) {
         return followId != null && followId.length != 0;
     }
 
-    private static boolean canRetryFollow(Tab tab, byte[] followId, GURL url) {
+    private static boolean canRetryFollow(Tab tab, byte @Nullable [] followId, @Nullable GURL url) {
         if (isFollowIdValid(followId)) {
             return true;
         }
-        return tab != null && url.equals(tab.getOriginalUrl());
+        return tab != null && tab.getOriginalUrl().equals(url);
     }
 }

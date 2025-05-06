@@ -14,10 +14,11 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -29,6 +30,7 @@ import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
  * Makes the modified version of SwipeRefreshLayout support layout, measuring and touch handling
  * of direct child.
  */
+@NullMarked
 public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements ScrollListener {
     public static final int IPH_WAIT_TIME_MS = 5 * 1000;
     // Offset in dips from the top of the view to where the progress spinner should start.
@@ -41,13 +43,13 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
 
     private final Activity mActivity;
     @IdRes private final int mAnchorViewId;
-    private View mTarget; // the target of the gesture.
+    private @Nullable View mTarget; // the target of the gesture.
     private final int mTouchSlop;
     private final ObserverList<SwipeRefreshLayout.OnRefreshListener> mRefreshListeners =
             new ObserverList<>();
     private float mLastMotionY;
     private boolean mIsBeingDragged;
-    private ScrollableContainerDelegate mScrollableContainerDelegate;
+    private @Nullable ScrollableContainerDelegate mScrollableContainerDelegate;
     private int mHeaderOffset;
 
     /**
@@ -55,8 +57,7 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
      * @param activity The current {@link Activity}.
      * @param anchorViewId ID of the view below which this layout is anchored.
      */
-    public static FeedSwipeRefreshLayout create(
-            @NonNull Activity activity, @IdRes int anchorViewId) {
+    public static FeedSwipeRefreshLayout create(Activity activity, @IdRes int anchorViewId) {
         FeedSwipeRefreshLayout instance = new FeedSwipeRefreshLayout(activity, anchorViewId);
         instance.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -83,7 +84,7 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
         return instance;
     }
 
-    private FeedSwipeRefreshLayout(@NonNull Activity activity, @IdRes int anchorViewId) {
+    private FeedSwipeRefreshLayout(Activity activity, @IdRes int anchorViewId) {
         super(activity);
         mActivity = activity;
         mAnchorViewId = anchorViewId;

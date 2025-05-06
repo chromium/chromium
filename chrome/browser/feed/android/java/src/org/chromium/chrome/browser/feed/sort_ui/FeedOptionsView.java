@@ -15,13 +15,14 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.base.ViewUtils;
 
 /** View class representing an expandable/collapsible view holding option chips for the feed. */
+@NullMarked
 public class FeedOptionsView extends LinearLayout {
     private LinearLayout mChipsContainer;
     private static final int ANIMATION_DURATION_MS = 200;

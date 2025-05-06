@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.feed.webfeed;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Class containing all data that customizes the contents displayed in the dialog. */
+@NullMarked
 class WebFeedDialogContents {
     final String mTitle;
     final String mDetails;

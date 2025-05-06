@@ -8,13 +8,15 @@ import android.graphics.Canvas;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 
 /** Provides a surface that displays a list of interest feeds. */
+@NullMarked
 public interface FeedSurfaceProvider {
 
     /**
@@ -68,8 +70,7 @@ public interface FeedSurfaceProvider {
     /**
      * @return The surface's FeedReliabilityLogger which may be null.
      */
-    @Nullable
-    FeedReliabilityLogger getReliabilityLogger();
+    @Nullable FeedReliabilityLogger getReliabilityLogger();
 
     /** Reloads the contents. */
     void reload();

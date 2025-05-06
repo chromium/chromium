@@ -11,6 +11,7 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -21,6 +22,7 @@ import org.chromium.ui.modelutil.ModelListAdapter;
  * Sets up the model, adapter, and mediator for FeedManagement surface. It is based on the doc at
  * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
  */
+@NullMarked
 public class FeedManagementCoordinator {
     private AppCompatActivity mActivity;
     private final View mView;

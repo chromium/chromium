@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.feed.followmanagement;
 
 import android.graphics.Bitmap;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Items for the list view in the feed management activity. */
+@NullMarked
 public class FollowManagementItemProperties {
     public static final int DEFAULT_ITEM_TYPE = 0;
     public static final int EMPTY_ITEM_TYPE = 1;

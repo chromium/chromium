@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.feed.signinbottomsheet;
 
-import android.view.View;
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -27,6 +29,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 
 /** Coordinator for displaying the signin flow in the bottom sheet. */
+@NullMarked
 public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
@@ -35,8 +38,8 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private final SigninManager mSigninManager;
     private boolean mSetTestToast;
     private final @SigninAccessPoint int mSigninAccessPoint;
-    private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
-    private final Runnable mOnSigninSuccessCallback;
+    private @Nullable AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
+    private final @Nullable Runnable mOnSigninSuccessCallback;
     private final AccountPickerBottomSheetStrings mBottomSheetStrings;
 
     public SigninBottomSheetCoordinator(
@@ -44,14 +47,14 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             BottomSheetController controller,
             Profile profile,
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
+            AccountPickerBottomSheetStrings bottomSheetStrings,
             @Nullable Runnable onSigninSuccessCallback,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mController = controller;
         mProfile = profile;
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        mSigninManager = assertNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
         mSetTestToast = false;
         mOnSigninSuccessCallback = onSigninSuccessCallback;
         mSigninAccessPoint = signinAccessPoint;
@@ -149,14 +152,14 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                 SigninAccessPoint.MAX_VALUE);
         if (mSetTestToast) return;
         Toast.makeText(
-                        mWindowAndroid.getActivity().get(),
+                        assumeNonNull(mWindowAndroid.getActivity().get()),
                         R.string.sign_in_to_chrome_disabled_by_user_summary,
                         Toast.LENGTH_SHORT)
                 .show();
     }
 
     public View getBottomSheetViewForTesting() {
-        return mAccountPickerBottomSheetCoordinator.getBottomSheetViewForTesting();
+        return assumeNonNull(mAccountPickerBottomSheetCoordinator).getBottomSheetViewForTesting();
     }
 
     public void setToastOverrideForTesting() {

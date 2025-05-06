@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.feed;
 
-import androidx.annotation.Nullable;
-
 import com.google.protobuf.ByteString;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.components.feed.proto.FeedUiProto;
 
 /** Implements LoggingParameters. Contains parameters needed for logging. */
+@NullMarked
 class FeedLoggingParameters implements LoggingParameters {
     private final String mClientInstanceId;
     private final String mAccountName;
@@ -83,8 +84,7 @@ class FeedLoggingParameters implements LoggingParameters {
     }
 
     @Override
-    @Nullable
-    public byte[] rootEventId() {
+    public byte @Nullable [] rootEventId() {
         return mRootEventId;
     }
 }

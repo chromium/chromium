@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.feed;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 
 /** Records UMA stats for the actions that the user takes on the feed in the NTP. */
+@NullMarked
 public class FeedUma {
     public static final String[] TOTAL_CARDS_HISTOGRAM_NAMES = {
         "ContentSuggestions.Feed.LoadMoreTrigger.TotalCards",
