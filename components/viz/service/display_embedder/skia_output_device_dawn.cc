@@ -93,16 +93,16 @@ bool SkiaOutputDeviceDawn::Initialize(gpu::SurfaceHandle surface_handle) {
 #if BUILDFLAG(IS_WIN)
   gpu::SurfaceHandle window_handle_to_draw_to;
 
-  if (context_state_->IsGraphiteDawnD3D()) {
-    child_window_.Initialize(/*remove_redirection_bitmap=*/true);
-    window_handle_to_draw_to = child_window_.window();
-  } else if (context_state_->IsGraphiteDawnVulkanSwiftShader()) {
-    // Swiftshader uses a Vulkan swap chain that StretchDIBits to a
-    // Redirection Bitmap.
-    child_window_.Initialize(/*remove_redirection_bitmap=*/false);
-    window_handle_to_draw_to = child_window_.window();
-  } else {
-    window_handle_to_draw_to = surface_handle;
+  // Only D3D swapchain requires that the rendering windows are owned by the
+  // process that's currently doing the rendering.
+  switch (context_state_->dawn_context_provider()->backend_type()) {
+    case wgpu::BackendType::D3D11:
+    case wgpu::BackendType::D3D12:
+      child_window_.Initialize(/*remove_redirection_bitmap=*/true);
+      window_handle_to_draw_to = child_window_.window();
+      break;
+    default:
+      window_handle_to_draw_to = surface_handle;
   }
 
   vsync_provider_ =
