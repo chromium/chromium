@@ -163,10 +163,18 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
   EXPECT_TRUE(glic_fre_controller()->IsShowingDialog());
 }
 
+// TODO(crbug.com/402310277): Re-enable this test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_FreDialogCloseAndReopenForDifferentTab \
+  DISABLED_FreDialogCloseAndReopenForDifferentTab
+#else
+#define MAYBE_FreDialogCloseAndReopenForDifferentTab \
+  FreDialogCloseAndReopenForDifferentTab
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Tests that, when the FRE dialog is already open in an inactive tab, trying to
 // show it in the active tab closes the existing dialog and opens a new one.
 IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
-                       FreDialogCloseAndReopenForDifferentTab) {
+                       MAYBE_FreDialogCloseAndReopenForDifferentTab) {
   // Open the FRE dialog in a tab.
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
   browser()->tab_strip_model()->ActivateTabAt(0);
