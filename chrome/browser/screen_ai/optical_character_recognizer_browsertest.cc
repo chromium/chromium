@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -653,8 +654,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          OpticalCharacterRecognizerResultsTest,
                          testing::ValuesIn(kTestFilenames));
 
+// TODO(https://crbug.com/408145905): Flaky and failing on mac-osxbeta-rel and
+// Linux Tests (dbg)(1).
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+#define MAYBE_PerformOCRLargeImage DISABLED_PerformOCRLargeImage
+#else
+#define MAYBE_PerformOCRLargeImage PerformOCRLargeImage
+#endif
 IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
-                       PerformOCRLargeImage) {
+                       MAYBE_PerformOCRLargeImage) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   ASSERT_TRUE(CreateAndInitOCR());
