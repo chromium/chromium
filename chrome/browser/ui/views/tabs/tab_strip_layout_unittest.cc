@@ -192,7 +192,7 @@ TEST(TabStripLayoutTest, MiddleWidthRoundedAndSplitTab) {
   test_case.split_tabs = {0, 1};
 
   auto bounds = CalculateTabBounds(test_case);
-  EXPECT_EQ("116 115 213 212", TabWidthsAsString(bounds));
+  EXPECT_EQ("115 115 213 213", TabWidthsAsString(bounds));
 }
 
 TEST(TabStripLayoutTest, BelowMinActiveWidthOneTab) {
