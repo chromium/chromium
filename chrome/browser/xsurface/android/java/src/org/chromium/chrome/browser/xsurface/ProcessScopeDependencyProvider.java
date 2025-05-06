@@ -26,7 +26,7 @@ public interface ProcessScopeDependencyProvider {
      * same format given to System.loadLibrary().
      */
     public interface LibraryResolver {
-        String resolvePath(String libName);
+        @Nullable String resolvePath(String libName);
     }
 
     /** @return the context associated with the application. */
