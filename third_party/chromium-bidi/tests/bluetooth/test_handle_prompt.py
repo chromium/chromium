@@ -15,65 +15,17 @@
 
 import pytest
 import pytest_asyncio
-from test_helpers import (AnyExtending, execute_command, goto_url,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (AnyExtending, execute_command, goto_url, subscribe,
+                          wait_for_event)
 
-HTML_SINGLE_PERIPHERAL = """
-<div>
-    <button id="bluetooth">bluetooth</button>
-    <script>
-        const options = {filters: [{name:"SomeDevice"}]};
-        document.getElementById('bluetooth').addEventListener('click', () => {
-          navigator.bluetooth.requestDevice(options);
-        });
-    </script>
-</div>
-"""
-
-# Create a fake BT device.
-fake_device_address = '09:09:09:09:09:09'
-
-
-async def setup_device(websocket):
-    # Enable BT emulation.
-    await execute_command(
-        websocket, {
-            'method': 'goog:cdp.sendCommand',
-            'params': {
-                'method': 'BluetoothEmulation.enable',
-                'params': {
-                    'state': 'powered-on',
-                    'leSupported': True,
-                }
-            }
-        })
-
-    await execute_command(
-        websocket, {
-            'method': 'goog:cdp.sendCommand',
-            'params': {
-                'method': 'BluetoothEmulation.simulatePreconnectedPeripheral',
-                'params': {
-                    'address': fake_device_address,
-                    'name': 'SomeDevice',
-                    'manufacturerData': [],
-                    'knownServiceUuids':
-                        ['12345678-1234-5678-9abc-def123456789', ],
-                }
-            }
-        })
+from . import (FAKE_DEVICE_ADDRESS, disable_simulation, request_device,
+               setup_device)
 
 
 @pytest_asyncio.fixture(autouse=True)
-async def disable_simulation(websocket, context_id):
+async def teardown(websocket, context_id):
     yield
-    await execute_command(
-        websocket, {
-            'method': 'bluetooth.disableSimulation',
-            'params': {
-                'context': context_id,
-            }
-        })
+    await disable_simulation(websocket, context_id)
 
 
 @pytest.mark.asyncio
@@ -86,25 +38,9 @@ async def disable_simulation(websocket, context_id):
 async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
                                                     html):
     await subscribe(websocket, ['bluetooth.requestDevicePromptUpdated'])
-
-    url = html(HTML_SINGLE_PERIPHERAL)
-    await goto_url(websocket, context_id, url)
-
-    await setup_device(websocket)
-
-    await send_JSON_command(
-        websocket, {
-            'method': 'script.evaluate',
-            'params': {
-                'expression': 'document.querySelector("#bluetooth").click();',
-                'awaitPromise': True,
-                'target': {
-                    'context': context_id,
-                },
-                'userActivation': True
-            }
-        })
-
+    await goto_url(websocket, context_id, html())
+    await setup_device(websocket, context_id)
+    await request_device(websocket, context_id)
     response = await wait_for_event(websocket,
                                     'bluetooth.requestDevicePromptUpdated')
     assert response == AnyExtending({
@@ -113,7 +49,7 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
         'params': {
             'context': context_id,
             'devices': [{
-                'id': fake_device_address
+                'id': FAKE_DEVICE_ADDRESS
             }],
         }
     })
@@ -130,25 +66,9 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
 async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
                                                    accept):
     await subscribe(websocket, ['bluetooth'])
-
-    url = html(HTML_SINGLE_PERIPHERAL)
-    await goto_url(websocket, context_id, url)
-
-    await setup_device(websocket)
-
-    await send_JSON_command(
-        websocket, {
-            'method': 'script.evaluate',
-            'params': {
-                'expression': 'document.querySelector("#bluetooth").click();',
-                'awaitPromise': True,
-                'target': {
-                    'context': context_id,
-                },
-                'userActivation': True
-            }
-        })
-
+    await goto_url(websocket, context_id, html())
+    await setup_device(websocket, context_id)
+    await request_device(websocket, context_id)
     event = await wait_for_event(websocket,
                                  'bluetooth.requestDevicePromptUpdated')
 

@@ -174,8 +174,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSimulateAdvertisementParameters(command.params),
         );
       case 'bluetooth.simulateGattConnectionResponse':
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#bluetoothProcessor.simulateGattConnectionResponse(
+          this.#parser.parseSimulateGattConnectionResponseParameters(
+            command.params,
+          ),
         );
       case 'bluetooth.simulateGattDisconnection':
         throw new UnknownErrorException(
