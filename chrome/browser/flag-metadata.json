@@ -8975,11 +8975,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "sync-webauthn-credentials",
-    "owners": [ "chrome-webauthn@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "sys-ui-holdback-drive-integration",
     "owners": ["newcomer@chromium.org"],
     "expiry_milestone": 135
