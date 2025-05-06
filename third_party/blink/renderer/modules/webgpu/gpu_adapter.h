@@ -94,6 +94,7 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   std::optional<uint32_t> d3d_shader_model_;
   std::optional<uint32_t> vk_driver_version_;
   wgpu::PowerPreference power_preference_;
+  wgpu::AdapterPropertiesSubgroupMatrixConfigs subgroup_matrix_configs_ = {};
 
   static constexpr int kMaxAllowedConsoleWarnings = 50;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;

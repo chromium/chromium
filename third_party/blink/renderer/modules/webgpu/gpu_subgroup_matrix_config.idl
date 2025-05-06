@@ -1,0 +1,26 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+enum GPUSubgroupMatrixComponentType {
+    "f32",
+    "f16",
+    "u32",
+    "i32",
+    "u8",
+    "i8",
+};
+
+[
+    RuntimeEnabled=WebGPUExperimentalFeatures,
+    Exposed=(Window, Worker),
+    SecureContext
+] interface GPUSubgroupMatrixConfig {
+    readonly attribute GPUSubgroupMatrixComponentType componentType;
+    readonly attribute GPUSubgroupMatrixComponentType resultComponentType;
+    readonly attribute unsigned long long M;
+    readonly attribute unsigned long long N;
+    readonly attribute unsigned long long K;
+};

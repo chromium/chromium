@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device_lost_info.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_memory_heap_info.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_subgroup_matrix_config.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
 #include "third_party/blink/renderer/modules/webgpu/string_utils.h"
@@ -65,6 +66,11 @@ GPUAdapter::GPUAdapter(
   wgpu::AdapterPropertiesMemoryHeaps memoryHeapProperties = {};
   if (GetHandle().HasFeature(wgpu::FeatureName::AdapterPropertiesMemoryHeaps)) {
     *propertiesChain = &memoryHeapProperties;
+    propertiesChain = &(*propertiesChain)->nextInChain;
+  }
+  if (GetHandle().HasFeature(
+          wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix)) {
+    *propertiesChain = &subgroup_matrix_configs_;
     propertiesChain = &(*propertiesChain)->nextInChain;
   }
   wgpu::AdapterPropertiesD3D d3dProperties = {};
@@ -143,6 +149,17 @@ GPUAdapterInfo* GPUAdapter::CreateAdapterInfoForAdapter() {
         vendor_, architecture_, subgroup_min_size_, subgroup_max_size_,
         is_fallback_adapter_);
   }
+
+  // SAFETY: Required from caller
+  const auto subgroup_matrix_configs_span =
+      UNSAFE_BUFFERS(base::span<const wgpu::SubgroupMatrixConfig>(
+          subgroup_matrix_configs_.configs,
+          subgroup_matrix_configs_.configCount));
+  for (const auto& c : subgroup_matrix_configs_span) {
+    info->AppendSubgroupMatrixConfig(
+        MakeGarbageCollected<GPUSubgroupMatrixConfig>(c));
+  }
+
   return info;
 }
 

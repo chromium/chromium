@@ -603,6 +603,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter description
 [Worker]     getter device
 [Worker]     getter isFallbackAdapter
+[Worker]     getter subgroupMatrixConfigs
 [Worker]     getter subgroupMaxSize
 [Worker]     getter subgroupMinSize
 [Worker]     getter vendor
@@ -836,6 +837,14 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method getCompilationInfo
 [Worker]     setter label
+[Worker] interface GPUSubgroupMatrixConfig
+[Worker]     attribute @@toStringTag
+[Worker]     getter K
+[Worker]     getter M
+[Worker]     getter N
+[Worker]     getter componentType
+[Worker]     getter resultComponentType
+[Worker]     method constructor
 [Worker] interface GPUSupportedFeatures
 [Worker]     attribute @@toStringTag
 [Worker]     getter size
