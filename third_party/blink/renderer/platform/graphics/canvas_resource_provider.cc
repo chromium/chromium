@@ -399,6 +399,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     RasterInterface()->WritePixels(client_si->mailbox(), x, y,
                                    client_si->GetTextureTarget(),
                                    SkPixmap(orig_info, pixels, row_bytes));
+    resource()->GetSyncToken();
 
     // If the overdraw optimization kicked in, we need to indicate that the
     // pixels do not need to be cleared, otherwise the subsequent
