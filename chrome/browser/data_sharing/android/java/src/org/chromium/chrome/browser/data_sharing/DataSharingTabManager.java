@@ -97,7 +97,7 @@ public class DataSharingTabManager {
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
     private final Resources mResources;
     private final OneshotSupplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
@@ -607,6 +607,7 @@ public class DataSharingTabManager {
                                 DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
                                 R.string.collaboration_learn_about_shared_groups)
                         .build();
+
         String sessionId =
                 uiDelegate.showCreateFlow(
                         new DataSharingCreateUiConfig.Builder()
@@ -955,11 +956,5 @@ public class DataSharingTabManager {
 
     BulkFaviconUtil getBulkFaviconUtilForTesting() {
         return mBulkFaviconUtil;
-    }
-
-    /** Override ShareDelegateSupplier for testing. */
-    public void setShareDelegateSupplierForTesting(
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier) {
-        mShareDelegateSupplier = shareDelegateSupplier;
     }
 }
