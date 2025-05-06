@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
@@ -337,7 +338,8 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   }
 
   SelectElementAccessibilityIssueReason CheckForIssue(const Node& descendant) {
-    if (descendant.getNodeType() == Node::kCommentNode) {
+    if (descendant.getNodeType() == Node::kCommentNode ||
+        IsAutonomousCustomElement(descendant)) {
       return SelectElementAccessibilityIssueReason::kValidChild;
     }
     // Get the parent of the descendant.
@@ -370,7 +372,8 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
         (IsAllowedPhrasingContent(*parent) && !IsA<HTMLSpanElement>(*parent))) {
       return CheckDescedantOfOption(descendant);
     }
-    if (IsA<HTMLDivElement>(*parent) || IsA<HTMLSpanElement>(*parent)) {
+    if (IsA<HTMLDivElement>(*parent) || IsA<HTMLSpanElement>(*parent) ||
+        IsAutonomousCustomElement(*parent)) {
       return TraverseAncestorsAndCheckDescendant(descendant);
     }
     if ((IsA<HTMLNoScriptElement>(*parent) || IsA<HTMLScriptElement>(*parent) ||
@@ -432,7 +435,8 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   SelectElementAccessibilityIssueReason CheckDescedantOfOption(
       const Node& descendant) {
     if (!IsA<HTMLDivElement>(descendant) &&
-        !IsAllowedPhrasingContent(descendant)) {
+        !IsAllowedPhrasingContent(descendant) &&
+        !IsAutonomousCustomElement(descendant)) {
       return SelectElementAccessibilityIssueReason::
           kNonPhrasingContentOptionChild;
     }
@@ -541,6 +545,17 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
           return !html_element->IsInteractiveContent();
         }
         return element->IsSVGElement();
+      }
+    }
+    return false;
+  }
+
+  bool IsAutonomousCustomElement(const Node& node) {
+    if (node.IsCustomElement()) {
+      if (auto* element = DynamicTo<Element>(node)) {
+        if (CustomElement::IsValidName(element->localName())) {
+          return true;
+        }
       }
     }
     return false;

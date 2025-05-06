@@ -161,6 +161,21 @@
   });
 </script>
 
+<select>
+  <label is="custom-label"></label>
+</select>
+
+<script>
+  class CustomLabel extends HTMLLabelElement {
+    constructor() {
+      super();
+      this.style.color = 'blue';
+      this.style.fontWeight = 'bold';
+    }
+  }
+  customElements.define('custom-label', CustomLabel, { extends: 'label' });
+</script>
+
 <script>
 testRunner.waitUntilDone();
 testRunner.dumpAsText();

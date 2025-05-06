@@ -30,6 +30,7 @@ CONSOLE WARNING: A span tag was parsed inside of a <select> which was not insert
 CONSOLE WARNING: A div tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
 CONSOLE WARNING: A span tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
 CONSOLE WARNING: A span tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A label tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
    
  
  
@@ -50,3 +51,4 @@ CONSOLE WARNING: A span tag was parsed inside of a <select> which was not insert
 .. ..
  
 .. ..
+ 
