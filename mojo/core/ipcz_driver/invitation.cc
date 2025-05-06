@@ -90,7 +90,7 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
     base::Process remote_process = base::Process(),
     MojoProcessErrorHandler error_handler = nullptr,
     uintptr_t error_handler_context = 0,
-    bool is_remote_process_untrusted = false) {
+    Transport::ProcessTrust remote_process_trust = Transport::ProcessTrust{}) {
   CHECK_EQ(endpoint.num_platform_handles, 1u);
   auto handle =
       PlatformHandle::FromMojoPlatformHandle(&endpoint.platform_handles[0]);
@@ -100,7 +100,7 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
 
   auto transport = base::MakeRefCounted<Transport>(
       endpoint_types, PlatformChannelEndpoint(std::move(handle)),
-      std::move(remote_process), is_remote_process_untrusted);
+      std::move(remote_process), remote_process_trust);
   transport->SetErrorHandler(error_handler, error_handler_context);
   transport->set_leak_channel_on_shutdown(options.leak_channel_on_shutdown);
   transport->set_is_peer_trusted(options.is_peer_trusted);
@@ -268,15 +268,21 @@ MojoResult Invitation::Send(
   // bit essentially means that the remote process is especially untrustworthy
   // (e.g. a Chrome renderer) and should be subject to additional constraints
   // regarding what types of objects can be transferred to it.
-  const bool is_remote_process_untrusted =
-      options &&
-      (options->flags & MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS) != 0;
+  Transport::ProcessTrust remote_process_trust{};
+#if BUILDFLAG(IS_WIN)
+  if (options &&
+      (options->flags & MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS) != 0) {
+    remote_process_trust = Transport::ProcessTrust::kUntrusted;
+  } else {
+    remote_process_trust = Transport::ProcessTrust::kTrusted;
+  }
+#endif
 
   const bool is_peer_elevated =
       options && (options->flags & MOJO_SEND_INVITATION_FLAG_ELEVATED);
 #if !BUILDFLAG(IS_WIN)
   // For now, the concept of an elevated process is only meaningful on Windows.
-  DCHECK(!is_peer_elevated);
+  CHECK(!is_peer_elevated);
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -296,7 +302,7 @@ MojoResult Invitation::Send(
       *transport_endpoint,
       {.is_peer_trusted = is_peer_elevated, .is_trusted_by_peer = true},
       std::move(remote_process), error_handler, error_handler_context,
-      is_remote_process_untrusted);
+      remote_process_trust);
   if (transport == IPCZ_INVALID_DRIVER_HANDLE) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
