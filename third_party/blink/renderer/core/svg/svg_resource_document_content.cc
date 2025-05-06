@@ -232,22 +232,11 @@ SVGResourceTarget* SVGResourceDocumentContent::GetResourceTarget(
     return nullptr;
   }
   auto* svg_target =
-      DynamicTo<SVGElement>(document->getElementById(element_id));
-  if (!svg_target) {
-    return nullptr;
-  }
-  return &svg_target->EnsureResourceTarget();
-}
-
-// TODO(dmangal): incorporate the below function into `GetResourceTarget`.
-SVGResourceTarget* SVGResourceDocumentContent::GetResourceTargetForRoot()
-    const {
-  Document* document = GetDocument();
-  if (!document) {
-    return nullptr;
-  }
-  auto* svg_target = DynamicTo<SVGSVGElement>(document->documentElement());
-
+      element_id.empty() &&
+              RuntimeEnabledFeatures::
+                  AllowSvgUseToReferenceExternalDocumentRootEnabled()
+          ? DynamicTo<SVGSVGElement>(document->documentElement())
+          : DynamicTo<SVGElement>(document->getElementById(element_id));
   if (!svg_target) {
     return nullptr;
   }

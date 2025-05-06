@@ -318,26 +318,14 @@ void SVGUseElement::ClearResourceReference() {
 }
 
 Element* SVGUseElement::ResolveTargetElement() {
-  if (!element_url_.HasFragmentIdentifier()) {
-    // TODO(dmangal): Cleanup the below code to integrate more with the rest of
-    // the logic in this function
-    if (RuntimeEnabledFeatures::
-            AllowSvgUseToReferenceExternalDocumentRootEnabled() &&
-        IsStructurallyExternal() && document_content_) {
-      // Take the root SVG element from the external document
-      external_resource_target_ = document_content_->GetResourceTargetForRoot();
-
-      return external_resource_target_ ? external_resource_target_->target
-                                       : nullptr;
-    }
-
-    return nullptr;
-  }
-
   AtomicString element_identifier(DecodeURLEscapeSequences(
       element_url_.FragmentIdentifier(), DecodeURLMode::kUTF8OrIsomorphic));
 
   if (!IsStructurallyExternal()) {
+    if (!element_url_.HasFragmentIdentifier()) {
+      return nullptr;
+    }
+
     // Only create observers for non-instance use elements.
     // Instances will be updated by their corresponding elements.
     if (InUseShadowTree()) {
