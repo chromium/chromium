@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -206,6 +207,7 @@ public class StripLayoutHelperTest {
     @Mock private ServiceStatus mServiceStatus;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private Bitmap mAvatarBitmap;
+    @Mock private TintedCompositorButton mCloseButton;
     @Mock TabStripIphController mController;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mSharedImageTilesCaptor;
@@ -2147,6 +2149,93 @@ public class StripLayoutHelperTest {
                 actualRect);
 
         displayMetrics.density = densityBeforeTest; // Clean up.
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
+    @Feature("Tab Context Menu")
+    public void testTabContextMenu_PreventsHovercard() {
+        // Setup.
+        initializeTabHoverTest();
+        mStripLayoutHelper.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+        when(mTabContextMenuCoordinator.isMenuShowing()).thenReturn(true);
+
+        // Now try to hover on the tab.
+        mStripLayoutHelper.updateLastHoveredTab(
+                mStripLayoutHelper.getStripLayoutTabsForTesting()[0]);
+
+        verify(mTabHoverCardView, never())
+                .show(
+                        nullable(Tab.class),
+                        anyBoolean(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
+    @Feature("Tab Group Context Menu")
+    public void testTabGroupContextMenu_PreventsHovercard() {
+        // Setup.
+        initializeTabHoverTest();
+        mStripLayoutHelper.setTabGroupContextMenuCoordinatorForTesting(
+                mTabGroupContextMenuCoordinator);
+        when(mTabGroupContextMenuCoordinator.isMenuShowing()).thenReturn(true);
+
+        // Now try to hover on the tab.
+        mStripLayoutHelper.updateLastHoveredTab(
+                mStripLayoutHelper.getStripLayoutTabsForTesting()[0]);
+
+        verify(mTabHoverCardView, never())
+                .show(
+                        nullable(Tab.class),
+                        anyBoolean(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
+    @Feature("Advanced Peripherals Support")
+    public void testCloseTabsContextMenu_PreventsHovercard() {
+        // Set up: see testOnLongPress_OnCloseButton setup.
+        initializeTest(false, false, 0);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+
+        // Mock tab's view.
+        View tabView = new View(mActivity);
+        tabView.setLayoutParams(new MarginLayoutParams(150, 50));
+        when(mModel.getTabAt(1).getView()).thenReturn(tabView);
+
+        // Long press on second tab's close button.
+        StripLayoutTab tab = tabs[1];
+        when(tab.checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
+        when(tab.getCloseButton()).thenReturn(mCloseButton);
+        when(mCloseButton.getParentView()).thenReturn(tab);
+        when(mCloseButton.getType()).thenReturn(ButtonType.TAB_CLOSE);
+        mStripLayoutHelper.setTabAtPositionForTesting(tab);
+        mStripLayoutHelper.onLongPress(150f, 0f);
+
+        assertTrue(
+                "Expected 'close all tabs' context menu to be showing",
+                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
+
+        // Now try to hover on the tab.
+        mStripLayoutHelper.updateLastHoveredTab(tab);
+
+        verify(mTabHoverCardView, never())
+                .show(
+                        nullable(Tab.class),
+                        anyBoolean(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat());
     }
 
     @Test
