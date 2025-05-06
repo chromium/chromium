@@ -43,9 +43,7 @@ using SubresourceFilterMatch =
 // Metadata that was returned by a GetFullHash call. This is the parsed version
 // of the PB (from Pver3, or Pver4 local) or JSON (from Pver4 via GMSCore).
 // Some fields are only applicable to certain lists.
-//
-// When adding elements to this struct, make sure you update operator== and
-// ToTracedValue.
+// When adding elements to this struct, make sure you update ToTracedValue.
 struct ThreatMetadata {
   ThreatMetadata();
   ThreatMetadata(const ThreatMetadata& other);
@@ -54,8 +52,8 @@ struct ThreatMetadata {
   ThreatMetadata& operator=(ThreatMetadata&& other);
   ~ThreatMetadata();
 
-  bool operator==(const ThreatMetadata& other) const;
-  bool operator!=(const ThreatMetadata& other) const;
+  friend bool operator==(const ThreatMetadata&,
+                         const ThreatMetadata&) = default;
 
   // Returns the metadata in a format tracing can support.
   std::unique_ptr<base::trace_event::TracedValue> ToTracedValue() const;

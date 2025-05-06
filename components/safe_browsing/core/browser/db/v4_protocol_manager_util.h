@@ -227,8 +227,8 @@ class ListIdentifier {
                  ThreatType threat_type);
   explicit ListIdentifier(const ListUpdateResponse&);
 
-  bool operator==(const ListIdentifier& other) const;
-  bool operator!=(const ListIdentifier& other) const;
+  friend bool operator==(const ListIdentifier&,
+                         const ListIdentifier&) = default;
   size_t hash() const;
 
   PlatformType platform_type() const { return platform_type_; }
@@ -277,8 +277,8 @@ struct StoreAndHashPrefix {
   StoreAndHashPrefix(ListIdentifier list_id, const HashPrefixStr& hash_prefix);
   ~StoreAndHashPrefix();
 
-  bool operator==(const StoreAndHashPrefix& other) const;
-  bool operator!=(const StoreAndHashPrefix& other) const;
+  friend bool operator==(const StoreAndHashPrefix&,
+                         const StoreAndHashPrefix&) = default;
   size_t hash() const;
 
  private:

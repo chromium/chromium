@@ -22,16 +22,6 @@ ThreatMetadata& ThreatMetadata::operator=(ThreatMetadata&& other) = default;
 
 ThreatMetadata::~ThreatMetadata() = default;
 
-bool ThreatMetadata::operator==(const ThreatMetadata& other) const {
-  return threat_pattern_type == other.threat_pattern_type &&
-         api_permissions == other.api_permissions &&
-         subresource_filter_match == other.subresource_filter_match;
-}
-
-bool ThreatMetadata::operator!=(const ThreatMetadata& other) const {
-  return !operator==(other);
-}
-
 std::unique_ptr<base::trace_event::TracedValue> ThreatMetadata::ToTracedValue()
     const {
   auto value = std::make_unique<base::trace_event::TracedValue>();

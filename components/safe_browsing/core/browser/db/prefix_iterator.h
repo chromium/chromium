@@ -69,9 +69,6 @@ class PrefixIterator {
   bool operator==(const PrefixIterator& rhs) const {
     return index_ == rhs.index_;
   }
-  bool operator!=(const PrefixIterator& rhs) const {
-    return index_ != rhs.index_;
-  }
   bool operator>(const PrefixIterator& rhs) const {
     return index_ > rhs.index_;
   }

@@ -211,15 +211,6 @@ FullHashInfo::FullHashInfo(const FullHashInfo& other) = default;
 
 FullHashInfo::~FullHashInfo() = default;
 
-bool FullHashInfo::operator==(const FullHashInfo& other) const {
-  return full_hash == other.full_hash && list_id == other.list_id &&
-         positive_expiry == other.positive_expiry && metadata == other.metadata;
-}
-
-bool FullHashInfo::operator!=(const FullHashInfo& other) const {
-  return !operator==(other);
-}
-
 // V4GetHashProtocolManager implementation --------------------------------
 
 // static
