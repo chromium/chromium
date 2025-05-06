@@ -182,6 +182,7 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_scene_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator_delegate.h"
@@ -1335,8 +1336,15 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
                            initWithPromosManager:promosManager]];
 
   if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
-    [sceneState addAgent:[[SigninFullscreenPromoSceneAgent alloc]
-                             initWithPromosManager:promosManager]];
+    [sceneState
+        addAgent:
+            [[SigninFullscreenPromoSceneAgent alloc]
+                initWithPromosManager:promosManager
+                          authService:authService
+                      identityManager:IdentityManagerFactory::GetForProfile(
+                                          profile)
+                          syncService:SyncServiceFactory::GetForProfile(profile)
+                          prefService:prefService]];
   }
 }
 

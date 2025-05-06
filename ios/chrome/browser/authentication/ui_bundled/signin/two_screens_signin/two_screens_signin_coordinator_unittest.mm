@@ -11,6 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/fullscreen_signin_screen_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_view_controller.h"
@@ -39,8 +40,12 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
@@ -121,10 +126,16 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   }
 
   // Signs in a fake identity.
-  void SigninFakeIdentity() {
+  void SigninFakeIdentity(bool has_history_sync_opt_in) {
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
     auth_service->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForProfile(profile_.get());
+    sync_service->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, has_history_sync_opt_in);
+    sync_service->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kTabs, has_history_sync_opt_in);
   }
 
   // Advances the coordinator to the next screen.
@@ -156,7 +167,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   EXPECT_NE(PresentedViewController(), nil);
   EXPECT_TRUE([TopViewController()
       isKindOfClass:[FullscreenSigninScreenViewController class]]);
-  SigninFakeIdentity();
+  SigninFakeIdentity(/*has_history_sync_opt_in=*/false);
 
   NextScreen();
 
@@ -175,6 +186,35 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   histogram_tester.ExpectUniqueSample<signin_metrics::AccessPoint>(
       "Signin.SigninStartedAccessPoint", signin_metrics::AccessPoint::kSettings,
       1);
+}
+
+// Tests that the screens are not presented when the user has already signed in
+// and history sync opt-in.
+TEST_F(TwoScreensSigninCoordinatorTest,
+       ScreensNotPresentedWhenSignedInHistorySyncOptIn) {
+  base::HistogramTester histogram_tester;
+  SigninFakeIdentity(/*has_history_sync_opt_in=*/true);
+
+  StartTwoScreensSigninCoordinator(SigninCoordinatorResultSuccess,
+                                   fake_identity_);
+  // Expect the signin screen to not be presented.
+  EXPECT_EQ(PresentedViewController(), nil);
+  EXPECT_FALSE([TopViewController()
+      isKindOfClass:[FullscreenSigninScreenViewController class]]);
+  // Expect the history sync screen to not be presented.
+  EXPECT_FALSE(
+      [TopViewController() isKindOfClass:[HistorySyncViewController class]]);
+
+  // Expect completion block to be run synchronously and be finished without
+  // calling -stop. Since the user has already signed in and history sync
+  // opt-in, the coordinator will call the completion block.
+  EXPECT_TRUE(completion_block_done_);
+  ExpectNoUpgradePromoHistogram(&histogram_tester);
+  histogram_tester.ExpectUniqueSample<signin_metrics::AccessPoint>(
+      "Signin.SignIn.Started", signin_metrics::AccessPoint::kSettings, 0);
+  histogram_tester.ExpectUniqueSample<signin_metrics::AccessPoint>(
+      "Signin.SigninStartedAccessPoint", signin_metrics::AccessPoint::kSettings,
+      0);
 }
 
 // Tests that stopping the coordinator before it is done will interrupt it.

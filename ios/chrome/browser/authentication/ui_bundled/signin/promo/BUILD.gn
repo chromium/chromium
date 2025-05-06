@@ -11,8 +11,11 @@ source_set("promo") {
   ]
   deps = [
     "//components/feature_engagement/public",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync/service",
     "//components/version_info",
     "//ios/chrome/app/profile",
+    "//ios/chrome/browser/authentication/ui_bundled/history_sync",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/promos_manager/model",
@@ -21,6 +24,7 @@ source_set("promo") {
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/promos_manager/ui_bundled:promos",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/signin/model:authentication_service",
   ]
 }
 
@@ -31,6 +35,9 @@ source_set("unit_tests") {
   deps = [
     ":promo",
     "//base",
+    "//components/signin/public/base",
+    "//components/sync:test_support",
+    "//components/sync/service",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/profile:test_utils",
@@ -47,10 +54,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

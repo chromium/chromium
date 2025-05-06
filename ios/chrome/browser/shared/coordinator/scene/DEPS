@@ -40,6 +40,7 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/start_surface/ui_bundled",
+  "+ios/chrome/browser/sync/model/sync_service_factory.h",
   "+ios/chrome/browser/tab_insertion/model",
   "+ios/chrome/browser/tab_switcher/ui_bundled",
   "+ios/chrome/browser/url_loading/model",
