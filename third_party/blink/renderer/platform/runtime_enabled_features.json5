@@ -2745,6 +2745,14 @@
       public: true,
     },
     {
+      // LayoutBox::PhysicalLocation() to return a truly visual offset - the
+      // offset of its first fragment relatively to the first fragment of its
+      // containing block, also when block-fragmented (used to be in the
+      // "stitched" flow-thread coordinate space).
+      name: "LayoutBoxVisualLocation",
+      status: "experimental",
+    },
+    {
       name: "LayoutFlexNewRowAlgorithm",
       status: "stable",
     },

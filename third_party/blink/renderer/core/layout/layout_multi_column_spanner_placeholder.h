@@ -64,7 +64,7 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
   void WillBeRemovedFromTree() override;
 
  private:
-  DeprecatedLayoutPoint LocationInternal() const override;
+  DeprecatedLayoutPoint DeprecatedLocationInternal() const override;
   PhysicalSize Size() const override;
 
   // The actual column-span:all layoutObject inside the flow thread.

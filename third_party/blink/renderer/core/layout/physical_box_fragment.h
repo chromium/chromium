@@ -290,6 +290,14 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return std::nullopt;
   }
 
+  PhysicalOffset OffsetFromRootFragmentationContext() const {
+    if (const auto* field =
+            GetRareField(FieldId::kOffsetFromRootFragmentationContext)) {
+      return field->offset_from_root_fragmentation_context;
+    }
+    return PhysicalOffset();
+  }
+
   // Return true if this is either a container that establishes an inline
   // formatting context, or if it's non-atomic inline content participating in
   // one. Empty blocks don't establish an inline formatting context.
@@ -482,6 +490,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     MutableForContainerLayout(base::PassKey<PhysicalBoxFragment>,
                               PhysicalBoxFragment& fragment);
     void SetMargins(const PhysicalBoxStrut& margins);
+    void SetOffsetFromRootFragmentationContext(PhysicalOffset);
 
    private:
     PhysicalBoxFragment& fragment_;

@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 
@@ -669,6 +670,28 @@ TEST_P(PrintContextTest, LinkedTargetSecondPage) {
   ASSERT_EQ(1u, operations->size());
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, (*operations)[0].type);
   EXPECT_SKRECT_EQ(0, 50, 0, 0, (*operations)[0].rect);
+}
+
+TEST_P(PrintContextTest, LinkedTargetRootMargin) {
+  ScopedLayoutBoxVisualLocationForTest scoped_feature(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      html { margin-top: 50px; }
+    </style>
+    <a style="display:block; width:33px; height:33px;" href="#target"></a>
+    <div id="target" style="margin-top:100px; width:10px; height:10px;"></div>
+  )HTML");
+
+  testing::NiceMock<MockPageContextCanvas> first_canvas;
+  PrintSinglePage(first_canvas, 0);
+  const Vector<MockPageContextCanvas::Operation>* operations =
+      &first_canvas.RecordedOperations();
+  ASSERT_EQ(2u, operations->size());
+  EXPECT_EQ(MockPageContextCanvas::kDrawRect, (*operations)[0].type);
+  EXPECT_SKRECT_EQ(0, 50, 33, 33, (*operations)[0].rect);
+
+  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, (*operations)[1].type);
+  EXPECT_SKRECT_EQ(0, 183, 0, 0, (*operations)[1].rect);
 }
 
 // Here are a few tests to check that shrink to fit doesn't mess up page count.

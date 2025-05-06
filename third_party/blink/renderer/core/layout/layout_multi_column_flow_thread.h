@@ -227,7 +227,7 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final : public LayoutFlowThread {
   // "public" for |MakeGarbageCollected<T>|.
   explicit LayoutMultiColumnFlowThread();
 
-  DeprecatedLayoutPoint LocationInternal() const override;
+  DeprecatedLayoutPoint DeprecatedLocationInternal() const override;
   PhysicalSize Size() const override;
 
  private:

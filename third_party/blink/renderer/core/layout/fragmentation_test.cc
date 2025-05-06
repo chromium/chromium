@@ -268,7 +268,6 @@ TEST_F(FragmentationTest, InkOverflowInline) {
   DCHECK(flow_thread->IsLayoutFlowThread());
   // |flow_thread| is in the stitched coordinate system.
   // Legacy had (0, 0, 150, 30), but NG doesn't compute for |LayoutFlowThread|.
-  EXPECT_EQ(flow_thread->VisualOverflowRect(), PhysicalRect(0, 0, 100, 30));
   EXPECT_EQ(container->VisualOverflowRect(), PhysicalRect(0, 0, 260, 15));
 }
 

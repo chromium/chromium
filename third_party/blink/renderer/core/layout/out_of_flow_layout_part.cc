@@ -2979,6 +2979,12 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
   }
   algorithm->AppendOutOfFlowResult(result);
 
+  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+    // Copying back to the LayoutBox will be done later, when fragmented layout
+    // is complete. Only then can we know the physical offsets.
+    return;
+  }
+
   // Copy the offset of the OOF node back to legacy such that it is relative
   // to its containing block rather than the fragmentainer that it is being
   // added to.

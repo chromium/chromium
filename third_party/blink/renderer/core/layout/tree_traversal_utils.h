@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TREE_TRAVERSAL_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TREE_TRAVERSAL_UTILS_H_
 
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
+
 namespace blink {
 
 class LayoutInline;
@@ -26,15 +28,20 @@ class PhysicalFragmentTraversalListener {
   enum NextStep {
     // Continue traversal normally.
     kContinue,
-    // Skip any children, then continue traversal normally.
+    // Skip any children, don't call HandleExit(), then continue traversal
+    // normally.
     kSkipChildren,
   };
 
   // Call when entering a fragment, before descending into the subtree.
   virtual NextStep HandleEntry(const PhysicalBoxFragment&,
+                               PhysicalOffset,
                                bool is_first_for_node) {
     return kContinue;
   }
+
+  // Call when exiting a fragment, after having walked the subtree.
+  virtual void HandleExit(const PhysicalBoxFragment&, PhysicalOffset) {}
 
   // TODO(crbug.com/406288653): Get rid of this.
   virtual void HandleCulledInline(const LayoutInline& culled_inline,

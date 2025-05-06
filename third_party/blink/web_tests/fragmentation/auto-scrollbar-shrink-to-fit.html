@@ -4,7 +4,7 @@
     body { overflow:scroll; }
 </style>
 <p>There should be a blue square below.</p>
-<div style="columns:2; column-fill:auto; height:110px; line-height:20px; orphans:1; widows:1;">
+<div style="columns:2; column-fill:auto; gap:0; width:200px; height:110px; line-height:20px; orphans:1; widows:1;">
     <div style="position:relative;">
         <div style="height:80px;"></div>
         <div style="position:absolute;">
@@ -24,6 +24,7 @@
 <script>
 test(() => {
     var elm = document.getElementById("elm");
-    assert_equals(elm.offsetTop, 30);
+    assert_equals(elm.offsetTop, -80);
+    assert_equals(elm.offsetLeft, 100);
 }, "Shrink-to-fit with auto vertical scrollbar inside");
 </script>

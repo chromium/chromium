@@ -83,8 +83,8 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
         builder.table_column_geometries_);
   }
 
-  // size() can be smaller than num_fields because FieldId::kMargins is not
-  // set yet.
+  // size() can be smaller than num_fields because kMargins and
+  // kOffsetFromRootFragmentationContext are not set yet.
   DCHECK_LE(field_list_.size(), num_fields);
 }
 
@@ -123,6 +123,8 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   SET_IF_EXISTS(kTableSectionRowOffsets, table_section_row_offsets, other);
   SET_IF_EXISTS(kPageName, page_name, other);
   SET_IF_EXISTS(kMargins, margins, other);
+  SET_IF_EXISTS(kOffsetFromRootFragmentationContext,
+                offset_from_root_fragmentation_context, other);
 
   DCHECK_EQ(field_list_.size(), other.field_list_.size());
 }
@@ -149,6 +151,8 @@ PhysicalFragmentRareData::~PhysicalFragmentRareData() = default;
     FUNC(kTableSectionRowOffsets, table_section_row_offsets);               \
     FUNC(kPageName, page_name);                                             \
     FUNC(kMargins, margins);                                                \
+    FUNC(kOffsetFromRootFragmentationContext,                               \
+         offset_from_root_fragmentation_context);                           \
   }
 
 #define CONSTRUCT_UNION_MEMBER(id, name) \

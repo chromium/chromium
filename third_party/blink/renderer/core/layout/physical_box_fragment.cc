@@ -811,6 +811,16 @@ void PhysicalBoxFragment::MutableForContainerLayout::SetMargins(
   fragment_.EnsureRareField(FieldId::kMargins).margins = margins;
 }
 
+void PhysicalBoxFragment::MutableForContainerLayout::
+    SetOffsetFromRootFragmentationContext(PhysicalOffset offset) {
+  const auto id =
+      PhysicalFragmentRareData::FieldId::kOffsetFromRootFragmentationContext;
+  if (offset.IsZero() && !fragment_.GetRareField(id)) {
+    return;
+  }
+  fragment_.EnsureRareField(id).offset_from_root_fragmentation_context = offset;
+}
+
 PhysicalBoxFragment::MutableForContainerLayout
 PhysicalBoxFragment::GetMutableForContainerLayout() const {
   DCHECK(layout_object_->GetFrameView()->IsInPerformLayout());

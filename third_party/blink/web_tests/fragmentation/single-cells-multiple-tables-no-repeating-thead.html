@@ -6,9 +6,10 @@ table {
 tr {
     break-inside: avoid;
 }
+#cell { color: blue; }
 </style>
 <p>crbug.com/621258: Don't let repeating headers overlap on pages that contain two tables.</p>
-<div style="-webkit-columns:3; line-height: 20px; column-fill: auto; height:190px;">
+<div style="columns:3; line-height: 20px; column-fill: auto; gap:0; width:450px; height:190px;">
     <table>
         <thead>
             <tr>
@@ -36,7 +37,7 @@ tr {
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
-        <tr><td id="cell" data-total-y=176>Te</td><td>xt</td></tr>
+        <tr><td id="cell" data-total-x="150" data-total-y="0">Te</td><td>xt</td></tr>
     </table>
 </div>
 <div id="console"></div>
@@ -44,4 +45,3 @@ tr {
 <script>
 checkLayout("#cell", document.getElementById("console"));
 </script>
-

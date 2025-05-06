@@ -150,7 +150,10 @@ static constexpr int kAutoscrollBeltSizeBottom = 20;
 static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
-  DeprecatedLayoutPoint frame_location_;
+  union {
+    DeprecatedLayoutPoint a;
+    PhysicalOffset b;
+  } frame_location_;
   PhysicalSize frame_size_;
   PhysicalSize previous_size;
   MinMaxSizes intrinsic_logical_widths;
@@ -1134,6 +1137,24 @@ void LayoutBox::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
                                         const LayoutBoxModelObject* ancestor,
                                         MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+    const PhysicalBoxFragment* first_fragment = nullptr;
+    for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
+      // Calculate the offset relatively to the first fragment, which in turn
+      // will be mapped correctly to the ancestor.
+      PhysicalOffset offset;
+      if (!first_fragment) {
+        first_fragment = &fragment;
+      } else {
+        offset = fragment.OffsetFromRootFragmentationContext() -
+                 first_fragment->OffsetFromRootFragmentationContext();
+      }
+      PhysicalRect rect(offset, fragment.Size());
+      quads.push_back(LocalRectToAncestorQuad(rect, ancestor, mode));
+    }
+    return;
+  }
+
   if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock()) {
     flow_thread->QuadsInAncestorForDescendant(*this, quads, ancestor, mode);
     return;
@@ -1187,6 +1208,20 @@ void LayoutBox::UpdateAfterLayout() {
     ClearNeedsLayoutWithFullPaintInvalidation();
   } else {
     ClearNeedsLayout();
+  }
+
+  if (auto* block_flow = DynamicTo<LayoutBlockFlow>(this)) {
+    // TODO(crbug.com/371802475): Get rid of this. The special anonymous objects
+    // created (but not really used anymore) for multicol layout are not laid
+    // out, and need to be cleared manually, to avoid DCHECK failures.
+    if (LayoutMultiColumnFlowThread* flow_thread =
+            block_flow->MultiColumnFlowThread()) {
+      for (LayoutBox* column_box = flow_thread->FirstMultiColumnBox();
+           column_box; column_box = column_box->NextSiblingMultiColumnBox()) {
+        column_box->ClearNeedsLayout();
+      }
+      flow_thread->ClearNeedsLayout();
+    }
   }
 
   // We should notify the display lock that we've done layout on self, and if
@@ -4453,6 +4488,16 @@ WritingModeConverter LayoutBox::CreateWritingModeConverter() const {
   NOT_DESTROYED();
   return WritingModeConverter({Style()->GetWritingMode(), TextDirection::kLtr},
                               Size());
+}
+
+PhysicalOffset LayoutBox::PhysicalLocation(
+    const LayoutBox* location_container) const {
+  NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+    return frame_location_.physical_offset;
+  }
+  return DeprecatedPhysicalLocationInternal(
+      location_container ? location_container : LocationContainer());
 }
 
 bool LayoutBox::IsReadingFlowContainer() const {

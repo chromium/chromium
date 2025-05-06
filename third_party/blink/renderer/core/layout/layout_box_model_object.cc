@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -728,7 +729,9 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
            current && current->GetNode() != offset_parent;
            current = current->Container()) {
         // FIXME: What are we supposed to do inside SVG content?
-        reference_point += current->ColumnOffset(reference_point);
+        if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+          reference_point += current->ColumnOffset(reference_point);
+        }
         if (current->IsBox()) {
           reference_point += To<LayoutBox>(current)->PhysicalLocation();
         }

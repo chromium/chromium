@@ -363,6 +363,13 @@ class CORE_EXPORT InlineCursor {
     return CurrentRectInBlockFlow().offset;
   }
 
+  // Return the rectangle of the current item, relatively to the first container
+  // fragment. Used by block fragmentation.
+  PhysicalRect CurrentRectInFirstContainerFragment() const;
+  PhysicalOffset CurrentOffsetInFirstContainerFragment() const {
+    return CurrentRectInFirstContainerFragment().offset;
+  }
+
   // Returns inline position relative to current text fragment for
   // |LocalCaretRect|. It is error to call other than text.
   LayoutUnit CaretInlinePositionForOffset(unsigned offset) const;

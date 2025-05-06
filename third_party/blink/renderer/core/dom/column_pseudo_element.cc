@@ -32,6 +32,7 @@ Element* ColumnPseudoElement::FirstChildInDOMOrder() const {
 
    private:
     NextStep HandleEntry(const PhysicalBoxFragment& descendant,
+                         PhysicalOffset,
                          bool is_first_for_node) final {
       // We're only interested in nodes that start in this column. Any node
       // that's resumed from a previous column will seen in its start column.

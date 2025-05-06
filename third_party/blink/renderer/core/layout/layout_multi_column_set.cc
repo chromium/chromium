@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/multi_column_fragmentainer_group.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -178,6 +179,7 @@ unsigned LayoutMultiColumnSet::FragmentainerGroupIndexAtFlowThreadOffset(
     LayoutUnit flow_thread_offset,
     PageBoundaryRule rule) const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   UpdateGeometryIfNeeded();
   DCHECK_GT(fragmentainer_groups_.size(), 0u);
   if (flow_thread_offset <= 0)
@@ -200,6 +202,7 @@ const MultiColumnFragmentainerGroup&
 LayoutMultiColumnSet::FragmentainerGroupAtVisualPoint(
     const LogicalOffset& visual_point) const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   UpdateGeometryIfNeeded();
   DCHECK_GT(fragmentainer_groups_.size(), 0u);
   LayoutUnit block_offset = visual_point.block_offset;
@@ -213,6 +216,7 @@ LayoutMultiColumnSet::FragmentainerGroupAtVisualPoint(
 
 bool LayoutMultiColumnSet::IsPageLogicalHeightKnown() const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   return FirstFragmentainerGroup().IsLogicalHeightKnown();
 }
 
@@ -275,6 +279,7 @@ PhysicalOffset LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
     LayoutUnit block_offset,
     PageBoundaryRule rule) const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   return FragmentainerGroupAtFlowThreadOffset(block_offset, rule)
       .FlowThreadTranslationAtOffset(block_offset, rule);
 }
@@ -282,6 +287,7 @@ PhysicalOffset LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
 LogicalOffset LayoutMultiColumnSet::VisualPointToFlowThreadPoint(
     const PhysicalOffset& visual_point) const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   LogicalOffset logical_point =
       CreateWritingModeConverter().ToLogical(visual_point, {});
   const MultiColumnFragmentainerGroup& row =
@@ -337,6 +343,7 @@ unsigned LayoutMultiColumnSet::ActualColumnCount() const {
 PhysicalRect LayoutMultiColumnSet::FragmentsBoundingBox(
     const PhysicalRect& bounding_box_in_flow_thread) const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   UpdateGeometryIfNeeded();
   PhysicalRect result;
   for (const auto& group : fragmentainer_groups_)
@@ -356,10 +363,11 @@ void LayoutMultiColumnSet::WillBeRemovedFromTree() {
   DetachFromFlowThread();
 }
 
-DeprecatedLayoutPoint LayoutMultiColumnSet::LocationInternal() const {
+DeprecatedLayoutPoint LayoutMultiColumnSet::DeprecatedLocationInternal() const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   UpdateGeometryIfNeeded();
-  return frame_location_;
+  return frame_location_.layout_point;
 }
 
 PhysicalSize LayoutMultiColumnSet::Size() const {
@@ -377,9 +385,13 @@ void LayoutMultiColumnSet::UpdateGeometryIfNeeded() const {
 
 void LayoutMultiColumnSet::UpdateGeometry() {
   NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+    // Nobody cares.
+    return;
+  }
   DCHECK(!HasValidCachedGeometry());
   SetHasValidCachedGeometry(true);
-  frame_location_ = DeprecatedLayoutPoint();
+  frame_location_.layout_point = DeprecatedLayoutPoint();
   ResetColumnHeight();
   const LayoutBlockFlow* container = MultiColumnBlockFlow();
   DCHECK_GT(container->PhysicalFragmentCount(), 0u);
@@ -446,7 +458,7 @@ void LayoutMultiColumnSet::UpdateGeometry() {
   }
   // Found the first column box after previous_placeholder.
 
-  frame_location_ = ComputeLocation(
+  frame_location_.layout_point = ComputeLocation(
       *iter, iter.Offset(), logical_size.inline_size, *container,
       iter.FragmentIndex(), border_padding_scrollbar);
 

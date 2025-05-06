@@ -16,13 +16,15 @@ namespace blink {
 namespace {
 
 void HandleBoxFragment(const PhysicalBoxFragment& fragment,
+                       PhysicalOffset offset,
                        bool is_first_for_node,
                        PhysicalFragmentTraversalOptions options,
                        PhysicalFragmentTraversalListener& listener) {
   PhysicalFragmentTraversalListener::NextStep next_step =
-      listener.HandleEntry(fragment, is_first_for_node);
+      listener.HandleEntry(fragment, offset, is_first_for_node);
   if (next_step != PhysicalFragmentTraversalListener::kSkipChildren) {
     ForAllBoxFragmentDescendants(fragment, options, listener);
+    listener.HandleExit(fragment, offset);
   }
 }
 
@@ -34,7 +36,7 @@ void ForAllBoxFragmentDescendants(const PhysicalBoxFragment& fragment,
   for (const PhysicalFragmentLink& child : fragment.Children()) {
     if (const auto* child_box_fragment =
             DynamicTo<PhysicalBoxFragment>(child.get())) {
-      HandleBoxFragment(*child_box_fragment,
+      HandleBoxFragment(*child_box_fragment, child.offset,
                         child_box_fragment->IsFirstForNode(), options,
                         listener);
     }
@@ -54,8 +56,8 @@ void ForAllBoxFragmentDescendants(const PhysicalBoxFragment& fragment,
     if (const PhysicalBoxFragment* child_box_fragment =
             cursor.Current().BoxFragment()) {
       const FragmentItem* item = cursor.Current().Item();
-      HandleBoxFragment(*child_box_fragment, item->IsFirstForNode(), options,
-                        listener);
+      HandleBoxFragment(*child_box_fragment, item->OffsetInContainerFragment(),
+                        item->IsFirstForNode(), options, listener);
     }
     if (options & kFragmentTraversalOptionCulledInlines) {
       if (const LayoutObject* descendant = cursor.Current().GetLayoutObject()) {

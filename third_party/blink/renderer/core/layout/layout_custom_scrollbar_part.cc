@@ -179,7 +179,8 @@ void LayoutCustomScrollbarPart::SetOverriddenSize(const PhysicalSize& size) {
   overridden_size_ = size;
 }
 
-DeprecatedLayoutPoint LayoutCustomScrollbarPart::LocationInternal() const {
+DeprecatedLayoutPoint LayoutCustomScrollbarPart::DeprecatedLocationInternal()
+    const {
   NOT_DESTROYED();
   NOTREACHED();
 }

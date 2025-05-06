@@ -411,6 +411,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
       const LayoutObject*,
       MapCoordinatesFlags) const override;
 
+  // TODO(crbug.com/40855022): Remove the PhysicalOffset parameter.
   PhysicalOffset AdjustedPositionRelativeTo(const PhysicalOffset&,
                                             const Element*) const;
 

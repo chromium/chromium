@@ -3477,7 +3477,8 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
     return;
 
   PhysicalOffset container_offset = OffsetFromContainer(container, mode);
-  if (IsLayoutFlowThread()) {
+  if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled() &&
+      IsLayoutFlowThread()) {
     // So far the point has been in flow thread coordinates (i.e. as if
     // everything in the fragmentation context lived in one tall single column).
     // Convert it to a visual point now, since we're about to escape the flow
@@ -3560,7 +3561,8 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
                                     : TransformState::kFlattenTransform);
   }
 
-  if (IsLayoutFlowThread()) {
+  if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled() &&
+      IsLayoutFlowThread()) {
     // Descending into a flow thread. Convert to the local coordinate space,
     // i.e. flow thread coordinates.
     PhysicalOffset visual_point = transform_state.MappedPoint();
@@ -3709,6 +3711,8 @@ gfx::Transform LayoutObject::LocalToAncestorTransform(
 
 bool LayoutObject::OffsetForContainerDependsOnPoint(
     const LayoutObject* container) const {
+  NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   return IsLayoutFlowThread() ||
          (container->StyleRef().IsFlippedBlocksWritingMode() &&
           container->IsBox());

@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
 #include "third_party/blink/renderer/platform/graphics/visual_rect_flags.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -2548,6 +2549,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // to a point in the containing coordinate space.
   virtual PhysicalOffset ColumnOffset(const PhysicalOffset&) const {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
     return PhysicalOffset();
   }
 

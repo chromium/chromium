@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_LAYOUT_TABLE_COLUMN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_LAYOUT_TABLE_COLUMN_H_
 
-#include "base/notreached.h"
+#include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 
@@ -41,7 +41,13 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
 
   PhysicalSize Size() const override;
 
-  DeprecatedLayoutPoint LocationInternal() const override;
+  PhysicalOffset PhysicalLocation(const LayoutBox*) const override;
+
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const override;
+
+  DeprecatedLayoutPoint DeprecatedLocationInternal() const override;
 
   // LayoutObject methods start.
 
@@ -112,6 +118,45 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
   }
 
   // LayoutObject methods end
+
+  struct SynthesizedFragment {
+    STACK_ALLOCATED();
+
+   public:
+    SynthesizedFragment(const PhysicalRect& rect,
+                        PhysicalOffset additional_offset_from_table_fragment,
+                        const PhysicalBoxFragment& table_fragment)
+        : rect(rect),
+          additional_offset_from_table_fragment(
+              additional_offset_from_table_fragment),
+          table_fragment(table_fragment) {}
+
+    // The "fragment" rectangle, relatively to its container. If it's a
+    // table-column-group, or a table-column without a table-column-group
+    // parent, the container is the table. Otherwise it's the parent
+    // table-column-group.
+    PhysicalRect rect;
+
+    // Additional offset from the table fragment to `rect`.
+    PhysicalOffset additional_offset_from_table_fragment;
+
+    const PhysicalBoxFragment& table_fragment;
+  };
+
+  // Synthesize fragment rectangles for a table-column or table-column-group and
+  // iterate over them, and call the provided callback for each of them. If the
+  // callback returns false, iteration will stop.
+  //
+  // Table column and table column groups don't create fragments
+  // (PhysicalBoxFragment), so we have to synthesize their rects, in order to
+  // support getClientRects(), and more.
+  //
+  // TODO(crbug.com/360905183): If we add separate layout objects (and
+  // fragments) for the table wrapper and the table grid, it should become more
+  // straight-forward to create fragments for table columns and column groups as
+  // well. And then this machinery can go away.
+  void ForAllSynthesizedFragments(
+      base::FunctionRef<bool(const SynthesizedFragment&)>) const;
 
  private:
   unsigned span_ = 1;

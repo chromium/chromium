@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -457,7 +458,13 @@ void LayoutInline::CollectLineBoxRects(
   cursor.MoveToIncludingCulledInline(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     if (!IsInChildRubyText(*this, cursor.Current().GetLayoutObject())) {
-      yield(cursor.CurrentRectInBlockFlow());
+      PhysicalRect rect;
+      if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+        rect = cursor.CurrentRectInFirstContainerFragment();
+      } else {
+        rect = cursor.CurrentRectInBlockFlow();
+      }
+      yield(rect);
     }
   }
 }
@@ -499,7 +506,9 @@ void LayoutInline::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                            this](const PhysicalRect& rect) {
     if (!transform_depends_on_point_computed) {
       transform_depends_on_point_computed = true;
-      transform_depends_on_point = AbsoluteTransformDependsOnPoint(*this);
+      transform_depends_on_point =
+          !RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled() &&
+          AbsoluteTransformDependsOnPoint(*this);
       if (!transform_depends_on_point)
         mapping_to_ancestor.emplace(LocalToAncestorTransform(ancestor, mode));
     }
@@ -537,7 +546,10 @@ std::optional<PhysicalOffset> LayoutInline::FirstLineBoxTopLeftInternal()
     cursor.MoveToIncludingCulledInline(*this);
     if (!cursor)
       return std::nullopt;
-    return cursor.CurrentOffsetInBlockFlow();
+    if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+      return cursor.CurrentOffsetInBlockFlow();
+    }
+    return cursor.CurrentOffsetInFirstContainerFragment();
   }
   return std::nullopt;
 }

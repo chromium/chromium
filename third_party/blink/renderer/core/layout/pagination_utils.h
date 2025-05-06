@@ -101,6 +101,11 @@ PhysicalRect StitchedPageContentRect(const LayoutView&, wtf_size_t page_number);
 // the stitched coordinate system.
 PhysicalRect StitchedPageContentRect(const PhysicalBoxFragment& page_container);
 
+PhysicalRect StitchedPageContentRect(
+    const PhysicalBoxFragment& page_area,
+    const PhysicalBoxFragment& first_page_area,
+    const BlockBreakToken* previous_break_token);
+
 const BlockBreakToken* FindPreviousBreakTokenForPageArea(
     const PhysicalBoxFragment& page_area);
 
