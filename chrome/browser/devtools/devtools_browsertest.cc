@@ -316,6 +316,12 @@ class DevToolsTest : public PlatformBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
+  void TearDownOnMainThread() override {
+    if (window_) {
+      CloseDevToolsWindow();
+    }
+  }
+
  protected:
   static std::unique_ptr<net::test_server::HttpResponse> HandleFaviconRequest(
       const net::test_server::HttpRequest& request) {
@@ -375,7 +381,7 @@ class DevToolsTest : public PlatformBrowserTest {
   }
 
   void CloseDevToolsWindow() {
-    DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
+    DevToolsWindowTesting::CloseDevToolsWindowSync(window_.ExtractAsDangling());
   }
 
   WebContents* main_web_contents() {
@@ -386,7 +392,7 @@ class DevToolsTest : public PlatformBrowserTest {
     return DevToolsWindowTesting::Get(window_)->toolbox_web_contents();
   }
 
-  raw_ptr<DevToolsWindow, DanglingUntriaged> window_;
+  raw_ptr<DevToolsWindow> window_;
 };
 
 class SitePerProcessDevToolsTest : public DevToolsTest {
@@ -472,7 +478,10 @@ class DevToolsBeforeUnloadTest : public DevToolsTest {
     OpenDevToolsWindow(kDebuggerTestPage, is_docked);
     auto runner = base::MakeRefCounted<content::MessageLoopRunner>();
     DevToolsWindowTesting::Get(window_)->SetCloseCallback(
-        runner->QuitClosure());
+        base::BindLambdaForTesting([this, runner]() {
+          window_ = nullptr;
+          runner->Quit();
+        }));
     InjectBeforeUnloadListener(main_web_contents());
     {
       DevToolsWindowBeforeUnloadObserver before_unload_observer(window_);
@@ -780,10 +789,10 @@ class DevToolsServiceWorkerExtensionTest : public InProcessBrowserTest {
   }
 
   void CloseDevToolsWindow() {
-    DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
+    DevToolsWindowTesting::CloseDevToolsWindowSync(window_.ExtractAsDangling());
   }
 
-  raw_ptr<DevToolsWindow, DanglingUntriaged> window_ = nullptr;
+  raw_ptr<DevToolsWindow> window_ = nullptr;
   raw_ptr<extensions::ExtensionRegistrar, DanglingUntriaged>
       extension_registrar_ = nullptr;
   raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged>
@@ -878,10 +887,10 @@ class WorkerDevToolsTest : public InProcessBrowserTest {
   }
 
   void CloseDevToolsWindow() {
-    DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
+    DevToolsWindowTesting::CloseDevToolsWindowSync(window_.ExtractAsDangling());
   }
 
-  raw_ptr<DevToolsWindow, DanglingUntriaged> window_;
+  raw_ptr<DevToolsWindow> window_;
 };
 
 // Tests that BeforeUnload event gets called on docked devtools if
@@ -2576,12 +2585,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsReattachAfterCrashTest,
 IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_AutoAttachToWindowOpen) {
   OpenDevToolsWindow(kWindowOpenTestPage, false);
   DevToolsWindowTesting::Get(window_)->SetOpenNewWindowForPopups(true);
-  DevToolsWindowCreationObserver observer;
-  ASSERT_TRUE(content::ExecJs(GetInspectedTab(),
-                              "window.open('window_open.html', '_blank');"));
-  observer.WaitForLoad();
-  DispatchOnTestSuite(observer.devtools_window(), "waitForDebuggerPaused");
-  DevToolsWindowTesting::CloseDevToolsWindowSync(observer.devtools_window());
+  DevToolsWindow* devtools_window = nullptr;
+  {
+    DevToolsWindowCreationObserver observer;
+    ASSERT_TRUE(content::ExecJs(GetInspectedTab(),
+                                "window.open('window_open.html', '_blank');"));
+    observer.WaitForLoad();
+    devtools_window = observer.devtools_window();
+  }
+  DispatchOnTestSuite(devtools_window, "waitForDebuggerPaused");
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
   CloseDevToolsWindow();
 }
 
@@ -3227,7 +3240,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, LoadNetworkResourceForFrontend) {
   LoadLegacyFilesInFrontend(window_);
   RunTestMethod("testLoadResourceForFrontend", url.spec().c_str(),
                 file_url.c_str());
-  DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
+  CloseDevToolsWindow();
 }
 
 // TODO(crbug.com/41435439) Disabled for flakiness.
@@ -3236,7 +3249,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_CreateBrowserContext) {
   window_ = DevToolsWindowTesting::OpenDiscoveryDevToolsWindowSync(
       browser()->profile());
   RunTestMethod("testCreateBrowserContext", url.spec().c_str());
-  DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
+  CloseDevToolsWindow();
 }
 
 // TODO(crbug.com/40708597): Flaky.
@@ -3244,7 +3257,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_DisposeEmptyBrowserContext) {
   window_ = DevToolsWindowTesting::OpenDiscoveryDevToolsWindowSync(
       browser()->profile());
   RunTestMethod("testDisposeEmptyBrowserContext");
-  DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
+  CloseDevToolsWindow();
 }
 
 // TODO(crbug.com/40689291): Find a better strategy for testing protocol methods
@@ -3254,7 +3267,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, NewWindowFromBrowserContext) {
       browser()->profile());
   LoadLegacyFilesInFrontend(window_);
   RunTestMethod("testNewWindowFromBrowserContext");
-  DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
+  CloseDevToolsWindow();
 }
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, InspectElement) {
@@ -3944,6 +3957,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsSyncTest, GetSyncInformation) {
   EXPECT_TRUE(*result.value.GetDict().FindBool("arePreferencesSynced"));
   EXPECT_EQ(*result.value.GetDict().FindString("accountEmail"),
             "user@gmail.com");
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
 // Regression test for https://crbug.com/1270184.
@@ -4127,6 +4142,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteTest, MAYBE_PausedDebuggerFocus) {
                               blink::WebMouseEvent::Button::kLeft);
   active_tab_observer.Wait();
   ASSERT_EQ(0, tab_strip_model->active_index());
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
 }
 
 class DevToolsConsoleInsightsTest : public DevToolsTest {
@@ -4465,6 +4482,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsRenderDocumentTest, ReloadWithRFHSwap) {
   EXPECT_TRUE(WaitForLoadStop(main_web_contents));
   EXPECT_FALSE(called);
   EXPECT_EQ(window_, DevToolsWindow::FindDevToolsWindow(agent_host.get()));
-  DevToolsWindowTesting::Get(window_)->CloseDevToolsWindowSync(window_);
+  CloseDevToolsWindow();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

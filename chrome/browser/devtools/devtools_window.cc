@@ -487,6 +487,9 @@ DevToolsWindow::~DevToolsWindow() {
 
   capture_handle_.RunAndReset();
   owned_toolbox_web_contents_.reset();
+#if !BUILDFLAG(IS_ANDROID)
+  browser_list_observation_.Reset();
+#endif
 
   DevToolsWindows* instances = g_devtools_window_instances.Pointer();
   auto it = std::ranges::find(*instances, this);
@@ -1973,6 +1976,19 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
 #endif
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void DevToolsWindow::OnBrowserRemoved(Browser* browser) {
+  // If the modal dialog manager has this browser as its delegate, clear the
+  // reference.
+  web_modal::WebContentsModalDialogManager* dialog_manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(
+          main_web_contents_);
+  if (dialog_manager && dialog_manager->delegate() == browser) {
+    dialog_manager->SetDelegate(nullptr);
+  }
+}
+#endif
 
 void DevToolsWindow::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                       bool animate) {
