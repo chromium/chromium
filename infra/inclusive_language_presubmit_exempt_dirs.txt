@@ -481,7 +481,6 @@ third_party/crashpad/crashpad/third_party/linux 1 1
 third_party/crashpad/crashpad/third_party/ninja 1 1
 third_party/crashpad/crashpad/util/misc 1 1
 third_party/dav1d 2 2
-third_party/distributed_point_functions/code 2 1
 third_party/expat 2 2
 third_party/fdlibm 1 1
 third_party/fusejs/dist 3 1
