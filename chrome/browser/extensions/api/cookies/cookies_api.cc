@@ -167,11 +167,8 @@ void CookiesEventRouter::OnCookieChange(bool otr,
       otr ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/false)
           : profile_->GetOriginalProfile();
   // TODO(407373848): OTR profile must exist when the cookie change event
-  // arrived. Change this to CHECK once this is merged.
-  DCHECK(profile);
-  if (!profile) {
-    return;
-  }
+  // arrived.
+  CHECK(profile);
 
   api::cookies::Cookie cookie = cookies_helpers::CreateCookie(
       change.cookie, cookies_helpers::GetStoreIdFromProfile(profile));
@@ -220,7 +217,7 @@ void CookiesEventRouter::OnOffTheRecordProfileCreated(Profile* off_the_record) {
   // When an off-the-record spinoff of |profile_| is created, start listening
   // for cookie changes there. The OTR receiver should never be bound, since
   // there wasn't previously an OTR profile.
-  DCHECK(!otr_receiver_.is_bound());
+  CHECK(!otr_receiver_.is_bound());
 #if !BUILDFLAG(IS_ANDROID)
   otr_profile_observation_.Observe(off_the_record);
 #endif
