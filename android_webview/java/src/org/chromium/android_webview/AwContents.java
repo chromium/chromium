@@ -3345,6 +3345,16 @@ public class AwContents implements SmartClipProvider {
 
     /** @see android.view.View#onAttachedToWindow() */
     public void onAttachedToWindow() {
+        // Before adding to this method, consider whether your could would make more sense living
+        // in AwViewMethodsImpl#onAttachedToWindow. The difference is that:
+        //
+        // - AwContents#onAttachedToWindow is called when the WebView is attached to the window.
+        // - AwViewMethodsImpl#onAttachedToWindow is called when the View that holds the AwContents
+        //   is attached to the window.
+        //
+        // The difference is important when the user enters full screen and the AwContents is
+        // instead attached to a FullScreenView.
+
         if (TRACE) Log.i(TAG, "%s onAttachedToWindow", this);
         mTemporarilyDetached = false;
         mAwViewMethods.onAttachedToWindow();
@@ -3355,8 +3365,10 @@ public class AwContents implements SmartClipProvider {
         mAwFrameMetricsListener =
                 AwFrameMetricsListener.maybeCreate(
                         mContainerView, mWindowAndroid.getWindowAndroid());
+    }
 
-        ViewGroup.LayoutParams viewGroupParams = mContainerView.getRootView().getLayoutParams();
+    private static void recordIfAttachedToPopupWindow(View view) {
+        ViewGroup.LayoutParams viewGroupParams = view.getRootView().getLayoutParams();
         if (viewGroupParams instanceof WindowManager.LayoutParams params) {
             if (params.type == WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
                     || params.type == WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG) {
@@ -4644,6 +4656,8 @@ public class AwContents implements SmartClipProvider {
                     AwWindowCoverageTracker.getOrCreateForRootView(
                             AwContents.this, mContainerView.getRootView());
             mAwWindowCoverageTracker.trackContents(AwContents.this);
+
+            recordIfAttachedToPopupWindow(mContainerView);
         }
 
         @Override
