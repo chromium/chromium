@@ -2433,8 +2433,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
 // LINT.IfChange
 - (NSString*)AXSelectedText {
-  NSRange selectedTextRange;
-  [[self AXSelectedTextRange] getValue:&selectedTextRange];
+  NSRange selectedTextRange = [[self AXSelectedTextRange] rangeValue];
   return [[self getAXValueAsString] substringWithRange:selectedTextRange];
 }
 // LINT.ThenChange(accessibilitySelectedText)
