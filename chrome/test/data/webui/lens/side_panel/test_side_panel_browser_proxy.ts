@@ -17,6 +17,7 @@ export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
       'popAndLoadQueryFromHistory',
       'getIsContextualSearchbox',
       'onScrollToMessage',
+      'requestSendFeedback',
     ]);
   }
 
@@ -35,6 +36,10 @@ export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
         textFragments,
         pdfPageNumber,
     );
+  }
+
+  requestSendFeedback() {
+    this.methodCalled('requestSendFeedback');
   }
 }
 

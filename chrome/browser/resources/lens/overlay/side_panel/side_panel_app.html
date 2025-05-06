@@ -28,48 +28,6 @@
     background-color: #101218;
   }
 
-  #closeFeedbackToastButton {
-    margin-block-end: 8px;
-    margin-block-start: 8px;
-    margin-inline-end: 0;
-    margin-inline-start: 0;
-  }
-
-  #feedbackButtonContainer {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    margin-inline-start: auto;
-  }
-
-  #feedbackToast {
-    --color-toast-background: white;
-    --color-toast-button: #1558D6;
-    --color-toast-foreground: #474747;
-    --cr-icon-button-fill-color: #5E5E5E;
-    box-shadow: 0px 2px 6px 0px rgba(23, 23, 23, 0.32);
-    display: flex;
-    height: 48px;
-    left: 0;
-    margin: auto auto 16px;
-    min-height: 48px;
-    padding: 0;
-    right: 0;
-    width: 336px;
-    white-space: nowrap;
-  }
-
-  :host([dark-mode]) #feedbackToast {
-    --color-toast-background: #303134;
-    --color-toast-button: #99C3FF6;
-    --color-toast-foreground: #BFBFBF;
-    --cr-icon-button-fill-color: #9E9E9E;
-  }
-
-  #feedbackToastMessage {
-    margin-inline-start: 16px;
-  }
-
   /* Set z-index to hide results to prevent ghost frames when reshowing. */
   :host([is-loading-results]) #results {
     z-index: 0;
@@ -152,14 +110,6 @@
 
   :host([show-ghost-loader]) #searchboxContainer {
     --color-searchbox-background: var(--color-searchbox-results-background);
-  }
-
-  #sendFeedbackButton {
-    background-color: transparent;
-    border: none;
-    margin-block-end: 6px;
-    margin-block-start: 6px;
-    padding: 0;
   }
 
   #toast {
@@ -268,17 +218,7 @@
     allow="cross-origin-isolated; display-capture; geolocation; microphone;"
     frameBorder="0">
 </iframe>
-<cr-toast id="feedbackToast" duration="0">
-  <div id="feedbackToastMessage">$i18n{feedbackToastMessage}</div>
-  <div id="feedbackButtonContainer">
-    <cr-button id="sendFeedbackButton" on-click="onSendFeedbackClick">
-      $i18n{sendFeedbackButtonText}
-    </cr-button>
-    <cr-icon-button id="closeFeedbackToastButton" iron-icon="cr:close"
-                    on-click="onHideFeedbackToastClick">
-    </cr-icon-button>
-  </div>
-</cr-toast>
+<feedback-toast id="feedbackToast"></feedback-toast>
 
 <cr-toast id="messageToast" duration="4000">
   <div>[[toastMessage]]</div>

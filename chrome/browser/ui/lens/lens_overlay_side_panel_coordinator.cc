@@ -409,6 +409,10 @@ void LensOverlaySidePanelCoordinator::GetIsContextualSearchbox(
   GetLensOverlayController()->GetIsContextualSearchbox(std::move(callback));
 }
 
+void LensOverlaySidePanelCoordinator::RequestSendFeedback() {
+  GetLensOverlayController()->FeedbackRequestedByEvent(ui::EF_NONE);
+}
+
 void LensOverlaySidePanelCoordinator::OnScrollToMessage(
     const std::vector<std::string>& text_fragments,
     uint32_t pdf_page_number) {

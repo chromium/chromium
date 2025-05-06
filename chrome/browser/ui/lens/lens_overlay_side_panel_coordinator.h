@@ -152,7 +152,8 @@ class LensOverlaySidePanelCoordinator
   void GetIsContextualSearchbox(
       GetIsContextualSearchboxCallback callback) override;
   void OnScrollToMessage(const std::vector<std::string>& text_fragments,
-                         uint32_t pdf_page_number) override;
+      uint32_t pdf_page_number) override;
+  void RequestSendFeedback() override;
 
   // This method is used to set up communication between this instance and the
   // side panel WebUI. This is called by the WebUIController when the WebUI is

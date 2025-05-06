@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/bind.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -14,6 +11,8 @@
 // web browser, but allow for inspection and modification of internal state of
 // LensOverlayController and other business-logic classes.
 
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+
 #include <memory>
 
 #include "base/base64url.h"
@@ -22,6 +21,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/protobuf_matchers.h"
@@ -61,7 +61,6 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
@@ -86,6 +85,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -101,6 +101,8 @@
 #include "components/lens/lens_overlay_side_panel_menu_option.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -5169,6 +5171,45 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Expect a new tab to be opened.
   EXPECT_EQ(tabs + 1, browser()->tab_strip_model()->count());
   EXPECT_EQ(0u, observer.dispatched_events().size());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       FeedbackRequestedOpensFeedbackUI) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Open the side panel.
+  controller->OpenSidePanelForTesting();
+  ASSERT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Get the coordinator.
+  auto* coordinator = controller->results_side_panel_coordinator();
+  ASSERT_TRUE(coordinator);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_FALSE(FeedbackDialog::GetInstanceForTest());
+  coordinator->RequestSendFeedback();
+
+// ChromeOS opens its own feedback dialog.
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Wait for the feedback dialog to appear instead of a new tab.
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return FeedbackDialog::GetInstanceForTest() != nullptr; }));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
 class LensOverlayControllerBrowserStartQueryFlowOptimization

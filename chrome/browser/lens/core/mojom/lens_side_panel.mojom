@@ -30,6 +30,9 @@ interface LensSidePanelPageHandler {
   // file:// URL being tracked on the browser. If the latest contextualized
   // local file:// URL is not open on the main tab, then it opens in a new tab.
   OnScrollToMessage(array<string> text_fragments, uint32 pdf_page_number);
+
+  // Request the browser to open the feedback dialog.
+  RequestSendFeedback();
 };
 
 // Enumerates the semantic events that can be logged by the Lens Overlay.
