@@ -156,48 +156,41 @@ void CopyArCoreImage(const ArSession* session,
   out_pixels.copy_from(src_span);
 }
 
-// Helper, copies ARCore image to the passed in vector, discovering the buffer
-// size and resizing the vector first.
-template <typename T>
-void CopyArCoreImage(const ArSession* session,
-                     const ArImage* image,
-                     int32_t plane_index,
-                     std::vector<T>* out_pixels,
-                     uint32_t* out_width,
-                     uint32_t* out_height) {
-  // Get source image information
-  int32_t width = 0, height = 0;
-  ArImage_getWidth(session, image, &width);
-  ArImage_getHeight(session, image, &height);
-
-  *out_width = width;
-  *out_height = height;
-
-  // Allocate memory for the output.
-  out_pixels->resize(width * height);
-
-  CopyArCoreImage(session, image, plane_index,
-                  base::as_writable_byte_span(*out_pixels), sizeof(T), width,
-                  height);
-}
-
 device::mojom::XRLightProbePtr GetLightProbe(
     ArSession* arcore_session,
     ArLightEstimate* arcore_light_estimate) {
   // ArCore hands out 9 sets of RGB spherical harmonics coefficients
   // https://developers.google.com/ar/reference/c/group/light#arlightestimate_getenvironmentalhdrambientsphericalharmonics
   constexpr size_t kNumShCoefficients = 9;
+  constexpr size_t kNumChannels = 3;
+  constexpr size_t kRedChannel = 0;
+  constexpr size_t kGreenChannel = 1;
+  constexpr size_t kBlueChannel = 2;
 
   auto light_probe = device::mojom::XRLightProbe::New();
 
   light_probe->spherical_harmonics = device::mojom::XRSphericalHarmonics::New();
-  light_probe->spherical_harmonics->coefficients =
-      std::vector<device::RgbTupleF32>(kNumShCoefficients,
-                                       device::RgbTupleF32{});
 
+  // Create a temporary array to hold the values from ARCore. We'll need to
+  // transform them into an `RgbTupleF32` to send across mojom.
+  std::array<float, kNumShCoefficients * kNumChannels> coefficient_list;
   ArLightEstimate_getEnvironmentalHdrAmbientSphericalHarmonics(
-      arcore_session, arcore_light_estimate,
-      light_probe->spherical_harmonics->coefficients.data()->components.data());
+      arcore_session, arcore_light_estimate, coefficient_list.data());
+
+  // The returned data is 27 floats (kNumShCoefficients * kNumChannels), in
+  // the repeating order of RGB. We can thus iterate over chunks of 3 to
+  // create our RgbTupleF32s.
+  base::span<const float> coefficients(coefficient_list);
+  light_probe->spherical_harmonics->coefficients.reserve(coefficients.size());
+  while (!coefficients.empty()) {
+    auto [coefficient, rem] = coefficients.split_at<kNumChannels>();
+    // Copy the first set of data.
+    light_probe->spherical_harmonics->coefficients.emplace_back(
+        coefficient[kRedChannel], coefficient[kGreenChannel],
+        coefficient[kBlueChannel]);
+    // Advance the array.
+    coefficients = rem;
+  }
 
   float main_light_direction[3] = {};
   ArLightEstimate_getEnvironmentalHdrMainLightDirection(
@@ -206,6 +199,10 @@ device::mojom::XRLightProbePtr GetLightProbe(
   light_probe->main_light_direction.set_y(main_light_direction[1]);
   light_probe->main_light_direction.set_z(main_light_direction[2]);
 
+  // Intensity is returned as three floats, r, g, then b:
+  // https://developers.google.com/ar/reference/c/group/ar-light-estimate#arlightestimate_getenvironmentalhdrmainlightintensity.
+  // Since this is just a single value, it's okay to have this read directly
+  // into the backing array of the RgbTupleF32.
   ArLightEstimate_getEnvironmentalHdrMainLightIntensity(
       arcore_session, arcore_light_estimate,
       light_probe->main_light_intensity.components.data());
@@ -221,7 +218,7 @@ device::mojom::XRReflectionProbePtr GetReflectionProbe(
       arcore_session, arcore_light_estimate, arcore_cube_map);
 
   auto cube_map = device::mojom::XRCubeMap::New();
-  std::array<std::vector<device::RgbaTupleF16>*, 6> const cube_map_faces = {
+  std::array<std::vector<uint16_t>*, 6> const cube_map_faces = {
       &cube_map->positive_x, &cube_map->negative_x, &cube_map->positive_y,
       &cube_map->negative_y, &cube_map->positive_z, &cube_map->negative_z};
 
@@ -243,8 +240,6 @@ device::mojom::XRReflectionProbePtr GetReflectionProbe(
       ReleaseArCoreCubemap(&arcore_cube_map);
       return nullptr;
     }
-
-    auto* cube_map_face = cube_map_faces[i];
 
     // Make sure we only have a single image plane
     int32_t num_planes = 0;
@@ -268,9 +263,9 @@ device::mojom::XRReflectionProbePtr GetReflectionProbe(
     }
 
     // Copy the cubemap
-    uint32_t face_width = 0, face_height = 0;
-    CopyArCoreImage(arcore_session, arcore_cube_map_face, 0, cube_map_face,
-                    &face_width, &face_height);
+    int32_t face_width = 0, face_height = 0;
+    ArImage_getWidth(arcore_session, arcore_cube_map_face, &face_width);
+    ArImage_getHeight(arcore_session, arcore_cube_map_face, &face_height);
 
     // Make sure the cube map is square
     if (face_width != face_height) {
@@ -279,15 +274,29 @@ device::mojom::XRReflectionProbePtr GetReflectionProbe(
       return nullptr;
     }
 
+    const int32_t signed_width_and_height =
+        base::checked_cast<int32_t>(cube_map->width_and_height);
     // Make sure all faces have the same dimensions
     if (i == 0) {
       cube_map->width_and_height = face_width;
-    } else if (face_width != cube_map->width_and_height ||
-               face_height != cube_map->width_and_height) {
+    } else if (face_width != signed_width_and_height ||
+               face_height != signed_width_and_height) {
       DVLOG(1) << "ArCore cube map faces not all of the same dimensions.";
       ReleaseArCoreCubemap(&arcore_cube_map);
       return nullptr;
     }
+
+    // ARCore returns (and mojom expects) to receive the data as r, g, b, a, ...
+    // There are width*height "pixels" of 4 components each, with each component
+    // being a uint16_t.
+    auto* cube_map_face = cube_map_faces[i];
+    cube_map_face->resize(face_width * face_height *
+                          device::mojom::XRCubeMap::kNumComponentsPerPixel);
+    size_t pixel_size =
+        device::mojom::XRCubeMap::kNumComponentsPerPixel * sizeof(uint16_t);
+    CopyArCoreImage(arcore_session, arcore_cube_map_face, 0,
+                    base::as_writable_byte_span(*cube_map_face), pixel_size,
+                    face_width, face_height);
   }
 
   ReleaseArCoreCubemap(&arcore_cube_map);

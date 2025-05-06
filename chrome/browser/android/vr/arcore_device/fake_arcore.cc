@@ -322,15 +322,20 @@ mojom::XRLightEstimationDataPtr FakeArCore::GetLightEstimationData() {
   result->light_probe->spherical_harmonics->coefficients.resize(9);
 
   // Initialize reflection_probe to black
+  const uint32_t cube_map_side_size = 16;
+  const uint64_t num_components = mojom::XRCubeMap::kNumComponentsPerPixel;
+  const size_t cube_map_size =
+      cube_map_side_size * cube_map_side_size * num_components;
+
   result->reflection_probe = mojom::XRReflectionProbe::New();
   result->reflection_probe->cube_map = mojom::XRCubeMap::New();
-  result->reflection_probe->cube_map->width_and_height = 16;
-  result->reflection_probe->cube_map->positive_x.resize(16 * 16);
-  result->reflection_probe->cube_map->negative_x.resize(16 * 16);
-  result->reflection_probe->cube_map->positive_y.resize(16 * 16);
-  result->reflection_probe->cube_map->negative_y.resize(16 * 16);
-  result->reflection_probe->cube_map->positive_z.resize(16 * 16);
-  result->reflection_probe->cube_map->negative_z.resize(16 * 16);
+  result->reflection_probe->cube_map->width_and_height = cube_map_side_size;
+  result->reflection_probe->cube_map->positive_x.resize(cube_map_size);
+  result->reflection_probe->cube_map->negative_x.resize(cube_map_size);
+  result->reflection_probe->cube_map->positive_y.resize(cube_map_size);
+  result->reflection_probe->cube_map->negative_y.resize(cube_map_size);
+  result->reflection_probe->cube_map->positive_z.resize(cube_map_size);
+  result->reflection_probe->cube_map->negative_z.resize(cube_map_size);
 
   return result;
 }
