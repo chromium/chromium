@@ -5,12 +5,21 @@
 #ifndef ASH_TEST_ASH_TEST_UTIL_H_
 #define ASH_TEST_ASH_TEST_UTIL_H_
 
+#include <array>
 #include <cstddef>
+#include <iterator>
+#include <ranges>
+#include <string>
 #include <string_view>
+#include <utility>
 #include <variant>
 
+#include "base/containers/span.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
+#include "crypto/hash.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
@@ -122,6 +131,36 @@ views::Widget* FindWidgetWithName(std::string_view name);
 // waits until there is one.
 // NOTE: This function causes an infinite loop if the target widget never shows.
 views::Widget* FindWidgetWithNameAndWaitIfNeeded(const std::string& name);
+
+// Given a range r with elements r0, r1, ..., rn and an optional projection p
+// (which defaults to the identity), return a stable hash of the concatenation
+// of p(r0), p(r1), ..., p(rn). This is used in some tests to ensure that global
+// data tables are not changed without consulting the owners of those tables or
+// that other invariants are not violated.
+//
+// For example, use this like:
+//   std::vector<MyType> things;
+//   std::string hash = StableHashOfCollection(things, [](const MyType& thing) {
+//     return thing.ToString();
+//   };
+//
+// The projection must return something that base::as_byte_span() accepts - a
+// string, vector of bytes, or many other range-like types are acceptable.
+//
+// This hash is guaranteed stable: the same values, supplied in the same order,
+// will hash to the same value between test runs.
+template <typename Range, typename Proj = std::identity>
+  requires std::ranges::range<Range> &&
+           std::indirectly_unary_invocable<Proj, std::ranges::iterator_t<Range>>
+std::string StableHashOfCollection(const Range& range, Proj proj = {}) {
+  crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);
+  for (const auto& element : range) {
+    hasher.Update(base::as_byte_span(proj(element)));
+  }
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
+  hasher.Finish(hash);
+  return base::ToLowerASCII(base::HexEncode(base::as_string_view(hash)));
+}
 
 }  // namespace ash
 

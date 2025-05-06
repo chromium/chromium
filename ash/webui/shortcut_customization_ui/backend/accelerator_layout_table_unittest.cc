@@ -9,9 +9,8 @@
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
+#include "ash/test/ash_test_util.h"
 #include "base/containers/contains.h"
-#include "base/hash/md5.h"
-#include "base/hash/md5_boringssl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
@@ -25,7 +24,8 @@ namespace {
 // The total number of Ash accelerators.
 constexpr int kAshAcceleratorsTotalNum = 160;
 // The hash of Ash accelerators.
-constexpr char kAshAcceleratorsHash[] = "864aa0f17421e1ce783c85780a7cf357";
+constexpr char kAshAcceleratorsHash[] =
+    "7c9f5d090e6be1c01bcfca53b67a79956737dbba149b4e683b44c6ace07e509d";
 
 std::string ToActionName(ash::AcceleratorAction action) {
   return base::StrCat(
@@ -59,19 +59,6 @@ struct AshAcceleratorDataCmp {
            std::tie(rhs.trigger_on_press, rhs.keycode, rhs.modifiers);
   }
 };
-
-std::string HashAshAcceleratorData(
-    const std::vector<ash::AcceleratorData>& accelerators) {
-  base::MD5Context context;
-  base::MD5Init(&context);
-  for (const auto& accelerator : accelerators) {
-    base::MD5Update(&context, AshAcceleratorDataToString(accelerator));
-  }
-
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &context);
-  return MD5DigestToBase16(digest);
-}
 
 class AcceleratorLayoutMetadataTest : public testing::Test {
  public:
@@ -182,7 +169,7 @@ TEST_F(AcceleratorLayoutMetadataTest, ModifyAcceleratorShouldUpdateLayout) {
   std::stable_sort(ash_accelerators.begin(), ash_accelerators.end(),
                    AshAcceleratorDataCmp());
   const std::string ash_accelerators_hash =
-      HashAshAcceleratorData(ash_accelerators);
+      ash::StableHashOfCollection(ash_accelerators, AshAcceleratorDataToString);
   EXPECT_EQ(ash_accelerators_hash, kAshAcceleratorsHash)
       << kCommonMessage << "kAshAcceleratorsHash=\"" << ash_accelerators_hash
       << "\"\n";
