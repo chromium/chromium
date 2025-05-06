@@ -376,6 +376,9 @@ class SampleForTests {
                 @JniType("std::vector<float>") float[] f,
                 @JniType("std::vector<double>") double[] d);
 
+        @JniType("MyEnum")
+        int returnFromEnum();
+
         // Similar to nativeMethod above, but here the C++ fully qualified class name is taken from
         // the annotation rather than parameter name, which can thus be chosen freely.
         @NativeClassQualifiedName("CPPClass::InnerClass")

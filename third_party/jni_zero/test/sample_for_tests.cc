@@ -166,6 +166,10 @@ static std::vector<bool> JNI_SampleForTests_PrimitiveArrays(
   return Java_SampleForTests_primitiveArrays(env, b, c, s, i, l, f, d);
 }
 
+static MyEnum JNI_SampleForTests_ReturnFromEnum(JNIEnv* env) {
+  return MyEnum::kFirstOption;
+}
+
 }  // namespace jni_zero::tests
 
 // Proxy natives.

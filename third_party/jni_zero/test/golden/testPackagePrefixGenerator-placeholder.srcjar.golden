@@ -33,6 +33,7 @@ public interface SampleForTests {
     public double methodOtherP0(long nativePtr, org.jni_zero.SampleForTests caller);
     public boolean[] primitiveArrays(byte[] b, char[] c, short[] s, int[] i, long[] l, float[] f, double[] d);
     public String returnAString(long nativeCPPClass, org.jni_zero.SampleForTests caller);
+    public int returnFromEnum();
     public void setNonPODDatatype(org.jni_zero.SampleForTests obj, android.graphics.Rect rect);
   }
 }
