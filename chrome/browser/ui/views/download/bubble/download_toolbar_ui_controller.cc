@@ -447,23 +447,20 @@ DownloadToolbarUIController::DownloadToolbarUIController(
           base::BindRepeating(
               &DownloadToolbarUIController::AutoClosePartialView,
               base::Unretained(this))) {
-  action_item_ =
-      actions::ActionManager::Get()
-          .FindAction(
-              kActionShowDownloads,
-              browser_view_->browser()->browser_actions()->root_action_item())
-          ->GetAsWeakPtr();
+  Browser* const browser = browser_view_->browser();
+  action_item_ = actions::ActionManager::Get()
+                     .FindAction(kActionShowDownloads,
+                                 browser->browser_actions()->root_action_item())
+                     ->GetAsWeakPtr();
   tooltip_texts_[0] = l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON);
   action_item_->SetTooltipText(tooltip_texts_.at(0));
 
-  bubble_controller_ =
-      std::make_unique<DownloadBubbleUIController>(browser_view_->browser());
+  bubble_controller_ = std::make_unique<DownloadBubbleUIController>(browser);
 
-  BrowserList::GetInstance()->AddObserver(this);
+  browser_list_observation_.Observe(BrowserList::GetInstance());
 }
 
 DownloadToolbarUIController::~DownloadToolbarUIController() {
-  BrowserList::GetInstance()->RemoveObserver(this);
   controller_.reset();
   bubble_controller_.reset();
 }
@@ -473,6 +470,11 @@ void DownloadToolbarUIController::Init() {
   // separately at a point where the PinnedToolbarActionsContainer will exist.
   controller_ = std::make_unique<DownloadDisplayController>(
       this, browser_view_->browser(), bubble_controller_.get());
+}
+
+void DownloadToolbarUIController::TearDownPreBrowserViewDestruction() {
+  immersive_revealed_lock_.reset();
+  browser_view_ = nullptr;
 }
 
 void DownloadToolbarUIController::Show() {

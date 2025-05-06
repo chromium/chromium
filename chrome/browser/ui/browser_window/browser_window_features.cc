@@ -332,6 +332,10 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
   glic_button_controller_.reset();
 #endif
 
+  if (download_toolbar_ui_controller_) {
+    download_toolbar_ui_controller_->TearDownPreBrowserViewDestruction();
+  }
+
   // TODO(crbug.com/346148093): This logic should not be gated behind a
   // conditional.
   if (side_panel_coordinator_) {
