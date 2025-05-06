@@ -207,6 +207,15 @@ ManageSharingAvatarContainer::ManageSharingAvatarContainer(
 
 ManageSharingAvatarContainer::~ManageSharingAvatarContainer() = default;
 
+void ManageSharingAvatarContainer::OnDeviceScaleFactorChanged(
+    float old_device_scale_factor,
+    float new_device_scale_factor) {
+  views::View::OnDeviceScaleFactorChanged(old_device_scale_factor,
+                                          new_device_scale_factor);
+  RequeryMemberInfo();
+  RebuildChildren();
+}
+
 void ManageSharingAvatarContainer::RequeryMemberInfo() {
   // This action cant be performed if there is no DataSharingService.
   if (!data_sharing_service_) {
@@ -223,17 +232,25 @@ void ManageSharingAvatarContainer::RequeryMemberInfo() {
       image_fetcher_service->GetImageFetcher(
           image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
 
+  // Attempt to get the exact scaled avatar image, default to a overscaled by 2
+  // to support HiDPI displays.
+  auto image_size = kCircleSize * 2;
+  if (GetWidget() && GetWidget()->GetCompositor()) {
+    image_size =
+        GetWidget()->GetCompositor()->device_scale_factor() * kCircleSize;
+  }
+
   // If we have up to three members, initiate fetch for each.
   if (members_for_display_.size() > 0) {
     data_sharing_service_->GetAvatarImageForURL(
-        members_for_display_[0].avatar_url, signin::kAccountInfoImageSize,
+        members_for_display_[0].avatar_url, image_size,
         base::BindOnce(&ManageSharingAvatarContainer::UpdateMemberGfxImage,
                        weak_ptr_factory_.GetWeakPtr(), 0),
         image_fetcher);
   }
   if (members_for_display_.size() > 1) {
     data_sharing_service_->GetAvatarImageForURL(
-        members_for_display_[1].avatar_url, signin::kAccountInfoImageSize,
+        members_for_display_[1].avatar_url, image_size,
         base::BindOnce(&ManageSharingAvatarContainer::UpdateMemberGfxImage,
                        weak_ptr_factory_.GetWeakPtr(), 1),
         image_fetcher);
@@ -242,7 +259,7 @@ void ManageSharingAvatarContainer::RequeryMemberInfo() {
   // we show the overflow.
   if (members_for_display_.size() == 3) {
     data_sharing_service_->GetAvatarImageForURL(
-        members_for_display_[2].avatar_url, signin::kAccountInfoImageSize,
+        members_for_display_[2].avatar_url, image_size,
         base::BindOnce(&ManageSharingAvatarContainer::UpdateMemberGfxImage,
                        weak_ptr_factory_.GetWeakPtr(), 2),
         image_fetcher);
