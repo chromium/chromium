@@ -8,8 +8,7 @@
 'use strict';
 
 promise_test(async t => {
-  await promise_rejects_js(
-      t, TypeError, Translator.create(/*empty options*/));
+  await promise_rejects_js(t, TypeError, Translator.create(/*empty options*/));
 }, 'Translator.create rejects with TypeError if no options are passed.');
 
 promise_test(async t => {

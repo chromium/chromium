@@ -1,20 +1,15 @@
-// META: title=Translate from English to Japanese
+// META: title=Translator Translate
 // META: global=window
 // META: timeout=long
 // META: script=../resources/util.js
 // META: script=../resources/language_codes.js
 // META: script=/resources/testdriver.js
+// META: script=resources/util.js
 //
 // Setting `timeout=long` as this test may require downloading the translation
 // library and the language models.
 
 'use strict';
-
-async function createTranslator(options) {
-  return await test_driver.bless('Create translator', async () => {
-    return await Translator.create(options);
-  });
-}
 
 promise_test(async t => {
   const languagePair = {sourceLanguage: 'en', targetLanguage: 'ja'};
@@ -141,7 +136,7 @@ promise_test(async t => {
   for (let i = 0; i < translatableStrings.length; i++) {
     assert_not_equals(translatedTranslatableString[i], translatableStrings[i]);
   }
-}, 'Translator.translate() echos non-translatable content');
+}, 'Translator.translate() echoes non-translatable content');
 
 promise_test(async t => {
   const translator =
