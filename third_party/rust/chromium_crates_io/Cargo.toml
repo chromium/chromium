@@ -42,13 +42,6 @@ temporal_capi = "0.0.6"
 version = "1.4.2"
 features = ["nightly"]  # For optimized aarch64 implementation.
 
-# Include temporarily here as a direct dependency during the import process
-# for authenticated-pseudonyms.
-# TODO(crbug.com/404604413): Stop exposing this here when it becomes a
-# transitive dependency.
-[dependencies.group]
-version = "0.13"
-
 [dependencies.icu_capi]
 version = "2.0.0-beta2"
 default-features = false
@@ -86,14 +79,6 @@ version = "0.4"
 # `release_max_level_info` disables debug and trace logs at compile time
 # when debug asserts are off, which is when DCHECK_IS_ON() is false.
 features = [ "std", "release_max_level_info" ]
-
-# Temporarily inform our cargo tooling that we need a new version of rand_core. Remove
-# default features to align with authenticated-pseudonyms use case (crbug.com/404604413)
-# TODO(crbug.com/404598090) Remove this when all upstreams have updated, and rand_core
-# moves to be a transitive dependency only.
-[dependencies.rand_core]
-version = "0.9.0"
-default-features = false
 
 # Temporarily inform our cargo tooling that we care about
 # the new version of serde_json_lenient. We are in the midst
