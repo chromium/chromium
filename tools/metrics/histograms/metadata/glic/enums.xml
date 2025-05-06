@@ -37,6 +37,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ActInFocusedTabErrorReason) -->
 
+<!-- LINT.IfChange(DeepScanAccessPoint) -->
+
+<enum name="DeepScanAccessPoint">
+<!-- These values are persisted to logs. Entries should not be renumbered and
+     numeric values should never be reused. Keep this in sync with
+     safe_browsing::DeepScanAccessPoint in
+     chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h
+    -->
+
+  <int value="0" label="File Downloaded"/>
+  <int value="1" label="File Uploaded"/>
+  <int value="2" label="Drag and Drop"/>
+  <int value="3" label="Paste"/>
+  <int value="4" label="Print"/>
+  <int value="5" label="File Transfer"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h:DeepScanAccessPoint) -->
+
 <!-- LINT.IfChange(GlicAttachChangeReason) -->
 
 <enum name="GlicAttachChangeReason">

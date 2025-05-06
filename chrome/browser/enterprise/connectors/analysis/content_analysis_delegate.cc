@@ -417,6 +417,8 @@ void ContentAnalysisDelegate::CreateForWebContents(
                 glic::GlicProfileManager::GetInstance()->GetLastActiveGlic()) {
           std::u16string label = l10n_util::GetPluralStringFUTF16(
               IDS_DEEP_SCANNING_DIALOG_UPLOAD_WARNING_MESSAGE, 1);
+          base::UmaHistogramEnumeration("Glic.Modal.DeepScanAccessPoint",
+                                        access_point);
           glic_keyed_service->window_controller().ShowGlicModal(label);
         }
       }

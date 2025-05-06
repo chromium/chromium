@@ -200,6 +200,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Modal.DeepScanAccessPoint" enum="DeepScanAccessPoint"
+    expires_after="2026-03-01">
+  <owner>birnie@google.com</owner>
+  <owner>dewittj@google.com</owner>
+  <summary>
+    Recorded each time a Glic modal is created as a result of an Enterprise
+    Connector deep scan trigger originating from
+    ContentAnalysisDelegate::CreateForWebContents. The specific access point
+    that triggered the scan is recorded. See the DeepScanAccessPoint enum in
+    glic/enums.xml for possible values, corresponding to
+    safe_browsing::DeepScanAccessPoint.
+  </summary>
+</histogram>
+
 <histogram name="Glic.OsEntrypoint.Settings.Shortcut" enum="BooleanEnabled"
     expires_after="2026-01-15">
   <owner>agale@chromium.org</owner>
