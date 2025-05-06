@@ -832,8 +832,8 @@ public class FeedStream implements Stream {
     public void bind(
             RecyclerView rootView,
             FeedListContentManager manager,
-            FeedScrollState savedInstanceState,
-            FeedSurfaceScope surfaceScope,
+            @Nullable FeedScrollState savedInstanceState,
+            @Nullable FeedSurfaceScope surfaceScope,
             HybridListRenderer renderer,
             @Nullable FeedReliabilityLogger reliabilityLogger,
             int headerCount) {

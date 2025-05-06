@@ -108,8 +108,8 @@ public interface Stream {
     void bind(
             RecyclerView view,
             FeedListContentManager manager,
-            FeedScrollState savedInstanceState,
-            FeedSurfaceScope surfaceScope,
+            @Nullable FeedScrollState savedInstanceState,
+            @Nullable FeedSurfaceScope surfaceScope,
             HybridListRenderer renderer,
             @Nullable FeedReliabilityLogger reliabilityLogger,
             int headerCount);

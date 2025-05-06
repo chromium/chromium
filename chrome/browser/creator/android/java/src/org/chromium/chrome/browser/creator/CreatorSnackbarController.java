@@ -9,10 +9,13 @@ import static org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionReques
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 /** Controller for showing Creator snackbars */
+@NullMarked
 public class CreatorSnackbarController {
     static final int SNACKBAR_DURATION_MS = 8000;
 
@@ -32,7 +35,7 @@ public class CreatorSnackbarController {
         mSnackbarController =
                 new SnackbarManager.SnackbarController() {
                     @Override
-                    public void onAction(Object actionData) {
+                    public void onAction(@Nullable Object actionData) {
                         mSnackbarManager.dismissAllSnackbars();
                     }
                 };

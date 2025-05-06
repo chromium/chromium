@@ -106,7 +106,9 @@ public interface BottomSheetController {
      * @param hideReason The reason that the content is being hidden.
      */
     void hideContent(
-            BottomSheetContent content, boolean animate, @StateChangeReason int hideReason);
+            @Nullable BottomSheetContent content,
+            boolean animate,
+            @StateChangeReason int hideReason);
 
     void hideContent(@Nullable BottomSheetContent content, boolean animate);
 
