@@ -822,11 +822,19 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
   // If the user turns on sync, disable account storage for bookmarks. This
   // way the user does not get duplicate data if they turn off sync (and
   // choose to preserve their data locally) and then sign in again.
+  // This is safe to remove with the deprecation of
+  // `signin::ConsentLevel::kSync`.
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSync) ==
       signin::PrimaryAccountChangeEvent::Type::kSet) {
     auto current_gaia_id = event_details.GetCurrentState().primary_account.gaia;
-    SigninPrefs(*client_->GetPrefs())
-        .SetBookmarksExplicitBrowserSignin(current_gaia_id, false);
+    auto prefs = SigninPrefs(*client_->GetPrefs());
+
+    if (prefs.GetBookmarksExplicitBrowserSignin(current_gaia_id)) {
+      base::UmaHistogramBoolean(
+          "Signin.Bookmarks.SyncTurnedOnWithAccountStorageEnabled", true);
+    }
+
+    prefs.SetBookmarksExplicitBrowserSignin(current_gaia_id, false);
   }
 #endif
 }

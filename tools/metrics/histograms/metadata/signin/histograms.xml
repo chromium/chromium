@@ -692,6 +692,16 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Bookmarks.SyncTurnedOnWithAccountStorageEnabled"
+    enum="BooleanOccurred" expires_after="2025-10-12">
+  <owner>amelies@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that sync was turned on while the user had account storage for
+    bookmarks enabled. The record happens when the user opts in to sync.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Bookmarks.{ConsentLevel}.{BookmarkGroup}{AccessPoint}"
     units="count" expires_after="2025-10-05">
   <owner>rsult@google.com</owner>
