@@ -661,7 +661,23 @@ export class BrowsingContextImpl {
     });
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
-      if (this.id !== params.frameId) {
+      // Checking for `params.frameId` for comptaibility with Chrome
+      // versions that do not have a frameId. TODO: remove once
+      // https://crrev.com/c/6487891 is in stable.
+      if (params.frameId && this.id !== params.frameId) {
+        return;
+      }
+      if (
+        !params.frameId &&
+        this.#parentId &&
+        this.#cdpTarget.cdpClient !==
+          this.#browsingContextStorage.getContext(this.#parentId)?.cdpTarget
+            .cdpClient
+      ) {
+        // If CDP event `Page.javascriptDialogClosed` does not have a frameId, this
+        // heuristic emits the event only for top-level per-cdp target context, ignoring
+        // the event for same-process iframes. So the event will be emitted only once per
+        // CDP target. TODO: remove once https://crrev.com/c/6487891 is in stable.
         return;
       }
       const accepted = params.result;
@@ -695,7 +711,23 @@ export class BrowsingContextImpl {
     });
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
-      if (this.id !== params.frameId) {
+      // Checking for `params.frameId` for comptaibility with Chrome
+      // versions that do not have a frameId. TODO: remove once
+      // https://crrev.com/c/6487891 is in stable.
+      if (params.frameId && this.id !== params.frameId) {
+        return;
+      }
+      if (
+        !params.frameId &&
+        this.#parentId &&
+        this.#cdpTarget.cdpClient !==
+          this.#browsingContextStorage.getContext(this.#parentId)?.cdpTarget
+            .cdpClient
+      ) {
+        // If CDP event `Page.javascriptDialogClosed` does not have a frameId, this
+        // heuristic emits the event only for top-level per-cdp target context, ignoring
+        // the event for same-process iframes. So the event will be emitted only once per
+        // CDP target. TODO: remove once https://crrev.com/c/6487891 is in stable.
         return;
       }
       const promptType = BrowsingContextImpl.#getPromptType(params.type);
