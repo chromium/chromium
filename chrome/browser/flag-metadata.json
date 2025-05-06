@@ -9220,6 +9220,14 @@
     "expiry_milestone": 135
   },
   {
+    "name": "three-button-password-save-dialog",
+    "owners": [
+      "cjgrant@chromium.org",
+      "dfried@chromium.org"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "throttle-main-thread-to-60hz",
     "owners": [ "lizeb@google.com", "clank-performance-team@google.com" ],
     "expiry_milestone": 137

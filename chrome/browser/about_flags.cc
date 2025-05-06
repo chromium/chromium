@@ -11823,6 +11823,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillThirdPartyModeContentProvider)},
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"three-button-password-save-dialog",
+     flag_descriptions::kThreeButtonPasswordSaveDialogName,
+     flag_descriptions::kThreeButtonPasswordSaveDialogDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kThreeButtonPasswordSaveDialog)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

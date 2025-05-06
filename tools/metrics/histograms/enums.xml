@@ -17280,6 +17280,7 @@ from previous Chrome versions.
   <int value="1115564918" label="LacrosWaylandLogging:enabled"/>
   <int value="1115635149" label="EnableUnifiedMultiDeviceSetup:enabled"/>
   <int value="1115732111" label="OmniboxCalcProvider:enabled"/>
+  <int value="1116018547" label="ThreeButtonPasswordSaveDialog:disabled"/>
   <int value="1116084116" label="BindingManagerConnectionLimit:enabled"/>
   <int value="1116593018" label="CaptureThumbnailOnLoadFinished:disabled"/>
   <int value="1116798400" label="NoncedPartitionedCookies:enabled"/>
@@ -18794,6 +18795,7 @@ from previous Chrome versions.
   <int value="1677258310" label="DragAppsInTabletMode:disabled"/>
   <int value="1677610330" label="OmniboxExpandedStateHeight:enabled"/>
   <int value="1678259296" label="ChromeWhatsNewInMainMenuNewBadge:enabled"/>
+  <int value="1678849864" label="ThreeButtonPasswordSaveDialog:enabled"/>
   <int value="1678866761" label="SystemLatinPhysicalTyping:disabled"/>
   <int value="1679347136" label="ExperimentalWebAppProfileIsolation:enabled"/>
   <int value="1679558835" label="ArcAvailableForChildAccount:enabled"/>

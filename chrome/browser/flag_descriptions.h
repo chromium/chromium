@@ -2276,6 +2276,11 @@ extern const char kAutofillThirdPartyModeContentProviderName[];
 extern const char kAutofillThirdPartyModeContentProviderDescription[];
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kThreeButtonPasswordSaveDialogName[];
+extern const char kThreeButtonPasswordSaveDialogDescription[];
+#endif
+
 extern const char kThrottleMainTo60HzName[];
 extern const char kThrottleMainTo60HzDescription[];
 

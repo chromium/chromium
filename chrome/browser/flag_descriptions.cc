@@ -3948,6 +3948,14 @@ const char kAutofillThirdPartyModeContentProviderDescription[] =
     "Enables querying the third party autofill mode state from the Chrome app.";
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kThreeButtonPasswordSaveDialogName[] =
+    "Three Button Password Save Dialog";
+const char kThreeButtonPasswordSaveDialogDescription[] =
+    "Provides a 'not now' button alongside the 'never' button on the save "
+    "password dialog.";
+#endif
+
 const char kThrottleMainTo60HzName[] = "throttle-main-thread-to-60hz";
 const char kThrottleMainTo60HzDescription[] =
     "Throttle main thread updates to 60fps, even when VSync rate is higher.";
