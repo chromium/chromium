@@ -1513,8 +1513,6 @@ static_library("ui") {
       "webui/profile_internals/profile_internals_ui.h",
       "webui/sanitized_image_source.cc",
       "webui/sanitized_image_source.h",
-      "webui/search_engine_choice/icon_utils.cc",
-      "webui/search_engine_choice/icon_utils.h",
       "webui/search_engine_choice/search_engine_choice_handler.cc",
       "webui/search_engine_choice/search_engine_choice_handler.h",
       "webui/search_engine_choice/search_engine_choice_ui.cc",

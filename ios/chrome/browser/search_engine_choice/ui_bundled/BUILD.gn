@@ -66,12 +66,16 @@ source_set("ui_util") {
   ]
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/regional_capabilities",
+    "//components/resources:components_scaled_resources_grit",
     "//components/search_engines",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//third_party/search_engines_data:search_engines_scaled_resources_grit",
     "//ui/base",
+    "//ui/resources",
   ]
   frameworks = [ "UIKit.framework" ]
 }

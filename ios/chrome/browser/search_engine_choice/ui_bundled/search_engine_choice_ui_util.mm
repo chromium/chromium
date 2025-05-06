@@ -4,25 +4,49 @@
 
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h"
 
+#import <algorithm>
+#import <string>
+
 #import "base/strings/utf_string_conversions.h"
+#import "build/branding_buildflags.h"
+#import "components/grit/components_scaled_resources.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
+#import "third_party/search_engines_data/search_engines_scaled_resources_map.h"
 #import "ui/base/resource/resource_bundle.h"
+#import "ui/resources/grit/ui_resources.h"
 
 UIImage* SearchEngineFaviconFromTemplateURL(const TemplateURL& template_url) {
   // Only works for prepopulated search engines.
   CHECK_GT(template_url.prepopulate_id(), 0)
       << base::UTF16ToUTF8(template_url.short_name());
-  std::u16string engine_keyword = template_url.data().keyword();
-  int resource_id = search_engines::GetIconResourceId(engine_keyword);
-  if (resource_id == -1) {
-    // It is possible to have no resource id for a prepopulated search engine
-    // that was selected from a country outside of EEA countries.
-    return nil;
+
+  // This would be better served by ResourcesUtil::GetThemeResourceId(), but
+  // the symbol appears to be unreachable from the ios/chrome/browser.
+  std::string resource_name = template_url.data().GetBuiltinImageResourceId();
+  int resource_id = IDR_DEFAULT_FAVICON;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Google resources are part of the Chrome resources bundle and require
+  // special case handling.
+  if (resource_name == "IDR_SEARCH_ENGINE_GOOGLE_IMAGE") {
+    resource_id = IDR_SEARCH_ENGINE_GOOGLE_IMAGE;
+  } else
+#endif
+  {
+    auto resource_it = std::ranges::find_if(
+        kSearchEnginesScaledResources,
+        [&](const auto& resource) { return resource.path == resource_name; });
+
+    // Note: it is possible to have no resource id for a prepopulated search
+    // engine that was selected from a country outside of EEA countries.
+    if (resource_it != std::end(kSearchEnginesScaledResources)) {
+      resource_id = resource_it->id;
+    }
   }
+
   ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
   return resource_bundle.GetNativeImageNamed(resource_id).ToUIImage();
 }

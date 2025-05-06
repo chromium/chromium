@@ -258,9 +258,9 @@ TEST_P(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
           std::string_view(), std::string_view(), std::string_view(),
           std::string_view(), std::string_view(), std::string_view(),
           std::string_view(), std::string_view(), std::string_view(),
-          std::vector<std::string>(), std::string_view(), std::string_view(),
-          std::u16string_view(), base::Value::List(), false, false, 0,
-          base::span<TemplateURLData::RegulatoryExtension>())));
+          std::string_view(), std::vector<std::string>(), std::string_view(),
+          std::string_view(), std::u16string_view(), base::Value::List(), false,
+          false, 0, base::span<TemplateURLData::RegulatoryExtension>())));
   templateService()->SetUserSelectedDefaultSearchProvider(template_url);
 
   auto info = service()->GetAboutThisSiteInfo(

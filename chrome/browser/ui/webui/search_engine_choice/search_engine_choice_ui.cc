@@ -14,7 +14,6 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
-#include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -42,14 +41,11 @@ std::string GetChoiceListJSON(
   for (const auto& choice : choices) {
     base::Value::Dict choice_value;
 
-    std::string_view icon_path =
-        GetSearchEngineGeneratedIconPath(choice->keyword());
-    if (icon_path.empty()) {
-      icon_path = "chrome://theme/IDR_DEFAULT_FAVICON";
-    }
     choice_value.Set("prepopulateId", choice->prepopulate_id());
     choice_value.Set("name", choice->short_name());
-    choice_value.Set("iconPath", icon_path);
+    choice_value.Set(
+        "iconPath", base::StrCat({"chrome://theme/",
+                                  choice->data().GetBuiltinImageResourceId()}));
     choice_value.Set("url", choice->url());
     choice_value.Set("marketingSnippet",
                      search_engines::GetMarketingSnippetString(choice->data()));

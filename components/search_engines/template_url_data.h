@@ -50,6 +50,7 @@ struct TemplateURLData {
                   std::string_view contextual_search_url,
                   std::string_view logo_url,
                   std::string_view doodle_url,
+                  std::string_view base_builtin_resource_id,
                   std::string_view search_url_post_params,
                   std::string_view suggest_url_post_params,
                   std::string_view image_url_post_params,
@@ -84,6 +85,9 @@ struct TemplateURLData {
 
   // Generate the deterministic hash of data within this TemplateURL.
   std::vector<uint8_t> GenerateHash() const;
+
+  // Retrieve builtin image resource ID for this engine.
+  std::string GetBuiltinImageResourceId() const;
 
   // Recomputes |sync_guid| using the same logic as in the constructor. This
   // means a random GUID is generated, except for built-in search engines,
@@ -122,6 +126,9 @@ struct TemplateURLData {
 
   // Optional URL for the Doodle.
   GURL doodle_url;
+
+  // Builtin base resource ID used to construct derived resource IDs.
+  std::string_view base_builtin_resource_id;
 
   // The following post_params are comma-separated lists used to specify the
   // post parameters for the corresponding URL.

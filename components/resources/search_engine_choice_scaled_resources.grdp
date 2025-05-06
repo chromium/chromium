@@ -4,6 +4,7 @@
 <grit-part>
   <if expr="_google_chrome">
     <structure type="chrome_scaled_image" name="IDR_GOOGLE_COM_PNG" file="google_chrome/google_search_logo.png" />
+    <structure type="chrome_scaled_image" name="IDR_SEARCH_ENGINE_GOOGLE_IMAGE" file="google_chrome/google_search_logo.png" />
   </if>
   <structure type="chrome_scaled_image" name="IDR_AR_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
   <structure type="chrome_scaled_image" name="IDR_AT_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
