@@ -1051,7 +1051,7 @@ bool IOSPasskeysM2Enabled() {
 
 BASE_FEATURE(kIOSPushNotificationMultiProfile,
              "IOSPushNotificationMultiProfile",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsIOSMultiProfilePushNotificationHandlingEnabled() {
   return base::FeatureList::IsEnabled(kIOSPushNotificationMultiProfile);

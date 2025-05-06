@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -204,10 +205,15 @@ class CommercePushNotificationClientTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_
                      forProtocol:@protocol(ApplicationCommands)];
+
+    commerce_push_notification_client_ =
+        IsIOSMultiProfilePushNotificationHandlingEnabled()
+            ? std::make_unique<CommercePushNotificationClient>(profile_.get())
+            : std::make_unique<CommercePushNotificationClient>();
   }
 
   CommercePushNotificationClient* GetCommercePushNotificationClient() {
-    return &commerce_push_notification_client_;
+    return commerce_push_notification_client_.get();
   }
 
   Browser* GetBrowser() { return browser_.get(); }
@@ -219,28 +225,29 @@ class CommercePushNotificationClientTest : public PlatformTest {
   void HandleNotificationInteraction(NSString* action_identifier,
                                      NSDictionary* user_info,
                                      base::OnceClosure completion) {
-    commerce_push_notification_client_.HandleNotificationInteraction(
+    commerce_push_notification_client_->HandleNotificationInteraction(
         action_identifier, user_info, std::move(completion));
   }
 
   std::vector<std::pair<GURL, base::OnceCallback<void(Browser*)>>>&
   GetUrlsDelayedForLoading() {
-    return commerce_push_notification_client_.urls_delayed_for_loading_;
+    return commerce_push_notification_client_->urls_delayed_for_loading_;
   }
 
   void OnSceneActiveForegroundBrowserReady() {
-    commerce_push_notification_client_.OnSceneActiveForegroundBrowserReady();
+    commerce_push_notification_client_->OnSceneActiveForegroundBrowserReady();
   }
 
   Browser* GetSceneLevelForegroundActiveBrowser() {
-    return commerce_push_notification_client_.GetActiveForegroundBrowser();
+    return commerce_push_notification_client_->GetActiveForegroundBrowser();
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  CommercePushNotificationClient commerce_push_notification_client_;
+  std::unique_ptr<CommercePushNotificationClient>
+      commerce_push_notification_client_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> background_browser_;
   raw_ptr<TestProfileIOS> profile_;
@@ -319,13 +326,11 @@ TEST_F(CommercePushNotificationClientTest, TestHintKeyRemovedUponNotification) {
     kSerializedPayloadKey : base::SysUTF8ToNSString(serialized_any_escaped)
   };
 
-  CommercePushNotificationClient push_notification_client;
-
   EXPECT_CALL(mock_delegate,
               RemoveFetchedEntriesByHintKeys(
                   testing::_, testing::Eq(optimization_guide::proto::HOST),
                   testing::ElementsAreArray({kHintKey})));
-  push_notification_client.HandleNotificationReception(dict);
+  commerce_push_notification_client_->HandleNotificationReception(dict);
 }
 
 TEST_F(CommercePushNotificationClientTest, TestNotificationInteraction) {
