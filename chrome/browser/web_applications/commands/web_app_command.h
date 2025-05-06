@@ -112,8 +112,8 @@ class WebAppCommand : public internal::CommandWithLock<LockType> {
 
   // Special constructor if the callback doesn't take any arguments. There is no
   // need to specify an empty tuple.
-  template <std::size_t i = sizeof...(CallbackArgs),
-            std::enable_if_t<i == 0, int> = 0>
+  template <std::size_t i = sizeof...(CallbackArgs)>
+    requires(i == 0)
   WebAppCommand(const std::string& name,
                 LockDescription initial_lock_request,
                 CallbackType callback)
@@ -123,8 +123,8 @@ class WebAppCommand : public internal::CommandWithLock<LockType> {
     CHECK(!callback_.is_null());
   }
 
-  template <std::size_t i = sizeof...(CallbackArgs),
-            std::enable_if_t<i >= 1, int> = 0>
+  template <std::size_t i = sizeof...(CallbackArgs)>
+    requires(i >= 1)
   WebAppCommand(const std::string& name,
                 LockDescription initial_lock_request,
                 CallbackType callback,
