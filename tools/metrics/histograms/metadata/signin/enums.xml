@@ -527,6 +527,42 @@ chromium-metrics-reviews@google.com.
              IdentityManager"/>
 </enum>
 
+<!-- LINT.IfChange(IOSProfileInitializationOutcome) -->
+
+<enum name="IOSProfileInitializationOutcome">
+  <int value="0"
+      label="Test-only code path, should never be recorded in production"/>
+  <int value="1"
+      label="Okay: Multi-profile feature disabled; profile was already
+             initialized"/>
+  <int value="2"
+      label="Okay: Multi-profile feature disabled; profile newly initialized"/>
+  <int value="3" label="Okay: Personal profile was already initialized"/>
+  <int value="4" label="Okay: Personal profile newly initialized"/>
+  <int value="5" label="Okay: Managed profile was already initialized"/>
+  <int value="6" label="Okay: Managed profile newly initialized"/>
+  <int value="7"
+      label="Bad: Managed profile newly initialized, but was already signed
+             in"/>
+  <int value="8"
+      label="Bad: Managed profile was already initialized, but newly signed
+             in"/>
+  <int value="9"
+      label="Bad: Managed profile was already initialized, but had no
+             assigned accounts"/>
+  <int value="10"
+      label="Bad: Managed profile newly initialized, but had no assigned
+             accounts"/>
+  <int value="11"
+      label="Bad: Managed profile was already initialized, but had multiple
+             assigned accounts, and was newly signed in"/>
+  <int value="12"
+      label="Bad: Managed profile newly initialized, but had multiple
+             assigned accounts"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/signin/model/authentication_service.h:IOSProfileInitializationOutcome) -->
+
 <enum name="LaunchWebAuthFlowResult">
   <int value="0" label="Success"/>
   <int value="1" label="kOffTheRecord"/>

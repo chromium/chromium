@@ -1808,6 +1808,18 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IOSAuthenticationServiceInitializationOutcome"
+    enum="IOSProfileInitializationOutcome" expires_after="2026-03-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records the outcome of profile initialzation done by AuthenticationService,
+    which happens whenever a profile is loaded (i.e. on browser startup, plus
+    whenever the user switches accounts/profiles).
+  </summary>
+</histogram>
+
 <histogram name="Signin.IOSChangeProfileReason" enum="IOSChangeProfileReason"
     expires_after="2025-11-25">
   <owner>jlebel@chromium.org</owner>
