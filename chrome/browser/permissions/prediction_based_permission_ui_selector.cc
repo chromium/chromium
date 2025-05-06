@@ -157,11 +157,11 @@ void PredictionBasedPermissionUiSelector::InquireServerModel(
           /*is_on_device=*/false, request_type));
 }
 
-void PredictionBasedPermissionUiSelector::InquireTfliteOnDeviceModelIfAvailable(
+void PredictionBasedPermissionUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
     const PredictionRequestFeatures& features,
     permissions::RequestType request_type) {
 #if !BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  VLOG(1) << "[CPSS] Client doesn't support tflite";
+  VLOG(1) << "[CPSS] Client doesn't support CPSSv1";
   std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
   return;
 #else
@@ -174,11 +174,11 @@ void PredictionBasedPermissionUiSelector::InquireTfliteOnDeviceModelIfAvailable(
             request_type);
   }
   if (prediction_model_handler && prediction_model_handler->ModelAvailable()) {
-    VLOG(1) << "[CPSS] Using locally available TFLite model";
+    VLOG(1) << "[CPSS] Using locally available CPSSv1 model";
     permissions::PermissionUmaUtil::RecordPermissionPredictionSource(
         permissions::PermissionPredictionSource::ON_DEVICE_TFLITE);
     auto proto_request = GetPredictionRequestProto(features);
-    tflite_model_holdback_probability_ =
+    cpss_v1_model_holdback_probability_ =
         prediction_model_handler->HoldBackProbability();
     prediction_model_handler->ExecuteModelWithMetadata(
         base::BindOnce(
@@ -190,7 +190,7 @@ void PredictionBasedPermissionUiSelector::InquireTfliteOnDeviceModelIfAvailable(
         std::move(proto_request));
     return;
   }
-  VLOG(1) << "[CPSS] On device TFLite model unavailable";
+  VLOG(1) << "[CPSS] On device CPSSv1 model unavailable";
   std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
@@ -215,19 +215,19 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   callback_ = std::move(callback);
   last_permission_request_relevance_ = std::nullopt;
   last_request_grant_likelihood_ = std::nullopt;
-  tflite_model_holdback_probability_ = std::nullopt;
+  cpss_v1_model_holdback_probability_ = std::nullopt;
   was_decision_held_back_ = std::nullopt;
 
   const PredictionSource prediction_source =
       GetPredictionTypeToUse(request->request_type());
-  if (prediction_source == PredictionSource::USE_NONE) {
+  if (prediction_source == PredictionSource::kNoCpssModel) {
     VLOG(1) << "[CPSS] Configuration does not allow CPSS requests";
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
 
   PredictionRequestFeatures features = BuildPredictionRequestFeatures(request);
-  if (prediction_source == PredictionSource::USE_ONDEVICE_TFLITE) {
+  if (prediction_source == PredictionSource::kOnDeviceCpssV1Model) {
     if (features.requested_permission_counts.total() <
         kRequestedPermissionMinimumHistoricalActions) {
       VLOG(1) << "[CPSS] Historic prompt count ("
@@ -256,16 +256,16 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   DCHECK(!request_);
 
   switch (prediction_source) {
-    case PredictionSource::USE_ONDEVICE_AI_AND_SERVER_SIDE:
+    case PredictionSource::kOnDeviceAiv1AndServerSideModel:
       InquireAiOnDeviceAndServerModelIfAvailable(
           web_contents->GetPrimaryMainFrame(), std::move(features),
           request->request_type());
       return;
-    case PredictionSource::USE_SERVER_SIDE:
+    case PredictionSource::kServerSideCpssV3Model:
       return InquireServerModel(features, request->request_type(),
                                 /*record_source=*/true);
-    case PredictionSource::USE_ONDEVICE_TFLITE:
-      return InquireTfliteOnDeviceModelIfAvailable(features,
+    case PredictionSource::kOnDeviceCpssV1Model:
+      return InquireCpssV1OnDeviceModelIfAvailable(features,
                                                    request->request_type());
     default:
       NOTREACHED();
@@ -463,8 +463,8 @@ bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
   const double holdback_chance = base::RandDouble();
   bool should_holdback = false;
   if (is_on_device) {
-    DCHECK(tflite_model_holdback_probability_.has_value());
-    should_holdback = holdback_chance < *tflite_model_holdback_probability_;
+    DCHECK(cpss_v1_model_holdback_probability_.has_value());
+    should_holdback = holdback_chance < *cpss_v1_model_holdback_probability_;
   } else {
     should_holdback =
         holdback_chance <
@@ -489,12 +489,12 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
 
   if (request_type == permissions::RequestType::kNotifications &&
       !is_notification_cpss_enabled) {
-    return PredictionSource::USE_NONE;
+    return PredictionSource::kNoCpssModel;
   }
 
   if (request_type == permissions::RequestType::kGeolocation &&
       !is_geolocation_cpss_enabled) {
-    return PredictionSource::USE_NONE;
+    return PredictionSource::kNoCpssModel;
   }
 
   bool use_server_side = false;
@@ -509,9 +509,9 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
   }
   if (use_server_side) {
     if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
-      return PredictionSource::USE_ONDEVICE_AI_AND_SERVER_SIDE;
+      return PredictionSource::kOnDeviceAiv1AndServerSideModel;
     }
-    return PredictionSource::USE_SERVER_SIDE;
+    return PredictionSource::kServerSideCpssV3Model;
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -524,9 +524,9 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
         permissions::features::kPermissionOnDeviceGeolocationPredictions);
   }
   if (use_ondevice_tflite) {
-    return PredictionSource::USE_ONDEVICE_TFLITE;
+    return PredictionSource::kOnDeviceCpssV1Model;
   }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
-  return PredictionSource::USE_NONE;
+  return PredictionSource::kNoCpssModel;
 }
