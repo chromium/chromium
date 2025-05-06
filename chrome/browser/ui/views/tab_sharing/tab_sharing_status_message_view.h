@@ -64,10 +64,13 @@ class TabSharingStatusMessageView : public views::View {
       delete;
   ~TabSharingStatusMessageView() override;
 
+  // View:
+  gfx::Size GetMinimumSize() const override;
+
  private:
   void SetupMessage(MessageInfo info);
-  void AddLabel(const std::u16string& text);
-  void AddButton(const EndpointInfo& endpoint_info);
+  void AddLabel(const std::u16string& text, int flex_layout_order);
+  void AddButton(const EndpointInfo& endpoint_info, int flex_layout_order);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SHARING_TAB_SHARING_STATUS_MESSAGE_VIEW_H_

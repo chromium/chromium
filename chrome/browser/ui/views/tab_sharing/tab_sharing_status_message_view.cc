@@ -13,7 +13,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -194,17 +194,20 @@ TabSharingStatusMessageView::TabSharingStatusMessageView(
   SetupMessage(info);
   AddChildView(views::Builder<views::Separator>()
                    .SetProperty(views::kMarginsKey, kSeparatorInsets)
+                   .SetProperty(views::kFlexBehaviorKey,
+                                views::FlexSpecification(
+                                    views::MinimumFlexSizeRule::kPreferred))
                    .Build());
-
-  views::BoxLayout* layout =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStretch);
-  layout->set_between_child_spacing(0);
+  views::FlexLayout* layout =
+      SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 }
 
 TabSharingStatusMessageView::~TabSharingStatusMessageView() = default;
+
+gfx::Size TabSharingStatusMessageView::GetMinimumSize() const {
+  return gfx::Size();
+}
 
 void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
   // Format the message text and retrieve the offsets to where the replacements
@@ -238,15 +241,17 @@ void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
   // This results in the text before the endpoint_info and the replacement text
   // being added to the next label.
   size_t label_start = 0;
+  int flex_layout_order = 1;
   for (size_t i = 0; i < info.endpoint_infos.size(); ++i) {
     if (!info.endpoint_infos[i].focus_target_id) {
       continue;
     }
     const size_t label_length = offsets[i] - label_start;
     if (label_length > 0) {
-      AddLabel(label_text.substr(label_start, label_length));
+      AddLabel(label_text.substr(label_start, label_length),
+               flex_layout_order++);
     }
-    AddButton(info.endpoint_infos[i]);
+    AddButton(info.endpoint_infos[i], flex_layout_order++);
     label_start = offsets[i] + replacements[i].size();
   }
 
@@ -254,7 +259,7 @@ void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
   // label covers the entire string.
   const size_t label_length = label_text.size() - label_start;
   if (label_length > 0) {
-    AddLabel(label_text.substr(label_start, label_length));
+    AddLabel(label_text.substr(label_start, label_length), flex_layout_order++);
   }
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
@@ -262,12 +267,18 @@ void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
-void TabSharingStatusMessageView::AddLabel(const std::u16string& text) {
-  AddChildView(std::make_unique<views::Label>(
+void TabSharingStatusMessageView::AddLabel(const std::u16string& text,
+                                           int flex_layout_order) {
+  views::Label* label = AddChildView(std::make_unique<views::Label>(
       text, views::style::CONTEXT_DIALOG_BODY_TEXT));
+  label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero)
+          .WithOrder(flex_layout_order));
 }
 
-void TabSharingStatusMessageView::AddButton(const EndpointInfo& endpoint_info) {
+void TabSharingStatusMessageView::AddButton(const EndpointInfo& endpoint_info,
+                                            int flex_layout_order) {
   views::MdTextButton* button =
       AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(&ActivateWebContents,
@@ -283,6 +294,10 @@ void TabSharingStatusMessageView::AddButton(const EndpointInfo& endpoint_info) {
                        ui::kColorLinkForeground);
   button->SetBgColorIdOverride(ui::kColorSysNeutralContainer);
   button->SetLabelStyle(views::style::STYLE_BODY_5_MEDIUM);
+  button->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero)
+          .WithOrder(flex_layout_order));
 }
 
 BEGIN_METADATA(TabSharingStatusMessageView)
