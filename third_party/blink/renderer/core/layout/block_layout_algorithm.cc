@@ -296,6 +296,10 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
 LogicalStaticPosition::InlineEdge InlineAxisEdge(
     const BlockNode& child,
     const ComputedStyle* parent_style) {
+  if (!RuntimeEnabledFeatures::CSSAlignBlockAndInlineOutOfFlowsEnabled()) {
+    return LogicalStaticPosition::kInlineStart;
+  }
+
   StyleSelfAlignmentData normal_value_behavior = {ItemPosition::kStart,
                                                   OverflowAlignment::kDefault};
   const ItemPosition align_self =
@@ -320,6 +324,10 @@ LogicalStaticPosition::InlineEdge InlineAxisEdge(
 LogicalStaticPosition::BlockEdge BlockAxisEdge(
     const BlockNode& child,
     const ComputedStyle* parent_style) {
+  if (!RuntimeEnabledFeatures::CSSAlignBlockAndInlineOutOfFlowsEnabled()) {
+    return LogicalStaticPosition::kBlockStart;
+  }
+
   StyleSelfAlignmentData normal_value_behavior = {ItemPosition::kStart,
                                                   OverflowAlignment::kDefault};
   const ItemPosition align_self =
