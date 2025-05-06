@@ -50,27 +50,33 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
   CGFloat imageWidth = self.frame.size.width;
   CGFloat imageHeight = self.frame.size.height;
 
-  // TODO(crbug.com/411039614): Replace UIGraphicsBeginImageContextWithOptions
-  // with UIGraphicsImageRenderer.
-  UIGraphicsBeginImageContextWithOptions(CGSizeMake(imageWidth, imageHeight),
-                                         YES, 0.0);
-  [thumbnailImage drawInRect:CGRectMake(0, 0, imageWidth, imageHeight)];
+  UIGraphicsImageRendererFormat* format =
+      [[UIGraphicsImageRendererFormat alloc] init];
+  format.opaque = YES;
+  format.scale = 0.0;
 
-  UIImage* blueOverlay =
-      ImageWithColor([UIColor.systemBlueColor colorWithAlphaComponent:0.5]);
-  UIImage* xSymbolImage = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize),
-      @[ [UIColor whiteColor] ]);
-  [blueOverlay drawInRect:CGRectMake(0, 0, self.frame.size.width,
-                                     self.frame.size.height)];
-  [xSymbolImage
-      drawInRect:CGRectMake((imageWidth - xSymbolImage.size.width) / 2,
-                            (imageHeight - xSymbolImage.size.height) / 2,
-                            xSymbolImage.size.width, xSymbolImage.size.height)];
-  UIImage* resultImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
+  UIGraphicsImageRenderer* renderer = [[UIGraphicsImageRenderer alloc]
+      initWithSize:CGSizeMake(imageWidth, imageHeight)
+            format:format];
 
-  return resultImage;
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        // Thumbnail image.
+        [thumbnailImage drawAtPoint:CGPointZero];
+
+        // Blue overlay.
+        [[UIColor.systemBlueColor colorWithAlphaComponent:0.5] setFill];
+        [context fillRect:renderer.format.bounds blendMode:kCGBlendModeNormal];
+
+        // X Symbol.
+        UIImage* xSymbolImage = SymbolWithPalette(
+            DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize),
+            @[ [UIColor whiteColor] ]);
+        [xSymbolImage
+            drawInRect:CGRectMake((imageWidth - xSymbolImage.size.width) / 2,
+                                  (imageHeight - xSymbolImage.size.height) / 2,
+                                  xSymbolImage.size.width,
+                                  xSymbolImage.size.height)];
+      }];
 }
 
 - (BOOL)isHighlighted {
