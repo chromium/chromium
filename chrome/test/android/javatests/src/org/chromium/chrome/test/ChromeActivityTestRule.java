@@ -125,6 +125,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      * @return The {@link AppMenuCoordinator} for the activity.
      */
     public AppMenuCoordinator getAppMenuCoordinator() {
+        if (getActivity().getRootUiCoordinatorForTesting() == null) return null;
         return getActivity().getRootUiCoordinatorForTesting().getAppMenuCoordinatorForTesting();
     }
 

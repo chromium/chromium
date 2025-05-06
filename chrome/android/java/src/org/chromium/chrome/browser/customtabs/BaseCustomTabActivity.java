@@ -881,6 +881,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         if (mTabFactory != null) {
             mTabFactory.destroyTabModelOrchestrator();
         }
+
+        // If tab models have not been initialized, any early created tabs would leak.
+        if (mTabProvider != null
+                && mTabProvider.getTab() != null
+                && !mTabProvider.getTab().isDestroyed()) {
+            mTabProvider.getTab().destroy();
+        }
     }
 
     @Override
