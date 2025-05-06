@@ -32,10 +32,6 @@ bool PaymentItem::operator==(const PaymentItem& other) const {
          pending == other.pending;
 }
 
-bool PaymentItem::operator!=(const PaymentItem& other) const {
-  return !(*this == other);
-}
-
 PaymentItem& PaymentItem::operator=(const PaymentItem& other) {
   label = other.label;
   if (other.amount) {

@@ -16,16 +16,4 @@ PaymentOptions::PaymentOptions()
       shipping_type(payments::PaymentShippingType::SHIPPING) {}
 PaymentOptions::~PaymentOptions() = default;
 
-bool PaymentOptions::operator==(const PaymentOptions& other) const {
-  return request_payer_name == other.request_payer_name &&
-         request_payer_email == other.request_payer_email &&
-         request_payer_phone == other.request_payer_phone &&
-         request_shipping == other.request_shipping &&
-         shipping_type == other.shipping_type;
-}
-
-bool PaymentOptions::operator!=(const PaymentOptions& other) const {
-  return !(*this == other);
-}
-
 }  // namespace payments

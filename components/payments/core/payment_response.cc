@@ -20,8 +20,4 @@ bool PaymentResponse::operator==(const PaymentResponse& other) const {
          payer_phone == other.payer_phone;
 }
 
-bool PaymentResponse::operator!=(const PaymentResponse& other) const {
-  return !(*this == other);
-}
-
 }  // namespace payments

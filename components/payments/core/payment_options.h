@@ -18,8 +18,8 @@ class PaymentOptions {
   PaymentOptions();
   ~PaymentOptions();
 
-  bool operator==(const PaymentOptions& other) const;
-  bool operator!=(const PaymentOptions& other) const;
+  friend bool operator==(const PaymentOptions&,
+                         const PaymentOptions&) = default;
 
   // Indicates whether the user agent should collect and return the payer's name
   // as part of the payment request. For example, this would be set to true to
