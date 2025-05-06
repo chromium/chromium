@@ -118,7 +118,6 @@ class EmailInfo : public FormGroup {
   ~EmailInfo() override;
 
   bool operator==(const EmailInfo& other) const;
-  bool operator!=(const EmailInfo& other) const { return !operator==(other); }
 
   // FormGroup:
   std::u16string GetInfo(const AutofillType& type,
@@ -150,7 +149,6 @@ class CompanyInfo : public FormGroup {
   ~CompanyInfo() override;
 
   bool operator==(const CompanyInfo& other) const;
-  bool operator!=(const CompanyInfo& other) const { return !operator==(other); }
 
   // FormGroup:
   std::u16string GetInfo(const AutofillType& type,
