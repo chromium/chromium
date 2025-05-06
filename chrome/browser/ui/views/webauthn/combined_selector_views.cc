@@ -101,6 +101,17 @@ void CombinedSelectorRadioButton::GetRadioButtonsInList(int group,
   list_view->GetViewsInGroup(group, views);
 }
 
+bool CombinedSelectorRadioButton::SkipDefaultKeyEventProcessing(
+    const ui::KeyEvent& event) {
+  // The radio button would show the ink drop on return key press. Since the
+  // radio buttons in the combined selector are tab focusable
+  // (IsGroupFocusTraversable), this is not required. The return key should not
+  // be handled by the radio button.
+  return event.key_code() == ui::VKEY_RETURN
+             ? false
+             : RadioButton::SkipDefaultKeyEventProcessing(event);
+}
+
 BEGIN_METADATA(CombinedSelectorRadioButton)
 END_METADATA
 
