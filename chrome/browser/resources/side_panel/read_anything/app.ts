@@ -19,13 +19,13 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
-import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
+import {minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
 import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
 import {ReadAloudHighlighter} from './read_aloud/highlighter.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 import type {SpeechListener} from './read_aloud/speech_controller.js';
-import {PauseActionSource} from './read_aloud/speech_model.js';
+import {PauseActionSource, SpeechEngineState} from './read_aloud/speech_model.js';
 import type {SpeechPlayingState} from './read_aloud/speech_model.js';
 import {VoicePackController} from './read_aloud/voice_pack_controller.js';
 import {WordBoundaries} from './read_aloud/word_boundaries.js';
@@ -39,13 +39,6 @@ import type {VoicePackStatus} from './voice_language_util.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 
 const AppElementBase = WebUiListenerMixinLit(CrLitElement);
-
-interface UtteranceSettings {
-  lang: string;
-  volume: number;
-  pitch: number;
-  rate: number;
-}
 
 const linkDataAttribute = 'link';
 
@@ -124,11 +117,6 @@ export class AppElement extends AppElementBase implements SpeechListener {
   // resetting speech right after starting it.
   private accessor willDrawAgainSoon_: boolean = false;
 
-  // After the first utterance has been spoken, we should assume that the
-  // speech engine has loaded, and we shouldn't adjust the play / pause
-  // disabled state based on the message.onStart callback to avoid flickering.
-  private firstUtteranceSpoken_ = false;
-
   // When a new TTS Engine extension is loaded into reading mode, we want to try
   // to install new natural voices from it. However, the new engine isn't ready
   // until it calls onvoiceschanged, so set this and wait for that call to
@@ -144,8 +132,8 @@ export class AppElement extends AppElementBase implements SpeechListener {
   // All possible available voices for the current speech engine.
   protected accessor availableVoices_: SpeechSynthesisVoice[] = [];
   // If a preview is playing, this is set to the voice the preview is playing.
-  // Otherwise, this is undefined.
-  protected accessor previewVoicePlaying_: SpeechSynthesisVoice|undefined;
+  // Otherwise, this is null.
+  protected accessor previewVoicePlaying_: SpeechSynthesisVoice|null = null;
 
   protected accessor localeToDisplayName_: {[locale: string]: string} = {};
 
@@ -231,7 +219,6 @@ export class AppElement extends AppElementBase implements SpeechListener {
       // not always reliabled called.
       this.speech_.cancel();
       this.hasContent_ = false;
-      this.firstUtteranceSpoken_ = false;
       this.firstTextNodeSetForReadAloud = null;
       this.nodeStore_.clearDomNodes();
       this.clearReadAloudState();
@@ -1086,41 +1073,7 @@ export class AppElement extends AppElementBase implements SpeechListener {
     event.preventDefault();
     event.stopPropagation();
 
-    this.speechController_.stopSpeech(PauseActionSource.VOICE_PREVIEW);
-
-    // If there's no previewVoice, return after stopping the current preview
-    if (!event.detail) {
-      this.previewVoicePlaying_ = undefined;
-      return;
-    }
-
-    const defaultUtteranceSettings = this.defaultUtteranceSettings();
-    const utterance = new SpeechSynthesisUtterance(
-        loadTimeData.getString('readingModeVoicePreviewText'));
-    const voice = event.detail.previewVoice;
-    utterance.voice = voice;
-    utterance.lang = defaultUtteranceSettings.lang;
-    utterance.volume = defaultUtteranceSettings.volume;
-    utterance.pitch = defaultUtteranceSettings.pitch;
-    utterance.rate = defaultUtteranceSettings.rate;
-
-    utterance.onstart = event => {
-      this.previewVoicePlaying_ = event.utterance.voice || undefined;
-    };
-
-    utterance.onend = () => {
-      this.previewVoicePlaying_ = undefined;
-    };
-
-    // TODO: crbug.com/40927698 - There should probably be more sophisticated
-    // error handling for voice previews, but for now, simply setting the
-    // preview voice to null should be sufficient to reset state if an error is
-    // encountered during a preview.
-    utterance.onerror = () => {
-      this.previewVoicePlaying_ = undefined;
-    };
-
-    this.speech_.speak(utterance);
+    this.speechController_.previewVoice(event.detail.previewVoice);
   }
 
   protected onVoiceMenuClose_(
@@ -1153,6 +1106,14 @@ export class AppElement extends AppElementBase implements SpeechListener {
   onIsAudioCurrentlyPlayingChange(): void {
     this.isAudioCurrentlyPlaying_ =
         this.speechController_.isAudioCurrentlyPlaying();
+  }
+
+  onEngineStateChange(): void {
+    this.speechEngineLoaded_ = this.speechController_.isEngineLoaded();
+  }
+
+  onPreviewVoicePlaying(): void {
+    this.previewVoicePlaying_ = this.speechController_.getPreviewVoicePlaying();
   }
 
   onPause() {
@@ -1544,16 +1505,7 @@ export class AppElement extends AppElementBase implements SpeechListener {
       }
     });
 
-    message.onstart = () => {
-      // We've gotten the signal that the speech engine has loaded, therefore
-      // we can enable the Read Aloud buttons.
-      this.speechEngineLoaded_ = true;
-
-      // Reset the isSpeechBeingRepositioned property after speech starts
-      // after a next / previous button.
-      this.speechController_.setIsSpeechBeingRepositioned(false);
-      this.speechController_.setIsAudioCurrentlyPlaying(true);
-    };
+    this.speechController_.setOnSpeechSynthesisUtteranceStart(message);
 
     message.onend = () => {
       if (isTextTooLong) {
@@ -1589,18 +1541,7 @@ export class AppElement extends AppElementBase implements SpeechListener {
       message.voice = voice;
     }
 
-    const utteranceSettings = this.defaultUtteranceSettings();
-    message.lang = utteranceSettings.lang;
-    message.volume = utteranceSettings.volume;
-    message.pitch = utteranceSettings.pitch;
-    message.rate = utteranceSettings.rate;
-
-
-    if (!this.firstUtteranceSpoken_) {
-      this.speechEngineLoaded_ = false;
-      this.firstUtteranceSpoken_ = true;
-    }
-    this.speech_.speak(message);
+    this.speechController_.speakMessage(message);
   }
 
   handleSpeechSynthesisError(
@@ -1610,7 +1551,7 @@ export class AppElement extends AppElementBase implements SpeechListener {
     // to prevent trapping users in a state where they can no longer play
     // Read Aloud, as this is preferable to a long delay before speech
     // with no feedback.
-    this.speechEngineLoaded_ = true;
+    this.speechController_.setEngineState(SpeechEngineState.LOADED);
 
     if (error.error === 'interrupted') {
       this.speechController_.onSpeechInterrupted();
@@ -1684,17 +1625,6 @@ export class AppElement extends AppElementBase implements SpeechListener {
       }
     }
     return utteranceText;
-  }
-
-  private defaultUtteranceSettings(): UtteranceSettings {
-    return {
-      lang: this.voicePackController_.getCurrentLanguage(),
-      // TODO: crbug.com/40927698 - Ensure the rate is valid for the current
-      // speech engine.
-      rate: getCurrentSpeechRate(),
-      volume: 1,
-      pitch: 1,
-    };
   }
 
   private onSpeechFinished() {

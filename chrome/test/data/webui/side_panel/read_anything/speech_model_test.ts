@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, PauseActionSource, SpeechModel} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, PauseActionSource, SpeechEngineState, SpeechModel} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {createSpeechSynthesisVoice} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -108,5 +109,31 @@ suite('SpeechModel', () => {
     assertEquals(source2, speechModel.getPauseSource());
     speechModel.setPauseSource(source3);
     assertEquals(source3, speechModel.getPauseSource());
+  });
+
+  test('setPreviewVoicePlaying', () => {
+    const voice1 = createSpeechSynthesisVoice({lang: 'en', name: 'April'});
+    const voice2 = null;
+    const voice3 = createSpeechSynthesisVoice({lang: 'fr', name: 'May'});
+
+    speechModel.setPreviewVoicePlaying(voice1);
+    assertEquals(voice1, speechModel.getPreviewVoicePlaying());
+    speechModel.setPreviewVoicePlaying(voice2);
+    assertEquals(voice2, speechModel.getPreviewVoicePlaying());
+    speechModel.setPreviewVoicePlaying(voice3);
+    assertEquals(voice3, speechModel.getPreviewVoicePlaying());
+  });
+
+  test('setEngineState', () => {
+    const state1 = SpeechEngineState.LOADING;
+    const state2 = SpeechEngineState.NONE;
+    const state3 = SpeechEngineState.LOADED;
+
+    speechModel.setEngineState(state1);
+    assertEquals(state1, speechModel.getEngineState());
+    speechModel.setEngineState(state2);
+    assertEquals(state2, speechModel.getEngineState());
+    speechModel.setEngineState(state3);
+    assertEquals(state3, speechModel.getEngineState());
   });
 });

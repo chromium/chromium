@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
+
+import {getCurrentSpeechRate} from '../common.js';
 import {ReadAnythingLogger} from '../read_anything_logger.js';
 import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
 
-import {PauseActionSource, SpeechModel} from './speech_model.js';
+import {PauseActionSource, SpeechEngineState, SpeechModel} from './speech_model.js';
 import type {SpeechPlayingState} from './speech_model.js';
 
 export interface SpeechListener {
   onPause(): void;
   onIsSpeechActiveChange(): void;
   onIsAudioCurrentlyPlayingChange(): void;
+  onEngineStateChange(): void;
+  onPreviewVoicePlaying(): void;
 }
 
 export class SpeechController {
@@ -72,6 +77,28 @@ export class SpeechController {
     if (isAudioCurrentlyPlaying !== this.isAudioCurrentlyPlaying()) {
       this.model_.setIsAudioCurrentlyPlaying(isAudioCurrentlyPlaying);
       this.listeners_.forEach(l => l.onIsAudioCurrentlyPlayingChange());
+    }
+  }
+
+  isEngineLoaded(): boolean {
+    return this.model_.getEngineState() === SpeechEngineState.LOADED;
+  }
+
+  setEngineState(state: SpeechEngineState) {
+    if (state !== this.model_.getEngineState()) {
+      this.model_.setEngineState(state);
+      this.listeners_.forEach(l => l.onEngineStateChange());
+    }
+  }
+
+  getPreviewVoicePlaying(): SpeechSynthesisVoice|null {
+    return this.model_.getPreviewVoicePlaying();
+  }
+
+  setPreviewVoicePlaying(voice: SpeechSynthesisVoice|null) {
+    if (voice !== this.model_.getPreviewVoicePlaying()) {
+      this.model_.setPreviewVoicePlaying(voice);
+      this.listeners_.forEach(l => l.onPreviewVoicePlaying());
     }
   }
 
@@ -137,6 +164,64 @@ export class SpeechController {
     this.listeners_.forEach(l => l.onPause());
   }
 
+  setOnSpeechSynthesisUtteranceStart(message: SpeechSynthesisUtterance) {
+    message.onstart = () => {
+      // We've gotten the signal that the speech engine has started, therefore
+      // we can enable the Read Aloud buttons.
+      this.setEngineState(SpeechEngineState.LOADED);
+
+      // Reset the isSpeechBeingRepositioned property after speech starts
+      // after a next / previous button.
+      this.setIsSpeechBeingRepositioned(false);
+      this.setIsAudioCurrentlyPlaying(true);
+    };
+  }
+
+  speakMessage(message: SpeechSynthesisUtterance) {
+    if (this.model_.getEngineState() === SpeechEngineState.NONE) {
+      this.setEngineState(SpeechEngineState.LOADING);
+    }
+
+    this.speakWithDefaults_(message);
+  }
+
+  previewVoice(previewVoice: SpeechSynthesisVoice|null) {
+    this.stopSpeech(PauseActionSource.VOICE_PREVIEW);
+
+    // If there's no previewVoice, return after stopping the current preview
+    if (!previewVoice) {
+      this.setPreviewVoicePlaying(null);
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(
+        loadTimeData.getString('readingModeVoicePreviewText'));
+    // This should only be false in tests where we can't properly construct an
+    // actual SpeechSynthesisVoice object even though the test voices pass the
+    // type checking of method signatures.
+    if (previewVoice instanceof SpeechSynthesisVoice) {
+      utterance.voice = previewVoice;
+    }
+
+    utterance.onstart = () => {
+      this.setPreviewVoicePlaying(previewVoice);
+    };
+
+    utterance.onend = () => {
+      this.setPreviewVoicePlaying(null);
+    };
+
+    // TODO: crbug.com/40927698 - There should probably be more sophisticated
+    // error handling for voice previews, but for now, simply setting the
+    // preview voice to null should be sufficient to reset state if an error is
+    // encountered during a preview.
+    utterance.onerror = () => {
+      this.setPreviewVoicePlaying(null);
+    };
+
+    this.speakWithDefaults_(utterance);
+  }
+
   onSpeechInterrupted() {
     // SpeechSynthesis.cancel() was called, which could have originated
     // either within or outside of reading mode. If it originated from
@@ -160,6 +245,12 @@ export class SpeechController {
   private isSpeechActiveChanged(isSpeechActive: boolean) {
     this.listeners_.forEach(l => l.onIsSpeechActiveChange());
     chrome.readingMode.onSpeechPlayingStateChanged(isSpeechActive);
+  }
+
+  private speakWithDefaults_(message: SpeechSynthesisUtterance) {
+    message.lang = chrome.readingMode.baseLanguageForSpeech;
+    message.rate = getCurrentSpeechRate();
+    this.speech_.speak(message);
   }
 
   static getInstance(): SpeechController {

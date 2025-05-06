@@ -38,6 +38,12 @@ export interface SpeechPlayingState {
   isSpeechBeingRepositioned: boolean;
 }
 
+export enum SpeechEngineState {
+  NONE,
+  LOADING,
+  LOADED,
+}
+
 export class SpeechModel {
   private speechPlayingState_: SpeechPlayingState = {
     isSpeechTreeInitialized: false,
@@ -48,6 +54,9 @@ export class SpeechModel {
     isSpeechBeingRepositioned: false,
   };
 
+  private speechEngineState_: SpeechEngineState = SpeechEngineState.NONE;
+  private previewVoicePlaying_: SpeechSynthesisVoice|null = null;
+
   reset(): void {
     this.speechPlayingState_ = {
       isSpeechTreeInitialized: false,
@@ -57,6 +66,24 @@ export class SpeechModel {
       hasSpeechBeenTriggered: false,
       isSpeechBeingRepositioned: false,
     };
+    this.speechEngineState_ = SpeechEngineState.NONE;
+    this.previewVoicePlaying_ = null;
+  }
+
+  getEngineState(): SpeechEngineState {
+    return this.speechEngineState_;
+  }
+
+  setEngineState(state: SpeechEngineState): void {
+    this.speechEngineState_ = state;
+  }
+
+  getPreviewVoicePlaying(): SpeechSynthesisVoice|null {
+    return this.previewVoicePlaying_;
+  }
+
+  setPreviewVoicePlaying(voice: SpeechSynthesisVoice|null) {
+    this.previewVoicePlaying_ = voice;
   }
 
   getState(): SpeechPlayingState {

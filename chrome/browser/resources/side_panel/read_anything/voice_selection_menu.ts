@@ -93,7 +93,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
 
   accessor selectedVoice: SpeechSynthesisVoice|undefined;
   accessor localeToDisplayName: {[lang: string]: string} = {};
-  accessor previewVoicePlaying: SpeechSynthesisVoice|undefined;
+  accessor previewVoicePlaying: SpeechSynthesisVoice|null = null;
   accessor enabledLangs: string[] = [];
   accessor availableVoices: SpeechSynthesisVoice[] = [];
   accessor isSpeechActive: boolean = false;
@@ -102,7 +102,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   private accessor currentNotifications_:
       {[language: string]: NotificationType} = {};
 
-  private accessor previewVoiceInitiated: SpeechSynthesisVoice|undefined;
+  private accessor previewVoiceInitiated: SpeechSynthesisVoice|null = null;
   protected errorMessages_: string[] = [];
   protected accessor downloadingMessages_: string[] = [];
   protected accessor voiceGroups_: VoiceDropdownGroup[] = [];
@@ -274,9 +274,11 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
         ToolbarEvent.PLAY_PREVIEW,
         // If preview is currently playing, we pass null to indicate the audio
         // should be paused.
-        dropdownItem.previewActuallyPlaying ?
-            null :
-            {previewVoice: dropdownItem.voice});
+        {
+          previewVoice:
+              dropdownItem.previewActuallyPlaying ? null : dropdownItem.voice,
+        },
+    );
   }
 
   protected openLanguageMenu_() {
@@ -355,7 +357,9 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
 
     // When the menu first opens, the target is the whole menu.
     // In that case, use default behavior.
-    if (!targetIsVoiceOption && !targetIsPreviewButton) return;
+    if (!targetIsVoiceOption && !targetIsPreviewButton) {
+      return;
+    }
 
     e.preventDefault();
 

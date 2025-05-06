@@ -643,7 +643,13 @@ suite('Speech', () => {
 
     suite('and voice preview is played', () => {
       setup(() => {
-        emitEvent(app, 'preview-voice', {detail: {previewVoice: null}});
+        const voice =
+            createSpeechSynthesisVoice({lang: 'en', name: 'December'});
+        emitEvent(app, 'preview-voice', {
+          detail: {
+            previewVoice: voice,
+          },
+        });
       });
 
       test('cancels speech and plays preview', () => {

@@ -407,8 +407,8 @@ export function convertLangOrLocaleToExactVoicePackLocale(langOrLocale: string):
       locale => locale.startsWith(possibleConvertedLang.toLowerCase()));
 }
 
-export function isWaitingForInstallLocally(status: VoiceClientSideStatusCode|
-                                           undefined) {
+export function isWaitingForInstallLocally(
+    status: VoiceClientSideStatusCode|undefined) {
   return status === VoiceClientSideStatusCode.SENT_INSTALL_REQUEST ||
       status === VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY;
 }
@@ -533,8 +533,8 @@ export const AVAILABLE_GOOGLE_TTS_LOCALES = new Set([
 ]);
 
 export function areVoicesEqual(
-    voice1: SpeechSynthesisVoice|undefined,
-    voice2: SpeechSynthesisVoice|undefined): boolean {
+    voice1?: SpeechSynthesisVoice|null,
+    voice2?: SpeechSynthesisVoice|null): boolean {
   if (!voice1 || !voice2) {
     return false;
   }

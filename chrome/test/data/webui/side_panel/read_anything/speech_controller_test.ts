@@ -1,10 +1,10 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, PauseActionSource, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, PauseActionSource, SpeechBrowserProxyImpl, SpeechController, SpeechEngineState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {mockMetrics} from './common.js';
+import {createSpeechSynthesisVoice, mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -16,6 +16,8 @@ suite('SpeechController', () => {
   let onPause: boolean;
   let isSpeechActiveChanged: boolean;
   let isAudioCurrentlyPlayingChanged: boolean;
+  let onPreviewVoicePlaying: boolean;
+  let onEngineStateChange: boolean;
   let metrics: TestMetricsBrowserProxy;
 
   setup(() => {
@@ -30,6 +32,8 @@ suite('SpeechController', () => {
     isSpeechActiveChanged = false;
     isAudioCurrentlyPlayingChanged = false;
     onPause = false;
+    onPreviewVoicePlaying = false;
+    onEngineStateChange = false;
     const speechListener = {
       onPause() {
         onPause = true;
@@ -41,6 +45,14 @@ suite('SpeechController', () => {
 
       onIsAudioCurrentlyPlayingChange() {
         isAudioCurrentlyPlayingChanged = true;
+      },
+
+      onEngineStateChange() {
+        onEngineStateChange = true;
+      },
+
+      onPreviewVoicePlaying() {
+        onPreviewVoicePlaying = true;
       },
     };
 
@@ -146,6 +158,94 @@ suite('SpeechController', () => {
     assertFalse(isSpeechActiveChanged);
     assertTrue(speechController.isAudioCurrentlyPlaying());
     assertTrue(isAudioCurrentlyPlayingChanged);
+  });
+
+  test('setEngineState notifies listeners if value changes', () => {
+    speechController.setEngineState(SpeechEngineState.NONE);
+
+    assertFalse(onEngineStateChange);
+    assertFalse(speechController.isEngineLoaded());
+
+    speechController.setEngineState(SpeechEngineState.LOADED);
+
+    assertTrue(onEngineStateChange);
+    assertTrue(speechController.isEngineLoaded());
+  });
+
+  test('setPreviewVoicePlaying notifies listeners if value changes', () => {
+    speechController.setPreviewVoicePlaying(null);
+
+    assertFalse(onPreviewVoicePlaying);
+    assertFalse(!!speechController.getPreviewVoicePlaying());
+
+    const voice = createSpeechSynthesisVoice({lang: 'it', name: 'June'});
+    speechController.setPreviewVoicePlaying(voice);
+
+    assertTrue(onPreviewVoicePlaying);
+    assertEquals(voice, speechController.getPreviewVoicePlaying());
+  });
+
+  test('speakMessage waits for engine load', async () => {
+    const msg =
+        new SpeechSynthesisUtterance('Sorry not sorry bout what I said');
+    speechController.setOnSpeechSynthesisUtteranceStart(msg);
+
+    speechController.speakMessage(msg);
+    assertEquals(msg, await speech.whenCalled('speak'));
+    assertFalse(speechController.isEngineLoaded());
+    assertFalse(speechController.isAudioCurrentlyPlaying());
+
+    assertTrue(!!msg.onstart);
+    msg.onstart(new SpeechSynthesisEvent('type', {utterance: msg}));
+    assertTrue(speechController.isEngineLoaded());
+    assertTrue(speechController.isAudioCurrentlyPlaying());
+  });
+
+  test('speakMessage uses current language and speech rate', async () => {
+    const rate = 1.5;
+    const lang = 'hi';
+    const msg = new SpeechSynthesisUtterance('I\'m just tryna have some fun');
+    chrome.readingMode.speechRate = rate;
+    chrome.readingMode.baseLanguageForSpeech = lang;
+    speechController.setOnSpeechSynthesisUtteranceStart(msg);
+
+    speechController.speakMessage(msg);
+
+    const spoken = await speech.whenCalled('speak');
+    assertEquals(msg, spoken);
+    assertEquals(rate, msg.rate);
+    assertEquals(lang, msg.lang);
+  });
+
+  test('previewVoice stops speech', () => {
+    speechController.setIsSpeechActive(true);
+    speechController.setIsAudioCurrentlyPlaying(true);
+
+    speechController.previewVoice(null);
+
+    assertFalse(speechController.isSpeechActive());
+    assertFalse(speechController.isAudioCurrentlyPlaying());
+    assertEquals(
+        PauseActionSource.VOICE_PREVIEW, speechController.getPauseSource());
+  });
+
+  test('previewVoice plays preview with voice', () => {
+    const voice = createSpeechSynthesisVoice({lang: 'yue', name: 'August'});
+    speechController.previewVoice(voice);
+    assertEquals(1, speech.getCallCount('speak'));
+  });
+
+  test('previewVoice sets preview voice playing', async () => {
+    const voice = createSpeechSynthesisVoice({lang: 'yue', name: 'November'});
+
+    speechController.previewVoice(voice);
+
+    const spoken = await speech.whenCalled('speak');
+    spoken.onstart(new SpeechSynthesisEvent('type', {utterance: spoken}));
+    assertEquals(voice, speechController.getPreviewVoicePlaying());
+
+    spoken.onend();
+    assertFalse(!!speechController.getPreviewVoicePlaying());
   });
 
   suite('initializeSpeechTree', () => {
