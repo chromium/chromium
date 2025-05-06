@@ -3850,13 +3850,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcEventLogging.Api" enum="WebRtcEventLoggingApiEnum"
-    expires_after="2023-11-07">
+    expires_after="2025-12-31">
   <owner>eladalon@chromium.org</owner>
-  <owner>manj@google.com</owner>
-  <owner>dmitriyg@google.com</owner>
+  <owner>philipel@chromium.org</owner>
   <summary>
     The result of calls to the API for the collection and uploading of WebRTC
-    event logs.
+    event logs. Warning: this histogram was expired from 2023-11-07 to
+    2025-05-05; data may be missing.
   </summary>
 </histogram>
 
