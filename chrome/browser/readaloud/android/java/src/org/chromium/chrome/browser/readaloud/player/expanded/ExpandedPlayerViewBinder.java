@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
-import org.chromium.chrome.modules.readaloud.PlaybackArgs.FeedbackType;
+import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.ui.modelutil.PropertyKey;

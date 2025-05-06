@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.readaloud.player;
 import android.widget.SeekBar;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.modules.readaloud.PlaybackArgs.FeedbackType;
-import org.chromium.chrome.modules.readaloud.PlaybackArgs.NegativeFeedbackReason;
+import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
+import org.chromium.chrome.modules.readaloud.Feedback.NegativeFeedbackReason;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 
