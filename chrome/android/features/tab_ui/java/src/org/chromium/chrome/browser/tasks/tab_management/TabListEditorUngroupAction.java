@@ -55,7 +55,7 @@ public class TabListEditorUngroupAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabsToUngroup) {
+    public boolean performAction(List<Tab> tabsToUngroup, List<String> tabGroupSyncIds) {
         assert !editorSupportsActionOnRelatedTabs()
                 : "Ungrouping is not supported when actions apply to related tabs.";
 

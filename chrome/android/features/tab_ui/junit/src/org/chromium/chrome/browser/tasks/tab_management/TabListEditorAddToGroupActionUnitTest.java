@@ -54,6 +54,7 @@ import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** Tests for {@link TabListEditorAddToGroupAction}. */
@@ -232,7 +233,7 @@ public class TabListEditorAddToGroupActionUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
 
-        assertTrue(mAction.performAction(tabs));
+        assertTrue(mAction.performAction(tabs, Collections.emptyList()));
         verify(mCoordinator).showBottomSheet(tabs);
         verify(mTabGroupCreationDialogManager, never()).showDialog(any(), any());
     }
@@ -242,7 +243,7 @@ public class TabListEditorAddToGroupActionUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
 
-        assertTrue(mAction.performAction(tabs));
+        assertTrue(mAction.performAction(tabs, Collections.emptyList()));
         verify(mTabGroupModelFilter).mergeListOfTabsToGroup(eq(tabs), eq(mTab1), anyBoolean());
         verify(mTabGroupCreationDialogManager)
                 .showDialog(eq(mTab1.getTabGroupId()), eq(mTabGroupModelFilter));
@@ -251,7 +252,7 @@ public class TabListEditorAddToGroupActionUnitTest {
 
     @Test(expected = AssertionError.class)
     public void testPerformAction_NoTabs() {
-        mAction.performAction(new ArrayList<>());
+        mAction.performAction(Collections.emptyList(), Collections.emptyList());
     }
 
     @Test

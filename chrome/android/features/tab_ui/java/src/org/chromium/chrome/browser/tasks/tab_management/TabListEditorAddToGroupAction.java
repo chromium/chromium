@@ -142,7 +142,7 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
         assert !tabs.isEmpty() : "Add tab to group action should not be enabled for no tabs.";
         BottomSheetController controller = getActionDelegate().getBottomSheetController();
         TabGroupModelFilter filter = getTabGroupModelFilter();

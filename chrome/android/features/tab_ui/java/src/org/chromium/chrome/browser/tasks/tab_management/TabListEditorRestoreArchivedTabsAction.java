@@ -49,7 +49,7 @@ public class TabListEditorRestoreArchivedTabsAction extends TabListEditorAction 
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
         mArchiveDelegate.restoreArchivedTabs(tabs);
         return true;
     }

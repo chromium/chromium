@@ -60,7 +60,7 @@ public class TabListEditorCloseAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
         assert !tabs.isEmpty() : "Close action should not be enabled for no tabs.";
 
         getTabGroupModelFilter()

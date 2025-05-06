@@ -101,7 +101,7 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
         TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter();
 
         if (tabs.size() == 1) {

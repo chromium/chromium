@@ -90,7 +90,7 @@ public class TabListEditorSelectionAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
         if (mActionState == ActionState.SELECT_ALL) {
             getActionDelegate().selectAll();
             TabUiMetricsHelper.recordSelectionEditorActionMetrics(

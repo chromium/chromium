@@ -145,7 +145,7 @@ public class TabListEditorMenuTest {
         }
 
         @Override
-        public boolean performAction(List<Tab> tabs) {
+        public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
             return true;
         }
 

@@ -383,8 +383,6 @@ class TabListEditorMediator
 
     @Override
     public void selectAll() {
-        // TODO(crbug.com/412786011): Update this logic to select visible tab groups once the
-        // selection delegate for the TabListEditor supports synced tab groups.
         Set<TabListEditorItemSelectionId> selectedItemIds = mSelectionDelegate.getSelectedItems();
         for (Tab tab : mVisibleTabs) {
             selectedItemIds.add(TabListEditorItemSelectionId.createTabId(tab.getId()));
@@ -406,7 +404,6 @@ class TabListEditorMediator
 
     @Override
     public boolean areAllTabsSelected() {
-        // TODO(crbug.com/412786011): Update this logic to include visible tab groups.
         Set<TabListEditorItemSelectionId> selectedItemIds = mSelectionDelegate.getSelectedItems();
         return selectedItemIds.size() == mVisibleTabs.size();
     }

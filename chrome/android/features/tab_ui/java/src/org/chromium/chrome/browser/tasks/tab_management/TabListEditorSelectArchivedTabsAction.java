@@ -49,7 +49,7 @@ public class TabListEditorSelectArchivedTabsAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
         mArchiveDelegate.startTabSelection();
         return true;
     }

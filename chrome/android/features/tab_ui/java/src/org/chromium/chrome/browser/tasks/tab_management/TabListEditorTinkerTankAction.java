@@ -68,7 +68,7 @@ public class TabListEditorTinkerTankAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
         assert !tabs.isEmpty() : "Tinker Tank action should not be enabled for no tabs.";
         BottomSheetController bottomSheetController =
                 getActionDelegate().getBottomSheetController();
