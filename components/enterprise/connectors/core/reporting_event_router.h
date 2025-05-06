@@ -55,7 +55,9 @@ class ReportingEventRouter : public KeyedService {
   // `user_name`
   void OnPasswordChanged(const std::string& user_name);
 
-  void OnUrlFilteringInterstitial(
+  // Notifies listeners about events related to Url Filtering Interstitials.
+  // Virtual for tests.
+  virtual void OnUrlFilteringInterstitial(
       const GURL& url,
       const std::string& threat_type,
       const safe_browsing::RTLookupResponse& response,

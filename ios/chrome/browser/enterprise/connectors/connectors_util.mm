@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/feature_list.h"
 #import "components/enterprise/connectors/core/common.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/web_client.h"
 

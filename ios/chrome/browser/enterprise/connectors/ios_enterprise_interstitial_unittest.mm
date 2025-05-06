@@ -4,20 +4,33 @@
 
 #import "ios/chrome/browser/enterprise/connectors/ios_enterprise_interstitial.h"
 
+#import <string.h>
+
 #import "base/strings/strcat.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/enterprise/connectors/core/features.h"
+#import "components/enterprise/connectors/core/reporting_event_router.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/metrics_helper.h"
+#import "ios/chrome/browser/enterprise/connectors/features.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
 
 namespace enterprise_connectors {
 
@@ -25,6 +38,9 @@ using base::test::ios::kSpinDelaySeconds;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using safe_browsing::SBThreatType;
 using safe_browsing::ThreatSource;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::InSequence;
 
 namespace {
 
@@ -39,10 +55,44 @@ constexpr char kWarnInteractionHistogram[] =
 constexpr char kTestUrl[] = "http://example.com";
 constexpr char kTestMessage[] = "Test message";
 
+class MockReportingEventRouter : public ReportingEventRouter {
+  using ReferrerChain =
+      google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
+
+ public:
+  explicit MockReportingEventRouter(
+      IOSRealtimeReportingClient* reporting_client)
+      : ReportingEventRouter(reporting_client) {}
+
+  MOCK_METHOD(void,
+              OnUrlFilteringInterstitial,
+              (const GURL& url,
+               const std::string& threat_type,
+               const safe_browsing::RTLookupResponse& response,
+               const ReferrerChain& referrer_chain),
+              (override));
+};
+
+std::unique_ptr<KeyedService> BuildTestingReportingEventRouter(
+    web::BrowserState* browser_state) {
+  auto* profile = ProfileIOS::FromBrowserState(browser_state);
+  return std::make_unique<MockReportingEventRouter>(
+      IOSRealtimeReportingClientFactory::GetForProfile(profile));
+}
+
 class IOSEnterpriseInterstitialTest : public PlatformTest {
  public:
-  IOSEnterpriseInterstitialTest()
-      : profile_(TestProfileIOS::Builder().Build()) {
+  IOSEnterpriseInterstitialTest() {
+    TestProfileIOS::Builder builder = TestProfileIOS::Builder();
+    builder.AddTestingFactory(
+        IOSReportingEventRouterFactory::GetInstance(),
+        base::BindRepeating(&BuildTestingReportingEventRouter));
+
+    profile_ = std::move(builder).Build();
+
+    event_router_ = static_cast<MockReportingEventRouter*>(
+        IOSReportingEventRouterFactory::GetForProfile(profile_.get()));
+
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetBrowserState(profile_.get());
     navigation_manager_ = navigation_manager.get();
@@ -50,6 +100,7 @@ class IOSEnterpriseInterstitialTest : public PlatformTest {
     web_state_.SetBrowserState(profile_.get());
 
     SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
+    SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state_);
   }
 
   security_interstitials::UnsafeResource CreateBlockUnsafeResource() {
@@ -89,10 +140,31 @@ class IOSEnterpriseInterstitialTest : public PlatformTest {
     unsafe_resource.rt_lookup_response = response;
   }
 
+  void RegisterUnsafeResource(
+      const security_interstitials::UnsafeResource& resource) {
+    SafeBrowsingUrlAllowList::FromWebState(&web_state_)
+        ->AddPendingUnsafeNavigationDecision(resource.url,
+                                             resource.threat_type);
+    SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state_)
+        ->StoreMainFrameUnsafeResource(resource);
+  }
+
+  std::unique_ptr<IOSEnterpriseInterstitial> CreateBlockingPage(
+      const security_interstitials::UnsafeResource& resource) {
+    RegisterUnsafeResource(resource);
+    return IOSEnterpriseInterstitial::CreateBlockingPage(resource);
+  }
+  std::unique_ptr<IOSEnterpriseInterstitial> CreateWarningPage(
+      const security_interstitials::UnsafeResource& resource) {
+    RegisterUnsafeResource(resource);
+    return IOSEnterpriseInterstitial::CreateWarningPage(resource);
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
-  std::unique_ptr<ProfileIOS> profile_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<MockReportingEventRouter> event_router_ = nullptr;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
 };
@@ -100,11 +172,21 @@ class IOSEnterpriseInterstitialTest : public PlatformTest {
 }  // namespace
 
 TEST_F(IOSEnterpriseInterstitialTest, EnterpriseBlock_MetricsRecorded) {
+  base::test::ScopedFeatureList feature;
+  feature.InitWithFeatures(
+      /*enable_features=*/{kEnterpriseRealtimeEventReportingOnIOS,
+                           kIOSEnterpriseRealtimeUrlFiltering},
+      /*disable_features=*/{});
+
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(kBlockDecisionHistogram, 0);
 
-  auto test_page = IOSEnterpriseInterstitial::CreateBlockingPage(
-      CreateBlockUnsafeResource());
+  // Creating the blocking page should trigger a blocked seen event.;
+  EXPECT_CALL(*event_router_,
+              OnUrlFilteringInterstitial(Eq(GURL(kTestUrl)),
+                                         Eq("ENTERPRISE_BLOCKED_SEEN"), _, _));
+
+  auto test_page = CreateBlockingPage(CreateBlockUnsafeResource());
   EXPECT_TRUE(test_page->ShouldCreateNewNavigation());
   EXPECT_EQ(test_page->request_url(), GURL(kTestUrl));
 
@@ -123,11 +205,28 @@ TEST_F(IOSEnterpriseInterstitialTest, EnterpriseBlock_MetricsRecorded) {
 }
 
 TEST_F(IOSEnterpriseInterstitialTest, EnterpriseWarn_MetricsRecorded) {
+  base::test::ScopedFeatureList feature;
+  feature.InitWithFeatures(
+      /*enable_features=*/{kEnterpriseRealtimeEventReportingOnIOS,
+                           kIOSEnterpriseRealtimeUrlFiltering},
+      /*disable_features=*/{});
+
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(kWarnDecisionHistogram, 0);
 
-  auto test_page =
-      IOSEnterpriseInterstitial::CreateWarningPage(CreateWarnUnsafeResource());
+  {
+    InSequence seq;
+    // Creating the warning page should trigger a warned seen event.;
+    EXPECT_CALL(*event_router_,
+                OnUrlFilteringInterstitial(Eq(GURL(kTestUrl)),
+                                           Eq("ENTERPRISE_WARNED_SEEN"), _, _));
+    // Proceed command should trigger repoting a bypass event;
+    EXPECT_CALL(*event_router_,
+                OnUrlFilteringInterstitial(
+                    Eq(GURL(kTestUrl)), Eq("ENTERPRISE_WARNED_BYPASS"), _, _));
+  }
+
+  auto test_page = CreateWarningPage(CreateWarnUnsafeResource());
   EXPECT_TRUE(test_page->ShouldCreateNewNavigation());
   EXPECT_EQ(test_page->request_url(), GURL(kTestUrl));
 
@@ -162,7 +261,7 @@ TEST_F(IOSEnterpriseInterstitialTest, CustomMessageDisplayed) {
   auto warn_resource = CreateWarnUnsafeResource();
   AddCustomMessageToResource(warn_resource,
                              safe_browsing::RTLookupResponse::ThreatInfo::WARN);
-  EXPECT_NE(IOSEnterpriseInterstitial::CreateWarningPage(warn_resource)
+  EXPECT_NE(CreateWarningPage(warn_resource)
                 ->GetHtmlContents()
                 .find(expected_primary_paragraph),
             std::string::npos);
@@ -183,8 +282,7 @@ TEST_F(IOSEnterpriseInterstitialTest, HandleDoNotProceedCommand) {
   ASSERT_EQ(1, navigation_manager_->GetLastCommittedItemIndex());
   ASSERT_TRUE(navigation_manager_->CanGoBack());
 
-  auto test_page = IOSEnterpriseInterstitial::CreateBlockingPage(
-      CreateBlockUnsafeResource());
+  auto test_page = CreateBlockingPage(CreateBlockUnsafeResource());
 
   test_page->HandleCommand(security_interstitials::CMD_DONT_PROCEED);
 
@@ -203,8 +301,7 @@ TEST_F(IOSEnterpriseInterstitialTest, HandleDoNotProceedCommand) {
 // WebState if there is no safe NavigationItem to navigate back to.
 TEST_F(IOSEnterpriseInterstitialTest, HandleDontProceedCommandWithoutSafeItem) {
   // Send the don't proceed command.
-  auto test_page = IOSEnterpriseInterstitial::CreateBlockingPage(
-      CreateBlockUnsafeResource());
+  auto test_page = CreateBlockingPage(CreateBlockUnsafeResource());
 
   test_page->HandleCommand(security_interstitials::CMD_DONT_PROCEED);
 
@@ -225,8 +322,7 @@ TEST_F(IOSEnterpriseInterstitialTest, HandProceedCommand) {
   ASSERT_FALSE(allow_list->AreUnsafeNavigationsAllowed(GURL(kTestUrl)));
   ASSERT_FALSE(navigation_manager_->ReloadWasCalled());
 
-  auto test_page =
-      IOSEnterpriseInterstitial::CreateWarningPage(CreateWarnUnsafeResource());
+  auto test_page = CreateWarningPage(CreateWarnUnsafeResource());
   test_page->HandleCommand(security_interstitials::CMD_PROCEED);
 
   std::set<SBThreatType> allowed_threats;
@@ -254,8 +350,7 @@ TEST_F(IOSEnterpriseInterstitialTest, RemovePendingDecisionsUponDestruction) {
       pending_threats,
       ::testing::ElementsAre(SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN));
 
-  auto test_page =
-      IOSEnterpriseInterstitial::CreateWarningPage(CreateWarnUnsafeResource());
+  auto test_page = CreateWarningPage(CreateWarnUnsafeResource());
   // Destroying interstitial should remove pending allow list decisions.
   test_page = nullptr;
   EXPECT_FALSE(allow_list->IsUnsafeNavigationDecisionPending(GURL(kTestUrl)));

@@ -36,6 +36,25 @@ source_set("reporting") {
   ]
 }
 
+source_set("util") {
+  sources = [
+    "reporting_util.h",
+    "reporting_util.mm",
+  ]
+
+  deps = [
+    ":reporting",
+    "//base",
+    "//components/enterprise/connectors/core",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//ios/chrome/browser/enterprise/connectors:features",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/components/security_interstitials/safe_browsing",
+    "//ios/web/public",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
