@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment.FragmentType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -93,5 +94,27 @@ class PrivacyGuideUtils {
             return false;
         }
         return true;
+    }
+
+    static int getFragmentFocusViewId(@FragmentType int fragmentType) {
+        switch (fragmentType) {
+            case FragmentType.WELCOME:
+                return R.id.welcome_view;
+            case FragmentType.MSBB:
+                return R.id.msbb_switch;
+            case FragmentType.HISTORY_SYNC:
+                return R.id.history_sync_switch;
+            case FragmentType.SAFE_BROWSING:
+                return R.id.sb_step_header;
+            case FragmentType.COOKIES:
+                return R.id.cookies_step_header;
+            case FragmentType.AD_TOPICS:
+                return R.id.ad_topics_switch;
+            case FragmentType.DONE:
+                return R.id.done_step_header;
+            default:
+                assert false : "Unexpected fragment type: " + fragmentType;
+                return -1;
+        }
     }
 }
