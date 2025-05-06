@@ -695,6 +695,8 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::TextureCompressionETC2;
     case V8GPUFeatureName::Enum::kTextureCompressionAstc:
       return wgpu::FeatureName::TextureCompressionASTC;
+    case V8GPUFeatureName::Enum::kTextureCompressionAstcSliced3d:
+      return wgpu::FeatureName::TextureCompressionASTCSliced3D;
     case V8GPUFeatureName::Enum::kTimestampQuery:
       return wgpu::FeatureName::TimestampQuery;
     case V8GPUFeatureName::Enum::

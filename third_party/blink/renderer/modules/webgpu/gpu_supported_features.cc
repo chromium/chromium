@@ -24,6 +24,8 @@ std::optional<V8GPUFeatureName::Enum> GPUSupportedFeatures::ToV8FeatureNameEnum(
       return V8GPUFeatureName::Enum::kTextureCompressionEtc2;
     case wgpu::FeatureName::TextureCompressionASTC:
       return V8GPUFeatureName::Enum::kTextureCompressionAstc;
+    case wgpu::FeatureName::TextureCompressionASTCSliced3D:
+      return V8GPUFeatureName::Enum::kTextureCompressionAstcSliced3d;
     case wgpu::FeatureName::IndirectFirstInstance:
       return V8GPUFeatureName::Enum::kIndirectFirstInstance;
     case wgpu::FeatureName::DepthClipControl:
