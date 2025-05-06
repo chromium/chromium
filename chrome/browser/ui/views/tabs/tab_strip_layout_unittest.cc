@@ -96,6 +96,21 @@ std::vector<gfx::Rect> CalculateTabBounds(TestCase test_case) {
   return CalculateTabBounds(tab_states, test_case.tabstrip_width);
 }
 
+void ExpectTabsNarrowerThanTabStrip(const std::vector<gfx::Rect>& bounds,
+                                    int tabstrip_width) {
+  EXPECT_LT(bounds.back().right(), tabstrip_width);
+}
+
+void ExpectTabsFillTabStrip(const std::vector<gfx::Rect>& bounds,
+                            int tabstrip_width) {
+  EXPECT_EQ(bounds.back().right(), tabstrip_width);
+}
+
+void ExpectTabsWiderThanTabStrip(const std::vector<gfx::Rect>& bounds,
+                                 int tabstrip_width) {
+  EXPECT_GT(bounds.back().right(), tabstrip_width);
+}
+
 }  // namespace
 
 // These tests verify that layout behaves correctly in various situations. In
@@ -120,6 +135,7 @@ TEST(TabStripLayoutTest, Basics) {
     EXPECT_EQ(0, b.y());
     EXPECT_EQ(kTabHeight, b.height());
   }
+  ExpectTabsNarrowerThanTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, AllPinnedTabs) {
@@ -130,6 +146,7 @@ TEST(TabStripLayoutTest, AllPinnedTabs) {
   auto bounds = CalculateTabBounds(test_case);
   EXPECT_EQ("64 64 64", TabWidthsAsString(bounds));
   EXPECT_EQ("0 46 92", TabXPositionsAsString(bounds));
+  ExpectTabsNarrowerThanTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, MixedPinnedAndNormalTabs) {
@@ -141,6 +158,7 @@ TEST(TabStripLayoutTest, MixedPinnedAndNormalTabs) {
   auto bounds = CalculateTabBounds(test_case);
   EXPECT_EQ("64 256 256", TabWidthsAsString(bounds));
   EXPECT_EQ("0 46 284", TabXPositionsAsString(bounds));
+  ExpectTabsNarrowerThanTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, MiddleWidth) {
@@ -151,6 +169,7 @@ TEST(TabStripLayoutTest, MiddleWidth) {
   auto bounds = CalculateTabBounds(test_case);
   EXPECT_EQ("163 163 163 163", TabWidthsAsString(bounds));
   EXPECT_EQ("0 145 290 435", TabXPositionsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, MiddleWidthAndPinnedTab) {
@@ -162,6 +181,7 @@ TEST(TabStripLayoutTest, MiddleWidthAndPinnedTab) {
   auto bounds = CalculateTabBounds(test_case);
   EXPECT_EQ("64 186 186", TabWidthsAsString(bounds));
   EXPECT_EQ("0 46 214", TabXPositionsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, MiddleWidthRounded) {
@@ -172,6 +192,7 @@ TEST(TabStripLayoutTest, MiddleWidthRounded) {
   auto bounds = CalculateTabBounds(test_case);
   EXPECT_EQ("164 164 163 163", TabWidthsAsString(bounds));
   EXPECT_EQ("0 146 292 437", TabXPositionsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, MiddleWidthRoundedAndPinnedTab) {
@@ -183,6 +204,7 @@ TEST(TabStripLayoutTest, MiddleWidthRoundedAndPinnedTab) {
   auto bounds = CalculateTabBounds(test_case);
   EXPECT_EQ("64 187 186", TabWidthsAsString(bounds));
   EXPECT_EQ("0 46 215", TabXPositionsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, MiddleWidthRoundedAndSplitTab) {
@@ -193,16 +215,19 @@ TEST(TabStripLayoutTest, MiddleWidthRoundedAndSplitTab) {
 
   auto bounds = CalculateTabBounds(test_case);
   EXPECT_EQ("115 115 213 213", TabWidthsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
-TEST(TabStripLayoutTest, BelowMinActiveWidthOneTab) {
+TEST(TabStripLayoutTest, MiddleWidthAndMinWidthSplitTab) {
   TestCase test_case;
-  test_case.tabstrip_width = 15;
-  test_case.num_tabs = 1;
+  test_case.tabstrip_width = 138;
+  test_case.num_tabs = 4;
+  test_case.split_tabs = {0, 1};
+  test_case.active_index = 2;
 
   auto bounds = CalculateTabBounds(test_case);
-  EXPECT_EQ("56", TabWidthsAsString(bounds));
-  EXPECT_EQ("0", TabXPositionsAsString(bounds));
+  EXPECT_EQ("38 38 58 58", TabWidthsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, BelowMinActiveWidth) {
@@ -214,6 +239,7 @@ TEST(TabStripLayoutTest, BelowMinActiveWidth) {
   auto bounds = CalculateTabBounds(test_case);
   EXPECT_EQ("46 46 46 56 46 46", TabWidthsAsString(bounds));
   EXPECT_EQ("0 28 56 84 122 150", TabXPositionsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, BelowMinActiveWidthRounded) {
@@ -222,8 +248,9 @@ TEST(TabStripLayoutTest, BelowMinActiveWidthRounded) {
   test_case.num_tabs = 6;
   test_case.active_index = 3;
 
-  EXPECT_EQ("47 47 47 56 47 46",
-            TabWidthsAsString(CalculateTabBounds(test_case)));
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("47 47 47 56 47 46", TabWidthsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, BelowMinActiveWidthActivePinnedTab) {
@@ -232,8 +259,9 @@ TEST(TabStripLayoutTest, BelowMinActiveWidthActivePinnedTab) {
   test_case.num_tabs = 6;
   test_case.num_pinned_tabs = 1;
 
-  EXPECT_EQ("64 55 55 55 55 55",
-            TabWidthsAsString(CalculateTabBounds(test_case)));
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("64 55 55 55 55 55", TabWidthsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, BelowMinActiveWidthInactivePinnedTab) {
@@ -243,8 +271,9 @@ TEST(TabStripLayoutTest, BelowMinActiveWidthInactivePinnedTab) {
   test_case.num_pinned_tabs = 1;
   test_case.active_index = 2;
 
-  EXPECT_EQ("64 55 56 55 55 55",
-            TabWidthsAsString(CalculateTabBounds(test_case)));
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("64 55 56 55 55 55", TabWidthsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, BelowMinActiveWidthActivePinnedTabRounded) {
@@ -253,8 +282,23 @@ TEST(TabStripLayoutTest, BelowMinActiveWidthActivePinnedTabRounded) {
   test_case.num_tabs = 6;
   test_case.num_pinned_tabs = 1;
 
-  EXPECT_EQ("64 56 55 55 55 55",
-            TabWidthsAsString(CalculateTabBounds(test_case)));
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("64 56 55 55 55 55", TabWidthsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
+}
+
+TEST(TabStripLayoutTest, BelowMinActiveWidthSplitTab) {
+  TestCase test_case;
+  test_case.tabstrip_width = 200;
+  test_case.num_tabs = 6;
+  test_case.split_tabs = {0, 1};
+  test_case.active_index = 2;
+
+  // Can't avoid rounding with split tabs unless there is a large number of tabs
+  // because regular tabs grow faster.
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("36 36 56 54 54 54", TabWidthsAsString(bounds));
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, NotEnoughSpace) {
@@ -262,7 +306,20 @@ TEST(TabStripLayoutTest, NotEnoughSpace) {
   test_case.tabstrip_width = 10;
   test_case.num_tabs = 3;
 
-  EXPECT_EQ("56 32 32", TabWidthsAsString(CalculateTabBounds(test_case)));
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("56 32 32", TabWidthsAsString(bounds));
+  ExpectTabsWiderThanTabStrip(bounds, test_case.tabstrip_width);
+}
+
+TEST(TabStripLayoutTest, NotEnoughSpaceOneTab) {
+  TestCase test_case;
+  test_case.tabstrip_width = 15;
+  test_case.num_tabs = 1;
+
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("56", TabWidthsAsString(bounds));
+  EXPECT_EQ("0", TabXPositionsAsString(bounds));
+  ExpectTabsWiderThanTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, NotEnoughSpaceAllPinnedTabs) {
@@ -271,7 +328,9 @@ TEST(TabStripLayoutTest, NotEnoughSpaceAllPinnedTabs) {
   test_case.num_tabs = 3;
   test_case.num_pinned_tabs = 3;
 
-  EXPECT_EQ("64 64 64", TabWidthsAsString(CalculateTabBounds(test_case)));
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("64 64 64", TabWidthsAsString(bounds));
+  ExpectTabsWiderThanTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, NotEnoughSpaceMixedPinnedAndNormalTabs) {
@@ -280,7 +339,9 @@ TEST(TabStripLayoutTest, NotEnoughSpaceMixedPinnedAndNormalTabs) {
   test_case.num_tabs = 3;
   test_case.num_pinned_tabs = 1;
 
-  EXPECT_EQ("64 32 32", TabWidthsAsString(CalculateTabBounds(test_case)));
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("64 32 32", TabWidthsAsString(bounds));
+  ExpectTabsWiderThanTabStrip(bounds, test_case.tabstrip_width);
 }
 
 TEST(TabStripLayoutTest, ExactlyEnoughSpaceAllPinnedTabs) {
@@ -297,5 +358,5 @@ TEST(TabStripLayoutTest, ExactlyEnoughSpaceAllPinnedTabs) {
 
   // Validate that the tabstrip width is indeeed exactly enough to hold two
   // pinned tabs.
-  EXPECT_EQ(test_case.tabstrip_width, bounds[1].right());
+  ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
