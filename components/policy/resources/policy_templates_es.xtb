@@ -11134,7 +11134,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="8956312248048980644">Permite los clústeres de agentes con clave de origen de forma predeterminada.</translation>
 <translation id="8963464192296208229">Los ajustes de F11 usan la combinación de teclas que incluye la tecla modificadora Alt</translation>
 <translation id="8966888925105658202">No permitir que los orígenes de aplicaciones web aisladas se comuniquen con endpoints de red privados en la API Direct Sockets</translation>
-<translation id="8967548037699118811">Habilita la integración de la aplicación de Gemini
+<translation id="8967548037699118811">Habilita la integración de la aplicación Gemini
 
 0/sin definir = la integración de Gemini estará disponible para los usuarios
 

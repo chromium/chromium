@@ -3129,7 +3129,7 @@
 <translation id="3165734944977250074">ファイルが存在しないため、移動できません</translation>
 <translation id="3166443275568926403">パフォーマンスとバッテリーの状態</translation>
 <translation id="3167446923957429259">口を左に動かす</translation>
-<translation id="3167562202484086668"><ph name="BRAND" /> のデータをすべて削除する</translation>
+<translation id="3167562202484086668"><ph name="BRAND" />のデータをすべて削除</translation>
 <translation id="3169930038976362151">ニーズに合ったテーマを選択します。テーマ、壁紙、スクリーンセーバーなどを変更するには、デスクトップを長押しします。</translation>
 <translation id="3170072451822350649">ログインせずに<ph name="LINK_START" />ゲストとしてブラウジング<ph name="LINK_END" />することもできます。</translation>
 <translation id="3175067642577044620">本文</translation>
@@ -3195,7 +3195,7 @@
 <translation id="3220943972464248773">パスワードを同期するには、本人確認を行ってください</translation>
 <translation id="3222066309010235055">事前レンダリング: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> に接続</translation>
-<translation id="3223109931751684474">このデバイスのパスキーへのアクセス権を削除する</translation>
+<translation id="3223109931751684474">このデバイスのパスキーへのアクセス権を削除</translation>
 <translation id="3223531857777746191">リセットボタン</translation>
 <translation id="3225084153129302039">デフォルトの紫のアバター</translation>
 <translation id="3225319735946384299">コード署名</translation>
@@ -3691,7 +3691,7 @@
 <translation id="3582057310199111521">不正なサイトで入力、データ侵害で漏洩</translation>
 <translation id="3582299299336701326">明るい画面が暗くなり、暗い画面が明るくなります。色反転のオンとオフを切り替えるには、検索+Ctrl+H キーを押します。</translation>
 <translation id="3584169441612580296">パソコンからの写真、音楽、その他のメディアの読み取りと変更</translation>
-<translation id="3586741240886978899">このサイトで使用</translation>
+<translation id="3586741240886978899">過去にこのサイトで使用</translation>
 <translation id="3586806079541226322">このファイルを開けません</translation>
 <translation id="3586931643579894722">詳細を非表示</translation>
 <translation id="3587279952965197737"><ph name="MAX_CHARACTER_COUNT" /> 文字以下にしてください</translation>
@@ -4193,7 +4193,7 @@
 <translation id="3898768766145818464">動画を再生、一時停止</translation>
 <translation id="389901847090970821">キーボードを選択</translation>
 <translation id="3899457911440165602">証明書の削除エラー</translation>
-<translation id="3900966090527141178">パスワードのエクスポート</translation>
+<translation id="3900966090527141178">パスワードをエクスポート</translation>
 <translation id="390187954523570172"><ph name="TIME_AGO" /> に使用</translation>
 <translation id="3903187154317825986">デバイス内蔵キーボード</translation>
 <translation id="3903696968689283281">Wi-Fi Direct 所有者情報:</translation>
@@ -4924,7 +4924,7 @@
 <translation id="4423376891418188461">設定を元に戻す</translation>
 <translation id="4423525817792153232">すべての歯を見せる</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。障害レポートでは、ChromeOS がクラッシュした時間や使用された機能、通常のメモリ使用量などが送信されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="442528696198546304">パスワード、パスキー、およびその他のデータが <ph name="BRAND" /> から完全に削除されます</translation>
+<translation id="442528696198546304">パスワード、パスキー、およびその他のデータが <ph name="BRAND" />から完全に削除されます</translation>
 <translation id="4426268963847471040"><ph name="FILE_NAME" /> を削除</translation>
 <translation id="4426464032773610160">始める前に、USB または Bluetooth スイッチが Chromebook に接続されていることをご確認ください。キーボードのキーを使うこともできます。</translation>
 <translation id="4426490308207168518">フィードバックを送信したり、問題を報告したりできます</translation>
@@ -8023,7 +8023,7 @@
 <translation id="6686665106869989887">タブを右に移動しました</translation>
 <translation id="6686676261102452995">今日開いたファイル</translation>
 <translation id="6686817083349815241">パスワードを保存</translation>
-<translation id="6687008241368170505">Google パスワード マネージャーの PIN を変更する</translation>
+<translation id="6687008241368170505">Google パスワード マネージャーの PIN を変更</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> を非表示にする</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> さんにパソコンの前に来てもらってください。お子様の音声モデルを作成するには、この画面上のフレーズをいくつか声に出して読んでもらいます。
     <ph name="BR" />
@@ -11529,13 +11529,13 @@
 <translation id="9128870381267983090">ネットワークに接続する</translation>
 <translation id="9129562557082598582"><ph name="CERT_GROUP" /> をすべてエクスポート</translation>
 <translation id="9130015405878219958">入力されたモードが無効です。</translation>
-<translation id="9130135798965366513">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />利用規約<ph name="END_LINK2" />をご確認ください。</translation>
+<translation id="9130135798965366513">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに<ph name="FIELDS_STRING" />が共有されます。このサイトの<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />利用規約<ph name="END_LINK2" />をご確認ください。</translation>
 <translation id="9130208109420587135">グループ名 <ph name="NAME" /> を編集</translation>
 <translation id="9130364135697530260">このサイトの埋め込みコンテンツでは、保存したあなたに関する情報を使用できます</translation>
 <translation id="9131209053278896908">ブロック中のサイトがここに表示されます</translation>
 <translation id="9131487537093447019">Bluetooth デバイスとのメッセージの送受信。</translation>
 <translation id="9133568201369135151">診断データの収集が完了しました。このデータには、個人情報の一部が含まれています。</translation>
-<translation id="9133985615769429248">このデバイスを他のユーザーと共有している場合、画面ロックを使用すると、保存したパスワードを使用するたびに本人確認を行うことができます</translation>
+<translation id="9133985615769429248">このデバイスを他のユーザーと共有している場合、保存したパスワードの入力時に画面ロックを使用して本人確認を行うことができます</translation>
 <translation id="9134066738478820307">識別子の使用と保護されたコンテンツの再生をサイトに許可する</translation>
 <translation id="9135777878366959474">Google パスワード マネージャーの英数字の PIN を入力</translation>
 <translation id="9137013805542155359">原文のページを表示</translation>
