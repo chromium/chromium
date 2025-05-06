@@ -25,13 +25,18 @@
     "wpt:all": "wireit",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
+  "type": "commonjs",
+  "main": "./lib/cjs/index.js",
   "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    },
     "./*": {
       "import": "./lib/esm/*",
       "require": "./lib/cjs/*"
     },
     "./lib/cjs/*": {
-      "types": "./lib/cjs/*",
       "import": "./lib/cjs/*",
       "require": "./lib/cjs/*"
     }
