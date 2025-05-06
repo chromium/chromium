@@ -6517,9 +6517,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal"
-    enum="Boolean" expires_after="2025-05-19">
+    enum="Boolean" expires_after="2026-05-19">
   <owner>smcgruer@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records whether a user has still used autofill after dismissing the payments
     bottom sheet. There is a fallback to still allow the user to autofill the
@@ -6533,9 +6533,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.FillingCorrectness"
-    enum="BooleanAutofillFillingCorrectness" expires_after="2025-05-19">
+    enum="BooleanAutofillFillingCorrectness" expires_after="2026-05-19">
   <owner>smcgruer@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     For the Payments bottom sheet (Touch To Fill for credit cards), tracks
     whether or not the user has edited at least one of the autofilled fields
@@ -6544,9 +6544,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.NumberOfCardsShown"
-    units="cards" expires_after="2025-05-19">
+    units="cards" expires_after="2026-05-19">
   <owner>smcgruer@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     The number of credit cards shown in the Touch To Fill bottom sheet. Recorded
     when showing the bottom sheet.
@@ -6554,9 +6554,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.Outcome2"
-    enum="TouchToFill.CreditCard.Outcome" expires_after="2025-05-19">
+    enum="TouchToFill.CreditCard.Outcome" expires_after="2026-05-19">
   <owner>smcgruer@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records the outcome with which the bottom sheet was closed: credit card
     selected, virtual card selected, go to payment settings, scan new credit
@@ -6571,9 +6571,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.PerfectFilling" enum="Boolean"
-    expires_after="2025-05-19">
+    expires_after="2026-05-19">
   <owner>smcgruer@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     For the Payments bottom sheet (Touch To Fill for credit cards), logs at
     submission time if the filling experience was perfect or not. In a perfect
@@ -6583,9 +6583,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.SelectedIndex" units="index"
-    expires_after="2025-09-28">
+    expires_after="2026-05-19">
   <owner>smcgruer@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     The index of the selected credit card in the Touch To Fill bottom sheet.
     Recorded when user selects a credit card from the list.
@@ -6593,9 +6593,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.TriggerOutcome"
-    enum="TouchToFill.PaymentMethod.TriggerOutcome" expires_after="2025-05-19">
+    enum="TouchToFill.PaymentMethod.TriggerOutcome" expires_after="2026-05-19">
   <owner>smcgruer@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records the outcome of the attempt to trigger Touch To Fill for credit
     cards. It is recorded only when the touch to fill feature is enabled and the
