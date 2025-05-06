@@ -186,6 +186,7 @@ public abstract class ChromeFeatureList {
             "AndroidOmniboxFocusedNewTabPage";
     public static final String ANDROID_OPEN_PDF_INLINE_BACKPORT = "AndroidOpenPdfInlineBackport";
     public static final String ANDROID_PDF_ASSIST_CONTENT = "AndroidPdfAssistContent";
+    public static final String ANDROID_PROGRESS_BAR_VISUAL_UPDATE = "AndroidProgressBarVisualUpdate";
     public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
     public static final String ANDROID_TAB_DECLUTTER = "AndroidTabDeclutter";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE =
@@ -634,6 +635,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidMinimalUiLargeScreen =
             newCachedFlag(ANDROID_MINIMAL_UI_LARGE_SCREEN, false);
+    public static final CachedFlag sAndroidProgressBarVisualUpdate =
+            newCachedFlag(ANDROID_PROGRESS_BAR_VISUAL_UPDATE, false);
     public static final CachedFlag sAndroidSurfaceColorUpdate =
             newCachedFlag(ANDROID_SURFACE_COLOR_UPDATE, /* defaultValue= */ false);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
@@ -869,6 +872,7 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomToolbar,
                     sAndroidElegantTextHeight,
                     sAndroidMinimalUiLargeScreen,
+                    sAndroidProgressBarVisualUpdate,
                     sAndroidSurfaceColorUpdate,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAndroidTabSkipSaveTabsKillswitch,

@@ -301,6 +301,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "android-progress-bar-visual-update",
+    "owners": ["agazal@google.com", "peilinwang@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "android-surface-color-update",
     "owners": [ "jtanaristy@google.com", "wenyufu@google.com" ],
     "expiry_milestone": 140
