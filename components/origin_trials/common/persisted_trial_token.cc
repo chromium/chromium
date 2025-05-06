@@ -81,14 +81,6 @@ bool operator<(const PersistedTrialToken& a, const PersistedTrialToken& b) {
   return to_tuple(a) < to_tuple(b);
 }
 
-bool operator==(const PersistedTrialToken& a, const PersistedTrialToken& b) {
-  return to_tuple(a) == to_tuple(b) && a.partition_sites == b.partition_sites;
-}
-
-bool operator!=(const PersistedTrialToken& a, const PersistedTrialToken& b) {
-  return !(a == b);
-}
-
 std::ostream& operator<<(std::ostream& out, const PersistedTrialToken& token) {
   out << "{";
   out << "match_subdomains: " << base::ToString(token.match_subdomains) << ", ";

@@ -56,17 +56,15 @@ struct PersistedTrialToken {
   // specifically the origin, match subdomains, trial name, expiry time, and
   // signature attributes.
   bool Matches(const blink::TrialToken& trial_token) const;
+
+  // Equality operator for testing.
+  friend bool operator==(const PersistedTrialToken&,
+                         const PersistedTrialToken&) = default;
 };
 
 // Comparison operator to let us store PersistedTokens in a flat_set.
 // Does not take partitioning metadata into account.
 bool operator<(const PersistedTrialToken& a, const PersistedTrialToken& b);
-
-// Equality operator for testing.
-bool operator==(const PersistedTrialToken& a, const PersistedTrialToken& b);
-
-// In-equality operator for testing
-bool operator!=(const PersistedTrialToken& a, const PersistedTrialToken& b);
 
 // Stream operator, mainly for GTEST output
 std::ostream& operator<<(std::ostream& out, const PersistedTrialToken& token);
