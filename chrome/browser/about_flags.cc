@@ -10766,10 +10766,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-tab-declutter", flag_descriptions::kAndroidTabDeclutterName,
-     flag_descriptions::kAndroidTabDeclutterDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidTabDeclutter)},
-
     {"android-tab-declutter-archive-all-but-active-tab",
      flag_descriptions::kAndroidTabDeclutterArchiveAllButActiveTabName,
      flag_descriptions::kAndroidTabDeclutterArchiveAllButActiveTabDescription,
@@ -10789,6 +10785,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidTabDeclutterArchiveTabGroupsDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidTabDeclutterArchiveTabGroups)},
+
+    {"android-tab-declutter-auto-delete",
+     flag_descriptions::kAndroidTabDeclutterAutoDeleteName,
+     flag_descriptions::kAndroidTabDeclutterAutoDeleteDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidTabDeclutterAutoDelete)},
 
     {"android-tab-declutter-performance-improvements",
      flag_descriptions::kAndroidTabDeclutterPerformanceImprovementsName,

@@ -102,10 +102,6 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
 
     private void configureTabArchiveSettings() {
         Preference tabArchiveSettingsPref = findPreference(PREF_TAB_ARCHIVE_SETTINGS);
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_TAB_DECLUTTER)) {
-            tabArchiveSettingsPref.setVisible(false);
-            return;
-        }
 
         TabArchiveSettings archiveSettings =
                 new TabArchiveSettings(ChromeSharedPreferences.getInstance());

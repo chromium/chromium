@@ -820,54 +820,9 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-        ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
-    })
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
-    public void testTabsSettingsOn_GroupSync_KillSwitchInactive() {
+    public void testTabsSettingsOn() {
         startSettings();
         assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_TAB_DECLUTTER,
-        ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
-    })
-    public void testTabsSettingsOn_GroupSync_KillSwitchActive() {
-        startSettings();
-        Assert.assertNull(
-                "Tabs settings should not be shown",
-                mMainSettings.findPreference(MainSettings.PREF_TABS));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-        ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
-    })
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
-    public void testTabsSettingsOn_Declutter() {
-        startSettings();
-        assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_TAB_DECLUTTER,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
-    })
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
-    public void testTabsSettingsOff() {
-        startSettings();
-        Assert.assertNull(
-                "Tabs settings should not be shown",
-                mMainSettings.findPreference(MainSettings.PREF_TABS));
     }
 
     @Test

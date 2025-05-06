@@ -2650,8 +2650,8 @@ extern const char kAndroidPdfAssistContentDescription[];
 extern const char kAndroidSurfaceColorUpdateName[];
 extern const char kAndroidSurfaceColorUpdateDescription[];
 
-extern const char kAndroidTabDeclutterName[];
-extern const char kAndroidTabDeclutterDescription[];
+extern const char kAndroidTabDeclutterAutoDeleteName[];
+extern const char kAndroidTabDeclutterAutoDeleteDescription[];
 
 extern const char kAndroidTabDeclutterArchiveAllButActiveTabName[];
 extern const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[];

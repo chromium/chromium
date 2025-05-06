@@ -154,8 +154,7 @@ public class TabArchiverImpl implements TabArchiver {
         // Maps unique tab group tokens to the eligibility of that group.
         Map<Token, Boolean> tabGroupIdToArchiveEligibilityMap = new HashMap<>();
 
-        int maxSimultaneousArchives =
-                ChromeFeatureList.sAndroidTabDeclutterMaxSimultaneousArchives.getValue();
+        int maxSimultaneousArchives = mTabArchiveSettings.getMaxSimultaneousArchives();
         for (int i = 0; i < model.getCount(); i++) {
             // TODO(crbug.com/369845089): Investigate a more graceful fix to
             // batch these so all relevant tabs still get archived in the same

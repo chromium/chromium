@@ -1324,7 +1324,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @Config(sdk = 31)
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
     public void testCleanupIfLastInstance() {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
@@ -1357,7 +1356,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @Config(sdk = 31)
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
     public void testCleanupSyncedTabGroupsIfOnlyInstance() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});

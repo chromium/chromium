@@ -188,13 +188,13 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_PDF_ASSIST_CONTENT = "AndroidPdfAssistContent";
     public static final String ANDROID_PROGRESS_BAR_VISUAL_UPDATE = "AndroidProgressBarVisualUpdate";
     public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
-    public static final String ANDROID_TAB_DECLUTTER = "AndroidTabDeclutter";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE =
             "AndroidTabDeclutterArchiveAllButActiveTab";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS =
             "AndroidTabDeclutterArchiveDuplicateTabs";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS =
             "AndroidTabDeclutterArchiveTabGroups";
+    public static final String ANDROID_TAB_DECLUTTER_AUTO_DELETE = "AndroidTabDeclutterAutoDelete";
     public static final String ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH =
             "AndroidTabDeclutterDedupeTabIdsKillSwitch";
     public static final String ANDROID_TAB_DECLUTTER_PERFORMANCE_IMPROVEMENTS =
@@ -993,14 +993,14 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_DUMP_ON_SCROLL_WITHOUT_RESOURCE, false);
     public static final MutableFlagWithSafeDefault sAndroidNativePagesInNewTab =
             newMutableFlagWithSafeDefault(ANDROID_NATIVE_PAGES_IN_NEW_TAB, false);
-    public static final MutableFlagWithSafeDefault sAndroidTabDeclutter =
-            newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER, true);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveAllButActiveTab =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveDuplicateTabs =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS, true);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveTabGroups =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS, false);
+    public static final MutableFlagWithSafeDefault sAndroidTabDeclutterAutoDelete =
+            newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_AUTO_DELETE, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterPerformanceImprovements =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_PERFORMANCE_IMPROVEMENTS, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterRescueKillSwitch =
@@ -1492,30 +1492,15 @@ public abstract class ChromeFeatureList {
                     "android_native_pages_in_new_tab_history_enabled", true);
     public static final MutableBooleanParamWithSafeDefault
             sAndroidNativePagesInNewTabRecentTabsEnabled =
-            sAndroidNativePagesInNewTab.newBooleanParam(
-                    "android_native_pages_in_new_tab_recent_tabs_enabled", true);
-    public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterArchiveEnabled =
-            sAndroidTabDeclutter.newBooleanParam("android_tab_declutter_archive_enabled", true);
-    public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterArchiveTimeDeltaHours =
-            sAndroidTabDeclutter.newIntParam(
-                    "android_tab_declutter_archive_time_delta_hours", 21 * 24);
+                    sAndroidNativePagesInNewTab.newBooleanParam(
+                            "android_native_pages_in_new_tab_recent_tabs_enabled", true);
     public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterAutoDeleteEnabled =
-            sAndroidTabDeclutter.newBooleanParam(
+            sAndroidTabDeclutterAutoDelete.newBooleanParam(
                     "android_tab_declutter_auto_delete_enabled", false);
     public static final MutableIntParamWithSafeDefault
             sAndroidTabDeclutterAutoDeleteTimeDeltaHours =
-                    sAndroidTabDeclutter.newIntParam(
+                    sAndroidTabDeclutterAutoDelete.newIntParam(
                             "android_tab_declutter_auto_delete_time_delta_hours", 60 * 24);
-    public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterIntervalTimeDeltaHours =
-            sAndroidTabDeclutter.newIntParam(
-                    "android_tab_declutter_interval_time_delta_hours", 7 * 24);
-    public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterMaxSimultaneousArchives =
-            sAndroidTabDeclutter.newIntParam(
-                    "android_tab_declutter_max_simultaneous_archives", 100);
-    public static final MutableIntParamWithSafeDefault
-            sAndroidTabDeclutterIphMessageDismissThreshold =
-                    sAndroidTabDeclutter.newIntParam(
-                            "android_tab_declutter_iph_message_dismiss_threshold", 3);
     public static final MutableBooleanParamWithSafeDefault
             sDisableBottomControlsStackerYOffsetDispatching =
                     sBottomBrowserControlsRefactor.newBooleanParam(

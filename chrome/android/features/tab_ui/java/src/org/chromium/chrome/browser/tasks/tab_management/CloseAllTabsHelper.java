@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiver;
@@ -31,21 +30,18 @@ public class CloseAllTabsHelper {
                         TabClosureParams.closeAllTabs().hideTabGroups(true).build(),
                         /* allowDialog= */ false);
 
-        Runnable undoRunnable = () -> {};
-        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
-            final Profile profile =
-                    tabModelSelector.getCurrentModel().getProfile().getOriginalProfile();
-            List<Integer> previouslyArchivedTabIds =
-                    unarchiveTabsForTabClosure(profile, regularTabCreator);
-            undoRunnable =
-                    () ->
-                            archiveTabsAfterTabClosureUndo(
-                                    profile,
-                                    tabModelSelector
-                                            .getTabGroupModelFilterProvider()
-                                            .getTabGroupModelFilter(/* isIncognito= */ false),
-                                    previouslyArchivedTabIds);
-        }
+        final Profile profile =
+                tabModelSelector.getCurrentModel().getProfile().getOriginalProfile();
+        List<Integer> previouslyArchivedTabIds =
+                unarchiveTabsForTabClosure(profile, regularTabCreator);
+        Runnable undoRunnable =
+                () ->
+                        archiveTabsAfterTabClosureUndo(
+                                profile,
+                                tabModelSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ false),
+                                previouslyArchivedTabIds);
         tabModelSelector
                 .getModel(/* incognito= */ false)
                 .getTabRemover()

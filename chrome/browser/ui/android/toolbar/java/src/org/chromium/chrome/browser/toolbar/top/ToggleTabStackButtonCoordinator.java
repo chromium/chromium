@@ -324,7 +324,6 @@ public class ToggleTabStackButtonCoordinator {
     }
 
     private void maybeShowDeclutterIph(int tabCount) {
-        if (!ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) return;
         if (mIsIncognitoSupplier.get()) return;
         if (mAlreadyRequestedDeclutterIph) return;
         if (tabCount == 0) return;
