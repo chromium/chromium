@@ -39,12 +39,8 @@ class DevToolsFileHelper {
                const std::string& root_url,
                const std::string& file_system_path);
 
-    bool operator==(const FileSystem& that) const {
-      return type == that.type && file_system_name == that.file_system_name &&
-             root_url == that.root_url &&
-             file_system_path == that.file_system_path;
-    }
-    bool operator!=(const FileSystem& that) const { return !(*this == that); }
+    friend constexpr bool operator==(const FileSystem&,
+                                     const FileSystem&) = default;
 
     std::string type;
     std::string file_system_name;
