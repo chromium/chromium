@@ -803,11 +803,12 @@ void MaybeRecordOneDriveSyncMetrics() {
   cloud_synced_folder_checker::CloudSyncStatus status =
       cloud_synced_folder_checker::EvaluateOneDriveSyncStatus();
 
-  base::UmaHistogramBoolean("Windows.OneDriveSyncState.Synced", status.synced);
+  base::UmaHistogramBoolean("Windows.OneDriveSyncState.Synced",
+                            status.synced());
   base::UmaHistogramBoolean("Windows.OneDriveSyncState.DesktopSynced",
-                            status.desktop_synced);
+                            status.desktop_synced());
   base::UmaHistogramBoolean("Windows.OneDriveSyncState.DocumentsSynced",
-                            status.documents_synced);
+                            status.documents_synced());
 }
 
 #endif  // BUILDFLAG(IS_WIN)

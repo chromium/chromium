@@ -11,7 +11,10 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <utility>
+
 #include "base/base_paths_win.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -27,6 +30,24 @@ bool IsSubDirectoryOrEqual(const base::FilePath& a, const base::FilePath& b) {
 
 namespace cloud_synced_folder_checker {
 
+namespace features {
+BASE_FEATURE(kCloudSyncedFolderChecker,
+             "CloudSyncedFolderChecker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
+
+CloudSyncStatus::CloudSyncStatus() = default;
+
+CloudSyncStatus::CloudSyncStatus(const CloudSyncStatus&) = default;
+
+CloudSyncStatus& CloudSyncStatus::operator=(const CloudSyncStatus&) = default;
+
+CloudSyncStatus::CloudSyncStatus(CloudSyncStatus&&) = default;
+
+CloudSyncStatus& CloudSyncStatus::operator=(CloudSyncStatus&&) = default;
+
+CloudSyncStatus::~CloudSyncStatus() = default;
+
 CloudSyncStatus EvaluateOneDriveSyncStatus() {
   CloudSyncStatus status;
 
@@ -37,22 +58,25 @@ CloudSyncStatus EvaluateOneDriveSyncStatus() {
   }
 
   // OneDrive folder is synced.
-  status.synced = true;
-
-  one_drive_file_path = base::MakeAbsoluteFilePath(one_drive_file_path);
+  status.one_drive_path = base::MakeAbsoluteFilePath(one_drive_file_path);
 
   base::FilePath desktop_file_path;
   if (base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_file_path)) {
-    status.desktop_synced = IsSubDirectoryOrEqual(
-        base::MakeAbsoluteFilePath(desktop_file_path), one_drive_file_path);
+    desktop_file_path = base::MakeAbsoluteFilePath(desktop_file_path);
+    if (IsSubDirectoryOrEqual(desktop_file_path,
+                              status.one_drive_path.value())) {
+      status.desktop_path = std::move(desktop_file_path);
+    }
   }
 
   base::FilePath documents_file_path;
   if (base::PathService::Get(chrome::DIR_USER_DOCUMENTS,
                              &documents_file_path)) {
     documents_file_path = base::MakeAbsoluteFilePath(documents_file_path);
-    status.documents_synced = IsSubDirectoryOrEqual(
-        base::MakeAbsoluteFilePath(documents_file_path), one_drive_file_path);
+    if (IsSubDirectoryOrEqual(documents_file_path,
+                              status.one_drive_path.value())) {
+      status.documents_path = std::move(documents_file_path);
+    }
   }
 
   return status;
