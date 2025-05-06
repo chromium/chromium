@@ -33,13 +33,14 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
-import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropTabResult;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 
 import java.lang.ref.WeakReference;
@@ -55,6 +56,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private DragDropGlobalState mDragDropGlobalState;
     @Mock private Tab mTab;
+    @Mock private TabGroupMetadata mTabGroupMetadata;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplierImpl;
     private ClipDescription mTabClipDescription =
@@ -85,8 +87,6 @@ public class ChromeTabbedOnDragListenerUnitTest {
         when(mCurrentTab.getId()).thenReturn(1);
         when(mTabModelSelector.getModel(false)).thenReturn(Mockito.mock(TabModel.class));
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(SOURCE_INSTANCE_ID);
-        when(mDragDropGlobalState.getData())
-                .thenReturn(new ChromeTabDropDataAndroid.Builder().withTab(mTab).build());
         when(mDragDropGlobalState.isDragSourceInstance(SOURCE_INSTANCE_ID)).thenReturn(true);
         DragDropGlobalState.setInstanceForTesting(mDragDropGlobalState);
         Activity activity = Mockito.mock(Activity.class);
@@ -106,7 +106,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
     }
 
     private void doTestOnDragActionDragStarted(boolean isGroupDrag) {
-        // Drag started should return false, since drag source is not chrome tab.
+        // Drag started should return false, since drag source is not chrome tab or group.
         assertFalse(
                 "Drag started should return false.",
                 mChromeTabbedOnDragListener.onDrag(
@@ -147,17 +147,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
 
     @Test
     public void testOnDrag_ActionDrop_TabSwitcher() {
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.DragDrop.Tab.FromStrip.Result",
-                                DragDropTabResult.IGNORED_TAB_SWITCHER)
-                        .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result.DesktopWindow")
-                        .expectNoRecords("Android.DragDrop.Tab.Type")
-                        .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
-                        .build();
         doTestOnDragActionDropInTabSwitcher(/* isGroupDrag= */ false);
-        histogramExpectation.assertExpected();
     }
 
     @Test
@@ -166,6 +156,18 @@ public class ChromeTabbedOnDragListenerUnitTest {
     }
 
     private void doTestOnDragActionDropInTabSwitcher(boolean isGroupDrag) {
+        String resultHistogram =
+                String.format(
+                        "Android.DragDrop.%s.FromStrip.Result", isGroupDrag ? "TabGroup" : "Tab");
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(resultHistogram, DragDropResult.IGNORED_TAB_SWITCHER)
+                        .expectNoRecords(resultHistogram + ".DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.TabGroup.Type")
+                        .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
+                        .build();
         // Call drag start to set states.
         assertTrue(
                 "Drag started should return true.",
@@ -181,24 +183,13 @@ public class ChromeTabbedOnDragListenerUnitTest {
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder,
                         mockDragEvent(DragEvent.ACTION_DROP, /* result= */ false, isGroupDrag)));
+        // Verify histograms.
+        histogramExpectation.assertExpected();
     }
 
     @Test
     public void testOnDrag_ActionDrop_SameInstance() {
-        AppHeaderUtils.setAppInDesktopWindowForTesting(true);
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.DragDrop.Tab.FromStrip.Result",
-                                DragDropTabResult.IGNORED_SAME_INSTANCE)
-                        .expectIntRecord(
-                                "Android.DragDrop.Tab.FromStrip.Result.DesktopWindow",
-                                DragDropTabResult.IGNORED_SAME_INSTANCE)
-                        .expectNoRecords("Android.DragDrop.Tab.Type")
-                        .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
-                        .build();
         doTestOnDragActionDropInSameInstance(/* isGroupDrag= */ false);
-        histogramExpectation.assertExpected();
     }
 
     @Test
@@ -207,6 +198,22 @@ public class ChromeTabbedOnDragListenerUnitTest {
     }
 
     private void doTestOnDragActionDropInSameInstance(boolean isGroupDrag) {
+        String resultHistogram =
+                String.format(
+                        "Android.DragDrop.%s.FromStrip.Result", isGroupDrag ? "TabGroup" : "Tab");
+        AppHeaderUtils.setAppInDesktopWindowForTesting(true);
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(resultHistogram, DragDropResult.IGNORED_SAME_INSTANCE)
+                        .expectIntRecord(
+                                resultHistogram + ".DesktopWindow",
+                                DragDropResult.IGNORED_SAME_INSTANCE)
+                        .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.TabGroup.Type")
+                        .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
+                        .build();
+        setGlobalStateData(isGroupDrag);
         // Call drag start to set states.
         assertTrue(
                 "Drag started should return true.",
@@ -222,10 +229,15 @@ public class ChromeTabbedOnDragListenerUnitTest {
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder,
                         mockDragEvent(DragEvent.ACTION_DROP, /* result= */ false, isGroupDrag)));
+        // Verify histograms.
+        histogramExpectation.assertExpected();
     }
 
     @Test
     public void testOnDrag_ActionDrop_Success() {
+        // Setup drag drop global state.
+        setGlobalStateData(/* isGroupDrag= */ false);
+
         // Verify action drop is success.
         verifyActionDropSuccess(/* isInDesktopWindow= */ false, /* isGroupDrag= */ false);
 
@@ -238,13 +250,10 @@ public class ChromeTabbedOnDragListenerUnitTest {
     }
 
     @Test
-    public void testOnDrag_ActionDrop_Success_tabGroup() {
-        // Verify action drop is success.
-        verifyActionDropSuccess(/* isInDesktopWindow= */ false, /* isGroupDrag= */ true);
-    }
-
-    @Test
     public void testOnDrag_ActionDrop_Success_DesktopWindow() {
+        // Setup drag drop global state.
+        setGlobalStateData(/* isGroupDrag= */ false);
+
         // Verify action drop is success.
         verifyActionDropSuccess(/* isInDesktopWindow= */ true, /* isGroupDrag= */ false);
 
@@ -276,17 +285,45 @@ public class ChromeTabbedOnDragListenerUnitTest {
                 mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
     }
 
+    @Test
+    public void testOnDrag_ActionDrop_Success_TabGroup_DesktopWindow() {
+        // Setup drag drop global state.
+        setGlobalStateData(/* isGroupDrag= */ true);
+
+        // Verify action drop is success.
+        verifyActionDropSuccess(/* isInDesktopWindow= */ true, /* isGroupDrag= */ true);
+    }
+
+    @Test
+    public void testOnDrag_ActionDrop_Success_TabGroup() {
+        // Setup drag drop global state.
+        setGlobalStateData(/* isGroupDrag= */ true);
+
+        // Verify action drop is success.
+        verifyActionDropSuccess(/* isInDesktopWindow= */ false, /* isGroupDrag= */ true);
+    }
+
     private void verifyActionDropSuccess(boolean isInDesktopWindow, boolean isGroupDrag) {
-        HistogramWatcher.Builder histogramExpectationBuilder =
+        String histogram =
+                String.format("Android.DragDrop.%s.Type", isGroupDrag ? "TabGroup" : "Tab");
+        AppHeaderUtils.setAppInDesktopWindowForTesting(isInDesktopWindow);
+
+        HistogramWatcher.Builder builder =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.DragDrop.Tab.Type", DragDropType.TAB_STRIP_TO_CONTENT);
+                        .expectIntRecord(histogram, DragDropType.TAB_STRIP_TO_CONTENT)
+                        .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result")
+                        .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.TabGroup.FromStrip.Result")
+                        .expectNoRecords(
+                                "Android.DragDrop.TabGroup.FromStrip.Result.DesktopWindow");
         if (isInDesktopWindow) {
-            AppHeaderUtils.setAppInDesktopWindowForTesting(true);
-            histogramExpectationBuilder.expectIntRecord(
-                    "Android.DragDrop.Tab.Type.DesktopWindow", DragDropType.TAB_STRIP_TO_CONTENT);
+            builder.expectIntRecord(
+                    histogram + ".DesktopWindow", DragDropType.TAB_STRIP_TO_CONTENT);
+        } else {
+            builder.expectNoRecords(histogram + ".DesktopWindow");
         }
-        HistogramWatcher histogramWatcher = histogramExpectationBuilder.build();
+        HistogramWatcher histogramWatcher = builder.build();
+
         // Call drag start to set states.
         assertTrue(
                 "Drag started should return true.",
@@ -303,10 +340,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
                 "Action drop should return true",
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder,
-                        mockDragEvent(
-                                DragEvent.ACTION_DROP,
-                                /* result= */ false,
-                                /* isGroupDrag= */ false)));
+                        mockDragEvent(DragEvent.ACTION_DROP, /* result= */ false, isGroupDrag)));
         histogramWatcher.assertExpected();
     }
 
@@ -321,5 +355,18 @@ public class ChromeTabbedOnDragListenerUnitTest {
         when(event.getClipDescription()).thenReturn(clipDescription);
         doReturn(action).when(event).getAction();
         return event;
+    }
+
+    private void setGlobalStateData(boolean isGroupDrag) {
+        if (isGroupDrag) {
+            when(mDragDropGlobalState.getData())
+                    .thenReturn(
+                            new ChromeTabGroupDropDataAndroid.Builder()
+                                    .withTabGroupMetadata(mTabGroupMetadata)
+                                    .build());
+        } else {
+            when(mDragDropGlobalState.getData())
+                    .thenReturn(new ChromeTabDropDataAndroid.Builder().withTab(mTab).build());
+        }
     }
 }

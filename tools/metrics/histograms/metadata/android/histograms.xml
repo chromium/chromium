@@ -304,6 +304,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Unset" summary="pre-warmed tabs without creation reason"/>
 </variants>
 
+<variants name="TabObjectType">
+  <variant name=".Tab" summary="tab"/>
+  <variant name=".TabGroup" summary="tab group"/>
+</variants>
+
 <variants name="TaskType">
   <variant name="AuxiliarySearchDonate" summary="AuxiliarySearchDonate"/>
   <variant name="BackgroundSyncOneShot" summary="BackgroundSyncOneShot"/>
@@ -1750,99 +1755,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DragDrop.Tab.Duration.WithinDestStrip" units="ms"
-    expires_after="2025-09-07">
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    During tab drag and drop, record duration when the drag is within the
-    destination strip, which is the time difference from the first time entering
-    the destination strip to the last time leaving or dropping into the
-    destination strip. Recorded when a tab drag and drop is finished.
-  </summary>
-</histogram>
-
-<histogram name="Android.DragDrop.Tab.FromStrip.Result"
-    enum="DragDropTabResult" expires_after="2025-09-07">
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the tab drag and drop results, including successful drops and failed
-    drops with varied reasons. For failed drops, it is recorded during
-    ACTION_DROP. For successful drops, it is recored during ACTION_DRAG_ENDED.
-    Note that the successful drops count can be recorded more often than
-    Android.DragDrop.Tab.Type, such as reorder within strip or tabs being
-    consumed as text by EditText in native pages.
-  </summary>
-</histogram>
-
-<histogram name="Android.DragDrop.Tab.FromStrip.Result.DesktopWindow"
-    enum="DragDropTabResult" expires_after="2025-11-04">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the tab drag and drop results in desktop windowing mode, including
-    successful drops and failed drops with varied reasons. For failed drops, it
-    is recorded during ACTION_DROP. For successful drops, it is recored during
-    ACTION_DRAG_ENDED. Note that the successful drops count can be recorded more
-    often than Android.DragDrop.Tab.Type.DesktopWindow, such as reorder within
-    strip or tabs being consumed as text by EditText in native pages.
-  </summary>
-</histogram>
-
-<histogram name="Android.DragDrop.Tab.MaxInstanceFailureCount" units="failures"
-    expires_after="2025-09-28">
+<histogram name="Android.DragDrop.TabOrGroup.MaxInstanceFailureCount"
+    units="failures" expires_after="2026-05-05">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
-    The number of times tab tearing failed for a user, because the maximum
-    number of Chrome instances were open, in a 24-hour period. Recorded when the
-    max-instance toast is shown when a dragged tab drop is unhandled at the max
-    instance limit.
-  </summary>
-</histogram>
-
-<histogram name="Android.DragDrop.Tab.ReorderStripWithDragDrop" enum="Boolean"
-    expires_after="2025-09-28">
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records tab drops into source strip with or without leaving the strip. True
-    means the tab drag has left the source strip; while false means it does not.
-    Recorded when tab is dropped into source strip. Used to determine the amount
-    of accidental tab drag out of the strip.
-  </summary>
-</histogram>
-
-<histogram name="Android.DragDrop.Tab.SourceWindowClosed" enum="Boolean"
-    expires_after="2025-09-14">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records true when a tab drag/drop results in closing the source Chrome
-    window because it was the last tab in the window, false when the drop does
-    not close the source window. Only recorded when tab drag/drop is handled.
-  </summary>
-</histogram>
-
-<histogram name="Android.DragDrop.Tab.Type" enum="DragDropType"
-    expires_after="2025-09-07">
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the drag source and drop target when a tab is dropped successfully.
-  </summary>
-</histogram>
-
-<histogram name="Android.DragDrop.Tab.Type.DesktopWindow" enum="DragDropType"
-    expires_after="2025-11-04">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the drag source and drop target when a tab is dropped successfully
-    in desktop windowing mode.
+    The number of times tab or group tearing failed for a user, because the
+    maximum number of Chrome instances were open, in a 24-hour period. Recorded
+    when the max-instance toast is shown when a dragged tab or group drop is
+    unhandled at the max instance limit.
   </summary>
 </histogram>
 
@@ -1856,6 +1778,109 @@ chromium-metrics-reviews@google.com.
     number of uses for drag and drop to Omnibox, and specifics on how much each
     data type is being dropped. Android only.
   </summary>
+</histogram>
+
+<histogram name="Android.DragDrop{TabObjectType}.Duration.WithinDestStrip"
+    units="ms" expires_after="2026-05-05">
+  <owner>shuyng@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    During {TabObjectType} drag and drop, record duration when the drag is
+    within the destination strip, which is the time difference from the first
+    time entering the destination strip to the last time leaving or dropping
+    into the destination strip. Recorded when a {TabObjectType} drag and drop is
+    finished.
+  </summary>
+  <token key="TabObjectType" variants="TabObjectType"/>
+</histogram>
+
+<histogram name="Android.DragDrop{TabObjectType}.FromStrip.Result"
+    enum="DragDropResult" expires_after="2026-05-05">
+  <owner>shuyng@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the {TabObjectType} drag and drop results, including successful
+    drops and failed drops with varied reasons. For failed drops, it is recorded
+    during ACTION_DROP. For successful drops, it is recorded during
+    ACTION_DRAG_ENDED. Note that the successful drops count can be recorded more
+    often than Android.DragDrop.Tab.Type or Android.DragDrop.TabGroup.Type such
+    as reorder within strip or tabs being consumed as text by EditText in native
+    pages.
+  </summary>
+  <token key="TabObjectType" variants="TabObjectType"/>
+</histogram>
+
+<histogram
+    name="Android.DragDrop{TabObjectType}.FromStrip.Result.DesktopWindow"
+    enum="DragDropResult" expires_after="2026-05-05">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the {TabObjectType} drag and drop results in desktop windowing mode,
+    including successful drops and failed drops with varied reasons. For failed
+    drops, it is recorded during ACTION_DROP. For successful drops, it is
+    recored during ACTION_DRAG_ENDED. Note that the successful drops count can
+    be recorded more often than Android.DragDrop.Tab.Type.DesktopWindow or
+    Android.DragDrop.TabGroup.Type.DesktopWindow, such as reorder within strip
+    or tabs being consumed as text by EditText in native pages.
+  </summary>
+  <token key="TabObjectType" variants="TabObjectType"/>
+</histogram>
+
+<histogram name="Android.DragDrop{TabObjectType}.ReorderStripWithDragDrop"
+    enum="Boolean" expires_after="2026-05-05">
+  <owner>shuyng@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records {TabObjectType} drops into source strip with or without leaving the
+    strip. True means the drag has left the source strip; while false means it
+    does not. Recorded when drop into source strip. Used to determine the amount
+    of accidental drag out of the strip.
+  </summary>
+  <token key="TabObjectType" variants="TabObjectType"/>
+</histogram>
+
+<histogram name="Android.DragDrop{TabObjectType}.SourceWindowClosed"
+    enum="Boolean" expires_after="2026-05-05">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records true when a {TabObjectType} drag/drop results in closing the source
+    Chrome window because it was the last {TabObjectType} in the window, false
+    when the drop does not close the source window. Only recorded when drag/drop
+    is handled.
+  </summary>
+  <token key="TabObjectType" variants="TabObjectType"/>
+</histogram>
+
+<histogram name="Android.DragDrop{TabObjectType}.Type" enum="DragDropType"
+    expires_after="2026-05-05">
+  <owner>shuyng@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the drag source and drop target when a {TabObjectType} is dropped
+    successfully.
+  </summary>
+  <token key="TabObjectType" variants="TabObjectType"/>
+</histogram>
+
+<histogram name="Android.DragDrop{TabObjectType}.Type.DesktopWindow"
+    enum="DragDropType" expires_after="2026-05-05">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the drag source and drop target when a {TabObjectType} is dropped
+    successfully in desktop windowing mode.
+  </summary>
+  <token key="TabObjectType" variants="TabObjectType"/>
 </histogram>
 
 <histogram name="Android.DynamicColors.IsAvailable" enum="Boolean"

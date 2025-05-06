@@ -2358,7 +2358,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         if (!TabUiFeatureUtilities.isTabDragToCreateInstanceSupported()) return false;
         @Nullable TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
         return tabGroupMetadata != null
-                ? maybeLaunchDraggedTabGroupInWindow(tabGroupMetadata)
+                ? maybeLaunchDraggedTabGroupInWindow(intent, tabGroupMetadata)
                 : maybeLaunchDraggedTabInWindow(intent);
     }
 
@@ -2381,18 +2381,24 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
         mMultiInstanceManager.moveTabToWindow(this, tab, /* atIndex= */ 0);
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, true);
-        DragDropMetricUtils.recordTabDragDropType(
+        DragDropMetricUtils.recordDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
                 AppHeaderUtils.isAppInDesktopWindow(
-                        mRootUiCoordinator.getDesktopWindowStateManager()));
+                        mRootUiCoordinator.getDesktopWindowStateManager()),
+                /* isTabGroup= */ false);
         return true;
     }
 
-    // TODO(crbug.com/384979079): record metrics for tab group drop.
-    private boolean maybeLaunchDraggedTabGroupInWindow(@NonNull TabGroupMetadata tabGroupMetadata) {
+    private boolean maybeLaunchDraggedTabGroupInWindow(
+            Intent intent, @NonNull TabGroupMetadata tabGroupMetadata) {
         if (mMultiInstanceManager == null) return false;
 
         mMultiInstanceManager.moveTabGroupToWindow(this, tabGroupMetadata, /* atIndex= */ 0);
+        DragDropMetricUtils.recordDragDropType(
+                ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
+                AppHeaderUtils.isAppInDesktopWindow(
+                        mRootUiCoordinator.getDesktopWindowStateManager()),
+                /* isTabGroup= */ true);
         return true;
     }
 

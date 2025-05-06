@@ -21,9 +21,9 @@ public class DragDropMetricUtils {
     private DragDropMetricUtils() {}
 
     /**
-     * Enum used by Android.DragDrop.Tab.Type, which records the drag source and drop target when a
-     * tab is dropped successfully. These values are persisted to logs. Entries should not be
-     * renumbered and numeric values should never be reused.
+     * Enum used by Android.DragDrop.Tab.Type and Android.DragDrop.TabGroup.Type, which records the
+     * drag source and drop target when a tab is dropped successfully. These values are persisted to
+     * logs. Entries should not be renumbered and numeric values should never be reused.
      */
     @IntDef({
         DragDropType.TAB_STRIP_TO_TAB_STRIP,
@@ -51,6 +51,7 @@ public class DragDropMetricUtils {
         UrlIntentSource.UNKNOWN,
         UrlIntentSource.LINK,
         UrlIntentSource.TAB_IN_STRIP,
+        UrlIntentSource.TAB_GROUP_IN_STRIP,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface UrlIntentSource {
@@ -62,97 +63,122 @@ public class DragDropMetricUtils {
     }
 
     /**
-     * Enum used by Android.DragDrop.Tab.FromStrip.Result.*, which records the tab drag and drop
+     * Enum used by Android.DragDrop.Tab*.FromStrip.Result.* which records the drag and drop
      * results, including successful drops and failed drops with varies reasons. These values are
      * persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
     @IntDef({
-        DragDropTabResult.SUCCESS,
-        DragDropTabResult.IGNORED_TOOLBAR,
-        DragDropTabResult.IGNORED_DIFF_MODEL_NOT_SUPPORTED,
-        DragDropTabResult.IGNORED_TAB_SWITCHER,
-        DragDropTabResult.IGNORED_SAME_INSTANCE,
-        DragDropTabResult.ERROR_TAB_NOT_FOUND,
-        DragDropTabResult.IGNORED_MAX_INSTANCES,
+        DragDropResult.SUCCESS,
+        DragDropResult.IGNORED_TOOLBAR,
+        DragDropResult.IGNORED_DIFF_MODEL_NOT_SUPPORTED,
+        DragDropResult.IGNORED_TAB_SWITCHER,
+        DragDropResult.IGNORED_SAME_INSTANCE,
+        DragDropResult.ERROR_CONTENT_NOT_FOUND,
+        DragDropResult.IGNORED_MAX_INSTANCES,
+        DragDropResult.IGNORED_MHTML_TAB,
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface DragDropTabResult {
+    public @interface DragDropResult {
         int SUCCESS = 0;
         int IGNORED_TOOLBAR = 1;
         int IGNORED_DIFF_MODEL_NOT_SUPPORTED = 2;
         int IGNORED_TAB_SWITCHER = 3;
         int IGNORED_SAME_INSTANCE = 4;
-        int ERROR_TAB_NOT_FOUND = 5;
+        int ERROR_CONTENT_NOT_FOUND = 5;
         int IGNORED_MAX_INSTANCES = 6;
-        int NUM_ENTRIES = 7;
+        int IGNORED_MHTML_TAB = 7;
+        int NUM_ENTRIES = 8;
     }
 
     /**
-     * Record enumerated histogram Android.DragDrop.Tab.Type for dragged tab data.
+     * Record enumerated histogram Android.DragDrop.Tab.Type and Android.DragDrop.TabGroup.Type for
+     * dragged tab or tab group data.
      *
      * @param dragDropType An enum indicating the drag source and drop target.
      * @param isInDesktopWindow Whether the app is running in a desktop window.
+     * @param isTabGroup True if the dragged item is a tab group; otherwise, it is assumed to be a
+     *     single tab.
      */
-    public static void recordTabDragDropType(
-            @DragDropType int dragDropType, boolean isInDesktopWindow) {
+    public static void recordDragDropType(
+            @DragDropType int dragDropType, boolean isInDesktopWindow, boolean isTabGroup) {
+        String histogram =
+                String.format("Android.DragDrop.%s.Type", isTabGroup ? "TabGroup" : "Tab");
         RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_DRAG_DROP_TAB_TYPE, dragDropType, DragDropType.NUM_ENTRIES);
+                histogram, dragDropType, DragDropType.NUM_ENTRIES);
         if (isInDesktopWindow) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Android.DragDrop.Tab.Type.DesktopWindow",
-                    dragDropType,
-                    DragDropType.NUM_ENTRIES);
+                    histogram + ".DesktopWindow", dragDropType, DragDropType.NUM_ENTRIES);
         }
     }
 
     /**
-     * Record enumerated histograms Android.DragDrop.Tab.FromStrip.Result.*.
+     * Record enumerated histograms Android.DragDrop.Tab.FromStrip.Result and
+     * Android.DragDrop.TabGroup.FromStrip.Result.
      *
-     * @param result An enum indicating the tab drag and drop results, including successful drops
-     *     and failed drops with varies reasons.
+     * @param result An enum indicating the tab or tab group drag and drop results, including
+     *     successful drops and failed drops with varies reasons.
      * @param isInDesktopWindow Whether the app is running in a desktop window.
+     * @param isTabGroup True if the dragged item is a tab group; otherwise, it is assumed to be a
+     *     single tab.
      */
-    public static void recordTabDragDropResult(
-            @DragDropTabResult int result, boolean isInDesktopWindow) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.DragDrop.Tab.FromStrip.Result", result, DragDropTabResult.NUM_ENTRIES);
+    public static void recordDragDropResult(
+            @DragDropResult int result, boolean isInDesktopWindow, boolean isTabGroup) {
+        String histogram =
+                String.format(
+                        "Android.DragDrop.%s.FromStrip.Result", isTabGroup ? "TabGroup" : "Tab");
+        RecordHistogram.recordEnumeratedHistogram(histogram, result, DragDropResult.NUM_ENTRIES);
         if (isInDesktopWindow) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Android.DragDrop.Tab.FromStrip.Result.DesktopWindow",
-                    result,
-                    DragDropTabResult.NUM_ENTRIES);
+                    histogram + ".DesktopWindow", result, DragDropResult.NUM_ENTRIES);
         }
     }
 
     /**
-     * Record boolean histogram Android.DragDrop.Tab.ReorderStripWithDragDrop.
+     * Record boolean histogram Android.DragDrop.Tab.ReorderStripWithDragDrop and
+     * Android.DragDrop.TabGroup.ReorderStripWithDragDrop.
      *
      * @param leavingStrip Whether the tab drag has left the source strip.
+     * @param isTabGroup True if the dragged item is a tab group; otherwise, it is assumed to be a
+     *     single tab.
      */
-    public static void recordTabReorderStripWithDragDrop(boolean leavingStrip) {
-        RecordHistogram.recordBooleanHistogram(
-                "Android.DragDrop.Tab.ReorderStripWithDragDrop", leavingStrip);
+    public static void recordReorderStripWithDragDrop(boolean leavingStrip, boolean isTabGroup) {
+        String histogram =
+                String.format(
+                        "Android.DragDrop.%s.ReorderStripWithDragDrop",
+                        isTabGroup ? "TabGroup" : "Tab");
+        RecordHistogram.recordBooleanHistogram(histogram, leavingStrip);
     }
 
     /**
-     * Record times histogram Android.DragDrop.Tab.Duration.WithinDestStrip.
+     * Record times histogram Android.DragDrop.Tab.Duration.WithinDestStrip and
+     * Android.DragDrop.TabGroup.Duration.WithinDestStrip.
      *
      * @param duration scrolling on a destination strip.
+     * @param isTabGroup True if the dragged item is a tab group; otherwise, it is assumed to be a
+     *     single tab.
      */
-    public static void recordTabDurationWithinDestStrip(long duration) {
-        RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                "Android.DragDrop.Tab.Duration.WithinDestStrip", duration);
+    public static void recordDurationWithinDestStrip(long duration, boolean isTabGroup) {
+        String histogram =
+                String.format(
+                        "Android.DragDrop.%s.Duration.WithinDestStrip",
+                        isTabGroup ? "TabGroup" : "Tab");
+        RecordHistogram.recordMediumTimesHistogram(histogram, duration);
     }
 
     /**
-     * Record boolean histogram Android.DragDrop.Tab.SourceWindowClosed.
+     * Record boolean histogram Android.DragDrop.Tab.SourceWindowClosed and
+     * Android.DragDrop.TabGroup.SourceWindowClosed.
      *
      * @param didCloseWindow Whether a successful tab drag/drop resulted in closing the source
      *     Chrome window.
+     * @param isTabGroup True if the dragged item is a tab group; otherwise, it is assumed to be a
+     *     single tab.
      */
-    public static void recordTabDragDropClosedWindow(boolean didCloseWindow) {
-        RecordHistogram.recordBooleanHistogram(
-                "Android.DragDrop.Tab.SourceWindowClosed", didCloseWindow);
+    public static void recordDragDropClosedWindow(boolean didCloseWindow, boolean isTabGroup) {
+        String histogram =
+                String.format(
+                        "Android.DragDrop.%s.SourceWindowClosed", isTabGroup ? "TabGroup" : "Tab");
+        RecordHistogram.recordBooleanHistogram(histogram, didCloseWindow);
     }
 }

@@ -25,7 +25,7 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
-import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropTabResult;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 
 /**
@@ -79,22 +79,23 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                 // This is to prevent tab switcher from receiving drops. We might support dropping
                 // into tab switcher in the future, but this should still be retained to prevent
                 // dropping happens on top of tab switcher toolbar.
+                boolean isTabGroupDrop =
+                        clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB_GROUP);
                 if (mLayoutStateProviderSupplier.get() == null
                         || mLayoutStateProviderSupplier
                                 .get()
                                 .isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-                    DragDropMetricUtils.recordTabDragDropResult(
-                            DragDropTabResult.IGNORED_TAB_SWITCHER, isInDesktopWindow);
+                    DragDropMetricUtils.recordDragDropResult(
+                            DragDropResult.IGNORED_TAB_SWITCHER, isInDesktopWindow, isTabGroupDrop);
                     return false;
                 }
                 if (clipDescription == null) return false;
-                if (clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB)) {
+                if (isTabGroupDrop) {
+                    return handleGroupDrop(dragEvent, isInDesktopWindow);
+                } else {
+                    assert clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB);
                     return handleTabDrop(dragEvent, isInDesktopWindow);
                 }
-                if (clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB_GROUP)) {
-                    return handleGroupDrop(dragEvent);
-                }
-                return false;
         }
         return false;
     }
@@ -103,13 +104,17 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
         Tab draggedTab = ChromeDragDropUtils.getTabFromGlobalState(globalState);
         if (globalState == null || draggedTab == null) {
-            DragDropMetricUtils.recordTabDragDropResult(
-                    DragDropTabResult.ERROR_TAB_NOT_FOUND, isInDesktopWindow);
+            DragDropMetricUtils.recordDragDropResult(
+                    DragDropResult.ERROR_CONTENT_NOT_FOUND,
+                    isInDesktopWindow,
+                    /* isTabGroup= */ false);
             return false;
         }
         if (globalState.isDragSourceInstance(mMultiInstanceManager.getCurrentInstanceId())) {
-            DragDropMetricUtils.recordTabDragDropResult(
-                    DragDropTabResult.IGNORED_SAME_INSTANCE, isInDesktopWindow);
+            DragDropMetricUtils.recordDragDropResult(
+                    DragDropResult.IGNORED_SAME_INSTANCE,
+                    isInDesktopWindow,
+                    /* isTabGroup= */ false);
             return false;
         }
 
@@ -129,20 +134,27 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         // Reparent the dragged tab to the destination window.
         mMultiInstanceManager.moveTabToWindow(
                 mWindowAndroid.getActivity().get(), draggedTab, destIndex);
-        DragDropMetricUtils.recordTabDragDropType(
-                DragDropType.TAB_STRIP_TO_CONTENT, isInDesktopWindow);
+        DragDropMetricUtils.recordDragDropType(
+                DragDropType.TAB_STRIP_TO_CONTENT, isInDesktopWindow, /* isTabGroup= */ false);
         return true;
     }
 
-    // TODO(crbug.com/384979079): record metrics for tab group drop.
-    private boolean handleGroupDrop(DragEvent dragEvent) {
+    private boolean handleGroupDrop(DragEvent dragEvent, boolean isInDesktopWindow) {
         DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
         TabGroupMetadata tabGroupMetadata =
                 ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(globalState);
         if (globalState == null || tabGroupMetadata == null) {
+            DragDropMetricUtils.recordDragDropResult(
+                    DragDropResult.ERROR_CONTENT_NOT_FOUND,
+                    isInDesktopWindow,
+                    /* isTabGroup= */ true);
             return false;
         }
         if (globalState.isDragSourceInstance(mMultiInstanceManager.getCurrentInstanceId())) {
+            DragDropMetricUtils.recordDragDropResult(
+                    DragDropResult.IGNORED_SAME_INSTANCE,
+                    isInDesktopWindow,
+                    /* isTabGroup= */ true);
             return false;
         }
 
@@ -157,6 +169,8 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         // Reparent the dragged tab group to destination window.
         mMultiInstanceManager.moveTabGroupToWindow(
                 mWindowAndroid.getActivity().get(), tabGroupMetadata, destIndex);
+        DragDropMetricUtils.recordDragDropType(
+                DragDropType.TAB_STRIP_TO_CONTENT, isInDesktopWindow, /* isTabGroup= */ true);
         return true;
     }
 }

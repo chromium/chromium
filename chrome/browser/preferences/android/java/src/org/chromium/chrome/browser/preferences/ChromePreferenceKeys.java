@@ -873,12 +873,12 @@ public final class ChromePreferenceKeys {
             "org.chromium.chrome.browser.tab.TabIdManager.NEXT_ID";
 
     // Start timestamp of 1-day period for measuring the number of times the max-instance toast is
-    // shown when tab tearing fails.
-    public static final String TAB_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS =
-            "Chrome.TabTearing.MaxInstancesFailureStartTimeMs";
-    // Number of times in a day the max-instance toast is shown when tab tearing fails.
-    public static final String TAB_TEARING_MAX_INSTANCES_FAILURE_COUNT =
-            "Chrome.TabTearing.MaxInstancesFailureCount";
+    // shown when tab or group tearing fails.
+    public static final String TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS =
+            "Chrome.TabOrGroupTearing.MaxInstancesFailureStartTimeMs";
+    // Number of times in a day the max-instance toast is shown when tab or group tearing fails.
+    public static final String TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_COUNT =
+            "Chrome.TabOrGroupTearing.MaxInstancesFailureCount";
 
     // If the toolbar should be shown on top.
     public static final String TOOLBAR_TOP_ANCHORED = "Chrome.Toolbar.TopAnchored";
@@ -1130,8 +1130,8 @@ public final class ChromePreferenceKeys {
                 TAB_DECLUTTER_AUTO_DELETE_ENABLED,
                 TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
                 TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT,
-                TAB_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS,
-                TAB_TEARING_MAX_INSTANCES_FAILURE_COUNT,
+                TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS,
+                TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_COUNT,
                 TOOLBAR_TOP_ANCHORED,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
                 UMA_ON_POSTCREATE_COUNTER,

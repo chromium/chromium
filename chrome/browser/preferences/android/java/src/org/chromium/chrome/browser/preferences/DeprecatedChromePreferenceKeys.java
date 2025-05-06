@@ -70,6 +70,8 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.Tab.ArchiveIphShowing",
                 "Chrome.Tab.ShowArchiveTabDialogIPH",
                 "Chrome.Tab.ShowTabGroupCreationDialog",
+                "Chrome.TabTearing.MaxInstancesFailureCount",
+                "Chrome.TabTearing.MaxInstancesFailureStartTimeMs",
                 "Chrome.UMA.OnPreCreateCounter",
                 "Chrome.UMA.OnResumeCounter",
                 "Chrome.VideoTutorials.ShareUrls",
