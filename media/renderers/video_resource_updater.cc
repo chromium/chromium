@@ -180,6 +180,17 @@ viz::SharedImageFormat GetRGBSharedImageFormat(VideoPixelFormat format) {
 #endif
 }
 
+viz::SharedImageFormat GetSingleChannel8BitFormat(
+    const gpu::Capabilities& caps,
+    const gpu::SharedImageCapabilities& shared_image_caps) {
+  if (caps.texture_rg && !shared_image_caps.disable_r8_shared_images) {
+    return viz::SinglePlaneFormat::kR_8;
+  }
+
+  DCHECK(shared_image_caps.supports_luminance_shared_images);
+  return viz::SinglePlaneFormat::kLUMINANCE_8;
+}
+
 // Returns true if the input VideoFrame format can be stored directly in the
 // provided output shared image format.
 bool HasCompatibleRGBFormat(VideoPixelFormat input_format,
@@ -203,24 +214,20 @@ bool IsFrameFormat32BitRGB(VideoPixelFormat frame_format) {
          frame_format == PIXEL_FORMAT_ABGR || frame_format == PIXEL_FORMAT_ARGB;
 }
 
+bool IsFormat16BitFloat(viz::SharedImageFormat format) {
+  // Assume multiplanar SharedImageFormat with ChannelFormat::k16F is always
+  // used as LUMINANCEF16.
+  CHECK(format.is_multi_plane());
+  return format.channel_format() == viz::SharedImageFormat::ChannelFormat::k16F;
+}
+
 viz::SharedImageFormat::ChannelFormat SupportedMultiPlaneChannelFormat(
-    const gpu::Capabilities& caps,
-    const gpu::SharedImageCapabilities& shared_image_caps,
-    int bits_per_channel) {
-  if (bits_per_channel <= 8) {
-    // Must support texture_rg or 8-bits luminance.
-    DCHECK(shared_image_caps.supports_luminance_shared_images ||
-           caps.texture_rg);
-    return viz::SharedImageFormat::ChannelFormat::k8;
-  }
-  // Can support R_16 formats.
-  if (caps.texture_norm16 && shared_image_caps.supports_r16_shared_images) {
+    viz::SharedImageFormat format) {
+  if (format == viz::SinglePlaneFormat::kR_16) {
     return viz::SharedImageFormat::ChannelFormat::k16;
   }
-  // Can support R_F16 or LUMINANCE_F16 formats.
-  if (shared_image_caps.is_r16f_supported ||
-      (caps.texture_half_float_linear &&
-       shared_image_caps.supports_luminance_shared_images)) {
+  if (format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
+      format == viz::SinglePlaneFormat::kR_F16) {
     return viz::SharedImageFormat::ChannelFormat::k16F;
   }
   return viz::SharedImageFormat::ChannelFormat::k8;
@@ -850,6 +857,30 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
   return external_resource;
 }
 
+viz::SharedImageFormat VideoResourceUpdater::YuvSharedImageFormat(
+    int bits_per_channel) {
+  DCHECK(context_provider_);
+  const auto& caps = context_provider_->ContextCapabilities();
+  const auto& shared_image_caps =
+      context_provider_->SharedImageInterface()->GetCapabilities();
+  if (bits_per_channel <= 8) {
+    DCHECK(shared_image_caps.supports_luminance_shared_images ||
+           caps.texture_rg);
+    return GetSingleChannel8BitFormat(caps, shared_image_caps);
+  }
+  if (caps.texture_norm16 && shared_image_caps.supports_r16_shared_images) {
+    return viz::SinglePlaneFormat::kR_16;
+  }
+  if (shared_image_caps.is_r16f_supported) {
+    return viz::SinglePlaneFormat::kR_F16;
+  }
+  if (caps.texture_half_float_linear &&
+      shared_image_caps.supports_luminance_shared_images) {
+    return viz::SinglePlaneFormat::kLUMINANCE_F16;
+  }
+  return GetSingleChannel8BitFormat(caps, shared_image_caps);
+}
+
 viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
     VideoPixelFormat input_frame_format,
     int bits_per_channel,
@@ -893,8 +924,8 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
   }
 
   // Get the supported channel format for `yuv_si_format`'s first plane.
-  auto channel_format = SupportedMultiPlaneChannelFormat(
-      caps, shared_image_caps, bits_per_channel);
+  auto channel_format =
+      SupportedMultiPlaneChannelFormat(YuvSharedImageFormat(bits_per_channel));
   if (yuv_si_format.channel_format() != channel_format) {
     // If the requested channel format is not supported, use the supported
     // channel format and downsample later if needed.
@@ -1045,14 +1076,12 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
     const bool needs_bit_upshifting =
         bits_per_channel > 8 && bits_per_channel < resource_bit_depth;
 
-    const bool is_16bit_float = yuv_si_format.channel_format() ==
-                                viz::SharedImageFormat::ChannelFormat::k16F;
-
     // We need to convert the incoming data if we're transferring to half
     // float, if there is need for bit downshift or if the strides need to
     // be reconciled.
-    const bool needs_conversion =
-        is_16bit_float || needs_bit_downshifting || needs_bit_upshifting;
+    const bool needs_conversion = IsFormat16BitFloat(yuv_si_format) ||
+                                  needs_bit_downshifting ||
+                                  needs_bit_upshifting;
     const uint8_t* pixels;
     int pixels_stride_in_bytes;
     if (!needs_conversion) {
@@ -1069,7 +1098,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
         }
       }
 
-      if (is_16bit_float) {
+      if (IsFormat16BitFloat(yuv_si_format)) {
         int max_value = 1 << bits_per_channel;
         // Use 1.0/max_value to be consistent with multiplanar shared images
         // which create TextureDrawQuads and don't take in a multiplier, offset.
