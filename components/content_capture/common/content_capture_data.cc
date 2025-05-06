@@ -13,9 +13,4 @@ ContentCaptureData::ContentCaptureData(const ContentCaptureData& data) =
 
 ContentCaptureData::~ContentCaptureData() = default;
 
-bool ContentCaptureData::operator==(const ContentCaptureData& other) const {
-  return id == other.id && value == other.value && bounds == other.bounds &&
-         children == other.children;
-}
-
 }  // namespace content_capture
