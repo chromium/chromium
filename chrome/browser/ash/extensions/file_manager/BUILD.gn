@@ -253,7 +253,6 @@ fuzzer_test("create_fnmatch_query_fuzzer") {
     ":file_manager",
     "//base",
     "//chrome/browser",
-    "//components/exo/wayland:test_controller",
     "//components/exo/wayland:ui_controls_protocol",
   ]
 }
@@ -265,7 +264,6 @@ fuzzer_test("search_by_pattern_fuzzer") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash/fileapi",
-    "//components/exo/wayland:test_controller",
     "//components/exo/wayland:ui_controls_protocol",
   ]
 }
