@@ -28,6 +28,7 @@ import type {SpeechListener} from './read_aloud/speech_controller.js';
 import {PauseActionSource, SpeechEngineState} from './read_aloud/speech_model.js';
 import type {SpeechPlayingState} from './read_aloud/speech_model.js';
 import {VoicePackController} from './read_aloud/voice_pack_controller.js';
+import type {VoiceLanguageListener} from './read_aloud/voice_pack_controller.js';
 import {WordBoundaries} from './read_aloud/word_boundaries.js';
 import type {WordBoundaryState} from './read_aloud/word_boundaries.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
@@ -56,7 +57,8 @@ export interface AppElement {
   };
 }
 
-export class AppElement extends AppElementBase implements SpeechListener {
+export class AppElement extends AppElementBase implements
+    SpeechListener, VoiceLanguageListener {
   static get is() {
     return 'read-anything-app';
   }
@@ -213,6 +215,7 @@ export class AppElement extends AppElementBase implements SpeechListener {
 
     if (this.isReadAloudEnabled_) {
       this.speechController_.addListener(this);
+      this.voicePackController_.addListener(this);
       this.notificationManager_.addListener(this.$.languageToast);
 
       // Clear state. We don't do this in disconnectedCallback because that's
@@ -816,9 +819,8 @@ export class AppElement extends AppElementBase implements SpeechListener {
     // Update application state
     this.updateApplicationState(lang, newVoicePackStatus);
 
-    if (isVoicePackStatusError(newVoicePackStatus) &&
-        this.voicePackController_.disableLangIfNoVoices(lang)) {
-      this.enabledLangs_ = this.voicePackController_.getEnabledLangs();
+    if (isVoicePackStatusError(newVoicePackStatus)) {
+      this.voicePackController_.disableLangIfNoVoices(lang);
     }
   }
 
@@ -840,7 +842,8 @@ export class AppElement extends AppElementBase implements SpeechListener {
         case VoicePackServerStatusSuccessCode.INSTALLED:
           // Force a refresh of the voices list since we might not get an update
           // the voices have changed.
-          this.getVoices_(/*forceRefresh=*/ true);
+          this.voicePackController_.refreshAvailableVoices(
+              /*forceRefresh=*/ true);
           this.autoSwitchVoice_(lang);
 
           // Some languages may require a download from the voice pack
@@ -906,7 +909,7 @@ export class AppElement extends AppElementBase implements SpeechListener {
 
   onVoicesChanged() {
     if (this.waitingForNewEngine_) {
-      this.enabledLangs_.forEach(lang => {
+      this.voicePackController_.getEnabledLangs().forEach(lang => {
         this.installVoicePackIfPossible(
             lang,
             /* onlyInstallExactGoogleLocaleMatch=*/ true,
@@ -919,15 +922,13 @@ export class AppElement extends AppElementBase implements SpeechListener {
     const hadAvailableVoices = this.voicePackController_.hasAvailableVoices();
     // Get a new list of voices. This should be done before we call
     // refreshVoicePackStatuses();
-    this.getVoices_(/*forceRefresh=*/ true);
+    this.voicePackController_.refreshAvailableVoices(/*forceRefresh=*/ true);
 
     // TODO: crbug.com/390435037 - Simplify logic around loading voices and
     // language availability, especially around the new TTS engine.
 
     // <if expr="not is_chromeos">
-    if (this.voicePackController_.enableNowAvailableLangs()) {
-      this.enabledLangs_ = this.voicePackController_.getEnabledLangs();
-    }
+    this.voicePackController_.enableNowAvailableLangs();
     // </if>
 
     if (!hadAvailableVoices && this.voicePackController_.hasAvailableVoices()) {
@@ -1060,12 +1061,8 @@ export class AppElement extends AppElementBase implements SpeechListener {
   }
 
   private getVoices_(forceRefresh: boolean = false): SpeechSynthesisVoice[] {
-    if (this.voicePackController_.refreshAvailableVoices(forceRefresh)) {
-      this.availableVoices_ = this.voicePackController_.getAvailableVoices();
-      this.localeToDisplayName_ =
-          this.voicePackController_.getDisplayNamesForLocaleCodes();
-    }
-    return this.availableVoices_;
+    this.voicePackController_.refreshAvailableVoices(forceRefresh);
+    return this.voicePackController_.getAvailableVoices();
   }
 
   protected onPreviewVoice_(
@@ -1124,6 +1121,16 @@ export class AppElement extends AppElementBase implements SpeechListener {
         this.speechController_.isPausedFromButton()) {
       this.updateLinks_();
     }
+  }
+
+  onEnabledLangsChange(): void {
+    this.enabledLangs_ = this.voicePackController_.getEnabledLangs();
+  }
+
+  onAvailableVoicesChange(): void {
+    this.availableVoices_ = this.voicePackController_.getAvailableVoices();
+    this.localeToDisplayName_ =
+        this.voicePackController_.getDisplayNamesForLocaleCodes();
   }
 
   private logSpeechPlaySession_() {
@@ -1683,15 +1690,10 @@ export class AppElement extends AppElementBase implements SpeechListener {
       this.installVoicePackIfPossible(
           toggledLanguage, /* onlyInstallExactGoogleLocaleMatch=*/ true,
           /* retryIfPreviousInstallFailed= */ true);
+      this.voicePackController_.enableLang(toggledLanguage);
     } else {
       this.voicePackController_.uninstall(toggledLanguage);
-    }
-
-    const updateEnabledLangs = currentlyEnabled ?
-        this.voicePackController_.disableLang(toggledLanguage) :
-        this.voicePackController_.enableLang(toggledLanguage);
-    if (updateEnabledLangs) {
-      this.enabledLangs_ = this.voicePackController_.getEnabledLangs();
+      this.voicePackController_.disableLang(toggledLanguage);
     }
 
     chrome.readingMode.onLanguagePrefChange(toggledLanguage, !currentlyEnabled);
@@ -1746,17 +1748,10 @@ export class AppElement extends AppElementBase implements SpeechListener {
   }
 
   restoreEnabledLanguagesFromPref() {
-    // We need to make sure the languages we choose correspond to voices, so
-    // refresh the list of voices and available langs
-    this.getVoices_();
+    this.voicePackController_.restoreEnabledLanguagesFromPref(
+        this.defaultVoice()?.lang);
 
-    this.voicePackController_.setCurrentLanguage(
-        chrome.readingMode.baseLanguageForSpeech);
-    this.enabledLangs_ =
-        this.voicePackController_.getInitialListOfEnabledLanguages(
-            this.defaultVoice()?.lang);
-
-    for (const lang of this.enabledLangs_) {
+    for (const lang of this.voicePackController_.getEnabledLangs()) {
       this.installVoicePackIfPossible(
           lang, /* onlyInstallExactGoogleLocaleMatch=*/ true,
           /* retryIfPreviousInstallFailed= */ false);
@@ -1798,9 +1793,7 @@ export class AppElement extends AppElementBase implements SpeechListener {
         this.defaultVoice();
 
     // Enable the locale for the preferred voice for this language.
-    if (this.voicePackController_.enableLang(this.selectedVoice_?.lang)) {
-      this.enabledLangs_ = this.voicePackController_.getEnabledLangs();
-    }
+    this.voicePackController_.enableLang(this.selectedVoice_?.lang);
   }
 
   protected onLineSpacingChange_() {
@@ -1922,9 +1915,7 @@ export class AppElement extends AppElementBase implements SpeechListener {
 
     // Enable the locales so we can select a voice for the given language and
     // show it in the voice menu.
-    if (this.voicePackController_.enableLang(localeToEnable)) {
-      this.enabledLangs_ = this.voicePackController_.getEnabledLangs();
-    }
+    this.voicePackController_.enableLang(localeToEnable);
     this.selectPreferredVoice();
   }
 

@@ -44,9 +44,9 @@ suite('VoicePackModel', () => {
     voicePackModel.enableLang(lang1);
     voicePackModel.enableLang(lang2);
     voicePackModel.enableLang(lang3);
-    assertTrue(voicePackModel.disableLang(lang1));
-    assertTrue(voicePackModel.disableLang(lang2));
-    assertFalse(voicePackModel.disableLang('random'));
+    voicePackModel.disableLang(lang1);
+    voicePackModel.disableLang(lang2);
+    voicePackModel.disableLang('random');
 
     assertEquals(1, voicePackModel.getEnabledLangs().size);
     assertTrue(voicePackModel.getEnabledLangs().has(lang3));

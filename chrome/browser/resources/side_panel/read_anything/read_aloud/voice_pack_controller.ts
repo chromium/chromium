@@ -16,18 +16,27 @@ import {VoiceNotificationManager} from '../voice_notification_manager.js';
 
 import {VoicePackModel} from './voice_pack_model.js';
 
+export interface VoiceLanguageListener {
+  onEnabledLangsChange(): void;
+  onAvailableVoicesChange(): void;
+}
 
 export class VoicePackController {
   private notificationManager_: VoiceNotificationManager =
       VoiceNotificationManager.getInstance();
   private model_: VoicePackModel = new VoicePackModel();
   private speech_: SpeechBrowserProxy = SpeechBrowserProxyImpl.getInstance();
+  private listeners_: VoiceLanguageListener[] = [];
 
   // The extension is responsible for installing the Natural voices. If the
   // extension is not being responsive, the extension is probably not
   // downloaded. This handle is a reference to the callback that will be invoked
   // if the extension does not respond in a timely manner.
   private speechExtensionResponseCallbackHandle_?: number;
+
+  addListener(listener: VoiceLanguageListener) {
+    this.listeners_.push(listener);
+  }
 
   getCurrentLanguage(): string {
     return this.model_.getCurrentLanguage();
@@ -43,6 +52,11 @@ export class VoicePackController {
 
   getAvailableLangs(): string[] {
     return [...this.model_.getAvailableLangs()];
+  }
+
+  setAvailableVoices(voices: SpeechSynthesisVoice[]): void {
+    this.model_.setAvailableVoices(voices);
+    this.listeners_.forEach(l => l.onAvailableVoicesChange());
   }
 
   getAvailableVoices(): SpeechSynthesisVoice[] {
@@ -67,7 +81,7 @@ export class VoicePackController {
     }
   }
 
-  disableLangIfNoVoices(lang: string): boolean {
+  disableLangIfNoVoices(lang: string): void {
     const lowerLang = lang.toLowerCase();
     this.refreshAvailableVoices();
     const availableVoicesForLang = this.getAvailableVoicesForLang_(lowerLang);
@@ -88,28 +102,26 @@ export class VoicePackController {
         }
       });
     }
-
-    return disableLang;
   }
 
-  // Returns whether lang was enabled before disabling it.
-  disableLang(lang?: string): boolean {
+  disableLang(lang?: string): void {
     if (!lang) {
-      return false;
+      return;
     }
-    return this.model_.disableLang(lang);
+    if (this.isLangEnabled(lang)) {
+      this.model_.disableLang(lang);
+      this.listeners_.forEach(l => l.onEnabledLangsChange());
+    }
   }
 
-  // Returns whether lang was disabled before enabling it.
-  enableLang(lang?: string): boolean {
+  enableLang(lang?: string): void {
     if (!lang) {
-      return false;
+      return;
     }
     if (!this.isLangEnabled(lang)) {
       this.model_.enableLang(lang.toLowerCase());
-      return true;
+      this.listeners_.forEach(l => l.onEnabledLangsChange());
     }
-    return false;
   }
 
   isLangEnabled(lang: string): boolean {
@@ -122,7 +134,7 @@ export class VoicePackController {
   // happen on non-ChromeOS, since we're only installing the new engine
   // outside of ChromeOS.
   // <if expr="not is_chromeos">
-  enableNowAvailableLangs(): boolean {
+  enableNowAvailableLangs(): void {
     const nowAvailableLangs =
         [...this.model_.getPossiblyDisabledLangs()].filter(
             (lang: string) => this.isLangAvailable_(lang));
@@ -132,7 +144,6 @@ export class VoicePackController {
       chrome.readingMode.onLanguagePrefChange(lowerLang, true);
       this.model_.removePossiblyDisabledLang(lowerLang);
     });
-    return nowAvailableLangs.length > 0;
   }
 
   private isLangAvailable_(lang: string) {
@@ -140,24 +151,25 @@ export class VoicePackController {
   }
   // </if>
 
-  getInitialListOfEnabledLanguages(langOfDefaultVoice?: string): string[] {
+  restoreEnabledLanguagesFromPref(langOfDefaultVoice?: string): void {
+    // We need to make sure the languages we choose correspond to voices, so
+    // refresh the list of voices and available langs
+    this.refreshAvailableVoices();
+    this.setCurrentLanguage(chrome.readingMode.baseLanguageForSpeech);
     const storedLanguagesPref = chrome.readingMode.getLanguagesEnabledInPref();
     const langs = createInitialListOfEnabledLanguages(
         chrome.readingMode.baseLanguageForSpeech, storedLanguagesPref,
         this.getAvailableLangs(), langOfDefaultVoice);
     this.alignPreferencesWithEnabledLangs_(storedLanguagesPref);
     langs.forEach((l: string) => this.enableLang(l));
-    return langs;
   }
 
-  refreshAvailableVoices(forceRefresh: boolean = false): boolean {
+  refreshAvailableVoices(forceRefresh: boolean = false): void {
     if (!this.hasAvailableVoices() || forceRefresh) {
       const availableVoices = getFilteredVoiceList(this.speech_.getVoices());
-      this.model_.setAvailableVoices(availableVoices);
+      this.setAvailableVoices(availableVoices);
       this.model_.setAvailableLangs(availableVoices.map(({lang}) => lang));
-      return true;
     }
-    return false;
   }
 
   getDisplayNamesForLocaleCodes(): {[locale: string]: string} {

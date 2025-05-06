@@ -26,7 +26,7 @@ export {NodeStore} from './node_store.js';
 export {currentReadHighlightClass, previousReadHighlightClass, ReadAloudHighlighter} from './read_aloud/highlighter.js';
 export {SpeechController, SpeechListener} from './read_aloud/speech_controller.js';
 export {PauseActionSource, SpeechEngineState, SpeechModel} from './read_aloud/speech_model.js';
-export {VoicePackController} from './read_aloud/voice_pack_controller.js';
+export {VoiceLanguageListener, VoicePackController} from './read_aloud/voice_pack_controller.js';
 export {VoicePackModel} from './read_aloud/voice_pack_model.js';
 export type {WordBoundaryState} from './read_aloud/word_boundaries.js';
 export {WordBoundaries} from './read_aloud/word_boundaries.js';

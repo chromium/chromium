@@ -63,8 +63,8 @@ export class VoicePackModel {
     this.enabledLangs_.add(lang);
   }
 
-  disableLang(lang: string): boolean {
-    return this.enabledLangs_.delete(lang);
+  disableLang(lang: string): void {
+    this.enabledLangs_.delete(lang);
   }
 
   getAvailableLangs(): Set<string> {

@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import {BrowserProxy, EXTENSION_RESPONSE_TIMEOUT_MS, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, SpeechBrowserProxyImpl, VoiceClientSideStatusCode, VoiceNotificationManager, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {VoiceNotificationListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {VoiceLanguageListener, VoiceNotificationListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
@@ -17,6 +17,9 @@ import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 suite('VoicePackController', () => {
   let speech: TestSpeechBrowserProxy;
   let voicePackController: VoicePackController;
+  let listener: VoiceLanguageListener;
+  let onEnabledLangsChange: boolean;
+  let onAvailableVoicesChange: boolean;
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -27,6 +30,17 @@ suite('VoicePackController', () => {
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
     voicePackController = new VoicePackController();
+    onEnabledLangsChange = false;
+    onAvailableVoicesChange = false;
+    listener = {
+      onEnabledLangsChange() {
+        onEnabledLangsChange = true;
+      },
+      onAvailableVoicesChange() {
+        onAvailableVoicesChange = true;
+      },
+    };
+    voicePackController.addListener(listener);
   });
 
   suite('setLocalStatus', () => {
@@ -99,24 +113,35 @@ suite('VoicePackController', () => {
   });
 
   test('disableLang', () => {
-    assertFalse(voicePackController.disableLang('no'));
-    assertFalse(voicePackController.disableLang(''));
-
     voicePackController.enableLang('vi');
-    assertTrue(voicePackController.disableLang('vi'));
+    onEnabledLangsChange = false;
+
+    voicePackController.disableLang('');
+    assertFalse(onEnabledLangsChange);
+    voicePackController.disableLang('no');
+    assertFalse(onEnabledLangsChange);
+
+    voicePackController.disableLang('vi');
+    assertTrue(onEnabledLangsChange);
     assertFalse(voicePackController.isLangEnabled('vi'));
     assertFalse(voicePackController.isLangEnabled('VI'));
   });
 
   test('enableLang', () => {
-    assertFalse(voicePackController.enableLang(''));
-    assertTrue(voicePackController.enableLang('no'));
-    assertFalse(voicePackController.enableLang('no'));
+    voicePackController.enableLang('');
+    assertFalse(onEnabledLangsChange);
+
+    voicePackController.enableLang('no');
+    assertTrue(onEnabledLangsChange);
+
+    onEnabledLangsChange = false;
+    voicePackController.enableLang('no');
+    assertFalse(onEnabledLangsChange);
     assertTrue(voicePackController.isLangEnabled('no'));
     assertTrue(voicePackController.isLangEnabled('NO'));
   });
 
-  test('getInitialListOfEnabledLanguages', () => {
+  test('restoreEnabledLanguagesFromPref', () => {
     const lang1 = 'en-gb';
     const lang2 = 'fr';
     const lang3 = 'bd';
@@ -129,15 +154,47 @@ suite('VoicePackController', () => {
       createSpeechSynthesisVoice({lang: lang2, name: 'Google Thomas'}),
       createSpeechSynthesisVoice({lang: lang3, name: 'Google Matt'}),
     ]);
-    voicePackController.refreshAvailableVoices();
+
+    voicePackController.restoreEnabledLanguagesFromPref();
 
     assertArrayEquals(
-        [lang1, lang2, lang3],
-        voicePackController.getInitialListOfEnabledLanguages());
-
+        [lang1, lang2, lang3], voicePackController.getEnabledLangs());
+    assertEquals('en', voicePackController.getCurrentLanguage());
     assertTrue(voicePackController.isLangEnabled(lang1));
     assertTrue(voicePackController.isLangEnabled(lang2));
     assertTrue(voicePackController.isLangEnabled(lang3));
+    assertTrue(onEnabledLangsChange);
+  });
+
+  test('refreshAvailableVoices', () => {
+    const voices = [
+      createSpeechSynthesisVoice({lang: 'en', name: 'Google Henry'}),
+      createSpeechSynthesisVoice({lang: 'en', name: 'Google Thomas'}),
+      createSpeechSynthesisVoice({lang: 'en', name: 'Google Matt'}),
+    ];
+    speech.setVoices(voices);
+
+    assertFalse(onAvailableVoicesChange);
+    assertArrayEquals([], voicePackController.getAvailableVoices());
+
+    voicePackController.refreshAvailableVoices();
+    assertTrue(onAvailableVoicesChange);
+    assertArrayEquals(voices, voicePackController.getAvailableVoices());
+
+    // If we already have voices and new voices come in, we only get those
+    // voices when we force a refresh.
+    onAvailableVoicesChange = false;
+    const newVoices = voices.concat(
+        createSpeechSynthesisVoice({lang: 'it', name: 'Google Charles'}));
+    speech.setVoices(newVoices);
+
+    voicePackController.refreshAvailableVoices();
+    assertFalse(onAvailableVoicesChange);
+    assertArrayEquals(voices, voicePackController.getAvailableVoices());
+
+    voicePackController.refreshAvailableVoices(true);
+    assertTrue(onAvailableVoicesChange);
+    assertArrayEquals(newVoices, voicePackController.getAvailableVoices());
   });
 
   // <if expr="is_chromeos">
@@ -157,10 +214,17 @@ suite('VoicePackController', () => {
           createSpeechSynthesisVoice({lang: lang1, name: 'Henry'}),
           createSpeechSynthesisVoice({lang: lang2, name: 'Google Thomas'}),
         ]);
+        onEnabledLangsChange = false;
 
-        assertTrue(voicePackController.disableLangIfNoVoices(lang1));
-        assertFalse(voicePackController.disableLangIfNoVoices(lang2));
-        assertTrue(voicePackController.disableLangIfNoVoices(lang3));
+        voicePackController.disableLangIfNoVoices(lang1);
+        assertTrue(onEnabledLangsChange);
+
+        onEnabledLangsChange = false;
+        voicePackController.disableLangIfNoVoices(lang2);
+        assertFalse(onEnabledLangsChange);
+
+        voicePackController.disableLangIfNoVoices(lang3);
+        assertTrue(onEnabledLangsChange);
 
         const langsInPrefs = chrome.readingMode.getLanguagesEnabledInPref();
         assertFalse(langsInPrefs.includes(lang1.toLowerCase()));
@@ -189,10 +253,14 @@ suite('VoicePackController', () => {
           createSpeechSynthesisVoice({lang: lang1, name: 'Henry'}),
           createSpeechSynthesisVoice({lang: lang2, name: 'Google Thomas'}),
         ]);
+        onEnabledLangsChange = false;
 
-        assertFalse(voicePackController.disableLangIfNoVoices(lang1));
-        assertFalse(voicePackController.disableLangIfNoVoices(lang2));
-        assertTrue(voicePackController.disableLangIfNoVoices(lang3));
+        voicePackController.disableLangIfNoVoices(lang1);
+        assertFalse(onEnabledLangsChange);
+        voicePackController.disableLangIfNoVoices(lang2);
+        assertFalse(onEnabledLangsChange);
+        voicePackController.disableLangIfNoVoices(lang3);
+        assertTrue(onEnabledLangsChange);
 
         const langsInPrefs = chrome.readingMode.getLanguagesEnabledInPref();
         assertTrue(langsInPrefs.includes(lang1.toLowerCase()));
@@ -215,9 +283,10 @@ suite('VoicePackController', () => {
       createSpeechSynthesisVoice({lang: lang1, name: 'Henry'}),
     ]);
     voicePackController.refreshAvailableVoices();
-    assertArrayEquals(
-        [lang1], voicePackController.getInitialListOfEnabledLanguages());
+    voicePackController.restoreEnabledLanguagesFromPref();
+    assertArrayEquals([lang1], voicePackController.getEnabledLangs());
     assertArrayEquals([], chrome.readingMode.getLanguagesEnabledInPref());
+    onEnabledLangsChange = false;
 
     speech.setVoices([
       createSpeechSynthesisVoice({lang: lang1, name: 'Henry'}),
@@ -228,14 +297,15 @@ suite('VoicePackController', () => {
     voicePackController.enableNowAvailableLangs();
 
     // After voices come in, we should enable those langs.
+    voicePackController.restoreEnabledLanguagesFromPref();
     assertArrayEquals(
-        [lang1, lang2, lang3],
-        voicePackController.getInitialListOfEnabledLanguages());
+        [lang1, lang2, lang3], voicePackController.getEnabledLangs());
     assertArrayEquals(
         [lang1, lang2, lang3], chrome.readingMode.getLanguagesEnabledInPref());
     assertTrue(voicePackController.isLangEnabled(lang1));
     assertTrue(voicePackController.isLangEnabled(lang2));
     assertTrue(voicePackController.isLangEnabled(lang3));
+    assertTrue(onEnabledLangsChange);
   });
   // </if>
 
