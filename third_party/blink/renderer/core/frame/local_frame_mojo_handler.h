@@ -258,8 +258,7 @@ class LocalFrameMojoHandler
   void InstallCoopAccessMonitor(
       const FrameToken& accessed_window,
       network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-          coop_reporter_params,
-      bool is_in_same_virtual_coop_related_group) final;
+          coop_reporter_params) final;
   void UpdateBrowserControlsState(
       cc::BrowserControlsState constraints,
       cc::BrowserControlsState current,

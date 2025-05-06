@@ -136,16 +136,12 @@ void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
       this ==
       accessing_node->current_frame_host()->coop_access_report_manager();
 
-  // TODO(crbug.com/412965095): Remove the is_in_same_virtual_coop_related_group
-  // boolean from the Mojo interface and cleanup the COOP restrict-properties
-  // renderer reporting code.
   accessing_node->current_frame_host()
       ->GetAssociatedLocalMainFrame()
       ->InstallCoopAccessMonitor(
           *accessed_window_token,
           coop_reporter_->CreateReporterParams(access_from_coop_page,
-                                               accessing_node, accessed_node),
-          false);
+                                               accessing_node, accessed_node));
 }
 
 // static
