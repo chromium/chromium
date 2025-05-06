@@ -522,11 +522,6 @@ public class AwContents implements SmartClipProvider {
     private AwViewMethods mAwViewMethods;
     private final FullScreenTransitionsState mFullScreenTransitionsState;
 
-    // The framework may temporarily detach our container view, for example during layout if
-    // we are a child of a ListView. This may cause many toggles of View focus, which we suppress
-    // when in this state.
-    private boolean mTemporarilyDetached;
-
     // True when this AwContents has been destroyed.
     // Do not use directly, call isDestroyed() instead.
     private boolean mIsDestroyed;
@@ -3354,11 +3349,7 @@ public class AwContents implements SmartClipProvider {
         //
         // The difference is important when the user enters full screen and the AwContents is
         // instead attached to a FullScreenView.
-
-        if (TRACE) Log.i(TAG, "%s onAttachedToWindow", this);
-        mTemporarilyDetached = false;
         mAwViewMethods.onAttachedToWindow();
-        mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
 
         if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
 
@@ -3389,9 +3380,6 @@ public class AwContents implements SmartClipProvider {
     /** @see android.view.View#onDetachedFromWindow() */
     @SuppressLint("MissingSuperCall")
     public void onDetachedFromWindow() {
-        if (TRACE) Log.i(TAG, "%s onDetachedFromWindow", this);
-
-        mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
         mAwViewMethods.onDetachedFromWindow();
 
         mAwFrameMetricsListener = AwFrameMetricsListener
@@ -3411,12 +3399,12 @@ public class AwContents implements SmartClipProvider {
 
     /** @see android.view.View#onStartTemporaryDetach() */
     public void onStartTemporaryDetach() {
-        mTemporarilyDetached = true;
+        mAwViewMethods.onStartTemporaryDetach();
     }
 
     /** @see android.view.View#onFinishTemporaryDetach() */
     public void onFinishTemporaryDetach() {
-        mTemporarilyDetached = false;
+        mAwViewMethods.onFinishTemporaryDetach();
     }
 
     /**
@@ -4359,6 +4347,11 @@ public class AwContents implements SmartClipProvider {
         // attached to the Window and size tracking is enabled. It will be null otherwise.
         private AwWindowCoverageTracker mAwWindowCoverageTracker;
 
+        // The framework may temporarily detach our container view, for example during layout if
+        // we are a child of a ListView. This may cause many toggles of View focus, which we
+        // suppress when in this state.
+        private boolean mTemporarilyDetached;
+
         @Override
         public void onDraw(Canvas canvas) {
             try {
@@ -4621,12 +4614,17 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void onAttachedToWindow() {
+            if (TRACE) Log.i(TAG, "%s onAttachedToWindow", AwContents.this);
+
             if (isDestroyed(NO_WARN)) return;
             if (mIsAttachedToWindow) {
                 Log.w(TAG, "onAttachedToWindow called when already attached. Ignoring");
                 return;
             }
             mIsAttachedToWindow = true;
+            mTemporarilyDetached = false;
+
+            mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
 
             mViewEventSink.onAttachedToWindow();
             AwContentsJni.get()
@@ -4662,11 +4660,15 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void onDetachedFromWindow() {
+            if (TRACE) Log.i(TAG, "%s onDetachedFromWindow", AwContents.this);
+
             if (isDestroyed(NO_WARN)) return;
             if (!mIsAttachedToWindow) {
                 Log.w(TAG, "onDetachedFromWindow called when already detached. Ignoring");
                 return;
             }
+
+            mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
             detachWindowCoverageTracker();
 
             mIsAttachedToWindow = false;
@@ -4828,6 +4830,16 @@ public class AwContents implements SmartClipProvider {
         @Override
         public boolean performAccessibilityAction(final int action, final Bundle arguments) {
             return false;
+        }
+
+        @Override
+        public void onStartTemporaryDetach() {
+            mTemporarilyDetached = true;
+        }
+
+        @Override
+        public void onFinishTemporaryDetach() {
+            mTemporarilyDetached = false;
         }
     }
 

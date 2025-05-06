@@ -114,5 +114,11 @@ interface AwViewMethods {
     AccessibilityNodeProvider getAccessibilityNodeProvider();
 
     /** @see android.view.View#performAccessibilityAction */
-    public boolean performAccessibilityAction(final int action, final Bundle arguments);
+    boolean performAccessibilityAction(final int action, final Bundle arguments);
+
+    /** @see android.view.View#onStartTemporaryDetach() */
+    void onStartTemporaryDetach();
+
+    /** @see android.view.View#onFinishTemporaryDetach() */
+    void onFinishTemporaryDetach();
 }
