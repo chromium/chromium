@@ -12351,44 +12351,6 @@
             ]
         }
     ],
-    "IgnoreDuplicateNavs": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "IgnoreDuplicateNavs"
-                    ]
-                },
-                {
-                    "name": "Enabled_2ms",
-                    "params": {
-                        "duplicate_nav_threshold": "2000"
-                    },
-                    "enable_features": [
-                        "IgnoreDuplicateNavs"
-                    ]
-                },
-                {
-                    "name": "Enabled_1ms",
-                    "params": {
-                        "duplicate_nav_threshold": "1000"
-                    },
-                    "enable_features": [
-                        "IgnoreDuplicateNavs"
-                    ]
-                }
-            ]
-        }
-    ],
     "ImageDescriptionsAlternateRouting": [
         {
             "platforms": [
