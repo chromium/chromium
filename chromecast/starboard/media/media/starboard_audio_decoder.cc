@@ -112,6 +112,14 @@ StarboardAudioDecoder::GetAudioSampleInfo() {
   return audio_sample_info_;
 }
 
+std::optional<EncryptionScheme> StarboardAudioDecoder::GetEncryptionScheme() {
+  if (audio_sample_info_.has_value()) {
+    // The config is populated when audio_sample_info_ is populated.
+    return config_.encryption_scheme;
+  }
+  return std::nullopt;
+}
+
 bool StarboardAudioDecoder::SetConfig(const AudioConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

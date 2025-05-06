@@ -13,6 +13,7 @@ cast_source_set("starboard_decryptor_cast") {
 
   deps = [
     ":starboard_drm_key_tracker",
+    ":starboard_drm_wrapper",
     "//base",
     "//chromecast/media/base",
     "//chromecast/media/cdm",
@@ -49,6 +50,7 @@ test("starboard_decryptor_cast_test") {
   deps = [
     ":starboard_decryptor_cast",
     ":starboard_drm_key_tracker",
+    ":starboard_drm_wrapper",
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",

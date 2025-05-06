@@ -40,10 +40,6 @@ constexpr size_t kDrmSampleInfoIvSize =
 constexpr size_t kDrmSampleInfoIdentifierSize =
     std::size(SbDrmSampleInfo{}.identifier);
 
-// Set via StarboardCreateDrmSystem, and passed to the SbPlayer when the player
-// is created.
-SbDrmSystem g_drm_system = nullptr;
-
 // Helper function to convert a session ID to a string. Returns an empty string
 // if session_id is null or the size is invalid (<=0).
 std::string SessionIdToString(const void* session_id, int session_id_size) {
@@ -260,7 +256,7 @@ void* StarboardApiWrapperBase::CreatePlayer(
       chromecast::CastStarboardApiAdapter::GetInstance()->GetWindow(nullptr);
 
   SbPlayerCreationParam sb_creation_param =
-      ToSbPlayerCreationParam(*creation_param, g_drm_system);
+      ToSbPlayerCreationParam(*creation_param);
 
   return SbPlayerCreate(
       window, &sb_creation_param, &DeallocateSample, &OnDecoderStatus,
@@ -303,19 +299,14 @@ void StarboardApiWrapperBase::DestroyPlayer(void* player) {
 void* StarboardApiWrapperBase::CreateDrmSystem(
     const char* key_system,
     const StarboardDrmSystemCallbackHandler* callback_handler) {
-  if (g_drm_system) {
-    LOG(INFO) << "An SbDrmSystem already exists; creating a new one.";
-  }
-
   LOG(INFO) << "Creating SbDrmSystem";
-  g_drm_system = SbDrmCreateSystem(
+  return SbDrmCreateSystem(
       key_system,
       /*context=*/
       static_cast<void*>(
           const_cast<StarboardDrmSystemCallbackHandler*>(callback_handler)),
       &OnUpdateRequest, &OnSessionUpdated, &OnKeyStatusesChanged,
       &OnServerCertificateUpdated, &OnSessionClosed);
-  return g_drm_system;
 }
 
 void StarboardApiWrapperBase::DrmGenerateSessionUpdateRequest(
@@ -363,9 +354,6 @@ bool StarboardApiWrapperBase::DrmIsServerCertificateUpdatable(
 
 void StarboardApiWrapperBase::DrmDestroySystem(void* drm_system) {
   LOG(INFO) << "Destroying SbDrmSystem";
-  if (reinterpret_cast<void*>(g_drm_system) == drm_system) {
-    g_drm_system = nullptr;
-  }
   SbDrmDestroySystem(static_cast<SbDrmSystem>(drm_system));
 }
 

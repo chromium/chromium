@@ -40,8 +40,11 @@ class StarboardAudioDecoder : public StarboardDecoder,
   AudioTrackTimestamp GetAudioTrackTimestamp() override;
   int GetStartThresholdInFrames() override;
 
+  // StarboardDecoder implementation:
+  std::optional<EncryptionScheme> GetEncryptionScheme() override;
+
  private:
-  // StarboardDecoder impl:
+  // StarboardDecoder implementation:
   void InitializeInternal() override;
 
   SEQUENCE_CHECKER(sequence_checker_);

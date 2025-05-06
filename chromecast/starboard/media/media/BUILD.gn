@@ -40,6 +40,7 @@ source_set("starboard") {
     "//chromecast/starboard/chromecast/starboard_adapter",
     "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
     "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
+    "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
     "//ui/display",
     "//ui/gfx/geometry",
   ]

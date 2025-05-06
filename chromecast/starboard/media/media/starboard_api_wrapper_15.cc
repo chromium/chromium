@@ -125,8 +125,7 @@ class StarboardApiWrapper15 : public StarboardApiWrapperBase {
  private:
   // StarboardApiWrapperBase impl:
   SbPlayerCreationParam ToSbPlayerCreationParam(
-      const StarboardPlayerCreationParam& in_param,
-      void* drm_system) override {
+      const StarboardPlayerCreationParam& in_param) override {
     SbPlayerCreationParam out_param = {};
 
     out_param.audio_stream_info =
@@ -136,13 +135,12 @@ class StarboardApiWrapper15 : public StarboardApiWrapperBase {
     out_param.output_mode =
         static_cast<SbPlayerOutputMode>(in_param.output_mode);
 
-    if (drm_system) {
+    if (in_param.drm_system) {
       LOG(INFO) << "Using an SbDrmSystem for decryption.";
-      out_param.drm_system = static_cast<SbDrmSystem>(drm_system);
+      out_param.drm_system = static_cast<SbDrmSystem>(in_param.drm_system);
     } else {
-      LOG(INFO)
-          << "No SbDrmSystem was created before SbPlayer; no decryption is "
-             "possible in starboard.";
+      LOG(INFO) << "No SbDrmSystem was specified; no decryption is possible in "
+                   "starboard.";
       out_param.drm_system = kSbDrmSystemInvalid;
     }
 
