@@ -291,6 +291,16 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                         SingleCategorySettings.EXTRA_TITLE,
                         javascriptOptimizerPref.getTitle().toString());
 
+        Bundle arguments = getArguments();
+        if (arguments != null
+                && arguments
+                        .keySet()
+                        .contains(
+                                PrivacySettingsNavigation
+                                        .EXTRA_FOCUS_ADVANCED_PROTECTION_SECTION)) {
+            scrollToPreference(PREF_ADVANCED_PROTECTION_INFO);
+        }
+
         updatePreferences();
     }
 
@@ -510,12 +520,11 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                             androidAdvancedProtectionLinkAction),
                     createLink(context, "link_javascript_optimizer", javascriptOptimizerLinkAction)
                 };
+        String advancedProtectionSectionMessageTemplate =
+                getString(
+                        R.string.settings_privacy_and_security_advanced_protection_section_message);
         SpannableString span =
-                SpanApplier.applySpans(
-                        getString(
-                                R.string
-                                        .settings_privacy_and_security_advanced_protection_section_message),
-                        spans);
+                SpanApplier.applySpans(advancedProtectionSectionMessageTemplate, spans);
 
         PropertyModel advancedProtectionInfoModel =
                 new PropertyModel.Builder(SafetyHubModuleProperties.ALL_KEYS)

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safe_browsing;
 
+import androidx.fragment.app.Fragment;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -12,8 +14,9 @@ import org.chromium.ui.base.WindowAndroid;
 public class AdvancedProtectionCoordinator {
     private AdvancedProtectionMediator mMediator;
 
-    public AdvancedProtectionCoordinator(WindowAndroid windowAndroid) {
-        mMediator = new AdvancedProtectionMediator(windowAndroid);
+    public AdvancedProtectionCoordinator(
+            WindowAndroid windowAndroid, Class<? extends Fragment> privacySettingsFragmentClass) {
+        mMediator = new AdvancedProtectionMediator(windowAndroid, privacySettingsFragmentClass);
     }
 
     public void destroy() {

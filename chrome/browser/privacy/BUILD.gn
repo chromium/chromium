@@ -72,6 +72,10 @@ if (is_android) {
     ]
   }
 
+  android_library("privacy_settings_java") {
+    sources = [ "settings/java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsNavigation.java" ]
+  }
+
   android_resources("java_resources") {
     sources = [
       "java/res/layout/secure_dns_provider_preference.xml",

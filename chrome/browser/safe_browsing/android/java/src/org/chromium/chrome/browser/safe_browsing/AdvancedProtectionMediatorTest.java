@@ -15,6 +15,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
+import androidx.fragment.app.Fragment;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,6 +56,8 @@ public class AdvancedProtectionMediatorTest {
     private final UnownedUserDataHost mWindowUserDataHost = new UnownedUserDataHost();
 
     @Mock private ManagedMessageDispatcher mMessageDispatcher;
+
+    private static class TestFragment extends Fragment {}
 
     private static class TestPermissionProvider extends OsAdditionalSecurityPermissionProvider {
         private boolean mIsAdvancedProtectionRequestedByOs;
@@ -126,7 +130,7 @@ public class AdvancedProtectionMediatorTest {
     public void testDontShowMessageNoPrefAdvancedProtectionOff() {
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ false);
 
-        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid);
+        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
         coordinator.showMessageOnStartupIfNeeded();
         verifyDidNotEnqueueMessage();
 
@@ -141,7 +145,7 @@ public class AdvancedProtectionMediatorTest {
     public void testShowMessageNoPrefAdvancedProtectionOn() {
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ true);
 
-        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid);
+        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
         coordinator.showMessageOnStartupIfNeeded();
         verifyEnqueuedMessage();
 
@@ -159,7 +163,7 @@ public class AdvancedProtectionMediatorTest {
                 .writeBoolean(ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING, true);
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ true);
 
-        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid);
+        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
         coordinator.showMessageOnStartupIfNeeded();
         verifyDidNotEnqueueMessage();
 
@@ -176,7 +180,7 @@ public class AdvancedProtectionMediatorTest {
         sharedPreferences.writeBoolean(ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING, true);
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ false);
 
-        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid);
+        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
         coordinator.showMessageOnStartupIfNeeded();
         verifyDidNotEnqueueMessage();
 
@@ -198,7 +202,7 @@ public class AdvancedProtectionMediatorTest {
         sharedPreferences.writeBoolean(ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING, false);
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ true);
 
-        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid);
+        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
         coordinator.showMessageOnStartupIfNeeded();
         verifyEnqueuedMessage();
 
@@ -219,7 +223,7 @@ public class AdvancedProtectionMediatorTest {
         sharedPreferences.writeBoolean(ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING, true);
         var provider = setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ false);
 
-        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid);
+        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
         coordinator.showMessageOnStartupIfNeeded();
         verifyDidNotEnqueueMessage();
         provider.setAdvancedProtectionRequestedByOs(/* isAdvancedProtectionRequestedByOs= */ true);
@@ -236,7 +240,7 @@ public class AdvancedProtectionMediatorTest {
         sharedPreferences.writeBoolean(ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING, true);
         var provider = setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ false);
 
-        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid);
+        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
         coordinator.showMessageOnStartupIfNeeded();
         verifyDidNotEnqueueMessage();
         provider.setAdvancedProtectionRequestedByOs(/* isAdvancedProtectionRequestedByOs= */ true);
@@ -260,7 +264,7 @@ public class AdvancedProtectionMediatorTest {
                 yesterdayTimestamp);
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ false);
 
-        new AdvancedProtectionCoordinator(mWindowAndroid);
+        new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
         assertTrue(
                 yesterdayTimestamp
                         < sharedPreferences.readLong(
@@ -283,7 +287,7 @@ public class AdvancedProtectionMediatorTest {
                 yesterdayTimestamp);
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ true);
 
-        new AdvancedProtectionCoordinator(mWindowAndroid);
+        new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
         assertEquals(
                 yesterdayTimestamp,
                 sharedPreferences.readLong(
@@ -303,7 +307,7 @@ public class AdvancedProtectionMediatorTest {
                 ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING_UPDATED_TIME);
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ true);
 
-        new AdvancedProtectionCoordinator(mWindowAndroid);
+        new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
         assertTrue(
                 sharedPreferences.readBoolean(
                         ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING, false));
