@@ -32,10 +32,16 @@ class OmniboxTextFieldIOSTest : public PlatformTest {
     CGRect rect = CGRectMake(0, 0, 100, 20);
     textfield_ = [[OmniboxTextFieldIOS alloc] initWithFrame:rect
                                               isLensOverlay:NO];
-    [GetAnyKeyWindow() addSubview:textfield_];
+    root_view_controller_ = GetAnyKeyWindow().rootViewController;
+    [root_view_controller_.view addSubview:textfield_];
   }
 
-  void TearDown() override { [textfield_ removeFromSuperview]; }
+  void TearDown() override {
+    if ([textfield_ isFirstResponder]) {
+      [textfield_ resignFirstResponder];
+    }
+    [textfield_ removeFromSuperview];
+  }
 
   void ExpectRectEqual(CGRect expectedRect, CGRect actualRect) {
     EXPECT_EQ(expectedRect.origin.x, actualRect.origin.x);
@@ -52,8 +58,10 @@ class OmniboxTextFieldIOSTest : public PlatformTest {
     // The NSRange conversion mechanism only works when the field is first
     // responder.
     [textfield_ setText:text];
-    [textfield_ becomeFirstResponder];
-    ASSERT_TRUE([textfield_ isFirstResponder]);
+    if (![textfield_ isFirstResponder]) {
+      [textfield_ becomeFirstResponder];
+    }
+    EXPECT_TRUE([textfield_ isFirstResponder]);
 
     // `i` and `j` hold the start and end offsets of the range that is currently
     // being tested.  This function iterates through all possible combinations
@@ -102,25 +110,15 @@ class OmniboxTextFieldIOSTest : public PlatformTest {
       j = i + 1;
       start = [textfield_ positionFromPosition:beginning offset:i];
     }
-
-    [textfield_ resignFirstResponder];
   }
 
+  UIViewController* root_view_controller_;
   OmniboxTextFieldIOS* textfield_;
   base::test::TaskEnvironment task_environment_;
 };
 
-// TODO:(crbug.com/1156541): Re-enable this test on devices.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_SelectedRanges SelectedRanges
-#else
-#define MAYBE_SelectedRanges FLAKY_SelectedRanges
-#endif
-TEST_F(OmniboxTextFieldIOSTest, MAYBE_SelectedRanges) {
-  if (@available(iOS 17, *)) {
-    // TODO:(crbug.com/1468176): Failing on iOS17 beta 5.
-    return;
-  }
+// Tests that selectedNSRange and selectedTextRange returns similar values.
+TEST_F(OmniboxTextFieldIOSTest, SelectedRanges) {
   base::FilePath test_data_directory;
   ASSERT_TRUE(base::PathService::Get(ios::DIR_TEST_DATA, &test_data_directory));
   base::FilePath test_file = test_data_directory.Append(
