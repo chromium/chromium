@@ -913,8 +913,7 @@ void WindowPerformance::ReportEventTimings() {
   InteractiveDetector* interactive_detector =
       InteractiveDetector::From(*(DomWindow()->document()));
 
-  bool tracing_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
+  bool tracing_enabled = TRACE_EVENT_CATEGORY_ENABLED("latency");
 
   while (!event_timing_entries_.empty()) {
     // Find the range [first, last) of events with the same presentation_index
@@ -961,10 +960,10 @@ void WindowPerformance::ReportEventTimings() {
       auto scope = perfetto::Track::ThreadScoped(this);
       auto flowid = perfetto::Flow::ProcessScoped(presentation_index);
 
-      TRACE_EVENT_BEGIN("devtools.timeline", "EventsInAnimationFrame", scope,
+      TRACE_EVENT_BEGIN("latency", "EventsInAnimationFrame", scope,
                         first_event_processing_start, flowid);
 
-      TRACE_EVENT_INSTANT("devtools.timeline", "EventCreation", scope,
+      TRACE_EVENT_INSTANT("latency", "EventCreation", scope,
                           first_event_creation_time, flowid);
     }
 
@@ -989,10 +988,10 @@ void WindowPerformance::ReportEventTimings() {
       auto scope = perfetto::Track::ThreadScoped(this);
       auto flowid = perfetto::Flow::ProcessScoped(presentation_index);
 
-      TRACE_EVENT_END("devtools.timeline", scope, frame_end_time);
+      TRACE_EVENT_END("latency", scope, frame_end_time);
 
       if (!last_event_presentation_time.is_null()) {
-        TRACE_EVENT_INSTANT("devtools.timeline", "EventPresentation", scope,
+        TRACE_EVENT_INSTANT("latency", "EventPresentation", scope,
                             last_event_presentation_time, flowid);
       }
 
@@ -1003,7 +1002,7 @@ void WindowPerformance::ReportEventTimings() {
                                          ->fallback_time.is_null();
                            });
           first_entry_with_fallback != last) {
-        TRACE_EVENT_INSTANT("devtools.timeline", "EventFallbackTime", scope,
+        TRACE_EVENT_INSTANT("latency", "EventFallbackTime", scope,
                             first_entry_with_fallback->Get()
                                 ->GetEventTimingReportingInfo()
                                 ->fallback_time,
@@ -1199,10 +1198,11 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
     AddToEventTimingBuffer(*entry);
   }
 
-  bool tracing_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
+  bool latency_tracing_enabled = TRACE_EVENT_CATEGORY_ENABLED("latency");
+  bool devtools_tracing_enabled =
+      TRACE_EVENT_CATEGORY_ENABLED("devtools.timeline");
 
-  if (tracing_enabled) {
+  if (latency_tracing_enabled || devtools_tracing_enabled) {
     base::TimeTicks unsafe_start_time =
         entry->GetEventTimingReportingInfo()->creation_time;
     base::TimeTicks unsafe_end_time = entry->GetEndTime();
@@ -1210,18 +1210,18 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
     WTF::AddFloatToHash(hash, entry->startTime());
     auto track_id = perfetto::Track::ThreadScoped(this);
     auto flow_id = perfetto::Flow::FromPointer(entry);
-    TRACE_EVENT_INSTANT("devtools.timeline", "EventCreation", track_id,
+    TRACE_EVENT_INSTANT("latency", "EventCreation", track_id,
                         entry->GetEventTimingReportingInfo()->creation_time,
                         flow_id);
     auto enqueued_to_main_thread_time =
         entry->GetEventTimingReportingInfo()->enqueued_to_main_thread_time;
     if (!enqueued_to_main_thread_time.is_null()) {
-      TRACE_EVENT_INSTANT("devtools.timeline", "EventEnqueuedToMainThread",
-                          track_id, enqueued_to_main_thread_time, flow_id);
+      TRACE_EVENT_INSTANT("latency", "EventEnqueuedToMainThread", track_id,
+                          enqueued_to_main_thread_time, flow_id);
     }
 
     TRACE_EVENT_BEGIN(
-        "devtools.timeline", "EventProcessing", track_id,
+        "latency", "EventProcessing", track_id,
         entry->GetEventTimingReportingInfo()->processing_start_time, flow_id,
         [&](perfetto::EventContext ctx) {
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -1229,9 +1229,8 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
           entry->SetPerfettoData(DomWindow()->GetFrame(), data,
                                  GetTimeOriginInternal());
         });
-    TRACE_EVENT_END("devtools.timeline", track_id,
+    TRACE_EVENT_END("latency", track_id,
                     entry->GetEventTimingReportingInfo()->processing_end_time);
-
     // TODO(sullivan): Remove these events when DevTools migrates to the above
     // perfetto events.
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
