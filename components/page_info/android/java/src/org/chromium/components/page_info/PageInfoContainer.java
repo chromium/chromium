@@ -13,6 +13,8 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.core.view.ViewCompat;
+
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -186,7 +188,8 @@ public class PageInfoContainer extends FrameLayout {
         mSubpageHeader.setVisibility(subPageTitle != null ? VISIBLE : GONE);
         mSubpageTitle.setText(subPageTitle);
         mContent.addView(view);
-        announceForAccessibility(
+        ViewCompat.setAccessibilityPaneTitle(
+                this,
                 subPageTitle != null
                         ? subPageTitle
                         : getResources().getString(R.string.accessibility_toolbar_btn_site_info));
