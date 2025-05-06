@@ -307,7 +307,7 @@ class FwupdClientTest : public testing::Test {
     // This value is returned by DBus as a uint32_t and is added to a dictionary
     // that doesn't support unsigned numbers. So it needs to be casted to int.
     EXPECT_EQ(expected_priority_, (*updates)[0].priority);
-    EXPECT_EQ(kFakeUpdateUriForTesting, (*updates)[0].filepath.value());
+    EXPECT_EQ(expected_location_, (*updates)[0].filepath.value());
     EXPECT_EQ(expected_checksum_, (*updates)[0].checksum);
   }
 
@@ -328,6 +328,10 @@ class FwupdClientTest : public testing::Test {
   }
 
   void SetExpectNoUpdates(bool no_updates) { expect_no_updates_ = no_updates; }
+
+  void SetExpectedLocation(const std::string& location) {
+    expected_location_ = location;
+  }
 
   void CheckPropertyChanged(FwupdProperties* properties) {
     if (properties->IsPercentageValid()) {
@@ -406,6 +410,7 @@ class FwupdClientTest : public testing::Test {
   std::string expected_checksum_;
   std::string expected_description_;
   int expected_priority_ = kFakeUpdatePriorityForTesting;
+  std::string expected_location_ = kFakeUpdateUriForTesting;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -714,6 +719,63 @@ TEST_F(FwupdClientTest, NoTrustedReportsFlexEnabled) {
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   command_line.AppendSwitch(switches::kRevenBranding);
   EnableFeatureFlag(features::kFlexFirmwareUpdate);
+
+  SetExpectedDescription(kFakeUpdateDescriptionForTesting);
+  SetExpectedChecksum(kFakeSha256ForTesting);
+
+  fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
+
+  run_loop_.Run();
+}
+
+// Test that accepts firmware with invalid URI when fwupd dev mode is enabled.
+TEST_F(FwupdClientTest, AcceptAnyUriInDevMode) {
+  // The observer will check that the update description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnUpdateListResponse(_, _))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  std::string fake_location = "http://fakelocation.com/firmware.cab/auth";
+  RequestUpdatesResponse response;
+  response.locations = {fake_location};
+
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
+  EnableFeatureFlag(features::kFwupdDeveloperMode);
+
+  SetExpectedLocation(fake_location);
+  SetExpectedDescription(kFakeUpdateDescriptionForTesting);
+  SetExpectedChecksum(kFakeSha256ForTesting);
+
+  fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
+
+  run_loop_.Run();
+}
+
+// Test that accepts firmware with no trusted reports when fwupd dev mode is
+// enabled.
+TEST_F(FwupdClientTest, AcceptNoTrustedReportsInDevMode) {
+  // The observer will check that the update description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnUpdateListResponse(_, _))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  RequestUpdatesResponse response;
+  response.trusted = false;
+
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
+  EnableFeatureFlag(features::kFwupdDeveloperMode);
 
   SetExpectedDescription(kFakeUpdateDescriptionForTesting);
   SetExpectedChecksum(kFakeSha256ForTesting);

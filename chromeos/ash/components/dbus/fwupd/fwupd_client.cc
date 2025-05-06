@@ -386,8 +386,9 @@ class FwupdClientImpl : public FwupdClient {
       can_parse = false;
     }
 
-    const bool needs_trusted_report = !features::IsFlexFirmwareUpdateEnabled();
-    FIRMWARE_LOG(DEBUG) << "Trusted reports required: " << needs_trusted_report;
+    const bool needs_trusted_report =
+        !features::IsFlexFirmwareUpdateEnabled() &&
+        !features::IsFwupdDeveloperModeEnabled();
 
     FwupdUpdateList updates;
     while (can_parse && array_reader.HasMoreData()) {
@@ -407,7 +408,9 @@ class FwupdClientImpl : public FwupdClient {
       std::optional<bool> trusted_report = dict.FindBool(kHasTrustedReportKey);
       const bool has_trusted_report =
           trusted_report.has_value() && trusted_report.value();
-      FIRMWARE_LOG(DEBUG) << "Trusted Reports: " << has_trusted_report;
+      FIRMWARE_LOG(DEBUG) << "Trusted Reports required: "
+                          << needs_trusted_report
+                          << "; Trusted Reports found: " << has_trusted_report;
       const bool missing_trusted_report =
           needs_trusted_report && !has_trusted_report;
 
@@ -679,8 +682,17 @@ base::FilePath GetUpdatePathFromDict(const base::Value::Dict& dict) {
     return base::FilePath();
   }
 
-  // Convert to a FilePath and verify the extension.
+  // Convert to a FilePath
   base::FilePath path(url.spec());
+
+  // Force return; don't authenticate URL further.
+  if (features::IsFwupdDeveloperModeEnabled()) {
+    FIRMWARE_LOG(DEBUG)
+        << "Developer mode detected; URI authentication skipped";
+    return path;
+  }
+
+  // Verify the extension.
   if (path.Extension() != kCabFileExtension) {
     FIRMWARE_LOG(ERROR) << "Invalid location extension: " << path;
     return base::FilePath();
