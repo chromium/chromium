@@ -2057,6 +2057,9 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const FieldDataManager& field_data_manager,
     ButtonTitlesCache* button_titles_cache,
     DenseSet<ExtractOption> extract_options) {
+  CHECK(!form_element || form_element.GetDocument() == document,
+        base::NotFatalUntil::M140);
+
   if (form_element && !IsAccessible(form_element)) {
     return std::nullopt;
   }

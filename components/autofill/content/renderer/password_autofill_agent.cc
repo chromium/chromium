@@ -2369,11 +2369,9 @@ bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(
 
 void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
     const WebFormElement& cleared_form) {
-  WebDocument document = render_frame()
-                             ? render_frame()->GetWebFrame()->GetDocument()
-                             : WebDocument();
+  CHECK(cleared_form);
   if (std::optional<FormData> form_data = form_util::ExtractFormData(
-          document, cleared_form, field_data_manager(),
+          cleared_form.GetDocument(), cleared_form, field_data_manager(),
           autofill_agent_->GetCallTimerState(
               CallTimerState::CallSite::kNotifyPasswordManagerAboutClearedForm),
           autofill_agent_->button_titles_cache())) {

@@ -79,6 +79,13 @@ enum class ExtractOption {
 
 // Extract FormData from `form_element` or the unowned form if
 // `form_element.IsNull()`.
+//
+// The document must be the one we want to extract fields from. In other words:
+// Do not blindly pass "some" WebDocument for `document`! If `form_element` is
+// non-null, `document` must obviously be `form_element`'s document. As a rule
+// of thumb, avoid passing "the current frame's document" but instead, whenever
+// possible, pass WebForm[Control]Element::GetDocument() of the form or of the
+// field whose form that we want to extract.
 std::optional<FormData> ExtractFormData(
     const blink::WebDocument& document,
     const blink::WebFormElement& form_element,
