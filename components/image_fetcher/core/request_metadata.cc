@@ -9,14 +9,4 @@ namespace image_fetcher {
 RequestMetadata::RequestMetadata()
     : http_response_code(RESPONSE_CODE_INVALID) {}
 
-bool operator==(const RequestMetadata& lhs, const RequestMetadata& rhs) {
-  return lhs.mime_type == rhs.mime_type &&
-         lhs.http_response_code == rhs.http_response_code &&
-         lhs.content_location_header == rhs.content_location_header;
-}
-
-bool operator!=(const RequestMetadata& lhs, const RequestMetadata& rhs) {
-  return !(lhs == rhs);
-}
-
 }  // namespace image_fetcher
