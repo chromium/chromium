@@ -70,4 +70,59 @@ WTF::String GapGeometry::IntersectionsToString(
   return result.ToString();
 }
 
+PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
+    WritingDirectionMode writing_direction,
+    const PhysicalSize& container_size,
+    LayoutUnit inline_thickness,
+    LayoutUnit block_thickness) const {
+  // One of the two intersection lists must be non-empty. If both are empty,
+  // it means there are no gaps in the container, hence we wouldn't have a
+  // gap geometry.
+  CHECK(!row_intersections_.empty() || !column_intersections_.empty());
+
+  LayoutUnit inline_start;
+  LayoutUnit inline_size;
+  LayoutUnit block_start;
+  LayoutUnit block_size;
+
+  // To determine the inline bounds, we'd typically use the rows intersections
+  // but in the case where there are no row intersections (i.e. no row gaps) we
+  // fallback to using the column intersections.
+  if (row_intersections_.empty()) {
+    inline_start = column_intersections_.front().front().inline_offset;
+    inline_size = column_intersections_.back().back().inline_offset -
+                  column_intersections_.front().front().inline_offset;
+  } else {
+    inline_start = row_intersections_.front().front().inline_offset;
+    inline_size = row_intersections_.back().back().inline_offset -
+                  row_intersections_.front().front().inline_offset;
+  }
+
+  // Similarly, to determine the block bounds, we'd typically use the columns
+  // intersections but in the case where there are no column
+  // intersections (i.e. no column gaps) we fallback to using the row
+  // intersections.
+  if (column_intersections_.empty()) {
+    block_start = row_intersections_.front().front().block_offset;
+    block_size = row_intersections_.back().back().block_offset -
+                 row_intersections_.front().front().block_offset;
+  } else {
+    block_start = column_intersections_.front().front().block_offset;
+    block_size = column_intersections_.back().back().block_offset -
+                 column_intersections_.front().front().block_offset;
+  }
+
+  // Inflate the bounds to account for the gap decorations thickness.
+  inline_start -= inline_thickness / 2;
+  inline_size += inline_thickness;
+  block_start -= block_thickness / 2;
+  block_size += block_thickness;
+
+  LogicalRect logical_rect(inline_size, block_start, inline_size, block_size);
+  WritingModeConverter converter(writing_direction, container_size);
+  PhysicalRect physical_rect = converter.ToPhysical(logical_rect);
+
+  return physical_rect;
+}
+
 }  // namespace blink

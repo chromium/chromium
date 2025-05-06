@@ -115,6 +115,30 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
   }
 }
 
+int MaxGapDecorationsWidth(const GapDataList<int>& width_value) {
+  const auto widths = width_value.GetGapDataList();
+  CHECK(!widths.empty());
+
+  const auto& first_width = widths[0];
+  int max_width =
+      !first_width.IsRepeaterData()
+          ? first_width.GetValue()
+          : first_width.GetValueRepeater()->RepeatedValues().front();
+
+  for (const auto& width : widths) {
+    if (!width.IsRepeaterData()) {
+      max_width = std::max(max_width, width.GetValue());
+    } else {
+      const auto& repeated_values = width.GetValueRepeater()->RepeatedValues();
+      for (const auto& value : repeated_values) {
+        max_width = std::max(max_width, value);
+      }
+    }
+  }
+
+  return max_width;
+}
+
 }  // namespace
 
 // static
@@ -1061,6 +1085,18 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
     rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
     ink_overflow.Unite(rect);
   }
+
+  if (const GapGeometry* gap_geometry = GetGapGeometry()) {
+    LayoutUnit inline_thickness =
+        LayoutUnit(MaxGapDecorationsWidth(style.ColumnRuleWidth()));
+    LayoutUnit block_thickness =
+        LayoutUnit(MaxGapDecorationsWidth(style.RowRuleWidth()));
+    PhysicalRect rect = gap_geometry->ComputeInkOverflowForGaps(
+        Style().GetWritingDirection(), Size(), inline_thickness,
+        block_thickness);
+    ink_overflow.Unite(rect);
+  }
+
   return ink_overflow;
 }
 

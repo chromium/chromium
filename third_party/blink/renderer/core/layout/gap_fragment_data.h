@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_FRAGMENT_DATA_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -86,6 +87,12 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   const Vector<GapIntersectionList>& GetGapIntersections(
       GridTrackSizingDirection track_direction) const;
+
+  // Computes the physical bounding rect for gap decorations ink overflow.
+  PhysicalRect ComputeInkOverflowForGaps(WritingDirectionMode writing_direction,
+                                         const PhysicalSize& container_size,
+                                         LayoutUnit inline_thickness,
+                                         LayoutUnit block_thickness) const;
 
   ContainerType GetContainerType() const { return container_type_; }
 

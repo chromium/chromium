@@ -1330,7 +1330,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithDecorationData(
 
 void BoxFragmentPainter::PaintGapDecorations(const PaintInfo& paint_info,
                                              const PhysicalRect& paint_rect) {
-  if (const GapGeometry* gap_geometry = box_fragment_.GapGeometry()) {
+  if (const GapGeometry* gap_geometry = box_fragment_.GetGapGeometry()) {
     EGapRulePaintOrder paint_order = box_fragment_.Style().GapRulePaintOrder();
     // `gap-rule-paint-order` dictates whether to paint the columns over the
     // rows, or the rows over the columns. The default is to paint the rows over
@@ -1699,7 +1699,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
 // is implemented for multi-column.
 void BoxFragmentPainter::PaintColumnRules(const PaintInfo& paint_info,
                                           const PhysicalOffset& paint_offset) {
-  if (box_fragment_.GapGeometry()) {
+  if (box_fragment_.GetGapGeometry()) {
     return;
   }
 
