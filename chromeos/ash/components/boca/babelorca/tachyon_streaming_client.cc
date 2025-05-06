@@ -111,6 +111,7 @@ void TachyonStreamingClient::OnComplete(bool success) {
   if (success) {
     base::UmaHistogramEnumeration(kStreamEndReasonUma,
                                   StreamEndReason::kConnectionClosedSuccess);
+    url_loader_.reset();
     std::move(request_data_->response_cb)
         .Run(TachyonResponse(TachyonResponse::Status::kOk));
     return;
