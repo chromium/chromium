@@ -73,4 +73,7 @@ TEST_F(TabGroupProviderTest, TestOneTitleMatch) {
                           TestSchemeClassifier());
   tab_group_provider().Start(input, /* minimal_changes= */ false);
   ASSERT_EQ(1UL, tab_group_provider().matches().size());
+  ASSERT_EQ(u"test", tab_group_provider().matches()[0].contents);
+  ASSERT_TRUE(
+      tab_group_provider().matches()[0].matching_tab_group_uuid.has_value());
 }

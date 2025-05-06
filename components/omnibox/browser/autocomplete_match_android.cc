@@ -11,11 +11,14 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
+#include "base/uuid.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -111,7 +114,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           has_tab_match.value_or(false), actions_list,
           allowed_to_be_default_match,
           ConvertUTF16ToJavaString(env, inline_autocompletion),
-          ConvertUTF16ToJavaString(env, additional_text)));
+          ConvertUTF16ToJavaString(env, additional_text),
+          tab_groups::UuidToJavaString(
+              env, matching_tab_group_uuid.value_or(base::Uuid()))));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
 }

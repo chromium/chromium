@@ -125,7 +125,7 @@ AutocompleteMatch TabGroupProvider::CreateTabGroupMatch(
   match.contents_class = ClassifyTermMatches(
       contents_terms, match.contents.size(), ACMatchClassification::MATCH,
       ACMatchClassification::NONE);
-  // TODO(crbug.com/410574178): Plumb tab group id through match.
+  match.matching_tab_group_uuid = group.saved_guid();
   match.suggestion_group_id = omnibox::GROUP_MOBILE_OPEN_TABS;
 
   return match;

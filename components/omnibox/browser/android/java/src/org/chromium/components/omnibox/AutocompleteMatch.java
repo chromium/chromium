@@ -91,6 +91,7 @@ public class AutocompleteMatch {
     private final boolean mAllowedToBeDefaultMatch;
     private final String mInlineAutocompletion;
     private final String mAdditionalText;
+    private @Nullable String mTabGroupUuid;
 
     public AutocompleteMatch(
             int nativeType,
@@ -116,7 +117,8 @@ public class AutocompleteMatch {
             @Nullable List<OmniboxAction> actions,
             boolean allowedToBeDefaultMatch,
             String inlineAutocompletion,
-            String additionalText) {
+            String additionalText,
+            @Nullable String tabGroupUuid) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
         }
@@ -152,6 +154,7 @@ public class AutocompleteMatch {
         mAllowedToBeDefaultMatch = allowedToBeDefaultMatch;
         mInlineAutocompletion = inlineAutocompletion;
         mAdditionalText = additionalText;
+        mTabGroupUuid = tabGroupUuid;
     }
 
     @CalledByNative
@@ -182,7 +185,8 @@ public class AutocompleteMatch {
             @JniType("std::vector") List<OmniboxAction> actions,
             boolean allowedToBeDefaultMatch,
             String inlineAutocompletion,
-            String additionalText) {
+            String additionalText,
+            String localTabGroupId) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -221,7 +225,8 @@ public class AutocompleteMatch {
                         actions,
                         allowedToBeDefaultMatch,
                         inlineAutocompletion,
-                        additionalText);
+                        additionalText,
+                        TextUtils.isEmpty(localTabGroupId) ? null : localTabGroupId);
         match.updateNativeObjectRef(nativeObject);
         match.setDescription(
                 description, descriptionClassificationOffsets, descriptionClassificationStyles);
@@ -450,7 +455,8 @@ public class AutocompleteMatch {
                 && Arrays.equals(mPostData, suggestion.mPostData)
                 && mGroupId == suggestion.mGroupId
                 && mAnswerType == suggestion.mAnswerType
-                && answer_template_is_equal;
+                && answer_template_is_equal
+                && ObjectsCompat.equals(mTabGroupUuid, suggestion.mTabGroupUuid);
     }
 
     /**
@@ -460,6 +466,10 @@ public class AutocompleteMatch {
      */
     public int getGroupId() {
         return mGroupId;
+    }
+
+    public @Nullable String getTabGroupUuid() {
+        return mTabGroupUuid;
     }
 
     /**
@@ -567,7 +577,8 @@ public class AutocompleteMatch {
                 /* actions= */ null,
                 input.getAllowedToBeDefaultMatch(),
                 input.getInlineAutocompletion(),
-                input.getAdditionalText());
+                input.getAdditionalText(),
+                /* tabGroupUuid= */ null);
     }
 
     @Override
