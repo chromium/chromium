@@ -29,7 +29,7 @@ from grit.node import structure
 from grit.tool import interface
 
 
-JAVA_STRINGS_PATH_RE = re.compile(r'^.*/res/(.*)$')
+JAVA_STRINGS_PATH_RE = re.compile(r'^.*/(values.*)$')
 
 
 # It would be cleaner to have each module register itself, but that would
@@ -464,7 +464,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
     # logic, since the next step in the build process would be to zip the files
     # anyway.
     #
-    # Asserts that each path contains '/res/'.
+    # Asserts that each path contains '/values'.
     if self.android_output_zip_path is not None:
       self.ZipAndroidOutputs(zippable_android_xml_outputs)
 
@@ -490,7 +490,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
   # zip_helpers.add_files_to_zip takes in a list of tuples (zip_filename,
   # fs_filename). We are given a list of fs_filenames, and must construct
   # zip_filenames. We do so by converting the path to posix-style (ie, replacing
-  # \ with /), then trimming everything up to and including '/res/'.
+  # \ with /), then trimming everything up to but not including '/values'.
   #
   # Returns [(zip_filename, fs_filename)], or raises an AssertionError.
   def MakeAndroidZipOutputPaths(self, xml_outputs):
@@ -498,7 +498,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
     for fs_filename in xml_outputs:
       zip_filename = str(pathlib.Path(fs_filename).as_posix())
       match = JAVA_STRINGS_PATH_RE.match(zip_filename)
-      assert match is not None, ('fs_filename does not contain "/res/": '
+      assert match is not None, ('fs_filename does not contain "/values": '
                                  f'"{fs_filename}"')
       zip_filename = match.group(1)
       ret.append((zip_filename, fs_filename))
@@ -509,7 +509,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
   # |self.android_output_zip_path|, and then deletes the originals. Assumes
   # |self.android_output_zip_path| is not None.
   #
-  # Raises an AssertionError if any of the paths does not contain '/res/'.
+  # Raises an AssertionError if any of the paths does not contain '/values'.
   def ZipAndroidOutputs(self, xml_outputs):
     xml_outputs = self.MakeAndroidZipOutputPaths(xml_outputs)
     zip_helpers.add_files_to_zip(xml_outputs, self.android_output_zip_path)

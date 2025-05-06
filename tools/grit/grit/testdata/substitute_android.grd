@@ -12,7 +12,7 @@
     <output filename="sv_generated_resources.rc" type="rc_all" lang="sv" />
     <output filename="java/res/values-af/components_strings.xml" lang="af" type="android" context="android_java" />
     <output filename="java/res/values-am/components_strings.xml" lang="am" type="android" context="android_java" />
-    <output filename="java/res/values-ar/components_strings.xml" lang="ar" type="android" context="android_java" />
+    <output filename="values-ar/components_strings.xml" lang="ar" type="android" context="android_java" />
   </outputs>
   <translations>
     <file path="substitute.xmb" lang="sv" />

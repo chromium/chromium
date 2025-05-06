@@ -219,8 +219,7 @@ class BuildUnittest(unittest.TestCase):
                     'java/res/values-am/components_strings.xml')),
             '-a',
             os.path.abspath(
-                output_dir.GetPath(
-                    'java/res/values-ar/components_strings.xml')),
+                output_dir.GetPath('values-ar/components_strings.xml')),
         ]))
 
     # Incomplete output file list (while zipping XMLs) should fail.
@@ -309,8 +308,7 @@ class BuildUnittest(unittest.TestCase):
     self.assertTrue(
         os.path.exists(
             os.path.abspath(
-                output_dir.GetPath(
-                    'java/res/values-ar/components_strings.xml'))))
+                output_dir.GetPath('values-ar/components_strings.xml'))))
 
     output_dir.CleanUp()
 
@@ -341,8 +339,7 @@ class BuildUnittest(unittest.TestCase):
     self.assertFalse(
         os.path.exists(
             os.path.abspath(
-                output_dir.GetPath(
-                    'java/res/values-ar/components_strings.xml'))))
+                output_dir.GetPath('values-ar/components_strings.xml'))))
 
     with zipfile.ZipFile(zip_path, 'r') as zip_file:
       for info in zip_file.infolist():
