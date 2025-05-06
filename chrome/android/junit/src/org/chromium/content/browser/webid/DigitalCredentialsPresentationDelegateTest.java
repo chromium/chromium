@@ -11,11 +11,11 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.content.browser.webid.IdentityCredentialsDelegate.BUNDLE_KEY_IDENTITY_TOKEN;
-import static org.chromium.content.browser.webid.IdentityCredentialsDelegate.BUNDLE_KEY_PROVIDER_DATA;
-import static org.chromium.content.browser.webid.IdentityCredentialsDelegate.BUNDLE_KEY_REQUEST_JSON;
-import static org.chromium.content.browser.webid.IdentityCredentialsDelegate.EXTRA_CREDENTIAL_DATA;
-import static org.chromium.content.browser.webid.IdentityCredentialsDelegate.EXTRA_GET_CREDENTIAL_RESPONSE;
+import static org.chromium.content.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_IDENTITY_TOKEN;
+import static org.chromium.content.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_PROVIDER_DATA;
+import static org.chromium.content.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_REQUEST_JSON;
+import static org.chromium.content.browser.webid.DigitalCredentialsPresentationDelegate.EXTRA_CREDENTIAL_DATA;
+import static org.chromium.content.browser.webid.DigitalCredentialsPresentationDelegate.EXTRA_GET_CREDENTIAL_RESPONSE;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -34,12 +34,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
 
-/** Unit tests for {@link IdentityCredentialsDelegate}. */
+/** Unit tests for {@link DigitalCredentialsPresentationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         sdk = {Build.VERSION_CODES.TIRAMISU, Build.VERSION_CODES.UPSIDE_DOWN_CAKE})
-public class IdentityCredentialsDelegateTest {
+public class DigitalCredentialsPresentationDelegateTest {
     private static final String INTENT_HELPER_EXTRA_CREDENTIAL_TYPE =
             "androidx.identitycredentials.EXTRA_CREDENTIAL_TYPE";
     private static final String INTENT_HELPER_EXTRA_CREDENTIAL_DATA =
@@ -107,7 +107,7 @@ public class IdentityCredentialsDelegateTest {
         Bundle bundle = packageIntentInResponseBundle(intent);
 
         DigitalCredential credential =
-                IdentityCredentialsDelegate.extractDigitalCredentialFromResponseBundle(
+                DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromResponseBundle(
                         Activity.RESULT_OK, bundle);
 
         assertNotNull(credential);
@@ -123,7 +123,7 @@ public class IdentityCredentialsDelegateTest {
         Bundle bundle = packageIntentInResponseBundle(intent);
 
         DigitalCredential extractedCredential =
-                IdentityCredentialsDelegate.extractDigitalCredentialFromResponseBundle(
+                DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromResponseBundle(
                         Activity.RESULT_OK, bundle);
 
         assertNotNull(extractedCredential);
@@ -140,7 +140,7 @@ public class IdentityCredentialsDelegateTest {
         Bundle bundle = packageIntentInResponseBundle(intent);
 
         DigitalCredential extractedCredential =
-                IdentityCredentialsDelegate.extractDigitalCredentialFromResponseBundle(
+                DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromResponseBundle(
                         Activity.RESULT_OK, bundle);
 
         // Since the modern format contains a protocol, it is preferred.
@@ -158,7 +158,7 @@ public class IdentityCredentialsDelegateTest {
         Bundle bundle = packageIntentInResponseBundle(intent);
 
         DigitalCredential extractedCredential =
-                IdentityCredentialsDelegate.extractDigitalCredentialFromResponseBundle(
+                DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromResponseBundle(
                         Activity.RESULT_OK, bundle);
 
         // Since the modern format doesn't contain a protocol, the full response is considered as
@@ -178,8 +178,9 @@ public class IdentityCredentialsDelegateTest {
         assertThrows(
                 NullPointerException.class,
                 () -> {
-                    IdentityCredentialsDelegate.extractDigitalCredentialFromResponseBundle(
-                            Activity.RESULT_OK, bundle);
+                    DigitalCredentialsPresentationDelegate
+                            .extractDigitalCredentialFromResponseBundle(
+                                    Activity.RESULT_OK, bundle);
                 });
     }
 
@@ -193,8 +194,9 @@ public class IdentityCredentialsDelegateTest {
         assertThrows(
                 JSONException.class,
                 () -> {
-                    IdentityCredentialsDelegate.extractDigitalCredentialFromResponseBundle(
-                            Activity.RESULT_OK, bundle);
+                    DigitalCredentialsPresentationDelegate
+                            .extractDigitalCredentialFromResponseBundle(
+                                    Activity.RESULT_OK, bundle);
                 });
     }
 }

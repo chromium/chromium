@@ -369,6 +369,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/webcontents/WebContentsImpl.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsObserverProxy.java",
     "java/src/org/chromium/content/browser/webid/DigitalCredentialsCreationDelegate.java",
+    "java/src/org/chromium/content/browser/webid/DigitalCredentialsPresentationDelegate.java",
     "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegate.java",
     "java/src/org/chromium/content_public/browser/ActionModeCallback.java",
     "java/src/org/chromium/content_public/browser/ActionModeCallbackHelper.java",
