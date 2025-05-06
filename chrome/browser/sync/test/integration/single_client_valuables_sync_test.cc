@@ -154,4 +154,39 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
   EXPECT_THAT(vdm->GetLoyaltyCards(), testing::ElementsAre(loyalty_card2));
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
+                       ClearOnDisablePaymentsSync) {
+  const LoyaltyCard loyalty_card = CreateLoyaltyCard();
+  GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
+  ASSERT_TRUE(SetupSync());
+  ValuablesDataManager* vdm = GetValuablesDataManager(0);
+  ASSERT_NE(nullptr, vdm);
+  EXPECT_THAT(vdm->GetLoyaltyCards(), testing::ElementsAre(loyalty_card));
+
+  // Turn off payments sync, the data & metadata should be gone.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+
+  WaitForNumberOfCards(0, vdm);
+  EXPECT_THAT(vdm->GetLoyaltyCards(), testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
+                       ClearOnDisableWalletAutofill) {
+  const LoyaltyCard loyalty_card = CreateLoyaltyCard();
+  GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
+  ASSERT_TRUE(SetupSync());
+  ValuablesDataManager* vdm = GetValuablesDataManager(0);
+  ASSERT_NE(nullptr, vdm);
+  EXPECT_THAT(vdm->GetLoyaltyCards(), testing::ElementsAre(loyalty_card));
+
+  // Turn off the wallet autofill pref, the data & metadata should be gone as a
+  // side effect of the wallet data type controller noticing.
+  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/{});
+
+  WaitForNumberOfCards(0, vdm);
+  EXPECT_THAT(vdm->GetLoyaltyCards(), testing::IsEmpty());
+}
+
 }  // namespace
