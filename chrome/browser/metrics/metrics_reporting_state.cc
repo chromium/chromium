@@ -77,7 +77,7 @@ void SetMetricsReporting(bool to_update_pref,
   UpdateMetricsPrefsOnPermissionChange(updated_pref, called_from);
 
   // Uses the current state of whether reporting is enabled to enable services.
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
 
   if (to_update_pref == updated_pref) {
     RecordMetricsReportingHistogramValue(updated_pref ?
@@ -85,8 +85,9 @@ void SetMetricsReporting(bool to_update_pref,
   } else {
     RecordMetricsReportingHistogramValue(METRICS_REPORTING_ERROR);
   }
-  if (!callback_fn.is_null())
+  if (!callback_fn.is_null()) {
     std::move(callback_fn).Run(updated_pref);
+  }
 }
 
 }  // namespace

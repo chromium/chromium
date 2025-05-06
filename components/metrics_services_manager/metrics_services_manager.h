@@ -99,7 +99,10 @@ class MetricsServicesManager {
   OnRendererUnresponsiveCb GetOnRendererUnresponsiveCb();
 
   // Updates the managed services when permissions for uploading metrics change.
-  void UpdateUploadPermissions(bool may_upload);
+  // Note: Normally, uploads will happen when collection is enabled, but the
+  // `may_upload` params allows disabling uploads separately from collection
+  // (e.g. if network is unavailable).
+  void UpdateUploadPermissions(bool may_upload = true);
 
   // Gets the current state of metric reporting.
   bool IsMetricsReportingEnabled() const;

@@ -98,8 +98,7 @@ void CrOSPreConsentMetricsManager::Enable() {
   // Propagate the change to metrics services. This will create the Client ID
   // that will be used if the user consents to metrics. If pre-consent is being
   // disabled do not update the permissions as it should not be changed.
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
-      is_enabled_);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
 
   // Register CrOSPreConsentMetricsManager as the observer for policy change to
   // get notified when device is enrolled.

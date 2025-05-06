@@ -414,8 +414,7 @@ void EnableUrlKeyedAnonymizedDataCollection(Profile* profile) {
       UnifiedConsentServiceFactory::GetForProfile(profile);
   if (consent_service) {
     consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-    g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
-        true);
+    g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
   }
 }
 

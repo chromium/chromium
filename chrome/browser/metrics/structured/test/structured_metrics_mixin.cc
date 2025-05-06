@@ -169,8 +169,7 @@ void StructuredMetricsMixin::UpdateRecordingState(bool state) {
   recording_state_ = state;
 
   // Triggers rechecking of metrics state.
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
-      /*may_upload=*/true);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
 }
 
 std::unique_ptr<ChromeUserMetricsExtension>

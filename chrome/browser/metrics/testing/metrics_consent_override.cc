@@ -24,8 +24,7 @@ MetricsConsentOverride::~MetricsConsentOverride() {
 void MetricsConsentOverride::Update(bool state) {
   state_ = state;
   // Trigger rechecking of metrics state.
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
-      /*may_upload=*/true);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
 }
 
 }  // namespace metrics::test

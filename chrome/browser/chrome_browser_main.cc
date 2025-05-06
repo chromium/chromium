@@ -667,7 +667,7 @@ void ChromeBrowserMainParts::StartMetricsRecording() {
   g_browser_process->metrics_service()->StartUpdatingLastLiveTimestamp();
 #endif
 
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
 }
 
 void ChromeBrowserMainParts::RecordBrowserStartupTime() {
