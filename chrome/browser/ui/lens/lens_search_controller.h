@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -23,6 +24,7 @@ class LensOverlayController;
 class GURL;
 
 namespace lens {
+class LensOverlayGen204Controller;
 class LensOverlaySidePanelCoordinator;
 class LensSearchboxController;
 }  // namespace lens
@@ -133,6 +135,9 @@ class LensSearchController {
   // Returns the LensOverlayController.
   LensOverlayController* lens_overlay_controller();
 
+  // Returns the LensOverlayQueryController.
+  lens::LensOverlayQueryController* lens_overlay_query_controller();
+
   // Returns the LensOverlaySidePanelCoordinator.
   lens::LensOverlaySidePanelCoordinator* lens_overlay_side_panel_coordinator();
 
@@ -146,6 +151,8 @@ class LensSearchController {
   }
 
  protected:
+  friend class LensOverlayController;
+
   // Override these methods to stub out individual feature controllers for
   // testing.
   virtual std::unique_ptr<LensOverlayController> CreateLensOverlayController(
@@ -157,6 +164,22 @@ class LensSearchController {
       syncer::SyncService* sync_service,
       ThemeService* theme_service);
 
+  // Override these methods to stub out network requests for testing.
+  virtual std::unique_ptr<lens::LensOverlayQueryController>
+  CreateLensQueryController(
+      lens::LensOverlayFullImageResponseCallback full_image_callback,
+      lens::LensOverlayUrlResponseCallback url_callback,
+      lens::LensOverlayInteractionResponseCallback interaction_callback,
+      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
+      lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
+      lens::UploadProgressCallback page_content_upload_progress_callback,
+      variations::VariationsClient* variations_client,
+      signin::IdentityManager* identity_manager,
+      Profile* profile,
+      lens::LensOverlayInvocationSource invocation_source,
+      bool use_dark_mode,
+      lens::LensOverlayGen204Controller* gen204_controller);
+
   // Override these methods to be able to track calls made to the side panel
   // coordinator.
   virtual std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
@@ -166,6 +189,17 @@ class LensSearchController {
   // coordinator.
   virtual std::unique_ptr<lens::LensSearchboxController>
   CreateLensSearchboxController();
+
+  // Called by the Lens overlay when it has finished opening and has moved to
+  // the kOverlay state. This is how this class knows it can move into kActive
+  // state.
+  // TODO(crbug.com/404941800): Make this more generic to allow for multiple
+  // features to initialize at the same time.
+  void NotifyOverlayOpened();
+
+  // Shared logic for cleanup that is called after all features have finished
+  // cleaning up.
+  void CloseLensPart2();
 
   // Override these methods to be able to track calls made to the page context
   // eligibility API.
@@ -177,8 +211,15 @@ class LensSearchController {
     // active.
     kOff,
 
+    // The controller is in the process of starting up. Soon to be kActive.
+    kInitializing,
+
     // One or more Lens features are active on this tab.
     kActive,
+
+    // The controller is in the process of closing all dependencies and cleaning
+    // up. Will soon be kOff.
+    kClosing,
 
     // TODO(crbug.com/335516480): Implement suspended state.
     kSuspended,
@@ -189,6 +230,43 @@ class LensSearchController {
   void OnPageContextEligibilityAPILoaded(
       optimization_guide::PageContextEligibility* page_context_eligibility);
 
+  // Passes the correct callbacks and dependencies to the protected
+  // CreateLensQueryController method.
+  std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
+      lens::LensOverlayInvocationSource invocation_source);
+
+  // Callback used by the query controller to notify the search controller of
+  // the response to the initial image upload request.
+  void HandleStartQueryResponse(
+      std::vector<lens::mojom::OverlayObjectPtr> objects,
+      lens::mojom::TextPtr text,
+      bool is_error);
+
+  // Callback used by the query controller to notify the search controller of
+  // the URL response to the interaction request, aka, the URL that should be
+  // opened in the results frame.
+  void HandleInteractionURLResponse(
+      lens::proto::LensOverlayUrlResponse response);
+
+  // Callback used by the query controller to notify the search controller of
+  // the response of an interaction request. If this is a visual interaction
+  // request, the response will contain the text container within that image.
+  void HandleInteractionResponse(lens::mojom::TextPtr text);
+
+  // Callback used by the query controller to notify the search controller of
+  // the suggest inputs response. This is used to update the searchbox with
+  // the most recent suggest inputs.
+  void HandleSuggestInputsResponse(
+      lens::proto::LensOverlaySuggestInputs suggest_inputs);
+
+  // Callback used by the query controller to pass the thumbnail bytes of a
+  // visual interaction request to the searchbox.
+  void HandleThumbnailCreated(const std::string& thumbnail_bytes);
+
+  // Callback used by the query controller to notify the search controller of
+  // the progress of the page content upload.
+  void HandlePageContentUploadProgress(uint64_t position, uint64_t total);
+
   // Whether the LensSearchController has been initialized. Meaning, all the
   // dependencies have been initialized and the controller is ready to use.
   bool initialized_ = false;
@@ -196,8 +274,18 @@ class LensSearchController {
   // Tracks the internal state machine.
   State state_ = State::kOff;
 
+  // The query controller for the Lens Search feature on this tab. Lives for the
+  // duration of a Lens feature being active on this tab.
+  std::unique_ptr<lens::LensOverlayQueryController>
+      lens_overlay_query_controller_;
+
   // The overlay controller for the Lens Search feature on this tab.
   std::unique_ptr<LensOverlayController> lens_overlay_controller_;
+
+  // The controller for sending gen204 pings. Owned by this class so it can
+  // outlive the query controller, allowing gen204 requests to be sent upon
+  // query end.
+  std::unique_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
 
   // The side panel coordinator for the Lens Search feature on this tab.
   std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
@@ -210,6 +298,17 @@ class LensSearchController {
 
   // The page context eligibility API if it has been fetched. Can be nullptr.
   raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
+
+  // Owned by Profile, and thus guaranteed to outlive this instance.
+  raw_ptr<variations::VariationsClient> variations_client_;
+
+  // Unowned IdentityManager for fetching access tokens. Could be null for
+  // incognito profiles.
+  raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // The theme service associated with the current profile. Owned by Profile,
+  // and thus guaranteed to outlive this instance.
+  raw_ptr<ThemeService> theme_service_;
 
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;

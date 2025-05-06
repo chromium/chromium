@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/test_util.h"
@@ -29,49 +28,18 @@
 
 namespace {
 
-class MockLensOverlayController : public LensOverlayController {
- public:
-  MockLensOverlayController(tabs::TabInterface* tab,
-                            LensSearchController* lens_search_controller,
-                            variations::VariationsClient* variations_client,
-                            signin::IdentityManager* identity_manager,
-                            PrefService* pref_service,
-                            syncer::SyncService* sync_service,
-                            ThemeService* theme_service)
-      : LensOverlayController(tab,
-                              lens_search_controller,
-                              variations_client,
-                              identity_manager,
-                              pref_service,
-                              sync_service,
-                              theme_service) {}
-
-  MOCK_METHOD(void,
-              StartContextualizationWithoutOverlay,
-              (lens::LensOverlayInvocationSource invocation_source),
-              (override));
-};
-
 class MockLensSearchController : public lens::TestLensSearchController {
  public:
   explicit MockLensSearchController(tabs::TabInterface* tab)
       : lens::TestLensSearchController(tab) {}
 
-  std::unique_ptr<LensOverlayController> CreateLensOverlayController(
-      tabs::TabInterface* tab,
-      LensSearchController* lens_search_controller,
-      variations::VariationsClient* variations_client,
-      signin::IdentityManager* identity_manager,
-      PrefService* pref_service,
-      syncer::SyncService* sync_service,
-      ThemeService* theme_service) override {
-    return std::make_unique<MockLensOverlayController>(
-        tab, lens_search_controller, variations_client, identity_manager,
-        pref_service, sync_service, theme_service);
-  }
-
   MOCK_METHOD(void,
               OpenLensOverlay,
+              (lens::LensOverlayInvocationSource invocation_source),
+              (override));
+
+  MOCK_METHOD(void,
+              StartContextualization,
               (lens::LensOverlayInvocationSource invocation_source),
               (override));
 };
@@ -133,14 +101,6 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
             ->lens_search_controller());
   }
 
-  MockLensOverlayController* GetLensOverlayController() {
-    return static_cast<MockLensOverlayController*>(
-        browser()
-            ->GetActiveTabInterface()
-            ->GetTabFeatures()
-            ->lens_overlay_controller());
-  }
-
   // Replaces the client with one using an incognito profile. Note that this is
   // a one-way operation. Once a TEST_F calls this, all interactions with
   // |client_| will be off the record.
@@ -172,8 +132,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
                        OpenLensOverlay_DontShow) {
-  EXPECT_CALL(*GetLensOverlayController(),
-              StartContextualizationWithoutOverlay(testing::_))
+  EXPECT_CALL(*GetLensSearchController(), StartContextualization(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
           [](lens::LensOverlayInvocationSource invocation_source) {

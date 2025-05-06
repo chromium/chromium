@@ -911,30 +911,9 @@ bool LensOverlayController::IsUrlEligibleForTutorialIPHForTesting(
   return IsUrlEligibleForTutorialIPH(url);
 }
 
-std::unique_ptr<lens::LensOverlayQueryController>
-LensOverlayController::CreateLensQueryController(
-    lens::LensOverlayFullImageResponseCallback full_image_callback,
-    lens::LensOverlayUrlResponseCallback url_callback,
-    lens::LensOverlayInteractionResponseCallback interaction_callback,
-    lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
-    lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
-    lens::UploadProgressCallback upload_progress_callback,
-    variations::VariationsClient* variations_client,
-    signin::IdentityManager* identity_manager,
-    Profile* profile,
-    lens::LensOverlayInvocationSource invocation_source,
-    bool use_dark_mode,
-    lens::LensOverlayGen204Controller* gen204_controller) {
-  return std::make_unique<lens::LensOverlayQueryController>(
-      std::move(full_image_callback), std::move(url_callback),
-      std::move(interaction_callback), std::move(suggest_inputs_callback),
-      std::move(thumbnail_created_callback),
-      std::move(upload_progress_callback), variations_client, identity_manager,
-      profile, invocation_source, use_dark_mode, gen204_controller);
-}
-
 void LensOverlayController::ShowUI(
-    lens::LensOverlayInvocationSource invocation_source) {
+    lens::LensOverlayInvocationSource invocation_source,
+    lens::LensOverlayQueryController* lens_overlay_query_controller) {
   // If UI is already showing or in the process of showing, do nothing.
   if (state_ != State::kOff) {
     return;
@@ -950,8 +929,6 @@ void LensOverlayController::ShowUI(
   if (!tab_->CanShowModalUI()) {
     return;
   }
-
-  invocation_source_ = invocation_source;
 
   // Request user permission before grabbing a screenshot.
   CHECK(pref_service_);
@@ -969,7 +946,8 @@ void LensOverlayController::ShowUI(
     permission_bubble_controller_->RequestPermission(
         tab_->GetContents(),
         base::BindRepeating(&LensOverlayController::ShowUI,
-                            weak_factory_.GetWeakPtr(), invocation_source));
+                            weak_factory_.GetWeakPtr(), invocation_source,
+                            lens_overlay_query_controller));
     return;
   }
 
@@ -980,6 +958,10 @@ void LensOverlayController::ShowUI(
   pref_service_->SetInteger(prefs::kLensOverlayStartCount,
                             lens_overlay_start_count + 1);
 
+  // Store reference for later use.
+  invocation_source_ = invocation_source;
+  lens_overlay_query_controller_ = lens_overlay_query_controller;
+
   // Grab reference to the side panel coordinator it not already done so.
   if (!results_side_panel_coordinator_) {
     results_side_panel_coordinator_ =
@@ -988,24 +970,6 @@ void LensOverlayController::ShowUI(
 
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
-  // Create the query controller.
-  lens_overlay_query_controller_ = CreateLensQueryController(
-      base::BindRepeating(&LensOverlayController::HandleStartQueryResponse,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&LensOverlayController::HandleInteractionURLResponse,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&LensOverlayController::HandleInteractionResponse,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&LensOverlayController::HandleSuggestInputsResponse,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(
-          &LensOverlayController::HandlePageContentUploadProgress,
-          weak_factory_.GetWeakPtr()),
-      variations_client_, identity_manager_, profile, invocation_source,
-      lens::LensOverlayShouldUseDarkMode(theme_service_),
-      gen204_controller_.get());
   side_panel_coordinator_ =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   CHECK(side_panel_coordinator_);
@@ -1082,8 +1046,10 @@ void LensOverlayController::ShowUI(
 
 void LensOverlayController::IssueContextualSearchRequest(
     const GURL& destination_url,
+    lens::LensOverlayQueryController* lens_overlay_query_controller,
     AutocompleteMatchType::Type match_type,
-    bool is_zero_prefix_suggestion) {
+    bool is_zero_prefix_suggestion,
+    lens::LensOverlayInvocationSource invocation_source) {
   // Ignore the request if the overlay is off or closing.
   if (IsOverlayClosing()) {
     return;
@@ -1091,24 +1057,22 @@ void LensOverlayController::IssueContextualSearchRequest(
 
   // If the overlay is off, turn it on so the request can be fulfilled.
   if (state_ == State::kOff) {
-    // TODO(crbug.com/402497756): For prototyping, reusing the existing
-    // omnibox entry point. However, for production, create a new invocation
-    // source for this new entry point.
     // TODO(crbug.com/403573362): This is a temporary fix to unblock
     // prototyping. Since this flow goes straight to the side panel results with
     // not overlay UI, this flow does a lot of unnecessary work. There should be
     // a new flow that can contextualize without the overlay UI being
     // initialized.
-    StartContextualizationWithoutOverlay(
-        lens::LensOverlayInvocationSource::kOmnibox);
+    StartContextualizationWithoutOverlay(invocation_source,
+                                         lens_overlay_query_controller);
   }
 
   // Hold the request until the overlay has finished initializing.
   if (IsOverlayInitializing()) {
     pending_contextual_search_request_ =
         base::BindOnce(&LensOverlayController::IssueContextualSearchRequest,
-                       weak_factory_.GetWeakPtr(), destination_url, match_type,
-                       is_zero_prefix_suggestion);
+                       weak_factory_.GetWeakPtr(), destination_url,
+                       lens_overlay_query_controller, match_type,
+                       is_zero_prefix_suggestion, invocation_source);
     return;
   }
 
@@ -1119,18 +1083,20 @@ void LensOverlayController::IssueContextualSearchRequest(
 }
 
 void LensOverlayController::StartContextualizationWithoutOverlay(
-    lens::LensOverlayInvocationSource invocation_source) {
+    lens::LensOverlayInvocationSource invocation_source,
+    lens::LensOverlayQueryController* lens_overlay_query_controller) {
   should_show_overlay_ = false;
-  ShowUI(invocation_source);
+  ShowUI(invocation_source, lens_overlay_query_controller);
 }
 
 void LensOverlayController::ShowUIWithPendingRegion(
+    lens::LensOverlayQueryController* lens_overlay_query_controller,
     lens::LensOverlayInvocationSource invocation_source,
     lens::mojom::CenterRotatedBoxPtr region,
     const SkBitmap& region_bitmap) {
   pending_region_ = std::move(region);
   pending_region_bitmap_ = region_bitmap;
-  ShowUI(invocation_source);
+  ShowUI(invocation_source, lens_overlay_query_controller);
   // Overrides value set in ShowUI since invoking lens overlay with a pending
   // region is considered a search.
   search_performed_in_session_ = true;
@@ -2202,6 +2168,11 @@ void LensOverlayController::CloseUIPart2(
   // Closes preselection toast if it exists.
   ClosePreselectionBubble();
 
+  // Notify the query controller to loose references to this classes data before
+  // it gets cleaned up to prevent dangling ptrs.
+  lens_overlay_query_controller_->ResetPageContentData();
+  lens_overlay_query_controller_ = nullptr;
+
   // A permission prompt may be suspended if the overlay was showing when the
   // permission was queued. Restore the suspended prompt if possible.
   // TODO(b/331940245): Refactor to be decoupled from PermissionPromptFactory
@@ -2238,9 +2209,6 @@ void LensOverlayController::CloseUIPart2(
         ->RemoveObserver(this);
   }
 
-  // LensOverlayQueryController points to initialization data and therefore must
-  // be reset before the initialization data to avoid dangling pointers.
-  lens_overlay_query_controller_.reset();
   initialization_data_.reset();
 
   tab_contents_view_observer_.Reset();
@@ -2280,6 +2248,10 @@ void LensOverlayController::CloseUIPart2(
   should_send_screenshot_on_init_ = false;
 
   state_ = State::kOff;
+
+  // TODO(crbug.com/404941800): Make a more generalized solution once multiple
+  // async features are cleaning up at the same time.
+  lens_search_controller_->CloseLensPart2();
 
   // Update the entrypoints now that the controller is closed.
   UpdateEntryPointsState();
@@ -2374,6 +2346,7 @@ void LensOverlayController::InitializeOverlay(
   }
 
   state_ = State::kOverlay;
+  lens_search_controller_->NotifyOverlayOpened();
 
   // Update the entry points state to ensure that the entry points are disabled
   // now that the overlay is showing.

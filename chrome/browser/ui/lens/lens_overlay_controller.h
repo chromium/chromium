@@ -518,27 +518,12 @@ class LensOverlayController : public LensSearchboxClient,
   friend class LensSearchController;
   friend class lens::LensOverlaySidePanelCoordinator;
 
-  // Override these methods to stub out network requests for testing.
-  virtual std::unique_ptr<lens::LensOverlayQueryController>
-  CreateLensQueryController(
-      lens::LensOverlayFullImageResponseCallback full_image_callback,
-      lens::LensOverlayUrlResponseCallback url_callback,
-      lens::LensOverlayInteractionResponseCallback interaction_callback,
-      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
-      lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
-      lens::UploadProgressCallback upload_progress_callback,
-      variations::VariationsClient* variations_client,
-      signin::IdentityManager* identity_manager,
-      Profile* profile,
-      lens::LensOverlayInvocationSource invocation_source,
-      bool use_dark_mode,
-      lens::LensOverlayGen204Controller* gen204_controller);
-
   // This is entry point for showing the overlay UI. This has no effect if state
   // is not kOff. This has no effect if the tab is not in the foreground. If the
   // overlay is successfully invoked, then the value of `invocation_source` will
   // be recorded in the relevant metrics.
-  void ShowUI(lens::LensOverlayInvocationSource invocation_source);
+  void ShowUI(lens::LensOverlayInvocationSource invocation_sourc,
+              lens::LensOverlayQueryController* lens_overlay_query_controller);
 
   // Issues a contextual search request for Lens to fulfill.
   // No-op if the Lens Overlay is off or closing. If the Lens Overlay is in the
@@ -546,26 +531,32 @@ class LensOverlayController : public LensSearchboxClient,
   // opened.
   // TODO(crbug.com/403629222): Revisit if it makes sense to pass the
   // destination URL instead of the query text directly.
-  void IssueContextualSearchRequest(const GURL& destination_url,
-                                    AutocompleteMatchType::Type match_type,
-                                    bool is_zero_prefix_suggestion);
+  void IssueContextualSearchRequest(
+      const GURL& destination_url,
+      lens::LensOverlayQueryController* lens_overlay_query_controller,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion,
+      lens::LensOverlayInvocationSource invocation_source);
 
   // Starts the contextualization flow without the overlay being shown to the
   // user.
   // TODO(crbug.com/404941800): This still goes through the entire
-  // initialization flow for the overlay. This is not efficeient, but is being
+  // TODO(crbug.com/404941800): This still goes through the entire
+  // initialization flow for the overlay. This is not efficient, but is being
   // done to unblock the contextual searchbox prototype. This should be
   // refactored to be done in the LensSearchController to not go through the
   // overlay controller.
   // Virtual for testing.
   virtual void StartContextualizationWithoutOverlay(
-      lens::LensOverlayInvocationSource invocation_source);
+      lens::LensOverlayInvocationSource invocation_source,
+      lens::LensOverlayQueryController* lens_overlay_query_controller);
 
   // Sets a region to search after the overlay loads, then calls ShowUI().
   // All units are in device pixels. region_bitmap contains the high definition
   // image bytes to use for the search instead of cropping the region from the
   // viewport.
   void ShowUIWithPendingRegion(
+      lens::LensOverlayQueryController* lens_overlay_query_controller,
       lens::LensOverlayInvocationSource invocation_source,
       lens::mojom::CenterRotatedBoxPtr region,
       const SkBitmap& region_bitmap);
@@ -637,6 +628,35 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Returns a search query struct containing the current state of the overlay.
   void AddOverlayStateToSearchQuery(lens::SearchQuery& search_query);
+
+  // TODO(crbug.com/404941800): All the Handle*Response methods should not exist
+  // in this class. They currently exist to unblock development. They will be
+  // removed once the migration is complete. Handles the response to the Lens
+  // start query request.
+  void HandleStartQueryResponse(
+      std::vector<lens::mojom::OverlayObjectPtr> objects,
+      lens::mojom::TextPtr text,
+      bool is_error);
+
+  // Handles the URL response to the Lens interaction request.
+  void HandleInteractionURLResponse(
+      lens::proto::LensOverlayUrlResponse response);
+
+  // Handles the text response to the Lens interaction request.
+  void HandleInteractionResponse(lens::mojom::TextPtr text);
+
+  // Handles an update to the suggest inputs. This will be called whenever
+  // any part of the suggest inputs changes, such as when a new objects
+  // request is sent, or when an interaction data response is received.
+  void HandleSuggestInputsResponse(
+      lens::proto::LensOverlaySuggestInputs suggest_inputs);
+
+  // Handles the progress of the page content upload. Notifies the side panel
+  // to update the progress bar.
+  void HandlePageContentUploadProgress(uint64_t position, uint64_t total);
+
+  // Handles the creation of a new thumbnail based on the user selection.
+  void HandleThumbnailCreated(const std::string& thumbnail_bytes);
 
  private:
   // Data class for constructing overlay and storing overlay state for
@@ -1118,32 +1138,6 @@ class LensOverlayController : public LensSearchboxClient,
       bool is_zero_prefix_suggestion,
       std::map<std::string, std::string> additional_query_params);
 
-  // Handles the response to the Lens start query request.
-  void HandleStartQueryResponse(
-      std::vector<lens::mojom::OverlayObjectPtr> objects,
-      lens::mojom::TextPtr text,
-      bool is_error);
-
-  // Handles the URL response to the Lens interaction request.
-  void HandleInteractionURLResponse(
-      lens::proto::LensOverlayUrlResponse response);
-
-  // Handles the text response to the Lens interaction request.
-  void HandleInteractionResponse(lens::mojom::TextPtr text);
-
-  // Handles an update to the suggest inputs. This will be called whenever
-  // any part of the suggest inputs changes, such as when a new objects
-  // request is sent, or when an interaction data response is received.
-  void HandleSuggestInputsResponse(
-      lens::proto::LensOverlaySuggestInputs suggest_inputs);
-
-  // Handles the progress of the page content upload. Notifies the side panel
-  // to update the progress bar.
-  void HandlePageContentUploadProgress(uint64_t position, uint64_t total);
-
-  // Handles the creation of a new thumbnail based on the user selection.
-  void HandleThumbnailCreated(const std::string& thumbnail_bytes);
-
   // Records UMA and UKM metrics for time to first interaction. Not recorded
   // when invocation source is an image's content area menu because in this
   // case the time to first interaction is essentially zero.
@@ -1292,9 +1286,9 @@ class LensOverlayController : public LensSearchboxClient,
   // overlay view is showing.
   std::unique_ptr<UnderlyingWebContentsObserver> tab_contents_observer_;
 
-  // Query controller.
-  std::unique_ptr<lens::LensOverlayQueryController>
-      lens_overlay_query_controller_;
+  // Query controller. Owned by the search controller, guaranteed to be alive
+  // until the overlay is closed.
+  raw_ptr<lens::LensOverlayQueryController> lens_overlay_query_controller_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
