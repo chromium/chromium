@@ -1227,7 +1227,7 @@
                   'chrome/test/data/extensions/api_test/file_system_provider'
     },
     'fuchsia': {
-      'filepath': 'fuchsia',
+      'filepath': 'fuchsia.*$(?<!sdk_override.txt)',
     },
     'fuzzing': {
       'filepath': 'fuzz|Fuzz',
