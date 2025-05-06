@@ -95,6 +95,7 @@
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/geometry/size.h"
@@ -651,6 +652,7 @@ class CONTENT_EXPORT WebContentsImpl
   bool IsInPreviewMode() const override;
   void WillActivatePreviewPage() override;
   void ActivatePreviewPage() override;
+  WindowOpenDisposition GetOriginalWindowOpenDisposition() const override;
 
   // Implementation of PageNavigator.
   WebContents* OpenURL(const OpenURLParams& params,
@@ -2742,6 +2744,11 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Whether this contents represents a window initially opened as a new popup.
   bool is_popup_{false};
+
+  // The window open disposition that was originally requested
+  // when this WebContents was created.
+  WindowOpenDisposition original_window_open_disposition_ =
+      WindowOpenDisposition::UNKNOWN;
 
   // If this window was opened as a new partitioned popin this will contain the
   // properties needed to setup partitioning which aligns with the opener.

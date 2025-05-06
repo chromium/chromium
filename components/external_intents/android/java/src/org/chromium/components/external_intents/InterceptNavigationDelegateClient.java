@@ -50,4 +50,7 @@ public interface InterceptNavigationDelegateClient {
      * @param loadUrlParams parameters of the URL to be loaded
      */
     void loadUrlIfPossible(LoadUrlParams loadUrlParams);
+
+    /* Returns whether the tab associated with this client is a custom tab or not */
+    boolean isCustomTab();
 }

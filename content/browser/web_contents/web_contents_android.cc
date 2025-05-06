@@ -964,6 +964,14 @@ void WebContentsAndroid::SetSupportsForwardTransitionAnimation(
   web_contents_->SetSupportsForwardTransitionAnimation(supports);
 }
 
+jint WebContentsAndroid::GetOriginalWindowOpenDisposition(JNIEnv* env) {
+  return static_cast<jint>(web_contents_->GetOriginalWindowOpenDisposition());
+}
+
+jboolean WebContentsAndroid::HasOpener(JNIEnv* env) {
+  return static_cast<jboolean>(web_contents_->HasOpener());
+}
+
 void WebContentsAndroid::UpdateOffsetTagDefinitions(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jtag_definitions) {

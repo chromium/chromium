@@ -1252,6 +1252,16 @@ public class WebContentsImpl
                 .setSupportsForwardTransitionAnimation(mNativeWebContentsAndroid, supports);
     }
 
+    @Override
+    public boolean hasOpener() {
+        return WebContentsImplJni.get().hasOpener(mNativeWebContentsAndroid);
+    }
+
+    @Override
+    public int getOriginalWindowOpenDisposition() {
+        return WebContentsImplJni.get().getOriginalWindowOpenDisposition(mNativeWebContentsAndroid);
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
@@ -1472,5 +1482,9 @@ public class WebContentsImpl
                 long nativeWebContentsAndroid, Callback<Bitmap> callback);
 
         void setSupportsForwardTransitionAnimation(long nativeWebContentsAndroid, boolean enabled);
+
+        boolean hasOpener(long nativeWebContentsAndroid);
+
+        int getOriginalWindowOpenDisposition(long nativeWebContentsAndroid);
     }
 }

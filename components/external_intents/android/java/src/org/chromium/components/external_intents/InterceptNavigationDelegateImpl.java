@@ -449,6 +449,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setIsHiddenCrossFrameNavigation(hiddenCrossFrame)
                         .setIsSandboxedMainFrame(isSandboxedMainFrame)
                         .setNavigationId(navigationId)
+                        .setIsCustomTab(mClient.isCustomTab())
                         .build();
         if (!shouldRunAsync) return doShouldOverrideUrlLoading(params, isExternalProtocol);
         Runnable shouldIgnoreCheck =

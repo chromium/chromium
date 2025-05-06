@@ -638,6 +638,25 @@ public interface WebContents extends Parcelable {
     void setSupportsForwardTransitionAnimation(boolean supports);
 
     /**
+     * @return whether this WebContents has an opener (corresponding to window.opener in JavaScript)
+     *     associated with it.
+     */
+    boolean hasOpener();
+
+    /**
+     * Returns the window open disposition that was originally requested when this WebContents was
+     * created or navigated to. This method provides the disposition specified by the opener of this
+     * WebContents, indicating how the content was initially intended to be displayed (e.g., as a
+     * new foreground tab, a background tab, a new window, a popup, etc.). This value is determined
+     * at the point of creation, such as during a navigation that results in a new WebContents
+     * (e.g., from a link click with `target="_blank"`, `window.open()`, or a browser-initiated
+     * action).
+     *
+     * @return an integer constant representing the original window open disposition.
+     */
+    int getOriginalWindowOpenDisposition();
+
+    /**
      * Factory interface passed to {@link #getOrSetUserData()} for instantiation of class as user
      * data.
      *

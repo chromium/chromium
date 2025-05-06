@@ -392,6 +392,16 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     public void setSupportsForwardTransitionAnimation(boolean supports) {}
 
     @Override
+    public boolean hasOpener() {
+        return false;
+    }
+
+    @Override
+    public int getOriginalWindowOpenDisposition() {
+        return 0;
+    }
+
+    @Override
     public <T extends UserData> @Nullable T getOrSetUserData(
             Class<T> key, @Nullable UserDataFactory<T> userDataFactory) {
         return null;

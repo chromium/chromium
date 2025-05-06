@@ -948,6 +948,11 @@ GURL WebContentsImpl::GetPartitionedPopinEmbedderOriginImpl() const {
   return partitioned_popin_opener_properties_->top_frame_origin.GetURL();
 }
 
+WindowOpenDisposition WebContentsImpl::GetOriginalWindowOpenDisposition()
+    const {
+  return original_window_open_disposition_;
+}
+
 void WebContents::SetScreenOrientationDelegate(
     ScreenOrientationDelegate* delegate) {
   ScreenOrientationProvider::SetDelegate(delegate);
@@ -5139,6 +5144,9 @@ FrameTree* WebContentsImpl::CreateNewWindow(
       params.disposition == WindowOpenDisposition::NEW_POPUP;
   SetPartitionedPopinOpenerOnNewWindowIfNeeded(new_contents_impl, params,
                                                opener);
+
+  // Sets the newly created WebContents WindowOpenDisposition.
+  new_contents_impl->original_window_open_disposition_ = params.disposition;
 
   // If the new frame has a name, make sure any SiteInstances that can find
   // this named frame have proxies for it.  Must be called after

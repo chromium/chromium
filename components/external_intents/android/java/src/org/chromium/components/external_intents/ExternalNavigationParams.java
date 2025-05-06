@@ -99,6 +99,7 @@ public class ExternalNavigationParams {
     private boolean mIsRendererInitiated;
     private @Nullable Origin mInitiatorOrigin;
     private final long mNavigationId;
+    private final boolean mIsCustomTab;
 
     // Populated when an async action is taken, ensuring the callback gets called.
     private @Nullable RequiredCallback<AsyncActionTakenParams> mRequiredAsyncActionTakenCallback;
@@ -122,7 +123,8 @@ public class ExternalNavigationParams {
             boolean isInitialNavigationInFrame,
             boolean isHiddenCrossFrameNavigation,
             boolean isSandboxedMainFrame,
-            long navigationId) {
+            long navigationId,
+            boolean isCustomTab) {
         mUrl = url;
         mIsIncognito = isIncognito;
         mPageTransition = pageTransition;
@@ -142,6 +144,7 @@ public class ExternalNavigationParams {
         mIsHiddenCrossFrameNavigation = isHiddenCrossFrameNavigation;
         mIsSandboxedMainFrame = isSandboxedMainFrame;
         mNavigationId = navigationId;
+        mIsCustomTab = isCustomTab;
     }
 
     public void onAsyncActionStarted() {
@@ -261,6 +264,13 @@ public class ExternalNavigationParams {
         return mNavigationId;
     }
 
+    /**
+     * @return whether this WebContents is a Custom Tab, false otherwise.
+     */
+    public boolean isCustomTab() {
+        return mIsCustomTab;
+    }
+
     /** The builder for {@link ExternalNavigationParams} objects. */
     public static class Builder {
         private GURL mUrl;
@@ -282,6 +292,7 @@ public class ExternalNavigationParams {
         private boolean mIsHiddenCrossFrameNavigation;
         private boolean mIsSandboxedMainFrame;
         private long mNavigationId;
+        private boolean mIsCustomTab;
 
         public Builder(GURL url, boolean isIncognito) {
             mUrl = url;
@@ -384,6 +395,12 @@ public class ExternalNavigationParams {
             return this;
         }
 
+        /** Sets whether this navigation was started in a custom tab (e.g. PWA) */
+        public Builder setIsCustomTab(boolean isCustomTab) {
+            mIsCustomTab = isCustomTab;
+            return this;
+        }
+
         /**
          * @return A fully constructed {@link ExternalNavigationParams} object.
          */
@@ -407,7 +424,8 @@ public class ExternalNavigationParams {
                     mIsInitialNavigationInFrame,
                     mIsHiddenCrossFrameNavigation,
                     mIsSandboxedMainFrame,
-                    mNavigationId);
+                    mNavigationId,
+                    mIsCustomTab);
         }
     }
 }

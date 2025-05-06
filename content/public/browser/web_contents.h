@@ -1694,6 +1694,16 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual GURL GetPartitionedPopinEmbedderOrigin(
       base::PassKey<StorageAccessGrantPermissionContext>) const = 0;
 
+  // Returns the window open disposition that was originally requested
+  // when this WebContents was created.
+  // This method provides the disposition specified by the opener of this
+  // WebContents, indicating how the content was initially intended to be
+  // displayed (e.g., as a new foreground tab, a background tab, a new window,
+  // a popup, etc.). This value is determined at the point of
+  // creation, such as during a navigation that results in a new WebContents
+  // (e.g., from a link click with `target="_blank"`, `window.open()`).
+  virtual WindowOpenDisposition GetOriginalWindowOpenDisposition() const = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class WebContentsImpl;
