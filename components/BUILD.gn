@@ -577,6 +577,7 @@ test("components_unittests") {
       "//components/signin/public/identity_manager/objc:unit_tests",
       "//components/translate/ios/browser:unit_tests",
       "//components/ukm/ios:unit_tests",
+      "//components/webauthn/ios:js_tests",
     ]
     if (use_blink) {
       deps += [ ":components_tests_distiller_bundle_data" ]

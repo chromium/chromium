@@ -402,6 +402,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.IOS.ContentAreaEvent"
+    enum="WebAuthenticationIOSContentAreaEvent" expires_after="2025-11-01">
+  <owner>rgod@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Logs WebAuthn API interactions in the content area in Chrome on iOS, such as
+    a site requesting passkeys, or an assertion being returned by a CPE. Note
+    that this is *not* limited to passkeys stored in Chrome. Requests handled by
+    any (or no) credential provider are counted here, as well as requests for
+    other types of WebAuthn credentials (e.g. security key credentials).
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable2"
     enum="Boolean" expires_after="2025-10-12">
   <owner>kenrb@chromium.org</owner>
