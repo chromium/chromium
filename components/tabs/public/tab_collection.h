@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_TAB_COLLECTION_H_
-#define CHROME_BROWSER_UI_TABS_TAB_COLLECTION_H_
+#ifndef COMPONENTS_TABS_PUBLIC_TAB_COLLECTION_H_
+#define COMPONENTS_TABS_PUBLIC_TAB_COLLECTION_H_
 
 #include <cstddef>
 #include <list>
@@ -16,7 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ui/tabs/tab_collection_storage.h"
+#include "components/tabs/public/tab_collection_storage.h"
 
 namespace tabs {
 
@@ -227,4 +227,4 @@ class TabCollection {
 
 }  // namespace tabs
 
-#endif  // CHROME_BROWSER_UI_TABS_TAB_COLLECTION_H_
+#endif  // COMPONENTS_TABS_PUBLIC_TAB_COLLECTION_H_

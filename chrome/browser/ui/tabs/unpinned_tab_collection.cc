@@ -10,9 +10,9 @@
 
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
+#include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {

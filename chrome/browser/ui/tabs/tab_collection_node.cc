@@ -8,7 +8,7 @@
 #include <variant>
 
 #include "base/check.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_node_interface.h"
 #include "components/tabs/public/tab_interface.h"
 

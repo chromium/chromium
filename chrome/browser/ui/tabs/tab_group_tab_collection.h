@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_collection.h"
 
 namespace tab_groups {
 class TabGroupId;

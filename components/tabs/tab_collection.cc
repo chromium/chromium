@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_collection.h"
+#include "components/tabs/public/tab_collection.h"
 
 #include "base/check.h"
 #include "base/notreached.h"

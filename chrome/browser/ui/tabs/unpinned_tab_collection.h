@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "chrome/browser/ui/tabs/tab_collection.h"
+#include "components/tabs/public/tab_collection.h"
 
 namespace tabs {
 

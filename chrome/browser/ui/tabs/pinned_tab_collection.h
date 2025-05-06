@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_PINNED_TAB_COLLECTION_H_
 #define CHROME_BROWSER_UI_TABS_PINNED_TAB_COLLECTION_H_
 
-#include "chrome/browser/ui/tabs/tab_collection.h"
+#include "components/tabs/public/tab_collection.h"
 
 namespace tabs {
 

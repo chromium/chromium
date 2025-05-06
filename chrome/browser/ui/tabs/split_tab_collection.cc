@@ -9,8 +9,8 @@
 
 #include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "chrome/browser/ui/tabs/split_tab_visual_data.h"
-#include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "components/tabs/public/tab_collection_storage.h"
 
 namespace tabs {
 

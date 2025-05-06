@@ -6,23 +6,44 @@ source_set("public") {
   sources = [
     "public/split_tab_id.h",
     "public/supports_handles.h",
+    "public/tab_collection.h",
     "public/tab_collection_node_interface.h",
     "public/tab_interface.h",
   ]
+
+  # TODO(crbug.com/404296389): Move to the non-public target and refactor
+  # tab_collection.h to only require a forward declaration for testing.
+  sources += [ "public/tab_collection_storage.h" ]
+
   public_deps = [
     "//base",
     "//components/tab_groups",
   ]
 }
 
+source_set("tabs") {
+  sources = [
+    "tab_collection.cc",
+    "tab_collection_storage.cc",
+  ]
+  deps = [ ":public" ]
+}
+
 source_set("unit_tests") {
   testonly = true
+
+  # Move unit tests for tab collections here once decoupled from
+  # chrome/browser/ui/tabs/. Specifically:
+  # TODO(crbug.com/415963447): tab_collection_unittest.cc
+  # TODO(crbug.com/415965103): tab_collection_storage_unittest.cc
+  # TODO(crbug.com/415965106): tab_iterator_unittest.cc
   sources = [ "public/supports_handles_unittest.cc" ]
 
   public_deps = [ "//base" ]
 
   deps = [
     ":public",
+    ":tabs",
     "//testing/gmock",
     "//testing/gtest",
   ]

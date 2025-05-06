@@ -14,11 +14,11 @@
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_visual_data.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
 #include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {

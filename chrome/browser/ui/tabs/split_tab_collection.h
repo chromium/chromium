@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TABS_SPLIT_TAB_COLLECTION_H_
 #define CHROME_BROWSER_UI_TABS_SPLIT_TAB_COLLECTION_H_
 
-#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_collection.h"
 
 namespace split_tabs {
 class SplitTabData;

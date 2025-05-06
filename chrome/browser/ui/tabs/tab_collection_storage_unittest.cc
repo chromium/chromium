@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_collection_storage.h"
+#include "components/tabs/public/tab_collection_storage.h"
 
 #include <memory>
 
 #include "base/test/gtest_util.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/tab_collection.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
