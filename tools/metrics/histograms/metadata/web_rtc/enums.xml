@@ -345,7 +345,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="WebRtcEventLoggingApiEnum">
   <int value="0" label="kSuccess"/>
-  <int value="1" label="kDeadRph"/>
+  <int value="1" label="OBSOLETE_kDeadRph"/>
   <int value="2" label="kFeatureDisabled"/>
   <int value="3" label="kIncognito"/>
   <int value="4" label="kInvalidArguments"/>
@@ -357,6 +357,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="kLogPathNotAvailable"/>
   <int value="11" label="kHistoryPathNotAvailable"/>
   <int value="12" label="kFileCreationError"/>
+  <int value="13" label="kBrowserContextNotFound"/>
 </enum>
 
 <enum name="WebRtcEventLoggingUploadEnum">

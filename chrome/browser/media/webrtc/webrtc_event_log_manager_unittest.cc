@@ -3773,7 +3773,7 @@ TEST_F(WebRtcEventLogManagerTest,
   rph_.reset();
   std::string error_message;
   EXPECT_FALSE(StartRemoteLogging(key, nullptr, &error_message));
-  EXPECT_EQ(error_message, kStartRemoteLoggingFailureDeadRenderProcessHost);
+  EXPECT_EQ(error_message, kBrowserContextNotFound);
 }
 
 TEST_F(WebRtcEventLogManagerTest,

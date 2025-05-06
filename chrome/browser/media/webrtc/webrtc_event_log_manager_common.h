@@ -100,7 +100,7 @@ extern const base::TimeDelta kRemoteBoundWebRtcEventLogsMaxRetention;
 
 // These are made globally visible so that unit tests may check for them.
 extern const char kStartRemoteLoggingFailureAlreadyLogging[];
-extern const char kStartRemoteLoggingFailureDeadRenderProcessHost[];
+// extern const char OBSOLETE_kStartRemoteLoggingFailureDeadRenderProcessHost[];
 extern const char kStartRemoteLoggingFailureFeatureDisabled[];
 extern const char kStartRemoteLoggingFailureFileCreationError[];
 extern const char kStartRemoteLoggingFailureFilePathUsedHistory[];
@@ -113,6 +113,7 @@ extern const char kStartRemoteLoggingFailureNoAdditionalActiveLogsAllowed[];
 extern const char kStartRemoteLoggingFailureOutputPeriodMsTooLarge[];
 extern const char kStartRemoteLoggingFailureUnknownOrInactivePeerConnection[];
 extern const char kStartRemoteLoggingFailureUnlimitedSizeDisallowed[];
+extern const char kBrowserContextNotFound[];
 
 // Values for the histogram for the result of the API call to collect
 // a WebRTC event log.
@@ -121,7 +122,7 @@ extern const char kStartRemoteLoggingFailureUnlimitedSizeDisallowed[];
 // numeric values should never be reused.
 enum class WebRtcEventLoggingApiUma {
   kSuccess = 0,                         // Log successfully collected.
-  kDeadRph = 1,                         // Log not collected.
+  kDeadRph_OBSOLETE = 1,                // Log not collected.
   kFeatureDisabled = 2,                 // Log not collected.
   kIncognito = 3,                       // Log not collected.
   kInvalidArguments = 4,                // Log not collected.
@@ -133,7 +134,8 @@ enum class WebRtcEventLoggingApiUma {
   kLogPathNotAvailable = 10,            // Log not collected.
   kHistoryPathNotAvailable = 11,        // Log not collected.
   kFileCreationError = 12,              // Log not collected.
-  kMaxValue = kFileCreationError
+  kBrowserContextNotFound = 13,         // Log not collected.
+  kMaxValue = kBrowserContextNotFound
 };
 
 void UmaRecordWebRtcEventLoggingApi(WebRtcEventLoggingApiUma result);
