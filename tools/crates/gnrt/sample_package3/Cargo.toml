@@ -1,0 +1,21 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This `Cargo.toml` is a test input for Windows gnu-vs-msvc dependencies.
+# Chromium only supports `msvc` `target_env` and so only the last of
+# the crates below should be in the set of transitive dependencies:
+#
+# * `windows_x86_64_gnu`
+# * `windows_x86_64_gnullvm`
+# * `windows_x86_64_msvc`
+#
+# Output from `cargo metadata` has been saved in `gnrt/lib/test_metadata3.json`.
+
+[package]
+name = "sample_package3"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+termcolor = "1.4.1"

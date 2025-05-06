@@ -364,7 +364,22 @@ if (is_linux || is_chromeos) {
   }
 }
 
-assert(!toolchain_has_rust || rust_abi_target != "")
+if (toolchain_has_rust) {
+  assert(rust_abi_target != "")
+
+  _known_rust_target_triples_filepath = "//build/rust/known-target-triples.txt"
+  _is_rust_abi_target_a_known_triple = false
+  _known_rust_target_triples_ =
+      read_file(_known_rust_target_triples_filepath, "list lines")
+  foreach(_known_triple, _known_rust_target_triples_) {
+    if (_known_triple == rust_abi_target) {
+      _is_rust_abi_target_a_known_triple = true
+    }
+  }
+  assert(_is_rust_abi_target_a_known_triple,
+         "`${rust_abi_target}` needs to be added to " +
+             "`//${_known_rust_target_triples_filepath}`")
+}
 
 # This variable is passed to the Rust libstd build.
 rust_target_arch = ""
