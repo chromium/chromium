@@ -1,0 +1,5 @@
+# If `enable_rust_cxx` is set to true, then `//build/rust` provides
+# integration of `cxx` with Chromium's build system.  See for example
+# `cxx_bindings` property of the `rust_static_library` template from
+# `//build/rust/rust_static_library.gni`.
+file://build/rust/OWNERS
