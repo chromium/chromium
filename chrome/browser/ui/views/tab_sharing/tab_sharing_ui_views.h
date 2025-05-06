@@ -106,7 +106,7 @@ class TabSharingUIViews : public TabSharingUI,
  private:
   using InfoBars = std::map<content::WebContents*,
                             raw_ptr<infobars::InfoBar, CtnExperimental>>;
-  friend class TabSharingUIViewsBrowserTest;
+  friend class TabSharingUIViewsBrowserTestBase;
 
   // Used to identify |TabSharingUIViews| instances to
   // |TabCaptureContentsBorderHelper|, without passing pointers,

@@ -47,6 +47,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/controls/button/button_controller.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -104,6 +105,20 @@ std::u16string GetInfobarMessageText(Browser* browser, int tab) {
     return GetInfoText(static_cast<const TabSharingStatusMessageView&>(view));
   }
   NOTREACHED();
+}
+
+std::vector<views::MdTextButton*> GetMessageLinks(Browser* browser, int tab) {
+  const views::View& status_message_view =
+      *GetInfoBar(browser, tab)->GetStatusMessageViewForTesting();
+  CHECK_EQ(status_message_view.GetClassName(), "TabSharingStatusMessageView");
+
+  std::vector<views::MdTextButton*> buttons;
+  for (views::View* child_view : status_message_view.children()) {
+    if (child_view->GetClassName() == "MdTextButton") {
+      buttons.emplace_back(static_cast<views::MdTextButton*>(child_view));
+    }
+  }
+  return buttons;
 }
 
 bool HasShareThisTabInsteadButton(Browser* browser, int tab) {
@@ -197,6 +212,11 @@ void ActivateTab(Browser* browser, int tab) {
   base::RunLoop().RunUntilIdle();
 }
 
+bool IsActive(Browser* browser, int tab) {
+  return browser->tab_strip_model()->GetActiveWebContents() ==
+         GetWebContents(browser, tab);
+}
+
 constexpr int kNullTabIndex = -1;
 const std::u16string kShareThisTabInsteadMessage = u"Share this tab instead";
 const std::u16string kViewTabMessage = u"View tab:";
@@ -210,12 +230,15 @@ const policy::DlpContentRestrictionSet kScreenshareRestrictionSet(
 
 }  // namespace
 
-class TabSharingUIViewsBrowserTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
  public:
-  TabSharingUIViewsBrowserTest()
-      : enable_tab_capture_infobar_links_(GetParam()) {
+  struct Features {
+    bool enable_tab_capture_infobar_links;
+  };
+
+  explicit TabSharingUIViewsBrowserTestBase(Features features)
+      : enable_tab_capture_infobar_links_(
+            features.enable_tab_capture_infobar_links) {
     // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
     // disable kHttpsUpgrades feature.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -251,16 +274,17 @@ class TabSharingUIViewsBrowserTest
     // Explicitly activate the shared tab in testing.
     ActivateTab(browser, captured_tab);
 
-    tab_sharing_ui_ = TabSharingUI::Create(
-        GetGlobalId(browser, capturing_tab),
-        GetDesktopMediaID(browser, captured_tab), u"example-sharing.com",
-        /*app_preferred_current_tab=*/false,
-        TabSharingInfoBarDelegate::TabShareType::CAPTURE,
-        /*captured_surface_control_active=*/false);
+    tab_sharing_ui_ =
+        TabSharingUI::Create(GetGlobalId(browser, capturing_tab),
+                             GetDesktopMediaID(browser, captured_tab),
+                             /*capturer_name=*/u"capturer.com",
+                             /*app_preferred_current_tab=*/false,
+                             TabSharingInfoBarDelegate::TabShareType::CAPTURE,
+                             /*captured_surface_control_active=*/false);
 
     tab_sharing_ui_->OnStarted(
         base::OnceClosure(),
-        base::BindRepeating(&TabSharingUIViewsBrowserTest::OnSourceChange,
+        base::BindRepeating(&TabSharingUIViewsBrowserTestBase::OnSourceChange,
                             base::Unretained(this)),
         std::vector<content::DesktopMediaID>{});
 
@@ -359,12 +383,15 @@ class TabSharingUIViewsBrowserTest
     }
   }
 
+  void AddTab(Browser* browser, const GURL& url) {
+    const int next_index = browser->tab_strip_model()->count();
+    ASSERT_TRUE(AddTabAtIndexToBrowser(browser, next_index, url,
+                                       ui::PAGE_TRANSITION_LINK, true));
+  }
+
   void AddTabs(Browser* browser, int tab_count) {
     for (int i = 0; i < tab_count; ++i) {
-      const int next_index = browser->tab_strip_model()->count();
-      ASSERT_TRUE(AddTabAtIndexToBrowser(browser, next_index,
-                                         GURL(chrome::kChromeUINewTabURL),
-                                         ui::PAGE_TRANSITION_LINK, true));
+      AddTab(browser, GURL(chrome::kChromeUINewTabURL));
     }
 
     base::RunLoop().RunUntilIdle();
@@ -391,6 +418,15 @@ class TabSharingUIViewsBrowserTest
   base::test::ScopedFeatureList features_;
   const bool enable_tab_capture_infobar_links_;
   std::unique_ptr<TabSharingUI> tab_sharing_ui_;
+};
+
+class TabSharingUIViewsBrowserTest
+    : public TabSharingUIViewsBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  TabSharingUIViewsBrowserTest()
+      : TabSharingUIViewsBrowserTestBase(
+            {.enable_tab_capture_infobar_links = GetParam()}) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(All, TabSharingUIViewsBrowserTest, testing::Bool());
@@ -741,6 +777,99 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+class TabSharingMessageLinksBrowserTest
+    : public TabSharingUIViewsBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  TabSharingMessageLinksBrowserTest()
+      : TabSharingUIViewsBrowserTestBase(
+            {.enable_tab_capture_infobar_links = true}) {}
+
+  void SetUpOnMainThread() override {
+    TabSharingUIViewsBrowserTestBase::SetUpOnMainThread();
+    // The existing initial tab is used for the capturer. Two new tabs are added
+    // for the capturee and a third-party tab.
+    AddTab(browser(), kCapturedTabUrl);
+    AddTab(browser(), kOtherTabUrl);
+    ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  }
+
+ protected:
+  const int kCapturingTab = 0;
+  const int kCapturedTab = 1;
+  const int kOtherTab = 2;
+  const GURL kCapturedTabUrl = GURL(chrome::kChromeUINewTabURL);
+  const GURL kOtherTabUrl = GURL(chrome::kChromeUIAboutURL);
+  const std::string kCapturingTabLinkText = "capturer.com";
+  const std::string kCapturedTabLinkText = "chrome://new-tab-page";
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         TabSharingMessageLinksBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(TabSharingMessageLinksBrowserTest,
+                       ClickingOnLinkInCapturingTabActivatesCapturedTab) {
+  CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
+  ActivateTab(browser(), kCapturingTab);
+
+  std::vector<views::MdTextButton*> links =
+      GetMessageLinks(browser(), /*tab=*/kCapturingTab);
+  ASSERT_EQ(links.size(), 1u);
+  EXPECT_EQ(base::UTF16ToUTF8(links[0]->GetText()), kCapturedTabLinkText);
+
+  EXPECT_TRUE(IsActive(browser(), kCapturingTab));
+  links[0]->button_controller()->NotifyClick();
+  EXPECT_TRUE(IsActive(browser(), kCapturedTab));
+}
+
+IN_PROC_BROWSER_TEST_P(TabSharingMessageLinksBrowserTest,
+                       ClickingOnLinkInCapturedTabActivatesCapturingTab) {
+  CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
+  ActivateTab(browser(), kCapturedTab);
+
+  std::vector<views::MdTextButton*> links =
+      GetMessageLinks(browser(), /*tab=*/kCapturedTab);
+  ASSERT_EQ(links.size(), 1u);
+  EXPECT_EQ(base::UTF16ToUTF8(links[0]->GetText()), kCapturingTabLinkText);
+
+  EXPECT_TRUE(IsActive(browser(), kCapturedTab));
+  links[0]->button_controller()->NotifyClick();
+  EXPECT_TRUE(IsActive(browser(), kCapturingTab));
+}
+
+IN_PROC_BROWSER_TEST_P(TabSharingMessageLinksBrowserTest,
+                       ClickingOnCaptureeLinkInOtherTabActivatesCapturedTab) {
+  CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
+  ActivateTab(browser(), kOtherTab);
+
+  std::vector<views::MdTextButton*> links =
+      GetMessageLinks(browser(), /*tab=*/kOtherTab);
+  ASSERT_EQ(links.size(), 2u);
+  EXPECT_EQ(base::UTF16ToUTF8(links[0]->GetText()), kCapturedTabLinkText);
+  EXPECT_EQ(base::UTF16ToUTF8(links[1]->GetText()), kCapturingTabLinkText);
+
+  EXPECT_TRUE(IsActive(browser(), kOtherTab));
+  links[0]->button_controller()->NotifyClick();
+  EXPECT_TRUE(IsActive(browser(), kCapturedTab));
+}
+
+IN_PROC_BROWSER_TEST_P(TabSharingMessageLinksBrowserTest,
+                       ClickingOnCapturerLinkInOtherTabActivatesCapturingTab) {
+  CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
+  ActivateTab(browser(), kOtherTab);
+
+  std::vector<views::MdTextButton*> links =
+      GetMessageLinks(browser(), /*tab=*/kOtherTab);
+  ASSERT_EQ(links.size(), 2u);
+  EXPECT_EQ(base::UTF16ToUTF8(links[0]->GetText()), kCapturedTabLinkText);
+  EXPECT_EQ(base::UTF16ToUTF8(links[1]->GetText()), kCapturingTabLinkText);
+
+  EXPECT_TRUE(IsActive(browser(), kOtherTab));
+  links[1]->button_controller()->NotifyClick();
+  EXPECT_TRUE(IsActive(browser(), kCapturingTab));
+}
+
 class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
  public:
 #if BUILDFLAG(IS_CHROMEOS)
@@ -762,7 +891,7 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
       ActivateTab(browser, captured_tab);
       tab_sharing_ui_views_.push_back(TabSharingUI::Create(
           GetGlobalId(browser, capturing_tab),
-          GetDesktopMediaID(browser, captured_tab), u"example-sharing.com",
+          GetDesktopMediaID(browser, captured_tab), u"capturer.com",
           /*app_preferred_current_tab=*/false,
           TabSharingInfoBarDelegate::TabShareType::CAPTURE,
           /*captured_surface_control_active=*/false));
@@ -1014,7 +1143,7 @@ class TabSharingUIViewsPreferCurrentTabBrowserTest
     ActivateTab(browser(), kTab0);
     tab_sharing_ui_views_ = TabSharingUI::Create(
         GetGlobalId(browser(), kTab0),
-        GetDesktopMediaID(browser(), captured_tab), u"example-sharing.com",
+        GetDesktopMediaID(browser(), captured_tab), u"capturer.com",
         /*app_preferred_current_tab=*/true,
         TabSharingInfoBarDelegate::TabShareType::CAPTURE,
         /*captured_surface_control_active=*/false);
