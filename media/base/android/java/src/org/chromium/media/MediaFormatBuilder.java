@@ -28,7 +28,6 @@ class MediaFormatBuilder {
             boolean allowAdaptivePlayback,
             int profile) {
         MediaFormat format = MediaFormat.createVideoFormat(mime, width, height);
-        if (format == null) return null;
         setCodecSpecificData(format, csds);
         if (hdrMetadata != null) {
             hdrMetadata.addMetadataToFormat(format);
