@@ -444,7 +444,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       task_runner_provider_(task_runner_provider),
       current_begin_frame_tracker_(FROM_HERE),
       settings_(settings),
-      trees_in_viz_in_client_process_(settings_.TreesInVizInClientProcess()),
       use_layer_context_for_animations_(
           settings_.UseLayerContextForAnimations()),
       is_synchronous_single_threaded_(!task_runner_provider->HasImplThread() &&
@@ -1449,7 +1448,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
 
   // In TreesInViz mode, FrameData built in the renderer side is abandoned
   // and later rebuilt in viz side. Therefore, certain steps can be skipped.
-  bool output_frame_data = !trees_in_viz_in_client_process_;
+  bool output_frame_data = !settings_.TreesInVizInClientProcess();
 
   for (EffectTreeLayerListIterator it(active_tree());
        it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
@@ -2906,7 +2905,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
   base::TimeTicks submit_time = base::TimeTicks::Now();
 
-  if (trees_in_viz_in_client_process_) {
+  if (settings_.TreesInVizInClientProcess()) {
     UpdateDisplayTree(*frame);
 
     // For the display compositor we should have already submitted at display
@@ -3090,7 +3089,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   // the requests will be sent over to viz to compute them.
   // If we call TakeViewTransitionRequests() here, it will clear the requests
   // and send none to viz.
-  if (!trees_in_viz_in_client_process_) {
+  if (!settings_.TreesInVizInClientProcess()) {
     ViewTransitionRequest::ViewTransitionElementMap view_transition_element_map;
     const auto& capture_view_transition_tokens =
         active_tree_->GetCaptureViewTransitionTokens();
@@ -3336,7 +3335,7 @@ void LayerTreeHostImpl::DidDrawAllLayers(const FrameData& frame) {
 }
 
 void LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
-  DCHECK(trees_in_viz_in_client_process_);
+  DCHECK(settings_.TreesInVizInClientProcess());
   DCHECK(layer_context_);
 
   layer_context_->UpdateDisplayTreeFrom(
@@ -4144,7 +4143,7 @@ void LayerTreeHostImpl::SetNeedsRedraw(bool animation_only) {
   NotifyLatencyInfoSwapPromiseMonitors();
   events_metrics_manager_.SaveActiveEventMetrics();
 
-  if (trees_in_viz_in_client_process_) {
+  if (settings_.TreesInVizInClientProcess()) {
     if (!animation_only || !use_layer_context_for_animations_) {
       client_->SetNeedsRedrawOnImplThread();
     }
@@ -4511,7 +4510,7 @@ bool LayerTreeHostImpl::InitializeFrameSink(
 
   layer_tree_frame_sink_ = layer_tree_frame_sink;
   has_valid_layer_tree_frame_sink_ = true;
-  if (trees_in_viz_in_client_process_) {
+  if (settings_.TreesInVizInClientProcess()) {
     layer_context_ = layer_tree_frame_sink_->CreateLayerContext(*this);
   }
 

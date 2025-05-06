@@ -45,8 +45,6 @@ SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
   scheduler_settings.wait_for_all_pipeline_stages_before_draw =
       wait_for_all_pipeline_stages_before_draw;
   scheduler_settings.disable_frame_rate_limit = disable_frame_rate_limit;
-  scheduler_settings.trees_in_viz_in_client_process =
-      TreesInVizInClientProcess();
 
   if (base::FeatureList::IsEnabled(::features::kDeferImplInvalidation)) {
     scheduler_settings.delay_impl_invalidation_frames =

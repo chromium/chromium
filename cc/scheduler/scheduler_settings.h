@@ -63,10 +63,6 @@ class CC_EXPORT SchedulerSettings {
   // frames by.
   int delay_impl_invalidation_frames = 0;
 
-  // Whether the tree is pushing updates to a separate display tree via a
-  // LayerContext, rather than drawing directly to a compositor frame.
-  bool trees_in_viz_in_client_process = false;
-
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
 };
 
