@@ -117,6 +117,7 @@ void AshWebViewImpl::AddedToWidget() {
 }
 
 bool AshWebViewImpl::IsWebContentsCreationOverridden(
+    content::RenderFrameHost* opener,
     content::SiteInstance* source_site_instance,
     content::mojom::WindowContainerType window_container_type,
     const GURL& opener_url,
@@ -129,8 +130,8 @@ bool AshWebViewImpl::IsWebContentsCreationOverridden(
     return true;
   }
   return content::WebContentsDelegate::IsWebContentsCreationOverridden(
-      source_site_instance, window_container_type, opener_url, frame_name,
-      target_url);
+      opener, source_site_instance, window_container_type, opener_url,
+      frame_name, target_url);
 }
 
 content::WebContents* AshWebViewImpl::OpenURLFromTab(

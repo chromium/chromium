@@ -304,6 +304,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
                               int32_t line_no,
                               const std::u16string& source_id) override;
   bool IsWebContentsCreationOverridden(
+      content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,

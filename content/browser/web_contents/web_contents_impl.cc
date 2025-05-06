@@ -5019,10 +5019,11 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   }
 
   // TODO(crbug.com/40202416): Support a way for MPArch guests to support this.
-  if (delegate_ && delegate_->IsWebContentsCreationOverridden(
-                       source_site_instance, params.window_container_type,
-                       opener->GetLastCommittedURL(), params.frame_name,
-                       params.target_url)) {
+  if (delegate_ &&
+      delegate_->IsWebContentsCreationOverridden(
+          opener, source_site_instance, params.window_container_type,
+          opener->GetLastCommittedURL(), params.frame_name,
+          params.target_url)) {
     auto* web_contents_impl =
         static_cast<WebContentsImpl*>(delegate_->CreateCustomWebContents(
             opener, source_site_instance, is_new_browsing_instance,

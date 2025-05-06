@@ -142,7 +142,7 @@ TEST_F(BackgroundLoaderContentsTest, CanDownload_DelegateCalledWhenSet) {
 
 TEST_F(BackgroundLoaderContentsTest, ShouldNotCreateWebContents) {
   ASSERT_TRUE(contents()->IsWebContentsCreationOverridden(
-      nullptr /* source_site_instance */,
+      nullptr /* opener */, nullptr /* source_site_instance */,
       content::mojom::WindowContainerType::NORMAL /* window_container_type */,
       GURL() /* opener_url */, "foo" /* frame_name */,
       GURL() /* target_url */));
