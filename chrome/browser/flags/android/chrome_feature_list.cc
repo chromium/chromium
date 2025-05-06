@@ -480,7 +480,7 @@ BASE_FEATURE(kDisableCompositedProgressBar,
 
 BASE_FEATURE(kDisableListTabSwitcher,
              "DisableListTabSwitcher",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Long-term flag for debugging only.
 BASE_FEATURE(kForceListTabSwitcher,
