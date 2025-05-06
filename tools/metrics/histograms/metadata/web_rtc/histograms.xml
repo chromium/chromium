@@ -3815,7 +3815,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video{TypeOfStream}.CorruptionLikelihoodPermille"
-    units="permille (‰)" expires_after="2025-04-01">
+    units="permille (‰)" expires_after="2025-10-01">
   <owner>sprang@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
