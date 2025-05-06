@@ -250,8 +250,8 @@ class RenderViewContextMenu
   // clipboard. |url| must be valid and non-empty.
   static std::u16string FormatURLForClipboard(const GURL& url);
 
-  // Writes the specified text/url to the system clipboard.
-  void WriteURLToClipboard(const GURL& url);
+  // Writes the specified url to the system clipboard.
+  void WriteURLToClipboard(const GURL& url, int id);
 
   // Issues a preconnection request to the given url.
   void IssuePreconnectionToUrl(const std::string& anonymization_key_url,
