@@ -642,9 +642,13 @@ class Namespace:
     functions = []
     types = []
     events = []
+    properties = OrderedDict()
+    manifest_keys = None
     description = ProcessNodeDescription(self.namespace).description
     nodoc = False
     platforms = None
+    compiler_options = OrderedDict()
+    deprecated = None
 
     # Functions are defined as Operations on the API Interface definition.
     for node in self.namespace.GetListOf('Operation'):
@@ -676,9 +680,13 @@ class Namespace:
         'functions': functions,
         'types': types,
         'events': events,
+        'properties': properties,
+        'manifest_keys': manifest_keys,
         'nodoc': nodoc,
         'description': description,
-        'platforms': platforms
+        'platforms': platforms,
+        'compiler_options': compiler_options,
+        'deprecated': deprecated,
     }
 
 

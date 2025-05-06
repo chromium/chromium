@@ -588,12 +588,24 @@ class WebIdlSchemaTest(unittest.TestCase):
     expected = ['chromeos']
     self.assertEqual(expected, platforms_schema[0]['platforms'])
 
-  # Tests that the platforms attribute is None if not specified on in the
-  # extended attributes of a namespace.
-  def testNonSpecifiedPlatformsOnNamespace(self):
-    basic_schema = self.idl_basics
-    expected = None
-    self.assertEqual(expected, basic_schema['platforms'])
+  # Tests a variety of default values that are set on an API namespace when they
+  # are not specified in the source IDL file.
+  def testNonSpecifiedDefaultValues(self):
+    defaults_schema = web_idl_schema.Load('test/web_idl/defaults.idl')[0]
+    self.assertEqual(
+        {
+            'compiler_options': {},
+            'deprecated': None,
+            'description': '',
+            'events': [],
+            'functions': [],
+            'manifest_keys': None,
+            'namespace': 'defaultsOnlyWebIdl',
+            'nodoc': False,
+            'platforms': None,
+            'properties': {},
+            'types': [],
+        }, defaults_schema)
 
 
 if __name__ == '__main__':
