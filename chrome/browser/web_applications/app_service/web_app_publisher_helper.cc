@@ -1698,7 +1698,7 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
   std::vector<std::string> policy_ids;
 
   if (std::optional<std::string_view> preinstalled_web_app_policy_id =
-          apps_util::GetPolicyIdForPreinstalledWebApp(app_id)) {
+          web_app::GetPolicyIdForPreinstalledWebApp(app_id)) {
     policy_ids.emplace_back(*preinstalled_web_app_policy_id);
   }
 
@@ -1709,7 +1709,7 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
     DCHECK(swa_data);
     const ash::SystemWebAppType swa_type = swa_data->system_app_type;
     const std::optional<std::string_view> swa_policy_id =
-        apps_util::GetPolicyIdForSystemWebAppType(swa_type);
+        web_app::GetPolicyIdForSystemWebAppType(swa_type);
     if (swa_policy_id) {
       policy_ids.emplace_back(*swa_policy_id);
     }
@@ -1750,7 +1750,7 @@ apps::PackageId WebAppPublisherHelper::GetPackageId(
 #if BUILDFLAG(IS_CHROMEOS)
   if (web_app.client_data().system_web_app_data) {
     const std::optional<std::string_view> policy_id =
-        apps_util::GetPolicyIdForSystemWebAppType(
+        GetPolicyIdForSystemWebAppType(
             web_app.client_data().system_web_app_data->system_app_type);
     if (policy_id) {
       return apps::PackageId(apps::PackageType::kSystem, *policy_id);
