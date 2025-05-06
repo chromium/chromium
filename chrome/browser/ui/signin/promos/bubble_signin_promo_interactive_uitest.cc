@@ -238,16 +238,16 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   RunTestSequence(
       WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
                    kBubbleSignInPromoSignInButtonHasCallback),
-      EnsurePresent(PasswordSaveUpdateView::kPasswordBubble),
+      EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId),
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(PasswordSaveUpdateView::kPasswordBubble, std::string(),
-                 "5455375"),
+      Screenshot(PasswordSaveUpdateView::kPasswordBubbleElementId,
+                 std::string(), "5455375"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
-      EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubble));
+      EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubbleElementId));
 
   // Check that clicking the sign in button navigated to a sign in page.
   EXPECT_TRUE(IsSignInURL());
@@ -322,16 +322,16 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   RunTestSequence(
       WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
                    kBubbleSignInPromoSignInButtonHasCallback),
-      EnsurePresent(PasswordSaveUpdateView::kPasswordBubble),
+      EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId),
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(PasswordSaveUpdateView::kPasswordBubble, std::string(),
-                 "5455375"),
+      Screenshot(PasswordSaveUpdateView::kPasswordBubbleElementId,
+                 std::string(), "5455375"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
-      EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubble));
+      EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubbleElementId));
 
   // Check that there is no helper attached to the sign in tab, because the
   // password was already moved.
@@ -390,16 +390,16 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   RunTestSequence(
       WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
                    kBubbleSignInPromoSignInButtonHasCallback),
-      EnsurePresent(PasswordSaveUpdateView::kPasswordBubble),
+      EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId),
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(PasswordSaveUpdateView::kPasswordBubble, std::string(),
-                 "5455375"),
+      Screenshot(PasswordSaveUpdateView::kPasswordBubbleElementId,
+                 std::string(), "5455375"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
-      EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubble));
+      EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubbleElementId));
 
   // Check that clicking the sign in button navigated to a sign in page.
   EXPECT_TRUE(IsSignInURL());

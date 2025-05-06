@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_details_view.h"
@@ -57,6 +58,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/window/dialog_client_view.h"
 
 using base::Bucket;
 using net::test_server::BasicHttpResponse;
@@ -1341,4 +1343,44 @@ IN_PROC_BROWSER_TEST_F(
 
   RunTestSequence(Do(setup_shared_passwords),
                   EnsureNotPresent(SharedPasswordsNotificationView::kTopView));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, ClickNever) {
+  SetupPendingPassword();
+  const auto button = views::DialogClientView::kCancelButtonElementId;
+  RunTestSequence(PressButton(button), WaitForHide(button),
+                  CheckHistogramUniqueSample(
+                      "PasswordManager.SaveUIDismissalReason",
+                      password_manager::metrics_util::CLICKED_NEVER, 1));
+}
+class ThreeButtonPasswordBubbleInteractiveUiTest
+    : public PasswordBubbleInteractiveUiTest {
+ public:
+  ThreeButtonPasswordBubbleInteractiveUiTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kThreeButtonPasswordSaveDialog, true);
+  }
+  ~ThreeButtonPasswordBubbleInteractiveUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ThreeButtonPasswordBubbleInteractiveUiTest,
+                       ClickNotNow) {
+  SetupPendingPassword();
+  const auto button = views::DialogClientView::kCancelButtonElementId;
+  RunTestSequence(PressButton(button), WaitForHide(button),
+                  CheckHistogramUniqueSample(
+                      "PasswordManager.SaveUIDismissalReason",
+                      password_manager::metrics_util::CLICKED_NOT_NOW, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(ThreeButtonPasswordBubbleInteractiveUiTest, ClickNever) {
+  SetupPendingPassword();
+  const auto button = PasswordSaveUpdateView::kExtraButtonElementId;
+  RunTestSequence(PressButton(button), WaitForHide(button),
+                  CheckHistogramUniqueSample(
+                      "PasswordManager.SaveUIDismissalReason",
+                      password_manager::metrics_util::CLICKED_NEVER, 1));
 }

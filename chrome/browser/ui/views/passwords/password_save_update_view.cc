@@ -141,6 +141,8 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
     if (base::FeatureList::IsEnabled(
             features::kThreeButtonPasswordSaveDialog)) {
       extra_view_ = SetExtraView(std::make_unique<views::MdTextButton>());
+      extra_view_->SetProperty(views::kElementIdentifierKey,
+                               kExtraButtonElementId);
     }
   }
 
@@ -241,7 +243,7 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   AnnounceBubbleChange();
 
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
-                                    kPasswordBubble);
+                                    kPasswordBubbleElementId);
 
   return false;
 #else
@@ -442,4 +444,7 @@ void PasswordSaveUpdateView::TogglePasswordRevealed() {
 BEGIN_METADATA(PasswordSaveUpdateView)
 END_METADATA
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordSaveUpdateView, kPasswordBubble);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordSaveUpdateView,
+                                      kPasswordBubbleElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordSaveUpdateView,
+                                      kExtraButtonElementId);

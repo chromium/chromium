@@ -1338,6 +1338,8 @@ chromium-metrics-reviews@google.com.
       label="Not Syncing/Sync pasword saved. This value should not happen."/>
 </enum>
 
+<!-- LINT.IfChange(PasswordManagerUIDismissalReason) -->
+
 <enum name="PasswordManagerUIDismissalReason">
   <int value="0" label="Bubble lost focus / No infobar interaction"/>
   <int value="1" label="Clicked 'Save'/'Update'/'Move'/etc"/>
@@ -1360,7 +1362,10 @@ chromium-metrics-reviews@google.com.
   <int value="15"
       label="Clicked 'About password change' link in the password change
              bubble."/>
+  <int value="16" label="Clicked 'Not now' in the save password bubble."/>
 </enum>
+
+<!-- LINT.ThenChange(/components/password_manager/core/browser/password_manager_metrics_util.h:UIDismissalReason) -->
 
 <enum name="PasswordNoteAction">
   <int value="0"

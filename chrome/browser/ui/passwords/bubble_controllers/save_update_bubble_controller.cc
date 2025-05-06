@@ -154,7 +154,7 @@ void SaveUpdateBubbleController::OnNeverForThisSiteClicked() {
 
 void SaveUpdateBubbleController::OnNotNowClicked() {
   CHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetState());
-  // TODO(crbug.com/414573697): Log appropriate metrics.
+  SetDismissalReason(metrics_util::CLICKED_NOT_NOW);
   if (delegate_) {
     delegate_->OnNotNowClicked();
   }

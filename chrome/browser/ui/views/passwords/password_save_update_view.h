@@ -28,7 +28,8 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   METADATA_HEADER(PasswordSaveUpdateView, PasswordBubbleViewBase)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordBubble);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordBubbleElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExtraButtonElementId);
 
   PasswordSaveUpdateView(content::WebContents* web_contents,
                          views::View* anchor_view,

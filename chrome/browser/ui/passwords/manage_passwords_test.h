@@ -105,6 +105,14 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
       password_manager::PasswordStoreInterface* profile_store = nullptr,
       password_manager::PasswordStoreInterface* account_store = nullptr);
 
+  auto CheckHistogramUniqueSample(const std::string& name,
+                                  int sample,
+                                  int expected_count) {
+    return Do([=, this]() {
+      histogram_tester_.ExpectUniqueSample(name, sample, expected_count);
+    });
+  }
+
  private:
   password_manager::PasswordForm password_form_;
   password_manager::PasswordForm insecure_credential_;
