@@ -39,6 +39,16 @@ fuzzable_proto_library("realtimeapi_proto") {
   ]
 }
 
+proto_to_value("realtimeapi_proto_to_value") {
+  sources = [ "realtimeapi.proto" ]
+  deps = [
+    ":csd_proto",
+    ":csd_proto_to_value",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/common/proto:connectors_proto_to_value",
+  ]
+}
+
 fuzzable_proto_library("client_model_proto") {
   proto_in_dir = "//"
   sources = [ "client_model.proto" ]

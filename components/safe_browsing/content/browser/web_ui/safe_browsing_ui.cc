@@ -38,6 +38,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.to_value.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.to_value.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -58,6 +59,7 @@
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/common/proto/connectors.to_value.h"
 #endif
 
 using base::Time;
@@ -809,44 +811,6 @@ std::string AddFullHashCacheInfo(
 
 #endif
 
-base::Value::Dict SerializeClientReportingMetadata(
-    const enterprise_connectors::ClientMetadata& client_metadata) {
-  base::Value::Dict client_metadata_dict;
-  if (client_metadata.has_browser()) {
-    base::Value::Dict browser_dict;
-    browser_dict.Set("browser_id", client_metadata.browser().browser_id());
-    browser_dict.Set("user_agent", client_metadata.browser().user_agent());
-    browser_dict.Set("chrome_version",
-                     client_metadata.browser().chrome_version());
-    browser_dict.Set("machine_user", client_metadata.browser().machine_user());
-    client_metadata_dict.Set("browser", std::move(browser_dict));
-  }
-  if (client_metadata.has_device()) {
-    base::Value::Dict device_dict;
-    device_dict.Set("dm_token", client_metadata.device().dm_token());
-    device_dict.Set("client_id", client_metadata.device().client_id());
-    device_dict.Set("os_version", client_metadata.device().os_version());
-    device_dict.Set("os_platform", client_metadata.device().os_platform());
-    device_dict.Set("name", client_metadata.device().name());
-    device_dict.Set("device_fqdn", client_metadata.device().device_fqdn());
-    device_dict.Set("network_name", client_metadata.device().network_name());
-    client_metadata_dict.Set("device", std::move(device_dict));
-  }
-  if (client_metadata.has_profile()) {
-    base::Value::Dict profile_dict;
-    profile_dict.Set("dm_token", client_metadata.profile().dm_token());
-    profile_dict.Set("gaia_email", client_metadata.profile().gaia_email());
-    profile_dict.Set("profile_path", client_metadata.profile().profile_path());
-    profile_dict.Set("profile_name", client_metadata.profile().profile_name());
-    profile_dict.Set("client_id", client_metadata.profile().client_id());
-    client_metadata_dict.Set("profile", std::move(profile_dict));
-  }
-  client_metadata_dict.Set(
-      "is_chrome_os_managed_guest_session",
-      client_metadata.is_chrome_os_managed_guest_session());
-  return client_metadata_dict;
-}
-
 std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
   return SerializeJson(proto_to_value::Serialize(cdr));
 }
@@ -1022,61 +986,6 @@ base::Value::Dict SerializeSecurityEvent(
   return result;
 }
 
-base::Value::Dict SerializeRTThreatInfo(
-    const RTLookupResponse::ThreatInfo& threat_info) {
-  base::Value::Dict threat_info_dict;
-
-  threat_info_dict.Set(
-      "threat_type",
-      RTLookupResponse_ThreatInfo_ThreatType_Name(threat_info.threat_type()));
-
-  threat_info_dict.Set("cache_duration_sec",
-                       static_cast<double>(threat_info.cache_duration_sec()));
-
-  threat_info_dict.Set(
-      "verdict_type",
-      RTLookupResponse_ThreatInfo_VerdictType_Name(threat_info.verdict_type()));
-
-  threat_info_dict.Set(
-      "cache_expression_match_type",
-      RTLookupResponse_ThreatInfo_CacheExpressionMatchType_Name(
-          threat_info.cache_expression_match_type()));
-  threat_info_dict.Set("cache_expression_using_match_type",
-                       threat_info.cache_expression_using_match_type());
-
-  if (threat_info.has_matched_url_navigation_rule()) {
-    base::Value::Dict matched_rule;
-    matched_rule.Set("rule_id",
-                     threat_info.matched_url_navigation_rule().rule_id());
-    matched_rule.Set("rule_name",
-                     threat_info.matched_url_navigation_rule().rule_name());
-    matched_rule.Set(
-        "matched_url_category",
-        threat_info.matched_url_navigation_rule().matched_url_category());
-
-    if (threat_info.matched_url_navigation_rule().has_custom_message()) {
-      base::Value::List message_segments;
-      for (const auto& segment : threat_info.matched_url_navigation_rule()
-                                     .custom_message()
-                                     .message_segments()) {
-        base::Value::Dict segment_value;
-        if (segment.has_text()) {
-          segment_value.Set("text", segment.text());
-        }
-        if (segment.has_link()) {
-          segment_value.Set("link", segment.link());
-        }
-        message_segments.Append(std::move(segment_value));
-      }
-      matched_rule.Set("message_segments", std::move(message_segments));
-    }
-    threat_info_dict.Set("matched_url_navigation_rule",
-                         std::move(matched_rule));
-  }
-
-  return threat_info_dict;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 // This serializes the internal::ReferringAppInfo struct (not to be confused
 // with the protobuf message ReferringAppInfo), which contains intermediate
@@ -1108,72 +1017,13 @@ std::string SerializePGResponse(const LoginReputationClientResponse& response) {
 }
 
 std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
-  base::Value::Dict request_dict;
-  const RTLookupRequest& request = ping.request;
-
-  request_dict.Set("url", request.url());
-  request_dict.Set("population",
-                   proto_to_value::Serialize(request.population()));
+  base::Value::Dict request_dict = proto_to_value::Serialize(ping.request);
   request_dict.Set("scoped_oauth_token", ping.token);
-  request_dict.Set("dm_token", request.dm_token());
-  request_dict.Set("profile_dm_token", request.profile_dm_token());
-  request_dict.Set("browser_dm_token", request.browser_dm_token());
-  request_dict.Set("email", request.email());
-  if (request.has_client_reporting_metadata()) {
-    request_dict.Set(
-        "client_reporting_metadata",
-        SerializeClientReportingMetadata(request.client_reporting_metadata()));
-  }
-
-  request_dict.Set("lookup_type",
-                   RTLookupRequest_LookupType_Name(request.lookup_type()));
-
-  request_dict.Set("version", request.version());
-
-  request_dict.Set("os", RTLookupRequest_OSType_Name(request.os_type()));
-
-  base::Value::List local_ips;
-  for (const std::string& local_ip : request.local_ips()) {
-    local_ips.Append(local_ip);
-  }
-  request_dict.Set("local_ips", std::move(local_ips));
-
-  base::Value::List referrer_chain;
-  for (const auto& referrer_chain_entry : request.referrer_chain()) {
-    referrer_chain.Append(proto_to_value::Serialize(referrer_chain_entry));
-  }
-  request_dict.Set("referrer_chain", std::move(referrer_chain));
-#if BUILDFLAG(IS_ANDROID)
-  if (request.has_referring_app_info()) {
-    request_dict.Set("referring_app_info",
-                     proto_to_value::Serialize(request.referring_app_info()));
-  }
-#endif
-
   return SerializeJson(request_dict);
 }
 
 std::string SerializeURTLookupResponse(const RTLookupResponse& response) {
-  base::Value::Dict response_dict;
-
-  base::Value::List threat_info_list;
-  for (const RTLookupResponse::ThreatInfo& threat_info :
-       response.threat_info()) {
-    threat_info_list.Append(SerializeRTThreatInfo(threat_info));
-  }
-  response_dict.Set("threat_infos", std::move(threat_info_list));
-
-  response_dict.Set(
-      "client_side_detection_type",
-      ClientSideDetectionType_Name(response.client_side_detection_type()));
-
-  base::Value::List url_categories_list;
-  for (const std::string& url_category : response.url_categories()) {
-    url_categories_list.Append(url_category);
-  }
-  response_dict.Set("url_categories", std::move(url_categories_list));
-
-  return SerializeJson(response_dict);
+  return SerializeJson(proto_to_value::Serialize(response));
 }
 
 std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping) {
@@ -1228,185 +1078,16 @@ std::string SerializeContentAnalysisRequest(
     const std::string& upload_info,
     const std::string& upload_url,
     const enterprise_connectors::ContentAnalysisRequest& request) {
-  base::Value::Dict request_dict;
-
-  request_dict.Set(per_profile_request ? "profile_token" : "device_token",
-                   request.device_token());
-  request_dict.Set("blocking", request.blocking());
-  request_dict.Set("analysis_connector",
-                   enterprise_connectors::AnalysisConnector_Name(
-                       request.analysis_connector()));
-  request_dict.Set("reason",
-                   enterprise_connectors::ContentAnalysisRequest_Reason_Name(
-                       request.reason()));
-  base::Value::List local_ips;
-  for (const std::string& local_ip : request.local_ips()) {
-    local_ips.Append(local_ip);
-  }
-  request_dict.Set("local_ips", std::move(local_ips));
-
-  if (request.has_request_data()) {
-    base::Value::Dict request_data;
-    request_data.Set("url", request.request_data().url());
-    request_data.Set("filename", request.request_data().filename());
-    request_data.Set("digest", request.request_data().digest());
-    if (request.request_data().has_csd()) {
-      std::string csd_base64 =
-          base::Base64Encode(request.request_data().csd().SerializeAsString());
-      request_data.Set("csd", std::move(csd_base64));
-    }
-    if (request.request_data().referrer_chain_size() > 0) {
-      base::Value::List referrers;
-      for (const auto& referrer_chain_entry :
-           request.request_data().referrer_chain()) {
-        referrers.Append(proto_to_value::Serialize(referrer_chain_entry));
-      }
-      request_data.Set("referrers", std::move(referrers));
-    }
-    request_data.Set("content_type", request.request_data().content_type());
-    request_data.Set("tab_url", request.request_data().tab_url());
-    request_data.Set("source", request.request_data().source());
-    request_data.Set("destination", request.request_data().destination());
-    request_data.Set("email", request.request_data().email());
-    request_data.Set("tab_title", request.request_data().tab_title());
-    request_data.Set("content_area_account_email",
-                     request.request_data().content_area_account_email());
-
-    if (request.request_data().has_print_metadata()) {
-      base::Value::Dict print_metadata;
-      print_metadata.Set(
-          "printer_name",
-          request.request_data().print_metadata().printer_name());
-      print_metadata.Set(
-          "printer_type",
-          enterprise_connectors::ContentMetaData::PrintMetadata::
-              PrinterType_Name(
-                  request.request_data().print_metadata().printer_type()));
-      request_data.Set("print_metadata", std::move(print_metadata));
-    }
-
-    if (request.request_data().has_copied_text_source()) {
-      base::Value::Dict copied_text_source;
-      copied_text_source.Set("url",
-                             request.request_data().copied_text_source().url());
-      copied_text_source.Set(
-          "context",
-          enterprise_connectors::ContentMetaData::CopiedTextSource::
-              CopiedTextSourceType_Name(
-                  request.request_data().copied_text_source().context()));
-      request_data.Set("copied_text_source", std::move(copied_text_source));
-    }
-
-    request_dict.Set("request_data", std::move(request_data));
-  }
-
-  if (request.has_client_metadata()) {
-    base::Value::Dict metadata;
-
-    if (request.client_metadata().has_browser()) {
-      const auto& browser = request.client_metadata().browser();
-      base::Value::Dict browser_metadata;
-      browser_metadata.Set("browser_id", browser.browser_id());
-      browser_metadata.Set("user_agent", browser.user_agent());
-      browser_metadata.Set("chrome_version", browser.chrome_version());
-      browser_metadata.Set("machine_user", browser.machine_user());
-      metadata.Set("browser", std::move(browser_metadata));
-    }
-
-    if (request.client_metadata().has_device()) {
-      base::Value::Dict device_metadata;
-      const auto& device = request.client_metadata().device();
-      device_metadata.Set("dm_token", device.dm_token());
-      device_metadata.Set("client_id", device.client_id());
-      device_metadata.Set("os_version", device.os_version());
-      device_metadata.Set("os_platform", device.os_platform());
-      device_metadata.Set("name", device.name());
-      device_metadata.Set("device_fqdn", device.device_fqdn());
-      device_metadata.Set("network_name", device.network_name());
-      metadata.Set("device", std::move(device_metadata));
-    }
-
-    if (request.client_metadata().has_profile()) {
-      base::Value::Dict profile_metadata;
-      const auto& profile = request.client_metadata().profile();
-      profile_metadata.Set("dm_token", profile.dm_token());
-      profile_metadata.Set("gaia_email", profile.gaia_email());
-      profile_metadata.Set("profile_path", profile.profile_path());
-      profile_metadata.Set("profile_name", profile.profile_name());
-      profile_metadata.Set("client_id", profile.client_id());
-      metadata.Set("profile", std::move(profile_metadata));
-    }
-
-    request_dict.Set("client_metadata", std::move(metadata));
-  }
-
-  base::Value::List tags;
-  for (const std::string& tag : request.tags()) {
-    tags.Append(tag);
-  }
-  request_dict.Set("tags", std::move(tags));
-  request_dict.Set("request_token", request.request_token());
+  base::Value::Dict request_dict = proto_to_value::Serialize(request);
   request_dict.Set("access_token", access_token_truncated);
   request_dict.Set("upload_info", upload_info);
-  request_dict.Set(
-      "is_chrome_os_managed_guest_session",
-      request.client_metadata().is_chrome_os_managed_guest_session());
   request_dict.Set("upload_url", upload_url);
-
   return SerializeJson(request_dict);
 }
 
 std::string SerializeContentAnalysisResponse(
     const enterprise_connectors::ContentAnalysisResponse& response) {
-  base::Value::Dict response_dict;
-
-  response_dict.Set("token", response.request_token());
-
-  base::Value::List result_values;
-  for (const auto& result : response.results()) {
-    base::Value::Dict result_value;
-    result_value.Set(
-        "status",
-        enterprise_connectors::ContentAnalysisResponse_Result_Status_Name(
-            result.status()));
-    result_value.Set("tag", result.tag());
-
-    base::Value::List triggered_rules;
-    for (const auto& rule : result.triggered_rules()) {
-      base::Value::Dict rule_value;
-
-      rule_value.Set(
-          "action",
-          enterprise_connectors::
-              ContentAnalysisResponse_Result_TriggeredRule_Action_Name(
-                  rule.action()));
-      rule_value.Set("rule_name", rule.rule_name());
-      rule_value.Set("rule_id", rule.rule_id());
-      rule_value.Set("url_category", rule.url_category());
-
-      if (rule.has_custom_rule_message()) {
-        base::Value::List message_segments;
-        for (const auto& segment :
-             rule.custom_rule_message().message_segments()) {
-          base::Value::Dict segment_value;
-          if (segment.has_text()) {
-            segment_value.Set("text", segment.text());
-          }
-          if (segment.has_link()) {
-            segment_value.Set("link", segment.link());
-          }
-          message_segments.Append(std::move(segment_value));
-        }
-        rule_value.Set("message_segments", std::move(message_segments));
-      }
-      triggered_rules.Append(std::move(rule_value));
-    }
-    result_value.Set("triggered_rules", std::move(triggered_rules));
-    result_values.Append(std::move(result_value));
-  }
-  response_dict.Set("results", std::move(result_values));
-
-  return SerializeJson(response_dict);
+  return SerializeJson(proto_to_value::Serialize(response));
 }
 
 base::Value::Dict SerializeDeepScanDebugData(const std::string& token,

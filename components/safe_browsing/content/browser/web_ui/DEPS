@@ -1,5 +1,6 @@
 include_rules = [
   "+components/enterprise/common/proto/connectors.pb.h",
+  "+components/enterprise/common/proto/connectors.to_value.h",
   "+components/grit/safe_browsing_resources.h",
   "+components/grit/safe_browsing_resources_map.h",
   "+components/password_manager/core/browser/hash_password_manager.h",

@@ -31,6 +31,7 @@ static_library("web_ui") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:csd_proto_to_value",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto_to_value",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto_to_value",
     "//components/strings:components_strings_grit",

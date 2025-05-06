@@ -31,13 +31,7 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
                 const std::string& options,
                 GeneratorContext* context,
                 std::string* error) const override {
-#if BUILDFLAG(IS_WIN)
-    base::FilePath base_file_path =
-        base::FilePath(base::ASCIIToWide(file->name())).RemoveExtension();
-#else
-    base::FilePath base_file_path =
-        base::FilePath(file->name()).RemoveExtension();
-#endif
+    base::FilePath base_file_path = ToValueFilePath(file->name());
     base::FilePath h_file_path =
         base_file_path.AddExtension(FILE_PATH_LITERAL("to_value.h"));
     base::FilePath cc_file_path =
@@ -79,6 +73,14 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
     cc_printer.Print("#include \"base/base64.h\"\n");
     cc_printer.Print("#include \"$p$\"\n\n", "p", h_file_path.AsUTF8Unsafe());
 
+    for (int i = 0; i < file->dependency_count(); i++) {
+      base::FilePath include_path =
+          ToValueFilePath(file->dependency(i)->name())
+              .AddExtension(FILE_PATH_LITERAL("to_value.h"));
+      cc_printer.Print("#include \"$p$\"\n", "p", include_path.AsUTF8Unsafe());
+    }
+    cc_printer.Print("\n");
+
     cc_printer.Print("namespace proto_to_value {\n\n");
     for (int i = 0; i < file->message_type_count(); i++) {
       if (!PrintFunctionDefinition(*file->message_type(i), &cc_printer,
@@ -93,6 +95,14 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
   }
 
  private:
+  base::FilePath ToValueFilePath(std::string_view file_name) const {
+#if BUILDFLAG(IS_WIN)
+    return base::FilePath(base::ASCIIToWide(file_name)).RemoveExtension();
+#else
+    return base::FilePath(file_name).RemoveExtension();
+#endif
+  }
+
   std::string CppFullName(std::string_view full_name) const {
     std::string ret;
     CHECK(base::ReplaceChars(full_name, ".", "::", &ret));
