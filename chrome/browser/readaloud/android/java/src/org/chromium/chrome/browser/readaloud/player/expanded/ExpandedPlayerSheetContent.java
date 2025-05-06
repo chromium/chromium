@@ -28,12 +28,14 @@ import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.FeedbackType;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
 
 @NullMarked
 public class ExpandedPlayerSheetContent implements BottomSheetContent {
@@ -274,6 +276,24 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
                 .setText(publisher);
     }
 
+    void setSentFeedback(FeedbackType feedbackType) {
+      if (feedbackType == FeedbackType.NONE) {
+        mThumbUpButton.setSelected(false);
+        mThumbDownButton.setSelected(false);
+        return;
+      }
+      Toast.makeText(mContentView.getContext(), R.string.readaloud_feedback_toast_message, Toast.LENGTH_SHORT).show();
+      if (feedbackType == FeedbackType.POSITIVE) {
+        mThumbUpButton.setSelected(true);
+        mThumbDownButton.setSelected(false);
+        return;
+      }
+      if (feedbackType == FeedbackType.NEGATIVE) {
+        mThumbUpButton.setSelected(false);
+        mThumbDownButton.setSelected(true);
+      }
+    }
+
     void setElapsed(Long nanos) {
         ((TextView) mContentView.findViewById(R.id.readaloud_player_time))
                 .setText(formatTimeNanos(nanos));
@@ -302,12 +322,14 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         setOnClickListener(R.id.readaloud_more_button, this::showOptionsMenu);
         setOnClickListener(R.id.readaloud_mode_selector, () -> onPlaybackModeChangeClick(handler));
         setOnClickListener(R.id.readaloud_thumb_down_button, () -> showNegativeFeedbackMenu());
+        setOnClickListener(R.id.readaloud_thumb_up_button, () -> handlePositiveFeedback(handler));
 
         SeekBar seekBar =
                 (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
         seekBar.setOnSeekBarChangeListener(handler.getSeekBarChangeListener());
         mSpeedMenu.setInteractionHandler(handler);
         mOptionsMenu.setInteractionHandler(handler);
+        mNegativeFeedbackMenu.setInteractionHandler(handler);
     }
 
     public void setSpeed(float speed) {
@@ -324,6 +346,14 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
     void setHighlightingEnabled(boolean enabled) {
         mOptionsMenu.setHighlightingEnabled(enabled);
+    }
+
+    void handlePositiveFeedback(InteractionHandler handler) {
+      if (mThumbUpButton.isSelected()) {
+        // Positive feedback was already sent.
+        return;
+      }
+      handler.onPositiveFeedback();
     }
 
     public void setPlaying(boolean playing) {

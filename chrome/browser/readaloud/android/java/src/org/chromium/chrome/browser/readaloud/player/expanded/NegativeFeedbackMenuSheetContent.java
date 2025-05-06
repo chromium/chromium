@@ -13,17 +13,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.Colors;
+import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.NegativeFeedbackReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 @NullMarked
 class NegativeFeedbackMenuSheetContent extends MenuSheetContent {
@@ -33,24 +32,7 @@ class NegativeFeedbackMenuSheetContent extends MenuSheetContent {
     private final FrameLayout mContainer;
     private final Menu mOptionsMenu;
     private final ObjectAnimator mOptionsMenuOut;
-
-    @IntDef({
-        Feedback.NOT_FACTUALLY_CORRECT,
-        Feedback.BAD_VOICE,
-        Feedback.NOT_ENGAGING,
-        Feedback.OFFENSIVE,
-        Feedback.TECHNICAL_ISSUE,
-        Feedback.OTHER
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface Feedback {
-        int NOT_FACTUALLY_CORRECT = 0;
-        int BAD_VOICE = 1;
-        int NOT_ENGAGING = 2;
-        int OFFENSIVE = 3;
-        int TECHNICAL_ISSUE = 4;
-        int OTHER = 5;
-    }
+    @Nullable private InteractionHandler mInteractionHandler;
 
     public NegativeFeedbackMenuSheetContent(
             Context context,
@@ -72,37 +54,37 @@ class NegativeFeedbackMenuSheetContent extends MenuSheetContent {
         // Set up options menu
         mOptionsMenu = (Menu) layoutInflater.inflate(R.layout.readaloud_menu, null);
         mOptionsMenu.addItem(
-                Feedback.NOT_FACTUALLY_CORRECT,
+                NegativeFeedbackReason.NOT_FACTUALLY_CORRECT.getValue(),
                 /* iconId= */ 0,
                 res.getString(R.string.readaloud_negative_feedback_not_factually_correct),
                 /* header */ null,
                 MenuItem.Action.NONE);
         mOptionsMenu.addItem(
-                Feedback.BAD_VOICE,
+                NegativeFeedbackReason.BAD_VOICE.getValue(),
                 /* iconId= */ 0,
                 res.getString(R.string.readaloud_negative_feedback_didnt_like_the_voice),
                 /* header */ null,
                 MenuItem.Action.NONE);
         mOptionsMenu.addItem(
-                Feedback.NOT_ENGAGING,
+                NegativeFeedbackReason.NOT_ENGAGING.getValue(),
                 /* iconId= */ 0,
                 res.getString(R.string.readaloud_negative_feedback_not_engaging_enough),
                 /* header */ null,
                 MenuItem.Action.NONE);
         mOptionsMenu.addItem(
-                Feedback.OFFENSIVE,
+                NegativeFeedbackReason.OFFENSIVE.getValue(),
                 /* iconId= */ 0,
                 res.getString(R.string.readaloud_negative_feedback_offensive_content),
                 /* header */ null,
                 MenuItem.Action.NONE);
         mOptionsMenu.addItem(
-                Feedback.TECHNICAL_ISSUE,
+                NegativeFeedbackReason.TECHNICAL_ISSUE.getValue(),
                 /* iconId= */ 0,
                 res.getString(R.string.readaloud_negative_feedback_technical_issue),
                 /* header */ null,
                 MenuItem.Action.NONE);
         mOptionsMenu.addItem(
-                Feedback.OTHER,
+                NegativeFeedbackReason.OTHER.getValue(),
                 /* iconId= */ 0,
                 res.getString(R.string.readaloud_negative_feedback_other),
                 /* header */ null,
@@ -150,6 +132,10 @@ class NegativeFeedbackMenuSheetContent extends MenuSheetContent {
         updateAnimationValues();
     }
 
+    void setInteractionHandler(InteractionHandler interactionHandler) {
+        mInteractionHandler = interactionHandler;
+    }
+
     void onOrientationChange(int orientation) {
         mOptionsMenu.onOrientationChange(orientation);
     }
@@ -171,6 +157,7 @@ class NegativeFeedbackMenuSheetContent extends MenuSheetContent {
 
     private void onOptionsMenuClick(int itemId) {
         // TODO(crbug.com/401256755): Actually send the feedback on click.
+        assumeNonNull(mInteractionHandler).onNegativeFeedback(NegativeFeedbackReason.fromValue(itemId));
         mBottomSheetController.hideContent(this, true);
     }
 

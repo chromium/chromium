@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerLayout;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.FeedbackType;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
@@ -114,6 +115,7 @@ public class PlayerCoordinatorUnitTest {
                 .getCurrentLanguageVoicesSupplier();
         doReturn(new ObservableSupplierImpl<String>()).when(mDelegate).getVoiceIdSupplier();
         doReturn(new ObservableSupplierImpl<Boolean>()).when(mDelegate).getPlaybackModeSelectionEnabled();
+        doReturn(new ObservableSupplierImpl<FeedbackType>()).when(mDelegate).getFeedbackTypeSupplier();
         doReturn(mActivity).when(mDelegate).getActivity();
 
         mPlayerCoordinator = new PlayerCoordinator(mDelegate);

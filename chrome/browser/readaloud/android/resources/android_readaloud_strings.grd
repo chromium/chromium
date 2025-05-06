@@ -224,6 +224,9 @@
       <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_OTHER" desc="Menu item for other feedback.">
         Other
       </message>
+      <message name="IDS_READALOUD_FEEDBACK_TOAST_MESSAGE" desc="Text to show in the toast after the user submits a feedback for Audio Overviews">
+        Thank you! Your feedback helps.
+      </message>
 
       <message name="IDS_READALOUD_REPLAY" desc="Accessibility string for the button that rewinds 'Listen to this page' playback by the specified number of seconds.">
         Go back <ph name="NUMBER_OF_SECONDS">%1$s<ex>10</ex></ph> seconds

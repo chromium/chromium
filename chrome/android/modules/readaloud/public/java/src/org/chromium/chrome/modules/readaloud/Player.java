@@ -16,6 +16,8 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.FeedbackType;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.NegativeFeedbackReason;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
@@ -104,6 +106,14 @@ public interface Player {
 
         /** Return {@link UserEducationHelper} for requesting in-product-help. */
         UserEducationHelper getUserEducationHelper();
+
+        /** Positive feedback was triggered by the user. */
+        void onPositiveFeedback();
+
+        /** Negative feedback was triggered by the user. */
+        void onNegativeFeedback(NegativeFeedbackReason negativeFeedbackReason);
+
+        ObservableSupplier<FeedbackType> getFeedbackTypeSupplier();
     }
 
     /** Observer interface to provide updates about player UI. */

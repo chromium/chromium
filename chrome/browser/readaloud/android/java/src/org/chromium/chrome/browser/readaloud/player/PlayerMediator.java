@@ -20,6 +20,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.FeedbackType;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.NegativeFeedbackReason;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
@@ -156,6 +158,8 @@ class PlayerMediator implements InteractionHandler {
     private final Callback<PlaybackModeSelectionEnablementStatus>
             mPlaybackModeSelectionEnabledObserver = this::setPlaybackModeSelectionEnabled;
 
+    private final Callback<FeedbackType> mFeedbackTypeObserver = this::setFeedbackType;
+
     @Nullable private Playback mPlayback;
     @Nullable Playback mVoicePreviewPlayback;
 
@@ -171,6 +175,7 @@ class PlayerMediator implements InteractionHandler {
         mDelegate.getCurrentLanguageVoicesSupplier().addObserver(mVoiceListObserver);
         mDelegate.getVoiceIdSupplier().addObserver(mVoiceIdObserver);
         mDelegate.getPlaybackModeSelectionEnabled().addObserver(mPlaybackModeSelectionEnabledObserver);
+        mDelegate.getFeedbackTypeSupplier().addObserver(mFeedbackTypeObserver);
     }
 
     void destroy() {
@@ -342,6 +347,21 @@ class PlayerMediator implements InteractionHandler {
     @Override
     public void onHighlightingChange(boolean enabled) {
         mDelegate.getHighlightingEnabledSupplier().set(enabled);
+    }
+
+    @Override
+    public void setFeedbackType(FeedbackType feedbackType) {
+        mModel.set(PlayerProperties.FEEDBACK_TYPE, feedbackType.getValue());
+    }
+
+    @Override
+    public void onPositiveFeedback() {
+      mDelegate.onPositiveFeedback();
+    }
+
+    @Override
+    public void onNegativeFeedback(NegativeFeedbackReason reason) {
+      mDelegate.onNegativeFeedback(reason);
     }
 
     @Override

@@ -53,6 +53,8 @@ import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefsJni;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.FeedbackType;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.NegativeFeedbackReason;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
@@ -86,6 +88,7 @@ public class PlayerMediatorUnitTest {
     private ObservableSupplierImpl<Boolean> mHighlightingEnabledSupplier;
     private ObservableSupplierImpl<PlaybackModeSelectionEnablementStatus>
             mPlaybackModeSelectorEnabledSupplier;
+    private ObservableSupplierImpl<FeedbackType> mFeedbackTypeSupplier;
     @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
     public UserActionTester mUserActionTester;
 
@@ -167,6 +170,10 @@ public class PlayerMediatorUnitTest {
         mVoicesSupplier.set(List.of(new PlaybackVoice("en", "a")));
         mSelectedVoiceIdSupplier = new ObservableSupplierImpl<>();
         mSelectedVoiceIdSupplier.set("a");
+
+        mFeedbackTypeSupplier = new ObservableSupplierImpl<>();
+        mFeedbackTypeSupplier.set(FeedbackType.NONE);
+
         mHighlightingEnabledSupplier = new ObservableSupplierImpl<>();
         mHighlightingEnabledSupplier.set(true);
         mPlaybackModeSelectorEnabledSupplier = new ObservableSupplierImpl<>();
@@ -181,6 +188,7 @@ public class PlayerMediatorUnitTest {
         doReturn(mHighlightingEnabledSupplier).when(mDelegate).getHighlightingEnabledSupplier();
         doReturn(mVoicesSupplier).when(mDelegate).getCurrentLanguageVoicesSupplier();
         doReturn(mPlaybackModeSelectorEnabledSupplier).when(mDelegate).getPlaybackModeSelectionEnabled();
+        doReturn(mFeedbackTypeSupplier).when(mDelegate).getFeedbackTypeSupplier();
         doReturn(mSelectedVoiceIdSupplier).when(mDelegate).getVoiceIdSupplier();
         doReturn(mMockPrefServiceHelper.getPrefService()).when(mDelegate).getPrefService();
         mPreviewPromise = new Promise<>();
@@ -607,6 +615,25 @@ public class PlayerMediatorUnitTest {
         assertEquals(
                 PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED.getValue(),
                 mModel.get(PlayerProperties.PLAYBACK_MODE_SELECTION_ENABLED));
+    }
+
+    @Test
+    public void testObserveFeedbackType() {
+      mFeedbackTypeSupplier.set(FeedbackType.POSITIVE);
+
+      assertEquals(FeedbackType.POSITIVE.getValue(), mModel.get(PlayerProperties.FEEDBACK_TYPE));
+    }
+
+    @Test
+    public void testOnPositiveFeedback() {
+      mMediator.onPositiveFeedback();
+      verify(mDelegate).onPositiveFeedback();
+    }
+
+    @Test
+    public void testOnNegativeFeedback() {
+      mMediator.onNegativeFeedback(NegativeFeedbackReason.BAD_VOICE);
+      verify(mDelegate).onNegativeFeedback(eq(NegativeFeedbackReason.BAD_VOICE));
     }
 
     @Test

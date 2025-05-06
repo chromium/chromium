@@ -64,6 +64,8 @@ import org.chromium.chrome.browser.translate.TranslationObserver;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.FeedbackType;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.NegativeFeedbackReason;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
@@ -405,6 +407,8 @@ public class ReadAloudController
     private final ObservableSupplierImpl<List<PlaybackVoice>> mCurrentLanguageVoices;
     // Selected voice ID.
     private final ObservableSupplierImpl<String> mSelectedVoiceId;
+
+    private final ObservableSupplierImpl<FeedbackType> mFeedbackType;
     private final ActivityWindowAndroid mActivityWindowAndroid;
 
     /**
@@ -566,6 +570,7 @@ public class ReadAloudController
         mBottomSheetController = bottomSheetController;
         mCurrentLanguageVoices = new ObservableSupplierImpl<>();
         mSelectedVoiceId = new ObservableSupplierImpl<>();
+        mFeedbackType = new ObservableSupplierImpl<>(FeedbackType.NONE);
         mBottomControlsStacker = bottomControlsStacker;
         mLayoutManagerSupplier = layoutManagerSupplier;
         mHighlightingEnabled = new ObservableSupplierImpl<>(false);
@@ -1108,6 +1113,7 @@ public class ReadAloudController
                     ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(true);
                     ReadAloudMetrics.recordTabCreationSuccess(entrypoint, Entrypoint.NUM_ENTRIES);
                     Playback.Metadata metadata = assumeNonNull(playback.getMetadata());
+                    mFeedbackType.set(FeedbackType.NONE);
                     maybeSetUpHighlighter(metadata);
                     updatePlaybackModeSelectionEnabled(readabilityInfo, playbackLanguage);
                     updateVoiceMenu(
@@ -1475,6 +1481,23 @@ public class ReadAloudController
             mHighlighter.initializeJs(
                     mActivePlaybackTabSupplier.get(), assumeNonNull(mPlayback.getMetadata()), mHighlighterConfig);
         }
+    }
+
+    @Override
+    public ObservableSupplier<FeedbackType> getFeedbackTypeSupplier() {
+      return mFeedbackType;
+    }
+
+    @Override
+    public void onPositiveFeedback() {
+      // TODO(crbug.com/401256755): Implement feedback mechanism.
+      mFeedbackType.set(FeedbackType.POSITIVE);
+    }
+
+    @Override
+    public void onNegativeFeedback(NegativeFeedbackReason reason) {
+      // TODO(crbug.com/401256755): Implement feedback mechanism.
+      mFeedbackType.set(FeedbackType.NEGATIVE);
     }
 
     @Override
