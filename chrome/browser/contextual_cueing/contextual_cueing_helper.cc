@@ -129,6 +129,9 @@ void ContextualCueingHelper::DidFinishNavigation(
     return;
   }
 
+  // Reset FCP state.
+  has_first_contentful_paint_ = false;
+
   // Clear zero state suggestions if needed.
   if (base::FeatureList::IsEnabled(kGlicZeroStateSuggestions) &&
       ZeroStateSuggestionsPageData::GetForPage(
@@ -194,12 +197,13 @@ void ContextualCueingHelper::OnFirstContentfulPaintInPrimaryMainFrame() {
     return;
   }
 
+  has_first_contentful_paint_ = true;
+
   ZeroStateSuggestionsPageData* page_data =
       ZeroStateSuggestionsPageData::GetForPage(
           web_contents()->GetPrimaryPage());
   if (page_data) {
-    page_data->InitiatePageContentExtraction(
-        /*has_first_contentful_paint=*/true);
+    page_data->InitiatePageContentExtraction();
   }
 }
 
@@ -212,8 +216,7 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
       ZeroStateSuggestionsPageData::GetForPage(
           web_contents()->GetPrimaryPage());
   if (page_data) {
-    page_data->InitiatePageContentExtraction(
-        /*has_first_contentful_paint=*/true);
+    page_data->InitiatePageContentExtraction();
   }
 }
 

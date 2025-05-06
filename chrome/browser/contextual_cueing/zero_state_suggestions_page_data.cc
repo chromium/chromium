@@ -95,23 +95,29 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
         FROM_HERE,
         base::BindOnce(
             &ZeroStateSuggestionsPageData::InitiatePageContentExtraction,
-            weak_ptr_factory_.GetWeakPtr(),
-            /*has_first_contentful_paint=*/false),
+            weak_ptr_factory_.GetWeakPtr()),
         initiate_page_content_extraction_delay);
   } else {
-    InitiatePageContentExtraction(/*has_first_contentful_paint=*/false);
+    InitiatePageContentExtraction();
   }
 }
 
 ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() = default;
 
-void ZeroStateSuggestionsPageData::InitiatePageContentExtraction(
-    bool has_first_contentful_paint) {
+
+void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
+
   if (content_extraction_initiated_) {
     // Do not re-fetch content.
     return;
   }
 
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()));
+  bool has_first_contentful_paint = false;
+  if (auto* helper = ContextualCueingHelper::FromWebContents(web_contents)) {
+    has_first_contentful_paint = helper->has_first_contentful_paint();
+  }
   if (!has_first_contentful_paint &&
       !page().GetMainDocument().IsDocumentOnLoadCompletedInMainFrame()) {
     LOCAL_HISTOGRAM_BOOLEAN(
@@ -129,9 +135,6 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction(
       base::StringPrintf("ZeroStateSuggestionsPageData: Initiating page "
                          "content extraction for %s.",
                          GetUrl().spec()));
-
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()));
 
   if (kExtractAnnotatedPageContentForZeroStateSuggestions.Get()) {
     blink::mojom::AIPageContentOptionsPtr ai_page_content_options;
