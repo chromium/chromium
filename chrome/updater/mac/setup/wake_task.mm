@@ -74,12 +74,16 @@ NSDictionary* CreateWakeLaunchdPlist(UpdaterScope scope) {
     [program_arguments addObject:MakeProgramArgument(kSystemSwitch)];
   }
 
+  NSArray<NSString*>* associated_ids =
+      @[ base::SysUTF8ToNSString(MAC_BUNDLE_IDENTIFIER_STRING) ];
+
   NSDictionary<NSString*, id>* launchd_plist = @{
     @LAUNCH_JOBKEY_LABEL : base::SysUTF8ToNSString(GetWakeLaunchdName(scope)),
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : program_arguments,
     @LAUNCH_JOBKEY_STARTINTERVAL : @3600,
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope)
+    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope),
+    @LAUNCH_JOBKEY_ASSOCIATEDBUNDLEIDENTIFIERS : associated_ids
   };
 
   return launchd_plist;
