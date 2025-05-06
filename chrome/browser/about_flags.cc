@@ -6655,6 +6655,14 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
+    {"contextual-search-box-uses-contextual-search-provider",
+     flag_descriptions::kContextualSearchBoxUsesContextualSearchProviderName,
+     flag_descriptions::
+         kContextualSearchBoxUsesContextualSearchProviderDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
+                            kContextualSearchBoxUsesContextualSearchProvider)},
+
     {"omnibox-contextual-search-actions-at-top",
      flag_descriptions::kOmniboxContextualSearchActionsAtTopName,
      flag_descriptions::kOmniboxContextualSearchActionsAtTopDescription,

@@ -11308,6 +11308,8 @@ from previous Chrome versions.
   <int value="-1176493523" label="enable-md-extensions"/>
   <int value="-1175552430" label="WebViewNewInvalidateHeuristic:enabled"/>
   <int value="-1175496736" label="AutofillUnmaskCardRequestTimeout:enabled"/>
+  <int value="-1174628038"
+      label="ContextualSearchBoxUsesContextualSearchProvider:disabled"/>
   <int value="-1174292609" label="SystemProxyForSystemServices:disabled"/>
   <int value="-1174267639" label="ClientLoFi:disabled"/>
   <int value="-1173823468" label="FullUserAgent:enabled"/>
@@ -19748,6 +19750,8 @@ from previous Chrome versions.
   <int value="2024298022"
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:disabled"/>
   <int value="2024746269" label="WebNNDirectML:enabled"/>
+  <int value="2024793290"
+      label="ContextualSearchBoxUsesContextualSearchProvider:enabled"/>
   <int value="2025344937" label="SyncAndroidPromosWithIllustration:disabled"/>
   <int value="2025618564" label="AutofillShowAutocompleteDeleteButton:enabled"/>
   <int value="2027013221"

@@ -1737,6 +1737,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "contextual-search-box-uses-contextual-search-provider",
+    "owners": [ "mahmadi@chromium.org", "niharm@chromium.org", "orinj@chromium.org", "chrome-desktop-search@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "contextual-search-debug",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
     // This is used to enable debugging of server and backend code.

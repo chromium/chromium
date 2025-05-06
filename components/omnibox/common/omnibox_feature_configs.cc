@@ -80,6 +80,10 @@ BASE_FEATURE(ContextualSearch::kOmniboxContextualSearchSingleLensAction,
              "OmniboxContextualSearchSingleLensAction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(ContextualSearch::kContextualSearchBoxUsesContextualSearchProvider,
+             "ContextualSearchBoxUsesContextualSearchProvider",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(ContextualSearch::kContextualSearchUseVerticalBar,
              "ContextualSearchUseVerticalBar",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -112,6 +116,8 @@ ContextualSearch::ContextualSearch() {
       base::FeatureList::IsEnabled(kOmniboxContextualSearchActionsAtTop);
   single_lens_action =
       base::FeatureList::IsEnabled(kOmniboxContextualSearchSingleLensAction);
+  csb_uses_csp = base::FeatureList::IsEnabled(
+      kContextualSearchBoxUsesContextualSearchProvider);
   use_vertical_bar =
       base::FeatureList::IsEnabled(kContextualSearchUseVerticalBar);
 }

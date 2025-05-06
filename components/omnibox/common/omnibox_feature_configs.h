@@ -133,6 +133,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kOmniboxContextualSearchOnFocusSuggestions);
   DECLARE_FEATURE(kOmniboxContextualSearchActionsAtTop);
   DECLARE_FEATURE(kOmniboxContextualSearchSingleLensAction);
+  DECLARE_FEATURE(kContextualSearchBoxUsesContextualSearchProvider);
   DECLARE_FEATURE(kContextualSearchUseVerticalBar);
 
   // Whether the starter pack page scope is enabled.
@@ -157,6 +158,10 @@ struct ContextualSearch : Config<ContextualSearch> {
 
   // Whether to use the unified single action to open lens UI.
   bool single_lens_action;
+
+  // Whether to use ContextualSearchProvider instead of ZeroSuggestProvider for
+  // sourcing contextual search box matches.
+  bool csb_uses_csp;
 
   // Whether to use vertical bar instead of regular icon on contextual search
   // matches.

@@ -2914,6 +2914,12 @@ const char kOmniboxSearchAggregatorName[] = "Omnibox search aggregator";
 const char kOmniboxSearchAggregatorDescription[] =
     "Enables omnibox suggestions from the search aggregator provider";
 
+const char kContextualSearchBoxUsesContextualSearchProviderName[] =
+    "Contextual search box uses contextual search provider";
+const char kContextualSearchBoxUsesContextualSearchProviderDescription[] =
+    "Enables the contextual search box to use the ContextualSearchProvider "
+    "instead of the ZeroSuggestProvider as the source for suggestions.";
+
 const char kOmniboxContextualSearchActionsAtTopName[] =
     "Omnibox contextual search actions at top";
 const char kOmniboxContextualSearchActionsAtTopDescription[] =
