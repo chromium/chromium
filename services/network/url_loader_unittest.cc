@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/network/url_loader.h"
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <list>
 #include <memory>
@@ -29,6 +25,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
@@ -250,7 +247,7 @@ class URLRequestMultipleWritesJob : public net::URLRequestJob {
       std::string packet = packets_.front();
       packets_.pop_front();
       CHECK_GE(buf_size, static_cast<int>(packet.length()));
-      memcpy(buf->data(), packet.c_str(), packet.length());
+      buf->span().copy_prefix_from(base::as_byte_span(packet));
       result = packet.length();
     }
 
@@ -330,7 +327,7 @@ class URLRequestEternalSyncReadsJob : public net::URLRequestJob {
   int ReadRawData(net::IOBuffer* buf, int buf_size) override {
     DCHECK_GT(buf_size, 0);
     if (fill_entire_buffer_) {
-      memset(buf->data(), 'a', buf_size);
+      std::ranges::fill(buf->first(base::checked_cast<size_t>(buf_size)), 'a');
       return buf_size;
     }
 
@@ -419,7 +416,7 @@ class URLRequestSimulatedCacheJob : public net::URLRequestJob {
 
     // Pretend this is the entire network stack, which has sent the buffer
     // to some worker thread to be written to disk.
-    memset(buf->data(), 'a', buf_size);
+    std::ranges::fill(buf->first(base::checked_cast<size_t>(buf_size)), 'a');
     *simulated_cache_dest_ = buf;
 
     // The network stack will not report the read result until the write

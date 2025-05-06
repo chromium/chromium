@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/public/cpp/cors/cors.h"
 
 #include <limits.h>
+
+#include <algorithm>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -240,17 +237,15 @@ TEST_F(CorsTest, SafelistedAccept) {
   EXPECT_TRUE(IsCorsSafelistedHeader("accept", "text/html"));
   EXPECT_TRUE(IsCorsSafelistedHeader("AccepT", "text/html"));
 
-  constexpr char kAllowed[] =
+  constexpr std::string_view kAllowed =
       "\t !#$%&'*+,-./0123456789;="
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~";
   for (int i = 0; i < 128; ++i) {
     SCOPED_TRACE(testing::Message() << "c = static_cast<char>(" << i << ")");
     char c = static_cast<char>(i);
-    // 1 for the trailing null character.
-    auto* end = kAllowed + std::size(kAllowed) - 1;
-    EXPECT_EQ(std::find(kAllowed, end, c) != end,
+    EXPECT_EQ(std::ranges::find(kAllowed, c) != kAllowed.end(),
               IsCorsSafelistedHeader("accept", std::string(1, c)));
-    EXPECT_EQ(std::find(kAllowed, end, c) != end,
+    EXPECT_EQ(std::ranges::find(kAllowed, c) != kAllowed.end(),
               IsCorsSafelistedHeader("AccepT", std::string(1, c)));
   }
   for (int i = 128; i <= 255; ++i) {
@@ -270,14 +265,12 @@ TEST_F(CorsTest, SafelistedAcceptLanguage) {
   EXPECT_TRUE(IsCorsSafelistedHeader("accept-language", "en,ja"));
   EXPECT_TRUE(IsCorsSafelistedHeader("aCcEPT-lAngUAge", "en,ja"));
 
-  constexpr char kAllowed[] =
+  constexpr std::string_view kAllowed =
       "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz *,-.;=";
   for (int i = CHAR_MIN; i <= CHAR_MAX; ++i) {
     SCOPED_TRACE(testing::Message() << "c = static_cast<char>(" << i << ")");
     char c = static_cast<char>(i);
-    // 1 for the trailing null character.
-    auto* end = kAllowed + std::size(kAllowed) - 1;
-    EXPECT_EQ(std::find(kAllowed, end, c) != end,
+    EXPECT_EQ(std::ranges::find(kAllowed, c) != kAllowed.end(),
               IsCorsSafelistedHeader("aCcEPT-lAngUAge", std::string(1, c)));
   }
   EXPECT_TRUE(IsCorsSafelistedHeader("accept-language", std::string(128, 'a')));
@@ -329,16 +322,14 @@ TEST_F(CorsTest, SafelistedContentLanguage) {
   EXPECT_TRUE(IsCorsSafelistedHeader("content-language", "en,ja"));
   EXPECT_TRUE(IsCorsSafelistedHeader("cONTent-LANguaGe", "en,ja"));
 
-  constexpr char kAllowed[] =
+  constexpr std::string_view kAllowed =
       "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz *,-.;=";
   for (int i = CHAR_MIN; i <= CHAR_MAX; ++i) {
     SCOPED_TRACE(testing::Message() << "c = static_cast<char>(" << i << ")");
     char c = static_cast<char>(i);
-    // 1 for the trailing null character.
-    auto* end = kAllowed + std::size(kAllowed) - 1;
-    EXPECT_EQ(std::find(kAllowed, end, c) != end,
+    EXPECT_EQ(std::ranges::find(kAllowed, c) != kAllowed.end(),
               IsCorsSafelistedHeader("content-language", std::string(1, c)));
-    EXPECT_EQ(std::find(kAllowed, end, c) != end,
+    EXPECT_EQ(std::ranges::find(kAllowed, c) != kAllowed.end(),
               IsCorsSafelistedHeader("cONTent-LANguaGe", std::string(1, c)));
   }
   EXPECT_TRUE(
@@ -352,15 +343,13 @@ TEST_F(CorsTest, SafelistedContentLanguage) {
 }
 
 TEST_F(CorsTest, SafelistedContentType) {
-  constexpr char kAllowed[] =
+  constexpr std::string_view kAllowed =
       "\t !#$%&'*+,-./0123456789;="
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~";
   for (int i = 0; i < 128; ++i) {
     SCOPED_TRACE(testing::Message() << "c = static_cast<char>(" << i << ")");
     const char c = static_cast<char>(i);
-    // 1 for the trailing null character.
-    const auto* const end = kAllowed + std::size(kAllowed) - 1;
-    const bool is_allowed = std::find(kAllowed, end, c) != end;
+    const bool is_allowed = std::ranges::find(kAllowed, c) != kAllowed.end();
     const std::string value = std::string("text/plain; charset=") + c;
 
     EXPECT_EQ(is_allowed, IsCorsSafelistedHeader("content-type", value));

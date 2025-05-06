@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <string>
@@ -53,8 +48,8 @@ const char kMsg[] = "please start tls!";
 const size_t kMsgSize = strlen(kMsg);
 
 // Message sent over the tls connection.
-const char kSecretMsg[] = "here is secret.";
-const size_t kSecretMsgSize = strlen(kSecretMsg);
+constexpr std::string_view kSecretMsg = "here is secret.";
+constexpr size_t kSecretMsgSize = kSecretMsg.size();
 
 class TLSClientSocketTestBase {
  public:
@@ -578,8 +573,8 @@ TEST_P(TLSClientSocketTest, ReadWriteBeforeUpgradeToTLS) {
 
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
   EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsgSize));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
@@ -619,8 +614,8 @@ TEST_P(TLSClientSocketTest, ReadErrorAfterUpgradeToTLS) {
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
   EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsgSize));
   EXPECT_EQ(net::ERR_CONNECTION_CLOSED,
             post_tls_observer()->WaitForReadError());
@@ -661,8 +656,8 @@ TEST_P(TLSClientSocketTest, WriteErrorAfterUpgradeToTLS) {
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
   EXPECT_EQ(net::ERR_CONNECTION_CLOSED,
             post_tls_observer()->WaitForWriteError());
 
@@ -710,8 +705,8 @@ TEST_P(TLSClientSocketTest, ReadFromPreTlsDataPipeAfterUpgradeToTLS) {
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
   EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsgSize));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
@@ -760,8 +755,8 @@ TEST_P(TLSClientSocketTest, WriteToPreTlsDataPipeAfterUpgradeToTLS) {
 
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
   EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsgSize));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
@@ -811,8 +806,8 @@ TEST_P(TLSClientSocketTest, ReadAndWritePreTlsDataPipeAfterUpgradeToTLS) {
 
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
   EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsgSize));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
@@ -1038,7 +1033,7 @@ TEST_P(TLSClientSocketIoModeTest, MultipleWriteToTLSSocket) {
       size_t actually_written_bytes = 0;
       EXPECT_EQ(MOJO_RESULT_OK,
                 post_tls_send_handle()->get().WriteData(
-                    base::byte_span_from_cstring(kSecretMsg).subspan(i, 1u),
+                    base::as_byte_span(kSecretMsg).subspan(i, 1u),
                     MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
       // Flush the 1 byte write.
       base::RunLoop().RunUntilIdle();
