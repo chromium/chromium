@@ -80,6 +80,9 @@ class CONTENT_EXPORT OverscrollControllerAndroid
   void Enable();
   void Disable();
 
+  // Returns true if the controller is actively handling the current input
+  // sequence. This state persists until reset by
+  // MotionEventAndroid::Action::DOWN from the next input sequence.
   bool IsHandlingInputSequence();
 
   // Returns true if |event| is consumed by an overscroll effect, in which

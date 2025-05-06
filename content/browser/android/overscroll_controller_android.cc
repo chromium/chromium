@@ -188,9 +188,10 @@ void OverscrollControllerAndroid::OnOverscrolled(
   if (refresh_effect_) {
     refresh_effect_->OnOverscrolled(params.overscroll_behavior,
                                     params.accumulated_overscroll);
-    is_handling_sequence_ = refresh_effect_->IsActive();
+    bool refresh_effect_active = refresh_effect_->IsActive();
+    is_handling_sequence_ |= refresh_effect_active;
 
-    if (is_handling_sequence_ || refresh_effect_->IsAwaitingScrollUpdateAck()) {
+    if (refresh_effect_active || refresh_effect_->IsAwaitingScrollUpdateAck()) {
       // An active (or potentially active) refresh effect should always pre-empt
       // the passive glow effect.
       return;
@@ -304,26 +305,24 @@ bool OverscrollControllerAndroid::IsHandlingInputSequence() {
 
 bool OverscrollControllerAndroid::OnTouchEvent(
     const ui::MotionEventAndroid& event) {
+  const auto action = event.GetAction();
+  // This will consume touch events until the next Action::DOWN. Ideally we
+  // should consume until the final Action::UP/Action::CANCEL. But, apparently,
+  // we can't reliably determine the final Action::CANCEL in a multi-touch
+  // scenario. See https://crbug.com/653212.
+  if (action == ui::MotionEventAndroid::Action::DOWN) {
+    is_handling_sequence_ = false;
+  }
+
   const bool handles_current_event = IsHandlingInputSequence();
 
-  const auto action = event.GetAction();
-  const bool is_sequence_terminating_action =
-      (action == ui::MotionEventAndroid::Action::UP ||
-       action == ui::MotionEventAndroid::Action::CANCEL);
-
-  // Clean up state after processing a terminating action.
-  absl::Cleanup update_state = [this, &is_sequence_terminating_action] {
-    if (is_sequence_terminating_action) {
-      last_pos_ = gfx::Vector2dF();  // Reset last position.
-      is_handling_sequence_ = false;
-    }
-  };
-
+  // |refresh_effect_| might have been consuming input events earlier, return if
+  // the OverscrollController is consuming the whole input sequence.
   if (!ShouldHandleInputEvents()) {
     return handles_current_event;
   }
 
-  switch (event.GetAction()) {
+  switch (action) {
     case ui::MotionEventAndroid::Action::DOWN:
       last_pos_ = gfx::Vector2dF(event.GetXPix(0), event.GetYPix(0));
       break;
