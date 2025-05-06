@@ -48,6 +48,9 @@ import {PluginControllerEventType} from './controller.js';
 // <if expr="enable_ink">
 import type {ContentController} from './controller.js';
 // </if>
+// <if expr="enable_pdf_ink2">
+import {TextBoxState} from './elements/ink_text_box.js';
+// </if>
 import type {ChangePageAndXyDetail, ChangePageDetail, NavigateDetail} from './elements/viewer_bookmark.js';
 import {ChangePageOrigin} from './elements/viewer_bookmark.js';
 import type {ViewerErrorDialogElement} from './elements/viewer_error_dialog.js';
@@ -199,7 +202,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       hasEnteredAnnotationMode_: {type: Boolean},
 
       // <if expr="enable_pdf_ink2">
-      hasInk2Edits_: {type: Boolean},
+      hasCommittedInk2Edits_: {type: Boolean},
       // </if>
 
       formFieldFocus_: {type: String},
@@ -218,6 +221,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       showPasswordDialog_: {type: Boolean},
       showPropertiesDialog_: {type: Boolean},
       sidenavCollapsed_: {type: Boolean},
+
+      // <if expr="enable_pdf_ink2">
+      textboxState_: {type: Number},
+      // </if>
+
       title_: {type: String},
       twoUpViewEnabled_: {type: Boolean},
 
@@ -259,7 +267,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected accessor hasEdits_: boolean = false;
   protected accessor hasEnteredAnnotationMode_: boolean = false;
   // <if expr="enable_pdf_ink2">
-  protected accessor hasInk2Edits_: boolean = false;
+  protected accessor hasCommittedInk2Edits_: boolean = false;
   private hasSavedEdits_: boolean = false;
   // </if>
   protected accessor formFieldFocus_: FormFieldFocusType =
@@ -290,6 +298,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private sidenavRestoreState_: boolean = false;
   // </if>
 
+  // <if expr="enable_pdf_ink2">
+  protected accessor textboxState_: TextBoxState = TextBoxState.INACTIVE;
+  // </if>
   protected accessor title_: string = '';
   protected toolbarEnabled_: boolean = false;
   protected accessor twoUpViewEnabled_: boolean = false;
@@ -1116,7 +1127,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_pdf_ink2">
   /** Handles a new ink stroke in annotation mode. */
   private handleFinishInkStroke_() {
-    this.hasInk2Edits_ = true;
+    this.hasCommittedInk2Edits_ = true;
     this.pluginController_.getEventTarget().dispatchEvent(
         new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
     this.setShowBeforeUnloadDialog_(true);
@@ -1241,7 +1252,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     let shouldSaveWithAnnotation = this.hasEnteredAnnotationMode_;
     // <if expr="enable_pdf_ink2">
     if (this.pdfInk2Enabled_) {
-      shouldSaveWithAnnotation = this.hasInk2Edits_;
+      shouldSaveWithAnnotation = this.hasCommittedInk2Edits_ ||
+          this.textboxState_ === TextBoxState.EDITED;
     }
     // </if>
 
@@ -1306,12 +1318,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   // <if expr="enable_pdf_ink2">
   protected onStrokesUpdated_(e: CustomEvent<number>) {
-    this.hasInk2Edits_ = e.detail > 0;
+    this.hasCommittedInk2Edits_ = e.detail > 0;
 
     // If the user already saved, always show the beforeunload dialog if the
     // strokes have updated. If the user hasn't saved, only show the
     // beforeunload dialog if there's edits.
-    this.setShowBeforeUnloadDialog_(this.hasSavedEdits_ || this.hasInk2Edits_);
+    this.setShowBeforeUnloadDialog_(
+        this.hasSavedEdits_ || this.hasCommittedInk2Edits_);
   }
   // </if>
 
@@ -1368,6 +1381,16 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
     // </if> enable_ink
 
+    // <if expr="enable_pdf_ink2">
+    // If there is an open textbox, call commitTextAnnotation(). This will fire
+    // a message to the plugin with the annotation, if it has been edited.
+    if (this.textboxState_ !== TextBoxState.INACTIVE) {
+      const textbox = this.shadowRoot.querySelector('ink-text-box');
+      assert(textbox);
+      textbox.commitTextAnnotation();
+    }
+    // </if>
+
     const result = await this.currentController.save(requestType);
     if (result === null) {
       // The content controller handled the save internally.
@@ -1379,6 +1402,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (!fileName.toLowerCase().endsWith('.pdf')) {
       fileName = fileName + '.pdf';
     }
+
+    // <if expr="enable_pdf_ink2">
+    if (result.bypassSaveFileForTesting) {
+      // Only set by the mock plugin.
+      this.onSaveSuccessful_(requestType);
+      return;
+    }
+    // </if>
 
     // Create blob before callback to avoid race condition.
     const blob = new Blob([result.dataToSave], {type: 'application/pdf'});
@@ -1468,7 +1499,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         break;
       case SaveRequestType.ORIGINAL:
         // <if expr="enable_pdf_ink2">
-        if (this.hasInk2Edits_) {
+        if (this.hasCommittedInk2Edits_) {
           record(UserAction.SAVE_ORIGINAL);
           break;
         }
@@ -1521,6 +1552,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   // <if expr="enable_pdf_ink2">
+  protected isTextboxActive_(): boolean {
+    return this.textboxState_ !== TextBoxState.INACTIVE;
+  }
+
   protected isInTextAnnotationMode_(): boolean {
     return this.annotationMode_ === AnnotationMode.TEXT;
   }
@@ -1540,6 +1575,18 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    */
   protected shouldShowInkSidePanel_(): boolean {
     return this.inInk2AnnotationMode_() && this.useSidePanelForInk_;
+  }
+
+  protected hasInk2AnnotationEdits_(): boolean {
+    return this.textboxState_ === TextBoxState.EDITED ||
+        this.hasCommittedInk2Edits_;
+  }
+
+  protected onTextBoxStateChanged_(e: CustomEvent<TextBoxState>) {
+    this.textboxState_ = e.detail;
+    if (e.detail === TextBoxState.EDITED) {
+      this.setShowBeforeUnloadDialog_(true);
+    }
   }
 
   /**

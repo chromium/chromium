@@ -8,7 +8,7 @@ import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, View
 import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import type {AnnotationBrush, BeforeUnloadProxy, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement, SelectableIconButtonElement, ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {AnnotationBrushType, BeforeUnloadProxyImpl, Ink2Manager, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, BeforeUnloadProxyImpl, Ink2Manager, PluginController, PluginControllerEventType, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -175,6 +175,7 @@ export class MockPdfPluginElement extends HTMLEmbedElement {
   // <if expr="enable_pdf_ink2">
   private messageReply_: Object|null = null;
   private replyType_: string = '';
+  private replyToSave_: boolean = false;
   // </if>
 
   get messages(): any[] {
@@ -192,7 +193,9 @@ export class MockPdfPluginElement extends HTMLEmbedElement {
   postMessage(message: any, _transfer: Transferable[]) {
     assert(message.type);
     // <if expr="enable_pdf_ink2">
-    if (message.type === this.replyType_) {
+    if (message.type === 'save' && this.replyToSave_) {
+      this.replyToSaveMessage_(message);
+    } else if (message.type === this.replyType_) {
       assert(this.messageReply_);
       assert(message.messageId);
 
@@ -218,6 +221,48 @@ export class MockPdfPluginElement extends HTMLEmbedElement {
   setMessageReply(type: string, reply: Object) {
     this.replyType_ = type;
     this.messageReply_ = reply;
+  }
+
+  /**
+   * Tells the plugin to respond to a "save" event by firing a 'saveData'
+   * or 'consumeSaveToken' message.
+   */
+  setReplyToSave(reply: boolean) {
+    this.replyToSave_ = reply;
+  }
+
+  private replyToSaveMessage_(message: any) {
+    assert(message.token);
+    if (message.saveRequestType === SaveRequestType.ORIGINAL) {
+      this.dispatchEvent(new MessageEvent('message', {
+        data: {
+          type: 'consumeSaveToken',
+          token: message.token,
+        },
+        origin: '*',
+      }));
+      return;
+    }
+    assert(
+        message.saveRequestType === SaveRequestType.ANNOTATION,
+        'Unexpected save request type');
+    const testData = '%PDF1.0 Hello World';
+    const buffer = new ArrayBuffer(testData.length);
+    // Encode the same way chrome/browser/resources/pdf/controller.ts decodes.
+    const view = new Uint8Array(buffer);
+    for (let i = 0; i < testData.length; i++) {
+      view[i] = testData.charCodeAt(i);
+    }
+    this.dispatchEvent(new MessageEvent('message', {
+      data: {
+        type: 'saveData',
+        token: message.token,
+        dataToSave: buffer,
+        fileName: 'test.pdf',
+        bypassSaveFileForTesting: true,
+      },
+      origin: '*',
+    }));
   }
   // </if>
 }
@@ -666,5 +711,12 @@ export async function clickDropdownButton(
 export function assertDeepEquals(
     value1: object|any[]|undefined|null, value2: object|any[]|undefined|null) {
   chrome.test.assertTrue(chrome.test.checkDeepEq(value1, value2));
+}
+
+// Simulates initializing a textbox with a click.
+export function createTextBox() {
+  PluginController.getInstance().getEventTarget().dispatchEvent(new CustomEvent(
+      PluginControllerEventType.PLUGIN_MESSAGE,
+      {detail: {type: 'sendClickEvent', x: 50, y: 50}}));
 }
 // </if>
