@@ -552,10 +552,6 @@ public class AwContents implements SmartClipProvider {
     private final AwDisplayModeController mDisplayModeController;
     private final Rect mCachedSafeAreaRect = new Rect();
 
-    // The current AwWindowCoverageTracker, if any. This will be non-null when the AwContents is
-    // attached to the Window and size tracking is enabled. It will be null otherwise.
-    private AwWindowCoverageTracker mAwWindowCoverageTracker;
-
     private AwFrameMetricsListener mAwFrameMetricsListener;
 
     private AwDarkMode mAwDarkMode;
@@ -3371,10 +3367,6 @@ public class AwContents implements SmartClipProvider {
         mAwViewMethods.onAttachedToWindow();
         mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
 
-        mAwWindowCoverageTracker =
-                AwWindowCoverageTracker.getOrCreateForRootView(this, mContainerView.getRootView());
-        mAwWindowCoverageTracker.trackContents(this);
-
         if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
 
         mAwFrameMetricsListener =
@@ -3399,18 +3391,11 @@ public class AwContents implements SmartClipProvider {
                 "Android.WebView.UsedInPopupWindow", value, UsedInPopupWindow.COUNT);
     }
 
-    private void detachWindowCoverageTracker() {
-        if (mAwWindowCoverageTracker == null) return;
-        mAwWindowCoverageTracker.untrackContents(this);
-        mAwWindowCoverageTracker = null;
-    }
-
     /** @see android.view.View#onDetachedFromWindow() */
     @SuppressLint("MissingSuperCall")
     public void onDetachedFromWindow() {
         if (TRACE) Log.i(TAG, "%s onDetachedFromWindow", this);
 
-        detachWindowCoverageTracker();
         mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
         mAwViewMethods.onDetachedFromWindow();
 
@@ -4375,6 +4360,10 @@ public class AwContents implements SmartClipProvider {
 
         private boolean mSizeIsSmallForFrameRateHints;
 
+        // The current AwWindowCoverageTracker, if any. This will be non-null when the AwContents is
+        // attached to the Window and size tracking is enabled. It will be null otherwise.
+        private AwWindowCoverageTracker mAwWindowCoverageTracker;
+
         @Override
         public void onDraw(Canvas canvas) {
             try {
@@ -4667,6 +4656,11 @@ public class AwContents implements SmartClipProvider {
                     StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS)) {
                 StylusWritingSettingsState.getInstance().registerObserver(mStylusWritingController);
             }
+
+            mAwWindowCoverageTracker =
+                    AwWindowCoverageTracker.getOrCreateForRootView(
+                            AwContents.this, mContainerView.getRootView());
+            mAwWindowCoverageTracker.trackContents(AwContents.this);
         }
 
         @Override
@@ -4676,6 +4670,8 @@ public class AwContents implements SmartClipProvider {
                 Log.w(TAG, "onDetachedFromWindow called when already detached. Ignoring");
                 return;
             }
+            detachWindowCoverageTracker();
+
             mIsAttachedToWindow = false;
             hideAutofillPopup();
             AwContentsJni.get().onDetachedFromWindow(mNativeAwContents);
@@ -4698,6 +4694,12 @@ public class AwContents implements SmartClipProvider {
 
             mScrollAccessibilityHelper.removePostedCallbacks();
             mZoomControls.dismissZoomPicker();
+        }
+
+        private void detachWindowCoverageTracker() {
+            if (mAwWindowCoverageTracker == null) return;
+            mAwWindowCoverageTracker.untrackContents(AwContents.this);
+            mAwWindowCoverageTracker = null;
         }
 
         @Override
