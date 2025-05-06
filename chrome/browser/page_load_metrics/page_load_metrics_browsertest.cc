@@ -2487,43 +2487,6 @@ class SessionRestorePageLoadMetricsBrowserTest
   }
 };
 
-class SessionRestorePaintWaiter : public SessionRestoreObserver {
- public:
-  SessionRestorePaintWaiter() { SessionRestore::AddObserver(this); }
-
-  SessionRestorePaintWaiter(const SessionRestorePaintWaiter&) = delete;
-  SessionRestorePaintWaiter& operator=(const SessionRestorePaintWaiter&) =
-      delete;
-
-  ~SessionRestorePaintWaiter() { SessionRestore::RemoveObserver(this); }
-
-  // SessionRestoreObserver implementation:
-  void OnWillRestoreTab(content::WebContents* contents) override {
-    InitializePageLoadMetricsForWebContents(contents);
-    auto waiter = std::make_unique<PageLoadMetricsTestWaiter>(contents);
-    waiter->AddPageExpectation(TimingField::kFirstPaint);
-    waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
-    waiters_[contents] = std::move(waiter);
-  }
-
-  // First meaningful paints occur only on foreground tabs.
-  void WaitForForegroundTabs(size_t num_expected_foreground_tabs) {
-    size_t num_actual_foreground_tabs = 0;
-    for (auto iter = waiters_.begin(); iter != waiters_.end(); ++iter) {
-      if (iter->first->GetVisibility() == content::Visibility::HIDDEN)
-        continue;
-      iter->second->Wait();
-      ++num_actual_foreground_tabs;
-    }
-    EXPECT_EQ(num_expected_foreground_tabs, num_actual_foreground_tabs);
-  }
-
- private:
-  std::unordered_map<content::WebContents*,
-                     std::unique_ptr<PageLoadMetricsTestWaiter>>
-      waiters_;
-};
-
 IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
                        InitialVisibilityOfSingleRestoredTab) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));

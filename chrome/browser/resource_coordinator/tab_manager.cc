@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
-#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/common/chrome_constants.h"
@@ -81,30 +80,7 @@ using LoadingState = TabLoadTracker::LoadingState;
 ////////////////////////////////////////////////////////////////////////////////
 // TabManager
 
-class TabManager::TabManagerSessionRestoreObserver final
-    : public SessionRestoreObserver {
- public:
-  explicit TabManagerSessionRestoreObserver(TabManager* tab_manager)
-      : tab_manager_(tab_manager) {
-    SessionRestore::AddObserver(this);
-  }
-
-  ~TabManagerSessionRestoreObserver() { SessionRestore::RemoveObserver(this); }
-
-  // SessionRestoreObserver implementation:
-  void OnWillRestoreTab(WebContents* web_contents) override {
-    tab_manager_->OnWillRestoreTab(web_contents);
-  }
-
- private:
-  raw_ptr<TabManager> tab_manager_;
-};
-
-TabManager::TabManager() {
-  session_restore_observer_ =
-      std::make_unique<TabManagerSessionRestoreObserver>(this);
-}
-
+TabManager::TabManager() = default;
 TabManager::~TabManager() = default;
 
 void TabManager::Start() {
@@ -194,14 +170,6 @@ content::WebContents* TabManager::DiscardTabImpl(
   }
 
   return nullptr;
-}
-
-void TabManager::OnWillRestoreTab(WebContents* contents) {
-  // TabUIHelper is initialized in TabHelpers::AttachTabHelpers. But this place
-  // gets called earlier than that. So for restored tabs, also initialize their
-  // TabUIHelper here.
-  TabUIHelper::CreateForWebContents(contents);
-  TabUIHelper::FromWebContents(contents)->set_created_by_session_restore(true);
 }
 
 void TabManager::OnLifecycleUnitDestroyed(LifecycleUnit* lifecycle_unit) {

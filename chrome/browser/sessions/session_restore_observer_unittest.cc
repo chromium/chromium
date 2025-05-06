@@ -50,11 +50,6 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
     return session_restore_events_;
   }
 
-  const std::set<raw_ptr<content::WebContents, SetExperimental>>&
-  tabs_restoring() const {
-    return tabs_restoring_;
-  }
-
   // SessionRestoreObserver implementation:
   void OnSessionRestoreStartedLoadingTabs() override {
     session_restore_events_.emplace_back(
@@ -64,17 +59,9 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
     session_restore_events_.emplace_back(
         SessionRestoreEvent::FINISHED_LOADING_TABS);
   }
-  void OnWillRestoreTab(content::WebContents* contents) override {
-    tabs_restoring_.emplace(contents);
-  }
-
-  void OnDidRestoreTab(content::WebContents* contents) {
-    tabs_restoring_.erase(contents);
-  }
 
  private:
   std::vector<SessionRestoreEvent> session_restore_events_;
-  std::set<raw_ptr<content::WebContents, SetExperimental>> tabs_restoring_;
 };
 
 class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
@@ -131,7 +118,6 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
     }
     TabLoadTracker::Get()->TransitionStateForTesting(contents,
                                                      LoadingState::LOADED);
-    mock_observer_.OnDidRestoreTab(contents);
   }
 
   const std::vector<MockSessionRestoreObserver::SessionRestoreEvent>&
@@ -143,10 +129,6 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
     return session_restore_events().size();
   }
 
-  size_t number_of_tabs_restoring() const {
-    return mock_observer_.tabs_restoring().size();
-  }
-
  private:
   MockSessionRestoreObserver mock_observer_;
   std::vector<RestoredTab> restored_tabs_;
@@ -154,14 +136,12 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(SessionRestoreObserverTest, SingleSessionRestore) {
   SessionRestore::NotifySessionRestoreStartedLoadingTabs();
-  SessionRestore::OnWillRestoreTab(web_contents());
   RestoreTabs();
 
   ASSERT_EQ(1u, number_of_session_restore_events());
   EXPECT_EQ(
       MockSessionRestoreObserver::SessionRestoreEvent::STARTED_LOADING_TABS,
       session_restore_events()[0]);
-  EXPECT_EQ(1u, number_of_tabs_restoring());
 
   LoadWebContents(web_contents());
 
@@ -169,7 +149,6 @@ TEST_F(SessionRestoreObserverTest, SingleSessionRestore) {
   EXPECT_EQ(
       MockSessionRestoreObserver::SessionRestoreEvent::FINISHED_LOADING_TABS,
       session_restore_events()[1]);
-  EXPECT_EQ(0u, number_of_tabs_restoring());
 }
 
 TEST_F(SessionRestoreObserverTest, SequentialSessionRestores) {
@@ -184,21 +163,18 @@ TEST_F(SessionRestoreObserverTest, SequentialSessionRestores) {
         RestoredTab(test_contents, false, false, false, std::nullopt)};
 
     SessionRestore::NotifySessionRestoreStartedLoadingTabs();
-    SessionRestore::OnWillRestoreTab(test_contents);
     TabLoader::RestoreTabs(restored_tabs, base::TimeTicks());
 
     ASSERT_EQ(event_index + 1, number_of_session_restore_events());
     EXPECT_EQ(
         MockSessionRestoreObserver::SessionRestoreEvent::STARTED_LOADING_TABS,
         session_restore_events()[event_index++]);
-    EXPECT_EQ(1u, number_of_tabs_restoring());
 
     LoadWebContents(test_contents);
     ASSERT_EQ(event_index + 1, number_of_session_restore_events());
     EXPECT_EQ(
         MockSessionRestoreObserver::SessionRestoreEvent::FINISHED_LOADING_TABS,
         session_restore_events()[event_index++]);
-    EXPECT_EQ(0u, number_of_tabs_restoring());
   }
 }
 
@@ -209,8 +185,6 @@ TEST_F(SessionRestoreObserverTest, ConcurrentSessionRestores) {
                                      std::nullopt);
 
   SessionRestore::NotifySessionRestoreStartedLoadingTabs();
-  SessionRestore::OnWillRestoreTab(web_contents());
-  SessionRestore::OnWillRestoreTab(test_contents.get());
   RestoreTabs();
   TabLoader::RestoreTabs(another_restored_tabs, base::TimeTicks());
 
@@ -218,7 +192,6 @@ TEST_F(SessionRestoreObserverTest, ConcurrentSessionRestores) {
   EXPECT_EQ(
       MockSessionRestoreObserver::SessionRestoreEvent::STARTED_LOADING_TABS,
       session_restore_events()[0]);
-  EXPECT_EQ(2u, number_of_tabs_restoring());
 
   LoadWebContents(web_contents());
   LoadWebContents(test_contents.get());
@@ -226,5 +199,4 @@ TEST_F(SessionRestoreObserverTest, ConcurrentSessionRestores) {
   EXPECT_EQ(
       MockSessionRestoreObserver::SessionRestoreEvent::FINISHED_LOADING_TABS,
       session_restore_events()[1]);
-  EXPECT_EQ(0u, number_of_tabs_restoring());
 }

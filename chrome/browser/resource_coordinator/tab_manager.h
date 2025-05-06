@@ -116,7 +116,6 @@ class TabManager : public LifecycleUnitObserver,
 
   void OnSessionRestoreStartedLoadingTabs();
   void OnSessionRestoreFinishedLoadingTabs();
-  void OnWillRestoreTab(content::WebContents* contents);
 
   // Returns the number of tabs that are not pending load or discarded.
   int GetNumAliveTabs() const;
@@ -132,9 +131,6 @@ class TabManager : public LifecycleUnitObserver,
 
   // A listener to global memory pressure events.
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
-
-  class TabManagerSessionRestoreObserver;
-  std::unique_ptr<TabManagerSessionRestoreObserver> session_restore_observer_;
 
   // Weak pointer factory used for posting delayed tasks.
   base::WeakPtrFactory<TabManager> weak_ptr_factory_{this};
