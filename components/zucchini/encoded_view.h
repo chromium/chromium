@@ -100,8 +100,6 @@ class EncodedView {
 
     friend bool operator==(Iterator a, Iterator b) { return a.pos_ == b.pos_; }
 
-    friend bool operator!=(Iterator a, Iterator b) { return !(a == b); }
-
     friend bool operator<(Iterator a, Iterator b) { return a.pos_ < b.pos_; }
 
     friend bool operator>(Iterator a, Iterator b) { return b < a; }
