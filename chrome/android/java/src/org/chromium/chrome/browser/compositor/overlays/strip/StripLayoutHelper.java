@@ -270,6 +270,7 @@ public class StripLayoutHelper
                     StripLayoutTab tab = findTabById(movedTab.getId());
                     if (tab != null && tab.isCollapsed()) {
                         updateTabCollapsed(tab, false, false);
+                        finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
                         computeAndUpdateTabWidth(
                                 /* animate= */ true,
                                 /* deferAnimations= */ false,
@@ -930,7 +931,11 @@ public class StripLayoutHelper
             mLeftMargin = mLeftPadding;
             mRightMargin = mReservedEndMargin + mRightPadding;
         }
-        if (recalculateTabWidth) computeAndUpdateTabWidth(false, false, null);
+        if (recalculateTabWidth) {
+            finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
+            computeAndUpdateTabWidth(
+                    /* animate= */ false, /* deferAnimations= */ false, /* closedTab= */ null);
+        }
     }
 
     /**
@@ -1058,6 +1063,7 @@ public class StripLayoutHelper
                     PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME, 0L);
 
             rebuildStripTabs(false, false);
+            finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
             computeAndUpdateTabWidth(
                     /* animate= */ false, /* deferAnimations= */ false, /* closedTab= */ null);
         }
@@ -1625,6 +1631,7 @@ public class StripLayoutHelper
         rebuildStripViews();
 
         // 2. Initialize the draw parameters.
+        finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
         computeAndUpdateTabWidth(false, false, null);
 
         // 3. Scroll the strip to bring the selected tab to view and ensure that the active tab
@@ -2660,6 +2667,7 @@ public class StripLayoutHelper
                             // Resize the tabs appropriately.
                             // TODO(crbug.com/375468032): also respect "allowUndo" here.
                             // This is for when there is only one tab to close.
+                            finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
                             computeAndUpdateTabWidth(
                                     /* animate= */ true,
                                     /* deferAnimations= */ false,
@@ -2702,6 +2710,7 @@ public class StripLayoutHelper
         List<Animator> tabStripAnimators = new ArrayList<>();
 
         // 1. Add tabs expanding animators to expand remaining tabs to fill scrollable area.
+        finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
         List<Animator> tabExpandAnimators = computeAndUpdateTabWidth(true, true, closedTab);
         if (tabExpandAnimators != null) tabStripAnimators.addAll(tabExpandAnimators);
 
@@ -3129,6 +3138,7 @@ public class StripLayoutHelper
             if (delayResize) {
                 resetResizeTimeout(/* postIfNotPresent= */ true);
             } else {
+                finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
                 animationList =
                         computeAndUpdateTabWidth(
                                 /* animate= */ true,
@@ -3258,6 +3268,7 @@ public class StripLayoutHelper
             groupTitle.setBottomIndicatorWidth(groupTitle.getPaddedWidth());
         }
 
+        finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
         List<Animator> resizeAnimationList =
                 computeAndUpdateTabWidth(
                         /* animate= */ animate,
@@ -3424,6 +3435,7 @@ public class StripLayoutHelper
         if (groupTitle.getWidth() != oldWidth) {
             if (groupTitle.isVisible()) {
                 // If on-screen, this may result in the ideal tab width changing.
+                finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
                 computeAndUpdateTabWidth(
                         /* animate= */ false, /* deferAnimations= */ false, /* closedTab= */ null);
             } else {
@@ -3606,6 +3618,7 @@ public class StripLayoutHelper
                         mTabGroupModelFilter.getTabGroupCollapsed(groupTitle.getRootId());
                 updateTabGroupCollapsed(groupTitle, isCollapsed, false);
             }
+            finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
             computeAndUpdateTabWidth(
                     /* animate= */ true, /* deferAnimations= */ false, /* closedTab= */ null);
         }
@@ -3636,6 +3649,7 @@ public class StripLayoutHelper
                 // Resize the tab strip accordingly.
                 resizeStripOnTabClose(getTabById(tabToAnimate.getTabId()));
             } else {
+                finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
                 List<Animator> animationList =
                         computeAndUpdateTabWidth(
                                 /* animate= */ true,
@@ -3644,6 +3658,7 @@ public class StripLayoutHelper
                 if (animationList != null) runTabAddedAnimator(animationList, tabToAnimate);
             }
         } else {
+            finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
             computeAndUpdateTabWidth(
                     animate, /* deferAnimations= */ animate, /* closedTab= */ null);
         }
@@ -3779,7 +3794,6 @@ public class StripLayoutHelper
                 MathUtils.clamp(optimalTabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP));
 
         // 5. Prepare animations and propagate width to all tabs.
-        finishAnimationsAndPushTabUpdates();
         ArrayList<Animator> resizeAnimationList = null;
         if (animate) resizeAnimationList = new ArrayList<>();
         for (int i = 0; i < mStripTabs.length; i++) {
@@ -4339,7 +4353,11 @@ public class StripLayoutHelper
         public void handleMessage(Message m) {
             switch (m.what) {
                 case MESSAGE_RESIZE:
-                    computeAndUpdateTabWidth(true, false, null);
+                    finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
+                    computeAndUpdateTabWidth(
+                            /* animate= */ true,
+                            /* deferAnimations= */ false,
+                            /* closedTab= */ null);
                     mUpdateHost.requestUpdate();
                     break;
                 case MESSAGE_UPDATE_SPINNER:
@@ -4738,6 +4756,7 @@ public class StripLayoutHelper
             // Selects the first tab in the collapsed group. For expanded groups, the correct tab
             // should be selected during tab creation.
             TabModelUtils.setIndex(mModel, index);
+            finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
             computeAndUpdateTabWidth(
                     /* animate= */ true, /* deferAnimations= */ false, /* closedTab= */ null);
         }
