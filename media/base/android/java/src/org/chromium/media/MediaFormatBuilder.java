@@ -117,7 +117,7 @@ class MediaFormatBuilder {
         }
         int maxWidth = Math.max(128, format.getInteger(MediaFormat.KEY_WIDTH));
         if (allowAdaptivePlayback && format.containsKey(MediaFormat.KEY_MAX_WIDTH)) {
-            maxWidth = Math.max(maxHeight, format.getInteger(MediaFormat.KEY_MAX_WIDTH));
+            maxWidth = Math.max(maxWidth, format.getInteger(MediaFormat.KEY_MAX_WIDTH));
         }
         int maxPixels;
         int minCompressionRatio;
