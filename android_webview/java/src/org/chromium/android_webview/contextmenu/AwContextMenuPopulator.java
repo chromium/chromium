@@ -60,7 +60,7 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
         items.add(createListItem(Item.COPY_LINK_TEXT));
         items.add(createListItem(Item.OPEN_LINK));
 
-        groupedItems.add(new Pair<>(R.string.context_menu_copy_link_address, items));
+        groupedItems.add(new Pair<>(R.string.context_menu_link_title, items));
 
         return groupedItems;
     }

@@ -189,6 +189,9 @@
       <message name="IDS_CONTEXT_MENU_OPEN_LINK" desc="Context menu item to open the selected link in a relevant application. [CHAR_LIMIT=30]">
         Open link
       </message>
+      <message name="IDS_CONTEXT_MENU_LINK_TITLE" desc="The title of a context menu tab when the item pressed contains more than one type. This indicates that all the actions are related to the link.">
+        LINK
+      </message>
     </messages>
   </release>
 </grit>
