@@ -160,6 +160,15 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
         printer->Print("(message.$f$()));\n", "f", field_name);
         printer->Outdent();
         printer->Print("}\n");
+      } else if (field->type() == FieldDescriptor::Type::TYPE_STRING ||
+                 field->type() == FieldDescriptor::Type::TYPE_BYTES) {
+        printer->Print("if (!message.$f$().empty()) {\n", "f", field_name);
+        printer->Indent();
+        printer->Print("dict.Set(\"$f$\", ", "f", field_name);
+        PrintFieldToValue(*field, printer);
+        printer->Print("(message.$f$()));\n", "f", field_name);
+        printer->Outdent();
+        printer->Print("}\n");
       } else {
         printer->Print("dict.Set(\"$f$\", ", "f", field_name);
         PrintFieldToValue(*field, printer);

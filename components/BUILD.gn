@@ -809,6 +809,7 @@ test("components_unittests") {
       "//components/safe_browsing/content/common:file_type_policies_unittest",
       "//components/safe_browsing/content/common:unit_tests",
       "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
+      "//components/safe_browsing/core/common/proto_to_value:unit_tests",
     ]
   }
 

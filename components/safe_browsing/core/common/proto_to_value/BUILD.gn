@@ -11,3 +11,18 @@ if (current_toolchain == host_toolchain) {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "to_value_plugin_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/safe_browsing/core/common/proto_to_value/test_proto:test_proto",
+    "//components/safe_browsing/core/common/proto_to_value/test_proto:test_proto_to_value",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
