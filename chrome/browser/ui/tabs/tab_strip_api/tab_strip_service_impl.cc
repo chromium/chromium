@@ -86,14 +86,13 @@ void TabStripServiceImpl::OnTabStripModelChangeAdded(
     return;
   }
 
-  std::vector<tabs_api::mojom::PositionPtr> positions;
-  for (const auto& content : insert_change.contents) {
-    auto pos = tabs_api::mojom::Position::New();
-    pos->index = content.index;
-    positions.emplace_back(std::move(pos));
-  }
-
   for (auto& observer : observers_) {
+    std::vector<tabs_api::mojom::PositionPtr> positions;
+    for (const auto& content : insert_change.contents) {
+      auto pos = tabs_api::mojom::Position::New();
+      pos->index = content.index;
+      positions.emplace_back(std::move(pos));
+    }
     observer.OnTabsCreated(std::move(positions));
   }
 }

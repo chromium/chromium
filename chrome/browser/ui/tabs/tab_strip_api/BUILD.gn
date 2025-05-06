@@ -91,3 +91,22 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "tab_strip_service_impl_browsertest.cc" ]
+
+  deps = [
+    ":impl",
+    ":tab_strip_api",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
