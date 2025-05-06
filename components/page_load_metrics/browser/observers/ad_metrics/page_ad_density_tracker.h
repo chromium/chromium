@@ -36,16 +36,15 @@ class PageAdDensityTracker {
     RectId(RectType rect_type, int id);
     RectId(const RectId& other);
 
+    friend bool operator==(const RectId&, const RectId&) = default;
+    friend auto operator<=>(const RectId&, const RectId&) = default;
+
     RectType rect_type;
 
     // For iframe, the id comes from the frame tree node id. For other elements
     // (e.g. main frame ad rectangles), the id comes from the node id from the
     // renderer.
     int id;
-
-    bool operator<(const RectId& rhs) const;
-    bool operator==(const RectId& rhs) const;
-    bool operator!=(const RectId& rhs) const;
   };
 
   struct AdDensityCalculationResult {
