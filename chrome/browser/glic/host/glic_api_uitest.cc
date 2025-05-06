@@ -24,6 +24,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -72,6 +74,10 @@
 
 namespace glic {
 namespace {
+using testing::_;
+using testing::Contains;
+using testing::Pair;
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTab);
@@ -85,8 +91,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestPageContextEligibilityTest",
   };
 }
-
-using testing::_;
 
 // Observes the state of the WebUI hosted in the glic window.
 class WebUIStateListener : public Host::Observer {
@@ -622,13 +626,19 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testRequestHeader) {
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
 
-  ASSERT_THAT(base::ToVector(embedded_test_server_requests_,
-                             [](const auto& request) {
-                               return std::make_pair(
-                                   request.GetURL().path(),
-                                   request.headers.contains("X-Glic"));
-                             }),
-              testing::Contains(testing::Pair(GetGuestURL().path(), true)));
+  auto main_request = std::ranges::find_if(
+      embedded_test_server_requests_, [&](const auto& request) {
+        return request.GetURL().path() == GetGuestURL().path();
+      });
+  ASSERT_NE(main_request, embedded_test_server_requests_.end());
+  ASSERT_THAT(
+      main_request->headers,
+      testing::AllOf(Contains(Pair("x-glic", "1")),
+                     Contains(Pair("x-glic-chrome-channel",
+                                   testing::AnyOf("unknown", "canary", "dev",
+                                                  "beta", "stable"))),
+                     Contains(Pair("x-glic-chrome-version",
+                                   version_info::GetVersionNumber()))));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTab) {

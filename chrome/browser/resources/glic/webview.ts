@@ -306,7 +306,10 @@ export class WebviewController {
             return {cancel: !urlMatchesAllowedOrigin(details.url)};
           };
 
-  // Attaches the X-Glic header to all main-frame requests.
+  // Attaches the X-Glic headers to all main-frame requests.
+  // X-Glic: 1
+  // X-Glic-Chrome-Channel: stable
+  // X-Glic-Chrome-Version: 137.0.1234.0
   private onBeforeSendHeaders:
       ChromeEventFunctionType<typeof chrome.webRequest.onBeforeSendHeaders> =
           (details) => {
@@ -318,6 +321,14 @@ export class WebviewController {
             requestHeaders.push({
               name: 'X-Glic',
               value: '1',
+            });
+            requestHeaders.push({
+              name: 'X-Glic-Chrome-Version',
+              value: loadTimeData.getString('chromeVersion'),
+            });
+            requestHeaders.push({
+              name: 'X-Glic-Chrome-Channel',
+              value: loadTimeData.getString('chromeChannel'),
             });
             return {requestHeaders};
           };
