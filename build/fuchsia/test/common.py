@@ -372,7 +372,7 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
             if proc.returncode == 0:
                 return
             time.sleep(3)
-            retry_counter.record(1)
+            retry_counter.record()
         ssh_run(cmd, target_id=target_id, check=True)
 
     for package in packages:
@@ -422,7 +422,7 @@ def get_ssh_address(target_id: Optional[str],
             time.sleep(5)
         else:
             monitors.count('ffx', 'get_ssh_address', ipv4_only and 'ipv4' or '',
-                           'failed').record(1)
+                           'failed').record()
             raise RuntimeError('No addresses found for target.')
     ssh_port = int(addr['ssh_port'])
     if ssh_port == 0:
