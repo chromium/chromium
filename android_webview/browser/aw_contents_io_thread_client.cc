@@ -28,6 +28,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/base_tracing.h"
 #include "components/embedder_support/android/util/features.h"
@@ -358,12 +359,6 @@ void ClientMapEntryUpdater::WebContentsDestroyed() {
   delete this;
 }
 
-base::SequencedTaskRunner* GetGlobalSequencedTaskRunner() {
-  static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>> instance(
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
-  return instance->get();
-}
-
 }  // namespace
 
 WebContentsKey GetWebContentsKey(content::WebContents& web_contents) {
@@ -549,20 +544,11 @@ void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
   if (mediator) {
     const base::TimeTicks request_started = base::TimeTicks::Now();
     // The mediator is kept alive on the Java side.
-    if (base::FeatureList::IsEnabled(
-            features::kWebViewSequencedShouldInterceptRequest)) {
-      GetGlobalSequencedTaskRunner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&StartShouldInterceptRequest, std::move(request),
-                         request_started, std::move(callback),
-                         JavaObjectWeakGlobalRef(env, mediator)));
-    } else {
-      sequenced_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&StartShouldInterceptRequest, std::move(request),
-                         request_started, std::move(callback),
-                         JavaObjectWeakGlobalRef(env, mediator)));
-    }
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&StartShouldInterceptRequest, std::move(request),
+                       request_started, std::move(callback),
+                       JavaObjectWeakGlobalRef(env, mediator)));
   } else {
     Java_AwContentsIoThreadClient_onLoadResource(env, java_object_,
                                                  request.url);

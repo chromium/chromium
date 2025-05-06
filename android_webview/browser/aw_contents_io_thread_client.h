@@ -14,8 +14,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
@@ -152,8 +150,6 @@ class AwContentsIoThreadClient {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 };
 
 }  // namespace android_webview
