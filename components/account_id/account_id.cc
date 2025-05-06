@@ -83,10 +83,6 @@ bool AccountId::operator==(const AccountId& other) const {
   }
 }
 
-bool AccountId::operator!=(const AccountId& other) const {
-  return !operator==(other);
-}
-
 bool AccountId::operator<(const AccountId& right) const {
   // TODO(alemate): update this once all AccountId members are filled.
   return user_email_ < right.user_email_;
