@@ -171,18 +171,19 @@ class MeasureInputUsageClient
       receiver_;
 };
 
-base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
-ToMojo(String prompt) {
+mojom::blink::AILanguageModelPromptContentPtr ToMojo(String prompt) {
   return mojom::blink::AILanguageModelPromptContent::NewText(prompt);
 }
 
-base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
-ToMojo(AudioBuffer* audio_buffer) {
+mojom::blink::AILanguageModelPromptContentPtr ToMojo(
+    AudioBuffer* audio_buffer,
+    ExceptionState& exception_state) {
   if (audio_buffer->numberOfChannels() > 2) {
     // TODO(crbug.com/382180351): Support more than 2 channels.
-    return base::unexpected(MakeGarbageCollected<DOMException>(
+    exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "Audio with more than 2 channels is not supported."));
+        "Audio with more than 2 channels is not supported.");
+    return nullptr;
   }
   on_device_model::mojom::blink::AudioDataPtr audio_data =
       on_device_model::mojom::blink::AudioData::New();
@@ -206,16 +207,19 @@ ToMojo(AudioBuffer* audio_buffer) {
       std::move(audio_data));
 }
 
-base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
-ToMojo(base::span<uint8_t> audio_bytes, ExecutionContext* execution_context) {
+mojom::blink::AILanguageModelPromptContentPtr ToMojo(
+    base::span<uint8_t> audio_bytes,
+    ExecutionContext* execution_context,
+    ExceptionState& exception_state) {
   // TODO(crbug.com/401010825): Use the file sample rate.
   scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
       audio_bytes, /*mix_to_mono=*/true, /*sample_rate=*/48000);
   if (!bus) {
     // TODO(crbug.com/409615288): This should throw a TypeError according to the
     // spec.
-    return base::unexpected(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError, "Missing or invalid audio data."));
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "Missing or invalid audio data.");
+    return nullptr;
   }
 
   on_device_model::mojom::blink::AudioDataPtr audio_data =
@@ -232,8 +236,10 @@ ToMojo(base::span<uint8_t> audio_bytes, ExecutionContext* execution_context) {
       std::move(audio_data));
 }
 
-base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
-ToMojo(Blob* blob, ExecutionContext* execution_context) {
+mojom::blink::AILanguageModelPromptContentPtr ToMojo(
+    Blob* blob,
+    ExecutionContext* execution_context,
+    ExceptionState& exception_state) {
   // TODO(crbug.com/382180351): Make blob reading async or alternatively
   // use FileReaderSync instead (fix linker and exception issues).
   SyncedFileReaderAccumulator* blobReader =
@@ -243,35 +249,34 @@ ToMojo(Blob* blob, ExecutionContext* execution_context) {
       blob->GetBlobDataHandle(),
       execution_context->GetTaskRunner(TaskType::kFileReading));
   if (error_code != FileErrorCode::kOK) {
-    return base::unexpected(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError, "Failed to read blob."));
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "Failed to read blob.");
+    return nullptr;
   }
   ArrayBufferContents audio_contents =
       std::move(reader_data).AsArrayBufferContents();
   if (!audio_contents.IsValid()) {
-    return base::unexpected(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError, "Failed to read blob."));
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "Failed to read blob.");
+    return nullptr;
   }
-  return ToMojo(audio_contents.ByteSpan(), execution_context);
+  return ToMojo(audio_contents.ByteSpan(), execution_context, exception_state);
 }
 
-base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
-ToMojo(V8ImageBitmapSource* bitmap,
-       ScriptState* script_state,
-       ExceptionState& exception_state) {
+mojom::blink::AILanguageModelPromptContentPtr ToMojo(
+    V8ImageBitmapSource* bitmap,
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   std::optional<SkBitmap> skia_bitmap =
       GetBitmapFromV8ImageBitmapSource(script_state, bitmap, exception_state);
-  if (!skia_bitmap) {
-    return base::unexpected(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kSyntaxError,
-        "Unable to get bitmap from image content"));
+  if (exception_state.HadException()) {
+    return nullptr;
   }
   return mojom::blink::AILanguageModelPromptContent::NewBitmap(
       skia_bitmap.value());
 }
 
-base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
-ConvertPromptToMojoContent(
+mojom::blink::AILanguageModelPromptContentPtr ConvertPromptToMojoContent(
     V8LanguageModelPromptType content_type,
     const V8LanguageModelPromptContent* content,
     ScriptState* script_state,
@@ -284,10 +289,11 @@ ConvertPromptToMojoContent(
     case V8LanguageModelPromptType::Enum::kImage:
       if (!allowed_types.Contains(
               mojom::blink::AILanguageModelPromptType::kImage)) {
-        return base::unexpected(MakeGarbageCollected<DOMException>(
+        exception_state.ThrowDOMException(
             DOMExceptionCode::kNotSupportedError,
             "Image not supported. Session is not initialized with image "
-            "support."));
+            "support.");
+        return nullptr;
       }
       UseCounter::Count(execution_context,
                         WebFeature::kLanguageModel_Prompt_Input_Image);
@@ -295,40 +301,42 @@ ConvertPromptToMojoContent(
         return ToMojo(content->GetAsV8ImageBitmapSource(), script_state,
                       exception_state);
       }
-      return base::unexpected(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kSyntaxError, "Unsupported image content type"));
+      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                        "Unsupported image content type");
+      return nullptr;
     case V8LanguageModelPromptType::Enum::kAudio:
       if (!allowed_types.Contains(
               mojom::blink::AILanguageModelPromptType::kAudio)) {
-        return base::unexpected(MakeGarbageCollected<DOMException>(
+        exception_state.ThrowDOMException(
             DOMExceptionCode::kNotSupportedError,
             "Audio not supported. Session is not initialized with audio "
-            "support."));
+            "support.");
+        return nullptr;
       }
       UseCounter::Count(execution_context,
                         WebFeature::kLanguageModel_Prompt_Input_Audio);
       switch (content->GetContentType()) {
         case V8LanguageModelPromptContent::ContentType::kAudioBuffer:
-          return ToMojo(content->GetAsAudioBuffer());
+          return ToMojo(content->GetAsAudioBuffer(), exception_state);
         case V8LanguageModelPromptContent::ContentType::kBlob:
-          return ToMojo(content->GetAsBlob(), execution_context);
+          return ToMojo(content->GetAsBlob(), execution_context,
+                        exception_state);
         case V8LanguageModelPromptContent::ContentType::kArrayBuffer:
           return ToMojo(content->GetAsArrayBuffer()->Content()->ByteSpan(),
-                        execution_context);
+                        execution_context, exception_state);
         case V8LanguageModelPromptContent::ContentType::kArrayBufferView:
           return ToMojo(content->GetAsArrayBufferView()->ByteSpan(),
-                        execution_context);
+                        execution_context, exception_state);
         default:
-          return base::unexpected(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kSyntaxError,
-              "Unsupported audio content type"));
+          exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                            "Unsupported audio content type");
+          return nullptr;
       }
   }
 }
 
 // Return `prompt`'s content as a mojo struct or nullptr if there was an error.
-base::expected<mojom::blink::AILanguageModelPromptPtr, DOMException*>
-ConvertPromptToMojo(
+mojom::blink::AILanguageModelPromptPtr ConvertPromptToMojo(
     const V8LanguageModelPrompt* prompt,
     ScriptState* script_state,
     ExceptionState& exception_state,
@@ -338,7 +346,10 @@ ConvertPromptToMojo(
     // Handle basic string prompt.
     case V8LanguageModelPrompt::ContentType::kString: {
       auto result = mojom::blink::AILanguageModelPrompt::New();
-      ASSIGN_OR_RETURN(result->content, ToMojo(prompt->GetAsString()));
+      result->content = ToMojo(prompt->GetAsString());
+      if (result->content.is_null()) {
+        return nullptr;
+      }
       result->role = mojom::blink::AILanguageModelPromptRole::kUser;
       return result;
     }
@@ -346,10 +357,12 @@ ConvertPromptToMojo(
     case V8LanguageModelPrompt::ContentType::kLanguageModelPromptDict:
       LanguageModelPromptDict* dict = prompt->GetAsLanguageModelPromptDict();
       auto result = mojom::blink::AILanguageModelPrompt::New();
-      ASSIGN_OR_RETURN(result->content,
-                       ConvertPromptToMojoContent(
-                           dict->type(), dict->content(), script_state,
-                           exception_state, execution_context, allowed_types));
+      result->content = ConvertPromptToMojoContent(
+          dict->type(), dict->content(), script_state, exception_state,
+          execution_context, allowed_types);
+      if (result->content.is_null()) {
+        return nullptr;
+      }
       result->role = LanguageModel::ConvertRoleToMojo(dict->role());
       return result;
   }
@@ -357,9 +370,7 @@ ConvertPromptToMojo(
 
 // Populates the `prompts` mojo struct vector from `input`. Returns an exception
 // if some input was specified incorrectly or inaccessible, nullptr otherwise.
-base::expected<WTF::Vector<mojom::blink::AILanguageModelPromptPtr>,
-               DOMException*>
-BuildPrompts(
+std::optional<WTF::Vector<mojom::blink::AILanguageModelPromptPtr>> BuildPrompts(
     const V8LanguageModelPromptInput* input,
     ScriptState* script_state,
     ExceptionState& exception_state,
@@ -370,17 +381,22 @@ BuildPrompts(
     const auto& sequence =
         input->GetAsLanguageModelPromptDictOrStringSequence();
     for (const auto& entry : sequence) {
-      ASSIGN_OR_RETURN(auto prompt,
-                       ConvertPromptToMojo(entry, script_state, exception_state,
-                                           execution_context, allowed_types));
+      mojom::blink::AILanguageModelPromptPtr prompt =
+          ConvertPromptToMojo(entry, script_state, exception_state,
+                              execution_context, allowed_types);
+      if (prompt.is_null()) {
+        return std::nullopt;
+      }
       prompts.push_back(std::move(prompt));
     }
   } else {
     CHECK(input->IsV8LanguageModelPrompt());
     auto* entry = input->GetAsV8LanguageModelPrompt();
-    ASSIGN_OR_RETURN(auto prompt,
-                     ConvertPromptToMojo(entry, script_state, exception_state,
-                                         execution_context, allowed_types));
+    mojom::blink::AILanguageModelPromptPtr prompt = ConvertPromptToMojo(
+        entry, script_state, exception_state, execution_context, allowed_types);
+    if (prompt.is_null()) {
+      return std::nullopt;
+    }
     prompts.push_back(std::move(prompt));
   }
 
@@ -535,7 +551,6 @@ ScriptPromise<IDLString> LanguageModel::prompt(
   auto prompts = BuildPrompts(input, script_state, exception_state,
                               GetExecutionContext(), input_types_);
   if (!prompts.has_value()) {
-    resolver->Reject(prompts.error());
     return promise;
   }
 
@@ -601,10 +616,6 @@ ReadableStream* LanguageModel::promptStreaming(
   auto prompts = BuildPrompts(input, script_state, exception_state,
                               GetExecutionContext(), input_types_);
   if (!prompts.has_value()) {
-    auto* exception = prompts.error();
-    CHECK(IsDOMExceptionCode(exception->code()));
-    exception_state.ThrowDOMException(
-        static_cast<DOMExceptionCode>(exception->code()), exception->message());
     return nullptr;
   }
 
@@ -713,7 +724,6 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
   auto prompts = BuildPrompts(input, script_state, exception_state,
                               GetExecutionContext(), input_types_);
   if (!prompts.has_value()) {
-    resolver->Reject(prompts.error());
     return promise;
   }
 
