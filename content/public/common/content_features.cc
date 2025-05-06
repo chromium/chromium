@@ -1189,7 +1189,7 @@ BASE_FEATURE(kUnrestrictedSharedArrayBuffer,
 // If enabled, blink's context snapshot is used rather than the v8 snapshot.
 BASE_FEATURE(kUseContextSnapshot,
              "UseContextSnapshot",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables comparing browser and renderer's DidCommitProvisionalLoadParams in
