@@ -184,13 +184,13 @@ class GraphBuilderCoreml {
     base::expected<void, mojom::ErrorPtr> WeightItemFinalize(size_t byte_size);
 
     base::File weights_file_;
-    OperandId current_offset_ = 0;
+    uint64_t current_offset_ = 0;
     uint32_t num_of_weights_ = 0;
     base::TimeDelta weights_write_time_;
     bool has_error_ = false;
     bool finalized_ = false;
     // Maps operand IDs to offsets in the weight file.
-    base::flat_map<OperandId, OperandId> constant_offsets_;
+    base::flat_map<OperandId, uint64_t> constant_offsets_;
   };
 
   GraphBuilderCoreml(
