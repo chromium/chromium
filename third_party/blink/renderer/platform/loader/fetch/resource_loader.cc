@@ -664,6 +664,7 @@ bool ResourceLoader::WillFollowRedirect(
 
     // CanRequest() checks only enforced CSP, so check report-only here to
     // ensure that violations are sent.
+    // CanRequest() will also perform IntegrityPolicy verifications if needed.
     Context().CheckCSPForRequest(
         request_context, request_destination, request_mode,
         new_url_prior_upgrade, options, reporting_disposition,
@@ -978,6 +979,7 @@ void ResourceLoader::DidReceiveResponseInternal(
     //
     // CanRequest() below only checks enforced policies: check report-only
     // here to ensure violations are sent.
+    // CanRequest() will also perform IntegrityPolicy verifications if needed.
     const KURL& response_url = response.ResponseUrl();
     Context().CheckCSPForRequest(
         request_context, request_destination, request_mode, response_url,

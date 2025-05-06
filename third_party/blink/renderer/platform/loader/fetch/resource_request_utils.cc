@@ -251,6 +251,8 @@ PrepareResourceRequestForCacheAccess(
       options, reporting_disposition,
       MemoryCache::RemoveFragmentIdentifierIfNeeded(url_before_redirects),
       redirect_status);
+  // There's no need to add an integrity policy check here, as CanRequest() will
+  // do that below.
 
   context.PopulateResourceRequestBeforeCacheAccess(options, resource_request);
   if (!resource_request.Url().IsValid()) {

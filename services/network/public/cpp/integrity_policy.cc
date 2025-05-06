@@ -14,5 +14,6 @@ IntegrityPolicy& IntegrityPolicy::operator=(IntegrityPolicy&&) = default;
 
 IntegrityPolicy::IntegrityPolicy(const IntegrityPolicy&) = default;
 IntegrityPolicy& IntegrityPolicy::operator=(const IntegrityPolicy&) = default;
+bool IntegrityPolicy::operator==(const IntegrityPolicy&) const = default;
 
 }  // namespace network

@@ -154,6 +154,20 @@ void NavigationPolicyContainerBuilder::SetDocumentIsolationPolicy(
   delivered_policies_.document_isolation_policy = dip;
 }
 
+void NavigationPolicyContainerBuilder::SetIntegrityPolicy(
+    network::IntegrityPolicy ip) {
+  DCHECK(!HasComputedPolicies());
+
+  delivered_policies_.integrity_policy = std::move(ip);
+}
+
+void NavigationPolicyContainerBuilder::SetIntegrityPolicyReportOnly(
+    network::IntegrityPolicy ip) {
+  DCHECK(!HasComputedPolicies());
+
+  delivered_policies_.integrity_policy_report_only = std::move(ip);
+}
+
 const PolicyContainerPolicies&
 NavigationPolicyContainerBuilder::DeliveredPoliciesForTesting() const {
   DCHECK(!HasComputedPolicies());

@@ -29,6 +29,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_INTEGRITY_POLICY) IntegrityPolicy {
   IntegrityPolicy(const IntegrityPolicy&);
   IntegrityPolicy& operator=(const IntegrityPolicy&);
 
+  bool operator==(const IntegrityPolicy&) const;
+
   std::vector<mojom::IntegrityPolicy_Destination> blocked_destinations;
   std::vector<mojom::IntegrityPolicy_Source> sources;
   std::vector<std::string> endpoints;

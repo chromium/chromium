@@ -105,6 +105,9 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // This must be called before `ComputePolicies()`.
   void SetDocumentIsolationPolicy(const network::DocumentIsolationPolicy& dip);
 
+  void SetIntegrityPolicy(network::IntegrityPolicy ip);
+  void SetIntegrityPolicyReportOnly(network::IntegrityPolicy ip);
+
   // Sets the IP address space of the delivered policies of the new document.
   //
   // This must be called before `ComputePolicies()`.

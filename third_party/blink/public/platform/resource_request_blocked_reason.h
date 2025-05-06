@@ -14,6 +14,7 @@ enum class ResourceRequestBlockedReason {
   kMixedContent,
   kOrigin,
   kInspector,
+  kIntegrity,
   kSubresourceFilter,
   kContentType,
   kCoepFrameResourceNeedsCoepHeader,

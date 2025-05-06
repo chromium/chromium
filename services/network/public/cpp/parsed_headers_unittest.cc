@@ -363,5 +363,20 @@ TEST(ParsedHeadersTest, CookieIndices) {
       ::testing::Optional(::testing::ElementsAre("logged_in", "user_lang")));
 }
 
+TEST(ParsedHeadersTest, IntegrityPolicy) {
+  base::test::ScopedFeatureList enable{features::kIntegrityPolicyScript};
+  const std::string_view headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Integrity-Policy: blocked-destinations=(script)\r\n"
+      "Integrity-Policy-Report-Only: blocked-destinations=(script)\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  ASSERT_TRUE(parsed_headers);
+  EXPECT_EQ(parsed_headers->integrity_policy.blocked_destinations.size(), 1u);
+  EXPECT_EQ(
+      parsed_headers->integrity_policy_report_only.blocked_destinations.size(),
+      1u);
+}
+
 }  // namespace
 }  // namespace network

@@ -4032,6 +4032,8 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
             parent_policies.cross_origin_opener_policy,
             parent_policies.cross_origin_embedder_policy,
             parent_policies.document_isolation_policy,
+            parent_policies.integrity_policy,
+            parent_policies.integrity_policy_report_only,
             network::mojom::WebSandboxFlags::kNone,
             /*is_credentialless=*/false,
             /*can_navigate_top_without_user_gesture=*/true,

@@ -2251,6 +2251,8 @@ String blockedReason(blink::ResourceRequestBlockedReason reason) {
       return protocol::Network::BlockedReasonEnum::Origin;
     case blink::ResourceRequestBlockedReason::kInspector:
       return protocol::Network::BlockedReasonEnum::Inspector;
+    case blink::ResourceRequestBlockedReason::kIntegrity:
+      return protocol::Network::BlockedReasonEnum::Integrity;
     case blink::ResourceRequestBlockedReason::kSubresourceFilter:
       return protocol::Network::BlockedReasonEnum::SubresourceFilter;
     case blink::ResourceRequestBlockedReason::kContentType:

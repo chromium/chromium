@@ -17,6 +17,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/cpp/document_isolation_policy.h"
+#include "services/network/public/cpp/integrity_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -43,6 +44,8 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       const network::DocumentIsolationPolicy& document_isolation_policy,
+      network::IntegrityPolicy integrity_policy,
+      network::IntegrityPolicy integrity_policy_report_only,
       network::mojom::WebSandboxFlags sandbox_flags,
       bool is_credentialless,
       bool can_navigate_top_without_user_gesture,
@@ -119,6 +122,9 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // See:
   // https://github.com/explainers-by-googlers/document-isolation-policy
   network::DocumentIsolationPolicy document_isolation_policy;
+
+  network::IntegrityPolicy integrity_policy;
+  network::IntegrityPolicy integrity_policy_report_only;
 
   // Tracks the sandbox flags which are in effect on this document. This
   // includes any flags which have been set by a Content-Security-Policy header,
@@ -218,6 +224,13 @@ class CONTENT_EXPORT PolicyContainerHost
 
   const network::DocumentIsolationPolicy& document_isolation_policy() const {
     return policies_.document_isolation_policy;
+  }
+
+  const network::IntegrityPolicy& integrity_policy() const {
+    return policies_.integrity_policy;
+  }
+  const network::IntegrityPolicy& integrity_policy_report_only() const {
+    return policies_.integrity_policy_report_only;
   }
 
   network::mojom::WebSandboxFlags sandbox_flags() const {

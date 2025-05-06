@@ -16,6 +16,22 @@
 #include "services/network/public/cpp/document_isolation_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/integrity_policy.mojom.h"
+
+namespace {
+template <typename T>
+std::string ConvertToString(const std::vector<T>& array) {
+  std::ostringstream oss;
+  size_t array_size = array.size();
+  for (size_t i = 0; i < array_size; ++i) {
+    oss << array[i];
+    if (i == array_size - 1) {
+      oss << ", ";
+    }
+  }
+  return oss.str();
+}
+}  // namespace
 
 namespace content {
 
@@ -29,6 +45,8 @@ bool operator==(const PolicyContainerPolicies& lhs,
          lhs.cross_origin_opener_policy == rhs.cross_origin_opener_policy &&
          lhs.cross_origin_embedder_policy == rhs.cross_origin_embedder_policy &&
          lhs.document_isolation_policy == rhs.document_isolation_policy &&
+         lhs.integrity_policy == rhs.integrity_policy &&
+         lhs.integrity_policy_report_only == rhs.integrity_policy_report_only &&
          lhs.sandbox_flags == rhs.sandbox_flags &&
          lhs.is_credentialless == rhs.is_credentialless &&
          lhs.can_navigate_top_without_user_gesture ==
@@ -96,6 +114,16 @@ std::ostream& operator<<(std::ostream& out,
              .value_or("<null>")
       << " }";
 
+  out << ", integrity_policy: " << "{ blocked-destinations: "
+      << ConvertToString<::network::mojom::IntegrityPolicy_Destination>(
+             policies.integrity_policy.blocked_destinations)
+      << ", sources: "
+      << ConvertToString<::network::mojom::IntegrityPolicy_Source>(
+             policies.integrity_policy.sources)
+      << ", endpoints: "
+      << ConvertToString<std::string>(policies.integrity_policy.endpoints)
+      << " }";
+
   out << ", sandbox_flags: " << policies.sandbox_flags;
   out << ", is_credentialless: " << policies.is_credentialless;
   out << ", can_navigate_top_without_user_gesture: "
@@ -117,6 +145,8 @@ PolicyContainerPolicies::PolicyContainerPolicies(
     const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     const network::DocumentIsolationPolicy& document_isolation_policy,
+    network::IntegrityPolicy integrity_policy,
+    network::IntegrityPolicy integrity_policy_report_only,
     network::mojom::WebSandboxFlags sandbox_flags,
     bool is_credentialless,
     bool can_navigate_top_without_user_gesture,
@@ -128,6 +158,8 @@ PolicyContainerPolicies::PolicyContainerPolicies(
       cross_origin_opener_policy(cross_origin_opener_policy),
       cross_origin_embedder_policy(cross_origin_embedder_policy),
       document_isolation_policy(document_isolation_policy),
+      integrity_policy(std::move(integrity_policy)),
+      integrity_policy_report_only(std::move(integrity_policy_report_only)),
       sandbox_flags(sandbox_flags),
       is_credentialless(is_credentialless),
       can_navigate_top_without_user_gesture(
@@ -145,6 +177,8 @@ PolicyContainerPolicies::PolicyContainerPolicies(
                               network::CrossOriginOpenerPolicy(),
                               policies.cross_origin_embedder_policy,
                               network::DocumentIsolationPolicy(),
+                              std::move(policies.integrity_policy),
+                              std::move(policies.integrity_policy_report_only),
                               policies.sandbox_flags,
                               policies.is_credentialless,
                               policies.can_navigate_top_without_user_gesture,
@@ -162,6 +196,8 @@ PolicyContainerPolicies::PolicyContainerPolicies(
           response_head->parsed_headers->cross_origin_opener_policy,
           response_head->parsed_headers->cross_origin_embedder_policy,
           response_head->parsed_headers->document_isolation_policy,
+          response_head->parsed_headers->integrity_policy,
+          response_head->parsed_headers->integrity_policy_report_only,
           network::mojom::WebSandboxFlags::kNone,
           /*is_credentialless=*/false,
           /*can_navigate_top_without_user_gesture=*/true,
@@ -185,7 +221,8 @@ PolicyContainerPolicies PolicyContainerPolicies::Clone() const {
       referrer_policy, ip_address_space, is_web_secure_context,
       mojo::Clone(content_security_policies), cross_origin_opener_policy,
       cross_origin_embedder_policy, mojo::Clone(document_isolation_policy),
-      sandbox_flags, is_credentialless, can_navigate_top_without_user_gesture,
+      integrity_policy, integrity_policy_report_only, sandbox_flags,
+      is_credentialless, can_navigate_top_without_user_gesture,
       cross_origin_isolation_enabled_by_dip);
 }
 
@@ -204,7 +241,8 @@ void PolicyContainerPolicies::AddContentSecurityPolicies(
 blink::mojom::PolicyContainerPoliciesPtr
 PolicyContainerPolicies::ToMojoPolicyContainerPolicies() const {
   return blink::mojom::PolicyContainerPolicies::New(
-      cross_origin_embedder_policy, referrer_policy,
+      cross_origin_embedder_policy, integrity_policy,
+      integrity_policy_report_only, referrer_policy,
       mojo::Clone(content_security_policies), is_credentialless, sandbox_flags,
       ip_address_space, can_navigate_top_without_user_gesture,
       cross_origin_isolation_enabled_by_dip);

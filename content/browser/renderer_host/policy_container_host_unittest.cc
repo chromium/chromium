@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/integrity_policy.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
@@ -30,6 +31,8 @@ struct SameSizeAsPolicyContainerPolicies {
   network::CrossOriginOpenerPolicy cross_origin_opener_policy;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
   network::DocumentIsolationPolicy document_isolation_policy;
+  network::IntegrityPolicy integrity_policy;
+  network::IntegrityPolicy integrity_policy_report_only;
   network::mojom::WebSandboxFlags sandbox_flags;
   bool is_credentialless;
   bool can_navigate_top_without_user_gesture;
@@ -82,11 +85,17 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
   dip.reporting_endpoint = "endpoint 1";
   dip.report_only_reporting_endpoint = "endpoint 2";
 
+  network::IntegrityPolicy ip;
+  ip.sources.push_back(network::mojom::IntegrityPolicy::Source::kInline);
+  ip.blocked_destinations.push_back(
+      network::mojom::IntegrityPolicy::Destination::kScript);
+  ip.endpoints.push_back("integrity endpoint");
+
   PolicyContainerPolicies policies(
       network::mojom::ReferrerPolicy::kAlways,
       network::mojom::IPAddressSpace::kUnknown,
       /*is_web_secure_context=*/true, std::move(csps), coop, coep,
-      std::move(dip), sandbox_flags,
+      std::move(dip), ip, network::IntegrityPolicy(), sandbox_flags,
       /*is_credentialless=*/true,
       /*can_navigate_top_without_user_gesture=*/true,
       /*cross_origin_isolation_enabled_by_dip=*/false);

@@ -1262,6 +1262,8 @@ ResourceFetcher::UpdateRequestForTransparentPlaceholderImage(
       ResourceRequestBlockedReason::kCSP) {
     return ResourceRequestBlockedReason::kCSP;
   }
+  // Here we check for CSP but not for IntegrityPolicy, as IntegrityPolicy does
+  // not yet cover image destinations.
 
   return std::nullopt;
 }

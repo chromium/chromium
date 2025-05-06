@@ -302,6 +302,9 @@ String DescriptionForBlockedByClientOrResponse(
     case ResourceRequestBlockedReason::kInspector:
       detail = "Inspector";
       break;
+    case ResourceRequestBlockedReason::kIntegrity:
+      detail = "Integrity";
+      break;
     case ResourceRequestBlockedReason::kSubresourceFilter:
       detail = "SubresourceFilter";
       break;

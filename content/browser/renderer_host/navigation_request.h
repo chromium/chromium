@@ -82,6 +82,7 @@
 #endif
 
 namespace network {
+struct IntegrityPolicy;
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
@@ -2109,6 +2110,15 @@ class CONTENT_EXPORT NavigationRequest
   // Returns the CrossOriginEmbedderPolicy for the document, which is inherited
   // or retrieved from response headers.
   network::CrossOriginEmbedderPolicy ComputeCrossOriginEmbedderPolicy();
+
+  struct IntegrityPolicies {
+    network::IntegrityPolicy enforced;
+    network::IntegrityPolicy report_only;
+  };
+
+  // Calculates the integrity policies for a document, based on the
+  // `Integrity-Policy` and `Integrity-Policy-Report-Only` headers.
+  IntegrityPolicies ComputeIntegrityPolicies();
 
   // [spec]:
   // https://html.spec.whatwg.org/C/#check-a-navigation-response's-adherence-to-its-embedder-policy

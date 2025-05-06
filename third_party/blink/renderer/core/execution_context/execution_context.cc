@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/execution_context_csp_delegate.h"
+#include "third_party/blink/renderer/core/frame/integrity_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -520,8 +521,13 @@ void ExecutionContext::SetReferrerPolicy(
 void ExecutionContext::SetPolicyContainer(
     std::unique_ptr<PolicyContainer> container) {
   policy_container_ = std::move(container);
-  security_context_.SetSandboxFlags(
-      policy_container_->GetPolicies().sandbox_flags);
+  const mojom::blink::PolicyContainerPolicies& policies =
+      policy_container_->GetPolicies();
+  security_context_.SetSandboxFlags(policies.sandbox_flags);
+
+  IntegrityPolicy::LogParsingErrorsIfAny(this, policies.integrity_policy);
+  IntegrityPolicy::LogParsingErrorsIfAny(this,
+                                         policies.integrity_policy_report_only);
 }
 
 std::unique_ptr<PolicyContainer> ExecutionContext::TakePolicyContainer() {

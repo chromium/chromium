@@ -162,6 +162,7 @@
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
+#include "services/network/public/cpp/integrity_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
@@ -9524,6 +9525,28 @@ NavigationRequest::ComputeCrossOriginEmbedderPolicy() {
   return network::CrossOriginEmbedderPolicy();
 }
 
+NavigationRequest::IntegrityPolicies
+NavigationRequest::ComputeIntegrityPolicies() {
+  IntegrityPolicies policies;
+  if (!base::FeatureList::IsEnabled(
+          network::features::kIntegrityPolicyScript)) {
+    return policies;
+  }
+  const GURL& url = common_params_->url;
+  const GURL& top_level_creation_url = GetParentFrameOrOuterDocument()
+                                           ? GetParentFrameOrOuterDocument()
+                                                 ->GetOutermostMainFrame()
+                                                 ->GetLastCommittedURL()
+                                           : url;
+  if (network::IsUrlPotentiallyTrustworthy(top_level_creation_url) &&
+      response_head_ && response_head_->parsed_headers) {
+    policies.enforced = response_head_->parsed_headers->integrity_policy;
+    policies.report_only =
+        response_head_->parsed_headers->integrity_policy_report_only;
+  }
+  return policies;
+}
+
 // [spec]:
 // https://html.spec.whatwg.org/C/#check-a-navigation-response's-adherence-to-its-embedder-policy
 //
@@ -10055,6 +10078,12 @@ void NavigationRequest::ComputePoliciesToCommit() {
 
   policy_container_builder_->SetCrossOriginEmbedderPolicy(
       ComputeCrossOriginEmbedderPolicy());
+
+  IntegrityPolicies integrity_policies = ComputeIntegrityPolicies();
+  policy_container_builder_->SetIntegrityPolicy(
+      std::move(integrity_policies.enforced));
+  policy_container_builder_->SetIntegrityPolicyReportOnly(
+      std::move(integrity_policies.report_only));
 
   // If the navigation is the result of a network response, set DIP to the
   // one in the network response. Otherwise, DIP should follow normal rules of
