@@ -525,7 +525,7 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 
 # Persistent flaking on Windows and Mac/M1
 crbug.com/365680830 [ amd64 angle-d3d11 graphite-enabled win ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
-crbug.com/365680830 [ angle-metal apple sonoma ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
+crbug.com/365680830 [ mac mac-arm64 angle-metal ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 
 
 ####################
