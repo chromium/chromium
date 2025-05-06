@@ -81,4 +81,9 @@ bool IsFedCmAutofillEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmAutofill) ||
          IsFedCmDelegationEnabled();
 }
+
+bool IsFedCmIframeOriginEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmIframeOrigin);
+}
+
 }  // namespace content

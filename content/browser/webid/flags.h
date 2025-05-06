@@ -56,6 +56,10 @@ bool IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled();
 
 // Whether autofill enhancement with FedCM is enabled.
 bool IsFedCmAutofillEnabled();
+
+// Whether showing the iframe origin is enabled.
+bool IsFedCmIframeOriginEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

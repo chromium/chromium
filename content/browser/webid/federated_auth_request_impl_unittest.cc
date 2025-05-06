@@ -401,13 +401,16 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       }
     }
 
+    IdpNetworkRequestManager::ClientMetadata client_metadata;
+    client_metadata.privacy_policy_url =
+        GURL(info.client_metadata.privacy_policy_url);
+    client_metadata.terms_of_service_url =
+        GURL(info.client_metadata.terms_of_service_url);
+    client_metadata.brand_icon_url = GURL(info.client_metadata.brand_icon_url);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), info.client_metadata.fetch_status,
-                       IdpNetworkRequestManager::ClientMetadata{
-                           GURL(info.client_metadata.privacy_policy_url),
-                           GURL(info.client_metadata.terms_of_service_url),
-                           GURL(info.client_metadata.brand_icon_url)}));
+                       client_metadata));
   }
 
   void SendAccountsRequest(const url::Origin& idp_origin,

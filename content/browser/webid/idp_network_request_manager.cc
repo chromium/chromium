@@ -105,6 +105,8 @@ constexpr char kIdpBrandingForegroundColorKey[] = "color";
 // Client metadata keys.
 constexpr char kPrivacyPolicyKey[] = "privacy_policy_url";
 constexpr char kTermsOfServiceKey[] = "terms_of_service_url";
+constexpr char kClientMatchesTopFrameOriginKey[] =
+    "client_matches_top_frame_origin";
 
 // Accounts endpoint response keys.
 constexpr char kAccountsKey[] = "accounts";
@@ -706,6 +708,7 @@ void OnConfigParsed(const GURL& provider,
 }
 
 void OnClientMetadataParsed(
+    bool is_cross_site_iframe,
     int rp_brand_icon_ideal_size,
     int rp_brand_icon_minimum_size,
     IdpNetworkRequestManager::FetchClientMetadataCallback callback,
@@ -720,6 +723,10 @@ void OnClientMetadataParsed(
   const base::Value::Dict& response = result->GetDict();
   data.privacy_policy_url = ExtractUrl(response, kPrivacyPolicyKey);
   data.terms_of_service_url = ExtractUrl(response, kTermsOfServiceKey);
+  if (is_cross_site_iframe) {
+    data.client_matches_top_frame_origin =
+        response.FindBool(kClientMatchesTopFrameOriginKey);
+  }
 
   const base::Value::List* icons_value = response.FindList(kBrandingIconsKey);
   if (icons_value) {
@@ -1022,6 +1029,11 @@ IdpNetworkRequestManager::WellKnown::~WellKnown() = default;
 IdpNetworkRequestManager::WellKnown::WellKnown(const WellKnown& other) =
     default;
 
+IdpNetworkRequestManager::ClientMetadata::ClientMetadata() = default;
+IdpNetworkRequestManager::ClientMetadata::~ClientMetadata() = default;
+IdpNetworkRequestManager::ClientMetadata::ClientMetadata(
+    const ClientMetadata& other) = default;
+
 IdpNetworkRequestManager::TokenResult::TokenResult() = default;
 IdpNetworkRequestManager::TokenResult::~TokenResult() = default;
 IdpNetworkRequestManager::TokenResult::TokenResult(const TokenResult& other) =
@@ -1037,6 +1049,7 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
   // when the user selects an account to sign in.
   return std::make_unique<IdpNetworkRequestManager>(
       host->GetLastCommittedOrigin(),
+      host->GetMainFrame()->GetLastCommittedOrigin(),
       host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess(),
       host->GetBrowserContext()->GetFederatedIdentityPermissionContext(),
       host->BuildClientSecurityState());
@@ -1044,10 +1057,12 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
 
 IdpNetworkRequestManager::IdpNetworkRequestManager(
     const url::Origin& relying_party_origin,
+    const url::Origin& rp_embedding_origin,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     network::mojom::ClientSecurityStatePtr client_security_state)
     : relying_party_origin_(relying_party_origin),
+      rp_embedding_origin_(rp_embedding_origin),
       loader_factory_(loader_factory),
       permission_delegate_(permission_delegate),
       client_security_state_(std::move(client_security_state)) {
@@ -1289,6 +1304,12 @@ void IdpNetworkRequestManager::SendDisconnectRequest(
       maxResponseSizeInKiB * 1024);
 }
 
+bool IdpNetworkRequestManager::IsCrossSiteIframe() const {
+  return IsFedCmIframeOriginEnabled() && !rp_embedding_origin_.opaque() &&
+         !net::SchemefulSite::IsSameSite(relying_party_origin_,
+                                         rp_embedding_origin_);
+}
+
 void IdpNetworkRequestManager::DownloadAndDecodeImage(const GURL& url,
                                                       ImageCallback callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
@@ -1386,8 +1407,12 @@ void IdpNetworkRequestManager::FetchClientMetadata(
     int rp_brand_icon_ideal_size,
     int rp_brand_icon_minimum_size,
     FetchClientMetadataCallback callback) {
-  GURL target_url = endpoint.Resolve(
-      "?client_id=" + base::EscapeQueryParamValue(client_id, true));
+  std::string parameters =
+      "?client_id=" + base::EscapeQueryParamValue(client_id, true);
+  if (IsCrossSiteIframe()) {
+    parameters += "&top_frame_origin=" + rp_embedding_origin_.Serialize();
+  }
+  GURL target_url = endpoint.Resolve(parameters);
 
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateUncredentialedResourceRequest(target_url,
@@ -1396,8 +1421,9 @@ void IdpNetworkRequestManager::FetchClientMetadata(
   DownloadJsonAndParse(
       std::move(resource_request),
       /*url_encoded_post_data=*/std::nullopt,
-      base::BindOnce(&OnClientMetadataParsed, rp_brand_icon_ideal_size,
-                     rp_brand_icon_minimum_size, std::move(callback)),
+      base::BindOnce(&OnClientMetadataParsed, IsCrossSiteIframe(),
+                     rp_brand_icon_ideal_size, rp_brand_icon_minimum_size,
+                     std::move(callback)),
       maxResponseSizeInKiB * 1024);
 }
 

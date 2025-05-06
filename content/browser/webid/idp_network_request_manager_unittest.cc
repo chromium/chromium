@@ -124,11 +124,16 @@ url::Origin GetOriginHeader(const network::ResourceRequest& request) {
 
 class IdpNetworkRequestManagerTest : public ::testing::Test {
  public:
-  std::unique_ptr<IdpNetworkRequestManager> CreateTestManager() {
+  std::unique_ptr<IdpNetworkRequestManager> CreateTestManager(
+      const char* top_level_origin = nullptr) {
     test_permission_delegate_ =
         std::make_unique<NiceMock<MockPermissionDelegate>>();
+    url::Origin top_level_origin_obj;
+    if (top_level_origin) {
+      top_level_origin_obj = url::Origin::Create(GURL(top_level_origin));
+    }
     return std::make_unique<IdpNetworkRequestManager>(
-        url::Origin::Create(GURL(kTestRpUrl)),
+        url::Origin::Create(GURL(kTestRpUrl)), top_level_origin_obj,
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         test_permission_delegate_.get(),
@@ -311,10 +316,15 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
   IdpClientMetadata SendClientMetadataRequestAndWaitForResponse(
       const char* client_id,
-      const std::string& response = R"({})") {
+      const std::string& response = R"({})",
+      const char* top_level_origin = nullptr) {
     GURL client_id_endpoint(kTestClientMetadataEndpoint);
-    AddResponse(GURL(client_id_endpoint.spec() + "?client_id=" + client_id),
-                net::HTTP_OK, "application/json", response);
+    std::string url_string =
+        client_id_endpoint.spec() + "?client_id=" + client_id;
+    if (top_level_origin) {
+      url_string += std::string("&top_frame_origin=") + top_level_origin;
+    }
+    AddResponse(GURL(url_string), net::HTTP_OK, "application/json", response);
 
     IdpClientMetadata data;
     base::RunLoop run_loop;
@@ -324,7 +334,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
           run_loop.Quit();
         });
 
-    std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+    std::unique_ptr<IdpNetworkRequestManager> manager =
+        CreateTestManager(top_level_origin);
     manager->FetchClientMetadata(
         client_id_endpoint, client_id, kTestBrandIconIdealSize,
         kTestBrandIconMinimumSize, std::move(callback));
@@ -914,6 +925,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchWellKnownIllegalDomainFails) {
 
   auto network_manager = std::make_unique<IdpNetworkRequestManager>(
       url::Origin::Create(GURL(kTestRpUrl)),
+      /*rp_embedding_origin=*/url::Origin(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
       test_permission_delegate_.get(),
@@ -1766,6 +1778,19 @@ TEST_F(IdpNetworkRequestManagerTest, ClientMetadata) {
   ASSERT_EQ(GURL(), data.privacy_policy_url);
   ASSERT_EQ(GURL(), data.terms_of_service_url);
   ASSERT_EQ(GURL(), data.brand_icon_url);
+  ASSERT_FALSE(data.client_matches_top_frame_origin.has_value());
+}
+
+// Tests the "matches top frame" boolean.
+TEST_F(IdpNetworkRequestManagerTest, ClientMatchesTopFrameOrigin) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
+
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+      "clientid", R"({"client_matches_top_frame_origin": false})",
+      "https://toplevel.example");
+  ASSERT_TRUE(data.client_matches_top_frame_origin.has_value());
+  EXPECT_FALSE(*data.client_matches_top_frame_origin);
 }
 
 // Tests that we correctly records metrics regarding approved_clients.
