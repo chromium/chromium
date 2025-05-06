@@ -22,12 +22,24 @@
  */
 
 export namespace Bluetooth {
-  export type BluetoothServiceUuid = string;
+  export type BluetoothUuid = string;
 }
 export namespace Bluetooth {
   export type BluetoothManufacturerData = {
     key: number;
     data: string;
+  };
+}
+export namespace Bluetooth {
+  export type CharacteristicProperties = {
+    broadcast?: boolean;
+    read?: boolean;
+    writeWithoutResponse?: boolean;
+    write?: boolean;
+    notify?: boolean;
+    indicate?: boolean;
+    authenticatedSignedWrites?: boolean;
+    extendedProperties?: boolean;
   };
 }
 export namespace Bluetooth {
@@ -45,7 +57,7 @@ export namespace Bluetooth {
 export namespace Bluetooth {
   export type ScanRecord = {
     name?: string;
-    uuids?: [...Bluetooth.BluetoothServiceUuid[]];
+    uuids?: [...Bluetooth.BluetoothUuid[]];
     appearance?: number;
     manufacturerData?: [...Bluetooth.BluetoothManufacturerData[]];
   };
@@ -58,6 +70,11 @@ export type BluetoothCommand =
   | Bluetooth.SimulateAdvertisement
   | Bluetooth.SimulateGattConnectionResponse
   | Bluetooth.SimulateGattDisconnection
+  | Bluetooth.SimulateService
+  | Bluetooth.SimulateCharacteristic
+  | Bluetooth.SimulateCharacteristicResponse
+  | Bluetooth.SimulateDescriptor
+  | Bluetooth.SimulateDescriptorResponse
   | Record<string, never>;
 export namespace Bluetooth {
   export type HandleRequestDevicePrompt = {
@@ -121,7 +138,7 @@ export namespace Bluetooth {
     address: string;
     name: string;
     manufacturerData: [...Bluetooth.BluetoothManufacturerData[]];
-    knownServiceUuids: [...Bluetooth.BluetoothServiceUuid[]];
+    knownServiceUuids: [...Bluetooth.BluetoothUuid[]];
   };
 }
 export namespace Bluetooth {
@@ -169,6 +186,89 @@ export namespace Bluetooth {
   };
 }
 export namespace Bluetooth {
+  export type SimulateService = {
+    method: 'bluetooth.simulateService';
+    params: Bluetooth.SimulateServiceParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateServiceParameters = {
+    context: string;
+    address: string;
+    uuid: Bluetooth.BluetoothUuid;
+    type: 'add' | 'remove';
+  };
+}
+export namespace Bluetooth {
+  export type SimulateCharacteristic = {
+    method: 'bluetooth.simulateCharacteristic';
+    params: Bluetooth.SimulateCharacteristicParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateCharacteristicParameters = {
+    context: string;
+    address: string;
+    serviceUuid: Bluetooth.BluetoothUuid;
+    characteristicUuid: Bluetooth.BluetoothUuid;
+    characteristicProperties?: Bluetooth.CharacteristicProperties;
+    type: 'add' | 'remove';
+  };
+}
+export namespace Bluetooth {
+  export type SimulateCharacteristicResponse = {
+    method: 'bluetooth.simulateCharacteristicResponse';
+    params: Bluetooth.SimulateCharacteristicResponseParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateCharacteristicResponseParameters = {
+    context: string;
+    address: string;
+    serviceUuid: Bluetooth.BluetoothUuid;
+    characteristicUuid: Bluetooth.BluetoothUuid;
+    type:
+      | 'read'
+      | 'write'
+      | 'subscribe-to-notifications'
+      | 'unsubscribe-from-notifications';
+    code: number;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateDescriptor = {
+    method: 'bluetooth.simulateDescriptor';
+    params: Bluetooth.SimulateDescriptorParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateDescriptorParameters = {
+    context: string;
+    address: string;
+    serviceUuid: Bluetooth.BluetoothUuid;
+    characteristicUuid: Bluetooth.BluetoothUuid;
+    descriptorUuid: Bluetooth.BluetoothUuid;
+    type: 'add' | 'remove';
+  };
+}
+export namespace Bluetooth {
+  export type SimulateDescriptorResponse = {
+    method: 'bluetooth.simulateDescriptorResponse';
+    params: Bluetooth.SimulateDescriptorResponseParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateDescriptorResponseParameters = {
+    context: string;
+    address: string;
+    serviceUuid: Bluetooth.BluetoothUuid;
+    characteristicUuid: Bluetooth.BluetoothUuid;
+    descriptorUuid: Bluetooth.BluetoothUuid;
+    type: 'read' | 'write';
+    code: number;
+  };
+}
+export namespace Bluetooth {
   export type RequestDevicePromptUpdated = {
     method: 'bluetooth.requestDevicePromptUpdated';
     params: Bluetooth.RequestDevicePromptUpdatedParameters;
@@ -191,5 +291,43 @@ export namespace Bluetooth {
   export type GattConnectionAttemptedParameters = {
     context: string;
     address: string;
+  };
+}
+export namespace Bluetooth {
+  export type CharacteristicEventGenerated = {
+    method: 'bluetooth.characteristicEventGenerated';
+    params: Bluetooth.CharacteristicEventGeneratedParameters;
+  };
+}
+export namespace Bluetooth {
+  export type CharacteristicEventGeneratedParameters = {
+    context: string;
+    address: string;
+    serviceUuid: Bluetooth.BluetoothUuid;
+    characteristicUuid: Bluetooth.BluetoothUuid;
+    type:
+      | 'read'
+      | 'write-with-response'
+      | 'write-without-response'
+      | 'subscribe-to-notifications'
+      | 'unsubscribe-from-notifications';
+    data?: [...number[]];
+  };
+}
+export namespace Bluetooth {
+  export type DescriptorEventGenerated = {
+    method: 'bluetooth.descriptorEventGenerated';
+    params: Bluetooth.DescriptorEventGeneratedParameters;
+  };
+}
+export namespace Bluetooth {
+  export type DescriptorEventGeneratedParameters = {
+    context: string;
+    address: string;
+    serviceUuid: Bluetooth.BluetoothUuid;
+    characteristicUuid: Bluetooth.BluetoothUuid;
+    descriptorUuid: Bluetooth.BluetoothUuid;
+    type: 'read' | 'write';
+    data?: [...number[]];
   };
 }
