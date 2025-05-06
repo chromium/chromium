@@ -39,7 +39,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feed.FeedFeatures;
@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -70,20 +69,17 @@ public class NtpCustomizationMediatorUnitTest {
     @Mock private PrefService mPrefService;
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private Profile mProfile;
-    @Mock private ProfileProvider mProfileProvider;
 
     private NtpCustomizationMediator mMediator;
     private Map<Integer, Integer> mViewFlipperMap;
     private ListContainerViewDelegate mListDelegate;
     private Context mContext;
-    private OneshotSupplierImpl<ProfileProvider> mSupplier;
+    private Supplier<Profile> mProfileSupplier;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mSupplier = new OneshotSupplierImpl<>();
-        mSupplier.set(mProfileProvider);
-        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        mProfileSupplier = () -> mProfile;
         NtpCustomizationMediator.setPrefForTesting(mPrefService);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedFeatures.setFakePrefsForTest(mPrefService);
@@ -93,7 +89,7 @@ public class NtpCustomizationMediatorUnitTest {
                         mBottomSheetContent,
                         mViewFlipperPropertyModel,
                         mContainerPropertyModel,
-                        mSupplier);
+                        mProfileSupplier);
         mViewFlipperMap = mMediator.getViewFlipperMapForTesting();
         mListDelegate = mMediator.createListDelegate();
     }

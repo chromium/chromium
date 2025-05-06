@@ -3397,7 +3397,15 @@ public class ChromeTabbedActivity extends ChromeActivity {
             new NtpCustomizationCoordinator(
                             this,
                             mRootUiCoordinator.getBottomSheetController(),
-                            getProfileProviderSupplier())
+                            () -> {
+                                OneshotSupplier<ProfileProvider> profileProviderSupplier =
+                                        getProfileProviderSupplier();
+                                if (profileProviderSupplier.hasValue()) {
+                                    return getProfileProviderSupplier().get().getOriginalProfile();
+                                }
+
+                                return null;
+                            })
                     .showBottomSheet();
             NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                     NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);

@@ -25,7 +25,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,7 +44,7 @@ public class NtpCustomizationCoordinator {
     private final BottomSheetDelegate mDelegate;
 
     private final Context mContext;
-    private final Supplier<ProfileProvider> mProfileSupplier;
+    private final Supplier<Profile> mProfileSupplier;
     private NtpCustomizationMediator mMediator;
     private @MonotonicNonNull NtpCardsCoordinator mNtpCardsCoordinator;
     private @Nullable FeedSettingsCoordinator mFeedSettingsCoordinator;
@@ -70,7 +70,7 @@ public class NtpCustomizationCoordinator {
     public NtpCustomizationCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
-            Supplier<ProfileProvider> profileSupplier) {
+            Supplier<Profile> profileSupplier) {
         mContext = context;
         mProfileSupplier = profileSupplier;
         View contentView =

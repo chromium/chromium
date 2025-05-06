@@ -24,7 +24,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -57,7 +56,7 @@ public class NtpCustomizationMediator {
     private final PropertyModel mViewFlipperPropertyModel;
     private List<Integer> mListContent;
     private final PropertyModel mContainerPropertyModel;
-    private final Supplier<ProfileProvider> mProfileSupplier;
+    private final Supplier<Profile> mProfileSupplier;
     private @Nullable Profile mProfile;
     private @Nullable Integer mCurrentBottomSheet;
     private static @Nullable PrefService sPrefServiceForTest;
@@ -67,7 +66,7 @@ public class NtpCustomizationMediator {
             NtpCustomizationBottomSheetContent bottomSheetContent,
             PropertyModel viewFlipperPropertyModel,
             PropertyModel containerPropertyModel,
-            Supplier<ProfileProvider> profileSupplier) {
+            Supplier<Profile> profileSupplier) {
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
         mViewFlipperPropertyModel = viewFlipperPropertyModel;
