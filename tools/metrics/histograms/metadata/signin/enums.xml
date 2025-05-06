@@ -722,6 +722,8 @@ chromium-metrics-reviews@google.com.
   <int value="79" label="Leave or delete collaboration tab group"/>
   <int value="80" label="History Sync Opt-in Expanded Pill on inactivity"/>
   <int value="81" label="History sync educational tip module (Android only)"/>
+  <int value="82"
+      label="Managed profile was automatically signed in (iOS only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

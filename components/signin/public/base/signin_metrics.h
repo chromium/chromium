@@ -281,10 +281,13 @@ enum class AccessPoint : int {
   // History sync education tip is shown on the NTP to users who have history
   // sync disabled. Android only.
   kHistorySyncEducationalTip = 81,
+  // iOS only: The user switched to a managed account for the first time, and
+  // the corresponding profile was automatically signed in.
+  kManagedProfileAutoSigninIos = 82,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kHistorySyncEducationalTip,  // This must be last.
+  kMaxValue = kManagedProfileAutoSigninIos,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

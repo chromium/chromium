@@ -498,8 +498,8 @@ void AuthenticationService::PerformFirstTimeProfileInitializationIfNecessary() {
   // this CHECK.
   CHECK_EQ(identities_for_profile.count, 1ul, base::NotFatalUntil::M142);
   if (identities_for_profile.count > 0) {
-    // TODO(crbug.com/375605482): Need to set the right access point.
-    SignIn(identities_for_profile[0], signin_metrics::AccessPoint::kUnknown);
+    SignIn(identities_for_profile[0],
+           signin_metrics::AccessPoint::kManagedProfileAutoSigninIos);
   }
 }
 
