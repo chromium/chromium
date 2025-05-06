@@ -862,6 +862,16 @@ extern const char kIOSReactivationNotificationsOrderParam[];
 // Returns whether `kIOSReactivationNotifications` is enabled.
 bool IsIOSReactivationNotificationsEnabled();
 
+// Feature flag to enable Expanded Tips.
+BASE_DECLARE_FEATURE(kIOSExpandedTips);
+
+// Feature param containing a comma separated list of integers that represent
+// cases of the `TipsNotificationType` enum.
+extern const char kIOSExpandedTipsOrderParam[];
+
+// Returns whether `kIOSExpandTips` is enabled.
+bool IsIOSExpandedTipsEnabled();
+
 // Feature flag to show an alert to the user when only provisiona notifications
 // are allowed.
 BASE_DECLARE_FEATURE(kProvisionalNotificationAlert);

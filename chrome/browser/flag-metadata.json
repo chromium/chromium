@@ -5675,6 +5675,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "ios-expanded-tips",
+    "owners": ["scottyoder@google.com", "bwwilliams@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 142
+  },
+  {
     "name": "ios-interruptible-coordinator-always-dismissed",
     "owners": [
       "arthurmilchior@google.com",

@@ -726,6 +726,11 @@ const char kIOSReactivationNotificationsDescription[] =
     "Enables a feature to send provisional notifications of interest to new"
     "users and encourage them to return to the app.";
 
+const char kIOSExpandedTipsName[] = "Expanded Tips Notifications";
+const char kIOSExpandedTipsDescription[] =
+    "Enables a feature that adds several new Tips Notifications that can be "
+    "sent.";
+
 const char kIOSProvidesAppNotificationSettingsName[] =
     "IOS Provides App Notification Settings";
 const char kIOSProvidesAppNotificationSettingsDescription[] =

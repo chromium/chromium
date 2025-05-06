@@ -1566,6 +1566,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSReactivationNotifications,
                                     kIOSReactivationNotificationsVariations,
                                     "IOSReactivationNotifications")},
+    {"ios-expanded-tips", flag_descriptions::kIOSExpandedTipsName,
+     flag_descriptions::kIOSExpandedTipsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSExpandedTips)},
     {"invalidate-search-engine-choice-on-device-restore-detection",
      flag_descriptions::
          kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionName,

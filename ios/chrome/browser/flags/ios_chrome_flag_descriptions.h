@@ -418,6 +418,9 @@ extern const char kIOSStartTimeStartupRemediationsDescription[];
 extern const char kIOSReactivationNotificationsName[];
 extern const char kIOSReactivationNotificationsDescription[];
 
+extern const char kIOSExpandedTipsName[];
+extern const char kIOSExpandedTipsDescription[];
+
 extern const char kIOSProvidesAppNotificationSettingsName[];
 extern const char kIOSProvidesAppNotificationSettingsDescription[];
 

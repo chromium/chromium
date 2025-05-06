@@ -1005,6 +1005,15 @@ bool IsIOSReactivationNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSReactivationNotifications);
 }
 
+BASE_FEATURE(kIOSExpandedTips,
+             "IOSExpandedTips",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kIOSExpandedTipsOrderParam[] = "expanded_tips_order";
+
+bool IsIOSExpandedTipsEnabled() {
+  return base::FeatureList::IsEnabled(kIOSExpandedTips);
+}
+
 BASE_FEATURE(kProvisionalNotificationAlert,
              "ProvisionalNotificationAlert",
              base::FEATURE_DISABLED_BY_DEFAULT);
