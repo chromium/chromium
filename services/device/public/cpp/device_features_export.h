@@ -17,11 +17,7 @@
 
 #else  // !defined(WIN32)
 
-#if defined(DEVICE_FEATURES_IMPLEMENTATION)
 #define DEVICE_FEATURES_EXPORT __attribute__((visibility("default")))
-#else
-#define DEVICE_FEATURES_EXPORT
-#endif
 
 #endif
 

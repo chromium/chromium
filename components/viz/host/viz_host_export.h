@@ -15,11 +15,7 @@
 #endif  // defined(VIZ_HOST_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(VIZ_HOST_IMPLEMENTATION)
 #define VIZ_HOST_EXPORT __attribute__((visibility("default")))
-#else
-#define VIZ_HOST_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

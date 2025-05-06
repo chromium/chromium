@@ -17,11 +17,7 @@
 
 #else  // defined(WIN32)
 
-#if defined(OWNERSHIP_IMPLEMENTATION)
 #define OWNERSHIP_EXPORT __attribute__((visibility("default")))
-#else
-#define OWNERSHIP_EXPORT
-#endif  // defined(OWNERSHIP_IMPLEMENTATION)
 
 #endif  // defined(WIN32)
 

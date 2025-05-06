@@ -15,11 +15,7 @@
 #endif  // defined(CAPTIVE_PORTAL_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(CAPTIVE_PORTAL_IMPLEMENTATION)
 #define CAPTIVE_PORTAL_EXPORT __attribute__((visibility("default")))
-#else
-#define CAPTIVE_PORTAL_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

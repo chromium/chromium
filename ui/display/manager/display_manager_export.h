@@ -15,11 +15,7 @@
 #endif
 
 #else  // !defined(WIN32)
-#if defined(DISPLAY_MANAGER_IMPLEMENTATION)
 #define DISPLAY_MANAGER_EXPORT __attribute__((visibility("default")))
-#else
-#define DISPLAY_MANAGER_EXPORT
-#endif
 #endif
 
 #else  // !defined(COMPONENT_BUILD)

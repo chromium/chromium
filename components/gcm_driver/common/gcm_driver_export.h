@@ -15,11 +15,7 @@
 #endif  // defined(GCM_DRIVER_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(GCM_DRIVER_IMPLEMENTATION)
 #define GCM_DRIVER_EXPORT __attribute__((visibility("default")))
-#else
-#define GCM_DRIVER_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

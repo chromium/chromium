@@ -15,11 +15,7 @@
 #endif  // defined(VIZ_METAL_CONTEXT_PROVIDER_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(VIZ_METAL_CONTEXT_PROVIDER_IMPLEMENTATION)
 #define VIZ_METAL_CONTEXT_PROVIDER_EXPORT __attribute__((visibility("default")))
-#else
-#define VIZ_METAL_CONTEXT_PROVIDER_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

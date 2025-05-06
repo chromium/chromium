@@ -18,11 +18,7 @@
 #endif  // defined(CRYPTO_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(CRYPTO_IMPLEMENTATION)
 #define CRYPTO_EXPORT __attribute__((visibility("default")))
-#else
-#define CRYPTO_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

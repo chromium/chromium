@@ -11,11 +11,7 @@
 
 #if defined(COMPONENT_BUILD)
 
-#if defined(ACCELERATED_WIDGET_MAC_IMPLEMENTATION)
 #define ACCELERATED_WIDGET_MAC_EXPORT __attribute__((visibility("default")))
-#else
-#define ACCELERATED_WIDGET_MAC_EXPORT
-#endif
 
 #else  // defined(COMPONENT_BUILD)
 #define ACCELERATED_WIDGET_MAC_EXPORT

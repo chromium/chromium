@@ -39,7 +39,7 @@
 #define COMPONENT_IMPORT_ANNOTATION __declspec(dllimport)
 #else  // defined(WIN32)
 #define COMPONENT_EXPORT_ANNOTATION __attribute__((visibility("default")))
-#define COMPONENT_IMPORT_ANNOTATION
+#define COMPONENT_IMPORT_ANNOTATION __attribute__((visibility("default")))
 #endif  // defined(WIN32)
 #else   // defined(COMPONENT_BUILD)
 #define COMPONENT_EXPORT_ANNOTATION

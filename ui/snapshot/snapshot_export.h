@@ -18,11 +18,7 @@
 #endif  // defined(SNAPSHOT_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(SNAPSHOT_IMPLEMENTATION)
 #define SNAPSHOT_EXPORT __attribute__((visibility("default")))
-#else
-#define SNAPSHOT_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

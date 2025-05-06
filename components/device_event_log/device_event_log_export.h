@@ -16,19 +16,11 @@
 #endif  // defined(DEVICE_EVENT_LOG_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-
-#if defined(DEVICE_EVENT_LOG_IMPLEMENTATION)
 #define DEVICE_EVENT_LOG_EXPORT __attribute__((visibility("default")))
-#else
-#define DEVICE_EVENT_LOG_EXPORT
-#endif  // defined(DEVICE_EVENT_LOG_IMPLEMENTATION)
-
 #endif  // defined(WIN32)
 
 #else  // defined(COMPONENT_BUILD)
-
 #define DEVICE_EVENT_LOG_EXPORT
-
 #endif
 
 #endif  // COMPONENTS_DEVICE_EVENT_LOG_DEVICE_EVENT_LOG_EXPORT_H_

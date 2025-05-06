@@ -15,11 +15,7 @@
 #endif  // defined(GEOMETRY_SKIA_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(GFX_SKIA_IMPLEMENTATION)
 #define GFX_SKIA_EXPORT __attribute__((visibility("default")))
-#else
-#define GFX_SKIA_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

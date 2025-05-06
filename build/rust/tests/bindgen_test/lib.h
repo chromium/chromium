@@ -21,11 +21,7 @@
 #endif  // defined(COMPONENT_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(COMPONENT_IMPLEMENTATION)
 #define COMPONENT_EXPORT __attribute__((visibility("default")))
-#else
-#define COMPONENT_EXPORT
-#endif  // defined(COMPONENT_IMPLEMENTATION)
 #endif
 
 #else  // defined(COMPONENT_BUILD)
@@ -42,4 +38,4 @@ COMPONENT_EXPORT uint32_t add_two_numbers(uint32_t a, uint32_t b);
 }
 #endif
 
-#endif  //  BUILD_RUST_TESTS_BINDGEN_TEST_LIB_H_
+#endif  // BUILD_RUST_TESTS_BINDGEN_TEST_LIB_H_

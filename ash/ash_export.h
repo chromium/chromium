@@ -10,11 +10,7 @@
 
 #if defined(COMPONENT_BUILD)
 
-#if defined(ASH_IMPLEMENTATION)
 #define ASH_EXPORT __attribute__((visibility("default")))
-#else
-#define ASH_EXPORT
-#endif
 
 #else  // defined(COMPONENT_BUILD)
 #define ASH_EXPORT

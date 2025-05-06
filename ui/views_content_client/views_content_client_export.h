@@ -18,11 +18,7 @@
 #endif  // defined(VIEWS_CONTENT_CLIENT_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(VIEWS_CONTENT_CLIENT_IMPLEMENTATION)
 #define VIEWS_CONTENT_CLIENT_EXPORT __attribute__((visibility("default")))
-#else
-#define VIEWS_CONTENT_CLIENT_EXPORT
-#endif
 #endif  // defined(VIEWS_CONTENT_CLIENT_IMPLEMENTATION)
 
 #else  // defined(COMPONENT_BUILD)

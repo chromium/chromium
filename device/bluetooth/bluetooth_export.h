@@ -15,11 +15,7 @@
 
 #elif defined(COMPONENT_BUILD) && !defined(WIN32)
 
-#if defined(DEVICE_BLUETOOTH_IMPLEMENTATION)
 #define DEVICE_BLUETOOTH_EXPORT __attribute__((visibility("default")))
-#else
-#define DEVICE_BLUETOOTH_EXPORT
-#endif
 
 #else
 #define DEVICE_BLUETOOTH_EXPORT

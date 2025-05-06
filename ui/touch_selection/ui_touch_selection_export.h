@@ -22,11 +22,7 @@
 
 #else  // !defined(WIN32)
 
-#if defined(UI_TOUCH_SELECTION_IMPLEMENTATION)
 #define UI_TOUCH_SELECTION_EXPORT __attribute__((visibility("default")))
-#else
-#define UI_TOUCH_SELECTION_EXPORT
-#endif
 
 #endif
 

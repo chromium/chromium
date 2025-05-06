@@ -15,11 +15,7 @@
 #endif  // defined(USER_MANAGER_EXPORT)
 
 #else  // defined(WIN32)
-#if defined(USER_MANAGER_IMPLEMENTATION)
 #define USER_MANAGER_EXPORT __attribute__((visibility("default")))
-#else
-#define USER_MANAGER_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

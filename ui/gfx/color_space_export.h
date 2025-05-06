@@ -15,11 +15,7 @@
 #endif  // defined(COLOR_SPACE_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(COLOR_SPACE_IMPLEMENTATION)
 #define COLOR_SPACE_EXPORT __attribute__((visibility("default")))
-#else
-#define COLOR_SPACE_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

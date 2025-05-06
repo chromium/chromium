@@ -18,11 +18,7 @@
 #endif  // defined(KEYBOARD_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(KEYBOARD_IMPLEMENTATION)
 #define KEYBOARD_EXPORT __attribute__((visibility("default")))
-#else
-#define KEYBOARD_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

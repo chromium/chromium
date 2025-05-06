@@ -13,19 +13,11 @@
 #if defined(WIN32)
 #error Unsupported target architecture.
 #else  // !defined(WIN32)
-
-#if defined(UI_ANDROID_IMPLEMENTATION)
 #define UI_ANDROID_EXPORT __attribute__((visibility("default")))
-#else
-#define UI_ANDROID_EXPORT
-#endif
-
 #endif
 
 #else  // !defined(COMPONENT_BUILD)
-
 #define UI_ANDROID_EXPORT
-
 #endif
 
 #endif  // UI_ANDROID_UI_ANDROID_EXPORT_H_

@@ -18,11 +18,7 @@
 #endif  // defined(FILE_MANAGER_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(FILE_MANAGER_IMPLEMENTATION)
 #define FILE_MANAGER_EXPORT __attribute__((visibility("default")))
-#else
-#define FILE_MANAGER_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

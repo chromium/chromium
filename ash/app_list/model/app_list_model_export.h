@@ -10,11 +10,7 @@
 
 #if defined(COMPONENT_BUILD)
 
-#if defined(APP_LIST_MODEL_IMPLEMENTATION)
 #define APP_LIST_MODEL_EXPORT __attribute__((visibility("default")))
-#else
-#define APP_LIST_MODEL_EXPORT
-#endif
 
 #else  // defined(COMPONENT_BUILD)
 #define APP_LIST_MODEL_EXPORT

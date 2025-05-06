@@ -15,11 +15,7 @@
 
 #elif defined(COMPONENT_BUILD) && !defined(WIN32)
 
-#if defined(DEVICE_GAMEPAD_IMPLEMENTATION)
 #define DEVICE_GAMEPAD_EXPORT __attribute__((visibility("default")))
-#else
-#define DEVICE_GAMEPAD_EXPORT
-#endif
 
 #else
 #define DEVICE_GAMEPAD_EXPORT

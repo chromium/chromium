@@ -16,11 +16,7 @@
 
 #else  // !defined(WIN32)
 
-#if defined(MOJO_SYSTEM_IMPLEMENTATION)
 #define MOJO_SYSTEM_EXPORT __attribute__((visibility("default")))
-#else
-#define MOJO_SYSTEM_EXPORT
-#endif
 
 #endif  // defined(WIN32)
 

@@ -16,11 +16,7 @@
 
 #else  // defined(WIN32)
 
-#if defined(IPC_MESSAGE_SUPPORT_IMPL)
 #define IPC_MESSAGE_SUPPORT_EXPORT __attribute__((visibility("default")))
-#else
-#define IPC_MESSAGE_SUPPORT_EXPORT
-#endif
 
 #endif
 

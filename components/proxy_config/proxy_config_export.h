@@ -15,11 +15,7 @@
 #endif  // defined(PROXY_CONFIG_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(PROXY_CONFIG_IMPLEMENTATION)
 #define PROXY_CONFIG_EXPORT __attribute__((visibility("default")))
-#else
-#define PROXY_CONFIG_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

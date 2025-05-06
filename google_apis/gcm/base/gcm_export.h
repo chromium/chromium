@@ -15,11 +15,7 @@
 #endif  // defined(GCM_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(GCM_IMPLEMENTATION)
 #define GCM_EXPORT __attribute__((visibility("default")))
-#else
-#define GCM_EXPORT
-#endif  // defined(GCM_IMPLEMENTATION)
 #endif
 
 #else  // defined(COMPONENT_BUILD)

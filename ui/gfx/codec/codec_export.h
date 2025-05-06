@@ -15,11 +15,7 @@
 #endif  // defined(CODEC_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(CODEC_IMPLEMENTATION)
 #define CODEC_EXPORT __attribute__((visibility("default")))
-#else
-#define CODEC_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

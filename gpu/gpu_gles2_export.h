@@ -15,11 +15,7 @@
 #endif  // defined(GPU_GLES2_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(GPU_GLES2_IMPLEMENTATION)
 #define GPU_GLES2_EXPORT __attribute__((visibility("default")))
-#else
-#define GPU_GLES2_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

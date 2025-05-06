@@ -10,11 +10,7 @@
 
 #if defined(COMPONENT_BUILD)
 
-#if defined(APP_MENU_IMPLEMENTATION)
 #define APP_MENU_EXPORT __attribute__((visibility("default")))
-#else
-#define APP_MENU_EXPORT
-#endif
 
 #else  // defined(COMPONENT_BUILD)
 #define APP_MENU_EXPORT

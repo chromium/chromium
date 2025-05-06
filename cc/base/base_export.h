@@ -15,11 +15,7 @@
 #endif  // defined(CC_BASE_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(CC_BASE_IMPLEMENTATION)
 #define CC_BASE_EXPORT __attribute__((visibility("default")))
-#else
-#define CC_BASE_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

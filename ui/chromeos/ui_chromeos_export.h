@@ -6,11 +6,7 @@
 #define UI_CHROMEOS_UI_CHROMEOS_EXPORT_H_
 
 #if defined(COMPONENT_BUILD)
-#if defined(UI_CHROMEOS_IMPLEMENTATION)
 #define UI_CHROMEOS_EXPORT __attribute__((visibility("default")))
-#else
-#define UI_CHROMEOS_EXPORT
-#endif
 
 #else  // defined(COMPONENT_BUILD)
 #define UI_CHROMEOS_EXPORT

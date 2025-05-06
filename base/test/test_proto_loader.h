@@ -23,11 +23,7 @@ namespace base {
 #endif  // defined(PROTO_TEST_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(PROTO_TEST_IMPLEMENTATION)
 #define PROTO_TEST_EXPORT __attribute__((visibility("default")))
-#else
-#define PROTO_TEST_EXPORT
-#endif
 #endif
 #else  // defined(COMPONENT_BUILD)
 #define PROTO_TEST_EXPORT

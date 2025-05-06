@@ -15,11 +15,7 @@
 #endif  // defined(SESSIONS_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(SESSIONS_IMPLEMENTATION)
 #define SESSIONS_EXPORT __attribute__((visibility("default")))
-#else
-#define SESSIONS_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

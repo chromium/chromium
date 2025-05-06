@@ -15,11 +15,7 @@
 #endif  // defined(UI_DEVTOOLS_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(UI_DEVTOOLS_IMPLEMENTATION)
 #define UI_DEVTOOLS_EXPORT __attribute__((visibility("default")))
-#else
-#define UI_DEVTOOLS_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)
