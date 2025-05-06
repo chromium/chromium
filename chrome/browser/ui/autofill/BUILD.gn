@@ -30,10 +30,12 @@ source_set("autofill") {
   public_deps = [
     "//base",
     "//base:i18n",
+    "//chrome/browser:global_features",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/page_action:icon_type",
+    "//components/application_locale_storage:application_locale_storage",
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",

@@ -16,6 +16,7 @@
 #include "base/types/optional_util.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -92,7 +94,9 @@ AddressBubblesController::AddressBubblesController(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
       content::WebContentsUserData<AddressBubblesController>(*web_contents),
-      app_locale_(g_browser_process->GetApplicationLocale()) {}
+      app_locale_(g_browser_process->GetFeatures()
+                      ->application_locale_storage()
+                      ->Get()) {}
 
 AddressBubblesController::~AddressBubblesController() {
   // `address_profile_save_prompt_callback_` must have been invoked before

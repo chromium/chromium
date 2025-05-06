@@ -13,8 +13,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -34,7 +36,9 @@ AddressEditorController::AddressEditorController(
     bool is_validatable)
     : profile_to_edit_(profile_to_edit),
       pdm_(*pdm),
-      locale_(g_browser_process->GetApplicationLocale()),
+      locale_(g_browser_process->GetFeatures()
+                  ->application_locale_storage()
+                  ->Get()),
       is_validatable_(is_validatable) {
   const variations::VariationsService* variations_service =
       g_browser_process->variations_service();

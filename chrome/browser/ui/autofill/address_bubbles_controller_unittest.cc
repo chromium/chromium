@@ -12,8 +12,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -49,7 +51,9 @@ class AddressBubblesControllerTest : public TestWithBrowserView {
   }
 
   const std::string& app_locale() const {
-    return g_browser_process->GetApplicationLocale();
+    return g_browser_process->GetFeatures()
+        ->application_locale_storage()
+        ->Get();
   }
 };
 
