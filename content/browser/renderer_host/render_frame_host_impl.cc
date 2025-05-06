@@ -11734,7 +11734,8 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
   if (run_beforeunload_for_legacy) {
     DCHECK(send_ipc);
     beforeunload_pending_replies_.insert(this);
-    SendBeforeUnload(is_reload, GetWeakPtr(), /*for_legacy=*/true);
+    SendBeforeUnload(is_reload, GetWeakPtr(), /*for_legacy=*/true,
+                     /*is_renderer_initiated_navigation=*/subframes_only);
   }
 
   return found_beforeunload;
@@ -11835,7 +11836,8 @@ RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForFrame(
   // ACKs.
   beforeunload_pending_replies_.insert(rfh);
 
-  SendBeforeUnload(is_reload, rfh->GetWeakPtr(), /*for_legacy=*/false);
+  SendBeforeUnload(is_reload, rfh->GetWeakPtr(), /*for_legacy=*/false,
+                   /*is_renderer_initiated_navigation=*/subframes_only);
   return FrameIterationAction::kContinue;
 }
 
@@ -16431,7 +16433,8 @@ RenderFrameHostImpl::BuildCommitFailedNavigationCallback(
 void RenderFrameHostImpl::SendBeforeUnload(
     bool is_reload,
     base::WeakPtr<RenderFrameHostImpl> rfh,
-    bool for_legacy) {
+    bool for_legacy,
+    const bool is_renderer_initiated_navigation) {
   TRACE_EVENT_WITH_FLOW0("navigation", "RenderFrameHostImpl::SendBeforeUnload",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
@@ -16507,7 +16510,8 @@ void RenderFrameHostImpl::SendBeforeUnload(
                    base::TimeTicks start_time, base::TimeTicks end_time,
                    base::WeakPtr<NavigationControllerImpl>
                        navigation_controller,
-                   const bool can_be_in_navigate_to_pending_entry) {
+                   const bool can_be_in_navigate_to_pending_entry,
+                   const bool is_renderer_initiated_navigation) {
                   // Measures the time a posted task spends in the queue before
                   // execution. Recorded only when `for_legacy` is true.
                   base::UmaHistogramTimes(
@@ -16519,6 +16523,8 @@ void RenderFrameHostImpl::SendBeforeUnload(
                     navigation_controller
                         ->set_can_be_in_navigate_to_pending_entry(true);
                   }
+                  SCOPED_CRASH_KEY_BOOL("RFHI", "is_renderer_init_nav",
+                                        is_renderer_initiated_navigation);
                   std::move(callback).Run(/*proceed=*/true, start_time,
                                           end_time);
                   if (can_be_in_navigate_to_pending_entry &&
@@ -16531,7 +16537,8 @@ void RenderFrameHostImpl::SendBeforeUnload(
                 send_before_unload_start_time_,
                 beforeunload_end_time_for_legacy,
                 frame_tree()->controller().GetWeakPtr(),
-                can_be_in_navigate_to_pending_entry));
+                can_be_in_navigate_to_pending_entry,
+                is_renderer_initiated_navigation));
     return;
   }
   auto scope = MakeUrgentMessageScopeIfNeeded();

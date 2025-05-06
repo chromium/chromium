@@ -3371,7 +3371,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // in a NavigationController. See https://crbug.com/365039 for more details.
   virtual void SendBeforeUnload(bool is_reload,
                                 base::WeakPtr<RenderFrameHostImpl> impl,
-                                bool for_legacy);
+                                bool for_legacy,
+                                const bool is_renderer_initiated_navigation);
 
  private:
   friend class CommitNavigationPauser;
