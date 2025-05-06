@@ -63,8 +63,8 @@
             }
         },
         "crossbench": {
-            "speedometer_3.1": {
-                "display_name": "speedometer3.1.crossbench",
+            "speedometer_3": {
+                "display_name": "speedometer3.crossbench",
                 "arguments": [
                     "--fileserver",
                     "--debug"

@@ -380,14 +380,14 @@ def _crossbench_speedometer2_1(estimated_runtime=60, arguments=None):
 
 def _crossbench_speedometer2(estimated_runtime=60, arguments=None):
   """Alias for the latest Speedometer 2.X version."""
-  return CrossbenchConfig('speedometer2.1.crossbench',
-                          'speedometer_2.1',
+  return CrossbenchConfig('speedometer2.crossbench',
+                          'speedometer_2',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
 
 def _crossbench_speedometer3_0(estimated_runtime=60, arguments=None):
-  return CrossbenchConfig('speedometer3.crossbench',
+  return CrossbenchConfig('speedometer3.0.crossbench',
                           'speedometer_3.0',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
@@ -403,7 +403,7 @@ def _crossbench_speedometer3_1(estimated_runtime=60, arguments=None):
 def _crossbench_speedometer3(estimated_runtime=60, arguments=None):
   """Alias for the latest Speedometer 3.X version."""
   return CrossbenchConfig('speedometer3.crossbench',
-                          'speedometer_3.0',
+                          'speedometer_3',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
@@ -498,20 +498,17 @@ def _crossbench_loadline_tablet(estimated_runtime=3600, arguments=None):
 
 _CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
     _crossbench_jetstream2(),
-    _crossbench_speedometer3_0(),
-    _crossbench_speedometer3_1(),
+    _crossbench_speedometer3(),
 ])
 
 _CROSSBENCH_MOTIONMARK_SPEEDOMETER = frozenset([
     _crossbench_motionmark1_3(),
-    _crossbench_speedometer3_0(),
-    _crossbench_speedometer3_1(),
+    _crossbench_speedometer3(),
 ])
 
 _CROSSBENCH_BENCHMARKS_ALL = frozenset([
     _crossbench_speedometer2(),
-    _crossbench_speedometer3_0(),
-    _crossbench_speedometer3_1(),
+    _crossbench_speedometer3(),
     _crossbench_motionmark1_3(),
     _crossbench_jetstream2(),
 ])
@@ -520,7 +517,7 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
 # Android.
 _CROSSBENCH_ANDROID = frozenset([
     _crossbench_speedometer3_0(arguments=['--fileserver']),
-    _crossbench_speedometer3_1(arguments=['--fileserver']),
+    _crossbench_speedometer3(arguments=['--fileserver']),
     _crossbench_loadline_phone(arguments=[
         '--cool-down-threshold=moderate',
         '--no-splash',
@@ -532,7 +529,7 @@ _CROSSBENCH_ANDROID = frozenset([
 _CROSSBENCH_PIXEL9 = frozenset([
     # _crossbench_jetstream2(arguments=['--fileserver', '--debug']),
     _crossbench_motionmark1_3(arguments=['--fileserver', '--debug']),
-    _crossbench_speedometer3_1(arguments=['--fileserver', '--debug']),
+    _crossbench_speedometer3(arguments=['--fileserver', '--debug']),
     _crossbench_loadline_phone(arguments=[
         '--cool-down-threshold=moderate',
         '--no-splash',
@@ -541,7 +538,7 @@ _CROSSBENCH_PIXEL9 = frozenset([
 ])
 
 _CROSSBENCH_ANDROID_BYRA = frozenset([
-    _crossbench_speedometer3_1(arguments=['--fileserver', '--debug']),
+    _crossbench_speedometer3(arguments=['--fileserver', '--debug']),
 ])
 
 _CROSSBENCH_TANGOR = frozenset([
