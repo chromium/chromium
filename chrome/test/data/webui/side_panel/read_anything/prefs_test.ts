@@ -291,13 +291,13 @@ suite('PrefsTest', () => {
 
         test('to the default voice for this language', () => {
           voicePackController.enableLang(lang1);
-          app.speechSynthesisLanguage = lang1;
+          voicePackController.setCurrentLanguage(lang1);
           app.restoreSettingsFromPrefs();
           assertEquals(defaultVoiceWithLang1, app.getSpeechSynthesisVoice());
         });
 
         test('uses current voice if there\'s none for this language', () => {
-          app.speechSynthesisLanguage = langWithNoVoices;
+          voicePackController.setCurrentLanguage(langWithNoVoices);
           emitEvent(
               app, ToolbarEvent.VOICE, {detail: {selectedVoice: otherVoice}});
           voicePackController.enableLang(otherVoice.lang);
@@ -306,7 +306,7 @@ suite('PrefsTest', () => {
         });
 
         test('uses the device default if there\'s no current voice', () => {
-          app.speechSynthesisLanguage = langWithNoVoices;
+          voicePackController.setCurrentLanguage(langWithNoVoices);
           voicePackController.enableLang(langForDefaultVoice);
           voicePackController.enableLang(otherVoice.lang);
           app.restoreSettingsFromPrefs();
@@ -317,7 +317,7 @@ suite('PrefsTest', () => {
             'to the first listed voice for this language if there\'s no default',
             () => {
               voicePackController.enableLang(lang2);
-              app.speechSynthesisLanguage = lang2;
+              voicePackController.setCurrentLanguage(lang2);
               app.restoreSettingsFromPrefs();
               const currentSelectedVoice = app.getSpeechSynthesisVoice();
               assertTrue(!!currentSelectedVoice);

@@ -181,8 +181,6 @@ export class AppElement extends AppElementBase implements SpeechListener {
   // has been set. This is null if the id has not been set.
   firstTextNodeSetForReadAloud: number|null = null;
 
-  speechSynthesisLanguage: string;
-
   // With minor page changes, we redistill or redraw sometimes and end up losing
   // our reading position if read aloud has started. This keeps track of the
   // last position so we can check if it's still in the new page.
@@ -195,7 +193,8 @@ export class AppElement extends AppElementBase implements SpeechListener {
     this.logger_.logTimeFrom(
         TimeFrom.APP, this.startTime, this.constructorTime);
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
-    this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
+    this.voicePackController_.setCurrentLanguage(
+        chrome.readingMode.baseLanguageForSpeech);
     this.styleUpdater_ = new AppStyleUpdater(this);
     this.nodeStore_.clear();
     ColorChangeUpdater.forDocument().start();
@@ -990,7 +989,7 @@ export class AppElement extends AppElementBase implements SpeechListener {
   }
 
   defaultVoice(): SpeechSynthesisVoice|undefined {
-    const baseLang = this.speechSynthesisLanguage;
+    const baseLang = this.voicePackController_.getCurrentLanguage();
     const allPossibleVoices = this.getVoices_();
     const voicesForLanguage =
         allPossibleVoices.filter(voice => voice.lang.startsWith(baseLang));
@@ -1041,7 +1040,7 @@ export class AppElement extends AppElementBase implements SpeechListener {
     }
 
     // If the default voice won't work, try another voice in that language.
-    const baseLang = this.speechSynthesisLanguage;
+    const baseLang = this.voicePackController_.getCurrentLanguage();
     const voicesForLanguage =
         this.getVoices_().filter(voice => voice.lang.startsWith(baseLang));
 
@@ -1645,13 +1644,7 @@ export class AppElement extends AppElementBase implements SpeechListener {
     // No appropriate voice is available for the language designated in
     // SpeechSynthesisUtterance lang.
     if (error.error === 'language-unavailable') {
-      const possibleNewLanguage = convertLangToAnAvailableLangIfPresent(
-          this.speechSynthesisLanguage,
-          this.voicePackController_.getAvailableLangs(),
-          /* allowCurrentLanguageIfExists */ false);
-      if (possibleNewLanguage) {
-        this.speechSynthesisLanguage = possibleNewLanguage;
-      }
+      this.voicePackController_.onLanguageUnavailableError();
     }
 
     // The voice designated in SpeechSynthesisUtterance voice attribute
@@ -1694,10 +1687,8 @@ export class AppElement extends AppElementBase implements SpeechListener {
   }
 
   private defaultUtteranceSettings(): UtteranceSettings {
-    const lang = this.speechSynthesisLanguage;
-
     return {
-      lang,
+      lang: this.voicePackController_.getCurrentLanguage(),
       // TODO: crbug.com/40927698 - Ensure the rate is valid for the current
       // speech engine.
       rate: getCurrentSpeechRate(),
@@ -1829,7 +1820,8 @@ export class AppElement extends AppElementBase implements SpeechListener {
     // refresh the list of voices and available langs
     this.getVoices_();
 
-    this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
+    this.voicePackController_.setCurrentLanguage(
+        chrome.readingMode.baseLanguageForSpeech);
     this.enabledLangs_ =
         this.voicePackController_.getInitialListOfEnabledLanguages(
             this.defaultVoice()?.lang);
@@ -1953,11 +1945,12 @@ export class AppElement extends AppElementBase implements SpeechListener {
   }
 
   languageChanged() {
-    this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
+    this.voicePackController_.setCurrentLanguage(
+        chrome.readingMode.baseLanguageForSpeech);
     this.$.toolbar.updateFonts();
     // Don't check for Google locales when the language has changed.
     this.installVoicePackIfPossible(
-        this.speechSynthesisLanguage,
+        chrome.readingMode.baseLanguageForSpeech,
         /* onlyInstallExactGoogleLocaleMatch=*/ false,
         /* retryIfPreviousInstallFailed= */ false);
   }
@@ -1972,7 +1965,8 @@ export class AppElement extends AppElementBase implements SpeechListener {
     // language. Otherwise switch to a default voice if nothing is selected.
     const availableLang = convertLangToAnAvailableLangIfPresent(
         lang, this.voicePackController_.getAvailableLangs());
-    const speechSynthesisBaseLang = this.speechSynthesisLanguage.split('-')[0];
+    const speechSynthesisBaseLang =
+        this.voicePackController_.getCurrentLanguage().split('-')[0];
     if (!availableLang ||
         (speechSynthesisBaseLang &&
          !availableLang.startsWith(speechSynthesisBaseLang))) {

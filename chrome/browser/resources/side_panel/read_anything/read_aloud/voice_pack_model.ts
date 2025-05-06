@@ -41,6 +41,8 @@ export class VoicePackModel {
   // need to download Natural voices for automatically
   private languagesForVoiceDownloads_: Set<string> = new Set();
 
+  private currentLanguage_: string = '';
+
   addLanguageForDownload(lang: string): void {
     this.languagesForVoiceDownloads_.add(lang);
   }
@@ -115,5 +117,13 @@ export class VoicePackModel {
 
   getServerLanguages(): string[] {
     return Array.from(this.voicePackInstallStatusServerResponses_.keys());
+  }
+
+  getCurrentLanguage(): string {
+    return this.currentLanguage_;
+  }
+
+  setCurrentLanguage(language: string): void {
+    this.currentLanguage_ = language;
   }
 }

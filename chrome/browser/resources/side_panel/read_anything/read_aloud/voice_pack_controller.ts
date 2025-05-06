@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
-import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
-import type {VoicePackStatus} from '../voice_language_util.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getVoicePackConvertedLangIfExists, isVoicePackStatusError, isVoicePackStatusSuccess, VoiceClientSideStatusCode, VoicePackServerStatusSuccessCode} from '../voice_language_util.js';
-import {VoiceNotificationManager} from '../voice_notification_manager.js';
-
-import {VoicePackModel} from './voice_pack_model.js';
-
 // clang-format off
 // <if expr="is_chromeos">
 import {isGoogle} from '../voice_language_util.js';
 // </if>
 // clang-format on
+
+import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
+import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
+import type {VoicePackStatus} from '../voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getVoicePackConvertedLangIfExists, isVoicePackStatusError, isVoicePackStatusSuccess, VoiceClientSideStatusCode, VoicePackServerStatusSuccessCode} from '../voice_language_util.js';
+import {VoiceNotificationManager} from '../voice_notification_manager.js';
+
+import {VoicePackModel} from './voice_pack_model.js';
 
 
 export class VoicePackController {
@@ -28,6 +28,14 @@ export class VoicePackController {
   // downloaded. This handle is a reference to the callback that will be invoked
   // if the extension does not respond in a timely manner.
   private speechExtensionResponseCallbackHandle_?: number;
+
+  getCurrentLanguage(): string {
+    return this.model_.getCurrentLanguage();
+  }
+
+  setCurrentLanguage(language: string): void {
+    this.model_.setCurrentLanguage(language);
+  }
 
   getEnabledLangs(): string[] {
     return [...this.model_.getEnabledLangs()];
@@ -48,6 +56,15 @@ export class VoicePackController {
   isVoiceAvailable(voice?: SpeechSynthesisVoice): boolean {
     return this.getAvailableVoices().some(
         availableVoice => areVoicesEqual(availableVoice, voice));
+  }
+
+  onLanguageUnavailableError(): void {
+    const possibleNewLanguage = convertLangToAnAvailableLangIfPresent(
+        this.getCurrentLanguage(), this.getAvailableLangs(),
+        /* allowCurrentLanguageIfExists */ false);
+    if (possibleNewLanguage) {
+      this.setCurrentLanguage(possibleNewLanguage);
+    }
   }
 
   disableLangIfNoVoices(lang: string): boolean {

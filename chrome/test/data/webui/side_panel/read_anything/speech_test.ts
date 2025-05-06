@@ -5,7 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MAX_SPEECH_LENGTH, PauseActionSource, playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -17,6 +17,7 @@ suite('Speech', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
   let metrics: TestMetricsBrowserProxy;
+  let voicePackController: VoicePackController;
   let speechController: SpeechController;
 
   const paragraph1: string[] = [
@@ -87,7 +88,8 @@ suite('Speech', () => {
     chrome.readingMode.languageChanged = () => {};
     chrome.readingMode.onTtsEngineInstalled = () => {};
     metrics = mockMetrics();
-    VoicePackController.setInstance(new VoicePackController());
+    voicePackController = new VoicePackController();
+    VoicePackController.setInstance(voicePackController);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
 
@@ -512,10 +514,11 @@ suite('Speech', () => {
 
     test('selects default voice on language-unavailable', async () => {
       const pageLanguage = 'es';
-      assertFalse(pageLanguage === chrome.readingMode.defaultLanguageForSpeech);
-      assertFalse(
-          app.speechSynthesisLanguage ===
-          chrome.readingMode.defaultLanguageForSpeech);
+      assertNotEquals(
+          chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+      assertNotEquals(
+          chrome.readingMode.defaultLanguageForSpeech,
+          voicePackController.getCurrentLanguage());
       chrome.readingMode.setLanguageForTesting(pageLanguage);
       app.playSpeech();
       assertEquals(1, speech.getCallCount('speak'));
@@ -530,7 +533,7 @@ suite('Speech', () => {
       assertEquals(0, speech.getCallCount('speak'));
       assertEquals(
           chrome.readingMode.defaultLanguageForSpeech,
-          app.speechSynthesisLanguage);
+          voicePackController.getCurrentLanguage());
       assertEquals(
           chrome.readingMode.engineErrorStopSource,
           await metrics.whenCalled('recordSpeechStopSource'));
@@ -546,6 +549,7 @@ suite('Speech', () => {
       });
 
       test('cancels and selects default voice', async () => {
+        chrome.readingMode.setLanguageForTesting('en');
         emitEvent(app, ToolbarEvent.VOICE, {
           detail: {
             selectedVoice:
