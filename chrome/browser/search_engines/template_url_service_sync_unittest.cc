@@ -488,238 +488,6 @@ TEST_F(TemplateURLServiceSyncTest, MergeIntoEmpty) {
   EXPECT_EQ(0U, processor()->change_list_size());
 }
 
-TEST_F(TemplateURLServiceSyncTest, MergeInAllNewData) {
-  model()->Add(CreateTestTemplateURL(u"abc.com", "http://abc.com", "abc"));
-  model()->Add(CreateTestTemplateURL(u"def.com", "http://def.com", "def"));
-  model()->Add(CreateTestTemplateURL(u"xyz.com", "http://xyz.com", "xyz"));
-  ASSERT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-  syncer::SyncDataList initial_data = CreateInitialSyncData();
-  MergeAndExpectNotify(initial_data, 1);
-
-  EXPECT_EQ(6U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-  // We expect the model to have accepted all of the initial sync data. Search
-  // through the model using the GUIDs to ensure that they're present.
-  for (syncer::SyncDataList::const_iterator iter = initial_data.begin();
-      iter != initial_data.end(); ++iter) {
-    std::string guid = GetGUID(*iter);
-    EXPECT_TRUE(model()->GetTemplateURLForGUID(guid));
-  }
-  // All the original TemplateURLs should also remain in the model.
-  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"abc.com"));
-  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"def.com"));
-  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"xyz.com"));
-  // Ensure that Sync received the expected changes.
-  EXPECT_EQ(3U, processor()->change_list_size());
-  EXPECT_TRUE(processor()->contains_guid("abc"));
-  EXPECT_TRUE(processor()->contains_guid("def"));
-  EXPECT_TRUE(processor()->contains_guid("xyz"));
-}
-
-TEST_F(TemplateURLServiceSyncTest, MergeSyncIsTheSame) {
-  // The local data is the same as the sync data merged in. i.e. - There have
-  // been no changes since the last time we synced. Even the last_modified
-  // timestamps are the same.
-  syncer::SyncDataList initial_data = CreateInitialSyncData();
-  for (syncer::SyncDataList::const_iterator iter = initial_data.begin();
-      iter != initial_data.end(); ++iter) {
-    model()->Add(Deserialize(*iter));
-  }
-  ASSERT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-  MergeAndExpectNotify(initial_data, 0);
-
-  EXPECT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-  for (syncer::SyncDataList::const_iterator iter = initial_data.begin();
-      iter != initial_data.end(); ++iter) {
-    std::string guid = GetGUID(*iter);
-    EXPECT_TRUE(model()->GetTemplateURLForGUID(guid));
-  }
-  EXPECT_EQ(0U, processor()->change_list_size());
-}
-
-TEST_F(TemplateURLServiceSyncTest, MergeUpdateFromSync) {
-  // The local data is the same as the sync data merged in, but timestamps have
-  // changed. Ensure the right fields are merged in.
-  syncer::SyncDataList initial_data;
-  TemplateURL* turl1 = model()->Add(CreateTestTemplateURL(
-      u"abc.com", "http://abc.com", "abc", base::Time::FromTimeT(9000)));
-  model()->Add(CreateTestTemplateURL(u"xyz.com", "http://xyz.com", "xyz",
-                                     base::Time::FromTimeT(9000)));
-
-  std::unique_ptr<TemplateURL> turl1_newer = CreateTestTemplateURL(
-      u"abc.com", "http://abc.ca", "abc", base::Time::FromTimeT(9999));
-  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
-      turl1_newer->data()));
-
-  std::unique_ptr<TemplateURL> turl2_older = CreateTestTemplateURL(
-      u"xyz.com", "http://xyz.ca", "xyz", base::Time::FromTimeT(8888));
-  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
-      turl2_older->data()));
-
-  ASSERT_EQ(2U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-  MergeAndExpectNotify(initial_data, 1);
-
-  // Both were local updates, so we expect the same count.
-  EXPECT_EQ(2U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-
-  // Check that the first replaced the initial abc TemplateURL.
-  EXPECT_EQ(turl1, model()->GetTemplateURLForGUID("abc"));
-  EXPECT_EQ("http://abc.ca", turl1->url());
-
-  // Check that the second produced an upstream update to the xyz TemplateURL.
-  EXPECT_EQ(1U, processor()->change_list_size());
-  ASSERT_TRUE(processor()->contains_guid("xyz"));
-  syncer::SyncChange change = processor()->change_for_guid("xyz");
-  EXPECT_TRUE(change.change_type() == syncer::SyncChange::ACTION_UPDATE);
-  EXPECT_EQ("http://xyz.com", GetURL(change.sync_data()));
-}
-
-TEST_F(TemplateURLServiceSyncTest, MergeAddFromOlderSyncData) {
-  // GUIDs all differ, so this is data to be added from Sync, but the timestamps
-  // from Sync are older. Set up the local data so that one is a dupe, one has a
-  // conflicting keyword, and the last has no conflicts (a clean ADD).
-  // Duplicate keyword, same hostname
-  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com", "localguid1",
-                                     base::Time::FromTimeT(100)));
-
-  // Duplicate keyword, different hostname
-  model()->Add(CreateTestTemplateURL(u"key2", "http://expected.com",
-                                     "localguid2", base::Time::FromTimeT(100)));
-
-  // Add
-  model()->Add(
-      CreateTestTemplateURL(u"unique", "http://unique.com", "localguid3"));
-
-  ASSERT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-  MergeAndExpectNotify(CreateInitialSyncData(), 1);
-
-  // The dupe and conflict results in merges, as local values are always merged
-  // with sync values if there is a keyword conflict. The unique keyword should
-  // be added.
-  EXPECT_EQ(4U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-
-  // The key1 duplicate keyword results in the local copy winning. Ensure that
-  // Sync's copy was not added, and the local copy is pushed upstream to Sync as
-  // an update. The local copy should have received the sync data's GUID.
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid1"));
-  // Check changes for the UPDATE.
-  ASSERT_TRUE(processor()->contains_guid("guid1"));
-  syncer::SyncChange guid1_change = processor()->change_for_guid("guid1");
-  EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, guid1_change.change_type());
-  // The local sync_guid should no longer be found.
-  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid1"));
-
-  // The key2 duplicate keyword results in a merge, with the values of the local
-  // copy winning, so ensure it retains the original URL, and that an update to
-  // the sync guid is pushed upstream to Sync.
-  const TemplateURL* guid2 = model()->GetTemplateURLForGUID("guid2");
-  ASSERT_TRUE(guid2);
-  EXPECT_EQ(u"key2", guid2->keyword());
-  EXPECT_EQ("http://expected.com", guid2->url());
-  // Check changes for the UPDATE.
-  ASSERT_TRUE(processor()->contains_guid("guid2"));
-  syncer::SyncChange guid2_change = processor()->change_for_guid("guid2");
-  EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, guid2_change.change_type());
-  EXPECT_EQ("key2", GetKeyword(guid2_change.sync_data()));
-  EXPECT_EQ("http://expected.com", GetURL(guid2_change.sync_data()));
-  // The local sync_guid should no longer be found.
-  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid2"));
-
-  // The last TemplateURL should have had no conflicts and was just added. It
-  // should not have replaced the third local TemplateURL.
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid3"));
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid3"));
-
-  // Two UPDATEs and one ADD.
-  EXPECT_EQ(3U, processor()->change_list_size());
-  // One ADDs should be pushed up to Sync.
-  ASSERT_TRUE(processor()->contains_guid("localguid3"));
-  EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-            processor()->change_for_guid("localguid3").change_type());
-}
-
-TEST_F(TemplateURLServiceSyncTest, MergeAddFromNewerSyncData) {
-  // GUIDs all differ, so Sync may overtake some entries, but the timestamps
-  // from Sync are newer. Set up the local data so that one is a dupe, one has a
-  // conflicting keyword, and the last has no conflicts (a clean ADD).
-  // Duplicate keyword, same hostname
-  model()->Add(CreateTestTemplateURL(
-      u"key1", "http://key1.com", "localguid1", base::Time::FromTimeT(10),
-      false, TemplateURLData::PolicyOrigin::kNoPolicy, 111));
-
-  // Duplicate keyword, different hostname
-  model()->Add(CreateTestTemplateURL(
-      u"key2", "http://expected.com", "localguid2", base::Time::FromTimeT(10),
-      false, TemplateURLData::PolicyOrigin::kNoPolicy, 112));
-
-  // Add
-  model()->Add(CreateTestTemplateURL(
-      u"unique", "http://unique.com", "localguid3", base::Time::FromTimeT(10),
-      false, TemplateURLData::PolicyOrigin::kNoPolicy, 113));
-
-  ASSERT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-  MergeAndExpectNotify(CreateInitialSyncData(), 1);
-
-  // The duplicate keywords results in merges. The unique keyword be added to
-  // the model.
-  EXPECT_EQ(4U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-
-  // The key1 duplicate keyword results in Sync's copy winning. Ensure that
-  // Sync's copy replaced the local copy.
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid1"));
-  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid1"));
-  EXPECT_FALSE(processor()->contains_guid("guid1"));
-  EXPECT_FALSE(processor()->contains_guid("localguid1"));
-
-  // The key2 duplicate keyword results in Sync's copy winning, so ensure it
-  // retains the original keyword and is added. The local copy should be
-  // removed.
-  const TemplateURL* guid2_sync = model()->GetTemplateURLForGUID("guid2");
-  ASSERT_TRUE(guid2_sync);
-  EXPECT_EQ(u"key2", guid2_sync->keyword());
-  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid2"));
-
-  // The last TemplateURL should have had no conflicts and was just added. It
-  // should not have replaced the third local TemplateURL.
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid3"));
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid3"));
-
-  // One ADD.
-  EXPECT_EQ(1U, processor()->change_list_size());
-  // One ADDs should be pushed up to Sync.
-  ASSERT_TRUE(processor()->contains_guid("localguid3"));
-  EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-            processor()->change_for_guid("localguid3").change_type());
-}
-
-TEST_F(TemplateURLServiceSyncTest, MergeIgnoresPolicyAndPlayAPIEngines) {
-  // Add a policy-created engine.
-  model()->Add(CreateTestTemplateURL(
-      u"key1", "http://key1.com", "localguid1", base::Time::FromTimeT(100),
-      /*safe_for_autoreplace=*/false,
-      /*policy_origin=*/
-      TemplateURLData::PolicyOrigin::kDefaultSearchProvider));
-
-  {
-    auto play_api_engine = CreateTestTemplateURL(
-        u"key2", "http://key2.com", "localguid2", base::Time::FromTimeT(100));
-    TemplateURLData data(play_api_engine->data());
-    data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
-    play_api_engine = std::make_unique<TemplateURL>(data);
-    model()->Add(std::move(play_api_engine));
-  }
-
-  ASSERT_EQ(1U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-  MergeAndExpectNotify(CreateInitialSyncData(), 1);
-
-  // The policy engine should be ignored when it comes to conflict resolution.
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid1"));
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid1"));
-
-  // The Play API engine should be ignored when it comes to conflict resolution.
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid2"));
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid2"));
-}
-
 TEST_F(TemplateURLServiceSyncTest, ProcessChangesEmptyModel) {
   // We initially have no data.
   MergeAndExpectNotify({}, 0);
@@ -1082,51 +850,6 @@ TEST_F(TemplateURLServiceSyncTest, SyncErrorOnLaterSync) {
   std::optional<syncer::ModelError> process_error =
       ProcessAndExpectNotify(changes, 1);
   EXPECT_TRUE(process_error.has_value());
-}
-
-TEST_F(TemplateURLServiceSyncTest, MergeTwiceWithSameSyncData) {
-  // Ensure that a second merge with the same data as the first does not
-  // actually update the local data.
-  syncer::SyncDataList initial_data;
-  initial_data.push_back(CreateInitialSyncData()[0]);
-
-  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com", "guid1",
-                                     base::Time::FromTimeT(10)));  // earlier
-
-  std::optional<syncer::ModelError> error =
-      MergeAndExpectNotify(initial_data, 1);
-  ASSERT_FALSE(error.has_value());
-
-  // We should have updated the original TemplateURL with Sync's version.
-  // Keep a copy of it so we can compare it after we re-merge.
-  TemplateURL* guid1_url = model()->GetTemplateURLForGUID("guid1");
-  ASSERT_TRUE(guid1_url);
-  std::unique_ptr<TemplateURL> updated_turl(new TemplateURL(guid1_url->data()));
-  EXPECT_EQ(Time::FromTimeT(90), updated_turl->last_modified());
-
-  // Modify a single field of the initial data. This should not be updated in
-  // the second merge, as the last_modified timestamp remains the same.
-  std::unique_ptr<TemplateURL> temp_turl(Deserialize(initial_data[0]));
-  TemplateURLData data(temp_turl->data());
-  data.SetShortName(u"SomethingDifferent");
-  temp_turl = std::make_unique<TemplateURL>(data);
-  initial_data.clear();
-  initial_data.push_back(
-      TemplateURLService::CreateSyncDataFromTemplateURLData(temp_turl->data()));
-
-  // Remerge the data again. This simulates shutting down and syncing again
-  // at a different time, but the cloud data has not changed.
-  model()->StopSyncing(syncer::SEARCH_ENGINES);
-  sync_processor_wrapper_ =
-      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-          sync_processor_.get());
-  error = MergeAndExpectNotify(initial_data, 0);
-  ASSERT_FALSE(error.has_value());
-
-  // Check that the TemplateURL was not modified.
-  const TemplateURL* reupdated_turl = model()->GetTemplateURLForGUID("guid1");
-  ASSERT_TRUE(reupdated_turl);
-  AssertEquals(*updated_turl, *reupdated_turl);
 }
 
 TEST_F(TemplateURLServiceSyncTest, SyncedDefaultGUIDArrivesFirst) {
@@ -1662,44 +1385,6 @@ TEST_F(TemplateURLServiceSyncTest, SyncMergeDeletesDefault) {
             model()->GetTemplateURLForGUID("guid1"));
 }
 
-TEST_F(TemplateURLServiceSyncTest, LocalDefaultWinsConflict) {
-  // We expect that the local default always wins keyword conflict resolution.
-  const std::u16string keyword(u"key1");
-  const std::string url("http://whatever.com/{searchTerms}");
-  TemplateURL* default_turl = model()->Add(CreateTestTemplateURL(
-      keyword, url, "whateverguid", base::Time::FromTimeT(10)));
-  model()->SetUserSelectedDefaultSearchProvider(default_turl);
-
-  syncer::SyncDataList initial_data = CreateInitialSyncData();
-  // The guid1 entry should be different from the default but conflict in the
-  // keyword.
-  std::unique_ptr<TemplateURL> turl =
-      CreateTestTemplateURL(keyword, "http://key1.com/{searchTerms}", "guid1",
-                            base::Time::FromTimeT(90));
-  initial_data[0] =
-      TemplateURLService::CreateSyncDataFromTemplateURLData(turl->data());
-  MergeAndExpectNotify(initial_data, 1);
-
-  // Since the local default was not yet synced, it should be merged with the
-  // conflicting TemplateURL. However, its values should have been preserved
-  // since it would have won conflict resolution due to being the default.
-  EXPECT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-  const TemplateURL* winner = model()->GetTemplateURLForGUID("guid1");
-  ASSERT_TRUE(winner);
-  EXPECT_EQ(model()->GetDefaultSearchProvider(), winner);
-  EXPECT_EQ(keyword, winner->keyword());
-  EXPECT_EQ(url, winner->url());
-  ASSERT_TRUE(processor()->contains_guid("guid1"));
-  EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-            processor()->change_for_guid("guid1").change_type());
-  EXPECT_EQ(url, GetURL(processor()->change_for_guid("guid1").sync_data()));
-
-  // There is no loser, as the two were merged together. The local sync_guid
-  // should no longer be found in the model.
-  const TemplateURL* loser = model()->GetTemplateURLForGUID("whateverguid");
-  ASSERT_FALSE(loser);
-}
-
 TEST_F(TemplateURLServiceSyncTest, DeleteBogusData) {
   // Create a couple of bogus entries to sync.
   syncer::SyncDataList initial_data;
@@ -1845,150 +1530,6 @@ TEST_F(TemplateURLServiceSyncTest, SyncBaseURLs) {
   ProcessAndExpectNotify(changes, 1);
   EXPECT_EQ(u"google.com", synced_turl->keyword());
   EXPECT_EQ(0U, processor()->change_list_size());
-}
-
-TEST_F(TemplateURLServiceSyncTest, MergeInSyncTemplateURL) {
-  // An enumeration used to indicate which TemplateURL test value is expected
-  // for a particular test result.
-  enum ExpectedTemplateURL {
-    LOCAL,
-    SYNC,
-    BOTH,
-    NEITHER,
-  };
-
-  // Sets up and executes a MergeInSyncTemplateURL test given a number of
-  // expected start and end states:
-  //  * |conflict_winner| denotes which TemplateURL should win the
-  //    conflict.
-  //  * |synced_at_start| denotes which of the TemplateURLs should known
-  //    to Sync.
-  //  * |update_sent| denotes which TemplateURL should have an
-  //    ACTION_UPDATE sent to the server after the merge.
-  //  * |present_in_model| denotes which TemplateURL should be found in
-  //    the model after the merge.
-  //  * If |keywords_conflict| is true, the TemplateURLs are set up with
-  //    the same keyword.
-  struct TestCases {
-    ExpectedTemplateURL conflict_winner;
-    ExpectedTemplateURL synced_at_start;
-    ExpectedTemplateURL update_sent;
-    ExpectedTemplateURL present_in_model;
-    bool keywords_conflict;
-    size_t final_num_turls;
-  };
-  const auto test_cases = std::to_array<TestCases>({
-      // Both are synced and the new sync entry is better: Local is left as-is,
-      // and the Sync is added.
-      {SYNC, BOTH, NEITHER, BOTH, true, 2},
-      // Both are synced and the local entry is better: Sync is still added to
-      // the model.
-      {LOCAL, BOTH, NEITHER, BOTH, true, 2},
-      // Local was not known to Sync and the new sync entry is better: Sync is
-      // added. Local is removed. No updates.
-      {SYNC, SYNC, NEITHER, SYNC, true, 1},
-      // Local was not known to sync and the local entry is better: Local is
-      // updated with sync GUID, Sync is not added. UPDATE sent for Sync.
-      {LOCAL, SYNC, SYNC, SYNC, true, 1},
-      // No conflicting keyword. Both should be added with their original
-      // keywords, with no updates sent. Note that MergeDataAndStartSyncing is
-      // responsible for creating the ACTION_ADD for the local TemplateURL.
-      {NEITHER, SYNC, NEITHER, BOTH, false, 2},
-  });
-
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
-    SCOPED_TRACE(testing::Message() << "Case #" << i << std::endl);
-
-    // Assert all the valid states of ExpectedTemplateURLs.
-    ASSERT_FALSE(test_cases[i].conflict_winner == BOTH);
-    ASSERT_FALSE(test_cases[i].synced_at_start == NEITHER);
-    ASSERT_FALSE(test_cases[i].synced_at_start == LOCAL);
-    ASSERT_FALSE(test_cases[i].update_sent == BOTH);
-    ASSERT_FALSE(test_cases[i].present_in_model == NEITHER);
-
-    const std::u16string local_keyword = u"localkeyword";
-    const std::u16string sync_keyword =
-        test_cases[i].keywords_conflict ? local_keyword : u"synckeyword";
-    const std::string local_url = "www.localurl.com";
-    const std::string sync_url = "www.syncurl.com";
-    const base::Time local_last_modified = base::Time::FromTimeT(100);
-    const base::Time sync_last_modified =
-        base::Time::FromTimeT(test_cases[i].conflict_winner == SYNC ? 110 : 90);
-    const std::string local_guid = "local_guid";
-    const std::string sync_guid = "sync_guid";
-
-    // Initialize expectations.
-    std::u16string expected_local_keyword = local_keyword;
-    std::u16string expected_sync_keyword = sync_keyword;
-
-    // Create the data and run the actual test.
-    TemplateURL* local_turl = model()->Add(CreateTestTemplateURL(
-        local_keyword, local_url, local_guid, local_last_modified));
-    std::unique_ptr<TemplateURL> sync_turl(CreateTestTemplateURL(
-        sync_keyword, sync_url, sync_guid, sync_last_modified));
-
-    SyncDataMap sync_data;
-    if (test_cases[i].synced_at_start == SYNC ||
-        test_cases[i].synced_at_start == BOTH) {
-      sync_data[sync_turl->sync_guid()] =
-          TemplateURLService::CreateSyncDataFromTemplateURLData(
-              sync_turl->data());
-    }
-    if (test_cases[i].synced_at_start == BOTH) {
-      sync_data[local_turl->sync_guid()] =
-          TemplateURLService::CreateSyncDataFromTemplateURLData(
-              local_turl->data());
-    }
-    SyncDataMap initial_data;
-    initial_data[local_turl->sync_guid()] =
-        TemplateURLService::CreateSyncDataFromTemplateURLData(
-            local_turl->data());
-
-    syncer::SyncChangeList change_list;
-    test_util_a_->ResetObserverCount();
-    ASSERT_EQ(1u, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-    model()->MergeInSyncTemplateURL(sync_turl.get(), sync_data, &change_list,
-                                    &initial_data);
-    EXPECT_EQ(test_cases[i].final_num_turls,
-              model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-    EXPECT_EQ(1, test_util_a_->GetObserverCount());
-
-    // Check for expected updates, if any.
-    std::string expected_update_guid;
-    if (test_cases[i].update_sent == LOCAL)
-      expected_update_guid = local_guid;
-    else if (test_cases[i].update_sent == SYNC)
-      expected_update_guid = sync_guid;
-    if (!expected_update_guid.empty()) {
-      ASSERT_EQ(1U, change_list.size());
-      EXPECT_EQ(expected_update_guid, GetGUID(change_list[0].sync_data()));
-      EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-                change_list[0].change_type());
-    } else {
-      EXPECT_EQ(0U, change_list.size());
-    }
-
-    // Check for TemplateURLs expected in the model. Note that this is checked
-    // by GUID rather than the initial pointer, as a merge could occur (the
-    // Sync TemplateURL overtakes the local one). Also remove the present
-    // TemplateURL when done so the next test case starts with a clean slate.
-    if (test_cases[i].present_in_model == LOCAL ||
-        test_cases[i].present_in_model == BOTH) {
-      ASSERT_TRUE(model()->GetTemplateURLForGUID(local_guid));
-      EXPECT_EQ(expected_local_keyword, local_turl->keyword());
-      EXPECT_EQ(local_url, local_turl->url());
-      EXPECT_EQ(local_last_modified, local_turl->last_modified());
-      model()->Remove(model()->GetTemplateURLForGUID(local_guid));
-    }
-    if (test_cases[i].present_in_model == SYNC ||
-        test_cases[i].present_in_model == BOTH) {
-      ASSERT_TRUE(model()->GetTemplateURLForGUID(sync_guid));
-      EXPECT_EQ(expected_sync_keyword, sync_turl->keyword());
-      EXPECT_EQ(sync_url, sync_turl->url());
-      EXPECT_EQ(sync_last_modified, sync_turl->last_modified());
-      model()->Remove(model()->GetTemplateURLForGUID(sync_guid));
-    }
-  }  // for
 }
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine) {
@@ -3521,6 +3062,475 @@ TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
   }
 }
 
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       LocalDefaultWinsConflict) {
+  // We expect that the local default always wins keyword conflict resolution.
+  const std::u16string keyword(u"key1");
+  const std::string url("http://whatever.com/{searchTerms}");
+  TemplateURL* default_turl = model()->Add(CreateTestTemplateURL(
+      keyword, url, "whateverguid", base::Time::FromTimeT(10)));
+  model()->SetUserSelectedDefaultSearchProvider(default_turl);
+
+  syncer::SyncDataList initial_data = CreateInitialSyncData();
+  // The guid1 entry should be different from the default but conflict in the
+  // keyword.
+  std::unique_ptr<TemplateURL> turl =
+      CreateTestTemplateURL(keyword, "http://key1.com/{searchTerms}", "guid1",
+                            base::Time::FromTimeT(90));
+  initial_data[0] =
+      TemplateURLService::CreateSyncDataFromTemplateURLData(turl->data());
+  MergeAndExpectNotify(initial_data, 1);
+
+  // Since the local default was not yet synced, it should be merged with the
+  // conflicting TemplateURL. However, its values should have been preserved
+  // since it would have won conflict resolution due to being the default.
+  EXPECT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  const TemplateURL* winner = model()->GetTemplateURLForGUID("guid1");
+  ASSERT_TRUE(winner);
+  EXPECT_EQ(model()->GetDefaultSearchProvider(), winner);
+  EXPECT_EQ(keyword, winner->keyword());
+  EXPECT_EQ(url, winner->url());
+  ASSERT_TRUE(processor()->contains_guid("guid1"));
+  EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
+            processor()->change_for_guid("guid1").change_type());
+  EXPECT_EQ(url, GetURL(processor()->change_for_guid("guid1").sync_data()));
+
+  // There is no loser, as the two were merged together. The local sync_guid
+  // should no longer be found in the model.
+  const TemplateURL* loser = model()->GetTemplateURLForGUID("whateverguid");
+  ASSERT_FALSE(loser);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       MergeAddFromOlderSyncData) {
+  // GUIDs all differ, so this is data to be added from Sync, but the timestamps
+  // from Sync are older. Set up the local data so that one is a dupe, one has a
+  // conflicting keyword, and the last has no conflicts (a clean ADD).
+  // Duplicate keyword, same hostname
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com", "localguid1",
+                                     base::Time::FromTimeT(100)));
+
+  // Duplicate keyword, different hostname
+  model()->Add(CreateTestTemplateURL(u"key2", "http://expected.com",
+                                     "localguid2", base::Time::FromTimeT(100)));
+
+  // Add
+  model()->Add(
+      CreateTestTemplateURL(u"unique", "http://unique.com", "localguid3"));
+
+  ASSERT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  MergeAndExpectNotify(CreateInitialSyncData(), 1);
+
+  // The dupe and conflict results in merges, as local values are always merged
+  // with sync values if there is a keyword conflict. The unique keyword should
+  // be added.
+  EXPECT_EQ(4U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+
+  // The key1 duplicate keyword results in the local copy winning. Ensure that
+  // Sync's copy was not added, and the local copy is pushed upstream to Sync as
+  // an update. The local copy should have received the sync data's GUID.
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid1"));
+  // Check changes for the UPDATE.
+  ASSERT_TRUE(processor()->contains_guid("guid1"));
+  syncer::SyncChange guid1_change = processor()->change_for_guid("guid1");
+  EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, guid1_change.change_type());
+  // The local sync_guid should no longer be found.
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid1"));
+
+  // The key2 duplicate keyword results in a merge, with the values of the local
+  // copy winning, so ensure it retains the original URL, and that an update to
+  // the sync guid is pushed upstream to Sync.
+  const TemplateURL* guid2 = model()->GetTemplateURLForGUID("guid2");
+  ASSERT_TRUE(guid2);
+  EXPECT_EQ(u"key2", guid2->keyword());
+  EXPECT_EQ("http://expected.com", guid2->url());
+  // Check changes for the UPDATE.
+  ASSERT_TRUE(processor()->contains_guid("guid2"));
+  syncer::SyncChange guid2_change = processor()->change_for_guid("guid2");
+  EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, guid2_change.change_type());
+  EXPECT_EQ("key2", GetKeyword(guid2_change.sync_data()));
+  EXPECT_EQ("http://expected.com", GetURL(guid2_change.sync_data()));
+  // The local sync_guid should no longer be found.
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid2"));
+
+  // The last TemplateURL should have had no conflicts and was just added. It
+  // should not have replaced the third local TemplateURL.
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid3"));
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid3"));
+
+  // Two UPDATEs and one ADD.
+  EXPECT_EQ(3U, processor()->change_list_size());
+  // One ADDs should be pushed up to Sync.
+  ASSERT_TRUE(processor()->contains_guid("localguid3"));
+  EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
+            processor()->change_for_guid("localguid3").change_type());
+}
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       MergeAddFromNewerSyncData) {
+  // GUIDs all differ, so Sync may overtake some entries, but the timestamps
+  // from Sync are newer. Set up the local data so that one is a dupe, one has a
+  // conflicting keyword, and the last has no conflicts (a clean ADD).
+  // Duplicate keyword, same hostname
+  model()->Add(CreateTestTemplateURL(
+      u"key1", "http://key1.com", "localguid1", base::Time::FromTimeT(10),
+      false, TemplateURLData::PolicyOrigin::kNoPolicy, 111));
+
+  // Duplicate keyword, different hostname
+  model()->Add(CreateTestTemplateURL(
+      u"key2", "http://expected.com", "localguid2", base::Time::FromTimeT(10),
+      false, TemplateURLData::PolicyOrigin::kNoPolicy, 112));
+
+  // Add
+  model()->Add(CreateTestTemplateURL(
+      u"unique", "http://unique.com", "localguid3", base::Time::FromTimeT(10),
+      false, TemplateURLData::PolicyOrigin::kNoPolicy, 113));
+
+  ASSERT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  MergeAndExpectNotify(CreateInitialSyncData(), 1);
+
+  // The duplicate keywords results in merges. The unique keyword be added to
+  // the model.
+  EXPECT_EQ(4U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+
+  // The key1 duplicate keyword results in Sync's copy winning. Ensure that
+  // Sync's copy replaced the local copy.
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid1"));
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid1"));
+  EXPECT_FALSE(processor()->contains_guid("guid1"));
+  EXPECT_FALSE(processor()->contains_guid("localguid1"));
+
+  // The key2 duplicate keyword results in Sync's copy winning, so ensure it
+  // retains the original keyword and is added. The local copy should be
+  // removed.
+  const TemplateURL* guid2_sync = model()->GetTemplateURLForGUID("guid2");
+  ASSERT_TRUE(guid2_sync);
+  EXPECT_EQ(u"key2", guid2_sync->keyword());
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid2"));
+
+  // The last TemplateURL should have had no conflicts and was just added. It
+  // should not have replaced the third local TemplateURL.
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid3"));
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid3"));
+
+  // One ADD.
+  EXPECT_EQ(1U, processor()->change_list_size());
+  // One ADDs should be pushed up to Sync.
+  ASSERT_TRUE(processor()->contains_guid("localguid3"));
+  EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
+            processor()->change_for_guid("localguid3").change_type());
+}
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       MergeIgnoresPolicyAndPlayAPIEngines) {
+  // Add a policy-created engine.
+  model()->Add(CreateTestTemplateURL(
+      u"key1", "http://key1.com", "localguid1", base::Time::FromTimeT(100),
+      /*safe_for_autoreplace=*/false,
+      /*policy_origin=*/
+      TemplateURLData::PolicyOrigin::kDefaultSearchProvider));
+
+  {
+    auto play_api_engine = CreateTestTemplateURL(
+        u"key2", "http://key2.com", "localguid2", base::Time::FromTimeT(100));
+    TemplateURLData data(play_api_engine->data());
+    data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
+    play_api_engine = std::make_unique<TemplateURL>(data);
+    model()->Add(std::move(play_api_engine));
+  }
+
+  ASSERT_EQ(1U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  MergeAndExpectNotify(CreateInitialSyncData(), 1);
+
+  // The policy engine should be ignored when it comes to conflict resolution.
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid1"));
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid1"));
+
+  // The Play API engine should be ignored when it comes to conflict resolution.
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid2"));
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid2"));
+}
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       MergeInAllNewData) {
+  model()->Add(CreateTestTemplateURL(u"abc.com", "http://abc.com", "abc"));
+  model()->Add(CreateTestTemplateURL(u"def.com", "http://def.com", "def"));
+  model()->Add(CreateTestTemplateURL(u"xyz.com", "http://xyz.com", "xyz"));
+  ASSERT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  syncer::SyncDataList initial_data = CreateInitialSyncData();
+  MergeAndExpectNotify(initial_data, 1);
+
+  EXPECT_EQ(6U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  // We expect the model to have accepted all of the initial sync data. Search
+  // through the model using the GUIDs to ensure that they're present.
+  for (syncer::SyncDataList::const_iterator iter = initial_data.begin();
+       iter != initial_data.end(); ++iter) {
+    std::string guid = GetGUID(*iter);
+    EXPECT_TRUE(model()->GetTemplateURLForGUID(guid));
+  }
+  // All the original TemplateURLs should also remain in the model.
+  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"abc.com"));
+  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"def.com"));
+  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"xyz.com"));
+  // Ensure that Sync received the expected changes.
+  EXPECT_EQ(3U, processor()->change_list_size());
+  EXPECT_TRUE(processor()->contains_guid("abc"));
+  EXPECT_TRUE(processor()->contains_guid("def"));
+  EXPECT_TRUE(processor()->contains_guid("xyz"));
+}
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       MergeSyncIsTheSame) {
+  // The local data is the same as the sync data merged in. i.e. - There have
+  // been no changes since the last time we synced. Even the last_modified
+  // timestamps are the same.
+  syncer::SyncDataList initial_data = CreateInitialSyncData();
+  for (syncer::SyncDataList::const_iterator iter = initial_data.begin();
+       iter != initial_data.end(); ++iter) {
+    model()->Add(Deserialize(*iter));
+  }
+  ASSERT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  MergeAndExpectNotify(initial_data, 0);
+
+  EXPECT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  for (syncer::SyncDataList::const_iterator iter = initial_data.begin();
+       iter != initial_data.end(); ++iter) {
+    std::string guid = GetGUID(*iter);
+    EXPECT_TRUE(model()->GetTemplateURLForGUID(guid));
+  }
+  EXPECT_EQ(0U, processor()->change_list_size());
+}
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       MergeInSyncTemplateURL) {
+  // An enumeration used to indicate which TemplateURL test value is expected
+  // for a particular test result.
+  enum ExpectedTemplateURL {
+    LOCAL,
+    SYNC,
+    BOTH,
+    NEITHER,
+  };
+
+  // Sets up and executes a MergeInSyncTemplateURL test given a number of
+  // expected start and end states:
+  //  * |conflict_winner| denotes which TemplateURL should win the
+  //    conflict.
+  //  * |synced_at_start| denotes which of the TemplateURLs should known
+  //    to Sync.
+  //  * |update_sent| denotes which TemplateURL should have an
+  //    ACTION_UPDATE sent to the server after the merge.
+  //  * |present_in_model| denotes which TemplateURL should be found in
+  //    the model after the merge.
+  //  * If |keywords_conflict| is true, the TemplateURLs are set up with
+  //    the same keyword.
+  struct TestCases {
+    ExpectedTemplateURL conflict_winner;
+    ExpectedTemplateURL synced_at_start;
+    ExpectedTemplateURL update_sent;
+    ExpectedTemplateURL present_in_model;
+    bool keywords_conflict;
+    size_t final_num_turls;
+  };
+  const auto test_cases = std::to_array<TestCases>({
+      // Both are synced and the new sync entry is better: Local is left as-is,
+      // and the Sync is added.
+      {SYNC, BOTH, NEITHER, BOTH, true, 2},
+      // Both are synced and the local entry is better: Sync is still added to
+      // the model.
+      {LOCAL, BOTH, NEITHER, BOTH, true, 2},
+      // Local was not known to Sync and the new sync entry is better: Sync is
+      // added. Local is removed. No updates.
+      {SYNC, SYNC, NEITHER, SYNC, true, 1},
+      // Local was not known to sync and the local entry is better: Local is
+      // updated with sync GUID, Sync is not added. UPDATE sent for Sync.
+      {LOCAL, SYNC, SYNC, SYNC, true, 1},
+      // No conflicting keyword. Both should be added with their original
+      // keywords, with no updates sent. Note that MergeDataAndStartSyncing is
+      // responsible for creating the ACTION_ADD for the local TemplateURL.
+      {NEITHER, SYNC, NEITHER, BOTH, false, 2},
+  });
+
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
+    SCOPED_TRACE(testing::Message() << "Case #" << i << std::endl);
+
+    // Assert all the valid states of ExpectedTemplateURLs.
+    ASSERT_FALSE(test_cases[i].conflict_winner == BOTH);
+    ASSERT_FALSE(test_cases[i].synced_at_start == NEITHER);
+    ASSERT_FALSE(test_cases[i].synced_at_start == LOCAL);
+    ASSERT_FALSE(test_cases[i].update_sent == BOTH);
+    ASSERT_FALSE(test_cases[i].present_in_model == NEITHER);
+
+    const std::u16string local_keyword = u"localkeyword";
+    const std::u16string sync_keyword =
+        test_cases[i].keywords_conflict ? local_keyword : u"synckeyword";
+    const std::string local_url = "www.localurl.com";
+    const std::string sync_url = "www.syncurl.com";
+    const base::Time local_last_modified = base::Time::FromTimeT(100);
+    const base::Time sync_last_modified =
+        base::Time::FromTimeT(test_cases[i].conflict_winner == SYNC ? 110 : 90);
+    const std::string local_guid = "local_guid";
+    const std::string sync_guid = "sync_guid";
+
+    // Initialize expectations.
+    std::u16string expected_local_keyword = local_keyword;
+    std::u16string expected_sync_keyword = sync_keyword;
+
+    // Create the data and run the actual test.
+    TemplateURL* local_turl = model()->Add(CreateTestTemplateURL(
+        local_keyword, local_url, local_guid, local_last_modified));
+    std::unique_ptr<TemplateURL> sync_turl(CreateTestTemplateURL(
+        sync_keyword, sync_url, sync_guid, sync_last_modified));
+
+    SyncDataMap sync_data;
+    if (test_cases[i].synced_at_start == SYNC ||
+        test_cases[i].synced_at_start == BOTH) {
+      sync_data[sync_turl->sync_guid()] =
+          TemplateURLService::CreateSyncDataFromTemplateURLData(
+              sync_turl->data());
+    }
+    if (test_cases[i].synced_at_start == BOTH) {
+      sync_data[local_turl->sync_guid()] =
+          TemplateURLService::CreateSyncDataFromTemplateURLData(
+              local_turl->data());
+    }
+    SyncDataMap initial_data;
+    initial_data[local_turl->sync_guid()] =
+        TemplateURLService::CreateSyncDataFromTemplateURLData(
+            local_turl->data());
+
+    syncer::SyncChangeList change_list;
+    test_util_a_->ResetObserverCount();
+    ASSERT_EQ(1u, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+    model()->MergeInSyncTemplateURL(sync_turl.get(), sync_data, &change_list,
+                                    &initial_data);
+    EXPECT_EQ(test_cases[i].final_num_turls,
+              model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+    EXPECT_EQ(1, test_util_a_->GetObserverCount());
+
+    // Check for expected updates, if any.
+    std::string expected_update_guid;
+    if (test_cases[i].update_sent == LOCAL) {
+      expected_update_guid = local_guid;
+    } else if (test_cases[i].update_sent == SYNC) {
+      expected_update_guid = sync_guid;
+    }
+    if (!expected_update_guid.empty()) {
+      ASSERT_EQ(1U, change_list.size());
+      EXPECT_EQ(expected_update_guid, GetGUID(change_list[0].sync_data()));
+      EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
+                change_list[0].change_type());
+    } else {
+      EXPECT_EQ(0U, change_list.size());
+    }
+
+    // Check for TemplateURLs expected in the model. Note that this is checked
+    // by GUID rather than the initial pointer, as a merge could occur (the
+    // Sync TemplateURL overtakes the local one). Also remove the present
+    // TemplateURL when done so the next test case starts with a clean slate.
+    if (test_cases[i].present_in_model == LOCAL ||
+        test_cases[i].present_in_model == BOTH) {
+      ASSERT_TRUE(model()->GetTemplateURLForGUID(local_guid));
+      EXPECT_EQ(expected_local_keyword, local_turl->keyword());
+      EXPECT_EQ(local_url, local_turl->url());
+      EXPECT_EQ(local_last_modified, local_turl->last_modified());
+      model()->Remove(model()->GetTemplateURLForGUID(local_guid));
+    }
+    if (test_cases[i].present_in_model == SYNC ||
+        test_cases[i].present_in_model == BOTH) {
+      ASSERT_TRUE(model()->GetTemplateURLForGUID(sync_guid));
+      EXPECT_EQ(expected_sync_keyword, sync_turl->keyword());
+      EXPECT_EQ(sync_url, sync_turl->url());
+      EXPECT_EQ(sync_last_modified, sync_turl->last_modified());
+      model()->Remove(model()->GetTemplateURLForGUID(sync_guid));
+    }
+  }
+}
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       MergeTwiceWithSameSyncData) {
+  // Ensure that a second merge with the same data as the first does not
+  // actually update the local data.
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(CreateInitialSyncData()[0]);
+
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com", "guid1",
+                                     base::Time::FromTimeT(10)));  // earlier
+
+  std::optional<syncer::ModelError> error =
+      MergeAndExpectNotify(initial_data, 1);
+  ASSERT_FALSE(error.has_value());
+
+  // We should have updated the original TemplateURL with Sync's version.
+  // Keep a copy of it so we can compare it after we re-merge.
+  TemplateURL* guid1_url = model()->GetTemplateURLForGUID("guid1");
+  ASSERT_TRUE(guid1_url);
+  std::unique_ptr<TemplateURL> updated_turl(new TemplateURL(guid1_url->data()));
+  EXPECT_EQ(Time::FromTimeT(90), updated_turl->last_modified());
+
+  // Modify a single field of the initial data. This should not be updated in
+  // the second merge, as the last_modified timestamp remains the same.
+  std::unique_ptr<TemplateURL> temp_turl(Deserialize(initial_data[0]));
+  TemplateURLData data(temp_turl->data());
+  data.SetShortName(u"SomethingDifferent");
+  temp_turl = std::make_unique<TemplateURL>(data);
+  initial_data.clear();
+  initial_data.push_back(
+      TemplateURLService::CreateSyncDataFromTemplateURLData(temp_turl->data()));
+
+  // Remerge the data again. This simulates shutting down and syncing again
+  // at a different time, but the cloud data has not changed.
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  sync_processor_wrapper_ =
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          sync_processor_.get());
+  error = MergeAndExpectNotify(initial_data, 0);
+  ASSERT_FALSE(error.has_value());
+
+  // Check that the TemplateURL was not modified.
+  const TemplateURL* reupdated_turl = model()->GetTemplateURLForGUID("guid1");
+  ASSERT_TRUE(reupdated_turl);
+  AssertEquals(*updated_turl, *reupdated_turl);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       MergeUpdateFromSync) {
+  // The local data is the same as the sync data merged in, but timestamps have
+  // changed. Ensure the right fields are merged in.
+  syncer::SyncDataList initial_data;
+  TemplateURL* turl1 = model()->Add(CreateTestTemplateURL(
+      u"abc.com", "http://abc.com", "abc", base::Time::FromTimeT(9000)));
+  model()->Add(CreateTestTemplateURL(u"xyz.com", "http://xyz.com", "xyz",
+                                     base::Time::FromTimeT(9000)));
+
+  std::unique_ptr<TemplateURL> turl1_newer = CreateTestTemplateURL(
+      u"abc.com", "http://abc.ca", "abc", base::Time::FromTimeT(9999));
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      turl1_newer->data()));
+
+  std::unique_ptr<TemplateURL> turl2_older = CreateTestTemplateURL(
+      u"xyz.com", "http://xyz.ca", "xyz", base::Time::FromTimeT(8888));
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      turl2_older->data()));
+
+  ASSERT_EQ(2U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  MergeAndExpectNotify(initial_data, 1);
+
+  // Both were local updates, so we expect the same count.
+  EXPECT_EQ(2U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+
+  // Check that the first replaced the initial abc TemplateURL.
+  EXPECT_EQ(turl1, model()->GetTemplateURLForGUID("abc"));
+  EXPECT_EQ("http://abc.ca", turl1->url());
+
+  // Check that the second produced an upstream update to the xyz TemplateURL.
+  EXPECT_EQ(1U, processor()->change_list_size());
+  ASSERT_TRUE(processor()->contains_guid("xyz"));
+  syncer::SyncChange change = processor()->change_for_guid("xyz");
+  EXPECT_TRUE(change.change_type() == syncer::SyncChange::ACTION_UPDATE);
+  EXPECT_EQ("http://xyz.com", GetURL(change.sync_data()));
+}
+
 class TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines
     : public TemplateURLServiceSyncTest {
  public:
@@ -3783,6 +3793,40 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
 }
 
 TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       MergeUpdateFromSync) {
+  // The local data is the same as the sync data merged in, but timestamps have
+  // changed. Ensure the right fields are merged in.
+  syncer::SyncDataList initial_data;
+  TemplateURL* turl1 = model()->Add(CreateTestTemplateURL(
+      u"abc.com", "http://abc.com", "abc", base::Time::FromTimeT(9000)));
+  const TemplateURL* turl2 = model()->Add(CreateTestTemplateURL(
+      u"xyz.com", "http://xyz.com", "xyz", base::Time::FromTimeT(9000)));
+
+  std::unique_ptr<TemplateURL> turl1_newer = CreateTestTemplateURL(
+      u"abc.com", "http://abc.ca", "abc", base::Time::FromTimeT(9999));
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      turl1_newer->data()));
+
+  std::unique_ptr<TemplateURL> turl2_older = CreateTestTemplateURL(
+      u"xyz.com", "http://xyz.ca", "xyz", base::Time::FromTimeT(8888));
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      turl2_older->data()));
+
+  MergeAndExpectNotify(initial_data, 1);
+
+  // Check that the first overrides the local abc TemplateURL.
+  EXPECT_EQ(turl1, model()->GetTemplateURLForGUID("abc"));
+  EXPECT_EQ("http://abc.ca", turl1->url());
+
+  // Check that the second is overridden by the local xyz TemplateURL.
+  EXPECT_EQ(turl2, model()->GetTemplateURLForGUID("xyz"));
+  EXPECT_EQ("http://xyz.com", turl2->url());
+
+  // No changes were sent to Sync.
+  EXPECT_EQ(0U, processor()->change_list_size());
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
        MergeAddFromNewerSyncData) {
   // GUIDs all differ, so Sync may overtake some entries, but the timestamps
   // from Sync are newer. Set up the local data so that one is a dupe, one has a
@@ -3863,6 +3907,195 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
   // The Play API engine should be ignored when it comes to conflict resolution.
   EXPECT_TRUE(model()->GetTemplateURLForGUID("guid2"));
   EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid2"));
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       MergeInSyncTemplateURL) {
+  // An enumeration used to indicate which TemplateURL test value is expected
+  // for a particular test result.
+  enum ExpectedTemplateURL {
+    LOCAL,
+    SYNC,
+    BOTH,
+    NEITHER,
+  };
+
+  // Sets up and executes a MergeInSyncTemplateURL test given a number of
+  // expected start and end states:
+  //  * |conflict_winner| denotes which TemplateURL should win the
+  //    conflict.
+  //  * |synced_at_start| denotes which of the TemplateURLs should known
+  //    to Sync.
+  //  * |update_sent| denotes which TemplateURL should have an
+  //    ACTION_UPDATE sent to the server after the merge.
+  //  * |present_in_model| denotes which TemplateURL should be found in
+  //    the model after the merge.
+  //  * If |keywords_conflict| is true, the TemplateURLs are set up with
+  //    the same keyword.
+  struct TestCases {
+    ExpectedTemplateURL conflict_winner;
+    ExpectedTemplateURL synced_at_start;
+    ExpectedTemplateURL update_sent;
+    ExpectedTemplateURL present_in_model;
+    bool keywords_conflict;
+    size_t final_num_turls;
+  };
+  const auto test_cases = std::to_array<TestCases>({
+      // Both are synced and the new sync entry is better: Local is left as-is,
+      // and the Sync is added.
+      {SYNC, BOTH, NEITHER, BOTH, true, 2},
+      // Both are synced and the local entry is better: Sync is still added to
+      // the model.
+      {LOCAL, BOTH, NEITHER, BOTH, true, 2},
+      // Local was not known to Sync and the new sync entry is better: Sync is
+      // added. Local is removed. No updates.
+      {SYNC, SYNC, NEITHER, SYNC, true, 1},
+      // Local was not known to sync and the local entry is better: Local is
+      // updated with sync GUID, Sync is not added. UPDATE sent for Sync.
+      {LOCAL, SYNC, SYNC, SYNC, true, 1},
+      // No conflicting keyword. Both should be added with their original
+      // keywords, with no updates sent. Note that MergeDataAndStartSyncing is
+      // responsible for creating the ACTION_ADD for the local TemplateURL.
+      {NEITHER, SYNC, NEITHER, BOTH, false, 2},
+  });
+
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, {},
+                                    std::move(sync_processor_));
+
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
+    SCOPED_TRACE(testing::Message() << "Case #" << i << std::endl);
+
+    // Assert all the valid states of ExpectedTemplateURLs.
+    ASSERT_FALSE(test_cases[i].conflict_winner == BOTH);
+    ASSERT_FALSE(test_cases[i].synced_at_start == NEITHER);
+    ASSERT_FALSE(test_cases[i].synced_at_start == LOCAL);
+    ASSERT_FALSE(test_cases[i].update_sent == BOTH);
+    ASSERT_FALSE(test_cases[i].present_in_model == NEITHER);
+
+    const std::u16string local_keyword = u"localkeyword";
+    const std::u16string sync_keyword =
+        test_cases[i].keywords_conflict ? local_keyword : u"synckeyword";
+    const std::string local_url = "www.localurl.com";
+    const std::string sync_url = "www.syncurl.com";
+    const base::Time local_last_modified = base::Time::FromTimeT(100);
+    const base::Time sync_last_modified =
+        base::Time::FromTimeT(test_cases[i].conflict_winner == SYNC ? 110 : 90);
+    const std::string local_guid = "local_guid";
+    const std::string sync_guid = "sync_guid";
+
+    // Initialize expectations.
+    std::u16string expected_local_keyword = local_keyword;
+    std::u16string expected_sync_keyword = sync_keyword;
+
+    // Create the data and run the actual test.
+    TemplateURL* local_turl = model()->Add(CreateTestTemplateURL(
+        local_keyword, local_url, local_guid, local_last_modified));
+    std::unique_ptr<TemplateURL> sync_turl(CreateTestTemplateURL(
+        sync_keyword, sync_url, sync_guid, sync_last_modified));
+
+    SyncDataMap sync_data;
+    if (test_cases[i].synced_at_start == SYNC ||
+        test_cases[i].synced_at_start == BOTH) {
+      sync_data[sync_turl->sync_guid()] =
+          TemplateURLService::CreateSyncDataFromTemplateURLData(
+              sync_turl->data());
+    }
+    if (test_cases[i].synced_at_start == BOTH) {
+      sync_data[local_turl->sync_guid()] =
+          TemplateURLService::CreateSyncDataFromTemplateURLData(
+              local_turl->data());
+    }
+    SyncDataMap initial_data;
+    initial_data[local_turl->sync_guid()] =
+        TemplateURLService::CreateSyncDataFromTemplateURLData(
+            local_turl->data());
+
+    syncer::SyncChangeList change_list;
+    test_util_a_->ResetObserverCount();
+    model()->MergeInSyncTemplateURL(sync_turl.get(), sync_data, &change_list,
+                                    &initial_data);
+    EXPECT_EQ(test_cases[i].final_num_turls,
+              model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+    EXPECT_EQ(1, test_util_a_->GetObserverCount());
+
+    // Check for expected updates, if any.
+    std::string expected_update_guid;
+    if (test_cases[i].update_sent == LOCAL) {
+      expected_update_guid = local_guid;
+    } else if (test_cases[i].update_sent == SYNC) {
+      expected_update_guid = sync_guid;
+    }
+    ASSERT_EQ(0U, change_list.size());
+
+    // Check for TemplateURLs expected in the model. Note that this is checked
+    // by GUID rather than the initial pointer, as a merge could occur (the
+    // Sync TemplateURL overtakes the local one). Also remove the present
+    // TemplateURL when done so the next test case starts with a clean slate.
+    if (test_cases[i].present_in_model == LOCAL ||
+        test_cases[i].present_in_model == BOTH) {
+      ASSERT_TRUE(model()->GetTemplateURLForGUID(local_guid));
+      EXPECT_EQ(expected_local_keyword, local_turl->keyword());
+      EXPECT_EQ(local_url, local_turl->url());
+      EXPECT_EQ(local_last_modified, local_turl->last_modified());
+      model()->Remove(model()->GetTemplateURLForGUID(local_guid));
+    }
+    if (test_cases[i].present_in_model == SYNC ||
+        test_cases[i].present_in_model == BOTH) {
+      ASSERT_TRUE(model()->GetTemplateURLForGUID(sync_guid));
+      EXPECT_EQ(expected_sync_keyword, sync_turl->keyword());
+      EXPECT_EQ(sync_url, sync_turl->url());
+      EXPECT_EQ(sync_last_modified, sync_turl->last_modified());
+      model()->Remove(model()->GetTemplateURLForGUID(sync_guid));
+    }
+  }
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       MergeTwiceWithSameSyncData) {
+  // Ensure that a second merge with the same data as the first updates the
+  // effective data, since upon sync stop the account data should have been
+  // removed.
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(CreateInitialSyncData()[0]);
+
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com", "guid1",
+                                     base::Time::FromTimeT(10)));  // earlier
+
+  std::optional<syncer::ModelError> error =
+      MergeAndExpectNotify(initial_data, 1);
+  ASSERT_FALSE(error.has_value());
+
+  // Account data is added into the turl.
+  TemplateURL* guid1_url = model()->GetTemplateURLForGUID("guid1");
+  ASSERT_TRUE(guid1_url);
+  std::unique_ptr<TemplateURL> updated_turl(
+      new TemplateURL(guid1_url->GetLocalData(), guid1_url->GetAccountData()));
+  EXPECT_EQ(Time::FromTimeT(90), updated_turl->last_modified());
+
+  // Modify a single field of the initial data.
+  std::unique_ptr<TemplateURL> temp_turl(Deserialize(initial_data[0]));
+  TemplateURLData data(temp_turl->data());
+  data.SetShortName(u"SomethingDifferent");
+  temp_turl = std::make_unique<TemplateURL>(data);
+  initial_data.clear();
+  initial_data.push_back(
+      TemplateURLService::CreateSyncDataFromTemplateURLData(temp_turl->data()));
+
+  // Remerge the data again. This simulates shutting down and syncing again
+  // at a different time, but the cloud data has not changed.
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  sync_processor_wrapper_ =
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          sync_processor_.get());
+  error = MergeAndExpectNotify(initial_data, 1);
+  ASSERT_FALSE(error.has_value());
+
+  // Check that the account data was applied again.
+  const TemplateURL* reupdated_turl = model()->GetTemplateURLForGUID("guid1");
+  ASSERT_TRUE(reupdated_turl);
+  ASSERT_NE(updated_turl->data(), reupdated_turl->data());
+  ASSERT_EQ(reupdated_turl->short_name(), u"SomethingDifferent");
+  ASSERT_EQ(updated_turl->short_name(), u"unittest");
 }
 
 TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
