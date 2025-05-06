@@ -15,7 +15,6 @@ public class IncognitoNewTabPageAppMenuFacility
         mNewIncognitoTab =
                 declareMenuItemToStation(
                         items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
-        mNewWindow = declarePossibleMenuItem(items, NEW_WINDOW_ID, this::handleOpenNewWindow);
 
         declareStubMenuItem(items, HISTORY_ID);
         declareAbsentMenuItem(items, DELETE_BROWSING_DATA_ID);

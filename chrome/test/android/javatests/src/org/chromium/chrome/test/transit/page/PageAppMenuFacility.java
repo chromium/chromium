@@ -7,8 +7,6 @@ package org.chromium.chrome.test.transit.page;
 import androidx.annotation.CallSuper;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.Station;
-import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -35,7 +33,6 @@ public class PageAppMenuFacility<HostPageStationT extends PageStation>
 
     protected Item<RegularNewTabPageStation> mNewTab;
     protected Item<IncognitoNewTabPageStation> mNewIncognitoTab;
-    protected Item<RegularNewTabPageStation> mNewWindow;
     protected Item<SettingsStation> mSettings;
 
     @Override
@@ -67,35 +64,8 @@ public class PageAppMenuFacility<HostPageStationT extends PageStation>
         return mNewIncognitoTab.scrollToAndSelect();
     }
 
-    /** Select "New window" from the app menu. */
-    public RegularNewTabPageStation openNewWindow() {
-        TabbedAppMenuPropertiesDelegate delegate = getTabbedAppMenuPropertiesDelegate();
-        assert delegate.shouldShowNewWindow() : "App menu is not expected to show 'New window'";
-        return mNewWindow.scrollToAndSelect();
-    }
-
-    private TabbedAppMenuPropertiesDelegate getTabbedAppMenuPropertiesDelegate() {
-        return (TabbedAppMenuPropertiesDelegate)
-                mHostStation
-                        .getActivity()
-                        .getRootUiCoordinatorForTesting()
-                        .getAppMenuCoordinatorForTesting()
-                        .getAppMenuPropertiesDelegate();
-    }
-
     /** Select "Settings" from the app menu. */
     public SettingsStation openSettings() {
         return mSettings.scrollToAndSelect();
-    }
-
-    /**
-     * Use as lambda from subclasses to handle selecting |mNewWindow|.
-     *
-     * <p>Called from {@link #openNewWindow()} after scrolling to the item.
-     */
-    protected RegularNewTabPageStation handleOpenNewWindow(
-            ItemOnScreenFacility<RegularNewTabPageStation> itemOnScreen) {
-        return Station.spawnSync(
-                createNewWindowStation(), itemOnScreen.viewElement.getClickTrigger());
     }
 }

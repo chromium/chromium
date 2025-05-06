@@ -17,57 +17,47 @@ import java.util.List;
  */
 @NullMarked
 class Trip extends Transition {
-    private final List<Station<?>> mOrigins;
-    private final List<Station<?>> mDestinations;
+    private final Station mOrigin;
+    private final Station mDestination;
 
     /**
-     * Constructor. Trip is instantiated to move between {@link Station}s.
+     * Constructor. Trip is instantiated to move from one {@link Station} into another.
      *
-     * <p>The initial Transition is entering a single station.
-     *
-     * <p>Besides this, usually trips are triggered from one {@link Station} to another. With
-     * multiwindow, there can be any number of stations being exited and any number of stations
-     * being entered.
-     *
-     * @param origins the {@link Station}s to depart from.
-     * @param destinations the {@link Station}s to travel to.
+     * @param origin the {@link Station} to depart from.
+     * @param destination the {@link Station} to travel to.
      * @param options the {@link TransitionOptions}.
      * @param trigger the action that triggers the transition. e.g. clicking a View.
      */
     Trip(
-            List<Station<?>> origins,
-            List<Station<?>> destinations,
+            Station origin,
+            Station destination,
             TransitionOptions options,
             @Nullable Trigger trigger) {
         super(
                 options,
-                getStationsPlusFacilitiesWithPhase(origins, Phase.ACTIVE),
-                getStationsPlusFacilitiesWithPhase(destinations, Phase.NEW),
+                getStationPlusFacilitiesWithPhase(origin, Phase.ACTIVE),
+                getStationPlusFacilitiesWithPhase(destination, Phase.NEW),
                 trigger);
-        mOrigins = origins;
-        mDestinations = destinations;
+        mOrigin = origin;
+        mDestination = destination;
     }
 
-    private static List<? extends ConditionalState> getStationsPlusFacilitiesWithPhase(
-            List<Station<?>> stations, @Phase int phase) {
+    private static List<? extends ConditionalState> getStationPlusFacilitiesWithPhase(
+            Station station, @Phase int phase) {
         List<ConditionalState> allConditionalStates = new ArrayList<>();
-        for (Station<?> station : stations) {
-            allConditionalStates.add(station);
-            allConditionalStates.addAll(station.getFacilitiesWithPhase(phase));
-        }
+        allConditionalStates.add(station);
+        allConditionalStates.addAll(station.getFacilitiesWithPhase(phase));
         return allConditionalStates;
     }
 
     @Override
     protected void onAfterTransition() {
         super.onAfterTransition();
-        TrafficControl.notifyActiveStationsChanged(mOrigins, mDestinations);
+        TrafficControl.notifyActiveStationChanged(mDestination);
     }
 
     @Override
     public String toDebugString() {
-        return String.format(
-                "Trip %d (%s to %s)",
-                mId, getStateListString(mOrigins), getStateListString(mDestinations));
+        return String.format("Trip %d (%s to %s)", mId, mOrigin, mDestination);
     }
 }

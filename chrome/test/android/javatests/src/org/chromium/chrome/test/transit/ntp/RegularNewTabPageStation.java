@@ -37,6 +37,7 @@ public class RegularNewTabPageStation extends PageStation {
     public ViewElement<View> searchBoxElement;
     public ViewElement<UrlBar> urlBarElement;
     public ViewElement<View> logoElement;
+    public ViewElement<View> mvtsContainerElement;
     public Element<NewTabPage> nativePageElement;
 
     protected <T extends RegularNewTabPageStation> RegularNewTabPageStation(Builder<T> builder) {
@@ -63,6 +64,7 @@ public class RegularNewTabPageStation extends PageStation {
 
         logoElement = elements.declareView(viewSpec(withId(R.id.search_provider_logo)));
         searchBoxElement = elements.declareView(viewSpec(withId(R.id.search_box)));
+        mvtsContainerElement = elements.declareView(viewSpec(withId(R.id.mv_tiles_container)));
 
         nativePageElement =
                 elements.declareEnterConditionAsElement(

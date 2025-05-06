@@ -36,8 +36,18 @@ public class FacilitySwap extends Transition {
 
     @Override
     public String toDebugString() {
-        String facilitiesToExitString = getStateListString(mFacilitiesToExit);
-        String facilitiesToEnterString = getStateListString(mFacilitiesToEnter);
+        String facilitiesToExitString;
+        String facilitiesToEnterString;
+        if (mFacilitiesToExit.size() > 1) {
+            facilitiesToExitString = mFacilitiesToExit.toString();
+        } else {
+            facilitiesToExitString = mFacilitiesToExit.get(0).toString();
+        }
+        if (mFacilitiesToEnter.size() > 1) {
+            facilitiesToEnterString = mFacilitiesToEnter.toString();
+        } else {
+            facilitiesToEnterString = mFacilitiesToEnter.get(0).toString();
+        }
         return String.format(
                 "FacilitySwap %d (from %s to %s)",
                 mId, facilitiesToExitString, facilitiesToEnterString);

@@ -115,9 +115,7 @@ public class TabSwitcherLayoutPTTest {
             PageStation currentStation) {
         RegularTabSwitcherStation tabSwitcherStation = currentStation.openRegularTabSwitcher();
         CarryOn.pickUp(
-                new TabThumbnailsCapturedCarryOn(
-                        tabSwitcherStation.tabModelSelectorElement.get(), /* isIncognito= */ false),
-                /* trigger= */ null);
+                new TabThumbnailsCapturedCarryOn(/* isIncognito= */ false), /* trigger= */ null);
         return tabSwitcherStation;
     }
 
@@ -126,9 +124,7 @@ public class TabSwitcherLayoutPTTest {
             PageStation currentStation) {
         IncognitoTabSwitcherStation tabSwitcherStation = currentStation.openIncognitoTabSwitcher();
         CarryOn.pickUp(
-                new TabThumbnailsCapturedCarryOn(
-                        tabSwitcherStation.tabModelSelectorElement.get(), /* isIncognito= */ true),
-                /* trigger= */ null);
+                new TabThumbnailsCapturedCarryOn(/* isIncognito= */ true), /* trigger= */ null);
         return tabSwitcherStation;
     }
 

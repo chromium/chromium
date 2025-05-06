@@ -491,8 +491,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     /**
      * @return Whether the "New window" menu item should be displayed.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public boolean shouldShowNewWindow() {
+    protected boolean shouldShowNewWindow() {
         // Hide the menu on automotive devices.
         if (BuildInfo.getInstance().isAutomotive) return false;
 
