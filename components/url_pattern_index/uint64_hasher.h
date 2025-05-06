@@ -18,7 +18,8 @@
 namespace url_pattern_index {
 
 template <typename T>
-typename std::enable_if<sizeof(T) == 4, T>::type Uint64Hash(uint64_t v) {
+  requires(sizeof(T) == 4)
+T Uint64Hash(uint64_t v) {
   // "64 bit to 32 bit Hash Functions"
   v = ~v + (v << 18);  // v = (v << 18) - v - 1;
   v = v ^ (v >> 31);
@@ -30,7 +31,8 @@ typename std::enable_if<sizeof(T) == 4, T>::type Uint64Hash(uint64_t v) {
 }
 
 template <typename T>
-typename std::enable_if<sizeof(T) == 8, T>::type Uint64Hash(uint64_t v) {
+  requires(sizeof(T) == 8)
+T Uint64Hash(uint64_t v) {
   // "64 bit Mix Functions"
   v = ~v + (v << 21);  // v = (v << 21) - v - 1;
   v = v ^ (v >> 24);
