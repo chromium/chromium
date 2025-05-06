@@ -294,6 +294,8 @@ blink_core_sources("animation") {
     "transition_interpolation.h",
     "transition_keyframe.cc",
     "transition_keyframe.h",
+    "tree_counting_checker.cc",
+    "tree_counting_checker.h",
     "typed_interpolation_value.h",
     "underlying_length_checker.h",
     "underlying_value.h",

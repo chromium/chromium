@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/number_property_functions.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -85,13 +86,17 @@ InterpolationValue CSSNumberInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSNumberInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState&,
-    ConversionCheckers&) const {
-  auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
+    const StyleResolverState& state,
+    ConversionCheckers& conversion_checkers) const {
+  const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (!primitive_value || !primitive_value->IsNumber()) {
     return nullptr;
   }
-  return CreateNumberValue(primitive_value->GetDoubleValue());
+  if (primitive_value->IsElementDependent()) {
+    conversion_checkers.push_back(TreeCountingChecker::Create(state));
+  }
+  return CreateNumberValue(
+      primitive_value->ComputeNumber(state.CssToLengthConversionData()));
 }
 
 InterpolationValue
