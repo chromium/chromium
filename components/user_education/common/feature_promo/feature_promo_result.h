@@ -119,14 +119,9 @@ class FeaturePromoResult {
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr operator bool() const { return !failure_.has_value(); }
   constexpr bool operator!() const { return failure_.has_value(); }
-  constexpr bool operator==(const FeaturePromoResult& other) const {
-    return failure_ == other.failure_;
-  }
-  constexpr bool operator!=(const FeaturePromoResult& other) const {
-    return failure_ != other.failure_;
-  }
+  friend constexpr bool operator==(const FeaturePromoResult&,
+                                   const FeaturePromoResult&) = default;
   constexpr bool operator==(Failure other) const { return failure_ == other; }
-  constexpr bool operator!=(Failure other) const { return failure_ != other; }
   constexpr auto failure() const { return failure_; }
 
  private:
