@@ -59,8 +59,8 @@
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/embedder_support/switches.h"
-#include "crypto/rsa_private_key.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
+#include "crypto/keypair.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/zlib/google/zip.h"
 #include "url/gurl.h"
@@ -1011,10 +1011,10 @@ void ConvertHexadecimalToIDAlphabet(std::string& id) {
   }
 }
 
-std::string GenerateExtensionId(const std::string& input) {
-  uint8_t hash[16];
-  crypto::SHA256HashString(input, hash, sizeof(hash));
-  std::string output = base::ToLowerASCII(base::HexEncode(hash));
+std::string GenerateExtensionId(std::string_view input) {
+  auto hash = crypto::hash::Sha256(input);
+  auto hash_first16 = base::span<uint8_t>(hash).first<16>();
+  std::string output = base::ToLowerASCII(base::HexEncode(hash_first16));
   ConvertHexadecimalToIDAlphabet(output);
   return output;
 }
@@ -1086,19 +1086,13 @@ Status ProcessExtension(const std::string& extension,
                                        static_cast<int>(result)));
     }
   } else {
-    // Not a CRX file. Generate RSA keypair to get a valid extension id.
-    std::unique_ptr<crypto::RSAPrivateKey> key_pair(
-        crypto::RSAPrivateKey::Create(2048));
-    if (!key_pair)
-      return Status(kUnknownError, "cannot generate RSA key pair");
-    std::vector<uint8_t> public_key_vector;
-    if (!key_pair->ExportPublicKey(&public_key_vector))
-      return Status(kUnknownError, "cannot extract public key");
-    std::string public_key =
-        std::string(reinterpret_cast<char*>(&public_key_vector.front()),
-                    public_key_vector.size());
-    id = GenerateExtensionId(public_key);
-    public_key_base64 = base::Base64Encode(public_key);
+    // Not a CRX file. Generate a fresh RSA key pair and use its public key as
+    // the extension's signing key. Note that the private key is discarded
+    // immediately so this key can never be used to actually sign anything.
+    std::vector<uint8_t> pubkey =
+        crypto::keypair::PrivateKey::GenerateRsa2048().ToSubjectPublicKeyInfo();
+    id = GenerateExtensionId(base::as_string_view(pubkey));
+    public_key_base64 = base::Base64Encode(pubkey);
   }
 
   // Unzip the crx file.
