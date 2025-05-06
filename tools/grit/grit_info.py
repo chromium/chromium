@@ -23,8 +23,7 @@ def Outputs(filename,
             defines,
             ids_file,
             target_platform=None,
-            translate_genders=False,
-            android_output_zip_path=None):
+            translate_genders=False):
   grd = grd_reader.Parse(filename,
                          defines=defines,
                          tags_to_ignore={'messages'},
@@ -32,13 +31,17 @@ def Outputs(filename,
                          target_platform=target_platform,
                          translate_genders=translate_genders)
 
-  target = [
-      i.GetFilename() for i in grd.GetOutputFiles()
-      if i.GetType() != 'android' or android_output_zip_path is None
-  ]
+  target = []
+  lang_folders = {}
+  # Add all explicitly-specified output files
+  for output in grd.GetOutputFiles():
+    path = output.GetFilename()
+    target.append(path)
 
-  if android_output_zip_path is not None:
-    target.append(android_output_zip_path)
+    if path.endswith('.h'):
+      path, filename = os.path.split(path)
+    if output.attrs['lang']:
+      lang_folders[output.attrs['lang']] = os.path.dirname(path)
 
   return [t.replace('\\', '/') for t in target]
 
@@ -118,9 +121,6 @@ def DoMain(argv):
   parser.add_option("--translate-genders",
                     action="store_true",
                     dest="translate_genders")
-  parser.add_option("--android-output-zip-path",
-                    dest="android_output_zip_path",
-                    default=None)
 
   options, args = parser.parse_args(argv)
 
@@ -161,9 +161,9 @@ def DoMain(argv):
 
     prefix, filename = args
     outputs = [
-        posixpath.join(prefix, f) for f in Outputs(
-            filename, defines, options.ids_file, options.target_platform,
-            options.translate_genders, options.android_output_zip_path)
+        posixpath.join(prefix, f)
+        for f in Outputs(filename, defines, options.ids_file,
+                         options.target_platform, options.translate_genders)
     ]
     return '\n'.join(outputs)
   else:
