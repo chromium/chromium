@@ -37,14 +37,14 @@ std::u16string GetCustomMessageFromNavigationRule(
 
 std::u16string GetUrlFilteringCustomMessage(
     const std::vector<security_interstitials::UnsafeResource>&
-        unsafe_resources_) {
+        unsafe_resources) {
   std::u16string custom_message = u"";
   int highest_severity_verdict = 0;
 
-  if (!unsafe_resources_.empty() &&
-      !unsafe_resources_[0].rt_lookup_response.threat_info().empty()) {
+  if (!unsafe_resources.empty() &&
+      !unsafe_resources[0].rt_lookup_response.threat_info().empty()) {
     const auto& threat_infos =
-        unsafe_resources_[0].rt_lookup_response.threat_info();
+        unsafe_resources[0].rt_lookup_response.threat_info();
 
     // If it exists, We pick a non-empty custom message from all matched rules
     // at the same highest severity level.
