@@ -34,16 +34,16 @@ MailboxTextureBacking::MailboxTextureBacking(
     const gpu::Mailbox& mailbox,
     scoped_refptr<MailboxRef> mailbox_ref,
     const gfx::Size& size,
-    SkColorType sk_color_type,
+    const viz::SharedImageFormat& format,
     SkAlphaType alpha_type,
-    sk_sp<SkColorSpace> sk_color_space,
+    const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
     : mailbox_(mailbox),
       mailbox_ref_(std::move(mailbox_ref)),
       sk_image_info_(SkImageInfo::Make(gfx::SizeToSkISize(size),
-                                       sk_color_type,
+                                       ToClosestSkColorType(format),
                                        alpha_type,
-                                       std::move(sk_color_space))),
+                                       color_space.ToSkColorSpace())),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {}
 
 MailboxTextureBacking::~MailboxTextureBacking() {
