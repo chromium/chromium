@@ -2903,6 +2903,8 @@ static_library("browser") {
       "android/webapps/webapp_registry.h",
       "auxiliary_search/auxiliary_search_provider.cc",
       "auxiliary_search/auxiliary_search_provider.h",
+      "auxiliary_search/auxiliary_search_top_site_provider_bridge.cc",
+      "auxiliary_search/auxiliary_search_top_site_provider_bridge.h",
       "auxiliary_search/fetch_and_rank_helper.cc",
       "auxiliary_search/fetch_and_rank_helper.h",
       "banners/android/chrome_app_banner_manager_android.cc",

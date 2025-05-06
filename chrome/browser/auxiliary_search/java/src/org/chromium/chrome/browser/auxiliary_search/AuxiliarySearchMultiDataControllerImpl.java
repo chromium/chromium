@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours;
 
 import android.content.Context;
@@ -31,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  */
 @NullMarked
 public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchControllerImpl
-        implements AuxiliarySearchProvider.Observer {
+        implements AuxiliarySearchTopSiteProviderBridge.Observer {
     private final long mHistoryTtlMillis;
 
     // Whether this controller is observing most visited sites.
@@ -46,6 +47,8 @@ public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchContr
     // A set of ActivityLifecycleDispatcher that this controller tracks.
     private Set<ActivityLifecycleDispatcher> mActivityLifecycleDispatcherSet;
 
+    // It is null when the controller doesn't observe top sites changes.
+    private @Nullable AuxiliarySearchTopSiteProviderBridge mAuxiliarySearchTopSiteProviderBridge;
     private @Nullable List<AuxiliarySearchDataEntry> mCurrentSiteSuggestionEntries;
 
     /**
@@ -62,7 +65,8 @@ public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchContr
                         context, profile, /* tabModelSelector= */ null, hostType),
                 AuxiliarySearchDonor.getInstance(),
                 new FaviconHelper(),
-                hostType);
+                hostType,
+                new AuxiliarySearchTopSiteProviderBridge(profile));
     }
 
     @VisibleForTesting
@@ -72,7 +76,8 @@ public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchContr
             AuxiliarySearchProvider auxiliarySearchProvider,
             AuxiliarySearchDonor auxiliarySearchDonor,
             FaviconHelper faviconHelper,
-            @AuxiliarySearchHostType int hostType) {
+            @AuxiliarySearchHostType int hostType,
+            AuxiliarySearchTopSiteProviderBridge auxiliarySearchTopSiteProviderBridge) {
         super(
                 context,
                 profile,
@@ -81,6 +86,7 @@ public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchContr
                 faviconHelper,
                 hostType);
 
+        mAuxiliarySearchTopSiteProviderBridge = auxiliarySearchTopSiteProviderBridge;
         mExpectDonating = true;
         mHistoryTtlMillis =
                 TimeUnit.HOURS.toMillis(
@@ -129,7 +135,11 @@ public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchContr
     public void onDeferredStartup() {
         if (mHostType == AuxiliarySearchHostType.CTA && !mIsObservingTopSites) {
             mIsObservingTopSites = true;
-            mAuxiliarySearchProvider.setObserver(this);
+            if (mAuxiliarySearchTopSiteProviderBridge == null) {
+                mAuxiliarySearchTopSiteProviderBridge =
+                        new AuxiliarySearchTopSiteProviderBridge(mProfile);
+            }
+            mAuxiliarySearchTopSiteProviderBridge.setObserver(this);
         }
     }
 
@@ -142,7 +152,9 @@ public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchContr
 
         if (mActivityLifecycleDispatcherSet.isEmpty()) {
             if (mIsObservingTopSites) {
-                mAuxiliarySearchProvider.setObserver(null);
+                assumeNonNull(mAuxiliarySearchTopSiteProviderBridge);
+                mAuxiliarySearchTopSiteProviderBridge.destroy();
+                mAuxiliarySearchTopSiteProviderBridge = null;
                 mIsObservingTopSites = false;
             }
         }
@@ -226,5 +238,10 @@ public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchContr
 
     boolean getExpectDonatingForTesting() {
         return mExpectDonating;
+    }
+
+    @Nullable
+    AuxiliarySearchTopSiteProviderBridge getAuxiliarySearchTopSiteProviderBridgeForTesting() {
+        return mAuxiliarySearchTopSiteProviderBridge;
     }
 }

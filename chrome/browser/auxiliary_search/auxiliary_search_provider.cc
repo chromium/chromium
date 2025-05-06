@@ -21,7 +21,6 @@
 #include "chrome/browser/auxiliary_search/fetch_and_rank_helper.h"
 #include "chrome/browser/auxiliary_search/proto/auxiliary_search_group.pb.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
@@ -50,13 +49,6 @@ using visited_url_ranking::VisitedURLRankingService;
 using visited_url_ranking::VisitedURLRankingServiceFactory;
 
 namespace {
-// Must match Java Tab.INVALID_TAB_ID.
-static constexpr int kInvalidTabId = -1;
-// The next id to assign.
-static int kIdCounter = 0;
-
-constexpr int kMaxNumMostVisitedSites = 4;
-
 using BackToJavaCallback = base::OnceCallback<void(
     std::unique_ptr<std::vector<base::WeakPtr<TabAndroid>>>)>;
 
@@ -94,10 +86,9 @@ class AuxiliarySearchProviderFactory : public ProfileKeyedServiceFactory {
     if (base::FeatureList::IsEnabled(
             chrome::android::kAndroidAppIntegrationMultiDataSource)) {
       return std::make_unique<AuxiliarySearchProvider>(
-          VisitedURLRankingServiceFactory::GetForProfile(profile),
-          ChromeMostVisitedSitesFactory::NewForProfile(profile));
+          VisitedURLRankingServiceFactory::GetForProfile(profile));
     }
-    return std::make_unique<AuxiliarySearchProvider>(nullptr, nullptr);
+    return std::make_unique<AuxiliarySearchProvider>(nullptr);
   }
 };
 
@@ -144,30 +135,13 @@ void OnDataReady(JNIEnv* env,
   Java_AuxiliarySearchBridge_onDataReady(env, entries, j_callback);
 }
 
-// Converts the score to be an integer. Usually the score is between 0 and 1.0.
-int convertSiteSuggestionScore(double score) {
-  return std::max(0, static_cast<int>(score * 100));
-}
-
 }  // namespace
 
 AuxiliarySearchProvider::AuxiliarySearchProvider(
-    VisitedURLRankingService* ranking_service,
-    std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites)
-    : ranking_service_(ranking_service),
-      most_visited_sites_(std::move(most_visited_sites)) {}
+    VisitedURLRankingService* ranking_service)
+    : ranking_service_(ranking_service) {}
 
 AuxiliarySearchProvider::~AuxiliarySearchProvider() = default;
-
-void AuxiliarySearchProvider::Shutdown() {
-  if (most_visited_sites_) {
-    if (!observers_map_.empty()) {
-      most_visited_sites_->RemoveMostVisitedURLsObserver(this);
-    }
-    most_visited_sites_.reset();
-  }
-  observers_map_.clear();
-}
 
 void AuxiliarySearchProvider::GetNonSensitiveTabs(
     JNIEnv* env,
@@ -196,91 +170,6 @@ void AuxiliarySearchProvider::GetNonSensitiveHistoryData(
               base::android::ScopedJavaGlobalRef<jobject>(j_callback_obj)));
 
   helper->StartFetching();
-}
-
-int AuxiliarySearchProvider::SetObserverAndTrigger(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_ref_obj) {
-  auto j_ref = jni_zero::ScopedJavaGlobalRef<jobject>(j_ref_obj);
-  int id = kIdCounter++;
-  observers_map_[id] = j_ref;
-
-  // AuxiliarySearchProvider registers itself as an observer of the
-  // |most_visited_sites_|. Don't register again if it has registered before.
-  if (observers_map_.size() > 1) {
-    return id;
-  }
-
-  CHECK(most_visited_sites_);
-  most_visited_sites_->AddMostVisitedURLsObserver(this,
-                                                  kMaxNumMostVisitedSites);
-  return id;
-}
-
-void AuxiliarySearchProvider::RemoveObserver(JNIEnv* env, jint id) {
-  CHECK(observers_map_.contains(id));
-  observers_map_.erase(id);
-
-  if (observers_map_.size() == 0) {
-    most_visited_sites_->RemoveMostVisitedURLsObserver(this);
-  }
-}
-
-void AuxiliarySearchProvider::GetMostVisitedSites(JNIEnv* env) const {
-  CHECK(most_visited_sites_);
-
-  most_visited_sites_->RefreshTiles();
-}
-
-void AuxiliarySearchProvider::OnURLsAvailable(
-    const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
-        sections) {
-  CHECK(most_visited_sites_);
-  if (observers_map_.empty()) {
-    return;
-  }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries;
-  // Uses only personalized tiles for auxiliary search.
-  auto it = sections.find(ntp_tiles::SectionType::PERSONALIZED);
-  if (it == sections.end()) {
-    return;
-  }
-
-  for (const ntp_tiles::NTPTile& tile : it->second) {
-    // Filters the tile list to include only TOP_SITES and CUSTOM_LINKS tiles.
-    if (tile.source != ntp_tiles::TileSource::TOP_SITES &&
-        tile.source != ntp_tiles::TileSource::CUSTOM_LINKS) {
-      continue;
-    }
-
-    entries.push_back(Java_AuxiliarySearchBridge_addDataEntry(
-        env, static_cast<int>(AuxiliarySearchEntryType::kTopSite),
-        url::GURLAndroid::FromNativeGURL(env, tile.url),
-        base::android::ConvertUTF16ToJavaString(env, tile.title),
-        tile.last_visit_time.InMillisecondsSinceUnixEpoch(), kInvalidTabId,
-        /* appId= */ nullptr,
-        std::abs(static_cast<int>(
-            base::Hash(tile.url.spec() + base::UTF16ToUTF8(tile.title)))),
-        convertSiteSuggestionScore(tile.score)));
-  }
-
-  for (auto const& [id, observer] : observers_map_) {
-    Java_AuxiliarySearchBridge_onMostVisitedSitesURLsAvailable(env, observer,
-                                                               entries);
-  }
-}
-
-void AuxiliarySearchProvider::OnIconMadeAvailable(const GURL& site_url) {
-  if (observers_map_.empty()) {
-    return;
-  }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  for (auto const& [id, observer] : observers_map_) {
-    Java_AuxiliarySearchBridge_onIconMadeAvailable(env, observer, site_url);
-  }
 }
 
 // static

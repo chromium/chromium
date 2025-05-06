@@ -10,11 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -290,16 +286,6 @@ public class AuxiliarySearchProviderUnitTest {
                     assertEquals(AuxiliarySearchTestHelper.VISIT_ID_2, entry.visitId);
                     assertEquals(AuxiliarySearchTestHelper.SCORE_2, entry.score);
                 });
-    }
-
-    @Test
-    @SmallTest
-    public void testSetObserver() {
-        AuxiliarySearchProvider.Observer observer = mock(AuxiliarySearchProvider.Observer.class);
-        mAuxiliarySearchProvider.setObserver(observer);
-
-        verify(mMockAuxiliarySearchBridgeJni)
-                .setObserverAndTrigger(eq(FAKE_NATIVE_PROVIDER), any(AuxiliarySearchBridge.class));
     }
 
     @Test

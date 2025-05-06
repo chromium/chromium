@@ -37,9 +37,9 @@ public class AuxiliarySearchControllerImpl
                 AuxiliarySearchConfigManager.ShareTabsWithOsStateListener {
     protected final @AuxiliarySearchHostType int mHostType;
     protected final AuxiliarySearchProvider mAuxiliarySearchProvider;
+    protected final Profile mProfile;
 
     private final Context mContext;
-    private final Profile mProfile;
     private final FaviconHelper mFaviconHelper;
     private final AuxiliarySearchDonor mDonor;
     private final boolean mIsFaviconEnabled;

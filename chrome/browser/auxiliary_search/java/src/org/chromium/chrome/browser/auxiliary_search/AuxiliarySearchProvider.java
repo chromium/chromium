@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.content.Context;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
@@ -54,20 +52,6 @@ public class AuxiliarySearchProvider {
         int V1 = 0;
         int MULTI_TYPE_V2 = 1;
         int NUM_ENTRIES = 2;
-    }
-
-    /** An interface to handle events in {@link MostVisitedSites}. */
-    interface Observer {
-        /** This is called when the list of most visited URLs is initially available or updated. */
-        void onSiteSuggestionsAvailable(@Nullable List<AuxiliarySearchDataEntry> entries);
-
-        /**
-         * This is called when a previously uncached icon has been fetched. Parameters guaranteed to
-         * be non-null.
-         *
-         * @param siteUrl URL of site with newly-cached icon.
-         */
-        void onIconMadeAvailable(GURL siteUrl);
     }
 
     /* Only donate the recent 7 days accessed tabs.*/
@@ -139,15 +123,6 @@ public class AuxiliarySearchProvider {
         // We will get up to 100 tabs as default. This is controlled by feature
         // AuxiliarySearchDonation.
         mAuxiliarySearchBridge.getNonSensitiveHistoryData(callback);
-    }
-
-    /**
-     * Sets an observer and immediately fetches the current most visited sites suggestions.
-     *
-     * @param observer The observer to receive suggestions when they are ready.
-     */
-    public void setObserver(@Nullable Observer observer) {
-        assertNonNull(mAuxiliarySearchBridge).setObserver(observer);
     }
 
     @VisibleForTesting
