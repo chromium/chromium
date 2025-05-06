@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/syslog_logging.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
@@ -132,6 +133,7 @@ void LocalDataLossWarningScreen::OnRemovedUserDirectory(
   context()->user_context = std::move(user_context);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Failed to remove user home directory";
+    SYSLOG(INFO) << "(LOGIN) Failed to remove user home directory";
     context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
     exit_callback_.Run(Result::kCryptohomeError);
     return;
@@ -151,6 +153,8 @@ void LocalDataLossWarningScreen::OnRemovedUserDirectory(
   context()->user_context->ClearAuthFactorsConfiguration();
   context()->knowledge_factor_setup.auth_setup_flow =
       WizardContext::AuthChangeFlow::kInitialSetup;
+  SYSLOG(INFO) << "(LOGIN) LocalDataLossWarningScreen::OnRemovedUserDirectory, "
+               << "setting auth_setup_flow to kInitialSetup.";
 
   // Move online password back so that it can be used as key.
   // See `ShowImpl()` to see where it was stored.

@@ -32,6 +32,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -322,6 +323,8 @@ void LoginDisplayHostMojo::UseAlternativeAuthentication(
   // so mark the flow as reauth:
   if (GetWizardContext()->knowledge_factor_setup.auth_setup_flow ==
       WizardContext::AuthChangeFlow::kInitialSetup) {
+    SYSLOG(INFO) << "(LOGIN)AuthChangeFlow::kInitialSetup changing to "
+                 << "kReauthentication";
     GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
         WizardContext::AuthChangeFlow::kReauthentication;
   }
@@ -330,6 +333,8 @@ void LoginDisplayHostMojo::UseAlternativeAuthentication(
   if (online_password_mismatch &&
       (GetWizardContext()->knowledge_factor_setup.auth_setup_flow ==
        WizardContext::AuthChangeFlow::kReauthentication)) {
+    SYSLOG(INFO) << "(LOGIN) AuthChangeFlow::kReauthentication changing to "
+                 << "kRecovery due to online_password_mismatch";
     GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
         WizardContext::AuthChangeFlow::kRecovery;
   }
@@ -552,9 +557,13 @@ void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
       WizardContext::KnowledgeFactorSetup();
 
   if (prefilled_account.is_valid()) {
+    SYSLOG(INFO) << "(LOGIN) Prefilled account is valid, setting "
+                 << "auth_setup_flow to kReauthentication";
     GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
         WizardContext::AuthChangeFlow::kReauthentication;
   } else {
+    SYSLOG(INFO) << "(LOGIN) Prefilled account is not valid, setting "
+                 << "auth_setup_flow to kInitialSetup";
     GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
         WizardContext::AuthChangeFlow::kInitialSetup;
   }
@@ -564,6 +573,7 @@ void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
 
 void LoginDisplayHostMojo::StartUserRecovery(
     const AccountId& account_to_recover) {
+  SYSLOG(INFO) << "(LOGIN) LoginDisplayHostMojo::StartUserRecovery";
   GetWizardContext()->knowledge_factor_setup =
       WizardContext::KnowledgeFactorSetup();
 
