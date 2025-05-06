@@ -122,6 +122,20 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
     QueueReport(url, group, "csp-violation", std::move(body));
   }
 
+  void QueueIntegrityViolationReport(const GURL& url,
+                                     const std::string& endpoint,
+                                     const std::string& document_url,
+                                     const std::string& blocked_url,
+                                     const std::string& destination,
+                                     bool report_only) override {
+    base::Value::Dict body;
+    body.Set("documentURL", document_url);
+    body.Set("blockedURL", blocked_url);
+    body.Set("destination", destination);
+    body.Set("reportOnly", report_only);
+    QueueReport(url, endpoint, "integrity-violation", std::move(body));
+  }
+
   void QueuePermissionsPolicyViolationReport(
       const GURL& url,
       const std::string& endpoint,

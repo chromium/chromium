@@ -166,6 +166,16 @@ blink::CSPSourcePtr ConvertToBlink(const CSPSourcePtr& in) {
       ConvertToBlink(in->path), in->is_host_wildcard, in->is_port_wildcard);
 }
 
+blink::IntegrityPolicy::Destination ConvertToBlink(
+    const IntegrityPolicy::Destination& in) {
+  return blink::IntegrityPolicy::Destination(in);
+}
+
+blink::IntegrityPolicy::Source ConvertToBlink(
+    const IntegrityPolicy::Source& in) {
+  return blink::IntegrityPolicy::Source(in);
+}
+
 blink::CSPHashSourcePtr ConvertToBlink(const CSPHashSourcePtr& in) {
   CHECK(in);
   Vector<uint8_t> hash_value = ConvertToBlink(in->value);
@@ -197,6 +207,14 @@ blink::ContentSecurityPolicyHeaderPtr ConvertToBlink(
   CHECK(in);
   return blink::ContentSecurityPolicyHeader::New(
       ConvertToBlink(in->header_value), in->type, in->source);
+}
+
+blink::IntegrityPolicyPtr ConvertToBlink(const IntegrityPolicyPtr& in) {
+  Vector<blink::IntegrityPolicy::Destination> blocked_destinations =
+      ConvertToBlink(in->blocked_destinations);
+  return blink::IntegrityPolicy::New(
+      std::move(blocked_destinations), ConvertToBlink(in->sources),
+      ConvertToBlink(in->endpoints), ConvertToBlink(in->parsing_errors));
 }
 
 blink::CSPTrustedTypesPtr ConvertToBlink(const CSPTrustedTypesPtr& in) {

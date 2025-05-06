@@ -1,21 +1,33 @@
 <!doctype html>
 <head>
   <meta name="timeout" content="long">
+  <meta name="variant" content="?type=enforce">
+  <meta name="variant" content="?type=report">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/dispatcher/dispatcher.js"></script>
   <script src="/common/utils.js"></script>
+  <script src="/reporting/resources/report-helper.js"></script>
 </head>
 <body>
 <script>
+
   const run_test = (test_case) => {
     promise_test(async () => {
       const REMOTE_EXECUTOR =
         `/common/dispatcher/remote-executor.html?pipe=`;
-      const iframe_uuid = token();
 
-      const header_name = "Integrity-Policy";
-      const header = `header(${header_name},${test_case.header_value})`;
+      let header_name = "Integrity-Policy";
+      const params = new URLSearchParams(location.search);
+      if (params.get('type') === "report") {
+        if (test_case.expected.blocked) {
+          return;
+        }
+        header_name += "-Report-Only";
+      }
+      const iframe_uuid = token();
+      const header =
+        `header(${header_name},${test_case.header_value})`;
       const iframe_url =
         `${REMOTE_EXECUTOR}${encodeURIComponent(header)}&uuid=${iframe_uuid}`;
 
@@ -40,7 +52,6 @@
         });
         return { blocked: !loaded, ran: window.ran };
       }, [test_case]);
-
       assert_equals(!result.blocked, !!result.ran);
       assert_equals(result.blocked, test_case.expected.blocked);
     }, test_case.description);

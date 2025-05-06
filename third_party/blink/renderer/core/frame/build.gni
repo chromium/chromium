@@ -103,6 +103,8 @@ blink_core_sources_frame = [
   "history_util.h",
   "integrity_policy.cc",
   "integrity_policy.h",
+  "integrity_violation_report_body.cc",
+  "integrity_violation_report_body.h",
   "intervention.cc",
   "intervention.h",
   "intervention_report_body.cc",

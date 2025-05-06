@@ -2666,6 +2666,12 @@
       status: "experimental",
     },
     {
+      name: "IntegrityPolicyScript",
+      status: "experimental",
+      base_feature: "none",
+      public: true,
+    },
+    {
       name: "InterestGroupsInSharedStorageWorklet",
       public: true,
       status: "stable",

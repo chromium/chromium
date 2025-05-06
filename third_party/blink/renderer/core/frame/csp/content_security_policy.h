@@ -33,6 +33,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/cpp/integrity_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
@@ -326,6 +327,10 @@ class CORE_EXPORT ContentSecurityPolicy final
       const String& source_prefix = g_empty_string,
       std::optional<base::UnguessableToken> issue_id = std::nullopt);
 
+  // Strip a URL to make it safe to report it.
+  static String StripURLForUseInReport(const SecurityOrigin* security_origin,
+                                       const KURL& url,
+                                       CSPDirectiveName effective_type);
   // Called when mixed content is detected on a page; will trigger a violation
   // report if the 'block-all-mixed-content' directive is specified for a
   // policy.

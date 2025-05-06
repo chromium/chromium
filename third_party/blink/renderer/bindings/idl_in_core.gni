@@ -297,6 +297,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/frame/document_policy_violation_report_body.idl",
   "//third_party/blink/renderer/core/frame/external.idl",
   "//third_party/blink/renderer/core/frame/history.idl",
+  "//third_party/blink/renderer/core/frame/integrity_violation_report_body.idl",
   "//third_party/blink/renderer/core/frame/intervention_report_body.idl",
   "//third_party/blink/renderer/core/frame/is_input_pending_options.idl",
   "//third_party/blink/renderer/core/frame/location.idl",

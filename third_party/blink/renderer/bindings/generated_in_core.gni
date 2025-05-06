@@ -1176,6 +1176,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_input_device_capabilities.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_input_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_input_event.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_integrity_violation_report_body.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_integrity_violation_report_body.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_interest_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_interest_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_inspector_overlay_host.cc",

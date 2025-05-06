@@ -5626,6 +5626,14 @@ interface InputEvent : UIEvent
     getter isComposing
     method constructor
     method getTargetRanges
+interface IntegrityViolationReportBody : ReportBody
+    attribute @@toStringTag
+    getter blockedURL
+    getter destination
+    getter documentURL
+    getter reportOnly
+    method constructor
+    method toJSON
 interface InterestEvent : Event
     attribute @@toStringTag
     getter source

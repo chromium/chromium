@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/frame/csp/csp_hash_report_body.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
+#include "third_party/blink/renderer/core/frame/integrity_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -170,10 +171,20 @@ bool AllowOpaqueFencedFrames(
   return false;
 }
 
+bool HasScriptUnsafeHashes(
+    const network::mojom::blink::ContentSecurityPolicy& policy) {
+  CSPOperativeDirective directive = CSPDirectiveListOperativeDirective(
+      policy, network::mojom::CSPDirectiveName::ScriptSrc);
+  return directive.source_list && directive.source_list->allow_unsafe_hashes;
+}
+
+}  // namespace
+
 // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
-static String StripURLForUseInReport(const SecurityOrigin* security_origin,
-                                     const KURL& url,
-                                     CSPDirectiveName effective_type) {
+String ContentSecurityPolicy::StripURLForUseInReport(
+    const SecurityOrigin* security_origin,
+    const KURL& url,
+    CSPDirectiveName effective_type) {
   if (!url.IsValid()) {
     return String();
   }
@@ -212,15 +223,6 @@ static String StripURLForUseInReport(const SecurityOrigin* security_origin,
   // > 5. Return the result of executing the URL serializer on url.
   return stripped_url.GetString();
 }
-
-bool HasScriptUnsafeHashes(
-    const network::mojom::blink::ContentSecurityPolicy& policy) {
-  CSPOperativeDirective directive = CSPDirectiveListOperativeDirective(
-      policy, network::mojom::CSPDirectiveName::ScriptSrc);
-  return directive.source_list && directive.source_list->allow_unsafe_hashes;
-}
-
-}  // namespace
 
 bool ContentSecurityPolicy::IsNonceableElement(const Element* element) {
   if (element->nonce().IsNull())
@@ -861,7 +863,7 @@ bool AllowResourceHintRequestForPolicy(
 
 // https://w3c.github.io/webappsec-csp/#does-request-violate-policy
 bool ContentSecurityPolicy::AllowRequest(
-    mojom::blink::RequestContextType context,
+    mojom::blink::RequestContextType request_context,
     network::mojom::RequestDestination request_destination,
     network::mojom::RequestMode request_mode,
     const KURL& url,
@@ -876,7 +878,7 @@ bool ContentSecurityPolicy::AllowRequest(
   // 1. If request’s initiator is "prefetch", then return the result of
   // executing "Does resource hint request violate policy?" on request and
   // policy.
-  if (context == mojom::blink::RequestContextType::PREFETCH) {
+  if (request_context == mojom::blink::RequestContextType::PREFETCH) {
     return std::ranges::all_of(policies_, [&](const auto& policy) {
       return !CheckHeaderTypeMatches(check_header_type, reporting_disposition,
                                      policy->header->type) ||
@@ -888,7 +890,7 @@ bool ContentSecurityPolicy::AllowRequest(
   }
 
   std::optional<CSPDirectiveName> type =
-      GetDirectiveTypeFromRequestContextType(context);
+      GetDirectiveTypeFromRequestContextType(request_context);
 
   if (!type)
     return true;
@@ -1124,15 +1126,15 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
     // If this load was blocked via 'frame-ancestors', then the URL of
     // |document| has not yet been initialized. In this case, we'll set both
     // 'documentURI' and 'blockedURI' to the blocked document's URL.
-    String stripped_url =
-        StripURLForUseInReport(delegate->GetSecurityOrigin(), blocked_url,
-                               CSPDirectiveName::DefaultSrc);
+    String stripped_url = ContentSecurityPolicy::StripURLForUseInReport(
+        delegate->GetSecurityOrigin(), blocked_url,
+        CSPDirectiveName::DefaultSrc);
     init->setDocumentURI(stripped_url);
     init->setBlockedURI(stripped_url);
   } else {
-    String stripped_url =
-        StripURLForUseInReport(delegate->GetSecurityOrigin(), delegate->Url(),
-                               CSPDirectiveName::DefaultSrc);
+    String stripped_url = ContentSecurityPolicy::StripURLForUseInReport(
+        delegate->GetSecurityOrigin(), delegate->Url(),
+        CSPDirectiveName::DefaultSrc);
     init->setDocumentURI(stripped_url);
     switch (violation_type) {
       case ContentSecurityPolicyViolationType::kInlineViolation:
@@ -1150,7 +1152,7 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
         // does not strip path and query from the URL. This is safe since
         // blocked_url at this point is always the original url (before
         // redirects).
-        init->setBlockedURI(StripURLForUseInReport(
+        init->setBlockedURI(ContentSecurityPolicy::StripURLForUseInReport(
             delegate->GetSecurityOrigin(), blocked_url, effective_type));
         break;
       case ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation:
@@ -1210,8 +1212,8 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
     // violation. It is the URL pre-redirect. So it is safe to expose it in
     // reports without leaking any new informations to the document. See
     // https://crrev.com/c/2187792.
-    String source_file = StripURLForUseInReport(delegate->GetSecurityOrigin(),
-                                                source_url, effective_type);
+    String source_file = ContentSecurityPolicy::StripURLForUseInReport(
+        delegate->GetSecurityOrigin(), source_url, effective_type);
 
     init->setSourceFile(source_file);
     init->setLineNumber(source_location->LineNumber());
