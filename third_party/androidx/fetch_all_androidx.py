@@ -35,22 +35,11 @@ _CIPD_PATH = _ANDROIDX_PATH / 'cipd'
 _BOM_NAME = 'bill_of_materials.json'
 _EXTRACT_SCRIPT_PATH = _ANDROIDX_PATH / 'extract_and_commit_extras.py'
 
-sys.path.insert(1, str(_SRC_PATH / 'third_party/depot_tools'))
-import gclient_eval
-
 sys.path.insert(1, str(_SRC_PATH / 'build/autoroll'))
 import fetch_util
 
 # URL to artifacts in latest androidx snapshot.
 _ANDROIDX_LATEST_SNAPSHOT_ARTIFACTS_URL = 'https://androidx.dev/snapshots/latest/artifacts'
-
-# Path to package listed in //DEPS
-_DEPS_PACKAGE = 'src/third_party/androidx/cipd'
-# CIPD package name
-_CIPD_PACKAGE = 'chromium/third_party/androidx'
-
-# Snapshot repository URL with {{version}} placeholder.
-_SNAPSHOT_REPOSITORY_URL = 'https://androidx.dev/snapshots/builds/{{version}}/artifacts/repository'
 
 # When androidx roller is breaking, and a fix is not imminent, use this to pin a
 # broken library to an old known-working version.
@@ -75,10 +64,6 @@ _FILES_TO_COMMIT = [
 ]
 
 
-def _build_snapshot_repository_url(version):
-    return _SNAPSHOT_REPOSITORY_URL.replace('{{version}}', version)
-
-
 def _get_latest_androidx_version():
     androidx_artifacts_response = request.urlopen(
         _ANDROIDX_LATEST_SNAPSHOT_ARTIFACTS_URL)
@@ -93,49 +78,7 @@ def _get_latest_androidx_version():
                      androidx_artifacts_url)
     assert match is not None
     version = match.group(1)
-    return version
-
-
-def _query_cipd_tags(version):
-    cipd_output = subprocess.check_output(
-        ['cipd', 'describe', _CIPD_PACKAGE, '-version', version],
-        encoding='utf-8')
-    # Output looks like:
-    # Package:       chromium/third_party/androidx
-    # Instance ID:   gUjEawxv5mQO8yfbuC8W-rx4V3zYE-4LTWggXpZHI4sC
-    # Registered by: user:chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com
-    # Registered at: 2025-01-06 17:54:48.034135 +0000 UTC
-    # Refs:
-    #   latest
-    # Tags:
-    #   details0:version-cr-012873390
-    #   version:cr-012873390
-    lines = cipd_output.split('\n')
-    tags = {}
-    parsing_tags = False
-    for line in lines:
-        if not line.strip():
-            continue
-        if line.startswith('Tags:'):
-            parsing_tags = True
-            continue
-        if parsing_tags:
-            tag, value = line.strip().split(':', 1)
-            tags[tag] = value
-    return tags
-
-
-def _get_current_cipd_instance():
-    with open(os.path.join(_SRC_PATH, 'DEPS'), 'rt') as f:
-        gclient_dict = gclient_eval.Exec(f.read())
-        return gclient_eval.GetCIPD(gclient_dict, _DEPS_PACKAGE, _CIPD_PACKAGE)
-
-
-def _get_current_androidx_version():
-    cipd_instance = _get_current_cipd_instance()
-    cipd_tags = _query_cipd_tags(cipd_instance)
-    version_string = cipd_tags['version']
-    version = version_string[len('cr-0'):]
+    logging.info('Resolved latest androidx version to %s', version)
     return version
 
 
@@ -174,14 +117,12 @@ def main():
                                             os.path.abspath(args.local_repo))
     else:
         if args.local:
-            version = _get_current_androidx_version()
-            logging.info('Resolved current androidx version to %s', version)
+            version = fetch_util.get_current_androidx_version()
         else:
             version = _get_latest_androidx_version()
-            logging.info('Resolved latest androidx version to %s', version)
 
-        androidx_snapshot_repository_url = _build_snapshot_repository_url(
-            version)
+        androidx_snapshot_repository_url = (
+            fetch_util.make_androidx_maven_url(version))
         # Prepend '0' to version to avoid conflicts with previous version format.
         version = 'cr-0' + version
 
@@ -241,7 +182,7 @@ def main():
                        check=True)
 
     fetch_util.write_cipd_yaml(package_root=_CIPD_PATH,
-                               package_name=_CIPD_PACKAGE,
+                               package_name=fetch_util.ANDROIDX_CIPD_PACKAGE,
                                version=version,
                                output_path=_CIPD_PATH / 'cipd.yaml')
 

@@ -383,6 +383,7 @@ apply plugin: ChromiumPlugin
 repositories {
     google()
     mavenCentral()
+    // {{ANDROIDX_REPO}}
 }
 
 dependencies {

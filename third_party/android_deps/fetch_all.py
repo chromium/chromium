@@ -21,9 +21,11 @@ import contextlib
 import fnmatch
 import logging
 import os
+import pathlib
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import textwrap
 import urllib.request
@@ -33,6 +35,9 @@ from typing import Dict
 
 # Assume this script is stored under third_party/android_deps/
 _CHROMIUM_SRC = os.path.normpath(os.path.join(__file__, '..', '..', '..'))
+
+sys.path.insert(1, os.path.join(_CHROMIUM_SRC, 'build/autoroll'))
+import fetch_util
 
 # Default android_deps directory.
 _PRIMARY_ANDROID_DEPS_DIR = os.path.join(_CHROMIUM_SRC, 'third_party',
@@ -353,6 +358,29 @@ def _GenerateSettingsGradle(subproject_dirs: Dict[str, str],
         f.write(template_content)
 
 
+def _InitSubprojects(android_deps_dir, build_android_deps_dir):
+    subprojects = _ParseSubprojects(
+        os.path.join(android_deps_dir, 'subprojects.txt'))
+    subdirs = {name: f'subproject_{name}' for name in subprojects}
+    for name, original_path in subprojects.items():
+        subdir = subdirs[name]
+        build_gradle = os.path.join(subdir, _BUILD_GRADLE)
+        src_path = pathlib.Path(android_deps_dir) / original_path
+        data = src_path.read_text()
+        if '// {{ANDROIDX_REPO}}' in data:
+            version = fetch_util.get_current_androidx_version()
+            repo_url = fetch_util.make_androidx_maven_url(version)
+            data = data.replace('// {{ANDROIDX_REPO}}',
+                                f'maven {{ url "{repo_url}" }}')
+        dst_path = pathlib.Path(build_android_deps_dir) / build_gradle
+        dst_path.parent.mkdir()
+        dst_path.write_text(data)
+
+    _GenerateSettingsGradle(
+        subdirs,
+        os.path.join(_PRIMARY_ANDROID_DEPS_DIR, 'settings.gradle.template'),
+        os.path.join(build_android_deps_dir, 'settings.gradle'))
+
 def _BuildGradleCmd(build_android_deps_dir, task):
     return [
         _GRADLEW, '-p', build_android_deps_dir, '--stacktrace',
@@ -516,9 +544,6 @@ def main():
     parser.add_argument('--override-artifact',
                         action='append',
                         help='lib_subpath:url of .aar / .jar to override.')
-    parser.add_argument('--no-subprojects',
-                        action='store_true',
-                        help='Ignore subprojects.txt for faster runs.')
     parser.add_argument('--local',
                         help='Move .jar and .aar files to cipd/ directory '
                         'after running (3pp bot requires this to not '
@@ -576,25 +601,7 @@ def main():
         CopyFileOrDirectory(os.path.join(_CHROMIUM_SRC, _DEPS),
                             os.path.join(build_dir, _DEPS))
 
-        if args.no_subprojects:
-            subprojects = None
-        else:
-            subprojects = _ParseSubprojects(
-                os.path.join(args.android_deps_dir, 'subprojects.txt'))
-        subproject_subdirs = {}
-        if subprojects:
-            for subproject_name, original_path in subprojects.items():
-                subproject_subdir = f'subproject_{subproject_name}'
-                Copy(args.android_deps_dir, [original_path],
-                     build_android_deps_dir,
-                     [os.path.join(subproject_subdir, _BUILD_GRADLE)])
-                subproject_subdirs[subproject_name] = subproject_subdir
-
-        _GenerateSettingsGradle(
-            subproject_subdirs,
-            os.path.join(_PRIMARY_ANDROID_DEPS_DIR,
-                         'settings.gradle.template'),
-            os.path.join(build_android_deps_dir, 'settings.gradle'))
+        _InitSubprojects(args.android_deps_dir, build_android_deps_dir)
 
         logging.info('Running Gradle.')
 
