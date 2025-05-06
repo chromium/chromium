@@ -1067,7 +1067,7 @@
     {
       // Enables alignment properties for block and inline out-of-flow elements.
       name: "CSSAlignBlockAndInlineOutOfFlows",
-      status: "test",
+      status: "stable",
     },
     {
       // Remember the scroll offset of the default anchor when initially
