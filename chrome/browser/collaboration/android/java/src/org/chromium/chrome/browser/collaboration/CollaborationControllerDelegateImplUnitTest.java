@@ -479,4 +479,56 @@ public class CollaborationControllerDelegateImplUnitTest {
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }
+
+    @Test
+    public void testLeaveSharedTabGroup() {
+        createDelegate(FlowType.LEAVE_OR_DELETE);
+        long resultCallback = 1;
+        LocalTabGroupId localId = new LocalTabGroupId(new Token(1L, 2L));
+        String title = "title";
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.localId = localId;
+        savedGroup.title = title;
+        doReturn(savedGroup)
+                .when(mDataSharingTabManager)
+                .getSavedTabGroupForEitherId(null, localId);
+
+        mCollaborationControllerDelegateImpl.showLeaveDialog(null, localId, resultCallback);
+        ArgumentCaptor<PropertyModel> propertyModelCaptor =
+                ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManager).showDialog(propertyModelCaptor.capture(), anyInt());
+
+        ModalDialogProperties.Controller controller =
+                propertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(propertyModelCaptor.getValue(), ButtonType.NEGATIVE);
+        verify(mCollaborationControllerDelegateImplNativeMock)
+                .runResultCallback(eq(Outcome.CANCEL), eq(resultCallback));
+    }
+
+    @Test
+    public void testDeleteSharedTabGroup() {
+        createDelegate(FlowType.LEAVE_OR_DELETE);
+        long resultCallback = 1;
+        LocalTabGroupId localId = new LocalTabGroupId(new Token(1L, 2L));
+        String title = "title";
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.localId = localId;
+        savedGroup.title = title;
+        doReturn(savedGroup)
+                .when(mDataSharingTabManager)
+                .getSavedTabGroupForEitherId(null, localId);
+
+        mCollaborationControllerDelegateImpl.showLeaveDialog(null, localId, resultCallback);
+        ArgumentCaptor<PropertyModel> propertyModelCaptor =
+                ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManager).showDialog(propertyModelCaptor.capture(), anyInt());
+
+        ModalDialogProperties.Controller controller =
+                propertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(propertyModelCaptor.getValue(), ButtonType.POSITIVE);
+        verify(mCollaborationControllerDelegateImplNativeMock)
+                .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
+    }
 }

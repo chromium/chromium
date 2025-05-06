@@ -80,7 +80,6 @@ public class ActionConfirmationManager {
             this.finishBlocking = finishBlocking;
         }
     }
-    ;
 
     /**
      * @param profile The profile to access shared services with.

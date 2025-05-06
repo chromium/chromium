@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -22,6 +23,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager.MaybeBlockingResult;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
@@ -30,6 +34,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.FlowType;
@@ -581,6 +586,32 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 };
     }
 
+    private Callback<MaybeBlockingResult> getActionConfirmationCallback(long resultCallback) {
+        return (MaybeBlockingResult maybeBlockingResult) -> {
+            boolean accept =
+                    maybeBlockingResult.result != ActionConfirmationResult.CONFIRMATION_NEGATIVE;
+
+            if (maybeBlockingResult.finishBlocking != null) {
+                mCloseScreenRunnable = maybeBlockingResult.finishBlocking;
+            }
+
+            if (accept) {
+                CollaborationControllerDelegateImplJni.get()
+                        .runResultCallback(Outcome.SUCCESS, resultCallback);
+            } else {
+                CollaborationControllerDelegateImplJni.get()
+                        .runResultCallback(Outcome.CANCEL, resultCallback);
+            }
+        };
+    }
+
+    private ActionConfirmationManager getActionConfirmationManager() {
+        return new ActionConfirmationManager(
+                assumeNonNull(mDataSharingTabManager.getProfile()),
+                mActivity,
+                assumeNonNull(mDataSharingTabManager.getWindowAndroid().getModalDialogManager()));
+    }
+
     /**
      * Show the leave dialog screen.
      *
@@ -590,8 +621,13 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
      */
     @CalledByNative
     void showLeaveDialog(String syncId, LocalTabGroupId localId, long resultCallback) {
-        CollaborationControllerDelegateImplJni.get()
-                .runResultCallback(Outcome.FAILURE, resultCallback);
+        SavedTabGroup existingGroup =
+                mDataSharingTabManager.getSavedTabGroupForEitherId(syncId, localId);
+
+        getActionConfirmationManager()
+                .processLeaveGroupAttempt(
+                        getSavedTabGroupTitle(existingGroup),
+                        getActionConfirmationCallback(resultCallback));
     }
 
     /**
@@ -603,8 +639,19 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
      */
     @CalledByNative
     void showDeleteDialog(String syncId, LocalTabGroupId localId, long resultCallback) {
-        CollaborationControllerDelegateImplJni.get()
-                .runResultCallback(Outcome.FAILURE, resultCallback);
+        SavedTabGroup existingGroup =
+                mDataSharingTabManager.getSavedTabGroupForEitherId(syncId, localId);
+
+        getActionConfirmationManager()
+                .processDeleteSharedGroupAttempt(
+                        getSavedTabGroupTitle(existingGroup),
+                        getActionConfirmationCallback(resultCallback));
+    }
+
+    private String getSavedTabGroupTitle(SavedTabGroup tabGroup) {
+        return TextUtils.isEmpty(tabGroup.title)
+                ? TabGroupTitleUtils.getDefaultTitle(mActivity, tabGroup.savedTabs.size())
+                : tabGroup.title;
     }
 
     /**

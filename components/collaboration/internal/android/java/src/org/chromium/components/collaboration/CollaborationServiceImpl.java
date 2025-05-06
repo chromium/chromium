@@ -55,6 +55,15 @@ public class CollaborationServiceImpl implements CollaborationService {
     }
 
     @Override
+    public void startLeaveOrDeleteFlow(
+            CollaborationControllerDelegate delegate,
+            String syncId,
+            @CollaborationServiceLeaveOrDeleteEntryPoint int entry) {
+        CollaborationServiceImplJni.get()
+                .startLeaveOrDeleteFlow(mNativePtr, delegate.getNativePtr(), syncId, entry);
+    }
+
+    @Override
     public ServiceStatus getServiceStatus() {
         return CollaborationServiceImplJni.get().getServiceStatus(mNativePtr);
     }
@@ -111,6 +120,12 @@ public class CollaborationServiceImpl implements CollaborationService {
                 long nativeCollaborationServiceAndroid, long delegateNativePtr, GURL url);
 
         void startShareOrManageFlow(
+                long nativeCollaborationServiceAndroid,
+                long delegateNativePtr,
+                String syncId,
+                int entry);
+
+        void startLeaveOrDeleteFlow(
                 long nativeCollaborationServiceAndroid,
                 long delegateNativePtr,
                 String syncId,

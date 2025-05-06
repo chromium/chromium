@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEntryPoint;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.collaboration.CollaborationStatus;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -65,6 +66,12 @@ public class CollaborationServiceFactoryTest {
                             CollaborationControllerDelegate delegate,
                             String syncId,
                             @CollaborationServiceShareOrManageEntryPoint int entry) {}
+
+                    @Override
+                    public void startLeaveOrDeleteFlow(
+                            CollaborationControllerDelegate delegate,
+                            String syncId,
+                            @CollaborationServiceLeaveOrDeleteEntryPoint int entry) {}
 
                     @Override
                     public ServiceStatus getServiceStatus() {

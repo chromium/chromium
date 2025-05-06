@@ -99,6 +99,21 @@ void CollaborationServiceAndroid::StartShareOrManageFlow(
       static_cast<CollaborationServiceShareOrManageEntryPoint>(entry));
 }
 
+void CollaborationServiceAndroid::StartLeaveOrDeleteFlow(
+    JNIEnv* env,
+    jlong delegateNativePtr,
+    const JavaParamRef<jstring>& j_sync_group_id,
+    jint entry) {
+  std::string sync_group_id_str =
+      base::android::ConvertJavaStringToUTF8(env, j_sync_group_id);
+  tab_groups::EitherGroupID either_id =
+      base::Uuid::ParseLowercase(sync_group_id_str);
+
+  collaboration_service_->StartLeaveOrDeleteFlow(
+      conversion::GetDelegateUniquePtrFromJava(delegateNativePtr), either_id,
+      static_cast<CollaborationServiceLeaveOrDeleteEntryPoint>(entry));
+}
+
 ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetServiceStatus(
     JNIEnv* env) {
   ServiceStatus status = collaboration_service_->GetServiceStatus();

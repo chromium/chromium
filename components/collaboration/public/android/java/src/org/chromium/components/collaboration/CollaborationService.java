@@ -53,11 +53,24 @@ public interface CollaborationService {
      *
      * @param delegate The delegate to perform action on the Android UI.
      * @param either_id The ID to identify a tab group.
+     * @param entry The entry point of the flow.
      */
     void startShareOrManageFlow(
             CollaborationControllerDelegate delegate,
             String syncId,
             @CollaborationServiceShareOrManageEntryPoint int entry);
+
+    /**
+     * Starts a new collaboration leave or delete flow.
+     *
+     * @param delegate The delegate to perform action on the Android UI.
+     * @param either_id The ID to identify a tab group.
+     * @param entry The entry point of the flow.
+     */
+    void startLeaveOrDeleteFlow(
+            CollaborationControllerDelegate delegate,
+            String syncId,
+            @CollaborationServiceLeaveOrDeleteEntryPoint int entry);
 
     /** Returns the current {@link ServiceStatus} of the service. */
     ServiceStatus getServiceStatus();

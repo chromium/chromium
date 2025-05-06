@@ -23,6 +23,8 @@ if (is_android) {
       "//chrome/browser/settings:factory_java",
       "//chrome/browser/signin/services/android:java",
       "//chrome/browser/tab_group_sync:factory_java",
+      "//chrome/browser/tab_ui/android:java",
+      "//chrome/browser/tabmodel:java",
       "//chrome/browser/ui/android/signin:java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/settings/android:java",
