@@ -358,11 +358,15 @@ AudioInputStream* AudioManagerBase::MakeAudioInputStream(
       // created stream and cleans it up when it is Close()d, transparently to
       // the user of the stream. I the case where the audio manager closes the
       // stream (Mac), this will result in a dangling pointer.
+      AudioDebugRecordingStreamType stream_type =
+          (device_id == media::AudioDeviceDescription::kLoopbackInputDeviceId)
+              ? AudioDebugRecordingStreamType::kLoopback
+              : AudioDebugRecordingStreamType::kInput;
       stream = new AudioInputStreamDataInterceptor(
           base::BindRepeating(
               &AudioDebugRecordingManager::RegisterDebugRecordingSource,
-              base::Unretained(debug_recording_manager_.get()),
-              AudioDebugRecordingStreamType::kInput, params),
+              base::Unretained(debug_recording_manager_.get()), stream_type,
+              params),
           stream);
     }
   }
