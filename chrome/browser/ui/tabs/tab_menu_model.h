@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"
@@ -28,7 +30,8 @@ class TabMenuModel : public ui::SimpleMenuModel {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddANoteTabMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSplitTabsMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kUnsplitTabsMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kArrangeSplitTabsMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSwapSplitTabsMenuItem);
 
   TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                TabMenuModelDelegate* tab_menu_model_delegate,
@@ -48,6 +51,7 @@ class TabMenuModel : public ui::SimpleMenuModel {
   std::unique_ptr<ui::SimpleMenuModel> add_to_existing_window_submenu_;
   std::unique_ptr<ui::SimpleMenuModel>
       add_to_existing_comparison_table_submenu_;
+  std::unique_ptr<ui::SimpleMenuModel> arrange_split_view_submenu_;
 
   raw_ptr<TabMenuModelDelegate> tab_menu_model_delegate_;
 };

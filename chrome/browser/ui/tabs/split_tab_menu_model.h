@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_SPLIT_TAB_MENU_MODEL_H_
 
 #include <cstddef>
+#include <optional>
 #include <string>
 
 #include "ui/base/interaction/element_identifier.h"
@@ -33,7 +34,8 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitSplitMenuItem);
 
-  explicit SplitTabMenuModel(TabStripModel* tab_strip_model);
+  explicit SplitTabMenuModel(TabStripModel* tab_strip_model,
+                             std::optional<int> split_tab_index = std::nullopt);
   ~SplitTabMenuModel() override;
 
   enum class CommandId { kSwapPosition, kClose, kExitSplit };
@@ -51,6 +53,10 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
       split_tabs::SplitTabActiveLocation active_split_tab_location) const;
 
   raw_ptr<TabStripModel> tab_strip_model_ = nullptr;
+
+  // This represents the tab that this menu model should be operating on. If
+  // nothing is provided, use the currently active tab.
+  std::optional<int> split_tab_index_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SPLIT_TAB_MENU_MODEL_H_

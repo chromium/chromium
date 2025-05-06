@@ -27,8 +27,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kSwapPositionMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kCloseMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kExitSplitMenuItem);
 
-SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model)
-    : ui::SimpleMenuModel(this), tab_strip_model_(tab_strip_model) {
+SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
+                                     std::optional<int> split_tab_index)
+    : ui::SimpleMenuModel(this),
+      tab_strip_model_(tab_strip_model),
+      split_tab_index_(split_tab_index) {
   AddItem(static_cast<int>(CommandId::kSwapPosition), std::u16string());
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
   AddItemWithStringIdAndIcon(
@@ -102,7 +105,10 @@ void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
 }
 
 split_tabs::SplitTabId SplitTabMenuModel::GetSplitTabId() const {
-  tabs::TabInterface* const tab = tab_strip_model_->GetActiveTab();
+  tabs::TabInterface* const tab =
+      split_tab_index_.has_value()
+          ? tab_strip_model_->GetTabAtIndex(split_tab_index_.value())
+          : tab_strip_model_->GetActiveTab();
   CHECK(tab->IsSplit());
   return tab->GetSplit().value();
 }

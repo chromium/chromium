@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -34,6 +35,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -341,32 +343,21 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandAddToSplit) {
   EXPECT_FALSE(tab_strip_model->GetTabAtIndex(4)->IsSplit());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandRemoveSplit) {
-  AddTabs(3);
+IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandSwapWithActiveSplit) {
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
-  EXPECT_EQ(tab_strip_model->count(), 4);
-  tab_strip_model->ActivateTabAt(1);
+  AddTabs(3);
+  tab_strip_model->ActivateTabAt(0);
+  tab_strip_model->AddToNewSplit({1}, split_tabs::SplitTabLayout::kVertical);
 
   EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
-      3, TabStripModel::CommandAddToSplit));
-  tab_strip_model->ExecuteContextMenuCommand(3,
-                                             TabStripModel::CommandAddToSplit);
+      2, TabStripModel::CommandSwapWithActiveSplit));
 
-  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(0)->IsSplit());
+  tabs::TabInterface* tab_outside_split = tab_strip_model->GetTabAtIndex(2);
+
+  tab_strip_model->ExecuteContextMenuCommand(
+      2, TabStripModel::CommandSwapWithActiveSplit);
+
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(0)->IsSplit());
   EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->IsSplit());
-  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(2)->IsSplit());
-  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(3)->IsSplit());
-
-  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
-      1, TabStripModel::CommandRemoveSplit));
-  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
-      3, TabStripModel::CommandRemoveSplit));
-  tab_strip_model->ExecuteContextMenuCommand(1,
-                                             TabStripModel::CommandRemoveSplit);
-
-  // The two tabs in the split will now be unsplit retaining their indexes.
-  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(0)->IsSplit());
-  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(1)->IsSplit());
-  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(2)->IsSplit());
-  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(3)->IsSplit());
+  EXPECT_EQ(tab_outside_split, tab_strip_model->GetTabAtIndex(0));
 }

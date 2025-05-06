@@ -1948,9 +1948,9 @@ bool TabStripModel::IsContextMenuCommandEnabled(
       return SupportsTabGroups();
 
     case CommandAddToSplit:
-    case CommandRemoveSplit: {
+    case CommandSwapWithActiveSplit:
+    case CommandArrangeSplit:
       return true;
-    }
 
     case CommandRemoveFromGroup:
       return SupportsTabGroups();
@@ -2194,12 +2194,21 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       break;
     }
 
-    case CommandRemoveSplit: {
+    case CommandSwapWithActiveSplit: {
       CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
       std::optional<split_tabs::SplitTabId> split_id =
-          GetTabAtIndex(context_index)->GetSplit();
+          GetTabAtIndex(active_index())->GetSplit();
       CHECK(split_id.has_value());
-      RemoveSplit(split_id.value());
+
+      // TODO(crbug.com/414667744): Ensure this doesn't close the tab leaving
+      // the split.
+      ReplaceActiveTabInSplit(split_id.value(), context_index);
+      break;
+    }
+
+    case CommandArrangeSplit: {
+      // Do nothing. The submenu's delegate will invoke the correct subcommand
+      // later.
       break;
     }
 

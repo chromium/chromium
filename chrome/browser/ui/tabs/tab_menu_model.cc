@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -38,7 +41,8 @@ using base::UserMetricsAction;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kAddANoteTabMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kSplitTabsMenuItem);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kUnsplitTabsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kArrangeSplitTabsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kSwapSplitTabsMenuItem);
 
 TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                            TabMenuModelDelegate* tab_menu_model_delegate,
@@ -133,14 +137,32 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   }
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     if (!tab_strip->GetSplitForTab(index).has_value()) {
-      AddItemWithStringId(TabStripModel::CommandAddToSplit,
-                          IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT);
-      SetEnabledAt(GetItemCount() - 1, num_tabs == 1);
-      SetElementIdentifierAt(GetItemCount() - 1, kSplitTabsMenuItem);
+      if (tab_strip->GetActiveTab()->IsSplit()) {
+        AddItemWithStringId(TabStripModel::CommandSwapWithActiveSplit,
+                            IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT);
+        const int swap_with_split_index = GetItemCount() - 1;
+        SetEnabledAt(swap_with_split_index, num_tabs == 1);
+        SetElementIdentifierAt(swap_with_split_index, kSwapSplitTabsMenuItem);
+      } else {
+        AddItemWithStringId(TabStripModel::CommandAddToSplit,
+                            IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT);
+        const int add_to_split_index = GetItemCount() - 1;
+        SetEnabledAt(add_to_split_index, num_tabs == 1);
+        SetElementIdentifierAt(add_to_split_index, kSplitTabsMenuItem);
+      }
     } else {
-      AddItemWithStringId(TabStripModel::CommandRemoveSplit,
-                          IDS_TAB_CXMENU_REMOVE_SPLIT);
-      SetElementIdentifierAt(GetItemCount() - 1, kUnsplitTabsMenuItem);
+      arrange_split_view_submenu_ =
+          std::make_unique<SplitTabMenuModel>(tab_strip, index);
+      // The arrange split menu doesn't need the close entry.
+      arrange_split_view_submenu_->RemoveItemAt(
+          arrange_split_view_submenu_
+              ->GetIndexOfCommandId(
+                  static_cast<int>(SplitTabMenuModel::CommandId::kClose))
+              .value());
+      AddSubMenuWithStringId(TabStripModel::CommandArrangeSplit,
+                             IDS_TAB_CXMENU_ARRANGE_SPLIT,
+                             arrange_split_view_submenu_.get());
+      SetElementIdentifierAt(GetItemCount() - 1, kArrangeSplitTabsMenuItem);
     }
     SetIsNewFeatureAt(GetItemCount() - 1,
                       UserEducationService::MaybeShowNewBadge(
