@@ -163,8 +163,13 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
                         && type != TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND
                         && type != TabLaunchType.FROM_REPARENTING_BACKGROUND
                         && type != TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND)
-                || (!mTabModelSelector.isIncognitoBrandedModelSelected()
-                        && isNewTabIncognitoBranded);
+                || isDifferentModel(isNewTabIncognitoBranded);
+    }
+
+    private boolean isDifferentModel(boolean isNewTabIncognitoBranded) {
+        return mTabModelSelector.isIncognitoBrandedModelSelected()
+                ? !isNewTabIncognitoBranded
+                : isNewTabIncognitoBranded;
     }
 
     /**
