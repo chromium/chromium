@@ -1,0 +1,2 @@
+# This crate has been brought in as a dependency of the `png` crate.
+file://third_party/rust/png/OWNERS
