@@ -82,10 +82,6 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
     j_feedback_source_ = CreateJavaObjectForTesting();
     supervised_user_service_ =
         SupervisedUserServiceFactory::GetForProfile(profile_.get());
-
-    // In unit tests, the service is not automatically initialized but is
-    // required to ensure proper flow of preference values.
-    supervised_user_service_->Init();
   }
 
  protected:

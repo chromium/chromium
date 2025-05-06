@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
@@ -32,7 +31,6 @@
 #include "components/sync/service/sync_prefs.h"
 #include "extensions/buildflags/buildflags.h"
 
-namespace supervised_user {
 namespace {
 
 struct SupervisedUserSettingsPrefMappingEntry {
@@ -72,20 +70,6 @@ SupervisedUserSettingsPrefMappingEntry kSupervisedUserSettingsPrefMapping[] = {
 };
 
 }  // namespace
-
-void SetSupervisedUserPrefStoreDefaults(PrefValueMap& pref_values) {
-  pref_values.SetInteger(
-      prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(supervised_user::FilteringBehavior::kAllow));
-
-  pref_values.SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
-  pref_values.SetBoolean(feed::prefs::kEnableSnippets, false);
-
-  if (base::FeatureList::IsEnabled(kAlignSafeSitesValueWithBrowserDefault)) {
-    pref_values.SetBoolean(prefs::kSupervisedUserSafeSites, true);
-  }
-}
-}  // namespace supervised_user
 
 SupervisedUserPrefStore::SupervisedUserPrefStore() = default;
 
@@ -145,7 +129,13 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
   std::unique_ptr<PrefValueMap> old_prefs = std::move(prefs_);
   prefs_ = std::make_unique<PrefValueMap>();
   if (!settings.empty()) {
-    supervised_user::SetSupervisedUserPrefStoreDefaults(*prefs_.get());
+    // Set hardcoded prefs and defaults.
+    prefs_->SetInteger(
+        prefs::kDefaultSupervisedUserFilteringBehavior,
+        static_cast<int>(supervised_user::FilteringBehavior::kAllow));
+
+    prefs_->SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
+    prefs_->SetBoolean(feed::prefs::kEnableSnippets, false);
 
 #if BUILDFLAG(IS_ANDROID)
     syncer::SyncPrefs::SetTypeDisabledByCustodian(
@@ -153,8 +143,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
 #endif
 
     // Copy supervised user settings to prefs.
-    for (const auto& entry :
-         supervised_user::kSupervisedUserSettingsPrefMapping) {
+    for (const auto& entry : kSupervisedUserSettingsPrefMapping) {
       const base::Value* value = settings.Find(entry.settings_name);
       if (value) {
         prefs_->SetValue(entry.pref_name, value->Clone());

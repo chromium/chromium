@@ -17,7 +17,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
@@ -35,7 +34,6 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   SupervisedUserURLFilterTest() {
     PrefRegistrySimple* registry = pref_service_.registry();
     RegisterProfilePrefs(registry);
-    supervised_user_sync_data_fake_.Init(pref_service_);
     filter_.SetURLCheckerClient(
         std::make_unique<safe_search_api::FakeURLCheckerClient>());
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
@@ -77,9 +75,6 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
 
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
-  // This makes pref service behave as if SupervisedUserSettingsService and
-  // SupervisedUserPrefStore were in action.
-  SupervisedUserSyncDataFake supervised_user_sync_data_fake_;
   SupervisedUserURLFilter filter_ =
       SupervisedUserURLFilter(pref_service_,
                               std::make_unique<FakeURLFilterDelegate>());
@@ -524,8 +519,6 @@ class SupervisedUserURLFilteringWithConflictsTest
   SupervisedUserURLFilteringWithConflictsTest() {
     PrefRegistrySimple* registry = pref_service_.registry();
     RegisterProfilePrefs(registry);
-    supervised_user_sync_data_fake_.Init(pref_service_);
-
     filter_.SetURLCheckerClient(
         std::make_unique<safe_search_api::FakeURLCheckerClient>());
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
@@ -540,9 +533,6 @@ class SupervisedUserURLFilteringWithConflictsTest
 
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
-  // This makes pref service behave as if SupervisedUserSettingsService and
-  // SupervisedUserPrefStore were in action.
-  SupervisedUserSyncDataFake supervised_user_sync_data_fake_;
   SupervisedUserURLFilter filter_ =
       SupervisedUserURLFilter(pref_service_,
                               std::make_unique<FakeURLFilterDelegate>());
@@ -715,18 +705,13 @@ class SupervisedUserURLFilterMetricsTest
  protected:
   void EnableSafeSites() {
     RegisterProfilePrefs(pref_service_.registry());
-    supervised_user_sync_data_fake_.Init(pref_service_);
-
-    // This call enables parental controls, and default settings of parental
-    // controls is safe sites on.
-    EnableParentalControls(pref_service_);
+    pref_service_.SetString(prefs::kSupervisedUserId, kChildAccountSUID);
+    // No need to explicitly enable kSupervisedUserSafeSites, that's the default
+    // setting.
   }
 
   base::HistogramTester histogram_tester_;
   TestingPrefServiceSimple pref_service_;
-  // This makes pref service behave as if SupervisedUserSettingsService and
-  // SupervisedUserPrefStore were in action.
-  SupervisedUserSyncDataFake supervised_user_sync_data_fake_;
   SupervisedUserURLFilter filter_{pref_service_,
                                   std::make_unique<FakeURLFilterDelegate>()};
 };

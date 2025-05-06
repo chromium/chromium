@@ -64,14 +64,8 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
                                 bool is_subject_to_parental_controls,
                                 bool is_opted_in_to_parental_supervision) {
     Profile* profile = test_profile_manager()->CreateTestingProfile(
-        test_profile, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-        base::UTF8ToUTF16(test_profile), /*avatar_id=*/0,
-        IdentityTestEnvironmentProfileAdaptor::
-            GetIdentityTestEnvironmentFactories(),
-        /*is_supervised_profile=*/is_subject_to_parental_controls,
-        /*is_new_profile=*/std::nullopt,
-        /*policy_service=*/std::nullopt, /*shared_url_loader_factory=*/nullptr);
-
+        test_profile, IdentityTestEnvironmentProfileAdaptor::
+                          GetIdentityTestEnvironmentFactories());
     AccountInfo account = signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(profile), test_email,
         signin::ConsentLevel::kSignin);
@@ -84,10 +78,6 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
         is_opted_in_to_parental_supervision);
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(profile), account);
-
-    // In unit tests, the service is not automatically initialized but is
-    // required to ensure proper flow of preference values.
-    SupervisedUserServiceFactory::GetForProfile(profile)->Init();
 
     if (is_subject_to_parental_controls) {
       supervised_user::EnableParentalControls(*profile->GetPrefs());

@@ -63,12 +63,6 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
 
     if (is_subject_to_parental_controls) {
       supervised_user::EnableParentalControls(*profile->GetPrefs());
-      // Note: in prod environment, prefs::kSupervisedUserSafeSites is set true
-      // in the managed pref store automatically after enabling parental
-      // controls (see how SupervisedUserService activates
-      // SupervisedUserSettingsService, which in turn activates
-      // SupervisedUserPrefStore)
-      profile->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, true);
     }
   }
 

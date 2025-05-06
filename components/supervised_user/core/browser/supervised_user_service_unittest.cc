@@ -28,7 +28,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -42,19 +41,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
+
 namespace {
 
 const char kExampleUrl0[] = "http://www.example0.com";
 const char kExampleUrl1[] = "http://www.example1.com/123";
 
+}  // namespace
 
 class SupervisedUserServiceTestBase : public ::testing::Test {
  public:
   explicit SupervisedUserServiceTestBase(bool is_supervised) {
     settings_service_.Init(syncable_pref_service_.user_prefs_store());
     supervised_user::RegisterProfilePrefs(syncable_pref_service_.registry());
-    supervised_user_sync_data_fake_.Init(syncable_pref_service_);
-
     if (is_supervised) {
       syncable_pref_service_.SetString(prefs::kSupervisedUserId,
                                        kChildAccountSUID);
@@ -85,7 +84,6 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
 
   syncer::MockSyncService sync_service_;
   sync_preferences::TestingPrefServiceSyncable syncable_pref_service_;
-  SupervisedUserSyncDataFake supervised_user_sync_data_fake_;
   SupervisedUserSettingsService settings_service_;
 
   std::unique_ptr<SupervisedUserService> service_;
@@ -136,8 +134,7 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
   syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
                                                base::Value(true));
 
-  // This should not increase since setting user pref `kSupervisedUserSafeSites`
-  // true won't take precedence over SupervisedUserPrefStore.
+  // This should not increase since only changes from the default are recorded.
   histogram_tester.ExpectUniqueSample(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
@@ -162,6 +159,7 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
       /*sample=*/
       WebFilterType::kCertainSites,
       /*expected_count=*/1);
+
   histogram_tester.ExpectTotalCount(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
       /*expected_count=*/2);
@@ -288,5 +286,4 @@ TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
       /* SupervisedUserURLFilter::WARN */ base::Value(1)));
 }
 
-}  // namespace
 }  // namespace supervised_user
