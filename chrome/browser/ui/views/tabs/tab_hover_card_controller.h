@@ -185,6 +185,9 @@ class TabHoverCardController : public views::ViewObserver,
   bool hover_card_image_previews_enabled_ = false;
   bool hover_card_memory_usage_enabled_ = false;
 
+  // TODO(crbug.com/40865488): Remove after diagnosing crashes.
+  bool in_show_hover_card_ = false;
+
   // Ensure that this timer is destroyed before anything else is cleaned up.
   base::OneShotTimer delayed_show_timer_;
   base::WeakPtrFactory<TabHoverCardController> weak_ptr_factory_{this};
