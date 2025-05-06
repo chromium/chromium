@@ -126,7 +126,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
             'reusedPasswords_, weakPasswords_)',
       },
 
-      groupCount_: {
+      passwordCount_: {
         type: Number,
         value: 0,
         observer: 'updateCheckedPasswordsText_',
@@ -149,7 +149,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
   declare private bannerImage_: string;
   declare private reusedPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
   private didCheckAutomatically_: boolean = false;
-  declare private groupCount_: number;
+  declare private passwordCount_: number;
 
   private statusChangedListener_: PasswordCheckStatusChangedListener|null =
       null;
@@ -187,9 +187,11 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
       });
     };
 
-    this.setSavedPasswordsListener_ = _passwordList => {
-      PasswordManagerImpl.getInstance().getCredentialGroups().then(
-          groups => this.groupCount_ = groups.length);
+    this.setSavedPasswordsListener_ = passwordList => {
+      this.passwordCount_ =
+          passwordList
+              .filter(entry => !entry.federationText && !entry.isPasskey)
+              .length;
     };
 
     PasswordManagerImpl.getInstance().getPasswordCheckStatus().then(
@@ -202,8 +204,8 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
     PasswordManagerImpl.getInstance().addInsecureCredentialsListener(
         this.insecureCredentialsChangedListener_);
 
-    PasswordManagerImpl.getInstance().getCredentialGroups().then(
-        groups => this.groupCount_ = groups.length);
+    PasswordManagerImpl.getInstance().getSavedPasswordList().then(
+        this.setSavedPasswordsListener_);
     PasswordManagerImpl.getInstance().addSavedPasswordListChangedListener(
         this.setSavedPasswordsListener_);
   }
@@ -294,7 +296,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
       case CheckState.NO_PASSWORDS:
         this.checkedPasswordsText_ =
             await PluralStringProxyImpl.getInstance().getPluralString(
-                'checkedPasswords', this.groupCount_);
+                'checkedPasswords', this.passwordCount_);
         return;
       case CheckState.CANCELED:
         this.checkedPasswordsText_ = this.i18n('checkupCanceled');
