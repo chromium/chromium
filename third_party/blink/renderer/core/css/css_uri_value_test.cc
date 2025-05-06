@@ -16,7 +16,7 @@ TEST(CSSURIValueTest, ComputedCSSValue) {
   cssvalue::CSSURIValue* rel = MakeGarbageCollected<cssvalue::CSSURIValue>(
       *MakeGarbageCollected<CSSUrlData>(
           AtomicString("a"), KURL("http://foo.com/a"), Referrer(),
-          OriginClean::kTrue, /*is_ad_related=*/false));
+          /*origin_clean=*/true, /*is_ad_related=*/false));
   cssvalue::CSSURIValue* abs =
       rel->ComputedCSSValue(KURL("http://bar.com"), WTF::TextEncoding());
   EXPECT_EQ("url(\"http://bar.com/a\")", abs->CssText());
@@ -26,7 +26,7 @@ TEST(CSSURIValueTest, AlreadyComputedCSSValue) {
   cssvalue::CSSURIValue* rel = MakeGarbageCollected<cssvalue::CSSURIValue>(
       *MakeGarbageCollected<CSSUrlData>(
           AtomicString("http://baz.com/a"), KURL("http://baz.com/a"),
-          Referrer(), OriginClean::kTrue, /*is_ad_related=*/false));
+          Referrer(), /*origin_clean=*/true, /*is_ad_related=*/false));
   cssvalue::CSSURIValue* abs =
       rel->ComputedCSSValue(KURL("http://bar.com"), WTF::TextEncoding());
   EXPECT_EQ("url(\"http://baz.com/a\")", abs->CssText());
@@ -36,7 +36,7 @@ TEST(CSSURIValueTest, LocalComputedCSSValue) {
   cssvalue::CSSURIValue* rel = MakeGarbageCollected<cssvalue::CSSURIValue>(
       *MakeGarbageCollected<CSSUrlData>(
           AtomicString("#a"), KURL("http://baz.com/a"), Referrer(),
-          OriginClean::kTrue, /*is_ad_related=*/false));
+          /*origin_clean=*/true, /*is_ad_related=*/false));
   cssvalue::CSSURIValue* abs =
       rel->ComputedCSSValue(KURL("http://bar.com"), WTF::TextEncoding());
   EXPECT_EQ("url(\"#a\")", abs->CssText());
@@ -45,7 +45,7 @@ TEST(CSSURIValueTest, LocalComputedCSSValue) {
 TEST(CSSURIValueTest, EmptyComputedCSSValue) {
   cssvalue::CSSURIValue* rel = MakeGarbageCollected<cssvalue::CSSURIValue>(
       *MakeGarbageCollected<CSSUrlData>(g_empty_atom, KURL(), Referrer(),
-                                        OriginClean::kTrue,
+                                        /*origin_clean=*/true,
                                         /*is_ad_related=*/false));
   cssvalue::CSSURIValue* abs =
       rel->ComputedCSSValue(KURL("http://bar.com"), WTF::TextEncoding());

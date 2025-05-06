@@ -22,7 +22,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_URL_DATA_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_origin_clean.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -42,7 +41,7 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
   CSSUrlData(const AtomicString& unresolved_url,
              const KURL& resolved_url,
              const Referrer&,
-             OriginClean,
+             bool is_from_origin_clean_style_sheet,
              bool is_ad_related);
 
   // Create URL data with a resolved (absolute) URL. Generally used for
@@ -65,6 +64,11 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
   const CSSUrlData* MakeResolved(const KURL& base_url,
                                  const WTF::TextEncoding& charset) const;
 
+  // Returns a copy with the URL (re)resolved against the base URL of the
+  // document if there's is potential risk of "dangling markup". Otherwise
+  // returns itself.
+  const CSSUrlData* MakeResolvedIfDanglingMarkup(const Document&) const;
+
   // Returns a copy where the referrer has been reset.
   const CSSUrlData* MakeWithoutReferrer() const;
 
@@ -79,10 +83,6 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
 
   bool IsFromOriginCleanStyleSheet() const {
     return is_from_origin_clean_style_sheet_;
-  }
-  OriginClean GetOriginClean() const {
-    return is_from_origin_clean_style_sheet_ ? OriginClean::kTrue
-                                             : OriginClean::kFalse;
   }
   bool IsAdRelated() const { return is_ad_related_; }
 

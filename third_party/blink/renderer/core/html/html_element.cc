@@ -2791,7 +2791,7 @@ void HTMLElement::AddHTMLBackgroundImageToStyle(
           AtomicString(url), GetDocument().CompleteURL(url),
           Referrer(GetExecutionContext()->OutgoingReferrer(),
                    GetExecutionContext()->GetReferrerPolicy()),
-          OriginClean::kTrue, false /* is_ad_related */));
+          /*origin_clean=*/true, /*is_ad_related=*/false));
   if (initiator_name) {
     image_value->SetInitiator(initiator_name);
   }

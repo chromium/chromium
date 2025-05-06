@@ -37,17 +37,13 @@
 namespace blink {
 
 StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
+                                     const CSSUrlData& url_data,
                                      const Document& document,
                                      bool is_lazyload_possibly_deferred,
-                                     bool is_from_origin_clean_style_sheet,
-                                     bool is_ad_related,
-                                     const KURL& url,
                                      const float override_image_resolution)
-    : document_(document),
-      url_(url),
-      override_image_resolution_(override_image_resolution),
-      is_from_origin_clean_style_sheet_(is_from_origin_clean_style_sheet),
-      is_ad_related_(is_ad_related) {
+    : url_data_(url_data),
+      document_(document),
+      override_image_resolution_(override_image_resolution) {
   is_image_resource_ = true;
   is_lazyload_possibly_deferred_ = is_lazyload_possibly_deferred;
 
@@ -71,10 +67,8 @@ bool StyleFetchedImage::IsEqual(const StyleImage& other) const {
   if (!other.IsImageResource()) {
     return false;
   }
-
   const auto& other_image = To<StyleFetchedImage>(other);
-
-  return image_ == other_image.image_ && url_ == other_image.url_ &&
+  return image_ == other_image.image_ && *url_data_ == *other_image.url_data_ &&
          EqualResolutions(override_image_resolution_,
                           other_image.override_image_resolution_);
 }
@@ -101,12 +95,7 @@ ImageResourceContent* StyleFetchedImage::CachedImage() const {
 
 CSSValue* StyleFetchedImage::CssValue() const {
   return MakeGarbageCollected<CSSImageValue>(
-      *MakeGarbageCollected<CSSUrlData>(
-          AtomicString(url_.GetString()), url_, Referrer(),
-          is_from_origin_clean_style_sheet_ ? OriginClean::kTrue
-                                            : OriginClean::kFalse,
-          is_ad_related_),
-      const_cast<StyleFetchedImage*>(this));
+      *url_data_->MakeAbsolute(), const_cast<StyleFetchedImage*>(this));
 }
 
 CSSValue* StyleFetchedImage::ComputedCSSValue(const ComputedStyle&,
@@ -140,6 +129,10 @@ bool StyleFetchedImage::IsAccessAllowed(String& failing_url) const {
   return false;
 }
 
+bool StyleFetchedImage::IsFromOriginCleanStyleSheet() const {
+  return url_data_->IsFromOriginCleanStyleSheet();
+}
+
 float StyleFetchedImage::ApplyImageResolution(float multiplier) const {
   const Image& image = *image_->GetImage();
   if (image.IsBitmapImage() && override_image_resolution_ > 0.0f) {
@@ -160,7 +153,7 @@ gfx::SizeF StyleFetchedImage::ImageSize(
   gfx::SizeF size;
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     const SVGImageViewInfo* view_info =
-        SVGImageForContainer::CreateViewInfo(*svg_image, url_);
+        SVGImageForContainer::CreateViewInfo(*svg_image, FragmentIdentifier());
     const gfx::SizeF unzoomed_default_object_size =
         gfx::ScaleSize(default_object_size, 1 / multiplier);
     size = SVGImageForContainer::ConcreteObjectSize(
@@ -179,7 +172,7 @@ NaturalSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
   NaturalSizingInfo sizing_info;
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     const SVGImageViewInfo* view_info =
-        SVGImageForContainer::CreateViewInfo(*svg_image, url_);
+        SVGImageForContainer::CreateViewInfo(*svg_image, FragmentIdentifier());
     sizing_info =
         SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info)
             .value_or(NaturalSizingInfo::None());
@@ -198,7 +191,7 @@ bool StyleFetchedImage::HasIntrinsicSize() const {
   Image& image = *image_->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     const SVGImageViewInfo* view_info =
-        SVGImageForContainer::CreateViewInfo(*svg_image, url_);
+        SVGImageForContainer::CreateViewInfo(*svg_image, FragmentIdentifier());
     std::optional<NaturalSizingInfo> natural_sizing_info =
         SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info);
     return natural_sizing_info && !natural_sizing_info->IsNone();
@@ -251,7 +244,7 @@ scoped_refptr<Image> StyleFetchedImage::GetImage(
     return image;
   }
   const SVGImageViewInfo* view_info =
-      SVGImageForContainer::CreateViewInfo(*svg_image, url_);
+      SVGImageForContainer::CreateViewInfo(*svg_image, FragmentIdentifier());
   return SVGImageForContainer::Create(
       *svg_image, target_size, style.EffectiveZoom(), view_info,
       document.GetStyleEngine().ResolveColorSchemeForEmbedding(&style));
@@ -293,12 +286,17 @@ bool StyleFetchedImage::GetImageAnimationPolicy(
   return true;
 }
 
+String StyleFetchedImage::FragmentIdentifier() const {
+  return KURL(url_data_->ResolvedUrl()).FragmentIdentifier().ToString();
+}
+
 bool StyleFetchedImage::CanBeSpeculativelyDecoded() const {
   return false;
 }
 
 void StyleFetchedImage::Trace(Visitor* visitor) const {
   visitor->Trace(image_);
+  visitor->Trace(url_data_);
   visitor->Trace(document_);
   StyleImage::Trace(visitor);
   ImageResourceObserver::Trace(visitor);

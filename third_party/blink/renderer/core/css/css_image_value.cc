@@ -103,11 +103,11 @@ StyleImage* CSSImageValue::CacheImage(
     ImageResourceContent* image_content =
         document.GetStyleEngine().CacheImageContent(params);
     cached_image_ = MakeGarbageCollected<StyleFetchedImage>(
-        image_content, document,
+        image_content, *url_data.MakeResolvedIfDanglingMarkup(document),
+        document,
         params.GetImageRequestBehavior() ==
             FetchParameters::ImageRequestBehavior::kDeferImageLoad,
-        url_data.IsFromOriginCleanStyleSheet(), url_data.IsAdRelated(),
-        params.Url(), override_image_resolution);
+        override_image_resolution);
   }
   return cached_image_.Get();
 }
