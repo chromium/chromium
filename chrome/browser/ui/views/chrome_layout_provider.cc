@@ -230,7 +230,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_TEXTFIELD_ACCOUNT_CARD_VERTICAL:
       return 4;
     case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ICON_SIZE:
-      return 20;
+      return 16;
     case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_PADDING:
       return 12;
     case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS:

@@ -63,6 +63,8 @@ class RichControlsContainerView : public views::FlexLayoutView {
   // on the button.
   void SetTitleTextStyleAndColor(int style, ui::ColorId color_id);
 
+  void SetIconImageSizeAndMargins(gfx::Size size, gfx::Insets margin);
+
   std::u16string_view GetTitleForTesting() const;
   const ui::ImageModel GetIconForTesting();
   const ui::ImageModel GetEnforcedIconForTesting();

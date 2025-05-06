@@ -87,6 +87,8 @@ CreateInfoBoxContainerWithoutDescription(std::u16string title,
 
   auto container_view = std::make_unique<RichControlsContainerView>();
   container_view->SetTitle(std::move(title));
+  container_view->SetIconImageSizeAndMargins({icon_size, icon_size},
+                                             gfx::Insets::VH(2, 0));
   container_view->SetIcon(ui::ImageModel::FromVectorIcon(
       vector_icon, kColorFeatureFirstRunIconColor, icon_size));
   container_view->SetBackground(views::CreateRoundedRectBackground(

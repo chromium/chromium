@@ -97,6 +97,13 @@ int RichControlsContainerView::GetFirstLineHeight() {
   return title_->GetLineHeight();
 }
 
+void RichControlsContainerView::SetIconImageSizeAndMargins(
+    gfx::Size image_size,
+    gfx::Insets margin_insets) {
+  icon_->SetProperty(views::kMarginsKey, margin_insets);
+  icon_->SetImageSize(image_size);
+}
+
 views::Label* RichControlsContainerView::AddSecondaryLabel(
     std::u16string text) {
   auto secondary_label = std::make_unique<views::Label>(
