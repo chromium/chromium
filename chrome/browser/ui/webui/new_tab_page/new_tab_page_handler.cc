@@ -843,12 +843,6 @@ void NewTabPageHandler::OnModulesLoadedWithData(
 }
 
 void NewTabPageHandler::OnModuleUsed(const std::string& module_id) {
-  auto* tab = web_contents_.get();
-  // Close the associated IPH promo if open, as interaction with a module
-  // indicates the user is aware of how to interact with modules.
-  feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
-      feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature, tab);
-
   IncrementDictPrefKeyCount(prefs::kNtpModulesInteractedCountDict, module_id);
   MaybeLaunchInteractionSurvey(kUseInteraction, module_id);
 }
@@ -982,11 +976,6 @@ void NewTabPageHandler::MaybeShowFeaturePromo(
     case new_tab_page::mojom::IphFeature::kCustomizeChrome: {
       feature_promo_helper_->MaybeShowFeaturePromo(
           feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-          web_contents_.get());
-    } break;
-    case new_tab_page::mojom::IphFeature::kCustomizeModules: {
-      feature_promo_helper_->MaybeShowFeaturePromo(
-          feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature,
           web_contents_.get());
     } break;
     default:

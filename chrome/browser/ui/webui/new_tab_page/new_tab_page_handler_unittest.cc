@@ -1316,18 +1316,6 @@ TEST_F(NewTabPageHandlerTest, MaybeShowFeaturePromo_CustomizeChromeRefresh) {
   mock_page_.FlushForTesting();
 }
 
-TEST_F(NewTabPageHandlerTest, MaybeShowFeaturePromo_CustomizeModules) {
-  EXPECT_CALL(*mock_feature_promo_helper_, IsSigninModalDialogOpen)
-      .WillRepeatedly(testing::Return(false));
-  EXPECT_CALL(*mock_feature_promo_helper_,
-              MaybeShowFeaturePromo(_, web_contents_.get()))
-      .Times(1);
-
-  handler_->MaybeShowFeaturePromo(
-      new_tab_page::mojom::IphFeature::kCustomizeModules);
-  mock_page_.FlushForTesting();
-}
-
 TEST_F(NewTabPageHandlerTest,
        DontShowCustomizeChromeFeaturePromoWhenModalDialogIsOpen) {
   EXPECT_CALL(*mock_feature_promo_helper_, IsSigninModalDialogOpen)
@@ -1341,18 +1329,6 @@ TEST_F(NewTabPageHandlerTest,
       new_tab_page::mojom::IphFeature::kCustomizeChrome);
 
   mock_page_.FlushForTesting();
-}
-
-TEST_F(NewTabPageHandlerTest, OnModuleUsedRecordFeatureUsageAndClosePromo) {
-  EXPECT_CALL(
-      *mock_feature_promo_helper_,
-      RecordPromoFeatureUsageAndClosePromo(
-          testing::Ref(
-              feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature),
-          web_contents_.get()))
-      .Times(1);
-
-  handler_->OnModuleUsed("module_id");
 }
 
 TEST_F(NewTabPageHandlerTest, ShowWebstoreToast) {

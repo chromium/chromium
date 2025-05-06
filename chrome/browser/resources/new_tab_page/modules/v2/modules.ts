@@ -6,8 +6,6 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
-import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -17,7 +15,6 @@ import {PolymerElement, templatize} from 'chrome://resources/polymer/v3_0/polyme
 import {loadTimeData} from '../../i18n_setup.js';
 import {recordOccurence as recordOccurrence} from '../../metrics_utils.js';
 import type {PageCallbackRouter, PageHandlerRemote} from '../../new_tab_page.mojom-webui.js';
-import {IphFeature} from '../../new_tab_page.mojom-webui.js';
 import type {ModuleIdName} from '../../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
 import {WindowProxy} from '../../window_proxy.js';
@@ -78,9 +75,6 @@ export interface ModulesV2Element {
   };
 }
 
-export const MODULE_CUSTOMIZE_ELEMENT_ID =
-    'NewTabPageUI::kModulesCustomizeIPHAnchorElement';
-
 /**
  * Creates template instances for a list of modules.
  *
@@ -101,11 +95,8 @@ function createTemplateInstances(
   }));
 }
 
-const AppElementBase = HelpBubbleMixin(PolymerElement) as
-    {new (): PolymerElement & HelpBubbleMixinInterface};
-
 /** Container for the NTP modules. */
-export class ModulesV2Element extends AppElementBase {
+export class ModulesV2Element extends PolymerElement {
   static get is() {
     return 'ntp-modules-v2';
   }
@@ -395,24 +386,6 @@ export class ModulesV2Element extends AppElementBase {
 
       this.recordInitialLoadMetrics_(modules, modulesIdNames);
       this.dispatchEvent(new Event('modules-loaded'));
-
-
-      if (this.templateInstances_.length > 0) {
-        this.registerHelpBubble(
-            MODULE_CUSTOMIZE_ELEMENT_ID,
-            [
-              '#container',
-              'ntp-module-wrapper',
-              '#moduleElement',
-            ],
-            {fixed: true});
-        // TODO(crbug.com/40075330): Currently, a period of time must elapse
-        // between the registration of the anchor element and the promo
-        // invocation, else the anchor element will not be ready for use.
-        setTimeout(() => {
-          this.handler_.maybeShowFeaturePromo(IphFeature.kCustomizeModules);
-        }, 1000);
-      }
     }
 
     this.moduleLoadPromise_ = null;
