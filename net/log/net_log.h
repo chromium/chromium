@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <atomic>
+#include <concepts>
 #include <string>
 #include <vector>
 
@@ -203,29 +204,16 @@ class NET_EXPORT NetLog {
   void AddEntry(NetLogEventType type,
                 const NetLogSource& source,
                 NetLogEventPhase phase);
-
-  // NetLog parameter generators (lambdas) come in two flavors -- those that
-  // take no arguments, and those that take a single NetLogCaptureMode. This
-  // code allows differentiating between the two.
-  template <typename T, typename = void>
-  struct ExpectsCaptureMode : std::false_type {};
-  template <typename T>
-  struct ExpectsCaptureMode<T,
-                            decltype(void(std::declval<T>()(
-                                NetLogCaptureMode::kDefault)))>
-      : std::true_type {};
-
   // Adds an entry for the given source, phase, and type, whose parameters are
   // obtained by invoking |get_params()| with no arguments.
   //
   // See "Materializing parameters" for details.
   template <typename ParametersCallback>
-  inline typename std::enable_if<!ExpectsCaptureMode<ParametersCallback>::value,
-                                 void>::type
-  AddEntry(NetLogEventType type,
-           const NetLogSource& source,
-           NetLogEventPhase phase,
-           const ParametersCallback& get_params) {
+    requires(!std::invocable<ParametersCallback, NetLogCaptureMode>)
+  inline void AddEntry(NetLogEventType type,
+                       const NetLogSource& source,
+                       NetLogEventPhase phase,
+                       const ParametersCallback& get_params) {
     if (!IsCapturing()) [[likely]] {
       return;
     }
@@ -238,12 +226,11 @@ class NET_EXPORT NetLog {
   //
   // See "Materializing parameters" for details.
   template <typename ParametersCallback>
-  inline typename std::enable_if<ExpectsCaptureMode<ParametersCallback>::value,
-                                 void>::type
-  AddEntry(NetLogEventType type,
-           const NetLogSource& source,
-           NetLogEventPhase phase,
-           const ParametersCallback& get_params) {
+    requires(std::invocable<ParametersCallback, NetLogCaptureMode>)
+  inline void AddEntry(NetLogEventType type,
+                       const NetLogSource& source,
+                       NetLogEventPhase phase,
+                       const ParametersCallback& get_params) {
     if (!IsCapturing()) [[likely]] {
       return;
     }
