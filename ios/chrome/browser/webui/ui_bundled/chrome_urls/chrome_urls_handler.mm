@@ -51,7 +51,7 @@ void ChromeUrlsHandler::GetUrls(GetUrlsCallback callback) {
     chrome_urls::mojom::WebuiUrlInfoPtr url_info(
         chrome_urls::mojom::WebuiUrlInfo::New());
     url_info->url = url;
-    url_info->enabled = true;
+    url_info->enabled = host != kChromeUINewTabHost;
     url_info->internal = IsWebUIInternal(host);
     webui_urls.push_back(std::move(url_info));
   }
