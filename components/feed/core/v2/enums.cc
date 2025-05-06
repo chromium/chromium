@@ -114,6 +114,8 @@ std::ostream& operator<<(std::ostream& out, LoadStreamStatus value) {
       return out << "kLoadNotAllowedDisabled";
     case LoadStreamStatus::kLoadNotAllowedDisabledByDse:
       return out << "kLoadNotAllowedDisabledByDse";
+    case LoadStreamStatus::kNoCardReceived:
+      return out << "kNoCardReceived";
   }
 #else
   return out << (static_cast<int>(value));
@@ -157,6 +159,7 @@ bool IsLoadingSuccessfulAndFresh(LoadStreamStatus status) {
     case LoadStreamStatus::kNetworkFetchTimedOut:
     case LoadStreamStatus::kLoadNotAllowedDisabled:
     case LoadStreamStatus::kLoadNotAllowedDisabledByDse:
+    case LoadStreamStatus::kNoCardReceived:
       return false;
   }
 }

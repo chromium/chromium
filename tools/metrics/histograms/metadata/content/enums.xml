@@ -199,6 +199,10 @@ chromium-metrics-reviews@google.com.
              account"/>
   <int value="28" label="Failed - account token fetch timed out"/>
   <int value="29" label="Failed - network fetch timed out"/>
+  <int value="30" label="Failed - loading not allowed due to being disabled"/>
+  <int value="31"
+      label="Failed - loading not allowed due to being disabled by DSE"/>
+  <int value="32" label="Failed - no card received"/>
 </enum>
 
 <enum name="FeedRefreshTrigger">

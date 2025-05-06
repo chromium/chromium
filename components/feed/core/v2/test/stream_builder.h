@@ -85,6 +85,8 @@ struct StreamModelUpdateRequestGenerator {
           StreamModelUpdateRequest::Source::kInitialLoadFromStore) const;
 };
 
+std::unique_ptr<StreamModelUpdateRequest> MakeEmptyModelState();
+
 // Returns data operations to create a typical stream:
 // Root
 // |-Cluster 0
