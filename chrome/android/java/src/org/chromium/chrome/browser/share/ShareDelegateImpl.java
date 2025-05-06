@@ -194,11 +194,14 @@ public class ShareDelegateImpl implements ShareDelegate {
                 currentTab,
                 (ShareParams p) -> {
                     if (p != null) {
+                        var webContents = currentTab.getWebContents();
+                        var renderFrameHost =
+                                webContents != null ? webContents.getMainFrame() : null;
+
                         var extras =
                                 new ChromeShareExtras.Builder()
                                         .setIsUrlOfVisiblePage(true)
-                                        .setRenderFrameHost(
-                                                currentTab.getWebContents().getMainFrame())
+                                        .setRenderFrameHost(renderFrameHost)
                                         .build();
                         share(p, extras, shareOrigin);
                         return;
@@ -264,7 +267,7 @@ public class ShareDelegateImpl implements ShareDelegate {
 
     private void triggerShareWithCanonicalUrlResolved(
             final WindowAndroid window,
-            final WebContents webContents,
+            final @Nullable WebContents webContents,
             final String title,
             final @NonNull GURL visibleUrl,
             final GURL canonicalUrl,
@@ -277,7 +280,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                         .setSaveLastUsed(!shareDirectly)
                         .setShareDirectly(shareDirectly)
                         .setIsUrlOfVisiblePage(true)
-                        .setRenderFrameHost(webContents.getMainFrame())
+                        .setRenderFrameHost(webContents != null ? webContents.getMainFrame() : null)
                         .build(),
                 shareOrigin);
 
