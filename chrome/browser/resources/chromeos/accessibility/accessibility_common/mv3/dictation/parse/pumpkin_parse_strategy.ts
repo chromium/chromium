@@ -21,6 +21,7 @@ import {SmartReplacePhraseMacro} from '/common/action_fulfillment/macros/smart_r
 import {SmartSelectBetweenMacro} from '/common/action_fulfillment/macros/smart_select_between_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
 
+import {OffscreenCommandType} from '../../offscreen_command_type.js';
 import {LocaleInfo} from '../locale_info.js';
 import {ListCommandsMacro} from '../macros/list_commands_macro.js';
 
@@ -39,7 +40,6 @@ export class PumpkinParseStrategy extends ParseStrategy {
   private pumpkinTaggerReady_ = false;
   private tagResolver_: (
       (results: proto.speech.pumpkin.PumpkinTaggerResults) => void)|null = null;
-  private worker_: Worker|null = null;
   private locale_: PumpkinConstants.PumpkinLocale|null = null;
   private requestedPumpkinInstall_ = false;
   private onPumpkinTaggerReadyChangedForTesting_: VoidFunction|null = null;
@@ -49,6 +49,11 @@ export class PumpkinParseStrategy extends ParseStrategy {
     if (!this.locale_) {
       return;
     }
+
+    chrome.runtime.onMessage.addListener(
+        (message: any|undefined, _sender: chrome.runtime.MessageSender,
+         _sendResponse: (value: any) => void) =>
+            this.handleMessageFromOffscreen_(message));
 
     this.requestedPumpkinInstall_ = true;
     chrome.accessibilityPrivate.installPumpkinForDictation(data => {
@@ -79,17 +84,23 @@ export class PumpkinParseStrategy extends ParseStrategy {
     this.setPumpkinTaggerReady_(false);
     this.pumpkinData_ = data;
 
-    this.worker_ = new Worker(
-        PumpkinConstants.SANDBOXED_PUMPKIN_TAGGER_JS_FILE, {type: 'module'});
-    this.worker_.onmessage = (message) => this.onMessage_(message);
+    this.sendToOffscreen_(OffscreenCommandType.DICTATION_PUMPKIN_INSTALL);
+  }
+
+  private handleMessageFromOffscreen_(message: any|undefined) {
+    switch (message['command']) {
+      case OffscreenCommandType.DICTATION_PUMPKIN_RECEIVE:
+        this.onMessage_(message['fromPumpkinTagger']);
+        break;
+    }
+    return false;
   }
 
   /**
    * Called when the SandboxedPumpkinTagger posts a message to the background
    * context.
    */
-  private onMessage_(message: MessageEvent): void {
-    const command: PumpkinConstants.FromPumpkinTagger = message.data;
+  private onMessage_(command: PumpkinConstants.FromPumpkinTagger): void {
     switch (command.type) {
       case PumpkinConstants.FromPumpkinTaggerCommand.READY:
         this.refreshLocale_();
@@ -128,14 +139,9 @@ export class PumpkinParseStrategy extends ParseStrategy {
   }
 
   private sendToSandboxedPumpkinTagger_(
-      command: PumpkinConstants.ToPumpkinTagger): void {
-    if (!this.worker_) {
-      throw new Error(
-          `Worker not ready, cannot send command to SandboxedPumpkinTagger: ${
-              command.type}`);
-    }
-
-    this.worker_.postMessage(command);
+      toPumpkinTagger: PumpkinConstants.ToPumpkinTagger): void {
+    this.sendToOffscreen_(
+        OffscreenCommandType.DICTATION_PUMPKIN_SEND, {toPumpkinTagger});
   }
 
   /**
@@ -355,5 +361,9 @@ export class PumpkinParseStrategy extends ParseStrategy {
     if (this.onPumpkinTaggerReadyChangedForTesting_) {
       this.onPumpkinTaggerReadyChangedForTesting_();
     }
+  }
+
+  private sendToOffscreen_(command: OffscreenCommandType, data = {}): void {
+    chrome.runtime.sendMessage(undefined, Object.assign({command}, data));
   }
 }

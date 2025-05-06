@@ -53,6 +53,7 @@ ts_modules = [
   "dictation/ui_controller.ts",
   "dictation/macros/list_commands_macro.ts",
   "dictation/offscreen_audio.ts",
+  "dictation/offscreen_pumpkin_worker.ts",
   "dictation/parse/input_text_strategy.ts",
   "dictation/parse/parse_strategy.ts",
   "dictation/parse/pumpkin_parse_strategy.ts",
