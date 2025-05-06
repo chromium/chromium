@@ -45,8 +45,8 @@ class Ed25519PublicKey {
 
   ~Ed25519PublicKey();
 
-  bool operator==(const Ed25519PublicKey&) const;
-  bool operator!=(const Ed25519PublicKey&) const;
+  friend bool operator==(const Ed25519PublicKey&,
+                         const Ed25519PublicKey&) = default;
 
   const std::array<uint8_t, kLength>& bytes() const { return *bytes_; }
 

@@ -59,10 +59,4 @@ SignedWebBundleIntegrityBlock::SignedWebBundleIntegrityBlock(
 SignedWebBundleIntegrityBlock& SignedWebBundleIntegrityBlock::operator=(
     const SignedWebBundleIntegrityBlock&) = default;
 
-bool SignedWebBundleIntegrityBlock::operator==(
-    const SignedWebBundleIntegrityBlock& other) const = default;
-
-bool SignedWebBundleIntegrityBlock::operator!=(
-    const SignedWebBundleIntegrityBlock& other) const = default;
-
 }  // namespace web_package

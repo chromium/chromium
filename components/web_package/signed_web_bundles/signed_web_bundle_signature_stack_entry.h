@@ -35,8 +35,6 @@ class SignedWebBundleSignatureInfoBase {
 
   bool operator==(const SignedWebBundleSignatureInfoBase& other) const =
       default;
-  bool operator!=(const SignedWebBundleSignatureInfoBase& other) const =
-      default;
 
   const PublicKey& public_key() const { return public_key_; }
   const Signature& signature() const { return signature_; }
@@ -95,8 +93,8 @@ class SignedWebBundleSignatureStackEntry {
 
   ~SignedWebBundleSignatureStackEntry();
 
-  bool operator==(const SignedWebBundleSignatureStackEntry& other) const;
-  bool operator!=(const SignedWebBundleSignatureStackEntry& other) const;
+  friend bool operator==(const SignedWebBundleSignatureStackEntry&,
+                         const SignedWebBundleSignatureStackEntry&) = default;
 
   const std::vector<uint8_t>& attributes_cbor() const {
     return attributes_cbor_;

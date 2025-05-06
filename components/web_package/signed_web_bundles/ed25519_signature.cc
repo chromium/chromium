@@ -28,14 +28,6 @@ base::expected<Ed25519Signature, std::string> Ed25519Signature::Create(
   return Create(*sized_bytes);
 }
 
-bool Ed25519Signature::operator==(const Ed25519Signature& other) const {
-  return *bytes_ == *other.bytes_;
-}
-
-bool Ed25519Signature::operator!=(const Ed25519Signature& other) const {
-  return !operator==(other);
-}
-
 // static
 Ed25519Signature Ed25519Signature::Create(
     base::span<const uint8_t, kLength> bytes) {
