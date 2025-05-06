@@ -1014,13 +1014,13 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- Installer Downloader infobar -->
-      <message name="IDS_INSTALLER_DOWNLOADER_DISCLAIMER" desc=" Installer downloader infobar message for downloading the Chromium installer.">
+      <message name="IDS_INSTALLER_DOWNLOADER_DISCLAIMER" desc=" Installer downloader infobar message for downloading the Chromium installer." translateable="false">
         Download the Chromium Installer.
       </message>
-      <message name="IDS_INSTALLER_DOWNLOADER_LINK_TEXT" desc="Link text for the installer downloader infobar, 'Learn More'.">
+      <message name="IDS_INSTALLER_DOWNLOADER_LINK_TEXT" desc="Link text for the installer downloader infobar, 'Learn More'."  translateable="false">
         Learn More
       </message>
-      <message name="IDS_INSTALLER_DOWNLOADER_BUTTON_LABEL" desc="Button label for the installer downloader infobar to download the Chromium installer.">
+      <message name="IDS_INSTALLER_DOWNLOADER_BUTTON_LABEL" desc="Button label for the installer downloader infobar to download the Chromium installer."  translateable="false">
         Download Chromium Installer
       </message>
 
