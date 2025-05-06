@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 class BrowserWindowInterface;
 class TabStripModel;
@@ -28,6 +29,8 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
 
   void AddObserver(tabs_api::mojom::TabsObserver* observer);
   void RemoveObserver(tabs_api::mojom::TabsObserver* observer);
+
+  void Accept(mojo::PendingReceiver<tabs_api::mojom::TabStripService> client);
 
   // tabs_api::mojom::TabStripService overrides
   void CreateTabAt(tabs_api::mojom::PositionPtr pos,
@@ -55,6 +58,7 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
   // If usage expands to different threads, this needs to transition to
   // ObserverListThreadSafe.
   base::ObserverList<tabs_api::mojom::TabsObserver, true>::Unchecked observers_;
+  mojo::ReceiverSet<tabs_api::mojom::TabStripService> clients_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_SERVICE_IMPL_H_

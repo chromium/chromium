@@ -40,26 +40,6 @@ class MockTabStripServiceImpl : public TabStripServiceImpl {
   }
 };
 
-// Temporary scaffolding to link the mojo receiver with the impl. Once we
-// we figure out how clients will connect with the service, this scaffolding
-// should be removed.
-class ServiceBridge {
- public:
-  ServiceBridge(BrowserWindowInterface* browser, TabStripModel* model)
-      : impl_{browser, model} {}
-  ServiceBridge(const ServiceBridge&) = delete;
-  ServiceBridge operator=(const ServiceBridge&) = delete;
-  ~ServiceBridge() = default;
-
-  mojo::PendingRemote<tabs_api::mojom::TabStripService> GetRemote() {
-    return service_.BindNewPipeAndPassRemote();
-  }
-
- private:
-  mojo::Receiver<tabs_api::mojom::TabStripService> service_{&impl_};
-  MockTabStripServiceImpl impl_;
-};
-
 class TabStripServiceImplTest : public testing::Test {
  protected:
   TabStripServiceImplTest()
@@ -74,9 +54,9 @@ class TabStripServiceImplTest : public testing::Test {
   ~TabStripServiceImplTest() override = default;
 
   void SetUp() override {
-    bridge_ = std::make_unique<ServiceBridge>(browser_window_interface(),
-                                              tab_strip_model());
-    client_.Bind(bridge_->GetRemote());
+    impl_ = std::make_unique<MockTabStripServiceImpl>(
+        browser_window_interface(), tab_strip_model());
+    impl_->Accept(client_.BindNewPipeAndPassReceiver());
   }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -94,7 +74,7 @@ class TabStripServiceImplTest : public testing::Test {
   std::unique_ptr<TestTabStripModelDelegate> delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
-  std::unique_ptr<ServiceBridge> bridge_;
+  std::unique_ptr<TabStripServiceImpl> impl_;
 };
 
 TEST_F(TabStripServiceImplTest, CreateNewTab) {

@@ -106,3 +106,8 @@ void TabStripServiceImpl::RemoveObserver(
     tabs_api::mojom::TabsObserver* observer) {
   observers_.RemoveObserver(observer);
 }
+
+void TabStripServiceImpl::Accept(
+    mojo::PendingReceiver<tabs_api::mojom::TabStripService> client) {
+  clients_.Add(this, std::move(client));
+}
