@@ -1999,8 +1999,10 @@ public class ExternalNavigationHandlerTest {
                 .expecting(
                         OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
                         START_OTHER_ACTIVITY);
-        // Intent schemes should be normalized.
-        Assert.assertEquals("w3ird", mUrlHandler.mStartActivityIntent.getScheme());
+        // Schemes on Android are case-sensitive, so ensure the scheme is passed through as-is.
+        // It would be better if they were normalized to lower case for standards compliance,
+        // but this breaks some APKs that have mixed-case schemes.
+        Assert.assertEquals("w3irD", mUrlHandler.mStartActivityIntent.getScheme());
     }
 
     @Test

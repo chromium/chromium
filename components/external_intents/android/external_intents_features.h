@@ -13,9 +13,6 @@ BASE_DECLARE_FEATURE(kExternalNavigationDebugLogs);
 BASE_DECLARE_FEATURE(kBlockFrameRenavigations);
 BASE_DECLARE_FEATURE(kBlockIntentsToSelf);
 
-// When enabled, forces intent schemes to be lower case.
-BASE_DECLARE_FEATURE(kLowerCaseIntentSchemes);
-
 }  // namespace external_intents
 
 #endif  // COMPONENTS_EXTERNAL_INTENTS_ANDROID_EXTERNAL_INTENTS_FEATURES_H_
