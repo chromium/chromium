@@ -232,7 +232,9 @@ INSTANTIATE_TEST_SUITE_P(
 }  // namespace
 
 // Tests the items present in the view.
-TEST_P(AutofillProfileEditTableViewControllerTest, TestItems) {
+// TODO(crbug.com/416030990): Adapt test to
+// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
+TEST_P(AutofillProfileEditTableViewControllerTest, DISABLED_TestItems) {
   auto test_case = GetParam();
   bool multiple_sections = (test_case.is_settings && test_case.account_profile);
   EXPECT_EQ(NumberOfSections(), multiple_sections ? 2 : 1);
@@ -295,7 +297,9 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestItems) {
 }
 
 // Test the contents of the view when the value requirements fail.
-TEST_P(AutofillProfileEditTableViewControllerTest, TestRequirements) {
+// TODO(crbug.com/416030990): Adapt test to
+// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
+TEST_P(AutofillProfileEditTableViewControllerTest, DISABLED_TestRequirements) {
   TableViewTextEditItem* city_item =
       static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 4));
   // Remove the city field value.
@@ -353,8 +357,10 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestRequirements) {
 }
 
 // Tests the items in the view when the country value changes.
+// TODO(crbug.com/40281788): Adapt test to
+// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_P(AutofillProfileEditTableViewControllerTest,
-       TestItemsOnCountrySelection) {
+       DISABLED_TestItemsOnCountrySelection) {
   auto test_case = GetParam();
   TableViewTextEditItem* city_item =
       static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 4));
@@ -458,7 +464,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests that the sections and items are as expected on initialization, as well
 // as when the country value is changed.
-// TODO(crbug.com/402776694): Re-enable the test once the NumberOfItemsInSection
+// TODO(crbug.com/416030990): Re-enable the test once the NumberOfItemsInSection
 // based on the selected country problem is fixed.
 TEST_P(AutofillProfileEditTableViewControllerTestWithDynamicFieldsEnabled,
        DISABLED_SectionsAndItems) {

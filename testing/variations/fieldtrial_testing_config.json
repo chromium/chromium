@@ -1718,21 +1718,6 @@
             ]
         }
     ],
-    "AutofillDynamicallyLoadsFieldsForAddressInput": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillDynamicallyLoadsFieldsForAddressInput"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableBuyNowPayLaterDesktop": [
         {
             "platforms": [
