@@ -3959,8 +3959,6 @@ static_library("ui") {
       "views/data_sharing/collaboration_controller_delegate_desktop.h",
       "views/data_sharing/data_sharing_bubble_controller.cc",
       "views/data_sharing/data_sharing_bubble_controller.h",
-      "views/data_sharing/data_sharing_open_group_helper.cc",
-      "views/data_sharing/data_sharing_open_group_helper.h",
       "views/data_sharing/data_sharing_utils.cc",
       "views/data_sharing/data_sharing_utils.h",
       "views/desktop_capture/desktop_media_content_pane_view.cc",

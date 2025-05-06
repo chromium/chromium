@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
-#include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -298,43 +297,6 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
   url = data_sharing::GenerateWebUIUrl(request_info_close_with_token,
                                        browser()->profile());
   EXPECT_EQ(url.value().spec(), expected_close_flow_url_with_token);
-}
-
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, OpenGroupHelper) {
-  std::string fake_collab_id = "fake_collab_id";
-  tab_groups::LocalTabGroupID local_group_id = InstrumentATabGroup();
-  auto* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-          browser()->profile());
-  std::optional<tab_groups::SavedTabGroup> group_copy =
-      tab_group_service->GetGroup(local_group_id);
-
-  // Mock up a shared group.
-  group_copy->SetCollaborationId(tab_groups::CollaborationId(fake_collab_id));
-
-  RunTestSequence(
-      SaveGroupLeaveEditorBubbleOpen(local_group_id),
-      WaitForShow(kTabGroupHeaderElementId),
-      EnsurePresent(kTabGroupEditorBubbleId),
-      PressButton(kTabGroupEditorBubbleCloseGroupButtonId),
-      FinishTabstripAnimations(), WaitForHide(kTabGroupHeaderElementId),
-      Do([=, this]() {
-        DataSharingOpenGroupHelper* open_group_helper =
-            browser()
-                ->browser_window_features()
-                ->data_sharing_open_group_helper();
-        open_group_helper->OpenTabGroupWhenAvailable(fake_collab_id);
-        EXPECT_TRUE(open_group_helper->group_ids_for_testing().contains(
-            fake_collab_id));
-
-        // Mock group sync from remote.
-        open_group_helper->OnTabGroupAdded(group_copy.value(),
-                                           tab_groups::TriggerSource::REMOTE);
-        EXPECT_FALSE(open_group_helper->group_ids_for_testing().contains(
-            fake_collab_id));
-      }),
-      // The group is opened into the tab strip.
-      WaitForShow(kTabGroupHeaderElementId));
 }
 
 }  // namespace tab_groups
