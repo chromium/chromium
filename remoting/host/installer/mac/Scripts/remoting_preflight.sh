@@ -11,6 +11,7 @@ SERVICE_NAME=org.chromium.chromoting
 HOST_BUNDLE_NAME=@@HOST_BUNDLE_NAME@@
 CONFIG_FILE="$HELPERTOOLS/$SERVICE_NAME.json"
 OLD_SCRIPT_FILE="$HELPERTOOLS/$SERVICE_NAME.me2me.sh"
+HOST_BUNDLE_PATH="$HELPERTOOLS/$HOST_BUNDLE_NAME"
 HOST_SERVICE_BINARY="$HELPERTOOLS/$HOST_BUNDLE_NAME/Contents/MacOS/remoting_me2me_host_service"
 USERS_TMP_FILE="$HOST_SERVICE_BINARY.users"
 PLIST=/Library/LaunchAgents/org.chromium.chromoting.plist
@@ -18,6 +19,7 @@ BROKER_PLIST=/Library/LaunchDaemons/org.chromium.chromoting.broker.plist
 ENABLED_FILE="$HELPERTOOLS/$SERVICE_NAME.me2me_enabled"
 ENABLED_FILE_BACKUP="$ENABLED_FILE.backup"
 PREF_PANE=/Library/PreferencePanes/ChromeRemoteDesktop.prefPane
+BROKER_SERVICE_TARGET="system/org.chromium.chromoting.broker"
 
 # In case of errors, log the fact, but continue to unload launchd jobs as much
 # as possible. When finished, this preflight script should exit successfully in
@@ -122,7 +124,15 @@ for uid in $(find_users_with_active_hosts); do
 done
 
 logger Unloading broker service
-launchctl unload -w $BROKER_PLIST
+logger launchctl bootout $BROKER_SERVICE_TARGET
+launchctl bootout $BROKER_SERVICE_TARGET
+
+# Processes such as the native messaging hosts may keep running after the
+# binaries get updated, causing unexpected issues. So we kill them to prevent
+# the issues.
+logger Killing all processes in $HOST_BUNDLE_PATH
+logger pkill -9 -f "^$HOST_BUNDLE_PATH"'.*$'
+pkill -9 -f "^$HOST_BUNDLE_PATH"'.*$'
 
 # The installer no longer includes a preference-pane applet, so remove any
 # pref-pane from a previous installation.

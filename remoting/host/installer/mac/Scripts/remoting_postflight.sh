@@ -138,7 +138,8 @@ ln -s "$HELPERTOOLS/$HOST_BUNDLE_NAME/Contents/Resources/icudtl.dat" \
 # started until a host process connects to
 # chromoting.agent_process_broker_mojo_ipc.
 logger Loading broker service
-launchctl load -w $BROKER_PLIST
+logger launchctl bootstrap system $BROKER_PLIST
+launchctl bootstrap system $BROKER_PLIST
 
 # Load the host service for each user for whom the service was unloaded in the
 # preflight script (this includes the root user, in case only the login screen

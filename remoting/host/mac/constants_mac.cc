@@ -63,4 +63,6 @@ const char kBrandedUninstallerPath[] =
 const char kUnbrandedUninstallerPath[] =
     APPLICATIONS_DIR "Chromoting Host Uninstaller.app";
 
+const char kBrokerServiceTarget[] = "system/" BROKER_NAME;
+
 }  // namespace remoting
