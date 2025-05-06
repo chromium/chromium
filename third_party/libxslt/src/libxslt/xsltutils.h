@@ -261,6 +261,8 @@ XSLTPUBFUN xmlXPathCompExprPtr XSLTCALL
 #define XSLT_SOURCE_NODE_MASK       15u
 #define XSLT_SOURCE_NODE_HAS_KEY    1u
 #define XSLT_SOURCE_NODE_HAS_ID     2u
+#define XSLT_SOURCE_NODE_SHIFT_16   12u
+#define XSLT_SOURCE_NODE_SHIFT_32   28u
 int
 xsltGetSourceNodeFlags(xmlNodePtr node);
 int
