@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
@@ -618,6 +619,60 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
 
   // Confirm the worker state still does not exist.
   EXPECT_FALSE(worker_state);
+}
+
+// Test that if a renderer process exit notification is received before
+// a browser stop notification (since these things can be triggered
+// independently) and a context stop notification, it updates the worker's
+// renderer active state to inactive.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
+                       RenderProcessExitedUpdatesRendererState) {
+  ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
+
+  // Get information about worker for extension that will be stopped soon.
+  ServiceWorkerTaskQueue::WorkerState* worker_state = GetWorkerState();
+  ASSERT_TRUE(worker_state);
+  std::optional<WorkerId> worker_id = worker_state->worker_id();
+  ASSERT_TRUE(worker_id);
+  content::ServiceWorkerContext* sw_context =
+      GetServiceWorkerContext(profile());
+  ASSERT_TRUE(sw_context);
+  ASSERT_TRUE(base::Contains(sw_context->GetRunningServiceWorkerInfos(),
+                             worker_id->version_id));
+
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  ASSERT_TRUE(task_queue);
+  // Confirm the worker is renderer state active.
+  ASSERT_EQ(worker_state->renderer_state(),
+            ServiceWorkerTaskQueue::RendererState::kActive);
+
+  // Remove the task queue as an observer of `ServiceWorkerContext` so that
+  // the browser stop notification will not run immediately.
+  ServiceWorkerTaskQueue::Get(profile())->StopObservingContextForTest(
+      sw_context);
+  // Setup intercept of `ServiceWorkerHost::DidStopServiceWorkerContext()`.
+  // This simulates the worker renderer thread never informing that the worker
+  // context terminated.
+  ServiceWorkerHostInterceptorForWorkerStop stop_interceptor(*worker_id);
+
+  // Kill the service worker's renderer.
+  content::RenderProcessHost* worker_render_process_host =
+      content::RenderProcessHost::FromID(worker_id->render_process_id);
+  ASSERT_TRUE(worker_render_process_host);
+  content::RenderProcessHostWatcher process_exit_observer(
+      worker_render_process_host,
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  worker_render_process_host->Shutdown(content::RESULT_CODE_KILLED);
+  process_exit_observer.Wait();
+
+  // Verify the service worker was stopped.
+  ASSERT_TRUE(
+      content::CheckServiceWorkerIsStopped(sw_context, worker_id->version_id));
+
+  // Confirm the worker state still exists and renderer state has been set to
+  // inactive by `ServiceWorkerHost::RenderProcessForWorkerExited`.
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerTaskQueue::RendererState::kNotActive);
 }
 
 using ServiceWorkerRendererTrackingBrowserTest = ExtensionApiTest;

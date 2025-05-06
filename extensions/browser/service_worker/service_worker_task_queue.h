@@ -277,6 +277,9 @@ class ServiceWorkerTaskQueue
       const GURL& service_worker_scope,
       int64_t service_worker_version_id,
       int thread_id);
+  // Called when the extension renderer process that was running an extension
+  // Service Worker has exited.
+  void RenderProcessForWorkerExited(const WorkerId& worker_id);
 
   // Returns the current activation token for an extension, if the extension
   // is currently activated. Returns std::nullopt if the extension isn't
