@@ -429,6 +429,12 @@ void HandleNotificationInteractionAfterProfileSwitch(
   }
 
   client_manager->HandleNotificationInteraction(response);
+
+  // Also allow the app-scoped clients the opportunity to handle interactions.
+  GetApplicationContext()
+      ->GetPushNotificationService()
+      ->GetPushNotificationClientManager()
+      ->HandleNotificationInteraction(response);
 }
 
 // Creates a `ChangeProfileContinuation` callback bound with the original
@@ -1029,6 +1035,7 @@ void ProcessIncomingNotification(
 
   if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
     [self handleProfileSpecificNotificationResponse:response];
+    return;
   }
 
   // Notifications are intentionally passed on to the `appWideClientManager`
@@ -1061,6 +1068,10 @@ void ProcessIncomingNotification(
       response.notification.request.content.userInfo);
 
   if (profileName.empty()) {
+    // No profile name was found, so allow app-wide clients the opportunity to
+    // handle interactions.
+    self.appWideClientManager->HandleNotificationInteraction(response);
+
     RecordClientManagerAccessFailure(PushNotificationClientManagerFailurePoint::
                                          kHandleInteractionInvalidProfileName);
 
