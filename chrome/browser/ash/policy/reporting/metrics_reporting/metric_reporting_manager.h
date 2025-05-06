@@ -354,8 +354,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
       event_observer_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Fatal crash event observer. Life time of this object is owned by
   // `event_observer_managers_`.
-  raw_ptr<FatalCrashEventsObserver> fatal_crash_events_observer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<FatalCrashEventsObserver, DisableDanglingPtrDetection>
+      fatal_crash_events_observer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // App usage observer used to observe and collect app usage reports from the
   // `AppPlatformMetrics` component.

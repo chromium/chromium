@@ -102,7 +102,7 @@ constexpr char kWebsiteTelemetry[] = "website_telemetry";
 // static
 BASE_FEATURE(kEnableFatalCrashEventsObserver,
              "EnableFatalCrashEventsObserver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableChromeFatalCrashEventsObserver,
              "EnableChromeFatalCrashEventsObserver",
              base::FEATURE_ENABLED_BY_DEFAULT);
