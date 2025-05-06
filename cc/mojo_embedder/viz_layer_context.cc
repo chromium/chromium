@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
@@ -570,6 +571,10 @@ void SerializeLayer(LayerImpl& layer,
   if (layer.HasAnyRarePropertySet()) {
     auto rare_properties = viz::mojom::RareProperties::New();
     rare_properties->filter_quality = layer.GetFilterQuality();
+
+    // NOTE: If the layer's RareProperties is present, then `capture_bounds()`
+    // is guaranteed to be non-null.
+    rare_properties->capture_bounds = CHECK_DEREF(layer.capture_bounds());
     wire.rare_properties = std::move(rare_properties);
   }
   wire.may_contain_video = layer.may_contain_video();

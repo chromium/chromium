@@ -452,6 +452,7 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   layer.SetShouldCheckBackfaceVisibility(wire.should_check_backface_visibility);
   if (wire.rare_properties) {
     layer.SetFilterQuality(wire.rare_properties->filter_quality);
+    layer.SetCaptureBounds(wire.rare_properties->capture_bounds);
   }
   layer.SetMayContainVideo(wire.may_contain_video);
 
