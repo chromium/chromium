@@ -292,13 +292,7 @@ libcxx_modules("std_wctype_h") {
   }
 }
 
-if (libcxx_is_shared) {
-  _libcxx_target_type = "shared_library"
-} else {
-  _libcxx_target_type = "source_set"
-}
-
-target(_libcxx_target_type, "libc++") {
+target(libcxx_target_type, "libc++") {
   # Most things that need to depend on libc++ should do so via the implicit
   # 'common_deps' dependency below.  Some targets that package libc++.so may
   # need to explicitly depend on libc++.

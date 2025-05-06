@@ -141,6 +141,35 @@ libcxx_module_prefix = "$root_gen_dir/libcxx"
 assert(!(is_ios && libcxx_is_shared),
        "Can't build libc++ as a shared library on iOS.")
 
+if (libcxx_is_shared) {
+  libcxx_target_type = "shared_library"
+} else if (is_win) {
+  libcxx_target_type = "source_set"
+} else {
+  # Build as a static_library instead of a source_set when possible. Static
+  # library semantics are more ideal for libc++, because they ensure that only
+  # libc++ object files needed to satisfy unresolved symbols at link time are
+  # actually linked into the output. Especially for small targets with minimal
+  # use of libc++, this can provide space savings and a more predictable result,
+  # and cut down on the number of unnecessary static initializers.
+  libcxx_target_type = "static_library"
+}
+
+if (libcxx_target_type == "shared_library" ||
+    export_libcxxabi_from_executables) {
+  # libc++'s target type follows that of libc++, except:
+  #  - When libc++ is built as a shared_library, libc++abi should be a
+  #    source_set, so that libc++abi can be be linked into the libc++
+  #    shared_library in full.
+  #  - When exporting libc++abi from executables, libc++abi should be a
+  #    source_set, so that all of libc++abi is linked into executables
+  #    regardless of whether they directly depend on any particular portion of
+  #    it.
+  libcxxabi_target_type = "source_set"
+} else {
+  libcxxabi_target_type = libcxx_target_type
+}
+
 # Chromium will require using its libc++ library implementation. Warn if the
 # current configuration is not using it.
 if ((!use_custom_libcxx || !use_custom_libcxx_for_host) &&
