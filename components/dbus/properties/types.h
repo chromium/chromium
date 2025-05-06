@@ -30,7 +30,6 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusType {
   virtual ~DbusType();
 
   bool operator==(const DbusType& other) const;
-  bool operator!=(const DbusType& other) const;
 
   // Serializes this object to `writer`.
   virtual void Write(dbus::MessageWriter* writer) const = 0;

@@ -99,10 +99,6 @@ bool DbusType::operator==(const DbusType& other) const {
   return IsEqual(other);
 }
 
-bool DbusType::operator!=(const DbusType& other) const {
-  return !(*this == other);
-}
-
 bool DbusType::Move(DbusType&& object) {
   if (GetSignatureDynamic() != object.GetSignatureDynamic()) {
     return false;
