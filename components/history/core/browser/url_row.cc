@@ -67,16 +67,6 @@ std::string VisitContentModelAnnotations::Category::ToString() const {
   return base::StrCat({id, ":", base::NumberToString(weight)});
 }
 
-bool VisitContentModelAnnotations::Category::operator==(
-    const VisitContentModelAnnotations::Category& other) const {
-  return id == other.id && weight == other.weight;
-}
-
-bool VisitContentModelAnnotations::Category::operator!=(
-    const VisitContentModelAnnotations::Category& other) const {
-  return !(*this == other);
-}
-
 VisitContentModelAnnotations::VisitContentModelAnnotations(
     float visibility_score,
     const std::vector<Category>& categories,
