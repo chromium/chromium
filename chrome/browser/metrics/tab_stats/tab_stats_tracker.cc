@@ -328,9 +328,12 @@ class TabStatsTracker::TabWatcher final : public TabModelListObserver,
   void OnTabAdded(TabAndroid* tab) {
     if (content::WebContents* web_contents = tab->web_contents()) {
       tracker_->OnInitialOrInsertedTab(web_contents);
-    } else {
+    } else if (!tab_android_observations_.IsObservingSource(tab)) {
       // The WebContents hasn't been attached to the tab yet. Start tracking it
-      // when TabAndroid::Observer::OnInitWebContents is called.
+      // when TabAndroid::Observer::OnInitWebContents is called. Note OnTabAdded
+      // can be called while the tab is already being observed, if it's called
+      // from the TabModel constructor while an async DidAddTab notification is
+      // in flight.
       tab_android_observations_.AddObservation(tab);
     }
   }
