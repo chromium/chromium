@@ -7,9 +7,6 @@ import("proto_library.gni")
 import("proto_sources.gni")
 if (enable_js_protobuf) {
   import("//third_party/closure_compiler/compile_js.gni")
-  import("//ui/webui/resources/tools/bundle_js.gni")
-  import("//ui/webui/resources/tools/generate_grd.gni")
-  import("//ui/webui/resources/tools/minify_js.gni")
 }
 
 config("protobuf_config") {
@@ -421,35 +418,5 @@ if (enable_js_protobuf) {
       "//third_party/protobuf-javascript/src/map.js",
       "//third_party/protobuf-javascript/src/message.js",
     ]
-  }
-
-  bundle_js("bufbuild_bundle") {
-    visibility = [ ":bufbuild_min_js" ]
-    host = "_ignored_"
-    input = rebase_path(
-            "//third_party/node/node_modules/@bufbuild/protobuf/dist/esm",
-            root_build_dir)
-    js_module_in_files = [ "wire/index.js" ]
-    out_folder = "$target_gen_dir/bufbuild/bundled"
-  }
-
-  minify_js("bufbuild_min_js") {
-    visibility = [ ":bufbuild_grdp" ]
-    deps = [ ":bufbuild_bundle" ]
-    in_folder = "$target_gen_dir/bufbuild/bundled"
-    in_files = [ "wire/index.rollup.js" ]
-    out_folder = "$target_gen_dir/bufbuild/minified"
-  }
-
-  generate_grd("bufbuild_grdp") {
-    deps = [ ":bufbuild_min_js" ]
-    grd_prefix = "bufbuild"
-    out_grd = "$root_gen_dir/bufbuild.grdp"
-    input_files = [ "wire/index.rollup.js" ]
-
-    input_files_base_dir =
-        rebase_path("$target_gen_dir/bufbuild/minified", root_build_dir)
-    resource_path_rewrites =
-        [ "wire/index.rollup.js|@bufbuild/protobuf/wire/index.js" ]
   }
 }

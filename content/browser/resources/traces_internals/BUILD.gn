@@ -4,6 +4,39 @@
 
 import("//third_party/protobuf/proto_library.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+
+bundle_js("bufbuild_bundle") {
+  visibility = [ ":bufbuild_min_js" ]
+  host = "_ignored_"
+  input =
+      rebase_path("//third_party/node/node_modules/@bufbuild/protobuf/dist/esm",
+                  root_build_dir)
+  js_module_in_files = [ "wire/index.js" ]
+  out_folder = "$target_gen_dir/bufbuild/bundled"
+}
+
+minify_js("bufbuild_min_js") {
+  visibility = [ ":bufbuild_grdp" ]
+  deps = [ ":bufbuild_bundle" ]
+  in_folder = "$target_gen_dir/bufbuild/bundled"
+  in_files = [ "wire/index.rollup.js" ]
+  out_folder = "$target_gen_dir/bufbuild/minified"
+}
+
+generate_grd("bufbuild_grdp") {
+  deps = [ ":bufbuild_min_js" ]
+  grd_prefix = "bufbuild"
+  out_grd = "$root_gen_dir/bufbuild.grdp"
+  input_files = [ "wire/index.rollup.js" ]
+
+  input_files_base_dir =
+      rebase_path("$target_gen_dir/bufbuild/minified", root_build_dir)
+  resource_path_rewrites =
+      [ "wire/index.rollup.js|@bufbuild/protobuf/wire/index.js" ]
+}
 
 proto_library("config_proto") {
   generator_visibility = [ ":copy_mojo" ]
@@ -64,7 +97,7 @@ build_webui("build") {
     "$proto_ts_root/third_party/perfetto/protos/perfetto/config/perfetto_config.ts",
   ]
 
-  extra_grdp_deps = [ "//third_party/protobuf:bufbuild_grdp" ]
+  extra_grdp_deps = [ ":bufbuild_grdp" ]
   extra_grdp_files = [ "$root_gen_dir/bufbuild.grdp" ]
 
   ts_path_mappings = [ "/@bufbuild/protobuf/wire/index.js|" + rebase_path(
