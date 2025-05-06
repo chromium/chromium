@@ -5838,11 +5838,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "ios-tips-notifications",
-    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "ios-welcome-back-screen",
     "owners": ["bmcclure@google.com", "hiramahmood@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 141

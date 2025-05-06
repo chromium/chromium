@@ -344,7 +344,7 @@ void TipsNotificationClient::OnPendingRequestFound(
 void TipsNotificationClient::MaybeRequestNotification(
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if ((!permitted_ && !CanSendReactivation()) || DismissLimitReached()) {
+  if ((!permitted_ && !CanSendReactivation())) {
     std::move(completion).Run();
     return;
   }
@@ -796,17 +796,6 @@ void TipsNotificationClient::UpdateProvisionalAllowed() {
   CHECK(browser);
   provisional_allowed_ = [PushNotificationUtil
       provisionalAllowedByPolicyForProfile:browser->GetProfile()];
-}
-
-bool TipsNotificationClient::DismissLimitReached() {
-  int dismiss_limit = TipsNotificationsDismissLimit();
-  if (!dismiss_limit) {
-    return false;
-  }
-
-  int dismiss_count = GetApplicationContext()->GetLocalState()->GetInteger(
-      kTipsNotificationsDismissCount);
-  return dismiss_count >= dismiss_limit;
 }
 
 void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {

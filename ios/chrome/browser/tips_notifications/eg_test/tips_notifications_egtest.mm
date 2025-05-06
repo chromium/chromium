@@ -96,27 +96,11 @@ void MaybeDismissNotification() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  std::string triggerTime = "3s";
-
-  if ([self isRunningTest:@selector(testToggleTipsNotificationsMenuItem)]) {
-    triggerTime = "72h";
-  }
-
-  // Enable Tips Notifications with trigger time params.
-  std::string enableFeatures = base::StringPrintf(
-      "--enable-features=%s:%s/%s/%s/%s/%s/%s", kIOSTipsNotifications.name,
-      kIOSTipsNotificationsUnknownTriggerTimeParam, triggerTime.c_str(),
-      kIOSTipsNotificationsLessEngagedTriggerTimeParam, triggerTime.c_str(),
-      kIOSTipsNotificationsActiveSeekerTriggerTimeParam, triggerTime.c_str());
-
   if ([self isRunningTest:@selector(testReactivation)]) {
-    std::string enableReactivation =
-        base::StringPrintf(",%s", kIOSReactivationNotifications.name);
-    enableFeatures.append(enableReactivation);
+    config.features_enabled.push_back(kIOSReactivationNotifications);
   } else {
     config.features_disabled.push_back(kIOSReactivationNotifications);
   }
-  config.additional_args.push_back(enableFeatures);
 
   return config;
 }
@@ -135,9 +119,14 @@ void MaybeDismissNotification() {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
   [ChromeEarlGrey openNewTab];
+  if (![self isRunningTest:@selector(testToggleTipsNotificationsMenuItem)]) {
+    [ChromeEarlGrey setUserDefaultsObject:@(3)
+                                   forKey:@"TipsNotificationTrigger"];
+  }
 }
 
 - (void)tearDownHelper {
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"TipsNotificationTrigger"];
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
   [ChromeEarlGrey removeUserDefaultsObjectForKey:@"edoTestPort"];

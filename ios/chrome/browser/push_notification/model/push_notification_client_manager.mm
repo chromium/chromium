@@ -140,15 +140,10 @@ void PushNotificationClientManager::RegisterActionableNotifications() {
 std::vector<PushNotificationClientId>
 PushNotificationClientManager::GetClients() {
   std::vector<PushNotificationClientId> client_ids = {
-      PushNotificationClientId::kCommerce};
+      PushNotificationClientId::kCommerce, PushNotificationClientId::kTips};
   if (IsContentNotificationExperimentEnabled()) {
     client_ids.push_back(PushNotificationClientId::kContent);
     client_ids.push_back(PushNotificationClientId::kSports);
-  }
-  if (IsIOSTipsNotificationsEnabled() ||
-      (IsFirstRunRecent(base::Days(28)) &&
-       IsIOSReactivationNotificationsEnabled())) {
-    client_ids.push_back(PushNotificationClientId::kTips);
   }
   if (IsSafetyCheckNotificationsEnabled()) {
     client_ids.push_back(PushNotificationClientId::kSafetyCheck);
@@ -256,13 +251,9 @@ void PushNotificationClientManager::AddPerProfilePushNotificationClients() {
 
 // Adds clients that operate app-wide.
 void PushNotificationClientManager::AddAppWidePushNotificationClients() {
-  if (IsIOSTipsNotificationsEnabled() ||
-      (IsFirstRunRecent(base::Days(28)) &&
-       IsIOSReactivationNotificationsEnabled())) {
-    auto client = std::make_unique<TipsNotificationClient>();
-    CHECK_EQ(client->GetClientScope(), PushNotificationClientScope::kAppWide);
-    AddPushNotificationClient(std::move(client));
-  }
+  auto client = std::make_unique<TipsNotificationClient>();
+  CHECK_EQ(client->GetClientScope(), PushNotificationClientScope::kAppWide);
+  AddPushNotificationClient(std::move(client));
 }
 
 PushNotificationClient* PushNotificationClientManager::GetClientForNotification(

@@ -222,7 +222,6 @@ NSString* GetContextMenuHideDescriptionForType(
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
   BOOL canShowTipsNotificationsOptIn =
-      IsIOSTipsNotificationsEnabled() &&
       (IsSetUpListModuleType(self.type) || IsTipsModuleType(self.type));
 
   BOOL canShowSafetyCheckNotificationsOptIn =

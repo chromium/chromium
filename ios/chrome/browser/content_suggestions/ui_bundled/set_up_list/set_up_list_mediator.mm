@@ -174,13 +174,11 @@ bool DefaultBrowserPromoCompleted() {
         prefs::kHomeCustomizationMagicStackSetUpListEnabled,
         &_prefChangeRegistrar);
 
-    if (IsIOSTipsNotificationsEnabled()) {
-      _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kAppLevelPushNotificationPermissions,
-          &_localStatePrefChangeRegistrar);
-      _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kFeaturePushNotificationPermissions, &_prefChangeRegistrar);
-    }
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kAppLevelPushNotificationPermissions,
+        &_localStatePrefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kFeaturePushNotificationPermissions, &_prefChangeRegistrar);
 
     if (set_up_list::GetSetUpListInFirstRunVariation() !=
         set_up_list::FirstRunVariationType::kDisabled) {
@@ -429,7 +427,6 @@ bool DefaultBrowserPromoCompleted() {
     [self markSetUpListItemPrefComplete:SetUpListItemType::kDefaultBrowser];
   } else if (preferenceName == prefs::kAppLevelPushNotificationPermissions ||
              preferenceName == prefs::kFeaturePushNotificationPermissions) {
-    CHECK(IsIOSTipsNotificationsEnabled());
     if ([self hasOptedInToNotifications]) {
       [self markSetUpListItemPrefComplete:SetUpListItemType::kNotifications];
     }

@@ -721,11 +721,6 @@ const char kIOSStartTimeStartupRemediationsDescription[] =
     "Enables potential remediations for startup regressions caused by the "
     "reduction of Bling Start time from 6 hours to 4.";
 
-const char kIOSTipsNotificationsName[] = "Tips Notifications";
-const char kIOSTipsNotificationsDescription[] =
-    "Enables Notifications with content to help new users get the most out of "
-    "the app.";
-
 const char kIOSReactivationNotificationsName[] = "Reactivation Notifications";
 const char kIOSReactivationNotificationsDescription[] =
     "Enables a feature to send provisional notifications of interest to new"

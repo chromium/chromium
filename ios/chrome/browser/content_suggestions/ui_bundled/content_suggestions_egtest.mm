@@ -129,7 +129,6 @@ void TapMagicStackEditButton() {
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
     config.features_disabled.push_back(kContentPushNotifications);
-    config.features_disabled.push_back(kIOSTipsNotifications);
     config.features_disabled.push_back(set_up_list::kSetUpListInFirstRun);
     config.features_disabled.push_back(
         set_up_list::kSetUpListWithoutSignInItem);
@@ -363,6 +362,16 @@ void TapMagicStackEditButton() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kFakeAuthCancelButtonIdentifier)]
       performAction:grey_tap()];
+
+  // Tap the notification item.
+  TapView(set_up_list::kContentNotificationItemID);
+  // Ensure the Notification opt-in screen is displayed
+  id<GREYMatcher> notificationOptInView =
+      grey_accessibilityID(@"NotificationsOptInScreenAxId");
+  [[EarlGrey selectElementWithMatcher:notificationOptInView]
+      assertWithMatcher:grey_notNil()];
+  // Dismiss Notification opt-in screen.
+  TapPromoStyleSecondaryActionButton();
 
   // Verify the All Set item is shown.
   condition = ^{

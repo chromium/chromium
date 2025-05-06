@@ -106,11 +106,6 @@ int TipsNotificationsEnabledBitfield();
 std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
     bool for_reactivation);
 
-// Returns the dismiss limit. If the user dismisses this number of Tips
-// notifications in a row, no more Tips notifications will be sent. Zero
-// indicates there should be no limit.
-int TipsNotificationsDismissLimit();
-
 // Returns the matching NotificationType for the TipsNotificationType `type`.
 NotificationType NotificationTypeForTipsNotificationType(
     TipsNotificationType type);

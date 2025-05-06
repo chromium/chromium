@@ -64,7 +64,6 @@ void TapMenuItem(int labelId) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kIOSTipsNotifications);
   config.features_disabled.push_back(set_up_list::kSetUpListInFirstRun);
   return config;
 }

@@ -232,10 +232,8 @@
   _consumer = consumer;
   [_consumer setPriceTrackingItem:self.priceTrackingItem];
   [_consumer setContentNotificationsItem:self.contentNotificationsItem];
-  if (IsIOSTipsNotificationsEnabled()) {
-    [_consumer setTipsNotificationsItem:self.tipsNotificationsItem];
-    [_consumer setTipsNotificationsFooterItem:self.tipsNotificationsFooterItem];
-  }
+  [_consumer setTipsNotificationsItem:self.tipsNotificationsItem];
+  [_consumer setTipsNotificationsFooterItem:self.tipsNotificationsFooterItem];
   if (IsSafetyCheckNotificationsEnabled()) {
     [_consumer setSafetyCheckItem:self.safetyCheckItem];
   }

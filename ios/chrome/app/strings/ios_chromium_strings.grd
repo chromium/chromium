@@ -1063,9 +1063,6 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       <message name="IDS_IOS_SET_UP_LIST_TIPS_TITLE" desc="Title for the Set Up List (a variation that mentions Tips) - a list of tasks the user might want to complete when first using Chromium.">
         Chromium Tips
       </message>
-      <message name="IDS_IOS_SET_UP_LIST_TITLE" desc="Title for the Set Up List - a list of tasks the user might want to complete when first using Chromium.">
-        Get the most out of Chromium
-      </message>
       <message name="IDS_IOS_SHORT_PRODUCT_NAME" desc="The Chrome application short name.">
         Chromium
       </message>

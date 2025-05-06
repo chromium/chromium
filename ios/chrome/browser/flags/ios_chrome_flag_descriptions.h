@@ -415,9 +415,6 @@ extern const char kIOSStartTimeBrowserBackgroundRemediationsDescription[];
 extern const char kIOSStartTimeStartupRemediationsName[];
 extern const char kIOSStartTimeStartupRemediationsDescription[];
 
-extern const char kIOSTipsNotificationsName[];
-extern const char kIOSTipsNotificationsDescription[];
-
 extern const char kIOSReactivationNotificationsName[];
 extern const char kIOSReactivationNotificationsDescription[];
 

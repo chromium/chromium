@@ -41,8 +41,7 @@ class NotificationsOptInMediatorTest : public PlatformTest {
 
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile);
     prefs_ = profile->GetPrefs();
-    scoped_feature_list_.InitWithFeatures(
-        {kIOSTipsNotifications, kContentPushNotifications}, {});
+    scoped_feature_list_.InitWithFeatures({kContentPushNotifications}, {});
     consumer_ = OCMStrictProtocolMock(@protocol(NotificationsOptInConsumer));
   }
 

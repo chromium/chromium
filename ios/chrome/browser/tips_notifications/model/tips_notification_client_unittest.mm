@@ -709,25 +709,6 @@ TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
                 false, TipsNotificationUserType::kActiveSeeker),
             base::Days(7));
 
-  // Verify that the feature params can set the trigger delta.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kIOSTipsNotifications,
-      {
-          {kIOSTipsNotificationsUnknownTriggerTimeParam, "1d"},
-          {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "2d"},
-          {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "3d"},
-      });
-  EXPECT_EQ(
-      TipsNotificationTriggerDelta(false, TipsNotificationUserType::kUnknown),
-      base::Days(1));
-  EXPECT_EQ(TipsNotificationTriggerDelta(
-                false, TipsNotificationUserType::kLessEngaged),
-            base::Days(2));
-  EXPECT_EQ(TipsNotificationTriggerDelta(
-                false, TipsNotificationUserType::kActiveSeeker),
-            base::Days(3));
-
   // Verify that the experimental settings can override the trigger time.
   [[NSUserDefaults standardUserDefaults] setInteger:111
                                              forKey:@"TipsNotificationTrigger"];
@@ -738,7 +719,7 @@ TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
       removeObjectForKey:@"TipsNotificationTrigger"];
 
   // Verify that the Reactivation feature param can set the trigger delta.
-  feature_list.Reset();
+  base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       kIOSReactivationNotifications,
       {
@@ -752,46 +733,9 @@ TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
 // Tests that the order of notification types changes correctly when the feature
 // param is set.
 TEST_F(TipsNotificationClientTest, TestOrderParam) {
-  // Test order #1.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kIOSTipsNotifications, {
-                                 {kIOSTipsNotificationsOrderParam, "1"},
-                             });
   std::vector<TipsNotificationType> order = TipsNotificationsTypesOrder(false);
-  EXPECT_EQ(order[0], TipsNotificationType::kSetUpListContinuation);
-  EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
-
-  // Test order #2.
-  feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(
-      kIOSTipsNotifications, {
-                                 {kIOSTipsNotificationsOrderParam, "2"},
-                             });
-  order = TipsNotificationsTypesOrder(false);
-  EXPECT_EQ(order[0], TipsNotificationType::kLens);
-  EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
-
-  // Test order #3.
-  feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(
-      kIOSTipsNotifications, {
-                                 {kIOSTipsNotificationsOrderParam, "3"},
-                             });
-  order = TipsNotificationsTypesOrder(false);
   EXPECT_EQ(order[0], TipsNotificationType::kEnhancedSafeBrowsing);
   EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
-
-  // Test order #4.
-  feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(
-      kIOSTipsNotifications, {
-                                 {kIOSTipsNotificationsOrderParam, "4"},
-                             });
-  order = TipsNotificationsTypesOrder(false);
-  EXPECT_EQ(order[0], TipsNotificationType::kLens);
-  EXPECT_EQ(order[1], TipsNotificationType::kOmniboxPosition);
-  EXPECT_EQ(order[2], TipsNotificationType::kEnhancedSafeBrowsing);
 
   // Test Reactivation notifications order, default order.
   order = TipsNotificationsTypesOrder(true);
@@ -801,7 +745,7 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
   EXPECT_EQ(order[2], TipsNotificationType::kWhatsNew);
 
   // Test Reactivation notifications order, alternate order.
-  feature_list.Reset();
+  base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       kIOSReactivationNotifications,
       {

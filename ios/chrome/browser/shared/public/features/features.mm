@@ -833,25 +833,6 @@ BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
              "kInactiveNavigationAfterAppLaunchKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSTipsNotifications,
-             "IOSTipsNotifications",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const char kIOSTipsNotificationsUnknownTriggerTimeParam[] =
-    "unknown_trigger_time";
-const char kIOSTipsNotificationsActiveSeekerTriggerTimeParam[] =
-    "active_seeker_trigger_time";
-const char kIOSTipsNotificationsLessEngagedTriggerTimeParam[] =
-    "less_engaged_trigger_time";
-const char kIOSTipsNotificationsEnabledParam[] = "enabled";
-const char kIOSTipsNotificationsOrderParam[] = "tips_notifications_order";
-const char kIOSTipsNotificationsDismissLimitParam[] =
-    "tips_notifications_dismiss_limit";
-
-bool IsIOSTipsNotificationsEnabled() {
-  return base::FeatureList::IsEnabled(kIOSTipsNotifications);
-}
-
 bool IsPinnedTabsEnabled() {
   return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }

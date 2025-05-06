@@ -71,11 +71,9 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
             (testNotificationsSwipeDown_WithUpdatedSettingsView)] ||
       [self isRunningTest:@selector(testTipsSwitch)] ||
       [self isRunningTest:@selector(testSafetyCheckSwitch)]) {
-    config.additional_args.push_back("--enable-features=IOSTipsNotifications");
     config.additional_args.push_back(
         "--enable-features=SafetyCheckNotifications");
   } else {
-    config.additional_args.push_back("--disable-features=IOSTipsNotifications");
     config.additional_args.push_back(
         "--disable-features=SafetyCheckNotifications");
   }

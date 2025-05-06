@@ -1881,12 +1881,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Returns YES if the Notifications settings should show.
 - (BOOL)shouldShowNotificationsSettings {
-  return base::FeatureList::IsEnabled(kNotificationSettingsMenuItem) &&
-         (IsPriceTrackingEnabled(_profile) ||
-          IsContentNotificationEnabled(_profile) ||
-          IsIOSTipsNotificationsEnabled() ||
-          base::FeatureList::IsEnabled(
-              send_tab_to_self::kSendTabToSelfIOSPushNotifications));
+  return base::FeatureList::IsEnabled(kNotificationSettingsMenuItem);
 }
 
 // Records that the user has reached the impression limit for the enhanced safe

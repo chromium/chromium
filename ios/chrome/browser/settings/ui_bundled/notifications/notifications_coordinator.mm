@@ -122,8 +122,6 @@
 #pragma mark - NotificationsAlertPresenter
 
 - (void)presentPushNotificationPermissionAlert {
-  CHECK(IsIOSTipsNotificationsEnabled());
-
   [self resetOptInAlertCoordinator];
 
   // `kTips` is the only client currently included as it's the only feature
@@ -138,11 +136,6 @@
 
 - (void)presentPushNotificationPermissionAlertWithClientIds:
     (std::vector<PushNotificationClientId>)clientIds {
-  CHECK(IsIOSTipsNotificationsEnabled() ||
-        IsSafetyCheckNotificationsEnabled() ||
-        base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfIOSPushNotifications));
-
   // Presents a push notification permission alert for the specified client in
   // `clientIds`. **For now, only ONE client ID should be provided in
   // `clientIds`**, as there exists no generic UI for opting into push

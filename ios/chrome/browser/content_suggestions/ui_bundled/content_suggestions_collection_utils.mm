@@ -368,8 +368,7 @@ UIColor* SearchHintLabelColor() {
 }
 
 int SetUpListTitleStringID() {
-  return IsIOSTipsNotificationsEnabled() ? IDS_IOS_SET_UP_LIST_TIPS_TITLE
-                                         : IDS_IOS_SET_UP_LIST_TITLE;
+  return IDS_IOS_SET_UP_LIST_TIPS_TITLE;
 }
 
 NSString* SetUpListTitleString() {

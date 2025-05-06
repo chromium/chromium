@@ -251,11 +251,9 @@ bool TooNarrowForBanner(UIView* view) {
         @(NotificationsItemIdentifier::ItemIdentifierSendTab)
       ]];
     }
-    if (IsIOSTipsNotificationsEnabled()) {
-      [_snapshot appendItemsWithIdentifiers:@[
-        @(NotificationsItemIdentifier::ItemIdentifierTips)
-      ]];
-    }
+    [_snapshot appendItemsWithIdentifiers:@[
+      @(NotificationsItemIdentifier::ItemIdentifierTips)
+    ]];
     [_snapshot appendItemsWithIdentifiers:@[
       @(NotificationsItemIdentifier::ItemIdentifierPriceTracking)
     ]];

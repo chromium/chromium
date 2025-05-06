@@ -1168,12 +1168,8 @@ using segmentation_platform::TipIdentifier;
       [self showCredentialProviderPromo];
       break;
     case SetUpListItemType::kNotifications:
-      if (IsIOSTipsNotificationsEnabled()) {
-        [self showNotificationsOptInView:NotificationOptInAccessPoint::
-                                             kSetUpList];
-      } else {
-        [self showContentNotificationBottomSheet];
-      }
+      [self
+          showNotificationsOptInView:NotificationOptInAccessPoint::kSetUpList];
       break;
     case SetUpListItemType::kDocking:
       [self showDockingPromo];
@@ -1239,20 +1235,6 @@ using segmentation_platform::TipIdentifier;
                       CredentialProviderPromoCommands)
       showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
                                                  SetUpList];
-}
-
-- (void)showContentNotificationBottomSheet {
-  // Stop the coordinator if it is already running. If the user swipes to
-  // dismiss a previous instance and then clicks the item again the
-  // previous instance may not have been stopped yet due to the animation.
-  [_contentNotificationCoordinator stop];
-  _contentNotificationCoordinator =
-      [[SetUpListContentNotificationPromoCoordinator alloc]
-          initWithBaseViewController:self.magicStackCollectionView
-                             browser:self.browser
-                         application:[UIApplication sharedApplication]];
-  _contentNotificationCoordinator.delegate = self;
-  [_contentNotificationCoordinator start];
 }
 
 - (void)showNotificationsOptInView:(NotificationOptInAccessPoint)accessPoint {

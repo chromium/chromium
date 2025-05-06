@@ -188,26 +188,11 @@ base::TimeDelta TipsNotificationTriggerDelta(
   if (int setting = TipsNotificationTriggerExperimentalSetting()) {
     return base::Seconds(setting);
   }
-  switch (user_type) {
-    case TipsNotificationUserType::kUnknown:
-      return GetFieldTrialParamByFeatureAsTimeDelta(
-          kIOSTipsNotifications, kIOSTipsNotificationsUnknownTriggerTimeParam,
-          default_trigger);
-    case TipsNotificationUserType::kLessEngaged:
-      return GetFieldTrialParamByFeatureAsTimeDelta(
-          kIOSTipsNotifications,
-          kIOSTipsNotificationsLessEngagedTriggerTimeParam, default_trigger);
-    case TipsNotificationUserType::kActiveSeeker:
-      return GetFieldTrialParamByFeatureAsTimeDelta(
-          kIOSTipsNotifications,
-          kIOSTipsNotificationsActiveSeekerTriggerTimeParam, default_trigger);
-  }
+  return default_trigger;
 }
 
 int TipsNotificationsEnabledBitfield() {
-  return GetFieldTrialParamByFeatureAsInt(kIOSTipsNotifications,
-                                          kIOSTipsNotificationsEnabledParam,
-                                          kEnableAllNotifications);
+  return kEnableAllNotifications;
 }
 
 std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
@@ -221,69 +206,16 @@ std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
             TipsNotificationType::kWhatsNew,
         });
   }
-  int order_num = GetFieldTrialParamByFeatureAsInt(
-      kIOSTipsNotifications, kIOSTipsNotificationsOrderParam, 3);
-  switch (order_num) {
-    case 1:
-      // The default order.
-      return {
-          TipsNotificationType::kSetUpListContinuation,
-          TipsNotificationType::kWhatsNew,
-          TipsNotificationType::kLens,
-          TipsNotificationType::kOmniboxPosition,
-          TipsNotificationType::kEnhancedSafeBrowsing,
-          TipsNotificationType::kDefaultBrowser,
-          TipsNotificationType::kDocking,
-          TipsNotificationType::kSignin,
-      };
-
-    // Reordered with Lens first.
-    case 2:
-      return {
-          TipsNotificationType::kLens,
-          TipsNotificationType::kWhatsNew,
-          TipsNotificationType::kSetUpListContinuation,
-          TipsNotificationType::kOmniboxPosition,
-          TipsNotificationType::kEnhancedSafeBrowsing,
-          TipsNotificationType::kDefaultBrowser,
-          TipsNotificationType::kDocking,
-          TipsNotificationType::kSignin,
-      };
-
-    // Reordered with ESB first.
-    case 3:
-      return {
-          TipsNotificationType::kEnhancedSafeBrowsing,
-          TipsNotificationType::kWhatsNew,
-          TipsNotificationType::kLens,
-          TipsNotificationType::kOmniboxPosition,
-          TipsNotificationType::kSetUpListContinuation,
-          TipsNotificationType::kDefaultBrowser,
-          TipsNotificationType::kDocking,
-          TipsNotificationType::kSignin,
-      };
-
-    // Reordered with Lens, Omnibox position, and ESB first, and SetUpList
-    // removed.
-    case 4:
-      return {
-          TipsNotificationType::kLens,
-          TipsNotificationType::kOmniboxPosition,
-          TipsNotificationType::kEnhancedSafeBrowsing,
-          TipsNotificationType::kWhatsNew,
-          TipsNotificationType::kDefaultBrowser,
-          TipsNotificationType::kDocking,
-          TipsNotificationType::kSignin,
-      };
-
-    default:
-      NOTREACHED();
-  }
-}
-
-int TipsNotificationsDismissLimit() {
-  return GetFieldTrialParamByFeatureAsInt(
-      kIOSTipsNotifications, kIOSTipsNotificationsDismissLimitParam, 0);
+  return {
+      TipsNotificationType::kEnhancedSafeBrowsing,
+      TipsNotificationType::kWhatsNew,
+      TipsNotificationType::kLens,
+      TipsNotificationType::kOmniboxPosition,
+      TipsNotificationType::kSetUpListContinuation,
+      TipsNotificationType::kDefaultBrowser,
+      TipsNotificationType::kDocking,
+      TipsNotificationType::kSignin,
+  };
 }
 
 NotificationType NotificationTypeForTipsNotificationType(
