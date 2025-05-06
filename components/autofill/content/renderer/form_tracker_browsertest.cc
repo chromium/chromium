@@ -140,5 +140,32 @@ TEST_P(FormTrackerTest, FormlessHideThenXhr) {
   task_environment_.RunUntilIdle();
 }
 
+// Check that if a SelectControlSelectionChanged() is called asynchronously
+// after a navigation, the event is a dead end.
+TEST_P(FormTrackerTest, IgnoreSelectChangeInOldDocument) {
+  LoadHTML(R"(<!DOCTYPE HTML>
+    <select id=select>
+    <option value=0>0</option>
+    <option value=1>1</option>
+    <option value=2>2</option>
+    <option value=3>3</option>
+    </select>)");
+  GetMainFrame()->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest);
+
+  EXPECT_CALL(autofill_driver(), SelectControlSelectionChanged);
+  ExecuteJavaScriptForTests("document.getElementById('select').value = '1';");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(autofill_driver(), SelectControlSelectionChanged);
+  ExecuteJavaScriptForTests("document.getElementById('select').value = '2';");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(autofill_driver(), SelectControlSelectionChanged).Times(0);
+  ExecuteJavaScriptForTests("document.getElementById('select').value = '3';");
+  LoadHTML(R"(<!DOCTYPE HTML><input>)");  // Turns the event into a no-op.
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace
 }  // namespace autofill

@@ -281,12 +281,12 @@ void FormTracker::TrackAutofilledElement(
 void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
                                            SaveFormReason change_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+  CHECK_NE(change_source, SaveFormReason::kWillSendSubmitEvent);
   WebFormControlElement element =
       form_util::GetFormControlByRendererId(element_id);
-  // The frame or document or element could be null because this function is
-  // called asynchronously.
-  if (!unsafe_render_frame() || !element || !element.GetDocument() ||
-      !element.GetDocument().GetFrame()) {
+  // This function may be called asynchronously, so a navigation may have
+  // happened. Since this event isn't submission-related.
+  if (!form_util::IsOwnedByFrame(element, unsafe_render_frame())) {
     return;
   }
   blink::WebFormElement form_element = element.GetOwningFormForAutofill();
@@ -371,8 +371,7 @@ void FormTracker::WillSubmitForm(const WebFormElement& form) {
   // form submission event. If we didn't, we would send |form| to an
   // AutofillAgent and then to a ContentAutofillDriver etc. which haven't seen
   // this form before. See crbug.com/1240247#c13 for details.
-  if (!unsafe_render_frame() ||
-      !form_util::IsOwnedByFrame(form, unsafe_render_frame())) {
+  if (!form_util::IsOwnedByFrame(form, unsafe_render_frame())) {
     return;
   }
   FireFormSubmission(mojom::SubmissionSource::FORM_SUBMISSION, form);
