@@ -70,9 +70,9 @@ RenderInputRouterDelegateImpl::GetInputEventRouter() {
 
 bool RenderInputRouterDelegateImpl::IsIgnoringWebInputEvents(
     const blink::WebInputEvent& event) const {
-  // TODO(377625588): Implement notifying Viz of WebContentsImpl's ignoring
+  // TODO(395844737): Implement notifying Viz of WebContentsImpl's ignoring
   // input events.
-  return is_blocked_;
+  return false;
 }
 
 bool RenderInputRouterDelegateImpl::PreHandleGestureEvent(
@@ -139,14 +139,26 @@ input::StylusInterface* RenderInputRouterDelegateImpl::GetStylusInterface() {
 }
 
 bool RenderInputRouterDelegateImpl::IsHidden() const {
-  // TODO(391135801): Implement hang renderer detection with InputVizard.
-  // Currently, this returns a default value to stop the input event ack timers
-  // from firing unnecessarily.
-  return true;
+  return is_hidden_;
 }
 
-bool RenderInputRouterDelegateImpl::IsRendererProcessBlocked() {
-  return is_blocked_;
+void RenderInputRouterDelegateImpl::OnInputEventAckTimeout(
+    base::TimeTicks ack_timeout_ts) {
+  if (!is_responsive_) {
+    return;
+  }
+  is_responsive_ = false;
+  delegate_->RendererInputResponsivenessChanged(
+      frame_sink_id_, grouping_id_, is_responsive_, std::move(ack_timeout_ts));
+}
+
+void RenderInputRouterDelegateImpl::RendererIsResponsive() {
+  if (is_responsive_) {
+    return;
+  }
+  is_responsive_ = true;
+  delegate_->RendererInputResponsivenessChanged(frame_sink_id_, grouping_id_,
+                                                is_responsive_, std::nullopt);
 }
 
 void RenderInputRouterDelegateImpl::DidOverscroll(

@@ -7415,6 +7415,26 @@ void WebContentsImpl::StateOnOverscrollTransfer(
   iter->second->DidOverscroll(std::move(params));
 }
 
+void WebContentsImpl::RendererInputResponsivenessChanged(
+    const viz::FrameSinkId& frame_sink_id,
+    bool is_responsive,
+    std::optional<base::TimeTicks> ack_timeout_ts) {
+  auto iter = created_widgets_.find(frame_sink_id);
+  // This adds a safeguard against race condition where a RenderWidgetHostImpl
+  // is being destroyed & removed from |created_widgets_|, but Viz may still
+  // send a mojo call referencing it.
+  if (iter == created_widgets_.end()) {
+    return;
+  }
+
+  if (is_responsive) {
+    iter->second->RendererIsResponsive();
+  } else {
+    CHECK(ack_timeout_ts.has_value());
+    iter->second->OnInputEventAckTimeout(*ack_timeout_ts);
+  }
+}
+
 void WebContentsImpl::DidNavigateMainFramePreCommit(
     NavigationHandle* navigation_handle,
     bool navigation_is_within_page) {

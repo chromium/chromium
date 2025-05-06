@@ -388,8 +388,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnInvalidInputEventSource() override;
   void OnInputIgnored(const blink::WebInputEvent& event) override;
   input::StylusInterface* GetStylusInterface() override;
-  bool IsRendererProcessBlocked() override;
-  void OnInputEventAckTimeout() override;
+  void OnInputEventAckTimeout(base::TimeTicks ack_timeout_ts) override;
   void RendererIsResponsive() override;
   void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
 
@@ -1180,6 +1179,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // changed its state of being blocked.
   void RenderProcessBlockedStateChanged(bool blocked);
 
+  void NotifyVizOfPageVisibilityUpdates();
+
   // 1. Grants permissions to URL (if any)
   // 2. Grants permissions to filenames
   // 3. Grants permissions to file system files.
@@ -1189,7 +1190,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Implementation of |hang_monitor_restarter| callback passed to
   // RenderWidgetHostDelegate::RendererUnresponsive if the unresponsiveness
   // was noticed because of input event ack timeout.
-  void RestartInputEventAckTimeoutIfNecessary();
+  void RestartRenderInputRouterInputEventAckTimeout();
 
   void SetupRenderInputRouter();
   void SetupInputRouter();
@@ -1279,6 +1280,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Records the time when `was_ever_shown_` above becomes `true` for the first
   // time.
   base::TimeTicks first_shown_time_;
+
+  // Records the latest time when |this| widget's visibility state changes from
+  // hidden to shown.
+  base::TimeTicks latest_shown_time_;
 
   // Indicates whether the renderer host has received the first metadata signal
   // implying the renderer has pushed content to cc.

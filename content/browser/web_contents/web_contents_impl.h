@@ -1292,6 +1292,10 @@ class CONTENT_EXPORT WebContentsImpl
   void StateOnOverscrollTransfer(
       const viz::FrameSinkId& frame_sink_id,
       blink::mojom::DidOverscrollParamsPtr params) override;
+  void RendererInputResponsivenessChanged(
+      const viz::FrameSinkId& frame_sink_id,
+      bool is_responsive,
+      std::optional<base::TimeTicks> ack_timeout_ts) override;
 
   // Invoked before a form repost warning is shown.
   void NotifyBeforeFormRepostWarningShow() override;

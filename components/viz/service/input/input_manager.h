@@ -127,6 +127,11 @@ class VIZ_SERVICE_EXPORT InputManager
   void OnInvalidInputEventSource(
       const FrameSinkId& frame_sink_id,
       const base::UnguessableToken& grouping_id) override;
+  void RendererInputResponsivenessChanged(
+      const FrameSinkId& frame_sink_id,
+      const base::UnguessableToken& grouping_id,
+      bool is_responsive,
+      std::optional<base::TimeTicks> ack_timeout_ts) override;
   std::optional<bool> IsDelegatedInkHovering(
       const FrameSinkId& frame_sink_id) override;
   void DidOverscroll(const FrameSinkId& frame_sink_id,
@@ -142,6 +147,10 @@ class VIZ_SERVICE_EXPORT InputManager
       bool force_enable_zoom,
       const std::vector<FrameSinkId>& frame_sink_ids) override;
   void StopFlingingOnViz(const FrameSinkId& frame_sink_id) override;
+  void RestartInputEventAckTimeoutIfNecessary(
+      const FrameSinkId& frame_sink_id) override;
+  void NotifyVisibilityChanged(const FrameSinkId& frame_sink_id,
+                               bool is_hidden) override;
 
   void SetupRenderInputRouterDelegateConnection(
       const base::UnguessableToken& grouping_id,

@@ -455,6 +455,20 @@ void InputManager::OnInvalidInputEventSource(
       ->OnInvalidInputEventSource(frame_sink_id);
 }
 
+void InputManager::RendererInputResponsivenessChanged(
+    const FrameSinkId& frame_sink_id,
+    const base::UnguessableToken& grouping_id,
+    bool is_responsive,
+    std::optional<base::TimeTicks> ack_timeout_ts) {
+  auto itr = rir_delegate_remote_map_.find(grouping_id);
+  if (itr == rir_delegate_remote_map_.end()) {
+    return;
+  }
+
+  itr->second->RendererInputResponsivenessChanged(frame_sink_id, is_responsive,
+                                                  std::move(ack_timeout_ts));
+}
+
 std::optional<bool> InputManager::IsDelegatedInkHovering(
     const FrameSinkId& frame_sink_id) {
   auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
@@ -553,6 +567,24 @@ void InputManager::StopFlingingOnViz(const FrameSinkId& frame_sink_id) {
   }
 }
 
+void InputManager::RestartInputEventAckTimeoutIfNecessary(
+    const FrameSinkId& frame_sink_id) {
+  auto itr = rir_map_.find(frame_sink_id);
+  if (itr == rir_map_.end()) {
+    return;
+  }
+  itr->second->RestartInputEventAckTimeoutIfNecessary();
+}
+
+void InputManager::NotifyVisibilityChanged(const FrameSinkId& frame_sink_id,
+                                           bool is_hidden) {
+  auto itr = frame_sink_metadata_map_.find(frame_sink_id);
+  if (itr == frame_sink_metadata_map_.end()) {
+    return;
+  }
+  itr->second.rir_delegate->SetIsHidden(is_hidden);
+}
+
 void InputManager::SetupRenderInputRouterDelegateConnection(
     const base::UnguessableToken& grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
@@ -573,11 +605,11 @@ void InputManager::NotifyRendererBlockStateChanged(
     bool blocked,
     const std::vector<FrameSinkId>& rirs) {
   for (auto& frame_sink_id : rirs) {
-    auto itr = frame_sink_metadata_map_.find(frame_sink_id);
-
-    if (itr != frame_sink_metadata_map_.end()) {
-      itr->second.rir_delegate->SetIsBlocked(blocked);
+    auto itr = rir_map_.find(frame_sink_id);
+    if (itr == rir_map_.end()) {
+      continue;
     }
+    itr->second->RenderProcessBlockedStateChanged(blocked);
   }
 }
 
