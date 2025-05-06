@@ -342,9 +342,6 @@ class PLATFORM_EXPORT Color {
   // Access the color as though it were created using the hsl() syntax.
   void GetHSL(double& h, double& s, double& l) const;
 
-  // Access the color as though it were created using the hwb() syntax.
-  void GetHWB(double& h, double& w, double& b) const;
-
   Color Light() const;
   Color Dark() const;
 

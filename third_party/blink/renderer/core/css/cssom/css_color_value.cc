@@ -31,7 +31,7 @@ namespace blink {
 enum CSSColorType { kInvalid, kInvalidOrNamedColor, kRGB, kHSL, kHWB };
 
 CSSRGB* CSSColorValue::toRGB() const {
-  return MakeGarbageCollected<CSSRGB>(ToColor());
+  return MakeGarbageCollected<CSSRGB>(ToColor(), Color::ColorSpace::kSRGB);
 }
 
 CSSHSL* CSSColorValue::toHSL() const {
@@ -95,17 +95,6 @@ static CSSColorType DetermineColorType(CSSParserTokenStream& stream) {
   return CSSColorType::kInvalidOrNamedColor;
 }
 
-static CSSRGB* CreateCSSRGBByNumbers(int red, int green, int blue, int alpha) {
-  return MakeGarbageCollected<CSSRGB>(
-      CSSNumericValue::FromNumberish(MakeGarbageCollected<V8CSSNumberish>(red)),
-      CSSNumericValue::FromNumberish(
-          MakeGarbageCollected<V8CSSNumberish>(green)),
-      CSSNumericValue::FromNumberish(
-          MakeGarbageCollected<V8CSSNumberish>(blue)),
-      CSSNumericValue::FromPercentish(
-          MakeGarbageCollected<V8CSSNumberish>(alpha / 255.0)));
-}
-
 V8UnionCSSColorValueOrCSSStyleValue* CSSColorValue::parse(
     const ExecutionContext* execution_context,
     const String& css_text,
@@ -137,9 +126,8 @@ V8UnionCSSColorValueOrCSSStyleValue* CSSColorValue::parse(
     switch (color_type) {
       case CSSColorType::kRGB:
         return MakeGarbageCollected<V8UnionCSSColorValueOrCSSStyleValue>(
-            CreateCSSRGBByNumbers(
-                result->Value().Red(), result->Value().Green(),
-                result->Value().Blue(), result->Value().AlphaAsInteger()));
+            MakeGarbageCollected<CSSRGB>(result->Value(),
+                                         Color::ColorSpace::kSRGBLegacy));
       case CSSColorType::kHSL:
         return MakeGarbageCollected<V8UnionCSSColorValueOrCSSStyleValue>(
             MakeGarbageCollected<CSSHSL>(result->Value()));
@@ -155,11 +143,9 @@ V8UnionCSSColorValueOrCSSStyleValue* CSSColorValue::parse(
       To<CSSIdentifierValue>(parsed_value)->GetValueID();
   std::string_view value_name = GetCSSValueName(value_id);
   if (const NamedColor* named_color = FindColor(value_name)) {
-    Color color = Color::FromRGBA32(named_color->argb_value);
-
+    const Color color = Color::FromRGBA32(named_color->argb_value);
     return MakeGarbageCollected<V8UnionCSSColorValueOrCSSStyleValue>(
-        CreateCSSRGBByNumbers(color.Red(), color.Green(), color.Blue(),
-                              color.AlphaAsInteger()));
+        MakeGarbageCollected<CSSRGB>(color, Color::ColorSpace::kSRGBLegacy));
   }
 
   return MakeGarbageCollected<V8UnionCSSColorValueOrCSSStyleValue>(

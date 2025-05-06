@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 
 namespace blink {
 
@@ -27,7 +28,7 @@ class CORE_EXPORT CSSRGB final : public CSSColorValue {
                         ExceptionState& exception_state);
 
   // Internal constructor used by blink.
-  explicit CSSRGB(const Color&);
+  explicit CSSRGB(const Color&, Color::ColorSpace);
   CSSRGB(CSSNumericValue*,
          CSSNumericValue*,
          CSSNumericValue*,
