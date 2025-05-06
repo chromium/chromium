@@ -409,6 +409,11 @@ const char kDisableFacilitatedPaymentsMerchantAllowlistDescription[] =
     "payments, so that merchants that are not on the allowlist can also be "
     "tested for the supported features.";
 
+const char kHdrAgtmName[] = "Adaptive global tone mapping";
+const char kHdrAgtmDescription[] =
+    "Enables parsing and rendering of adaptive global tone mapping (AGTM) aka "
+    "SMTPE ST 2094-50 HDR metadata";
+
 const char kHistorySyncAlternativeIllustrationName[] =
     "History Sync Alternative Illustration";
 const char kHistorySyncAlternativeIllustrationDescription[] =

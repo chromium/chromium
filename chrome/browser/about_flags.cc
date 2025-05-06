@@ -6832,6 +6832,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDynamicColorGamut)},
 #endif
 
+    {"hdr-agtm", flag_descriptions::kHdrAgtmName,
+     flag_descriptions::kHdrAgtmDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kHdrAgtm)},
+
     {"memlog", flag_descriptions::kMemlogName,
      flag_descriptions::kMemlogDescription, kOsAll,
      MULTI_VALUE_TYPE(kMemlogModeChoices)},

@@ -478,6 +478,7 @@ component("color_space") {
   deps = [
     "//skia:skcms",
     "//ui/gfx:buffer_types",
+    "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry:geometry_skia",
   ]
   public_deps = [

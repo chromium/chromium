@@ -9562,6 +9562,7 @@ from previous Chrome versions.
   <int value="-1842511843" label="DiceWebSigninInterception:enabled"/>
   <int value="-1842145650" label="WaylandLinuxDrmSyncobj:enabled"/>
   <int value="-1841624903" label="FilesMaterializedViews:disabled"/>
+  <int value="-1841054968" label="HdrAgtm:disabled"/>
   <int value="-1840821581" label="WebViewPowerSchedulerThrottleIdle:disabled"/>
   <int value="-1840772138" label="WebKioskEnableLacros:disabled"/>
   <int value="-1840608422" label="AdvancedPpdAttributes:disabled"/>
@@ -13930,6 +13931,7 @@ from previous Chrome versions.
       label="AutofillEnableUnmaskCardRequestSetInstrumentId:enabled"/>
   <int value="-172544594" label="LacrosNonSyncingProfiles:enabled"/>
   <int value="-172480221" label="UseDMSAAForTiles:enabled"/>
+  <int value="-171798137" label="HdrAgtm:enabled"/>
   <int value="-171232290" label="ListAllDisplayModes:disabled"/>
   <int value="-171173736" label="VrBrowsingExperimentalFeatures:disabled"/>
   <int value="-170986053" label="EnableManualFallbacksFilling:enabled"/>

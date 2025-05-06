@@ -267,6 +267,9 @@ extern const char kDbdRevampDesktopDescription[];
 extern const char kDisableFacilitatedPaymentsMerchantAllowlistName[];
 extern const char kDisableFacilitatedPaymentsMerchantAllowlistDescription[];
 
+extern const char kHdrAgtmName[];
+extern const char kHdrAgtmDescription[];
+
 extern const char kHistorySyncAlternativeIllustrationName[];
 extern const char kHistorySyncAlternativeIllustrationDescription[];
 
