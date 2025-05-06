@@ -60,6 +60,12 @@ Main features of Hunspell command line tool, developed by László Németh:
 
 See man hunspell, man 3 hunspell, man 5 hunspell for complete manual.
 
+Translations: Hunspell has been translated into several languages already. If your language is missing or incomplete, please use [Weblate](https://hosted.weblate.org/engage/hunspell/) to help translate Hunspell.
+
+<a href="https://hosted.weblate.org/engage/hunspell/">
+<img src="https://hosted.weblate.org/widgets/hunspell/-/translations/horizontal-auto.svg" alt="Stanje prijevoda" />
+</a>
+
 # Dependencies
 
 Build only dependencies:
@@ -95,7 +101,7 @@ For dictionary development, use the `--with-warnings` option of
 configure.
 
 For interactive user interface of Hunspell executable, use the
-`--with-ui option`.
+`--with-ui` option.
 
 Optional developer packages:
 
@@ -115,7 +121,11 @@ dependencies are build with that.
     brew install autoconf automake libtool gettext
     brew link gettext --force
 
-Then run autoreconf, configure, make. See above.
+Then run:
+
+    autoreconf -vfi
+    ./configure
+    make
 
 # Compiling on Windows
 
@@ -304,8 +314,8 @@ Hunspell (MySpell) dictionaries:
   - https://wiki.documentfoundation.org/Language_support_of_LibreOffice
   - http://cgit.freedesktop.org/libreoffice/dictionaries
   - http://extensions.libreoffice.org
-  - http://extensions.openoffice.org
-  - http://wiki.services.openoffice.org/wiki/Dictionaries
+  - https://extensions.openoffice.org
+  - https://wiki.openoffice.org/wiki/Dictionaries
 
 Aspell dictionaries (conversion: man 5 hunspell):
 

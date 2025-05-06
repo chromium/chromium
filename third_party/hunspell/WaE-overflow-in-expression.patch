@@ -1,0 +1,34 @@
+From edb619100791110d3e34f09ec35392ad327c1135 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Caol=C3=A1n=20McNamara?= <caolan.mcnamara@collabora.com>
+Date: Fri, 3 Nov 2023 12:52:19 +0000
+Subject: [PATCH] WaE: overflow in expression
+
+---
+ src/hunspell/affixmgr.cxx | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
+index a3c93cd..5d35540 100644
+--- a/src/hunspell/affixmgr.cxx
++++ b/src/hunspell/affixmgr.cxx
+@@ -1603,7 +1603,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
+       timelimit_exceeded = false;
+   }
+   else if (std::chrono::duration_cast<std::chrono::milliseconds>(clock_now - clock_time_start).count()
+-            > TIMELIMIT * CLOCKS_PER_SEC * 1000)
++            > static_cast<double>(TIMELIMIT) * CLOCKS_PER_SEC * 1000)
+       timelimit_exceeded = true;
+ 
+   setcminmax(&cmin, &cmax, word.c_str(), len);
+@@ -2232,7 +2232,7 @@ int AffixMgr::compound_check_morph(const std::string& word,
+       timelimit_exceeded = false;
+   }
+   else if (std::chrono::duration_cast<std::chrono::milliseconds>(clock_now - clock_time_start).count()
+-            > TIMELIMIT * CLOCKS_PER_SEC * 1000)
++            > static_cast<double>(TIMELIMIT) * CLOCKS_PER_SEC * 1000)
+       timelimit_exceeded = true;
+ 
+   setcminmax(&cmin, &cmax, word.c_str(), len);
+-- 
+2.49.0.901.g37484f566f-goog
+

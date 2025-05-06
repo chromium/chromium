@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -109,6 +109,8 @@ int FileMgr::fail(const char* err, const char* par) {
 FileMgr::FileMgr(const char* file, const char* key) : hin(NULL), linenum(0) {
   in[0] = '\0';
 
+  if (!file || !strlen(file))
+    return;
   myopen(fin, file, std::ios_base::in);
   if (!fin.is_open()) {
     // check hzipped file
@@ -129,7 +131,7 @@ bool FileMgr::getline(std::string& dest) {
   ++linenum;
   if (fin.is_open()) {
     ret = static_cast<bool>(std::getline(fin, dest));
-  } else if (hin->is_open()) {
+  } else if (hin && hin->is_open()) {
     ret = hin->getline(dest);
   }
   if (!ret) {

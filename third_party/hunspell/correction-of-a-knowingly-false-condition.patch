@@ -1,0 +1,27 @@
+From f67ffdeea4504cc94d6d8a0caeb68838fc0811c9 Mon Sep 17 00:00:00 2001
+From: ihsinme <ihsinme@gmail.com>
+Date: Fri, 2 Apr 2021 14:04:02 +0300
+Subject: [PATCH] correction of a knowingly false condition.
+
+this if is not achievable because if the condition is true, then it is implemented above with the exit from the function.
+I suggest a simple fix.
+---
+ src/hunspell/affixmgr.cxx | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
+index dabaad2..d6ffc3c 100644
+--- a/src/hunspell/affixmgr.cxx
++++ b/src/hunspell/affixmgr.cxx
+@@ -2271,8 +2271,6 @@ int AffixMgr::compound_check_morph(const std::string& word,
+         rv = rv->next_homonym;
+       }
+ 
+-      if (timelimit == 0)
+-        return 0;
+ 
+       if (rv)
+         affixed = 0;
+-- 
+2.49.0.901.g37484f566f-goog
+
