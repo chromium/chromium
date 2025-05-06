@@ -16,8 +16,15 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <include layout="@layout/modal_dialog_title"
-            android:id="@+id/title_container"/>
+
+        <androidx.appcompat.widget.DialogTitle
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:ellipsize="end"
+            android:paddingHorizontal="@dimen/dialog_padding_sides"
+            android:paddingTop="@dimen/dialog_padding_sides"
+            android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
 
         <TextView
             android:id="@+id/message"

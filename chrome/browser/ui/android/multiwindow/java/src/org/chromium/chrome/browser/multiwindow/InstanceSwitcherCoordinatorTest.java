@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.containsString;
 
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,6 +36,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -290,7 +293,7 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
-    public void testBackOnConfirmDialog() throws Exception {
+    public void testCancelButton() throws Exception {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
@@ -324,7 +327,11 @@ public class InstanceSwitcherCoordinatorTest {
         onView(allOf(withText(R.string.instance_switcher_close_confirm_header)))
                 .check(matches(isDisplayed()));
 
-        onView(allOf(withId(R.id.title_icon), withEffectiveVisibility(VISIBLE))).perform(click());
-        onView(allOf(withText(R.string.instance_switcher_header))).check(matches(isDisplayed()));
+        onView(withText(R.string.cancel)).perform(click());
+        // The cancel button closes the instance switcher and opens the last opened window/tab
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(false));
+                });
     }
 }

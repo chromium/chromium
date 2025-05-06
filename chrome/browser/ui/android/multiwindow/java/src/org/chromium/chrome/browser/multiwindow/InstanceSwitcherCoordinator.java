@@ -11,11 +11,9 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -76,7 +74,6 @@ public class InstanceSwitcherCoordinator {
     private final ModelList mModelList = new ModelList();
     private final UiUtils mUiUtils;
     private final View mDialogView;
-    private final Drawable mArrowBackIcon;
 
     private @Nullable PropertyModel mDialog;
     private @Nullable InstanceInfo mItemToDelete;
@@ -126,7 +123,6 @@ public class InstanceSwitcherCoordinator {
         mCloseCallback = closeCallback;
         mUiUtils = new UiUtils(mContext, iconBridge);
         mNewWindowAction = newWindowAction;
-        mArrowBackIcon = mUiUtils.getTintedIcon(R.drawable.ic_arrow_back_24dp);
 
         ModelListAdapter adapter = new ModelListAdapter(mModelList);
         // TODO: Extend modern_list_item_view.xml to replace instance_switcher_item.xml
@@ -308,10 +304,6 @@ public class InstanceSwitcherCoordinator {
         dialog.setContentView(R.layout.close_confirmation_dialog);
 
         Resources res = mContext.getResources();
-        ImageView iconView = (ImageView) dialog.findViewById(R.id.title_icon);
-        iconView.setImageDrawable(mArrowBackIcon);
-        iconView.setOnClickListener(v -> dialog.dismiss());
-
         String title = res.getString(R.string.instance_switcher_close_confirm_header);
         ((TextView) dialog.findViewById(R.id.title)).setText(title);
         TextView messageView = (TextView) dialog.findViewById(R.id.message);
