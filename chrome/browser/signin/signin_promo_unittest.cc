@@ -352,6 +352,22 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
 }
 
+TEST_F(ShowSigninPromoTestWithFeatureFlags, DoNotShowPromoWithNoSyncService) {
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(
+      SyncServiceFactory::GetInstance(),
+      base::BindRepeating([](content::BrowserContext* context) {
+        return static_cast<std::unique_ptr<KeyedService>>(nullptr);
+      }));
+
+  std::unique_ptr<TestingProfile> profile =
+      IdentityTestEnvironmentProfileAdaptor::
+          CreateProfileForIdentityTestEnvironment(profile_builder);
+
+  ASSERT_EQ(nullptr, SyncServiceFactory::GetForProfile(profile.get()));
+  EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile));
+}
+
 TEST_F(ShowSigninPromoTestWithFeatureFlags,
        DoNotShowPromoWithOffTheRecordProfile) {
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(

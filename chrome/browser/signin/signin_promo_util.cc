@@ -125,13 +125,16 @@ bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
     return false;
   }
 
-  // Don't show the promo if the user is off-the-record.
-  if (profile.IsOffTheRecord()) {
-    return false;
-  }
-
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(&profile);
+
+  // Don't show the promo if the sync service is not available, e.g. if the
+  // profile is off-the-record.
+  if (!sync_service) {
+    return false;
+  }
+  CHECK(!profile.IsOffTheRecord());
+
   syncer::DataType data_type = GetDataTypeFromSignInPromoType(type);
 
   // Don't show the promo if policies disallow account storage.
@@ -310,21 +313,24 @@ bool ShouldShowBookmarkSignInPromo(Profile& profile) {
     return false;
   }
 
-  // If the user is in sign in pending state, the promo should only be shown if
-  // they already have account storage for bookmarks enabled.
+  if (!ShouldShowSignInPromoCommon(profile, SignInPromoType::kBookmark)) {
+    return false;
+  }
+
+  // At this point, both the identity manager and sync service should not be
+  // null.
   IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(&profile);
-  if (identity_manager && signin_util::IsSigninPending(identity_manager)) {
-    if (!sync_service ||
-        !sync_service->GetUserSettings()->GetSelectedTypes().Has(
-            syncer::UserSelectableType::kBookmarks)) {
-      return false;
-    }
-  }
+  CHECK(identity_manager);
+  CHECK(sync_service);
 
-  return ShouldShowSignInPromoCommon(profile, SignInPromoType::kBookmark);
+  // If the user is in sign in pending state, the promo should only be shown if
+  // they already have account storage for bookmarks enabled.
+  return !signin_util::IsSigninPending(identity_manager) ||
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kBookmarks);
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
