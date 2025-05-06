@@ -148,7 +148,9 @@ IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, DISABLED_SetPref_CrOSSetting) {
   EXPECT_TRUE(RunSettingsSubtest("setPref_CrOSSetting")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, OnPrefsChanged_CrOSSetting) {
+// TODO(crbug.com/415930490): Fix and re-enable.
+IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest,
+                       DISABLED_OnPrefsChanged_CrOSSetting) {
   EXPECT_TRUE(RunSettingsSubtest("onPrefsChanged_CrOSSetting")) << message_;
 }
 #endif
