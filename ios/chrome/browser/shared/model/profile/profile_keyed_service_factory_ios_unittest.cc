@@ -123,16 +123,26 @@ class ProfileKeyedServiceFactoryIOSTest : public testing::TestWithParam<Param> {
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    ,
+    CreateLazily,
     ProfileKeyedServiceFactoryIOSTest,
     ::testing::Combine(
         ::testing::Values(ProfileSelection::kNoInstanceInIncognito,
                           ProfileSelection::kRedirectedInIncognito,
                           ProfileSelection::kOwnInstanceInIncognito),
-        ::testing::Values(ServiceCreation::kCreateLazily,
-                          ServiceCreation::kCreateWithProfile),
+        ::testing::Values(ServiceCreation::kCreateLazily),
         ::testing::Values(TestingCreation::kCreateService,
                           TestingCreation::kNoServiceForTests)),
+    PrintToStringParamName());
+
+INSTANTIATE_TEST_SUITE_P(
+    CreateWithProfile,
+    ProfileKeyedServiceFactoryIOSTest,
+    ::testing::Combine(
+        ::testing::Values(ProfileSelection::kNoInstanceInIncognito,
+                          ProfileSelection::kRedirectedInIncognito,
+                          ProfileSelection::kOwnInstanceInIncognito),
+        ::testing::Values(ServiceCreation::kCreateWithProfile),
+        ::testing::Values(TestingCreation::kNoServiceForTests)),
     PrintToStringParamName());
 
 // Tests that ProfileKeyedServiceFactoryIOS behaves correctly for regular

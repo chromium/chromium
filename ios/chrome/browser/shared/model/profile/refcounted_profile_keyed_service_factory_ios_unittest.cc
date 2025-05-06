@@ -132,16 +132,26 @@ class RefcountedProfileKeyedServiceFactoryIOSTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    ,
+    CreateLazily,
     RefcountedProfileKeyedServiceFactoryIOSTest,
     ::testing::Combine(
         ::testing::Values(ProfileSelection::kNoInstanceInIncognito,
                           ProfileSelection::kRedirectedInIncognito,
                           ProfileSelection::kOwnInstanceInIncognito),
-        ::testing::Values(ServiceCreation::kCreateLazily,
-                          ServiceCreation::kCreateWithProfile),
+        ::testing::Values(ServiceCreation::kCreateLazily),
         ::testing::Values(TestingCreation::kCreateService,
                           TestingCreation::kNoServiceForTests)),
+    PrintToStringParamName());
+
+INSTANTIATE_TEST_SUITE_P(
+    CreateWithProfile,
+    RefcountedProfileKeyedServiceFactoryIOSTest,
+    ::testing::Combine(
+        ::testing::Values(ProfileSelection::kNoInstanceInIncognito,
+                          ProfileSelection::kRedirectedInIncognito,
+                          ProfileSelection::kOwnInstanceInIncognito),
+        ::testing::Values(ServiceCreation::kCreateWithProfile),
+        ::testing::Values(TestingCreation::kNoServiceForTests)),
     PrintToStringParamName());
 
 // Tests that RefcountedProfileKeyedServiceFactoryIOS behaves correctly for
