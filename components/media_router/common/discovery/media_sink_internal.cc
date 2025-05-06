@@ -72,10 +72,6 @@ bool MediaSinkInternal::operator==(const MediaSinkInternal& other) const {
   NOTREACHED();
 }
 
-bool MediaSinkInternal::operator!=(const MediaSinkInternal& other) const {
-  return !operator==(other);
-}
-
 bool MediaSinkInternal::operator<(const MediaSinkInternal& other) const {
   return sink_.id() < other.sink().id();
 }
