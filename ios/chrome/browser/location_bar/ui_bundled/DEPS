@@ -21,7 +21,7 @@ include_rules = [
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/toolbar/ui_bundled/public/toolbar_type.h",
   "+ios/chrome/browser/omnibox/model",
-  "+ios/chrome/browser/omnibox/ui_bundled",
+  "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_util.h",

@@ -13,7 +13,7 @@ include_rules = [
   "+ios/chrome/browser/first_run/ui_bundled/first_run_util.h",
   "+ios/chrome/browser/overscroll_actions/ui_bundled",
   "+ios/chrome/browser/toolbar/ui_bundled/buttons",
-  "+ios/chrome/browser/omnibox/ui_bundled",
+  "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/omnibox/public",
   "+ios/chrome/browser/lens/ui_bundled",

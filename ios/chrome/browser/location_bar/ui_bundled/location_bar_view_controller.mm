@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/text_field_view_containing.h"
+#import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

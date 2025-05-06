@@ -8,8 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_mutator.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_controller.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_mutator.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_view_controller.h"
 
 class FaviconLoader;
 @protocol LensCommands;

@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_view_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_focus_delegate.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "url/gurl.h"
 

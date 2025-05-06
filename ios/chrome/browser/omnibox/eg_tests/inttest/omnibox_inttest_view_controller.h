@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_INTTEST_OMNIBOX_INTTEST_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_INTTEST_OMNIBOX_INTTEST_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_presenter.h"
+#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 
 @protocol OmniboxInttestViewControllerDelegate;
 @protocol TextFieldViewContaining;

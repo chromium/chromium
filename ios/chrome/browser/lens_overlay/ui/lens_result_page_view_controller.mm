@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_progress_bar.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/text_field_view_containing.h"
+#import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

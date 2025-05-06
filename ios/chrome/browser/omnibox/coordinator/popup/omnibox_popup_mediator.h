@@ -7,14 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
-
+#import "base/memory/scoped_refptr.h"
 #import "components/history/core/browser/top_sites.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mutator.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/row/favicon_retriever.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/row/image_retriever.h"
+#import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item_menu_provider.h"
+#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_mutator.h"
+#import "ios/chrome/browser/omnibox/ui/popup/row/favicon_retriever.h"
+#import "ios/chrome/browser/omnibox/ui/popup/row/image_retriever.h"
 #import "ui/base/window_open_disposition.h"
 
 @protocol ApplicationCommands;
