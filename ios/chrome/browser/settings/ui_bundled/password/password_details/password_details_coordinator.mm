@@ -511,6 +511,8 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 #pragma mark - Private
 
 - (void)dismissActionSheetCoordinator {
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self.viewController.customLeftBarButtonItem);
   [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
 }
