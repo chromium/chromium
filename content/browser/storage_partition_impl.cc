@@ -2199,57 +2199,92 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
   const URLLoaderNetworkContext& context =
       url_loader_network_observers_.current_context();
 
+  // Three different cases are handled here depending on the request context:
+  //   1. Document context (ContextType::kRenderFrameHostContext) covers fetch()
+  //      and subresource requests. These should check for existing permission
+  //      state, and if the state is ASK trigger the permission prompt. These
+  //      should also handle being delegated into subframe documents.
+  //   2. Navigation context (ContextType::kNavigationRequestContext) covers
+  //      subframe navigations. These should check for existing permission
+  //      state, and if the state is ASK trigger the permission prompt. Nested
+  //      subframes should be allowed iff permission policy delegated the
+  //      permission into the embedding frame.
+  //   3. Worker context (ContextType::kServiceWorkerContext) covers requests
+  //      from workers. These may not have an existing document around. These
+  //      should check for the permission state, but NOT trigger the permission
+  //      prompt.
+
   // Currently requesting the Local Network Access permission is restricted to
-  // document contexts (subresource requests).
-  // TODO(crbug.com/404887282): Add support for allowing requests from workers
-  // if the user has previously granted the permission.
-  // TODO(crbug.com/404887285): Add support for having subframe navigation
-  // requests query and trigger the permission prompt.
-  if (context.type() != ContextType::kRenderFrameHostContext ||
-      !context.navigation_or_document()) {
-    std::move(callback).Run(false);
-    return;
-  }
-  RenderFrameHost* rfh = context.navigation_or_document()->GetDocument();
-  if (!rfh) {
-    std::move(callback).Run(false);
-    return;
-  }
+  // subresource requests and subframe navigation requests.
+  // TODO(crbug.com/404887285): Denying permission for a subframe navigation
+  // results in an error page with text that isn't quite true anymore: "The
+  // connection is blocked because it was initiated by a public page to connect
+  // to devices or servers on your private network. Reload this page to allow
+  // the connection." The last sentence should be removed.
 
-  PermissionController* permission_controller =
-      browser_context_->GetPermissionController();
-  DCHECK(permission_controller);
+  // Handle document (Case 1) and navigation (Case 2) contexts.
+  if (context.navigation_or_document()) {
+    RenderFrameHost* rfh = nullptr;
+    if (context.navigation_or_document()->GetDocument()) {
+      // Get the document that is making the request.
+      rfh = context.navigation_or_document()->GetDocument();
+    } else if (context.navigation_or_document()->GetNavigationRequest()) {
+      // Get the document that is embedding the frame being navigated.
+      rfh = context.navigation_or_document()
+                ->GetNavigationRequest()
+                ->GetParentFrameOrOuterDocument();
+    }
+    if (!rfh) {
+      std::move(callback).Run(false);
+      return;
+    }
 
-  auto status = permission_controller->GetPermissionStatusForCurrentDocument(
-      content::PermissionDescriptorUtil::
-          CreatePermissionDescriptorForPermissionType(
-              blink::PermissionType::LOCAL_NETWORK_ACCESS),
-      rfh);
-  if (status == blink::mojom::PermissionStatus::GRANTED) {
+    PermissionController* permission_controller =
+        browser_context_->GetPermissionController();
+    DCHECK(permission_controller);
+    auto status = permission_controller->GetPermissionStatusForCurrentDocument(
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(
+                blink::PermissionType::LOCAL_NETWORK_ACCESS),
+        rfh);
+    if (status == blink::mojom::PermissionStatus::GRANTED) {
+      std::move(callback).Run(true);
+      return;
+    } else if (status == blink::mojom::PermissionStatus::DENIED) {
+      std::move(callback).Run(false);
+      return;
+    } else {
+      // PermissionStatus is ASK, so request the permission. Converts the result
+      // into a boolean to pass back to `callback`, capturing whether the
+      // permission is granted or not.
+      permission_controller->RequestPermissionFromCurrentDocument(
+          rfh,
+          PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::LOCAL_NETWORK_ACCESS)),
+          base::BindOnce(
+              [](OnLocalNetworkAccessPermissionRequiredCallback cb,
+                 PermissionStatus status) {
+                std::move(cb).Run(status ==
+                                  blink::mojom::PermissionStatus::GRANTED);
+              },
+              std::move(callback)));
+      return;
+    }
+  } else if (context.type() == ContextType::kServiceWorkerContext) {
+    // TODO(crbug.com/404887282): Add support for gating requests from workers
+    // on whether the user previously granted the permission. This will require
+    // plumbing through the `window_id` for the fetch to identify the worker
+    // context and then using that to get the worker origin to use when calling
+    // PermissionController::GetPermissionStatusForWorker().
     std::move(callback).Run(true);
     return;
-  } else if (status == blink::mojom::PermissionStatus::DENIED) {
-    std::move(callback).Run(false);
-    return;
-  } else {
-    // PermissionStatus is ASK, so request the permission. Converts the result
-    // into a boolean to pass back to `callback`, capturing whether the
-    // permission is granted or not.
-    permission_controller->RequestPermissionFromCurrentDocument(
-        rfh,
-        PermissionRequestDescription(
-            content::PermissionDescriptorUtil::
-                CreatePermissionDescriptorForPermissionType(
-                    blink::PermissionType::LOCAL_NETWORK_ACCESS)),
-        base::BindOnce(
-            [](OnLocalNetworkAccessPermissionRequiredCallback cb,
-               PermissionStatus status) {
-              std::move(cb).Run(status ==
-                                blink::mojom::PermissionStatus::GRANTED);
-            },
-            std::move(callback)));
-    return;
   }
+
+  // Otherwise default to denying local network access.
+  std::move(callback).Run(false);
+  return;
 }
 
 void StoragePartitionImpl::OnCertificateRequested(
