@@ -141,7 +141,7 @@ std::vector<std::string> GetNetworkContextsParentDirectories() {
 }
 
 bool ShouldUseAmdGpuPolicy(sandbox::mojom::Sandbox sandbox_type) {
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   const bool obtain_gpu_info =
       sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoDecoding ||
       sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoEncoding;
@@ -316,8 +316,7 @@ int UtilityMain(MainFunctionParams parameters) {
 #endif
       break;
 #endif  // BUILDFLAG(IS_LINUX)
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       pre_sandbox_hook =
           base::BindOnce(&media::HardwareVideoDecodingPreSandboxHook);
@@ -326,8 +325,7 @@ int UtilityMain(MainFunctionParams parameters) {
       pre_sandbox_hook =
           base::BindOnce(&media::HardwareVideoEncodingPreSandboxHook);
       break;
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kIme:
       pre_sandbox_hook = base::BindOnce(&ash::ime::ImePreSandboxHook);
