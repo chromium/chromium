@@ -439,7 +439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.ExecuteMicroSeconds.Cumulative.Interactive"
-    units="microseconds" expires_after="2025-08-31">
+    units="microseconds" expires_after="2025-11-02">
   <owner>marja@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -1924,7 +1924,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxMode" enum="V8SandboxMode"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1945,7 +1945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxReservationSizeGB" units="GB"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -2395,7 +2395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmEngineMetadataSizeKiB" units="KB"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>evih@chromium.org</owner>
@@ -2575,7 +2575,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmModuleMetadataSizeKiB" units="KB"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>evih@chromium.org</owner>

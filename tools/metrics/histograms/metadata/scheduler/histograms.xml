@@ -73,7 +73,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.DBusSchedQoS.ServiceConnectionSuccess"
-    enum="Boolean" expires_after="2025-06-22">
+    enum="Boolean" expires_after="2025-11-02">
   <owner>kawasin@google.com</owner>
   <owner>joelaf@google.com</owner>
   <summary>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Scheduling.ThreadController.ActiveIntervalOnCpuPercentage.Short.{NamedThread}"
-    units="%" expires_after="2025-08-10">
+    units="%" expires_after="2025-11-02">
   <owner>olivierli@google.com</owner>
   <owner>etienneb@google.com</owner>
   <summary>

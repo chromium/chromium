@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.CPSS.SiteSettingsChanged.{Flavor}"
-    enum="ContentType" expires_after="2025-08-31">
+    enum="ContentType" expires_after="2025-11-02">
   <owner>lyf@chromium.org</owner>
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -722,7 +722,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Engagement.Dismissed{PermissionRequestTypes}"
-    units="%" expires_after="2025-08-31">
+    units="%" expires_after="2025-11-02">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -858,7 +858,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.OneTimePermission.Android.NegativeButtonOutOfScreen"
-    enum="Boolean" expires_after="2025-08-31">
+    enum="Boolean" expires_after="2025-11-02">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1308,7 +1308,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.Variant"
-    enum="ElementAnchoredBubbleVariant" expires_after="2025-08-31">
+    enum="ElementAnchoredBubbleVariant" expires_after="2025-11-02">
   <owner>hkamila@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>

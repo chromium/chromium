@@ -840,7 +840,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.CSSStyleSheetResource.ParseTime" units="microseconds"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <owner>blink-network-dev@chromium.org</owner>
@@ -2617,7 +2617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLFastPathParser.TotalParseTime2" units="microseconds"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
@@ -2757,7 +2757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.PreloadRequestCount" units="count"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -3120,7 +3120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.BoostImagePriorityReason"
-    enum="BoostImagePriorityReason" expires_after="2025-08-31">
+    enum="BoostImagePriorityReason" expires_after="2025-11-02">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -4978,7 +4978,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.SVGImage.DataChanged" units="microseconds"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>

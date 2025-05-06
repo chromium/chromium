@@ -2294,7 +2294,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.MediaApp.PdfLoaded" enum="BooleanExists"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>nektar@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

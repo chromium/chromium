@@ -504,7 +504,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.CheckUrl.UrlRealTimeWithBackgroundHashRealTimeMechanismTriggered"
-    enum="Boolean" expires_after="2025-08-28">
+    enum="Boolean" expires_after="2025-11-02">
   <owner>zackhan@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2137,7 +2137,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.NotificationContentDetection.DisplayPersistentNotificationEvent"
-    enum="DisplayPersistentNotificationEvents" expires_after="2025-08-31">
+    enum="DisplayPersistentNotificationEvents" expires_after="2025-11-02">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3308,7 +3308,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Database.Size{SafeBrowsing_V4Store_Metrics}"
-    units="KB" expires_after="2025-08-31">
+    units="KB" expires_after="2025-11-02">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3346,7 +3346,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4GetHash.CacheFullyHit" enum="BooleanCacheHit"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3734,7 +3734,7 @@ and applied correctly. -->
 
 <histogram
     name="SafeBrowsing.V4Store.DbThread.CheckHighConfidenceAllowlistStoreDuration"
-    units="ms" expires_after="2025-09-01">
+    units="ms" expires_after="2025-11-02">
   <owner>pkotwicz@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3746,7 +3746,7 @@ and applied correctly. -->
 
 <histogram
     name="SafeBrowsing.V4Store.IsStoreValid{SafeBrowsing_V4Store_Metrics}"
-    enum="BooleanValid" expires_after="2025-08-10">
+    enum="BooleanValid" expires_after="2025-11-02">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.BackForwardCache.Event"
-    enum="PageLoadBackForwardCacheEvent" expires_after="2025-08-31">
+    enum="PageLoadBackForwardCacheEvent" expires_after="2025-11-02">
   <owner>bmcquade@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <summary>
@@ -451,7 +451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.BeforeSoftNavigation.InteractionToNextPaint"
-    units="ms" expires_after="2025-08-31">
+    units="ms" expires_after="2025-11-02">
   <owner>sullivan@chromium.org</owner>
   <owner>iclelland@chromium.org</owner>
   <owner>haoliuk@chromium.org</owner>
@@ -524,7 +524,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction"
-    units="ms" expires_after="2025-08-31">
+    units="ms" expires_after="2025-11-02">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -1341,7 +1341,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.InitializeStreamDelay"
-    units="ms" expires_after="2025-09-01">
+    units="ms" expires_after="2025-11-02">
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -3978,7 +3978,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.Incognito"
-    units="scorex10000" expires_after="2025-08-31">
+    units="scorex10000" expires_after="2025-11-02">
   <owner>kjarosz@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
@@ -4409,7 +4409,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.{Scheme}"
-    units="ms" expires_after="2025-08-31">
+    units="ms" expires_after="2025-11-02">
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4533,7 +4533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.SoftNavigation.InteractionToNextPaint" units="ms"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>sullivan@chromium.org</owner>
   <owner>iclelland@chromium.org</owner>
   <owner>haoliuk@chromium.org</owner>

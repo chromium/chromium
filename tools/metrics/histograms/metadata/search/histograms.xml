@@ -1408,7 +1408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SaveGuestModeSelection" enum="BooleanYesNo"
-    expires_after="2025-09-01">
+    expires_after="2025-11-02">
   <owner>dullweber@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1420,7 +1420,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineChangedSnackbar.SettingsTapped"
-    enum="Boolean" expires_after="2025-09-01">
+    enum="Boolean" expires_after="2025-11-02">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>

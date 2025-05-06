@@ -1278,7 +1278,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.ExplicitSigninMigration" enum="ExplicitSigninMigration"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>droger@chromium.org</owner>
   <owner>rsult@google.com</owner>
   <summary>
@@ -1451,7 +1451,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.HistoryAlreadyOptedInAccessPoint.{ConsentLevel}"
-    enum="SigninAccessPoint" expires_after="2025-08-31">
+    enum="SigninAccessPoint" expires_after="2025-11-02">
   <owner>treib@google.com</owner>
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
@@ -1468,7 +1468,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.HistoryOptInState.{ConsentLevel}" enum="BooleanOptedIn"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>treib@google.com</owner>
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
@@ -2571,7 +2571,7 @@ OAuth Multilogin call. -->
 
 <histogram
     name="Signin.ShowSigninCoordinatorWhenAlreadyPresent.{View}AccessPoint"
-    enum="SigninAccessPoint" expires_after="2025-08-03">
+    enum="SigninAccessPoint" expires_after="2025-11-02">
   <owner>arthurmilchior@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <owner>msarda@chromium.org</owner>

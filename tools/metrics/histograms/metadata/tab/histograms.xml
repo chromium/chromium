@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Organization.Declutter.EntryPoint"
-    enum="TabDeclutterEntryPoint" expires_after="2025-08-24">
+    enum="TabDeclutterEntryPoint" expires_after="2025-11-02">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -453,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Organization.DeclutterCTR"
-    enum="TabOrganizationDeclutterCTREvent" expires_after="2025-08-24">
+    enum="TabOrganizationDeclutterCTREvent" expires_after="2025-11-02">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -3373,7 +3373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabState.RestoreMethod" enum="TabStateRestoreMethod"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>davidjm@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>

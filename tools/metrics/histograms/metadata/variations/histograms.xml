@@ -705,7 +705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.StoreSeed.DataSize" units="KiB"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>

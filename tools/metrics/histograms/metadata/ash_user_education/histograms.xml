@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Aborted.Reason"
-    enum="WelcomeTourAbortedReason" expires_after="2025-08-31">
+    enum="WelcomeTourAbortedReason" expires_after="2025-11-02">
   <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.ChangedExperimentalArm"
-    enum="WelcomeTourExperimentalArm" expires_after="2025-08-31">
+    enum="WelcomeTourExperimentalArm" expires_after="2025-11-02">
   <owner>wutao@google.com</owner>
   <owner>llin@google.com</owner>
   <summary>
@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Completed.Duration" units="ms"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -73,7 +73,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.ExperimentalArm"
-    enum="WelcomeTourExperimentalArm" expires_after="2025-08-31">
+    enum="WelcomeTourExperimentalArm" expires_after="2025-11-02">
   <owner>wutao@google.com</owner>
   <owner>llin@google.com</owner>
   <summary>
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Interaction.Count"
-    enum="WelcomeTourInteraction" expires_after="2025-08-31">
+    enum="WelcomeTourInteraction" expires_after="2025-11-02">
   <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Interaction.FirstTime.{Interaction}"
-    units="ms" expires_after="2025-08-31">
+    units="ms" expires_after="2025-11-02">
   <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Interaction.FirstTimeBucket.{Interaction}"
-    enum="TimeBucket" expires_after="2025-08-31">
+    enum="TimeBucket" expires_after="2025-11-02">
   <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Prevented.Reason"
-    enum="WelcomeTourPreventedReason" expires_after="2025-08-31">
+    enum="WelcomeTourPreventedReason" expires_after="2025-11-02">
   <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Result" enum="WelcomeTourResult"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>wutao@google.com</owner>
   <owner>llin@google.com</owner>
   <summary>
@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Step.Duration.{Step}" units="ms"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Step.Shown" enum="WelcomeTourStep"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>

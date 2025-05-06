@@ -2901,7 +2901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.VisitLoggedFromMainFrame" enum="Boolean"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2912,7 +2912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.VisitLoggedFromTransition"
-    enum="PageTransitionForVisitedLinks" expires_after="2025-08-31">
+    enum="PageTransitionForVisitedLinks" expires_after="2025-11-02">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>

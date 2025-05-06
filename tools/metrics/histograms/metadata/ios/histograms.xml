@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BringAndroidTabs.ActionOnPrompt"
-    enum="IOSBringAndroidTabsPromptActionType" expires_after="2025-08-10">
+    enum="IOSBringAndroidTabsPromptActionType" expires_after="2025-11-02">
   <owner>hiramahmood@google.com</owner>
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -474,7 +474,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.ContextualPanel.Entrypoint.{EntrypointType}"
     enum="IOSContextualPanelEntrypointInteractionType"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -494,7 +494,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.ContextualPanel.Entrypoint.{EntrypointType}.UptimeBeforeTap"
-    units="ms" expires_after="2025-08-31">
+    units="ms" expires_after="2025-11-02">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -514,7 +514,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="IOS.ContextualPanel.Entrypoint.{EntrypointType}.{ContextualPanelItemType}"
     enum="IOSContextualPanelEntrypointInteractionType"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -555,7 +555,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ContextualPanel.EntrypointDisplayed"
-    enum="IOSContextualPanelItemType" expires_after="2025-08-31">
+    enum="IOSContextualPanelItemType" expires_after="2025-11-02">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -565,7 +565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ContextualPanel.EntrypointTapped"
-    enum="IOSContextualPanelItemType" expires_after="2025-08-31">
+    enum="IOSContextualPanelItemType" expires_after="2025-11-02">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -576,7 +576,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.ContextualPanel.InfoBlockImpression.{ContextualPanelItemType}"
-    enum="IOSContextualPanelInfoBlockImpression" expires_after="2025-08-31">
+    enum="IOSContextualPanelInfoBlockImpression" expires_after="2025-11-02">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -589,7 +589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ContextualPanel.InfoBlockUptime.{ContextualPanelItemType}"
-    units="ms" expires_after="2025-08-31">
+    units="ms" expires_after="2025-11-02">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -619,7 +619,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ContextualPanel.Model.Relevance.{ContextualPanelItemType}"
-    enum="IOSContextualPanelModelRelevance" expires_after="2025-08-31">
+    enum="IOSContextualPanelModelRelevance" expires_after="2025-11-02">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -630,7 +630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ContextualPanel.VisibleTime" units="ms"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -786,7 +786,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.NumberFaviconsFetched" units="count"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -977,7 +977,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.CredentialProviderExtension.TurnOnPromptOutcome.{PromptSource}"
-    enum="Boolean" expires_after="2025-09-03">
+    enum="Boolean" expires_after="2025-11-02">
   <owner>noemies@google.com</owner>
   <owner>tmartino@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -2546,7 +2546,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.SafetyCheck" units="index"
-    expires_after="2025-08-17">
+    expires_after="2025-11-02">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -5544,7 +5544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabStrip.DragDropTabs" enum="IOSTabSwitcherDragDropTabs"
-    expires_after="2025-07-09">
+    expires_after="2025-11-02">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -5566,7 +5566,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabStrip.DragOrigin" enum="IOSTabSwitcherDragOrigin"
-    expires_after="2025-07-09">
+    expires_after="2025-11-02">
   <owner>ewannpv@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Records the origin of dropped items in the tab strip.</summary>
@@ -5962,7 +5962,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Web.FileInput.EventDropped" enum="Boolean"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>olivierrobin@chromium.org</owner>
   <owner>qpubert@google.com</owner>
   <summary>
@@ -6210,7 +6210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManualFallback.VisibleSuggestions.ExpandIcon.OpenPasswords"
-    units="Suggestions" expires_after="2025-08-31">
+    units="Suggestions" expires_after="2025-11-02">
   <owner>noemies@google.com</owner>
   <owner>sugoi@google.com</owner>
   <summary>
