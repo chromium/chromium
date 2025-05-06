@@ -27,6 +27,10 @@ class COMPONENT_EXPORT(GFX) WUCBackdrop {
   // Takes an SkColor and applies it to the backdrop sprite visual.
   void UpdateBackdropColor(SkColor color);
 
+  // Load the CoreMessaging library and `function_name`. This function contains
+  // a blocking call.
+  static FARPROC LoadCoreMessagingFunction(const char* function_name);
+
  private:
   // Represents the target of the WUC tree and retains a link to the root
   // visual.

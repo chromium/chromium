@@ -287,6 +287,11 @@ class UnpackedInstaller;
 namespace font_service::internal {
 class MappedFontFile;
 }
+
+namespace gfx {
+class WUCBackdrop;
+}
+
 namespace gl {
 struct GLImplementationParts;
 namespace init {
@@ -650,6 +655,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class base::win::OSInfo;
   friend class content::SlowWebPreferenceCache;  // http://crbug.com/1262162
   friend class media::GpuMojoMediaClientWin;     // https://crbug.com/360642944
+  friend class gfx::WUCBackdrop;
 #endif
 #if BUILDFLAG(IS_IOS)
   friend class ::BrowserStateDirectoryBuilder;
