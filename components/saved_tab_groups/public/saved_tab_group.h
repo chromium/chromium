@@ -209,7 +209,9 @@ class SavedTabGroup {
   // order of the group as is. CHECKs that the removed tab is not the last tab,
   // unless `ignore_empty_groups_for_testing` is true. `removed_by` is the user
   // who removed the tab, used for shared groups only and may be empty.
-  SavedTabGroup& RemoveTabLocally(const base::Uuid& saved_tab_guid);
+  SavedTabGroup& RemoveTabLocally(
+      const base::Uuid& saved_tab_guid,
+      std::optional<GaiaId> local_gaia_id = std::nullopt);
   SavedTabGroup& RemoveTabFromSync(
       const base::Uuid& saved_tab_guid,
       GaiaId removed_by,
@@ -283,6 +285,10 @@ class SavedTabGroup {
   // Make a copy the saved tab group, keeping fields like title, color, favicon
   // and all the tabs. UUID and local tab and group IDs are not copied.
   SavedTabGroup CopyBaseFieldsWithTabs() const;
+
+  // Updates the `last_removed_tabs_metadata_` for a given tab and gaia ID.
+  void UpdateLastRemovedTabMetadata(const base::Uuid& saved_tab_guid,
+                                    GaiaId removed_by);
 
   // The ID used to represent the group in sync.
   base::Uuid saved_guid_;

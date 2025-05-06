@@ -414,8 +414,10 @@ void SavedTabGroupModel::UpdateLocalTabId(const base::Uuid& group_id,
   saved_tab_groups_[group_index.value()].UpdateTab(tab);
 }
 
-void SavedTabGroupModel::RemoveTabFromGroupLocally(const base::Uuid& group_id,
-                                                   const base::Uuid& tab_id) {
+void SavedTabGroupModel::RemoveTabFromGroupLocally(
+    const base::Uuid& group_id,
+    const base::Uuid& tab_id,
+    std::optional<GaiaId> local_gaia_id) {
   if (!Contains(group_id)) {
     return;
   }
@@ -439,7 +441,8 @@ void SavedTabGroupModel::RemoveTabFromGroupLocally(const base::Uuid& group_id,
   // TODO(crbug.com/40062298): Convert all methods to pass ids by value to
   // prevent UAFs. Also removes the need for a separate copy variable.
   const base::Uuid copy_tab_id = tab_id;
-  saved_tab_groups_[index.value()].RemoveTabLocally(tab_id);
+  saved_tab_groups_[index.value()].RemoveTabLocally(tab_id,
+                                                    std::move(local_gaia_id));
 
   // TODO(dljames): Update to use SavedTabGroupRemoveLocally and update the API
   // to pass a group_id and an optional tab_id.
