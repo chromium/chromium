@@ -1753,8 +1753,15 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
         // forbid dictionary stems with COMPOUNDFORBIDFLAG in
         // compound words, overriding the effect of COMPOUNDPERMITFLAG
         if ((rv) && compoundforbidflag &&
-                TESTAFF(rv->astr, compoundforbidflag, rv->alen) && !hu_mov_rule)
+                TESTAFF(rv->astr, compoundforbidflag, rv->alen) && !hu_mov_rule) {
+            // given the while conditions that continue jumps to, this situation
+            // never ends
+            if (!scpd && !onlycpdrule && simplifiedcpd) {
+                HUNSPELL_WARNING(stderr, "break infinite loop\n");
+                break;
+            }
             continue;
+        }
 
         // search homonym with compound flag
         while ((rv) && !hu_mov_rule &&

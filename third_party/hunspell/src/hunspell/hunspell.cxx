@@ -542,6 +542,11 @@ bool HunspellImpl::spell_internal(const std::string& word, std::vector<std::stri
       wl = cleanword2(scw, sunicw, word, &captype, &abbv);
   }
 
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+    if (wl > 32768)
+      return false;
+#endif
+
 #ifdef MOZILLA_CLIENT
   // accept the abbreviated words without dots
   // workaround for the incomplete tokenization of Mozilla

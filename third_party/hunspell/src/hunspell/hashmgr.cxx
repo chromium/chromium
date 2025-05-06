@@ -722,7 +722,9 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
 
   std::vector<w_char> workbuf;
 
+  int nLineCount(0);
   while (dict->getline(ts)) {
+    ++nLineCount;
     mychomp(ts);
     // split each line into word and morphological description
     size_t dp_pos = 0;
@@ -804,9 +806,19 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
     }
   }
 
+  int ret(0);
+
+  // reject ludicrous tablesizes
+  if (tablesize > 8192 + nExtra && tablesize > nLineCount * 10 + nExtra) {
+    HUNSPELL_WARNING(stderr, ".dic initial approximate word count line value of %d is too large for %d lines\n", tablesize, nLineCount);
+    ret = 3;
+  }
+
   delete dict;
-#endif
+  return ret;
+#else
   return 0;
+#endif
 }
 
 // the hash function is a simple load and rotate
