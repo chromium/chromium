@@ -3029,23 +3029,35 @@ class BannedTypeCheckTest(unittest.TestCase):
             MockFile('some/cpp/problematic/file4.cc', [
                 'Browser* browser = chrome::FindBrowserWithTab(web_contents)'
             ]),
-            MockFile('allowed_ranges_usage.cc', ['std::ranges::begin(vec)']),
-            MockFile('banned_ranges_usage.cc',
-                     ['std::ranges::subrange(first, last)']),
+            MockFile(
+                'allowed_ranges_usage.cc',
+                [
+                    'std::ranges::begin(vec);',
+                    # std::ranges::view is a concept and allowed, but the views
+                    # library itself is not (see below)
+                    'static_assert(std::ranges::view<SomeType>);'
+                ]),
+            MockFile(
+                'banned_ranges_usage.cc',
+                [
+                    'std::ranges::subrange(first, last);',
+                    # Edge case: make sure std::ranges::views is disallowed,
+                    # even though std::ranges::view is allowed.
+                    'std::ranges::views::take(first, count);'
+                ]),
             MockFile('views_usage.cc', ['std::views::all(vec)']),
-            MockFile('content/desktop_android.cc',
-                     [
-                         '// some first line',
-                         '#if BUILDFLAG(IS_DESKTOP_ANDROID)',
-                         '// some third line',
-                     ]),
+            MockFile('content/desktop_android.cc', [
+                '// some first line',
+                '#if BUILDFLAG(IS_DESKTOP_ANDROID)',
+                '// some third line',
+            ]),
         ]
 
         results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
 
         # Each entry in results corresponds to a BanRule with a violation, in
         # the order they were encountered.
-        self.assertEqual(8, len(results))
+        self.assertEqual(9, len(results))
         self.assertTrue('some/cpp/problematic/file.cc' in results[0].message)
         self.assertTrue(
             'third_party/blink/problematic/file.cc' in results[1].message)
@@ -3057,13 +3069,15 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertTrue(all('some/cpp/comment/file.cc' not in r.message for r in results))
         self.assertTrue(all('allowed_ranges_usage.cc' not in r.message for r in results))
         self.assertTrue('banned_ranges_usage.cc' in results[5].message)
-        self.assertTrue('views_usage.cc' in results[6].message)
-        self.assertTrue('content/desktop_android.cc' in results[7].message)
+        self.assertTrue('banned_ranges_usage.cc' in results[6].message)
+        self.assertTrue('views_usage.cc' in results[7].message)
+        self.assertTrue('content/desktop_android.cc' in results[8].message)
 
         # Check ResultLocation data. Line nums start at 1.
-        self.assertEqual(results[7].locations[0].file_path, 'content/desktop_android.cc')
-        self.assertEqual(results[7].locations[0].start_line, 2)
-        self.assertEqual(results[7].locations[0].end_line, 2)
+        self.assertEqual(results[8].locations[0].file_path,
+                         'content/desktop_android.cc')
+        self.assertEqual(results[8].locations[0].start_line, 2)
+        self.assertEqual(results[8].locations[0].end_line, 2)
 
     def testBannedCppRandomFunctions(self):
         banned_rngs = [

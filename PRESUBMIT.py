@@ -1236,7 +1236,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     ),
     BanRule(
         # Ban everything except specifically allowlisted constructs.
-        pattern=r'/std::ranges::(?!' + '|'.join((
+        pattern=r'/std::ranges::(?!(?:' + '|'.join((
             # From https://en.cppreference.com/w/cpp/ranges:
             # Range access
             'begin',
@@ -1419,7 +1419,11 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             'distance',
             'next',
             'prev',
-        )) + r')\w+',
+            # Require a word boundary at the end of negative lookahead
+            # assertion, e.g. to ensure that even though `view` is allowed (and
+            # should not match this regex), `views` is still treated as
+            # disallowed (and matches the regex).
+        )) + r')\b)\w+',
         explanation=(
             'Use of range views and associated helpers is banned in Chrome. '
             'If you need this functionality, please contact cxx@chromium.org.',
