@@ -395,7 +395,6 @@ scoped_refptr<VideoFrame> CreateGmbOrMappableSIVideoFrame(
     base::TimeDelta timestamp,
     gfx::BufferUsage buffer_usage,
     gpu::SharedImageInterface* sii) {
-  CHECK(sii);
   auto gmb_handle =
       AllocateGpuMemoryBufferHandle(pixel_format, coded_size, buffer_usage);
   if (gmb_handle.is_null() || gmb_handle.type != gfx::NATIVE_PIXMAP) {
