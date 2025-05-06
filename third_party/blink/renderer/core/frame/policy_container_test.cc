@@ -25,7 +25,6 @@ TEST(PolicyContainerTest, MembersAreSetDuringConstruction) {
       /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
       network::mojom::blink::IPAddressSpace::kUnknown,
       /*can_navigate_top_without_user_gesture=*/true,
-      /*allow_cross_origin_isolation=*/false,
       /*cross_origin_isolation_enabled_by_dip=*/false);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));
@@ -45,7 +44,6 @@ TEST(PolicyContainerTest, UpdateReferrerPolicyIsPropagated) {
       /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
       network::mojom::blink::IPAddressSpace::kUnknown,
       /*can_navigate_top_without_user_gesture=*/true,
-      /*allow_cross_origin_isolation=*/false,
       /*cross_origin_isolation_enabled_by_dip=*/false);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));

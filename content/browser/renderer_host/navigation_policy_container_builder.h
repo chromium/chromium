@@ -117,10 +117,6 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // This must be called before `ComputePolicies()`.
   void SetIsOriginPotentiallyTrustworthy(bool value);
 
-  // Sets whether COOP origins allow the document to be crossOriginIsolated.
-  // This must be called before `ComputePolicies()`.
-  void SetAllowCrossOriginIsolation(bool value);
-
   // Sets whether crossOriginIsolation is enabled by DocumentIsolationPolicy.
   // This must be called after `ComputePolicies()`.
   void SetCrossOriginIsolationEnabledByDIP();

@@ -46,7 +46,6 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       network::mojom::WebSandboxFlags sandbox_flags,
       bool is_credentialless,
       bool can_navigate_top_without_user_gesture,
-      bool allow_cross_origin_isolation,
       bool cross_origin_isolation_enabled_by_dip);
 
   explicit PolicyContainerPolicies(
@@ -139,17 +138,6 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // using sandboxing. A document that is same-origin to the top-level frame
   // will always have this value set to true.
   bool can_navigate_top_without_user_gesture = true;
-
-  // The top-level initial empty document opened as a popup by a cross-origin
-  // iframe might inherit the COOP policies of the top-level document but it
-  // shouldn't have crossOriginIsolated capabilities if COOP was initially set
-  // by another origin. Hence, we pass down this boolean to tell the renderer to
-  // restrict those capabilities. For more detail, see
-  // https://github.com/hemeryar/coi-with-popups/blob/main/docs/cross_origin_iframe_popup.MD
-  // TODO(crbug.com/393522283): Ensure the COI status of a context is properly
-  // computed in the browser process and just pass it instead of passing several
-  // booleans to the renderer process and having it do the computation.
-  bool allow_cross_origin_isolation = false;
 
   // Whether crossOriginIsolation was enabled by DocumentIsolationPolicy. We
   // pass this to the renderer process, because crossOriginIsolation enabled by
@@ -264,10 +252,6 @@ class CONTENT_EXPORT PolicyContainerHost
 
   void SetCanNavigateTopWithoutUserGesture(bool value) {
     policies_.can_navigate_top_without_user_gesture = value;
-  }
-
-  void SetAllowCrossOriginIsolation(bool value) {
-    policies_.allow_cross_origin_isolation = value;
   }
 
   void SetCrossOriginIsolationEnabledByDIP() {

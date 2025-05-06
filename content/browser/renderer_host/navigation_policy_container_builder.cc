@@ -113,12 +113,6 @@ void NavigationPolicyContainerBuilder::SetIsOriginPotentiallyTrustworthy(
   delivered_policies_.is_web_secure_context = value;
 }
 
-void NavigationPolicyContainerBuilder::SetAllowCrossOriginIsolation(
-    bool value) {
-  DCHECK(!HasComputedPolicies());
-  delivered_policies_.allow_cross_origin_isolation = value;
-}
-
 void NavigationPolicyContainerBuilder::SetCrossOriginIsolationEnabledByDIP() {
   DCHECK(HasComputedPolicies());
   host_->SetCrossOriginIsolationEnabledByDIP();
