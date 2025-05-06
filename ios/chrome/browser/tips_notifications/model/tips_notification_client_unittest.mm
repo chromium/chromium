@@ -757,4 +757,16 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
   EXPECT_EQ(order[0], TipsNotificationType::kEnhancedSafeBrowsing);
   EXPECT_EQ(order[1], TipsNotificationType::kLens);
   EXPECT_EQ(order[2], TipsNotificationType::kWhatsNew);
+
+  // Test Expanded Tips order param.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSExpandedTips, {
+                            {kIOSExpandedTipsOrderParam, "4,5,6"},
+                        });
+  order = TipsNotificationsTypesOrder(false);
+  EXPECT_EQ(order.size(), 3u);
+  EXPECT_EQ(order[0], TipsNotificationType::kSetUpListContinuation);
+  EXPECT_EQ(order[1], TipsNotificationType::kDocking);
+  EXPECT_EQ(order[2], TipsNotificationType::kOmniboxPosition);
 }

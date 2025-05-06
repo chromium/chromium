@@ -205,6 +205,19 @@ std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
             TipsNotificationType::kEnhancedSafeBrowsing,
             TipsNotificationType::kWhatsNew,
         });
+  } else if (IsIOSExpandedTipsEnabled()) {
+    return GetFieldTrialParamByFeatureAsVector<TipsNotificationType>(
+        kIOSExpandedTips, kIOSExpandedTipsOrderParam,
+        {
+            TipsNotificationType::kEnhancedSafeBrowsing,
+            TipsNotificationType::kWhatsNew,
+            TipsNotificationType::kLens,
+            TipsNotificationType::kOmniboxPosition,
+            TipsNotificationType::kSetUpListContinuation,
+            TipsNotificationType::kDefaultBrowser,
+            TipsNotificationType::kDocking,
+            TipsNotificationType::kSignin,
+        });
   }
   return {
       TipsNotificationType::kEnhancedSafeBrowsing,
