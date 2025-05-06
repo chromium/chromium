@@ -19,14 +19,14 @@
 #include "ui/display/display_observer.h"
 
 class ChromeBrowserMainParts;
-class PowerMetricsReporter;
 class PrefRegistrySimple;
 class PrefService;
-class ProcessMonitor;
 
 #if !BUILDFLAG(IS_ANDROID)
 class BatteryDischargeReporter;
 class PerformanceInterventionMetricsReporter;
+class PowerMetricsReporter;
+class ProcessMonitor;
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -109,6 +109,7 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
 
   std::optional<display::ScopedDisplayObserver> display_observer_;
 
+#if !BUILDFLAG(IS_ANDROID)
   // The process monitor instance. Allows collecting metrics about every child
   // process.
   std::unique_ptr<ProcessMonitor> process_monitor_;
@@ -116,7 +117,6 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   // Reports power metrics.
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
 
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BatteryDischargeReporter> battery_discharge_reporter_;
 
   std::unique_ptr<PerformanceInterventionMetricsReporter>

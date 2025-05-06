@@ -41,23 +41,20 @@ namespace content {
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 // Returns the cumulative CPU usage for the specified process.
 std::optional<base::TimeDelta> GetCPUUsage(base::ProcessHandle process_handle) {
-  std::unique_ptr<base::ProcessMetrics> process_metrics;
-#if BUILDFLAG(IS_ANDROID)
-  // Sandbox restrictions prevent reading /proc for other processes.
-  process_metrics = nullptr;
-#elif BUILDFLAG(IS_MAC)
-  process_metrics = base::ProcessMetrics::CreateProcessMetrics(
-      process_handle, ChildProcessTaskPortProvider::GetInstance());
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<base::ProcessMetrics> process_metrics =
+      base::ProcessMetrics::CreateProcessMetrics(
+          process_handle, ChildProcessTaskPortProvider::GetInstance());
 #else
-  process_metrics = base::ProcessMetrics::CreateProcessMetrics(process_handle);
+  std::unique_ptr<base::ProcessMetrics> process_metrics =
+      base::ProcessMetrics::CreateProcessMetrics(process_handle);
 #endif
-  if (process_metrics) {
-    return base::OptionalFromExpected(process_metrics->GetCumulativeCPUUsage());
-  }
-  return std::nullopt;
+  return base::OptionalFromExpected(process_metrics->GetCumulativeCPUUsage());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -227,16 +224,20 @@ ChildProcessTerminationInfo ChildProcessLauncher::GetChildTerminationInfo(
     return termination_info_;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<base::TimeDelta> cpu_usage;
+  if (!should_launch_elevated_)
+    cpu_usage = GetCPUUsage(process_.process.Handle());
+#endif
+
+  termination_info_ = helper_->GetTerminationInfo(process_, known_dead);
+
+#if !BUILDFLAG(IS_ANDROID)
   // Get the cumulative CPU usage. This needs to be done before closing the
   // process handle (on Windows) or reaping the zombie process (on MacOS, Linux,
   // ChromeOS).
-  std::optional<base::TimeDelta> cpu_usage;
-  if (!should_launch_elevated_) {
-    cpu_usage = GetCPUUsage(process_.process.Handle());
-  }
-
-  termination_info_ = helper_->GetTerminationInfo(process_, known_dead);
   termination_info_.cpu_usage = cpu_usage;
+#endif
 
   // POSIX: If the process crashed, then the kernel closed the socket for it and
   // so the child has already died by the time we get here. Since
