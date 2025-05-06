@@ -18,7 +18,6 @@ import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
 
 /** Helper methods to deal with threading related tasks. */
 @NullMarked
@@ -202,19 +201,6 @@ public class ThreadUtils {
     }
 
     /**
-     * Run the supplied FutureTask on the main thread. The method will block only if the current
-     * thread is the main thread.
-     *
-     * @param task The FutureTask to run
-     * @return The queried task (to aid inline construction)
-     */
-    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
-    public static <T extends @Nullable Object> FutureTask<T> runOnUiThread(FutureTask<T> task) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, task);
-        return task;
-    }
-
-    /**
      * Run the supplied Runnable on the main thread. The method will block only if the current
      * thread is the main thread.
      *
@@ -222,19 +208,6 @@ public class ThreadUtils {
      */
     public static void runOnUiThread(Runnable r) {
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, r);
-    }
-
-    /**
-     * Post the supplied FutureTask to run on the main thread. The method will not block, even if
-     * called on the UI thread.
-     *
-     * @param task The FutureTask to run
-     * @return The queried task (to aid inline construction)
-     */
-    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
-    public static <T extends @Nullable Object> FutureTask<T> postOnUiThread(FutureTask<T> task) {
-        PostTask.postTask(TaskTraits.UI_DEFAULT, task);
-        return task;
     }
 
     /**
