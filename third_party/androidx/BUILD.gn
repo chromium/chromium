@@ -2023,6 +2023,7 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_collection_collection_java",
       ":androidx_compose_runtime_runtime_java",
+      ":androidx_lifecycle_lifecycle_runtime_compose_java",
       ":androidx_savedstate_savedstate_compose_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
