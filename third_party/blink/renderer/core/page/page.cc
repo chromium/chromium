@@ -210,7 +210,8 @@ Page* Page::CreateNonOrdinary(
     const ColorProviderColorMaps* color_provider_colors) {
   return MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
-      BrowsingContextGroupInfo::CreateUnique(), color_provider_colors,
+      /*browsing_context_group_token=*/base::UnguessableToken::Create(),
+      color_provider_colors,
       /*partitioned_popin_params=*/nullptr,
       /*is_ordinary=*/false);
 }
@@ -219,12 +220,12 @@ Page* Page::CreateOrdinary(
     ChromeClient& chrome_client,
     Page* opener,
     AgentGroupScheduler& agent_group_scheduler,
-    const BrowsingContextGroupInfo& browsing_context_group_info,
+    const base::UnguessableToken& browsing_context_group_token,
     const ColorProviderColorMaps* color_provider_colors,
     blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params) {
   Page* page = MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
-      browsing_context_group_info, color_provider_colors,
+      browsing_context_group_token, color_provider_colors,
       std::move(partitioned_popin_params), /*is_ordinary=*/true);
   page->opener_ = opener;
 
@@ -247,7 +248,7 @@ Page* Page::CreateOrdinary(
 Page::Page(base::PassKey<Page>,
            ChromeClient& chrome_client,
            AgentGroupScheduler& agent_group_scheduler,
-           const BrowsingContextGroupInfo& browsing_context_group_info,
+           const base::UnguessableToken& browsing_context_group_token,
            const ColorProviderColorMaps* color_provider_colors,
            blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
            bool is_ordinary)
@@ -293,7 +294,7 @@ Page::Page(base::PassKey<Page>,
       v8_compile_hints_consumer_(
           MakeGarbageCollected<
               v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>()),
-      browsing_context_group_info_(browsing_context_group_info) {
+      browsing_context_group_token_(browsing_context_group_token) {
   if (partitioned_popin_params) {
     partitioned_popin_opener_properties_ = PartitionedPopinOpenerProperties(
         SecurityOrigin::CreateFromUrlOrigin(
@@ -1602,16 +1603,12 @@ void Page::UpdateLifecycle(LocalFrame& root,
 }
 
 const base::UnguessableToken& Page::BrowsingContextGroupToken() {
-  return browsing_context_group_info_.browsing_context_group_token;
-}
-
-const base::UnguessableToken& Page::CoopRelatedGroupToken() {
-  return browsing_context_group_info_.coop_related_group_token;
+  return browsing_context_group_token_;
 }
 
 void Page::UpdateBrowsingContextGroup(
-    const blink::BrowsingContextGroupInfo& browsing_context_group_info) {
-  if (browsing_context_group_info_ == browsing_context_group_info) {
+    const base::UnguessableToken& browsing_context_group_token) {
+  if (browsing_context_group_token_ == browsing_context_group_token) {
     return;
   }
 
@@ -1622,7 +1619,7 @@ void Page::UpdateBrowsingContextGroup(
     SetPaused(false);
   }
 
-  browsing_context_group_info_ = browsing_context_group_info;
+  browsing_context_group_token_ = browsing_context_group_token;
 
   if (base::FeatureList::IsEnabled(
           features::kPausePagesPerBrowsingContextGroup) &&

@@ -64,7 +64,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -157,11 +156,10 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
        blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces),
       (override));
 
-  MOCK_METHOD(
-      void,
-      UpdatePageBrowsingContextGroup,
-      (const blink::BrowsingContextGroupInfo& browsing_context_group_info),
-      (override));
+  MOCK_METHOD(void,
+              UpdatePageBrowsingContextGroup,
+              (const base::UnguessableToken& browsing_context_group_token),
+              (override));
 
   MOCK_METHOD(void,
               SetPageAttributionSupport,

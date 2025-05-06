@@ -60,7 +60,6 @@
 #include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -443,7 +442,7 @@ struct SameSizeAsDocumentLoader
       fenced_frame_properties;
   net::StorageAccessApiStatus storage_access_api_status;
   mojom::blink::ParentResourceTimingAccess parent_resource_timing_access;
-  const std::optional<BrowsingContextGroupInfo> browsing_context_group_info;
+  const std::optional<base::UnguessableToken> browsing_context_group_token;
   const base::flat_map<mojom::blink::RuntimeFeature, bool>
       modified_runtime_features;
   AtomicString cookie_deprecation_label;
@@ -611,7 +610,7 @@ DocumentLoader::DocumentLoader(
       navigation_delivery_type_(params_->navigation_delivery_type),
       view_transition_state_(std::move(params_->view_transition_state)),
       storage_access_api_status_(params_->load_with_storage_access),
-      browsing_context_group_info_(params_->browsing_context_group_info),
+      browsing_context_group_token_(params_->browsing_context_group_token),
       modified_runtime_features_(std::move(params_->modified_runtime_features)),
       cookie_deprecation_label_(params_->cookie_deprecation_label),
       content_settings_(std::move(params_->content_settings)),
@@ -3086,10 +3085,10 @@ void DocumentLoader::CommitNavigation() {
   // browsing context group. This can only ever happen for a top-level frame,
   // because subframes can never change browsing context group, and the
   // value is omitted by the browser process at commit time.
-  if (browsing_context_group_info_.has_value()) {
+  if (browsing_context_group_token_.has_value()) {
     CHECK(frame_->IsMainFrame());
     frame_->GetPage()->UpdateBrowsingContextGroup(
-        browsing_context_group_info_.value());
+        browsing_context_group_token_.value());
   }
 
   DidInstallNewDocument(document);

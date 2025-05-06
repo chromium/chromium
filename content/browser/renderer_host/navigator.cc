@@ -725,20 +725,13 @@ void Navigator::DidNavigate(
       navigation_request->browsing_context_group_swap().ShouldSwap()) {
     SiteInstanceImpl* final_site_instance =
         render_frame_host->GetSiteInstance();
-    // TODO(crbug.com/412965095): Now that the CoopRelatedGroup no longer
-    // exists, the BrowsingContextGroupInfo class can be deleted and replaced by
-    // a simple token, the BrowsingInstance token. In the meantime, just pass
-    // the BrowsingInstanceToken as a CoopGroupToken so that we do not send an
-    // empty token.
-    blink::BrowsingContextGroupInfo browsing_context_group_info(
-        final_site_instance->browsing_instance_token(),
-        /*coop_related_group_token=*/final_site_instance
-            ->browsing_instance_token());
+    base::UnguessableToken browsing_context_group_token =
+        final_site_instance->browsing_instance_token();
     frame_tree.root()->render_manager()->ExecutePageBroadcastMethod(
-        [&browsing_context_group_info](RenderViewHostImpl* rvh) {
+        [&browsing_context_group_token](RenderViewHostImpl* rvh) {
           if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
             broadcast->UpdatePageBrowsingContextGroup(
-                browsing_context_group_info);
+                browsing_context_group_token);
           }
         },
         final_site_instance->group());

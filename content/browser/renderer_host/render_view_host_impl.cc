@@ -86,7 +86,6 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -602,18 +601,10 @@ bool RenderViewHostImpl::CreateRenderView(
   // group. Note that we cannot use this RenderViewHost's site_instance_group(),
   // which may not match in a popup case. For example, if A opens a
   // cross-browsing-context-group popup to B, the RenderViewHost for the opener
-  // in B's process should have A's BrowsingContextGroupInfo, which is the
+  // in B's process should have A's Browsing Context Group Token, which is the
   // current page in the opener.
-  // TODO(crbug.com/412965095): Now that the CoopRelatedGroup no longer exist,
-  // BrowsingContextGroupInfo can be replaced by a simple
-  // BrowsingContextGroupToken. In the meantime, just pass the
-  // BrowsingInstanceToken as a CoopGroupToken so that we do not send an empty
-  // token.
-  params->browsing_context_group_info = blink::BrowsingContextGroupInfo(
-      frame_tree_->GetMainFrame()->GetSiteInstance()->browsing_instance_token(),
-      frame_tree_->GetMainFrame()
-          ->GetSiteInstance()
-          ->browsing_instance_token());
+  params->browsing_context_group_token =
+      frame_tree_->GetMainFrame()->GetSiteInstance()->browsing_instance_token();
 
   // RenderViewHostImpl is reused after a crash, so reset any endpoint that
   // might be a leftover from a crash.

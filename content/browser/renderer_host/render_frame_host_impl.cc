@@ -268,7 +268,6 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_document_created.h"
@@ -9942,14 +9941,7 @@ void RenderFrameHostImpl::CreateNewWindow(
       new_main_rfh->GetDevToolsFrameToken(), wait_for_debugger,
       new_main_rfh->GetDocumentToken(),
       new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink(),
-      // TODO(crbug.com/412965095): Now that the CoopRelatedGroup no longer
-      // exists, replace BrowsingContextGroupInfo by a single token. In the
-      // meantime, just pass the BrowsingInstanceToken as a CoopGroupToken so
-      // that we do not send an empty token.
-      blink::BrowsingContextGroupInfo(
-          new_main_rfh->GetSiteInstance()->browsing_instance_token(),
-          /*coop_related_group_token=*/new_main_rfh->GetSiteInstance()
-              ->browsing_instance_token()),
+      new_main_rfh->GetSiteInstance()->browsing_instance_token(),
       delegate_->GetColorProviderColorMaps(),
       std::move(partitioned_popin_params), /*widget_screen_rect=*/std::nullopt,
       /*window_screen_rect=*/std::nullopt);
@@ -16143,20 +16135,13 @@ void RenderFrameHostImpl::SendCommitNavigation(
   // If this commit is for a main frame in another browsing context group, warn
   // the renderer that it should update the browsing context group information
   // of the page if this frame successfully commits. Note that the
-  // BrowsingContextGroupInfo in the params should only be populated at commit
-  // time, and only in the case of a swap.
-  CHECK(!commit_params->browsing_context_group_info.has_value());
+  // Browsing Context Group Token in the params should only be populated at
+  // commit time, and only in the case of a swap.
+  CHECK(!commit_params->browsing_context_group_token.has_value());
   if (is_main_frame() &&
       navigation_request->browsing_context_group_swap().ShouldSwap()) {
-    // TODO(crbug.com/412965095): Now that the CoopRelatedGroup no longer
-    // exists, replace BrowsingContextGroupInfo by a single token. In the
-    // meantime, just pass the BrowsingInstanceToken as a CoopGroupToken so that
-    // we do not send an empty token.
-    commit_params->browsing_context_group_info =
-        blink::BrowsingContextGroupInfo(
-            GetSiteInstance()->browsing_instance_token(),
-            /*coop_related_group_token=*/GetSiteInstance()
-                ->browsing_instance_token());
+    commit_params->browsing_context_group_token =
+        GetSiteInstance()->browsing_instance_token();
   }
 
   auto* cookie_deprecation_label_manager =
@@ -16231,20 +16216,13 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
 
   // If this commit is for a main frame in another browsing context group, warn
   // the renderer that it should update the browsing context group information
-  // of the page. Note that the BrowsingContextGroupInfo in the params should
-  // only be populated at commit time, and only in the case of a swap.
-  CHECK(!commit_params->browsing_context_group_info.has_value());
+  // of the page. Note that the Browsing Context Group Token in the params
+  // should only be populated at commit time, and only in the case of a swap.
+  CHECK(!commit_params->browsing_context_group_token.has_value());
   if (is_main_frame() &&
       navigation_request->browsing_context_group_swap().ShouldSwap()) {
-    // TODO(crbug.com/412965095): Now that the CoopRelatedGroup no longer
-    // exists, replace BrowsingContextGroupInfo by a single token. In the
-    // meantime, just pass the BrowsingInstanceToken as a CoopGroupToken so that
-    // we do not send an empty token.
-    commit_params->browsing_context_group_info =
-        blink::BrowsingContextGroupInfo(
-            GetSiteInstance()->browsing_instance_token(),
-            /*coop_related_group_token=*/GetSiteInstance()
-                ->browsing_instance_token());
+    commit_params->browsing_context_group_token =
+        GetSiteInstance()->browsing_instance_token();
   }
 
   {

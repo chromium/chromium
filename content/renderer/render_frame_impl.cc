@@ -1077,8 +1077,8 @@ void FillMiscNavigationParams(
   navigation_params->ancestor_or_self_has_cspee =
       commit_params.ancestor_or_self_has_cspee;
 
-  navigation_params->browsing_context_group_info =
-      commit_params.browsing_context_group_info;
+  navigation_params->browsing_context_group_token =
+      commit_params.browsing_context_group_token;
 
   navigation_params->content_settings =
       std::move(commit_params.content_settings);
@@ -7043,7 +7043,8 @@ WebView* RenderFrameImpl::CreateNewWindow(
   view_params->replication_state->frame_policy.sandbox_flags = sandbox_flags;
   view_params->replication_state->name = frame_name_utf8;
   view_params->devtools_main_frame_token = reply->devtools_main_frame_token;
-  view_params->browsing_context_group_info = reply->browsing_context_group_info;
+  view_params->browsing_context_group_token =
+      reply->browsing_context_group_token;
   view_params->color_provider_colors = reply->color_provider_colors;
 
   auto widget_params = mojom::CreateFrameWidgetParams::New();
