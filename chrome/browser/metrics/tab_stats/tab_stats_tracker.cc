@@ -308,7 +308,9 @@ class TabStatsTracker::TabWatcher final : public TabModelListObserver,
     tracker_->OnTabStripNewTabCount(CHECK_DEREF(tab_model).GetTabCount());
   }
 
-  void WillCloseTab(TabAndroid* tab) final {
+  void TabRemoved(TabAndroid* tab) final {
+    // The tab was removed from the model, either because it closed or moved to
+    // a different model. Either way stop watching for the WebContents.
     if (tab_android_observations_.IsObservingSource(tab)) {
       tab_android_observations_.RemoveObservation(tab);
     }
