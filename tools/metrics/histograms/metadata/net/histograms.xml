@@ -6358,6 +6358,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.RestrictedPorts" units="connections"
+    expires_after="2025-09-01">
+  <owner>tov@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Captures to which restricted port a connection is initiated, regardless of
+    whether this needs to be enforced. This only applies to the ports controlled
+    by the RestrictAbusePorts feature. Logged for every request that is
+    initiated.
+  </summary>
+</histogram>
+
 <histogram name="Net.SafeSearch.CacheHit" enum="CacheAccessStatus"
     expires_after="2025-10-05">
   <owner>tju@google.com</owner>

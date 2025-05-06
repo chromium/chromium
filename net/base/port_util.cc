@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -129,30 +130,23 @@ int g_scoped_allowable_port = 0;
 
 using PortSet = base::flat_set<int>;
 
-PortSet* g_restricted_abuse_ports() {
-  static base::NoDestructor<PortSet> restricted_abuse_ports;
-  return restricted_abuse_ports.get();
-}
-
-void InitializeRestrictedAbusePorts() {
-  g_restricted_abuse_ports()->clear();
-  if (base::FeatureList::IsEnabled(features::kRestrictAbusePorts)) {
-    const std::string ports_string = features::kPortsToRestrictForAbuse.Get();
-    PortSet::container_type ports;
-    for (const auto& port_string :
-         base::SplitStringPiece(ports_string, ",", base::TRIM_WHITESPACE,
-                                base::SPLIT_WANT_NONEMPTY)) {
-      int port;
-      if (net::ParseInt32(port_string, net::ParseIntFormat::STRICT_NON_NEGATIVE,
-                          &port)) {
-        ports.push_back(port);
-      } else {
-        DLOG(ERROR) << "Ignoring invalid port for kPortsToRestrictForAbuse: "
-                    << port_string;
-      }
+PortSet ParseRestrictedPortsFromParam(std::string_view param_name) {
+  const std::string ports_string = base::GetFieldTrialParamValueByFeature(
+      features::kRestrictAbusePorts, std::string(param_name));
+  PortSet::container_type ports;
+  for (const auto& port_string :
+       base::SplitStringPiece(ports_string, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    int port;
+    if (net::ParseInt32(port_string, net::ParseIntFormat::STRICT_NON_NEGATIVE,
+                        &port)) {
+      ports.push_back(port);
+    } else {
+      DLOG(ERROR) << "Ignoring invalid port for " << param_name << ": "
+                  << port_string;
     }
-    *g_restricted_abuse_ports() = PortSet(std::move(ports));
   }
+  return PortSet(std::move(ports));
 }
 
 }  // namespace
@@ -182,12 +176,16 @@ bool IsPortAllowedForScheme(int port, std::string_view url_scheme) {
   }
 
   if (base::FeatureList::IsEnabled(features::kRestrictAbusePorts)) {
-    if (g_restricted_abuse_ports()->empty()) {
-      InitializeRestrictedAbusePorts();
-    }
+    static const base::NoDestructor<PortSet> restrict_ports(
+        ParseRestrictedPortsFromParam("restrict_ports"));
+    static const base::NoDestructor<PortSet> monitor_ports(
+        ParseRestrictedPortsFromParam("monitor_ports"));
 
-    if (g_restricted_abuse_ports()->contains(port)) {
+    if (restrict_ports->contains(port)) {
+      base::UmaHistogramSparse("Net.RestrictedPorts", port);
       return false;
+    } else if (monitor_ports->contains(port)) {
+      base::UmaHistogramSparse("Net.RestrictedPorts", port);
     }
   }
 
