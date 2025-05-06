@@ -39,10 +39,6 @@ bool PriorityAndReason::operator==(const PriorityAndReason& other) const {
   return Compare(other) == 0;
 }
 
-bool PriorityAndReason::operator!=(const PriorityAndReason& other) const {
-  return Compare(other) != 0;
-}
-
 bool PriorityAndReason::operator<=(const PriorityAndReason& other) const {
   return Compare(other) <= 0;
 }

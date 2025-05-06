@@ -54,8 +54,7 @@
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"
 
-namespace performance_manager {
-namespace voting {
+namespace performance_manager::voting {
 
 // Contains a single vote. Specifically allows copying, etc, so as to be STL
 // container friendly.
@@ -78,7 +77,6 @@ class Vote final {
   const char* reason() const { return reason_; }
 
   bool operator==(const Vote& vote) const;
-  bool operator!=(const Vote& vote) const;
 
   // Returns true if the vote is valid. A valid vote must have a |reason_|.
   bool IsValid() const;
@@ -247,12 +245,6 @@ bool Vote<ContextType, VoteType, DefaultVote>::operator==(
 }
 
 template <typename ContextType, typename VoteType, VoteType DefaultVote>
-bool Vote<ContextType, VoteType, DefaultVote>::operator!=(
-    const Vote<ContextType, VoteType, DefaultVote>& vote) const {
-  return !(*this == vote);
-}
-
-template <typename ContextType, typename VoteType, VoteType DefaultVote>
 bool Vote<ContextType, VoteType, DefaultVote>::IsValid() const {
   return reason_;
 }
@@ -409,7 +401,6 @@ void VotingChannelFactory<VoteImpl>::OnVotingChannelDestroyed(
   --voting_channels_outstanding_;
 }
 
-}  // namespace voting
-}  // namespace performance_manager
+}  // namespace performance_manager::voting
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_VOTING_VOTING_H_

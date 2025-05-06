@@ -118,24 +118,11 @@ constexpr bool operator==(const V& a, const T& b) {
   return std::holds_alternative<T>(a) && std::get<T>(a) == b;
 }
 
-template <typename T, typename V>
-  requires(kIsVariantAlternative<T, V>)
-constexpr bool operator!=(const T& a, const V& b) {
-  return !std::holds_alternative<T>(b) || a != std::get<T>(b);
-}
-
-template <typename T, typename V>
-  requires(kIsVariantAlternative<T, V>)
-constexpr bool operator!=(const V& a, const T& b) {
-  return !std::holds_alternative<T>(a) || std::get<T>(a) != b;
-}
-
 }  // namespace internal
 
 // Enable extended comparators for variants defined in the resource_attribution
 // namespace.
 using internal::operator==;
-using internal::operator!=;
 
 }  // namespace resource_attribution
 

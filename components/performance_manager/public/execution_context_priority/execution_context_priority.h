@@ -43,7 +43,6 @@ class PriorityAndReason {
   int Compare(const PriorityAndReason& other) const;
 
   bool operator==(const PriorityAndReason& other) const;
-  bool operator!=(const PriorityAndReason& other) const;
   bool operator<=(const PriorityAndReason& other) const;
   bool operator>=(const PriorityAndReason& other) const;
   bool operator<(const PriorityAndReason& other) const;
