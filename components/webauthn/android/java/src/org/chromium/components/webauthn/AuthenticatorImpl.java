@@ -49,8 +49,8 @@ import java.util.Set;
 public final class AuthenticatorImpl implements Authenticator, AuthenticationContextProvider {
     private final @Nullable Context mContext;
     private final @Nullable WebContents mWebContents;
-    private final FidoIntentSender mIntentSender;
-    private final RenderFrameHost mRenderFrameHost;
+    private final @Nullable FidoIntentSender mIntentSender;
+    private final @Nullable RenderFrameHost mRenderFrameHost;
     private final @Nullable CreateConfirmationUiDelegate mCreateConfirmationUiDelegate;
 
     /** Ensures only one request is processed at a time. */
@@ -58,7 +58,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
 
     /**
      * The origin of the request. This may be overridden by an internal request from the browser
-     * process.
+     * process. <code>mOrigin</code> will be set when a RenderFrameHost is provided at construction
+     * and null otherwise.
      */
     private @Nullable Origin mOrigin;
 
@@ -88,27 +89,29 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
      *
      * @param context The context of the AndroidWindow that triggered this operation.
      * @param intentSender The interface that will be used to start {@link Intent}s from Play
-     *     Services.
+     *     Services. May only be null for calls that do not go to Play Services such as {@link
+     *     #getMatchingCredentialIds()}.
      * @param createConfirmationUiDelegate If not null, is an object that will be called before
      *     creating a credential to show a confirmation UI.
-     * @param renderFrameHost The host of the frame that has invoked the API.
+     * @param renderFrameHost The host of the frame that has invoked the API. Null if created
+     *     unrelated to a renderer context, and when renderFrameHost is null {@link
+     *     #makeCredential()} and {@link #getCredential()} will fail, do not call them.
      * @param topOrigin The origin of the main frame.
      */
     public AuthenticatorImpl(
             @Nullable Context context,
             @Nullable WebContents webContents,
-            FidoIntentSender intentSender,
+            @Nullable FidoIntentSender intentSender,
             @Nullable CreateConfirmationUiDelegate createConfirmationUiDelegate,
-            RenderFrameHost renderFrameHost,
+            @Nullable RenderFrameHost renderFrameHost,
             @Nullable Origin topOrigin) {
-        assert renderFrameHost != null;
         assert WebauthnModeProvider.getInstance().getWebauthnMode(webContents) != WebauthnMode.NONE;
 
         mContext = context;
         mWebContents = webContents;
         mIntentSender = intentSender;
         mRenderFrameHost = renderFrameHost;
-        mOrigin = mRenderFrameHost.getLastCommittedOrigin();
+        mOrigin = mRenderFrameHost == null ? null : mRenderFrameHost.getLastCommittedOrigin();
         mTopOrigin = topOrigin;
         mCreateConfirmationUiDelegate = createConfirmationUiDelegate;
     }
@@ -146,6 +149,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     @Override
     public void makeCredential(
             PublicKeyCredentialCreationOptions options, MakeCredential_Response callback) {
+        assert mIntentSender != null;
+        assert mRenderFrameHost != null;
         if (mIsOperationPending) {
             callback.call(AuthenticatorStatus.PENDING_REQUEST, null, null);
             return;
@@ -200,6 +205,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     @Override
     public void getCredential(
             PublicKeyCredentialRequestOptions options, GetCredential_Response callback) {
+        assert mIntentSender != null;
+        assert mRenderFrameHost != null;
         if (mIsOperationPending) {
             callback.call(
                     getCredentialResponseForAssertion(AuthenticatorStatus.PENDING_REQUEST, null));
@@ -476,12 +483,13 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     }
 
     @Override
-    public RenderFrameHost getRenderFrameHost() {
+    public @Nullable RenderFrameHost getRenderFrameHost() {
         return mRenderFrameHost;
     }
 
     @Override
     public FidoIntentSender getIntentSender() {
+        assert mIntentSender != null;
         return mIntentSender;
     }
 
