@@ -40,6 +40,13 @@ BASE_FEATURE(kAutofillVirtualViewStructureAndroidInCct,
              "AutofillVirtualViewStructureAndroidInCct",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, at least one passkey must be present to forward passkey requests
+// to the Android Credential Manager. Users can then always (re-)trigger the
+// passkey request with a long-press action on webauthn-annotated fields.
+BASE_FEATURE(kAutofillVirtualViewStructureAndroidPasskeyLongPress,
+             "AutofillVirtualViewStructureAndroidPasskeyLongPress",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {
   return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);
 }

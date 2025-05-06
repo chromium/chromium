@@ -2655,6 +2655,21 @@
             ]
         }
     ],
+    "AutofillVirtualViewStructureAndroidPasskeyLongPress": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillVirtualViewStructureAndroidPasskeyLongPress"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvoidDuplicateDelayBeginFrame": [
         {
             "platforms": [

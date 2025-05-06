@@ -612,12 +612,24 @@ void AndroidAutofillProvider::SetBottomSheetShownOff() {
   was_bottom_sheet_just_shown_ = false;
 }
 
+bool MayOfferUsefulPasskeyOptions(WebAuthnCredManDelegate* delegate) {
+  if (!delegate) {
+    return false;  // Needs delegate to trigger CredMan:
+  }
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillVirtualViewStructureAndroidPasskeyLongPress)) {
+    return true;  // Assume that hybrid entry point is enough reason to show.
+  }
+  // Needs *more* than the hybrid option for passkeys. With a request in flux,
+  // the remaining chance is hope enough. This needs to be checked on focus.
+  return delegate->HasPasskeys() != WebAuthnCredManDelegate::State::kNoPasskeys;
+}
+
 bool AndroidAutofillProvider::IntendsToShowCredMan(
     const FormFieldData& field,
     content::RenderFrameHost* rfh) const {
   return AllowCredManOnField(field) &&
-         // Needs delegate to trigger CredMan:
-         GetCredManDelegate(rfh) &&
+         MayOfferUsefulPasskeyOptions(GetCredManDelegate(rfh)) &&
          // Don't show more than once per page:
          credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
 }
@@ -632,6 +644,9 @@ bool AndroidAutofillProvider::ShouldShowCredManForField(
   if (!delegate ||
       delegate->HasPasskeys() == WebAuthnCredManDelegate::State::kNotReady) {
     return false;  // Requests not finished.
+  }
+  if (!MayOfferUsefulPasskeyOptions(delegate)) {
+    return false;  // Returning here hides the entry point to hybrid options.
   }
   return credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
 }

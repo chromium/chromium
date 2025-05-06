@@ -963,6 +963,28 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
       webauthn::WebAuthnCredManDelegate::State::kNoPasskeys, 1);
 }
 
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       LogConditionalPasskeysFlowPasskeysUnavailableWithoutPasskeys) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillVirtualViewStructureAndroidPasskeyLongPress};
+  ON_CALL(cred_man_delegate(), HasPasskeys())
+      .WillByDefault(
+          Return(webauthn::WebAuthnCredManDelegate::State::kNoPasskeys));
+
+  // Focus the form field.
+  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback).Times(0);
+  FocusFormField(webauthn_email_field());
+
+  // Don't expect Keyboard without CredMan showing.
+  EXPECT_FALSE(keyboard_suppressor().is_suppressing());
+  Mock::VerifyAndClearExpectations(&cred_man_delegate());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ConditionalPasskeysFlow.PasskeysState",
+      webauthn::WebAuthnCredManDelegate::State::kNoPasskeys, 0);
+}
+
 TEST_F(AndroidAutofillProviderWithCredManTest, NoCredManWithoutAnnotation) {
   EXPECT_CALL(provider_bridge(), OnFocusChanged);
   EXPECT_CALL(cred_man_delegate(), TriggerCredManUi).Times(0);
