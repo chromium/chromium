@@ -298,6 +298,7 @@ void GroupSuggestionsManager::OnSuggestionResult(
     const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
         inputs,
     GroupSuggestionsDelegate::UserResponseMetadata user_response) {
+  RecordSuggestionUKM(shown_suggestion, inputs, user_response);
   if (user_response.user_response ==
           GroupSuggestionsDelegate::UserResponse::kNotShown ||
       user_response.user_response ==
@@ -308,7 +309,6 @@ void GroupSuggestionsManager::OnSuggestionResult(
   DCHECK_EQ(user_response.suggestion_id, shown_suggestion.suggestion_id);
   suggestion_tracker_->AddSuggestion(shown_suggestion,
                                      user_response.user_response);
-  RecordSuggestionUKM(shown_suggestion, inputs, user_response);
 }
 
 }  // namespace visited_url_ranking
