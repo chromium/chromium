@@ -45,8 +45,9 @@ class BatchUploadService : public KeyedService {
   enum class EntryPoint {
     kPasswordManagerSettings = 0,
     kPasswordPromoCard = 1,
+    kBookmarksManagerPromoCard = 2,
 
-    kMaxValue = kPasswordPromoCard,
+    kMaxValue = kBookmarksManagerPromoCard,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BatchUploadEntryPoint)
 
