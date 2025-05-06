@@ -54,6 +54,12 @@ typedef NS_ENUM(NSInteger, ProgressIndicatorState) {
 
 // Sets the states for the progress indicator.
 - (void)setProgressState:(ProgressIndicatorState)progressState;
+
+// The accessibility label for the confirmation checkmark.
+// This label is applied and announced by VoiceOver when `progressState` is
+// set to `ProgressIndicatorStateSuccess`.
+@property(nonatomic, copy) NSString* confirmationAccessibilityLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ALERT_VIEW_UI_BUNDLED_ALERT_CONSUMER_H_

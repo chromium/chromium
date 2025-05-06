@@ -603,6 +603,11 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
     _spinner.hidden = YES;
     [_spinner stopAnimating];
     _checkmark.hidden = NO;
+    _checkmark.accessibilityLabel = self.confirmationAccessibilityLabel;
+    _checkmark.isAccessibilityElement =
+        (self.confirmationAccessibilityLabel.length > 0);
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                    _checkmark);
   } else {
     _spinner.hidden = YES;
     [_spinner stopAnimating];

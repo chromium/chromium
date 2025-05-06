@@ -23,6 +23,11 @@
 // Set this property to change between spinner, checkmark, or none.
 @property(nonatomic, assign) ProgressIndicatorState progressState;
 
+// The accessibility label for the confirmation checkmark.
+// This label is applied and announced by VoiceOver when `progressState` is
+// set to `ProgressIndicatorStateSuccess`.
+@property(nonatomic, copy) NSString* confirmationAccessibilityLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ALERT_VIEW_UI_BUNDLED_ALERT_VIEW_CONTROLLER_H_

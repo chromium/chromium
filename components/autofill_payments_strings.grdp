@@ -450,6 +450,11 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE" desc="Message displayed after tapping a card, and the response from the bank indicates that no further verification is required.">
     Verified
   </message>
+  <if expr="is_ios">
+    <message name="IDS_IOS_AUTOFILL_PROGRESS_DIALOG_CONFIRMATION_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement to indicate autofill progress dialog shows confirmation state. This is spoken by VoiceOver.">
+      Verified
+    </message>
+  </if>
   <message name="IDS_AUTOFILL_3DS_FETCH_VCN_PROGRESS_DIALOG_LOADING_MESSAGE" desc="Message to be displayed after a VCN 3DS authentication has completed, and Chrome is attempting to retrieve the virtual card from the Payments server. If the authentication was successful, a confirmation message will display in the progress dialog and then the virtual card will be filled. If the authentication was not successful, an error message will be displayed.">
     Verifying...
   </message>
