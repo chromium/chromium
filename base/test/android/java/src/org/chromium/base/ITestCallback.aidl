@@ -5,7 +5,6 @@
 package org.chromium.base;
 
 import org.chromium.base.ITestController;
-import org.chromium.base.process_launcher.FileDescriptorInfo;
 
 /**
  * This interface is called by the child process to pass its controller to its parent.

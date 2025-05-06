@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.Parcelable;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
@@ -102,7 +101,7 @@ public class ChildProcessService {
     private String @Nullable [] mCommandLineParams;
 
     // File descriptors that should be registered natively.
-    private FileDescriptorInfo @Nullable [] mFdInfos;
+    private IFileDescriptorInfo @Nullable [] mFdInfos;
 
     @GuardedBy("mLibraryInitializedLock")
     private boolean mLibraryInitialized;
@@ -160,7 +159,7 @@ public class ChildProcessService {
 
                 @Override
                 public void setupConnection(
-                        Bundle args,
+                        IChildProcessArgs args,
                         IParentProcess parentProcess,
                         List<IBinder> callbacks,
                         IBinder binderBox)
@@ -186,8 +185,7 @@ public class ChildProcessService {
                         m.initInChildProcess();
                         // In a number of cases the app zygote decides not to produce a RELRO FD.
                         // The bundle will tell the receiver to silently ignore it.
-                        relroBundle = new Bundle();
-                        m.putSharedRelrosToBundle(relroBundle);
+                        relroBundle = m.getSharedRelrosBundle();
                     }
                     // After finishSetupConnection() the parent process will stop accepting
                     // |relroBundle| from this process to ensure that another FD to shared memory
@@ -332,7 +330,7 @@ public class ChildProcessService {
             long[] regionOffsets = new long[mFdInfos.length];
             long[] regionSizes = new long[mFdInfos.length];
             for (int i = 0; i < mFdInfos.length; i++) {
-                FileDescriptorInfo fdInfo = mFdInfos[i];
+                IFileDescriptorInfo fdInfo = mFdInfos[i];
                 String key = idsToKeys != null ? idsToKeys.get(fdInfo.id) : null;
                 if (key != null) {
                     keys[i] = key;
@@ -426,27 +424,19 @@ public class ChildProcessService {
     }
 
     private void processConnectionBundle(
-            Bundle bundle, List<IBinder> clientInterfaces, IBinder binderBox) {
-        // Required to unparcel FileDescriptorInfo.
-        ClassLoader classLoader = getApplicationContext().getClassLoader();
-        bundle.setClassLoader(classLoader);
+            IChildProcessArgs args, List<IBinder> clientInterfaces, IBinder binderBox) {
         synchronized (mMainThread) {
             if (mCommandLineParams == null) {
-                mCommandLineParams =
-                        bundle.getStringArray(ChildProcessConstants.EXTRA_COMMAND_LINE);
+                mCommandLineParams = args.commandLine;
                 mMainThread.notifyAll();
             }
             // We must have received the command line by now
             assert mCommandLineParams != null;
-            Parcelable[] fdInfosAsParcelable =
-                    bundle.getParcelableArray(ChildProcessConstants.EXTRA_FILES);
-            if (fdInfosAsParcelable != null) {
-                // For why this arraycopy is necessary:
-                // http://stackoverflow.com/questions/8745893/i-dont-get-why-this-classcastexception-occurs
-                mFdInfos = new FileDescriptorInfo[fdInfosAsParcelable.length];
-                System.arraycopy(fdInfosAsParcelable, 0, mFdInfos, 0, fdInfosAsParcelable.length);
+            IFileDescriptorInfo[] fdInfos = args.fileDescriptorInfos;
+            if (fdInfos != null) {
+                mFdInfos = fdInfos;
             }
-            mDelegate.onConnectionSetup(bundle, clientInterfaces, binderBox);
+            mDelegate.onConnectionSetup(args, clientInterfaces, binderBox);
             mMainThread.notifyAll();
         }
     }

@@ -203,15 +203,15 @@ public class ChildProcessConnection {
     private final boolean mBindToCaller;
 
     private static class ConnectionParams {
-        final Bundle mConnectionBundle;
+        final IChildProcessArgs mChildProcessArgs;
         final @Nullable List<IBinder> mClientInterfaces;
         final @Nullable IBinder mBinderBox;
 
         ConnectionParams(
-                Bundle connectionBundle,
+                IChildProcessArgs childProcessArgs,
                 @Nullable List<IBinder> clientInterfaces,
                 @Nullable IBinder binderBox) {
-            mConnectionBundle = connectionBundle;
+            mChildProcessArgs = childProcessArgs;
             mClientInterfaces = clientInterfaces;
             mBinderBox = binderBox;
         }
@@ -575,8 +575,8 @@ public class ChildProcessConnection {
     /**
      * Sets-up the connection after it was started with start().
      *
-     * @param connectionBundle a bundle passed to the service that can be used to pass various
-     *     parameters to the service
+     * @param childProcessArgs an aidl interface with all miscellaneous parameters for the child
+     *     process connection.
      * @param clientInterfaces optional client specified interfaces that the child can use to
      *     communicate with the parent process
      * @param binderBox optional binder box the child can use to unpack additional binders
@@ -585,7 +585,7 @@ public class ChildProcessConnection {
      * @param zygoteInfoCallback will be called exactly once after the connection is set up
      */
     public void setupConnection(
-            Bundle connectionBundle,
+            IChildProcessArgs childProcessArgs,
             @Nullable List<IBinder> clientInterfaces,
             @Nullable IBinder binderBox,
             ConnectionCallback connectionCallback,
@@ -600,7 +600,7 @@ public class ChildProcessConnection {
         try (TraceEvent te = TraceEvent.scoped("ChildProcessConnection.setupConnection")) {
             mConnectionCallback = connectionCallback;
             mZygoteInfoCallback = zygoteInfoCallback;
-            mConnectionParams = new ConnectionParams(connectionBundle, clientInterfaces, binderBox);
+            mConnectionParams = new ConnectionParams(childProcessArgs, clientInterfaces, binderBox);
             // Run the setup if the service is already connected. If not, doConnectionSetup() will
             // be called from onServiceConnected().
             if (mServiceConnectComplete) {
@@ -882,7 +882,7 @@ public class ChildProcessConnection {
                     };
             try {
                 mService.setupConnection(
-                        mConnectionParams.mConnectionBundle,
+                        mConnectionParams.mChildProcessArgs,
                         parentProcess,
                         mConnectionParams.mClientInterfaces,
                         mConnectionParams.mBinderBox);

@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
+import org.chromium.base.process_launcher.IChildProcessArgs;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -241,7 +242,7 @@ public class ChildProcessLauncherIntegrationTest {
         private boolean mCrashServiceCalled;
         private final CountDownLatch mDisconnectedLatch = new CountDownLatch(1);
         // Arguments to setupConnection
-        private Bundle mConnectionBundle;
+        private IChildProcessArgs mChildProcessArgs;
         private List<IBinder> mClientInterfaces;
         private IBinder mBinderBox;
         private ConnectionCallback mConnectionCallback;
@@ -269,14 +270,14 @@ public class ChildProcessLauncherIntegrationTest {
             super.onServiceConnectedOnLauncherThread(service);
             crashServiceForTesting();
             mCrashServiceCalled = true;
-            if (mConnectionBundle != null) {
+            if (mChildProcessArgs != null) {
                 super.setupConnection(
-                        mConnectionBundle,
+                        mChildProcessArgs,
                         mClientInterfaces,
                         mBinderBox,
                         mConnectionCallback,
                         null);
-                mConnectionBundle = null;
+                mChildProcessArgs = null;
                 mClientInterfaces = null;
                 mBinderBox = null;
                 mConnectionCallback = null;
@@ -291,7 +292,7 @@ public class ChildProcessLauncherIntegrationTest {
 
         @Override
         public void setupConnection(
-                Bundle connectionBundle,
+                IChildProcessArgs childProcessArgs,
                 List<IBinder> clientInterfaces,
                 IBinder binderBox,
                 ConnectionCallback connectionCallback,
@@ -300,10 +301,10 @@ public class ChildProcessLauncherIntegrationTest {
             // setupConnection is guaranteed to fail.
             if (mCrashServiceCalled) {
                 super.setupConnection(
-                        connectionBundle, clientInterfaces, binderBox, connectionCallback, null);
+                        childProcessArgs, clientInterfaces, binderBox, connectionCallback, null);
                 return;
             }
-            mConnectionBundle = connectionBundle;
+            mChildProcessArgs = childProcessArgs;
             mClientInterfaces = clientInterfaces;
             mBinderBox = binderBox;
             mConnectionCallback = connectionCallback;

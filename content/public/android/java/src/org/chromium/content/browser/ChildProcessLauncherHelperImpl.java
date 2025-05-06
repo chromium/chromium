@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationState;
@@ -36,7 +37,8 @@ import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.ChildProcessConstants;
 import org.chromium.base.process_launcher.ChildProcessLauncher;
-import org.chromium.base.process_launcher.FileDescriptorInfo;
+import org.chromium.base.process_launcher.IChildProcessArgs;
+import org.chromium.base.process_launcher.IFileDescriptorInfo;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -174,20 +176,16 @@ public final class ChildProcessLauncherHelperImpl {
                 }
 
                 @Override
-                public void onBeforeConnectionSetup(Bundle connectionBundle) {
+                public void onBeforeConnectionSetup(IChildProcessArgs childProcessArgs) {
                     // Populate the bundle passed to the service setup call with content specific
                     // parameters.
-                    connectionBundle.putInt(
-                            ContentChildProcessConstants.EXTRA_CPU_COUNT, CpuFeatures.getCount());
-                    connectionBundle.putLong(
-                            ContentChildProcessConstants.EXTRA_CPU_FEATURES, CpuFeatures.getMask());
-                    if (sZygoteBundle != null) {
-                        connectionBundle.putAll(sZygoteBundle);
-                    } else {
-                        LibraryLoader.getInstance()
-                                .getMediator()
-                                .putSharedRelrosToBundle(connectionBundle);
+                    childProcessArgs.cpuCount = CpuFeatures.getCount();
+                    childProcessArgs.cpuFeatures = CpuFeatures.getMask();
+                    Bundle relros = sZygoteBundle;
+                    if (relros == null) {
+                        relros = LibraryLoader.getInstance().getMediator().getSharedRelrosBundle();
                     }
+                    childProcessArgs.relroBundle = relros;
                 }
 
                 @Override
@@ -353,29 +351,47 @@ public final class ChildProcessLauncherHelperImpl {
     private boolean mIsSpareRenderer;
 
     @CalledByNative
-    private static @Nullable FileDescriptorInfo makeFdInfo(
-            int id, int fd, boolean autoClose, long offset, long size) {
+    private static IFileDescriptorInfo @Nullable [] makeFdInfos(
+            @JniType("std::vector<int32_t>") int[] ids,
+            @JniType("std::vector<int32_t>") int[] fds,
+            @JniType("std::vector<bool>") boolean[] autoCloses,
+            @JniType("std::vector<int64_t>") long[] offsets,
+            @JniType("std::vector<int64_t>") long[] sizes) {
         assert LauncherThread.runningOnLauncherThread();
-        ParcelFileDescriptor pFd;
-        if (autoClose) {
-            // Adopt the FD, it will be closed when we close the ParcelFileDescriptor.
-            pFd = ParcelFileDescriptor.adoptFd(fd);
-        } else {
-            try {
-                pFd = ParcelFileDescriptor.fromFd(fd);
-            } catch (IOException e) {
-                Log.e(TAG, "Invalid FD provided for process connection, aborting connection.", e);
-                return null;
+        IFileDescriptorInfo[] fileDescriptorInfos = new IFileDescriptorInfo[ids.length];
+        for (int i = 0; i < ids.length; i++) {
+            ParcelFileDescriptor pFd;
+            if (autoCloses[i]) {
+                // Adopt the FD, it will be closed when we close the ParcelFileDescriptor.
+                pFd = ParcelFileDescriptor.adoptFd(fds[i]);
+            } else {
+                try {
+                    pFd = ParcelFileDescriptor.fromFd(fds[i]);
+                } catch (IOException e) {
+                    Log.e(
+                            TAG,
+                            "Invalid FD provided for process connection, id: "
+                                    + ids[i]
+                                    + " fd: "
+                                    + fds[i]);
+                    return null;
+                }
             }
+            IFileDescriptorInfo fileDescriptorInfo = new IFileDescriptorInfo();
+            fileDescriptorInfo.id = ids[i];
+            fileDescriptorInfo.fd = pFd;
+            fileDescriptorInfo.size = sizes[i];
+            fileDescriptorInfo.offset = offsets[i];
+            fileDescriptorInfos[i] = fileDescriptorInfo;
         }
-        return new FileDescriptorInfo(id, pFd, offset, size);
+        return fileDescriptorInfos;
     }
 
     @CalledByNative
     private static ChildProcessLauncherHelperImpl createAndStart(
             long nativePointer,
             String[] commandLine,
-            FileDescriptorInfo[] filesToBeMapped,
+            IFileDescriptorInfo[] filesToBeMapped,
             boolean canUseWarmUpConnection,
             @Nullable IBinder binderBox) {
         assert LauncherThread.runningOnLauncherThread();
@@ -670,7 +686,7 @@ public final class ChildProcessLauncherHelperImpl {
     private ChildProcessLauncherHelperImpl(
             long nativePointer,
             String[] commandLine,
-            FileDescriptorInfo[] filesToBeMapped,
+            IFileDescriptorInfo[] filesToBeMapped,
             boolean sandboxed,
             boolean reducePriorityOnBackground,
             boolean canUseWarmUpConnection,
@@ -1031,7 +1047,7 @@ public final class ChildProcessLauncherHelperImpl {
 
     public static ChildProcessLauncherHelperImpl createAndStartForTesting(
             String[] commandLine,
-            FileDescriptorInfo[] filesToBeMapped,
+            IFileDescriptorInfo[] filesToBeMapped,
             boolean sandboxed,
             boolean reducePriorityOnBackground,
             boolean canUseWarmUpConnection,

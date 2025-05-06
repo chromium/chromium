@@ -13,6 +13,7 @@ import android.util.SparseArray;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
+import org.chromium.base.process_launcher.IChildProcessArgs;
 import org.chromium.native_test.MainRunner;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
 
     @Override
     public void onConnectionSetup(
-            Bundle connectionBundle, List<IBinder> callbacks, IBinder binderBox) {
+            IChildProcessArgs args, List<IBinder> callbacks, IBinder binderBox) {
         mTestCallback = ITestCallback.Stub.asInterface(callbacks.get(0));
         mBinderBox = binderBox;
     }
