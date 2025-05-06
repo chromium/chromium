@@ -123,11 +123,20 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
 
   ViewTransition* active_transition = GetTransition(element);
   if (active_transition) {
+    // Starting a view-transition skips the currently active view-transition.
     active_transition->SkipTransition();
+  } else {
+    auto it = skipped_with_pending_dom_callback_.find(&element);
+    if (it != skipped_with_pending_dom_callback_.end()) {
+      // A recently skipped view transition might not have triggered its DOM
+      // callback. This step needs to complete ahead of the capture phase for
+      // the new view-transition.
+      active_transition = it->value;
+    }
   }
 
   DCHECK(!GetTransition(element))
-      << "SkipTransition() should finish existing |document_transition_|";
+      << "SkipTransition() should finish previously active view transition";
 
   // We need to be connected to a view to have a transition.
   if (!document.View()) {
@@ -270,6 +279,18 @@ void ViewTransitionSupplement::OnTransitionFinished(
   }
 }
 
+void ViewTransitionSupplement::OnSkipTransitionWithPendingCallback(
+    ViewTransition* transition) {
+  CHECK(transition);
+  skipped_with_pending_dom_callback_.insert(transition->Scope(), transition);
+}
+
+void ViewTransitionSupplement::OnSkippedTransitionDOMCallback(
+    ViewTransition* transition) {
+  CHECK(transition);
+  skipped_with_pending_dom_callback_.erase(transition->Scope());
+}
+
 ViewTransition* ViewTransitionSupplement::GetTransition() {
   return document_transition_.Get();
 }
@@ -318,6 +339,7 @@ ViewTransitionSupplement::~ViewTransitionSupplement() = default;
 void ViewTransitionSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(document_transition_);
   visitor->Trace(element_transitions_);
+  visitor->Trace(skipped_with_pending_dom_callback_);
 
   Supplement<Document>::Trace(visitor);
 }

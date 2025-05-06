@@ -1038,10 +1038,16 @@ bool ViewTransition::IsGeneratingPseudo(
 
 void ViewTransition::NotifySkippedTransitionDOMCallbackScheduled() {
   pending_dom_callback_ = true;
+  if (delegate_) {
+    delegate_->OnSkipTransitionWithPendingCallback(this);
+  }
 }
 
 void ViewTransition::NotifyInvokeDOMChangeCallback() {
   pending_dom_callback_ = false;
+  if (delegate_) {
+    delegate_->OnSkippedTransitionDOMCallback(this);
+  }
   if (blocking_) {
     blocking_->blocked_on_ = nullptr;
     blocking_->ProcessCurrentState();

@@ -51,6 +51,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
 
     virtual void AddPendingRequest(std::unique_ptr<ViewTransitionRequest>) = 0;
     virtual void OnTransitionFinished(ViewTransition*) = 0;
+    virtual void OnSkipTransitionWithPendingCallback(ViewTransition*) = 0;
+    virtual void OnSkippedTransitionDOMCallback(ViewTransition*) = 0;
   };
 
   // Creates and starts a same-document ViewTransition initiated using the
