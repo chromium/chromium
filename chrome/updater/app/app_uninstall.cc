@@ -151,6 +151,15 @@ namespace {
               << ": " << output << ": " << exit_code;
       if (exit_code != 0) {
         has_error = true;
+      } else {
+        // Wait until the install is completely removed, for instance, wait for
+        // the completion of the separate cmd script on Windows to complete the
+        // uninstall.
+        for (const auto deadline = base::TimeTicks::Now() + base::Seconds(20);
+             base::PathExists(command_line.GetProgram()) &&
+             (base::TimeTicks::Now() < deadline);
+             base::PlatformThread::Sleep(base::Milliseconds(100))) {
+        }
       }
     } else {
       VLOG(1) << "Failed to run the command to uninstall other versions.";

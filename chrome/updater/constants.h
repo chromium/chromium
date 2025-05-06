@@ -134,6 +134,14 @@ inline constexpr char kTestSwitch[] = "test";
 // Run in recovery mode.
 inline constexpr char kRecoverSwitch[] = "recover";
 
+// This switch does the following:
+// * Force-installs the metainstaller that is run with this switch and makes it
+//   the active `updater`.
+// * Installs the application(s) that are implicitly specified in the tagged
+//   metainstaller, or explicitly specified using the `--install` or `--handoff`
+//   parameters.
+inline constexpr char kForceInstallSwitch[] = "force-install";
+
 // The version of the program triggering recovery.
 inline constexpr char kBrowserVersionSwitch[] = "browser-version";
 

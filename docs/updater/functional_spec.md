@@ -361,6 +361,13 @@ process is determined by command-line arguments:
         *   If --browser-version is specified, --recover can be omitted.
     *  --sessionid=...
         *   Specifies the sesionid associated with this recovery attempt.
+*   --force-install
+    * This switch does the following:
+      * Force-installs the metainstaller that is run with this switch and makes
+        it the active `updater`.
+      * Installs the application(s) that are implicitly specified in the tagged
+        metainstaller, or explicitly specified using the `--install` or
+        `--handoff` parameters.
 *   --test
     *   Exit immediately with no error.
 *   --healthcheck

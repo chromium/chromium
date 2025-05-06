@@ -1312,7 +1312,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
     hr = root_task_folder->DeleteFolder(
         base::win::ScopedBstr(folder_name).Get(), 0);
     if (FAILED(hr)) {
-      LOG(ERROR) << "Failed get delete the sub folder. " << std::hex << hr;
+      LOG(ERROR) << "Failed to delete the sub folder: " << folder_name
+                 << ", error: " << std::hex << hr;
       return false;
     }
 

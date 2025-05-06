@@ -157,6 +157,15 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   // Only tasks and timers are supported on the main sequence.
   base::SingleThreadTaskExecutor main_task_executor;
 
+  if (command_line->HasSwitch(kForceInstallSwitch)) {
+    const int recover_result = MakeAppRecover()->Run();
+    return recover_result == kErrorOk &&
+                   (command_line->HasSwitch(kInstallSwitch) ||
+                    command_line->HasSwitch(kHandoffSwitch))
+               ? MakeAppInstall(command_line->HasSwitch(kSilentSwitch))->Run()
+               : recover_result;
+  }
+
   if (command_line->HasSwitch(kInstallSwitch) ||
       command_line->HasSwitch(kHandoffSwitch)) {
     return MakeAppInstall(command_line->HasSwitch(kSilentSwitch))->Run();
