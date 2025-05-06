@@ -1196,6 +1196,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/webapps/WebappAuthenticatorTest.java",
       "src/org/chromium/chrome/browser/webapps/WebappDataStorageTest.java",
       "src/org/chromium/chrome/browser/webapps/WebappDirectoryManagerTest.java",
+      "src/org/chromium/chrome/browser/webapps/WebappIntentDataProviderTest.java",
       "src/org/chromium/chrome/browser/webapps/WebappLauncherActivityTest.java",
       "src/org/chromium/chrome/browser/webapps/WebappRegistryTest.java",
     ]

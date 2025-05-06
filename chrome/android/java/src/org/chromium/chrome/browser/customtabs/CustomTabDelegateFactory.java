@@ -14,7 +14,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -354,7 +353,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             mShouldHideBrowserControls = mIntentDataProvider.shouldEnableUrlBarHiding();
             mIsOpenedByChrome = mIntentDataProvider.isOpenedByChrome();
             mWebApkScopeUrl = getWebApkScopeUrl(mIntentDataProvider);
-            mDisplayMode = getDisplayMode(mIntentDataProvider);
+            mDisplayMode = mIntentDataProvider.getResolvedDisplayMode();
             mShouldEnableEmbeddedMediaExperience =
                     mIntentDataProvider.shouldEnableEmbeddedMediaExperience();
             mContextMenuEnabled = !mIntentDataProvider.isAuthTab();
@@ -536,21 +535,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
         WebappExtras webappExtras = intentDataProvider.getWebappExtras();
         return (webappExtras != null) ? webappExtras.scopeUrl : null;
-    }
-
-    /** Returns the DisplayMode for the passed-in {@link BrowserServicesIntentDataProvider}. */
-    public static @DisplayMode.EnumType int getDisplayMode(
-            BrowserServicesIntentDataProvider intentDataProvider) {
-        if (intentDataProvider.getTwaDisplayMode() instanceof ImmersiveMode) {
-            return DisplayMode.FULLSCREEN;
-        }
-        WebappExtras webappExtras = intentDataProvider.getWebappExtras();
-        if (webappExtras != null) {
-            return webappExtras.displayMode;
-        }
-        return intentDataProvider.isTrustedWebActivity()
-                ? DisplayMode.STANDALONE
-                : DisplayMode.BROWSER;
     }
 
     private static boolean isWebappOrWebApk(@ActivityType int activityType) {

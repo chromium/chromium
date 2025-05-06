@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.ui.util.ColorUtils;
@@ -44,6 +45,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     private final Intent mIntent;
     private final ColorProviderImpl mColorProvider;
     private final ColorProviderImpl mDarkColorProvider;
+    private @DisplayMode.EnumType int mResolvedDisplayMode = DisplayMode.UNDEFINED;
 
     /** Returns the toolbar color to use if a custom color is not specified by the webapp. */
     public static int getDefaultToolbarColor() {
@@ -156,7 +158,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    public TrustedWebActivityDisplayMode getTwaDisplayMode() {
+    public TrustedWebActivityDisplayMode getProvidedTwaDisplayMode() {
         return mTwaDisplayMode;
     }
 
@@ -178,6 +180,35 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     @Override
     public @ScreenOrientationLockType.EnumType int getDefaultOrientation() {
         return mWebappExtras.orientation;
+    }
+
+    @Override
+    public int getResolvedDisplayMode() {
+        if (mResolvedDisplayMode != DisplayMode.UNDEFINED) {
+            return mResolvedDisplayMode;
+        }
+
+        mResolvedDisplayMode = resolveDisplayMode();
+        return mResolvedDisplayMode;
+    }
+
+    private @DisplayMode.EnumType int resolveDisplayMode() {
+        if (mWebappExtras.displayMode == DisplayMode.FULLSCREEN) {
+            return DisplayMode.FULLSCREEN;
+        }
+
+        // `browser` display mode web apps are not installable by default, because by the spec they
+        // should be opened in a new tab or browser window, but in Chrome they can be forcefully
+        // installed via app menu. In this case display mode should resolve to the first supported
+        // display mode in the "fullscreen -> standalone -> minimal-ui -> browser" fallback chain.
+        boolean shouldUseMinimalUi =
+                mWebappExtras.displayMode == DisplayMode.MINIMAL_UI
+                        || mWebappExtras.displayMode == DisplayMode.BROWSER;
+        if (WebAppHeaderUtils.isMinimalUiFlagEnabled() && shouldUseMinimalUi) {
+            return DisplayMode.MINIMAL_UI;
+        }
+
+        return DisplayMode.STANDALONE;
     }
 
     private static final class ColorProviderImpl implements ColorProvider {

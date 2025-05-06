@@ -37,10 +37,13 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
+import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -55,6 +58,7 @@ import org.chromium.ui.util.TokenHolder;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
 @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+@EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
 public class WebAppHeaderLayoutCoordinatorTest {
     private static final int SCREEN_WIDTH = 800;
     private static final int SCREEN_HEIGHT = 1600;
@@ -92,6 +96,8 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Before
     public void setup() {
         mShadowLooper = shadowOf(Looper.getMainLooper());
+
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEB_APK);
         setupStandaloneMode();
 
         mScrimVisibilitySupplier = new ObservableSupplierImpl<>();
@@ -144,6 +150,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         false);
 
         when(mIntentDataProvider.getWebappExtras()).thenReturn(mWebAppExtras);
+        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.STANDALONE);
     }
 
     private void setupMinUiMode() {
@@ -166,6 +173,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         false);
 
         when(mIntentDataProvider.getWebappExtras()).thenReturn(mWebAppExtras);
+        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.MINIMAL_UI);
     }
 
     private void setupTab(boolean isLoading, boolean canGoBack) {

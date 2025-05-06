@@ -81,9 +81,10 @@ public class WebAppHeaderLayoutCoordinator
             BrowserServicesIntentDataProvider browserServicesIntentDataProvider,
             ScrimManager scrimManager,
             NavigationPopup.HistoryDelegate historyDelegate) {
-        final var webAppExtras = browserServicesIntentDataProvider.getWebappExtras();
-        assert webAppExtras != null;
-        mDisplayMode = webAppExtras.displayMode;
+        assert browserServicesIntentDataProvider.isWebApkActivity()
+                || browserServicesIntentDataProvider.isTrustedWebActivity();
+
+        mDisplayMode = browserServicesIntentDataProvider.getResolvedDisplayMode();
         mHistoryDelegate = historyDelegate;
         mControlsEnabledSupplier = new ObservableSupplierImpl<>(true);
         mDisabledControlsHolder = new TokenHolder(this::updateControlsEnabledState);

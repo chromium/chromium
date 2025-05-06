@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -17,6 +21,11 @@ import android.os.Build;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsSession;
+import androidx.browser.customtabs.TrustedWebUtils;
+import androidx.browser.trusted.TrustedWebActivityDisplayMode;
+import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -31,12 +40,10 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
-import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
-import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -62,10 +69,10 @@ public class CustomTabToolbarColorControllerUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
-    @Mock public BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock public BrowserServicesThemeColorProvider mBrowserServicesThemeColorProvider;
     @Mock public ToolbarManager mToolbarManager;
     @Mock public ColorStateList mThemeColorStateList;
+    private BrowserServicesIntentDataProvider mIntentDataProvider;
     private Context mContext;
     private AppHeaderState mAppHeaderState;
 
@@ -80,7 +87,6 @@ public class CustomTabToolbarColorControllerUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mColorController = createController();
     }
 
     private CustomTabToolbarColorController createController() {
@@ -89,6 +95,44 @@ public class CustomTabToolbarColorControllerUnitTest {
                 mBrowserServicesThemeColorProvider,
                 mDesktopWindowStateManager,
                 mIntentDataProvider);
+    }
+
+    private Intent buildCustomTabIntent() {
+        CustomTabsSession session =
+                CustomTabsSession.createMockSessionForTesting(
+                        new ComponentName(mContext, ChromeLauncherActivity.class));
+        return new CustomTabsIntent.Builder(session).build().intent;
+    }
+
+    private Intent buildTwaIntent() {
+        var intent = buildCustomTabIntent();
+        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
+        return intent;
+    }
+
+    private CustomTabIntentDataProvider buildCustomTabIntentProvider(Intent intent) {
+        return new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+    }
+
+    private void setupCustomTab() {
+        var intent = buildCustomTabIntent();
+        mIntentDataProvider = buildCustomTabIntentProvider(intent);
+    }
+
+    private void setupMinimalUi() {
+        var intent = buildTwaIntent();
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
+                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle());
+        mIntentDataProvider = buildCustomTabIntentProvider(intent);
+    }
+
+    private void setupStandalone() {
+        var intent = buildTwaIntent();
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
+                new TrustedWebActivityDisplayMode.DefaultMode().toBundle());
+        mIntentDataProvider = buildCustomTabIntentProvider(intent);
     }
 
     private void setupDesktopWindowing(boolean isInDesktopWindow) {
@@ -105,27 +149,10 @@ public class CustomTabToolbarColorControllerUnitTest {
         when(mBrowserServicesThemeColorProvider.getBrandedColorScheme()).thenReturn(scheme);
     }
 
-    private static WebappExtras buildWebAppExtras(final int displayMode) {
-        return new WebappExtras(
-                /* id= */ "",
-                /* url= */ "",
-                /* scopeUrl= */ "",
-                /* icon= */ new WebappIcon(),
-                /* name= */ "",
-                /* shortName= */ "",
-                /* displayMode= */ displayMode,
-                /* orientation= */ 0,
-                /* source= */ 0,
-                /* backgroundColor= */ 0,
-                /* darkBackgroundColor= */ 0,
-                /* defaultBackgroundColor= */ 0,
-                /* isIconGenerated= */ false,
-                /* isIconAdaptive= */ false,
-                /* shouldForceNavigation= */ false);
-    }
-
     @Test
     public void testInitToolbarManagerNotWebApp_SetThemeFromProvider() {
+        setupCustomTab();
+        mColorController = createController();
         mColorController.onToolbarInitialized(mToolbarManager);
 
         verify(mToolbarManager).onThemeColorChanged(THEME_COLOR, false);
@@ -140,6 +167,8 @@ public class CustomTabToolbarColorControllerUnitTest {
     public void testThemeChange_UpdateToolbarWithNewTheme() {
         // prepare CCT in fullscreen mode
         setupDesktopWindowing(/* isInDesktopWindow= */ false);
+        setupCustomTab();
+        mColorController = createController();
         mColorController.onToolbarInitialized(mToolbarManager);
 
         // update provider with new theme
@@ -160,9 +189,8 @@ public class CustomTabToolbarColorControllerUnitTest {
     public void testDesktopWindowingModeStandalone_SetThemeFromProvider() {
         // prepare a web app in standalone mode
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        when(mIntentDataProvider.getWebappExtras())
-                .thenReturn(buildWebAppExtras(DisplayMode.STANDALONE));
-        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEB_APK);
+        setupStandalone();
+        mColorController = createController();
 
         // match provider theme
         mColorController.onToolbarInitialized(mToolbarManager);
@@ -180,9 +208,8 @@ public class CustomTabToolbarColorControllerUnitTest {
     public void testDesktopWindowingModeMinUi_SetBrowserDefaultTheme() {
         // prepare web app in desktop windowing
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        when(mIntentDataProvider.getWebappExtras())
-                .thenReturn(buildWebAppExtras(DisplayMode.MINIMAL_UI));
-        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEB_APK);
+        setupMinimalUi();
+        mColorController = createController();
 
         // expected theme is the browser default
         @ColorInt int expectedColor = SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, false);
@@ -206,9 +233,8 @@ public class CustomTabToolbarColorControllerUnitTest {
     public void testFullscreenModeMinUi_SetThemeFromProvider() {
         // prepare a web app in min ui mode
         setupDesktopWindowing(/* isInDesktopWindow= */ false);
-        when(mIntentDataProvider.getWebappExtras())
-                .thenReturn(buildWebAppExtras(DisplayMode.MINIMAL_UI));
-        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEB_APK);
+        setupMinimalUi();
+        mColorController = createController();
 
         // match provider theme
         mColorController.onToolbarInitialized(mToolbarManager);
@@ -224,6 +250,8 @@ public class CustomTabToolbarColorControllerUnitTest {
     public void testDesktopWindowingChangedInCCT_UpdateFromThemeProvider() {
         // prepare CCT in fullscreen mode
         setupDesktopWindowing(/* isInDesktopWindow= */ false);
+        setupCustomTab();
+        mColorController = createController();
         mColorController.onToolbarInitialized(mToolbarManager);
 
         // enter DW mode

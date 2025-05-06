@@ -117,7 +117,7 @@ public class SharedActivityCoordinator implements InflationObserver {
 
     private ImmersiveMode computeImmersiveMode(
             BrowserServicesIntentDataProvider intentDataProvider) {
-        TrustedWebActivityDisplayMode displayMode = intentDataProvider.getTwaDisplayMode();
+        TrustedWebActivityDisplayMode displayMode = intentDataProvider.getProvidedTwaDisplayMode();
         return (displayMode instanceof ImmersiveMode) ? (ImmersiveMode) displayMode : null;
     }
 }
