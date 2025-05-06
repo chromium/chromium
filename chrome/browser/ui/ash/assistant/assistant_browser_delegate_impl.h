@@ -18,7 +18,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/ash/services/assistant/service.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -124,7 +123,6 @@ class AssistantBrowserDelegateImpl
   void InitializeNewEntryPointFor(Profile* primary_profile);
 
   std::unique_ptr<DeviceActions> device_actions_;
-  std::unique_ptr<ash::assistant::Service> service_;
   std::unique_ptr<AssistantSetup> assistant_setup_;
 
   bool initialized_ = false;

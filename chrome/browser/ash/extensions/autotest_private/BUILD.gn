@@ -63,7 +63,6 @@ static_library("autotest_private") {
     "//chromeos/ash/components/settings",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",
-    "//chromeos/ash/services/assistant:lib",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/components/quick_answers/public/cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",

@@ -177,7 +177,6 @@
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/system_ui/arc_system_ui_bridge.h"
-#include "chromeos/ash/services/assistant/assistant_manager_service_impl.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
@@ -3254,15 +3253,6 @@ AutotestPrivateEnableAssistantAndWaitForReadyFunction::Run() {
       ash::assistant::AssistantStatus::READY) {
     return RespondNow(Error("Assistant is already enabled."));
   }
-
-  // We can set this callback only when assistant status is NOT_READY. We should
-  // call this before we try to enable Assistant to avoid causing some timing
-  // issue.
-  ash::assistant::AssistantManagerServiceImpl::
-      SetInitializedInternalCallbackForTesting(base::BindOnce(
-          &AutotestPrivateEnableAssistantAndWaitForReadyFunction::
-              OnInitializedInternal,
-          this));
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   const std::string& err_msg = SetAllowedPref(

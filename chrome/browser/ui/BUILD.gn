@@ -2599,7 +2599,6 @@ static_library("ui") {
       "//chromeos/ash/experiences/arc/video_accelerator:protected_native_pixmap_query_client",
       "//chromeos/ash/experiences/system_web_apps/types",
       "//chromeos/ash/resources",
-      "//chromeos/ash/services/assistant:lib",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/assistant/public/mojom",
       "//chromeos/ash/services/assistant/public/proto",

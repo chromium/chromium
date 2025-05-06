@@ -5318,7 +5318,6 @@ if (!is_android) {
         "//chromeos/ash/experiences/arc:prefs",
         "//chromeos/ash/experiences/arc/session:arc_base_enums",
         "//chromeos/ash/experiences/system_web_apps/types",
-        "//chromeos/ash/services/assistant:lib",
         "//chromeos/ash/services/assistant/public/cpp",
         "//chromeos/ash/services/assistant/public/proto",
         "//chromeos/ash/services/auth_factor_config",

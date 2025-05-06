@@ -17,7 +17,6 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     "//ash:test_support",
-    "//chromeos/ash/services/assistant:tests",
     "//chromeos/ash/services/bluetooth_config:unit_tests",
     "//chromeos/ash/services/boca/babelorca/cpp:unit_tests",
     "//chromeos/ash/services/cellular_setup:unit_tests",
@@ -40,11 +39,4 @@ source_set("unit_tests") {
     "//chromeos/ash/services/wifi_direct:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:ash_unit_tests",
   ]
-
-  if (enable_cros_libassistant) {
-    deps += [
-      "//chromeos/ash/services/libassistant:unit_tests",
-      "//chromeos/ash/services/libassistant/grpc:unit_tests",
-    ]
-  }
 }

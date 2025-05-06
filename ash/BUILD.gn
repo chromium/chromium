@@ -3800,7 +3800,6 @@ test("ash_unittests") {
     "app_menu/notification_overflow_view_unittest.cc",
     "assistant/assistant_alarm_timer_controller_unittest.cc",
     "assistant/assistant_controller_impl_unittest.cc",
-    "assistant/assistant_interaction_controller_impl_unittest.cc",
     "assistant/assistant_notification_controller_impl_unittest.cc",
     "assistant/assistant_setup_controller_unittest.cc",
     "assistant/assistant_state_controller_unittest.cc",

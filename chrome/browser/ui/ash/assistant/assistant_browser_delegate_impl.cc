@@ -190,11 +190,6 @@ void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
   device_actions_ = std::make_unique<DeviceActions>(
       std::make_unique<DeviceActionsDelegateImpl>());
 
-  service_ = std::make_unique<ash::assistant::Service>(
-      profile->GetURLLoaderFactory()->Clone(),
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
-  service_->Init();
-
   assistant_setup_ = std::make_unique<AssistantSetup>();
 }
 
@@ -210,8 +205,6 @@ void AssistantBrowserDelegateImpl::OnAppTerminating() {
   if (!initialized_) {
     return;
   }
-
-  ash::assistant::AssistantService::Get()->Shutdown();
 }
 
 void AssistantBrowserDelegateImpl::InitializeNewEntryPointFor(

@@ -772,40 +772,6 @@ TEST_F(SearchBoxViewTest, SearchResultBaseViewAccessibleProperties) {
   EXPECT_EQ(ax::mojom::DefaultActionVerb::kClick, data.GetDefaultActionVerb());
 }
 
-class SearchBoxViewAssistantButtonTest : public SearchBoxViewTest {
- public:
-  SearchBoxViewAssistantButtonTest() = default;
-  SearchBoxViewAssistantButtonTest(const SearchBoxViewAssistantButtonTest&) =
-      delete;
-  SearchBoxViewAssistantButtonTest& operator=(
-      const SearchBoxViewAssistantButtonTest&) = delete;
-  ~SearchBoxViewAssistantButtonTest() override = default;
-
-  // Overridden from testing::Test
-  void SetUp() override {
-    SearchBoxViewTest::SetUp();
-    GetSearchModel()->search_box()->SetShowAssistantButton(true);
-  }
-};
-
-// Tests that the assistant button is visible by default.
-TEST_F(SearchBoxViewAssistantButtonTest, AssistantButtonVisibleByDefault) {
-  EXPECT_TRUE(view()->edge_button_container()->GetVisible());
-  EXPECT_TRUE(view()->assistant_button()->GetVisible());
-}
-
-// Tests that the assistant button is invisible after typing in the search box,
-// and comes back when search box is empty.
-TEST_F(SearchBoxViewAssistantButtonTest,
-       AssistantButtonChangeVisibilityWithTyping) {
-  KeyPress(ui::VKEY_A);
-  EXPECT_FALSE(view()->edge_button_container()->GetVisible());
-
-  KeyPress(ui::VKEY_BACK);
-  EXPECT_TRUE(view()->edge_button_container()->GetVisible());
-  EXPECT_TRUE(view()->assistant_button()->GetVisible());
-}
-
 class SearchBoxViewFilterButtonTest : public SearchBoxViewTest {
  public:
   SearchBoxViewFilterButtonTest() {
@@ -1206,7 +1172,6 @@ class SearchBoxViewAnimationTest : public AshTestBase {
     non_zero_duration_mode_ =
         std::make_unique<ui::ScopedAnimationDurationScaleMode>(
             ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-    GetSearchModel()->search_box()->SetShowAssistantButton(true);
   }
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> non_zero_duration_mode_;
@@ -1221,7 +1186,6 @@ TEST_F(SearchBoxViewAnimationTest, SearchBoxImageButtonAnimations) {
   // hidden.
   EXPECT_FALSE(search_box->filter_and_close_button_container()->GetVisible());
   EXPECT_TRUE(search_box->edge_button_container()->GetVisible());
-  EXPECT_TRUE(search_box->assistant_button()->GetVisible());
 
   // Set search box to active state.
   search_box->SetSearchBoxActive(true, ui::EventType::kMousePressed);
@@ -1235,15 +1199,6 @@ TEST_F(SearchBoxViewAnimationTest, SearchBoxImageButtonAnimations) {
       ui::LayerAnimationElement::AnimatableProperty::OPACITY));
   EXPECT_EQ(close_animator->GetTargetOpacity(), 1.0f);
 
-  // Assistant button should be fading out.
-  EXPECT_TRUE(search_box->edge_button_container()->GetVisible());
-  EXPECT_TRUE(search_box->assistant_button()->GetVisible());
-  auto* assistant_animator =
-      search_box->edge_button_container()->layer()->GetAnimator();
-  EXPECT_TRUE(assistant_animator->IsAnimatingProperty(
-      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
-  EXPECT_EQ(assistant_animator->GetTargetOpacity(), 0.0f);
-
   // Set search box to inactive state, hiding the close button.
   search_box->SetSearchBoxActive(false, ui::EventType::kMousePressed);
 
@@ -1252,14 +1207,6 @@ TEST_F(SearchBoxViewAnimationTest, SearchBoxImageButtonAnimations) {
   EXPECT_TRUE(close_animator->IsAnimatingProperty(
       ui::LayerAnimationElement::AnimatableProperty::OPACITY));
   EXPECT_EQ(close_animator->GetTargetOpacity(), 0.0f);
-
-  // Assistant button should be fading in.
-  EXPECT_TRUE(search_box->edge_button_container()->GetVisible());
-  EXPECT_TRUE(search_box->assistant_button()->GetVisible());
-  ASSERT_TRUE(assistant_animator);
-  EXPECT_TRUE(assistant_animator->IsAnimatingProperty(
-      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
-  EXPECT_EQ(assistant_animator->GetTargetOpacity(), 1.0f);
 }
 
 // Test that activating and deactivating the search box causes the search icon
