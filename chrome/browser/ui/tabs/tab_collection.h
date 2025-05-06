@@ -9,8 +9,8 @@
 #include <list>
 #include <memory>
 #include <optional>
-#include <stack>
 #include <unordered_set>
+#include <vector>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -90,8 +90,9 @@ class TabCollection {
     // A stack used to maintain the traversal state for inorder traversal
     // of tabs within the TabCollection hierarchy. Each Frame on the stack
     // is a TabCollection in the current path of traversal, along
-    // with the index of the next child to be visited.
-    std::stack<Frame> stack_;
+    // with the index of the next child to be visited. This is implemented as a
+    // vector to take advantage of reserving memory for performance reasons.
+    std::vector<Frame> stack_;
   };
 
   using iterator = Iterator;
