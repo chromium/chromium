@@ -71,6 +71,7 @@ source_set("unit_tests") {
     "//components/omnibox/browser:test_support",
     "//components/search_engines",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",

@@ -11,7 +11,7 @@
 
 @protocol AutocompleteSuggestion;
 @class OmniboxAutocompleteController;
-class OmniboxController;
+class OmniboxControllerIOS;
 @protocol OmniboxFocusDelegate;
 @protocol OmniboxTextControllerDelegate;
 @class OmniboxTextFieldIOS;
@@ -34,7 +34,8 @@ class OmniboxViewIOS;
 @property(nonatomic, weak) OmniboxTextFieldIOS* textField;
 
 /// Temporary initializer, used during the refactoring. crbug.com/390409559
-- (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
+- (instancetype)initWithOmniboxController:
+                    (OmniboxControllerIOS*)omniboxController
                            omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
                             inLensOverlay:(BOOL)inLensOverlay
     NS_DESIGNATED_INITIALIZER;

@@ -8,16 +8,16 @@
 #import <UIKit/UIKit.h>
 
 #import "base/memory/raw_ptr.h"
-#import "components/omnibox/browser/omnibox_popup_view.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_popup_view_base.h"
 
 @class OmniboxAutocompleteController;
-class OmniboxController;
+class OmniboxControllerIOS;
 
 // iOS implementation of OmniboxPopupView.
-class OmniboxPopupViewIOS : public OmniboxPopupView {
+class OmniboxPopupViewIOS : public OmniboxPopupViewBase {
  public:
   OmniboxPopupViewIOS(
-      OmniboxController* controller,
+      OmniboxControllerIOS* controller,
       OmniboxAutocompleteController* omniboxAutocompleteController);
   ~OmniboxPopupViewIOS() override;
 

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/omnibox/coordinator/zero_suggest_prefetch_helper.h"
 
 #import "base/feature_list.h"
-#import "components/omnibox/browser/omnibox_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -31,7 +31,7 @@ using web::WebStateObserverBridge;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                          controller:(OmniboxController*)controller {
+                          controller:(OmniboxControllerIOS*)controller {
   self = [super init];
   if (self) {
     DCHECK(webStateList);

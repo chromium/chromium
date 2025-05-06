@@ -1,0 +1,220 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
+
+#import "base/functional/bind.h"
+#import "base/metrics/histogram.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/trace_event/trace_event.h"
+#import "components/omnibox/browser/autocomplete_classifier.h"
+#import "components/omnibox/browser/autocomplete_controller_emitter.h"
+#import "components/omnibox/browser/autocomplete_enums.h"
+#import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/autocomplete_match_type.h"
+#import "components/omnibox/browser/omnibox_client.h"
+#import "components/omnibox/browser/omnibox_field_trial.h"
+#import "components/omnibox/browser/omnibox_popup_selection.h"
+#import "components/omnibox/browser/omnibox_popup_view.h"
+#import "components/omnibox/browser/omnibox_prefs.h"
+#import "components/omnibox/browser/page_classification_functions.h"
+#import "components/omnibox/common/omnibox_feature_configs.h"
+#import "components/search_engines/template_url_starter_pack_data.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
+#import "ui/gfx/geometry/rect.h"
+
+OmniboxControllerIOS::OmniboxControllerIOS(
+    OmniboxViewBase* view,
+    std::unique_ptr<OmniboxClient> client,
+    base::TimeDelta autocomplete_stop_timer_duration)
+    : client_(std::move(client)),
+      autocomplete_controller_(std::make_unique<AutocompleteController>(
+          client_->CreateAutocompleteProviderClient(),
+          AutocompleteClassifier::DefaultOmniboxProviders(),
+          autocomplete_stop_timer_duration)),
+      edit_model_(std::make_unique<OmniboxEditModelIOS>(
+          /*omnibox_controller=*/this,
+          view)) {
+  // Directly observe omnibox's `AutocompleteController` instance - i.e., when
+  // `view` is provided in the constructor. In the case of realbox - i.e., when
+  // `view` is not provided in the constructor - `RealboxHandler` directly
+  // observes the `AutocompleteController` instance itself.
+  if (view) {
+    autocomplete_controller_->AddObserver(this);
+  }
+
+  // Register the `AutocompleteController` with `AutocompleteControllerEmitter`.
+  if (auto* emitter = client_->GetAutocompleteControllerEmitter()) {
+    autocomplete_controller_->AddObserver(emitter);
+  }
+
+  if (PrefService* prefs = client_->GetPrefs()) {
+    pref_change_registrar_.Init(prefs);
+    pref_change_registrar_.Add(
+        omnibox::kSuggestionGroupVisibility,
+        base::BindRepeating(
+            &OmniboxControllerIOS::OnSuggestionGroupVisibilityPrefChanged,
+            base::Unretained(this)));
+  }
+}
+
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
+
+OmniboxControllerIOS::~OmniboxControllerIOS() = default;
+
+void OmniboxControllerIOS::StartAutocomplete(
+    const AutocompleteInput& input) const {
+  TRACE_EVENT0("omnibox", "OmniboxControllerIOS::StartAutocomplete");
+  ClearPopupKeywordMode();
+
+  // We don't explicitly clear OmniboxPopupModel::manually_selected_match, as
+  // Start ends up invoking OmniboxPopupModel::OnResultChanged which clears it.
+  autocomplete_controller_->Start(input);
+}
+
+void OmniboxControllerIOS::StopAutocomplete(bool clear_result) const {
+  TRACE_EVENT0("omnibox", "OmniboxControllerIOS::StopAutocomplete");
+  autocomplete_controller_->Stop(clear_result
+                                     ? AutocompleteStopReason::kClobbered
+                                     : AutocompleteStopReason::kInteraction);
+}
+
+void OmniboxControllerIOS::StartZeroSuggestPrefetch() {
+  TRACE_EVENT0("omnibox", "OmniboxControllerIOS::StartZeroSuggestPrefetch");
+  auto page_classification =
+      client_->GetPageClassification(/*is_prefetch=*/true);
+
+  GURL current_url = client_->GetURL();
+  std::u16string text = base::UTF8ToUTF16(current_url.spec());
+
+  if (omnibox::IsNTPPage(page_classification) || !is_ios) {
+    text.clear();
+  }
+
+  AutocompleteInput input(text, page_classification,
+                          client_->GetSchemeClassifier());
+  input.set_current_url(current_url);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  autocomplete_controller_->StartPrefetch(input);
+}
+
+void OmniboxControllerIOS::OnResultChanged(AutocompleteController* controller,
+                                           bool default_match_changed) {
+  TRACE_EVENT0("omnibox", "OmniboxControllerIOS::OnResultChanged");
+  DCHECK(controller == autocomplete_controller_.get());
+
+  const bool popup_was_open = edit_model_->PopupIsOpen();
+  if (default_match_changed) {
+    // The default match has changed, we need to let the OmniboxEditModelIOS
+    // know about new inline autocomplete text (blue highlight).
+    if (autocomplete_controller_->result().default_match()) {
+      edit_model_->OnCurrentMatchChanged();
+    } else {
+      edit_model_->OnPopupResultChanged();
+      edit_model_->OnPopupDataChanged(
+          std::u16string(),
+          /*is_temporary_text=*/false, std::u16string(), std::u16string(),
+          std::u16string(), false, std::u16string(), AutocompleteMatch());
+    }
+  } else {
+    edit_model_->OnPopupResultChanged();
+  }
+
+  const bool popup_is_open = edit_model_->PopupIsOpen();
+  if (popup_was_open != popup_is_open) {
+    client_->OnPopupVisibilityChanged(popup_is_open);
+  }
+
+  if (popup_was_open && !popup_is_open) {
+    // Accept the temporary text as the user text, because it makes little sense
+    // to have temporary text when the popup is closed.
+    edit_model_->AcceptTemporaryTextAsUserText();
+    // Closing the popup can change the default suggestion. This usually occurs
+    // when it's unclear whether the input represents a search or URL; e.g.,
+    // 'a.com/b c' or when title autocompleting. Clear the additional text to
+    // avoid suggesting the omnibox contains a URL suggestion when that may no
+    // longer be the case; i.e. when the default suggestion changed from a URL
+    // to a search suggestion upon closing the popup.
+    edit_model_->ClearAdditionalText();
+  }
+
+  // Note: The client outlives `this`, so bind a weak pointer to the callback
+  // passed in to eliminate the potential for crashes on shutdown.
+  // `should_preload` is set to `controller->done()` as prerender may only want
+  // to start preloading a result after all Autocomplete results are ready.
+  client_->OnResultChanged(
+      autocomplete_controller_->result(), default_match_changed,
+      /*should_preload=*/controller->done(),
+      base::BindRepeating(&OmniboxControllerIOS::SetRichSuggestionBitmap,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OmniboxControllerIOS::ClearPopupKeywordMode() const {
+  TRACE_EVENT0("omnibox", "OmniboxControllerIOS::ClearPopupKeywordMode");
+  if (edit_model_->PopupIsOpen()) {
+    OmniboxPopupSelection selection = edit_model_->GetPopupSelection();
+    if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
+      selection.state = OmniboxPopupSelection::NORMAL;
+      edit_model_->SetPopupSelection(selection);
+    }
+  }
+}
+
+std::u16string OmniboxControllerIOS::GetHeaderForSuggestionGroup(
+    omnibox::GroupId suggestion_group_id) const {
+  return autocomplete_controller_->result().GetHeaderForSuggestionGroup(
+      suggestion_group_id);
+}
+
+bool OmniboxControllerIOS::IsSuggestionHidden(
+    const AutocompleteMatch& match) const {
+  if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
+      match.from_keyword) {
+    const TemplateURL* turl =
+        match.GetTemplateURL(client_->GetTemplateURLService(), false);
+    if (turl &&
+        turl->starter_pack_id() == TemplateURLStarterPackData::kGemini) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool OmniboxControllerIOS::IsSuggestionGroupHidden(
+    omnibox::GroupId suggestion_group_id) const {
+  const PrefService* prefs = client_->GetPrefs();
+  return prefs && autocomplete_controller_->result().IsSuggestionGroupHidden(
+                      prefs, suggestion_group_id);
+}
+
+void OmniboxControllerIOS::SetSuggestionGroupHidden(
+    omnibox::GroupId suggestion_group_id,
+    bool hidden) const {
+  if (PrefService* prefs = client_->GetPrefs()) {
+    autocomplete_controller_->result().SetSuggestionGroupHidden(
+        prefs, suggestion_group_id, hidden);
+  }
+}
+
+void OmniboxControllerIOS::SetRichSuggestionBitmap(int result_index,
+                                                   const GURL& icon_url,
+                                                   const SkBitmap& bitmap) {
+  if (!icon_url.is_empty()) {
+    edit_model_->SetIconBitmap(icon_url, bitmap);
+  } else {
+    edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
+  }
+}
+
+void OmniboxControllerIOS::OnSuggestionGroupVisibilityPrefChanged() {
+  for (size_t i = 0; i < autocomplete_controller_->result().size(); ++i) {
+    const AutocompleteMatch& match =
+        autocomplete_controller_->result().match_at(i);
+    bool suggestion_group_hidden =
+        match.suggestion_group_id.has_value() &&
+        IsSuggestionGroupHidden(match.suggestion_group_id.value());
+    edit_model_->SetPopupSuggestionGroupVisibility(i, suggestion_group_hidden);
+  }
+}

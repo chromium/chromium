@@ -7,7 +7,6 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
-#import "components/omnibox/browser/omnibox_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator+Testing.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
@@ -17,6 +16,7 @@
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_view_controller.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_view_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "url/gurl.h"
@@ -60,7 +60,7 @@
       std::make_unique<OmniboxInttestAutocompleteController>();
   _fakeSuggestionsBuilder =
       fakeAutocompleteController->fake_suggestions_builder();
-  if (OmniboxController* omniboxController =
+  if (OmniboxControllerIOS* omniboxController =
           omniboxCoordinator.omniboxController) {
     // Remove old AutocompleteController.
     AutocompleteController* oldAutocomplete =

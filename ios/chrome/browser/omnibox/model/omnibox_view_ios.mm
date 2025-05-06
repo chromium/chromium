@@ -19,12 +19,12 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/clipboard_provider.h"
 #import "components/omnibox/browser/location_bar_model.h"
-#import "components/omnibox/browser/omnibox_controller.h"
-#import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
@@ -56,7 +56,7 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
                                ProfileIOS* profile,
                                id<OmniboxCommands> omnibox_focuser,
                                id<ToolbarCommands> toolbar_commands_handler)
-    : OmniboxView(std::move(client)),
+    : OmniboxViewBase(std::move(client)),
       field_(field),
       ignore_popup_updates_(false) {
   DCHECK(field_);
@@ -84,7 +84,7 @@ void OmniboxViewIOS::SetCaretPos(size_t caret_pos) {
 
 void OmniboxViewIOS::RevertAll() {
   ignore_popup_updates_ = true;
-  OmniboxView::RevertAll();
+  OmniboxViewBase::RevertAll();
   ignore_popup_updates_ = false;
 }
 
@@ -130,7 +130,7 @@ bool OmniboxViewIOS::OnAfterPossibleChange(bool allow_keyword_ui_change) {
   new_state.sel_start = current_selection_.location;
   new_state.sel_end = current_selection_.location + current_selection_.length;
 
-  OmniboxView::StateChanges state_changes =
+  OmniboxViewBase::StateChanges state_changes =
       GetStateChanges(state_before_change_, new_state);
 
   // iOS does not supports KeywordProvider, so never allow keyword UI changes.
@@ -259,7 +259,7 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
   // Sanitize pasted text.
   if (model() && model()->is_pasting()) {
     std::u16string pastedText = base::SysNSStringToUTF16(field_.text);
-    std::u16string newText = OmniboxView::SanitizeTextForPaste(pastedText);
+    std::u16string newText = OmniboxViewBase::SanitizeTextForPaste(pastedText);
     if (pastedText != newText) {
       [field_ setText:base::SysUTF16ToNSString(newText)];
     }

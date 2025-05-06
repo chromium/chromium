@@ -11,7 +11,6 @@ source_set("ui_bundled_interface") {
   sources = [
     "autocomplete_suggestion.h",
     "autocomplete_suggestion_group_impl.h",
-    "omnibox_controller.h",
     "omnibox_icon.h",
     "suggest_action.h",
   ]
@@ -39,18 +38,25 @@ source_set("model") {
     "omnibox_autocomplete_controller.mm",
     "omnibox_autocomplete_controller_debugger_delegate.h",
     "omnibox_autocomplete_controller_delegate.h",
-    "omnibox_controller.mm",
+    "omnibox_controller_ios.h",
+    "omnibox_controller_ios.mm",
+    "omnibox_edit_model_ios.h",
+    "omnibox_edit_model_ios.mm",
     "omnibox_icon_formatter.h",
     "omnibox_icon_formatter.mm",
     "omnibox_image_fetcher.h",
     "omnibox_image_fetcher.mm",
     "omnibox_pedal_annotator.h",
     "omnibox_pedal_annotator.mm",
+    "omnibox_popup_view_base.h",
+    "omnibox_popup_view_base.mm",
     "omnibox_popup_view_ios.h",
     "omnibox_popup_view_ios.mm",
     "omnibox_text_controller.h",
     "omnibox_text_controller.mm",
     "omnibox_text_controller_delegate.h",
+    "omnibox_view_base.h",
+    "omnibox_view_base.mm",
     "omnibox_view_ios.h",
     "omnibox_view_ios.mm",
     "pedal_section_extractor.h",
@@ -66,13 +72,18 @@ source_set("model") {
     ":swift_dependencies",
     "//base",
     "//components/bookmarks/browser",
+    "//components/dom_distiller/core",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
+    "//components/history_embeddings",
     "//components/image_fetcher/core",
+    "//components/navigation_metrics",
     "//components/omnibox/browser",
     "//components/open_from_clipboard",
     "//components/password_manager/core/browser/ui",
+    "//components/search",
     "//components/search_engines",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/bookmarks/model",
@@ -145,21 +156,49 @@ swift_source_set("omnibox_pedal_swift") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_omnibox_edit_model_ios.h",
+    "test_omnibox_edit_model_ios.mm",
+    "test_omnibox_popup_view_base.h",
+    "test_omnibox_popup_view_base.mm",
+    "test_omnibox_view_base.h",
+    "test_omnibox_view_base.mm",
+  ]
+
+  deps = [
+    ":model",
+    "//base",
+    "//components/omnibox/browser:test_support",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "autocomplete_result_wrapper_unittest.mm",
     "chrome_omnibox_client_ios_unittest.mm",
     "omnibox_autocomplete_controller_unittest.mm",
+    "omnibox_controller_ios_unittest.mm",
+    "omnibox_edit_model_ios_unittest.mm",
     "omnibox_pedal_annotator_unittest.mm",
+    "omnibox_view_base_unittest.mm",
     "pedal_section_extractor_unittest.mm",
   ]
   deps = [
     ":model",
     ":omnibox_pedal_swift",
     ":swift_dependencies",
+    ":test_support",
     ":ui_bundled_interface",
     "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/dom_distiller/core",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/omnibox/browser",

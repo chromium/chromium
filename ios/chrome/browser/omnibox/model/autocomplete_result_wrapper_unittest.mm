@@ -8,13 +8,13 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_test_util.h"
 #import "components/omnibox/browser/autocomplete_result.h"
-#import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/omnibox/model/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -43,7 +43,7 @@ class AutocompleteResultWrapperTest : public PlatformTest {
     _fake_autocomplete_wrapper_delegate =
         [[FakeAutocompleteResultWrapperDelegate alloc] init];
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    omnibox_controller_ = std::make_unique<OmniboxController>(
+    omnibox_controller_ = std::make_unique<OmniboxControllerIOS>(
         /*view=*/nullptr, std::move(omnibox_client));
     wrapper_ = [[AutocompleteResultWrapper alloc]
         initWithOmniboxClient:omnibox_controller_->client()];
@@ -69,7 +69,7 @@ class AutocompleteResultWrapperTest : public PlatformTest {
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   FakeAutocompleteResultWrapperDelegate* _fake_autocomplete_wrapper_delegate;
-  std::unique_ptr<OmniboxController> omnibox_controller_;
+  std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
 };
 
 // Tests wrapping an autocomplete result with 2 non-pedal starred matches.

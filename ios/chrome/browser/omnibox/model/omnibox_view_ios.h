@@ -12,7 +12,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/omnibox/browser/location_bar_model.h"
-#import "components/omnibox/browser/omnibox_view.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
 
 struct AutocompleteMatch;
 class OmniboxClient;
@@ -25,7 +25,7 @@ class ProfileIOS;
 
 // iOS implementation of OmniBoxView.  Wraps a UITextField and
 // interfaces with the rest of the autocomplete system.
-class OmniboxViewIOS : public OmniboxView {
+class OmniboxViewIOS : public OmniboxViewBase {
  public:
   // Retains `field`.
   OmniboxViewIOS(OmniboxTextFieldIOS* field,

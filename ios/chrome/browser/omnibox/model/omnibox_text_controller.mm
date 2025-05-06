@@ -9,10 +9,10 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/omnibox/browser/omnibox_controller.h"
-#import "components/omnibox/browser/omnibox_view.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h"
@@ -31,18 +31,19 @@
 
 @implementation OmniboxTextController {
   /// Controller of the omnibox.
-  raw_ptr<OmniboxController> _omniboxController;
+  raw_ptr<OmniboxControllerIOS> _omniboxController;
   /// Controller of the omnibox view.
   raw_ptr<OmniboxViewIOS> _omniboxViewIOS;
   /// Omnibox edit model. Should only be used for text interactions.
-  raw_ptr<OmniboxEditModel> _omniboxEditModel;
+  raw_ptr<OmniboxEditModelIOS> _omniboxEditModel;
   /// Whether the popup was scrolled during this omnibox interaction.
   BOOL _suggestionsListScrolled;
   /// Whether it's the lens overlay omnibox.
   BOOL _inLensOverlay;
 }
 
-- (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
+- (instancetype)initWithOmniboxController:
+                    (OmniboxControllerIOS*)omniboxController
                            omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
                             inLensOverlay:(BOOL)inLensOverlay {
   self = [super init];

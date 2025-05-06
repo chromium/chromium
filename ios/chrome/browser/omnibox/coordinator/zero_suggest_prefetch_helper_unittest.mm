@@ -8,11 +8,12 @@
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #import "components/omnibox/browser/omnibox_client.h"
-#import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -46,11 +47,11 @@ class MockAutocompleteController : public AutocompleteController {
   ~MockAutocompleteController() override = default;
 };
 
-class TestOmniboxController : public OmniboxController {
+class TestOmniboxController : public OmniboxControllerIOS {
  public:
-  TestOmniboxController(OmniboxView* view,
+  TestOmniboxController(OmniboxViewBase* view,
                         std::unique_ptr<OmniboxClient> client)
-      : OmniboxController(view, std::move(client)) {}
+      : OmniboxControllerIOS(view, std::move(client)) {}
 
   ~TestOmniboxController() override = default;
   TestOmniboxController(const TestOmniboxController&) = delete;
