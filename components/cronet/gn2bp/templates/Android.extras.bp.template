@@ -203,13 +203,3 @@ cc_library_headers {
         "//external/cronet:__subpackages__",
     ],
 }
-
-filegroup {
-    name: "${GN2BP_MODULE_PREFIX}license_data",
-    srcs: [
-        "**/README.chromium",
-        "**/MODULE_LICENSE_*",
-        "**/LICENSE",
-        "**/METADATA",
-    ],
-}
