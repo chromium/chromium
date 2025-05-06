@@ -154,6 +154,8 @@ source_set("platform_impls") {
     "keyboard_layout_monitor_utils.h",
     "pipewire_capture_stream.cc",
     "pipewire_capture_stream.h",
+    "pipewire_desktop_capturer.cc",
+    "pipewire_desktop_capturer.h",
   ]
   deps = [
     ":x11",
