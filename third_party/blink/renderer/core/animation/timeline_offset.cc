@@ -166,10 +166,20 @@ std::optional<TimelineOffset> TimelineOffset::Create(
       return std::nullopt;
     }
 
+    // px and percentage values can only be constructed in typed OM using
+    // expressions which are resolvable at parse time. There are no CSS.sign,
+    // CSS.siblingIndex, or CSS.siblingCount which could be used to construct
+    // expressions that would return no value for GetValueIfKnown() below.
+    // When such constructs are specified and implemented the CHECKs below will
+    // trigger and this code needs to handle those cases.
     if (css_value->IsPx()) {
-      parsed_offset = Length::Fixed(css_value->GetDoubleValue());
+      std::optional<double> number = css_value->GetValueIfKnown();
+      CHECK(number.has_value());
+      parsed_offset = Length::Fixed(number.value());
     } else if (css_value->IsPercentage()) {
-      parsed_offset = Length::Percent(css_value->GetDoubleValue());
+      std::optional<double> number = css_value->GetValueIfKnown();
+      CHECK(number.has_value());
+      parsed_offset = Length::Percent(number.value());
     } else {
       DCHECK(!css_value->IsResolvableBeforeLayout());
       parsed_offset = TimelineOffset::ResolveLength(element, css_value);
