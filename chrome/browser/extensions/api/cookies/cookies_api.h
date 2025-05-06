@@ -45,6 +45,7 @@ class CookiesEventRouter : public ProfileObserver {
 
   // ProfileObserver:
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
  private:
   // This helper class connects to the CookieMonster over Mojo, and relays Mojo
@@ -87,6 +88,12 @@ class CookiesEventRouter : public ProfileObserver {
   raw_ptr<Profile> profile_;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/414825266): This is causing check failure on clank.
+  // Fix the root cause and remove `!ifdef android`.
+  base::ScopedObservation<Profile, ProfileObserver> otr_profile_observation_;
+#endif
 
   // To listen to cookie changes in both the original and the off the record
   // profiles, we need a pair of bindings, as well as a pair of
