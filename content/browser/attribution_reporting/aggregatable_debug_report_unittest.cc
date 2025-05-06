@@ -999,7 +999,6 @@ TEST(AggregatableDebugReportTest, CreateAggregatableReportRequest) {
           {AggregatableReportHistogramContribution(
               /*bucket=*/123,
               /*value=*/456, /*filtering_id=*/std::nullopt)},
-          blink::mojom::AggregationServiceMode::kDefault,
           /*aggregation_coordinator_origin=*/
           url::Origin::Create(GURL("https://a.test")),
           /*max_contributions_allowed=*/2u, /*filtering_id_max_bytes=*/1u),

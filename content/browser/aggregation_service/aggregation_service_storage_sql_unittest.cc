@@ -69,7 +69,6 @@ std::string RemoveQuotes(std::string_view input) {
 
 AggregatableReportRequest CreateExampleRequestWithDelayType() {
   return aggregation_service::CreateExampleRequest(
-      blink::mojom::AggregationServiceMode::kDefault,
       /*failed_send_attempts=*/0,
       /*aggregation_coordinator_origin=*/std::nullopt,
       AggregatableReportRequest::DelayType::ScheduledWithFullDelay);

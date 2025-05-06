@@ -96,7 +96,6 @@ void TestInterestGroupPrivateAggregationManager::ContributeToHistogram(
     private_aggregation_requests_[receiver_id].push_back(
         auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
             std::move(contribution),
-            blink::mojom::AggregationServiceMode::kDefault,
             /*debug_mode_details=*/nullptr,  // Will be filled in later.
             /*error_event=*/std::nullopt));
   }
@@ -114,7 +113,6 @@ void TestInterestGroupPrivateAggregationManager::ContributeToHistogramOnEvent(
     private_aggregation_requests_[receiver_id].push_back(
         auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
             std::move(contribution),
-            blink::mojom::AggregationServiceMode::kDefault,
             /*debug_mode_details=*/nullptr,  // Will be filled in later.
             error_event));
   }

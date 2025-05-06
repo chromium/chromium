@@ -45,13 +45,8 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
-#include "third_party/distributed_point_functions/shim/buildflags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
-#include "third_party/distributed_point_functions/shim/distributed_point_function_shim.h"
-#endif
 
 namespace content {
 
@@ -63,111 +58,19 @@ constexpr size_t kBitsPerByte = 8;
 constexpr std::string_view kHistogramValue = "histogram";
 constexpr std::string_view kOperationKey = "operation";
 
+// TODO(linnan): Refactoring to return `std::optional<GURL>`.
 std::vector<GURL> GetDefaultProcessingUrls(
-    blink::mojom::AggregationServiceMode aggregation_mode,
     const std::optional<url::Origin>& aggregation_coordinator_origin) {
-  switch (aggregation_mode) {
-    case blink::mojom::AggregationServiceMode::kTeeBased:
-      if (!aggregation_coordinator_origin.has_value()) {
-        return {GetAggregationServiceProcessingUrl(
-            ::aggregation_service::GetDefaultAggregationCoordinatorOrigin())};
-      }
-      if (!::aggregation_service::IsAggregationCoordinatorOriginAllowed(
-              *aggregation_coordinator_origin)) {
-        return {};
-      }
-      return {
-          GetAggregationServiceProcessingUrl(*aggregation_coordinator_origin)};
-    case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
-      // TODO(crbug.com/40214439): Update default processing urls.
-      return {GURL("https://server1.example"), GURL("https://server2.example")};
+  if (!aggregation_coordinator_origin.has_value()) {
+    return {GetAggregationServiceProcessingUrl(
+        ::aggregation_service::GetDefaultAggregationCoordinatorOrigin())};
   }
-}
-
-#if BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
-using DpfKey = distributed_point_functions::DpfKey;
-using DpfParameters = distributed_point_functions::DpfParameters;
-
-// Returns parameters that support each possible prefix length in
-// `[1, kBucketDomainBitLength]` with the same element_bitsize of
-// `kValueDomainBitLength`.
-std::vector<DpfParameters> ConstructDpfParameters() {
-  std::vector<DpfParameters> parameters(
-      AggregatableReport::kBucketDomainBitLength);
-  for (size_t i = 0; i < AggregatableReport::kBucketDomainBitLength; i++) {
-    parameters[i].set_log_domain_size(i + 1);
-
-    parameters[i].mutable_value_type()->mutable_integer()->set_bitsize(
-        AggregatableReport::kValueDomainBitLength);
-  }
-
-  return parameters;
-}
-
-// Returns empty vector in case of error.
-std::vector<DpfKey> GenerateDpfKeys(
-    const AggregationServicePayloadContents& contents) {
-  CHECK_EQ(contents.operation,
-           AggregationServicePayloadContents::Operation::kHistogram);
-  CHECK_EQ(contents.aggregation_mode,
-           blink::mojom::AggregationServiceMode::kExperimentalPoplar);
-  CHECK_EQ(contents.contributions.size(), 1u);
-
-  std::optional<std::pair<DpfKey, DpfKey>> maybe_dpf_keys =
-      distributed_point_functions::GenerateKeysIncremental(
-          ConstructDpfParameters(),
-          /*alpha=*/contents.contributions[0].bucket,
-          // We want the same beta, no matter which prefix length is used.
-          /*beta=*/
-          std::vector<absl::uint128>(AggregatableReport::kBucketDomainBitLength,
-                                     contents.contributions[0].value));
-
-  if (!maybe_dpf_keys.has_value()) {
+  if (!::aggregation_service::IsAggregationCoordinatorOriginAllowed(
+          *aggregation_coordinator_origin)) {
     return {};
   }
-
-  std::vector<DpfKey> dpf_keys;
-  dpf_keys.push_back(std::move(maybe_dpf_keys->first));
-  dpf_keys.push_back(std::move(maybe_dpf_keys->second));
-  return dpf_keys;
+  return {GetAggregationServiceProcessingUrl(*aggregation_coordinator_origin)};
 }
-
-// Returns a vector with a serialized CBOR map for each processing url. See
-// the AggregatableReport documentation for more detail on the expected format.
-// Returns an empty vector in case of error.
-std::vector<std::vector<uint8_t>>
-ConstructUnencryptedExperimentalPoplarPayloads(
-    const AggregationServicePayloadContents& payload_contents) {
-  std::vector<DpfKey> dpf_keys = GenerateDpfKeys(payload_contents);
-  if (dpf_keys.empty()) {
-    return {};
-  }
-  CHECK_EQ(dpf_keys.size(), 2u);
-
-  std::vector<std::vector<uint8_t>> unencrypted_payloads;
-  for (const DpfKey& dpf_key : dpf_keys) {
-    std::vector<uint8_t> serialized_key(dpf_key.ByteSizeLong());
-    bool succeeded =
-        dpf_key.SerializeToArray(serialized_key.data(), serialized_key.size());
-    CHECK(succeeded);
-
-    cbor::Value::MapValue value;
-    value.emplace(kOperationKey, kHistogramValue);
-    value.emplace("dpf_key", std::move(serialized_key));
-
-    std::optional<std::vector<uint8_t>> unencrypted_payload =
-        cbor::Writer::Write(cbor::Value(std::move(value)));
-
-    if (!unencrypted_payload.has_value()) {
-      return {};
-    }
-
-    unencrypted_payloads.push_back(std::move(unencrypted_payload.value()));
-  }
-
-  return unencrypted_payloads;
-}
-#endif  // BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
 
 // TODO(crbug.com/40215445): Replace with `base/numerics/byte_conversions.h` if
 // available.
@@ -212,7 +115,7 @@ void AppendEncodedContributionToCborArray(
 // Returns a serialized CBOR map. See the `AggregatableReport` documentation for
 // more detail on the expected format. Returns `std::nullopt` if serialization
 // fails.
-std::optional<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
+std::optional<std::vector<uint8_t>> ConstructUnencryptedPayload(
     const AggregationServicePayloadContents& payload_contents) {
   cbor::Value::MapValue value;
   value.emplace(kOperationKey, kHistogramValue);
@@ -259,11 +162,11 @@ constexpr std::optional<size_t> ComputeCborArrayOverheadLen(
   return std::nullopt;
 }
 
-// Computes the length in bytes of a TEE-based payload's plaintext CBOR
-// serialization. Returns `std::nullopt` if the computation would overflow or if
+// Computes the length in bytes of a payload's plaintext CBOR serialization.
+// Returns `std::nullopt` if the computation would overflow or if
 // `num_contributions` exceeds the maximum value of `uint32_t`. See
 // `AggregatableReport::AggregationServicePayload` for the format's definition.
-constexpr std::optional<size_t> ComputeTeeBasedPayloadLengthInBytes(
+constexpr std::optional<size_t> ComputePayloadLengthInBytes(
     size_t num_contributions,
     size_t filtering_id_max_bytes) {
   constexpr base::CheckedNumeric<size_t> kPayloadLenBeforeArray{
@@ -326,19 +229,6 @@ ConvertPayloadContentsFromProto(
         /*value=*/contribution_proto.value(), filtering_id);
   }
 
-  blink::mojom::AggregationServiceMode aggregation_mode =
-      blink::mojom::AggregationServiceMode::kTeeBased;
-  switch (proto.aggregation_mode()) {
-    case proto::AggregationServiceMode::TEE_BASED:
-      break;
-    case proto::AggregationServiceMode::EXPERIMENTAL_POPLAR:
-      aggregation_mode =
-          blink::mojom::AggregationServiceMode::kExperimentalPoplar;
-      break;
-    default:
-      return std::nullopt;
-  }
-
   std::optional<url::Origin> aggregation_coordinator_origin;
   if (proto.has_aggregation_coordinator_origin()) {
     aggregation_coordinator_origin =
@@ -361,7 +251,7 @@ ConvertPayloadContentsFromProto(
   }
 
   return AggregationServicePayloadContents(
-      operation, std::move(contributions), aggregation_mode,
+      operation, std::move(contributions),
       std::move(aggregation_coordinator_origin), max_contributions_allowed,
       filtering_id_max_bytes);
 }
@@ -466,16 +356,6 @@ void ConvertPayloadContentsToProto(
     }
   }
 
-  switch (payload_contents.aggregation_mode) {
-    case blink::mojom::AggregationServiceMode::kTeeBased:
-      out->set_aggregation_mode(proto::AggregationServiceMode::TEE_BASED);
-      break;
-    case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
-      out->set_aggregation_mode(
-          proto::AggregationServiceMode::EXPERIMENTAL_POPLAR);
-      break;
-  }
-
   if (payload_contents.aggregation_coordinator_origin.has_value()) {
     out->set_aggregation_coordinator_origin(
         payload_contents.aggregation_coordinator_origin->Serialize());
@@ -570,13 +450,11 @@ AggregationServicePayloadContents::AggregationServicePayloadContents(
     Operation operation,
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
-    blink::mojom::AggregationServiceMode aggregation_mode,
     std::optional<url::Origin> aggregation_coordinator_origin,
     base::StrictNumeric<size_t> max_contributions_allowed,
     size_t filtering_id_max_bytes)
     : operation(operation),
       contributions(std::move(contributions)),
-      aggregation_mode(aggregation_mode),
       aggregation_coordinator_origin(std::move(aggregation_coordinator_origin)),
       max_contributions_allowed(max_contributions_allowed),
       filtering_id_max_bytes(filtering_id_max_bytes) {}
@@ -670,8 +548,7 @@ std::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
     base::flat_map<std::string, std::string> additional_fields,
     int failed_send_attempts) {
   std::vector<GURL> processing_urls =
-      GetDefaultProcessingUrls(payload_contents.aggregation_mode,
-                               payload_contents.aggregation_coordinator_origin);
+      GetDefaultProcessingUrls(payload_contents.aggregation_coordinator_origin);
   return CreateInternal(std::move(processing_urls), std::move(payload_contents),
                         std::move(shared_info), delay_type,
                         std::move(reporting_path), debug_key,
@@ -707,7 +584,7 @@ AggregatableReportRequest::CreateInternal(
     base::flat_map<std::string, std::string> additional_fields,
     int failed_send_attempts) {
   if (!AggregatableReport::IsNumberOfProcessingUrlsValid(
-          processing_urls.size(), payload_contents.aggregation_mode)) {
+          processing_urls.size())) {
     DVLOG(1) << "Invalid number of processing URLs";
     return std::nullopt;
   }
@@ -715,13 +592,6 @@ AggregatableReportRequest::CreateInternal(
   if (!std::ranges::all_of(processing_urls,
                            network::IsUrlPotentiallyTrustworthy)) {
     DVLOG(1) << "Not all processing URLs are potentially trustworthy";
-    return std::nullopt;
-  }
-
-  if (!AggregatableReport::IsNumberOfHistogramContributionsValid(
-          payload_contents.contributions.size(),
-          payload_contents.aggregation_mode)) {
-    DVLOG(1) << "Invalid number of contributions";
     return std::nullopt;
   }
 
@@ -903,52 +773,23 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   const size_t num_processing_urls = public_keys.size();
   CHECK_EQ(num_processing_urls, report_request.processing_urls().size());
 
-  // The urls must be sorted so we can ensure the ordering (and assignment of
-  // DpfKey parties for the `kExperimentalPoplar` aggregation mode) is
-  // deterministic.
-  CHECK(std::ranges::is_sorted(report_request.processing_urls()));
+  std::optional<std::vector<uint8_t>> payload =
+      ConstructUnencryptedPayload(report_request.payload_contents());
+  if (!payload.has_value()) {
+    return std::nullopt;
+  }
+
+  // Validate that the payload length is a deterministic function of
+  // `max_contributions_allowed` and `filtering_id_max_bytes`.
+  const size_t expected_payload_length =
+      ComputePayloadLengthInBytes(
+          report_request.payload_contents().max_contributions_allowed,
+          report_request.payload_contents().filtering_id_max_bytes)
+          .value();
+  CHECK_EQ(payload->size(), expected_payload_length);
 
   std::vector<std::vector<uint8_t>> unencrypted_payloads;
-
-  switch (report_request.payload_contents().aggregation_mode) {
-    case blink::mojom::AggregationServiceMode::kTeeBased: {
-      std::optional<std::vector<uint8_t>> payload =
-          ConstructUnencryptedTeeBasedPayload(
-              report_request.payload_contents());
-      if (!payload.has_value()) {
-        return std::nullopt;
-      }
-
-      // Validate that the payload length is a deterministic function of
-      // `max_contributions_allowed` and `filtering_id_max_bytes`.
-      const size_t expected_payload_length =
-          ComputeTeeBasedPayloadLengthInBytes(
-              report_request.payload_contents().max_contributions_allowed,
-              report_request.payload_contents().filtering_id_max_bytes)
-              .value();
-      CHECK_EQ(payload->size(), expected_payload_length);
-
-      unencrypted_payloads.emplace_back(*std::move(payload));
-      break;
-    }
-    case blink::mojom::AggregationServiceMode::kExperimentalPoplar: {
-#if BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
-      unencrypted_payloads = ConstructUnencryptedExperimentalPoplarPayloads(
-          report_request.payload_contents());
-
-      if (unencrypted_payloads.empty()) {
-        return std::nullopt;
-      }
-      break;
-#else
-      LOG(WARNING)
-          << "Cannot create AggregatableReport for kExperimentalPoplar because "
-             "Chrome was compiled with use_distributed_point_functions=false";
-      return std::nullopt;
-#endif  // BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
-    }
-  }
-  CHECK(!unencrypted_payloads.empty());
+  unencrypted_payloads.emplace_back(*std::move(payload));
 
   std::string encoded_shared_info =
       report_request.shared_info().SerializeAsJson();
@@ -1036,44 +877,22 @@ base::Value::Dict AggregatableReport::GetAsJson() const {
 }
 
 // static
-bool AggregatableReport::IsNumberOfProcessingUrlsValid(
-    size_t number,
-    blink::mojom::AggregationServiceMode aggregation_mode) {
-  switch (aggregation_mode) {
-    case blink::mojom::AggregationServiceMode::kTeeBased:
-      return number == 1u;
-    case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
-      return number == 2u;
-  }
-}
-
-// static
-bool AggregatableReport::IsNumberOfHistogramContributionsValid(
-    size_t number,
-    blink::mojom::AggregationServiceMode aggregation_mode) {
-  // Note: APIs using the aggregation service may impose their own limits.
-  switch (aggregation_mode) {
-    case blink::mojom::AggregationServiceMode::kTeeBased:
-      return true;
-    case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
-      return number == 1u;
-  }
+bool AggregatableReport::IsNumberOfProcessingUrlsValid(size_t number) {
+  return number == 1u;
 }
 
 // static
 std::optional<std::vector<uint8_t>>
-AggregatableReport::SerializeTeeBasedPayloadForTesting(
+AggregatableReport::SerializePayloadForTesting(
     const AggregationServicePayloadContents& payload_contents) {
-  return ConstructUnencryptedTeeBasedPayload(payload_contents);
+  return ConstructUnencryptedPayload(payload_contents);
 }
 
 // static
-std::optional<size_t>
-AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
+std::optional<size_t> AggregatableReport::ComputePayloadLengthInBytesForTesting(
     size_t num_contributions,
     size_t filtering_id_max_bytes) {
-  return ComputeTeeBasedPayloadLengthInBytes(num_contributions,
-                                             filtering_id_max_bytes);
+  return ComputePayloadLengthInBytes(num_contributions, filtering_id_max_bytes);
 }
 
 std::vector<uint8_t> EncryptAggregatableReportPayloadWithHpke(

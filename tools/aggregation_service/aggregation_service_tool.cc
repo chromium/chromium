@@ -41,19 +41,6 @@ std::optional<content::TestAggregationService::Operation> ConvertToOperation(
   return std::nullopt;
 }
 
-std::optional<content::TestAggregationService::AggregationMode>
-ConvertToAggregationMode(std::string_view aggregation_mode_string) {
-  if (aggregation_mode_string == "tee-based")
-    return content::TestAggregationService::AggregationMode::kTeeBased;
-  if (aggregation_mode_string == "experimental-poplar")
-    return content::TestAggregationService::AggregationMode::
-        kExperimentalPoplar;
-  if (aggregation_mode_string == "default")
-    return content::TestAggregationService::AggregationMode::kDefault;
-
-  return std::nullopt;
-}
-
 }  // namespace
 
 UrlKeyFile::UrlKeyFile(GURL url, std::string key_file)
@@ -121,7 +108,6 @@ base::Value::Dict AggregationServiceTool::AssembleReport(
     std::string operation_str,
     std::string bucket_str,
     std::string value_str,
-    std::string aggregation_mode_str,
     url::Origin reporting_origin,
     std::vector<GURL> processing_urls,
     bool is_debug_mode_enabled,
@@ -149,23 +135,16 @@ base::Value::Dict AggregationServiceTool::AssembleReport(
     return result;
   }
 
-  std::optional<content::TestAggregationService::AggregationMode>
-      aggregation_mode = ConvertToAggregationMode(aggregation_mode_str);
-  if (!aggregation_mode.has_value()) {
-    LOG(ERROR) << "Invalid aggregation mode: " << aggregation_mode_str;
-    return result;
-  }
-
   if (reporting_origin.opaque()) {
     LOG(ERROR) << "Invalid reporting origin: " << reporting_origin;
     return result;
   }
 
   content::TestAggregationService::AssembleRequest request(
-      operation.value(), bucket, value, aggregation_mode.value(),
-      std::move(reporting_origin), std::move(processing_urls),
-      is_debug_mode_enabled, std::move(additional_fields),
-      std::move(api_version), std::move(api_identifier));
+      operation.value(), bucket, value, std::move(reporting_origin),
+      std::move(processing_urls), is_debug_mode_enabled,
+      std::move(additional_fields), std::move(api_version),
+      std::move(api_identifier));
 
   base::RunLoop run_loop;
   agg_service_->AssembleReport(

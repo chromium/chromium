@@ -198,11 +198,6 @@ testing::AssertionResult PayloadContentsEqual(
              << ", actual: " << actual.contributions[i].value;
     }
   }
-  if (expected.aggregation_mode != actual.aggregation_mode) {
-    return testing::AssertionFailure()
-           << "Expected aggregation_mode " << expected.aggregation_mode
-           << ", actual: " << actual.aggregation_mode;
-  }
 
   if (expected.aggregation_coordinator_origin !=
       actual.aggregation_coordinator_origin) {
@@ -304,18 +299,16 @@ testing::Matcher<AggregatableReportRequest> ReportRequestIs(
 }
 
 AggregatableReportRequest CreateExampleRequest(
-    blink::mojom::AggregationServiceMode aggregation_mode,
     int failed_send_attempts,
     std::optional<url::Origin> aggregation_coordinator_origin,
     std::optional<AggregatableReportRequest::DelayType> delay_type) {
   return CreateExampleRequestWithReportTime(
-      /*report_time=*/base::Time::Now(), aggregation_mode, failed_send_attempts,
+      /*report_time=*/base::Time::Now(), failed_send_attempts,
       std::move(aggregation_coordinator_origin), std::move(delay_type));
 }
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
-    blink::mojom::AggregationServiceMode aggregation_mode,
     int failed_send_attempts,
     std::optional<url::Origin> aggregation_coordinator_origin,
     std::optional<AggregatableReportRequest::DelayType> delay_type) {
@@ -325,7 +318,7 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
                  {blink::mojom::AggregatableReportHistogramContribution(
                      /*bucket=*/123, /*value=*/456,
                      /*filtering_id=*/std::nullopt)},
-                 aggregation_mode, std::move(aggregation_coordinator_origin),
+                 std::move(aggregation_coordinator_origin),
                  /*max_contributions_allowed=*/20u,
                  /*filtering_id_max_bytes=*/1u),
              AggregatableReportSharedInfo(
@@ -539,17 +532,6 @@ std::ostream& operator<<(
   switch (operation) {
     case AggregationServicePayloadContents::Operation::kHistogram:
       return out << "kHistogram";
-  }
-}
-
-std::ostream& operator<<(
-    std::ostream& out,
-    blink::mojom::AggregationServiceMode aggregation_mode) {
-  switch (aggregation_mode) {
-    case blink::mojom::AggregationServiceMode::kTeeBased:
-      return out << "kTeeBased";
-    case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
-      return out << "kExperimentalPoplar";
   }
 }
 

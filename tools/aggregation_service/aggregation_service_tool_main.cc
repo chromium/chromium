@@ -32,8 +32,6 @@ constexpr std::string_view kSwitchHelpShort = "h";
 constexpr std::string_view kSwitchOperation = "operation";
 constexpr std::string_view kSwitchBucket = "bucket";
 constexpr std::string_view kSwitchValue = "value";
-constexpr std::string_view kSwitchAlternativeAggregationMode =
-    "alternative-aggregation-mode";
 constexpr std::string_view kSwitchReportingOrigin = "reporting-origin";
 constexpr std::string_view kSwitchHelperKeyUrls = "helper-key-urls";
 constexpr std::string_view kSwitchHelperKeyFiles = "helper-key-files";
@@ -50,7 +48,7 @@ constexpr std::string_view kSwitchApi = "api";
 
 constexpr std::string_view kHelpMsg = R"(
   aggregation_service_tool [--operation=<operation>] --bucket=<bucket>
-  --value=<value> --aggregation-mode=<aggregation_mode>
+  --value=<value>
   --reporting-origin=<reporting_origin>
   --helper-keys=<helper_server_keys> [--output=<output_file>]
   [--output-url=<output_url>] [--disable-payload-encryption]
@@ -60,7 +58,7 @@ constexpr std::string_view kHelpMsg = R"(
 
   Examples:
   aggregation_service_tool --operation="histogram" --bucket=1234 --value=5
-  --alternative-aggregation-mode="experimental-poplar" --reporting-origin="https://example.com"
+  --reporting-origin="https://example.com"
   --helper-key-urls="https://a.com/keys.json https://b.com/path/to/keys.json"
   --output-file="output.json" --enable-debug-mode --api-version="1.0"
   --api="attribution-reporting" --additional-fields=
@@ -84,10 +82,6 @@ constexpr std::string_view kHelpMsg = R"(
              integer.
   --value = Bucket value of the histogram contribution, must be non-negative
             integer.
-  --alternative-aggregation-mode = Optional switch to specify an alternative
-                                   aggregation mode. Supports "tee-based",
-                                   "experimental-poplar" and "default"
-                                   (default value, equivalent to "tee-based").
   --reporting-origin = The reporting origin endpoint.
   --helper-key-urls = Optional switch to specify the URL(s) to fetch the public
                       key json file(s) from. Spaces are used as separators.
@@ -145,7 +139,6 @@ int main(int argc, char* argv[]) {
       kSwitchOperation,
       kSwitchBucket,
       kSwitchValue,
-      kSwitchAlternativeAggregationMode,
       kSwitchReportingOrigin,
       kSwitchHelperKeyUrls,
       kSwitchHelperKeyFiles,
@@ -263,11 +256,6 @@ int main(int argc, char* argv[]) {
           ? command_line.GetSwitchValueASCII(kSwitchOperation)
           : "histogram";
 
-  std::string aggregation_mode =
-      command_line.HasSwitch(kSwitchAlternativeAggregationMode)
-          ? command_line.GetSwitchValueASCII(kSwitchAlternativeAggregationMode)
-          : "default";
-
   url::Origin reporting_origin = url::Origin::Create(
       GURL(command_line.GetSwitchValueASCII(kSwitchReportingOrigin)));
 
@@ -302,10 +290,9 @@ int main(int argc, char* argv[]) {
   base::Value::Dict report_dict = tool.AssembleReport(
       std::move(operation), command_line.GetSwitchValueASCII(kSwitchBucket),
       command_line.GetSwitchValueASCII(kSwitchValue),
-      std::move(aggregation_mode), std::move(reporting_origin),
-      std::move(processing_urls), is_debug_mode_enabled,
-      std::move(additional_shared_info_fields), std::move(api_version),
-      std::move(api_identifier));
+      std::move(reporting_origin), std::move(processing_urls),
+      is_debug_mode_enabled, std::move(additional_shared_info_fields),
+      std::move(api_version), std::move(api_identifier));
   if (report_dict.empty()) {
     LOG(ERROR)
         << "aggregation_service_tool failed to create the aggregatable report.";

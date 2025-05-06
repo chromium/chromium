@@ -550,8 +550,6 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
   AggregationServicePayloadContents payload_contents(
       AggregationServicePayloadContents::Operation::kHistogram,
       std::move(contributions),
-      // TODO(alexmt): Consider allowing this to be set.
-      blink::mojom::AggregationServiceMode::kDefault,
       std::move(aggregation_coordinator_origin),
       /*max_contributions_allowed=*/max_contributions, filtering_id_max_bytes);
 

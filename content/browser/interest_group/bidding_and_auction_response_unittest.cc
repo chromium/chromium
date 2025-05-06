@@ -344,8 +344,6 @@ auction_worklet::mojom::PrivateAggregationRequestPtr CreatePaggForEventRequest(
                       auction_worklet::mojom::ForEventSignalValue::NewIntValue(
                           value),
                       filtering_id, std::move(event))),
-      // TODO(qingxinwu): consider allowing this to be set
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 }
 
@@ -358,8 +356,6 @@ CreateFinalizedPaggHistogramRequest(absl::uint128 bucket,
           /*bucket=*/bucket,
           /*value=*/value,
           /*filtering_id=*/filtering_id),
-      // TODO(qingxinwu): consider allowing this to be set
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New(),
       /*error_event=*/std::nullopt);
 }
@@ -1799,7 +1795,6 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
                                      /*bucket=*/1025,
                                      /*value=*/2,
                                      /*filtering_id=*/std::nullopt)),
-                     blink::mojom::AggregationServiceMode::kDefault,
                      blink::mojom::DebugModeDetails::New()));
          return response;
        }()},
@@ -1835,7 +1830,6 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
                                      /*bucket=*/1025,
                                      /*value=*/2,
                                      /*filtering_id=*/std::nullopt)),
-                     blink::mojom::AggregationServiceMode::kDefault,
                      blink::mojom::DebugModeDetails::New()));
          response.k_anon_ghost_winner->non_kanon_private_aggregation_requests
              .emplace_back(
@@ -1847,7 +1841,6 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
                                      /*bucket=*/1538,
                                      /*value=*/4,
                                      /*filtering_id=*/std::nullopt)),
-                     blink::mojom::AggregationServiceMode::kDefault,
                      blink::mojom::DebugModeDetails::New()));
          return response;
        }()},

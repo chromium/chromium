@@ -113,8 +113,7 @@ void AggregatableReportAssembler::AssembleReport(
     AssemblyCallback callback) {
   CHECK(std::ranges::is_sorted(report_request.processing_urls()));
   const size_t num_processing_urls = report_request.processing_urls().size();
-  CHECK(AggregatableReport::IsNumberOfProcessingUrlsValid(
-      num_processing_urls, report_request.payload_contents().aggregation_mode));
+  CHECK(AggregatableReport::IsNumberOfProcessingUrlsValid(num_processing_urls));
 
   const AggregationServicePayloadContents& contents =
       report_request.payload_contents();

@@ -193,7 +193,6 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,
           aggregatable_data->contributions(),
-          blink::mojom::AggregationServiceMode::kDefault,
           aggregatable_data->aggregation_coordinator_origin()
               ? std::make_optional(
                     **aggregatable_data->aggregation_coordinator_origin())

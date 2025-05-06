@@ -59,7 +59,6 @@ class AggregationServiceTool {
   base::Value::Dict AssembleReport(std::string operation_str,
                                    std::string bucket_str,
                                    std::string value_str,
-                                   std::string aggregation_mode_str,
                                    url::Origin reporting_origin,
                                    std::vector<GURL> processing_urls,
                                    bool is_debug_mode_enabled,

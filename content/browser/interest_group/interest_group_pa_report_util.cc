@@ -364,7 +364,6 @@ FillInPrivateAggregationRequest(
             auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
                 /*contribution=*/std::move(
                     request->contribution->get_histogram_contribution()),
-                request->aggregation_mode,
                 std::move(request->debug_mode_details),
                 /*error_event=*/std::nullopt);
 
@@ -427,7 +426,7 @@ FillInPrivateAggregationRequest(
 
   PrivateAggregationRequestWithEventType request_with_event_type(
       auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
-          std::move(calculated_contribution), request->aggregation_mode,
+          std::move(calculated_contribution),
           std::move(request->debug_mode_details),
           ConvertErrorEventToPAggType(reserved_error_event_type)),
       non_reserved_event_type);
@@ -483,10 +482,6 @@ void SplitContributionsIntoBatchesThenSendToHost(
   for (auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr& request :
        requests) {
     CHECK(request->debug_mode_details);
-
-    // TODO(alexmt): Split by this too when it can be non-default.
-    CHECK_EQ(request->aggregation_mode,
-             blink::mojom::AggregationServiceMode::kDefault);
 
     blink::mojom::DebugModeDetailsPtr debug_mode_details =
         std::move(request->debug_mode_details);

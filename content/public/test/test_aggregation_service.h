@@ -42,19 +42,11 @@ class TestAggregationService {
     kHistogram,
   };
 
-  // This is 1-1 mapping of AggregationServicePayloadContent::AggregationMode.
-  enum class AggregationMode {
-    kTeeBased,
-    kExperimentalPoplar,
-    kDefault = kTeeBased,
-  };
-
   // Represents a request to assemble an aggregatable report.
   struct AssembleRequest {
     AssembleRequest(Operation operation,
                     absl::uint128 bucket,
                     int value,
-                    AggregationMode aggregation_mode,
                     url::Origin reporting_origin,
                     std::vector<GURL> processing_urls,
                     bool is_debug_mode_enabled,
@@ -71,8 +63,6 @@ class TestAggregationService {
     absl::uint128 bucket;
     // Specifies the bucket value of the histogram contribution.
     int value;
-    // Specifies the aggregation mode to use.
-    AggregationMode aggregation_mode;
     // Specifies the endpoint reporting origin.
     url::Origin reporting_origin;
     // Specifies the key for the aggregation servers to do privacy budgeting.

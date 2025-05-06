@@ -89,7 +89,7 @@ auction_worklet::mojom::PrivateAggregationRequestPtr ConvertFromFinalized(
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(std::move(finalized->contribution)),
-      finalized->aggregation_mode, std::move(finalized->debug_mode_details));
+      std::move(finalized->debug_mode_details));
 }
 
 template <typename T>
@@ -583,7 +583,6 @@ class InterestGroupAuctionReporterTest
                   /*bucket=*/1,
                   /*value=*/2,
                   /*filtering_id=*/std::nullopt),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New(),
               /*error_event=*/std::nullopt);
   const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
@@ -593,7 +592,6 @@ class InterestGroupAuctionReporterTest
                   /*bucket=*/3,
                   /*value=*/4,
                   /*filtering_id=*/0),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New(),
               /*error_event=*/std::nullopt);
   const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
@@ -603,7 +601,6 @@ class InterestGroupAuctionReporterTest
                   /*bucket=*/5,
                   /*value=*/6,
                   /*filtering_id=*/1),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New(),
               /*error_event=*/std::nullopt);
   const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
@@ -613,7 +610,6 @@ class InterestGroupAuctionReporterTest
                   /*bucket=*/7,
                   /*value=*/8,
                   /*filtering_id=*/255),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New(),
               /*error_event=*/std::nullopt);
   const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
@@ -623,7 +619,6 @@ class InterestGroupAuctionReporterTest
                   /*bucket=*/9,
                   /*value=*/10,
                   /*filtering_id=*/std::nullopt),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New(),
               /*error_event=*/std::nullopt);
   const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
@@ -633,7 +628,6 @@ class InterestGroupAuctionReporterTest
                   /*bucket=*/42,
                   /*value=*/24,
                   /*filtering_id=*/std::nullopt),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New(),
               /*error_event=*/std::nullopt);
   const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -650,7 +644,6 @@ class InterestGroupAuctionReporterTest
                               /*filtering_id=*/std::nullopt,
                               auction_worklet::mojom::EventType::NewNonReserved(
                                   "event_type"))),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
       kReservedOncePrivateAggregationRequest =
@@ -669,7 +662,6 @@ class InterestGroupAuctionReporterTest
                                       auction_worklet::mojom::
                                           ReservedNonErrorEventType::
                                               kReservedOnce))),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
       kBonusNonReservedPrivateAggregationRequest =
@@ -685,7 +677,6 @@ class InterestGroupAuctionReporterTest
                               /*filtering_id=*/std::nullopt,
                               auction_worklet::mojom::EventType::NewNonReserved(
                                   "event_type2"))),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
       kReportWinNonReservedPrivateAggregationRequest =
@@ -701,7 +692,6 @@ class InterestGroupAuctionReporterTest
                               /*filtering_id=*/0,
                               auction_worklet::mojom::EventType::NewNonReserved(
                                   "event_type"))),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
 
   const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -720,7 +710,6 @@ class InterestGroupAuctionReporterTest
                                   NewReservedError(auction_worklet::mojom::
                                                        ReservedErrorEventType::
                                                            kReportSuccess))),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
       kErrorEventFinalizedPrivateAggregationRequest =
@@ -729,7 +718,6 @@ class InterestGroupAuctionReporterTest
                   /*bucket=*/3,
                   /*value=*/4,
                   /*filtering_id=*/0),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New(),
               blink::mojom::PrivateAggregationErrorEvent::kReportSuccess);
 

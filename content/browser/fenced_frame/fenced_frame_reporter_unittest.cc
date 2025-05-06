@@ -56,7 +56,6 @@ const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
                 /*bucket=*/1,
                 /*value=*/2,
                 /*filtering_id=*/std::nullopt),
-            blink::mojom::AggregationServiceMode::kDefault,
             blink::mojom::DebugModeDetails::New(),
             /*error_event=*/std::nullopt);
 
@@ -67,7 +66,6 @@ const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
                 /*bucket=*/3,
                 /*value=*/4,
                 /*filtering_id=*/1),
-            blink::mojom::AggregationServiceMode::kDefault,
             blink::mojom::DebugModeDetails::New(),
             /*error_event=*/std::nullopt);
 

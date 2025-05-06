@@ -515,7 +515,6 @@ BiddingAndAuctionResponse::TryParseKAnonGhostWinner(
                               /*bucket=*/U128FromBigEndian(*bucket),
                               /*value=*/*value,
                               /*filtering_id=*/std::nullopt)),
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New()));
     }
   }
@@ -816,8 +815,6 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
                               auction_worklet::mojom::ForEventSignalValue::
                                   NewIntValue(*value),
                               filtering_id, event_type->Clone())),
-              // TODO(qingxinwu): consider allowing this to be set
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
       output.component_win_pagg_requests[agg_phase_key].emplace_back(
           std::move(request));
@@ -836,8 +833,6 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
                   /*bucket=*/U128FromBigEndian(*bucket),
                   /*value=*/*value,
                   /*filtering_id=*/filtering_id),
-              // TODO(qingxinwu): consider allowing this to be set
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New(), error_event);
 
       if (event_type->is_non_reserved()) {

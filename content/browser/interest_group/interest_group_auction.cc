@@ -4199,8 +4199,6 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
               base::saturated_cast<int32_t>(
                   std::max(0.0, value * report_buyers_config->scale)),
               /*filtering_id=*/std::nullopt),
-          // TODO(caraitto): Consider allowing this to be set.
-          blink::mojom::AggregationServiceMode::kDefault,
           std::move(debug_mode_details),
           /*error_event=*/std::nullopt));
   return true;

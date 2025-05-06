@@ -53,7 +53,6 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
       Operation operation,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
-      blink::mojom::AggregationServiceMode aggregation_mode,
       std::optional<url::Origin> aggregation_coordinator_origin,
       base::StrictNumeric<size_t> max_contributions_allowed,
       size_t filtering_id_max_bytes);
@@ -70,7 +69,6 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   Operation operation;
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
       contributions;
-  blink::mojom::AggregationServiceMode aggregation_mode;
   std::optional<url::Origin> aggregation_coordinator_origin;
   size_t max_contributions_allowed;
   size_t filtering_id_max_bytes;
@@ -139,8 +137,8 @@ class CONTENT_EXPORT AggregatableReport {
 
     // This payload is constructed using the data in the
     // AggregationServicePayloadContents and then encrypted with one of
-    // `url`'s public keys. For the `kTeeBased` aggregation mode, the plaintext
-    // of the encrypted payload is a serialized CBOR map structured as follows:
+    // `url`'s public keys. The plaintext of the encrypted payload is a
+    // serialized CBOR map structured as follows:
     // {
     //   "operation": "<chosen operation as string>",
     //   "data": [{
@@ -148,10 +146,6 @@ class CONTENT_EXPORT AggregatableReport {
     //     "value": <a 4-byte (i.e. 32-bit) big-endian bytestring>
     //   }, ...],
     // }
-    // Note that the "data" array may contain multiple contributions.
-    // For the `kExperimentalPoplar` aggregation mode, the "data" field is
-    // replaced with:
-    //   "dpf_key": <binary serialization of the DPF key>
     std::vector<uint8_t> payload;
 
     // Indicates the chosen encryption key.
@@ -257,22 +251,13 @@ class CONTENT_EXPORT AggregatableReport {
   // TODO(crbug.com/40196851): Expose static method to validate that a
   // base::Value appears to represent a valid report.
 
-  // Returns whether `number` is a valid number of processing URLs for the
-  // `aggregation_mode`.
-  static bool IsNumberOfProcessingUrlsValid(
-      size_t number,
-      blink::mojom::AggregationServiceMode aggregation_mode);
+  // Returns whether `number` is a valid number of processing URLs.
+  static bool IsNumberOfProcessingUrlsValid(size_t number);
 
-  // Returns whether `number` is a valid number of histogram contributions for
-  // the `aggregation_mode`.
-  static bool IsNumberOfHistogramContributionsValid(
-      size_t number,
-      blink::mojom::AggregationServiceMode aggregation_mode);
-
-  static std::optional<std::vector<uint8_t>> SerializeTeeBasedPayloadForTesting(
+  static std::optional<std::vector<uint8_t>> SerializePayloadForTesting(
       const AggregationServicePayloadContents& payload_contents);
 
-  static std::optional<size_t> ComputeTeeBasedPayloadLengthInBytesForTesting(
+  static std::optional<size_t> ComputePayloadLengthInBytesForTesting(
       size_t num_contributions,
       size_t filtering_id_max_bytes);
 
@@ -325,10 +310,6 @@ class CONTENT_EXPORT AggregatableReportRequest {
 
   // Returns `std::nullopt` if any of the following are true:
   //
-  //   * The number of contributions within `payload_contents` is invalid for
-  //     the `payload_contents.aggregation_mode` (see
-  //     `IsNumberOfHistogramContributionsValid()`).
-  //
   //   * `payload_contents.max_contributions_allowed` is less than the number of
   //     contributions.
   //
@@ -359,8 +340,6 @@ class CONTENT_EXPORT AggregatableReportRequest {
       int failed_send_attempts = 0);
 
   // Returns `std:nullopt` whenever `Create()` would for that condition too.
-  // Also returns `std::nullopt` if `processing_url.size()` is not valid for the
-  // `payload_contents.aggregation_mode` (see `IsNumberOfProcessingUrlsValid`).
   static std::optional<AggregatableReportRequest> CreateForTesting(
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
