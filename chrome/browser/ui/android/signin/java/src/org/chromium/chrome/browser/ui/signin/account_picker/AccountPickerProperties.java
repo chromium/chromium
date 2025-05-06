@@ -8,7 +8,6 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -44,9 +43,8 @@ class AccountPickerProperties {
                 new PropertyModel.WritableObjectPropertyKey<>("profile_data");
         static final PropertyModel.WritableBooleanPropertyKey IS_CURRENTLY_SELECTED =
                 new PropertyModel.WritableBooleanPropertyKey("is_currently_selected");
-        static final PropertyModel.ReadableObjectPropertyKey<Callback<DisplayableProfileData>>
-                ON_CLICK_LISTENER =
-                        new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
+                new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
 
         static final PropertyKey[] ALL_KEYS =
                 new PropertyKey[] {PROFILE_DATA, IS_CURRENTLY_SELECTED, ON_CLICK_LISTENER};
@@ -56,7 +54,7 @@ class AccountPickerProperties {
         static PropertyModel createModel(
                 DisplayableProfileData profileData,
                 boolean isCurrentlySelected,
-                Callback<DisplayableProfileData> listener) {
+                Runnable listener) {
             return new PropertyModel.Builder(ALL_KEYS)
                     .with(PROFILE_DATA, profileData)
                     .with(IS_CURRENTLY_SELECTED, isCurrentlySelected)

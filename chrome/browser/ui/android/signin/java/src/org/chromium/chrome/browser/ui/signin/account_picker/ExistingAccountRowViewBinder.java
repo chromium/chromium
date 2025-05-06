@@ -31,9 +31,7 @@ public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, V
         boolean isCurrentlySelected = model.get(ExistingAccountRowProperties.IS_CURRENTLY_SELECTED);
         if (propertyKey == ExistingAccountRowProperties.ON_CLICK_LISTENER) {
             view.setOnClickListener(
-                    v ->
-                            model.get(ExistingAccountRowProperties.ON_CLICK_LISTENER)
-                                    .onResult(profileData));
+                    v -> model.get(ExistingAccountRowProperties.ON_CLICK_LISTENER).run());
         } else if ((propertyKey == ExistingAccountRowProperties.PROFILE_DATA)
                 || (propertyKey == ExistingAccountRowProperties.IS_CURRENTLY_SELECTED)) {
             bindAccountView(profileData, view, isCurrentlySelected);

@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
@@ -26,6 +28,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -36,6 +39,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 
 import java.util.List;
+import java.util.Objects;
 
 /** Mediator of the account picker bottom sheet in web sign-in flow. */
 @NullMarked
@@ -57,13 +61,12 @@ public class AccountPickerBottomSheetMediator
     private final boolean mIsWebSignin;
     private final @SigninAccessPoint int mSigninAccessPoint;
 
-    // TODO(crbug.com/41487829): Use CoreAccountInfo here instead.
-    private @Nullable String mSelectedAccountEmail;
-    private @Nullable String mDefaultAccountEmail;
-    private @Nullable String mAddedAccountEmail;
+    private @Nullable CoreAccountInfo mSelectedAccount;
+    private @Nullable CoreAccountInfo mDefaultAccount;
+    private @Nullable CoreAccountInfo mAddedAccount;
     // This field is used to save the added account email while the account info becomes available
     // in AccountManagerFacade for sign-in.
-    private @Nullable String mPendingSelectedAccountEmail;
+    private @Nullable String mPendingAddedAccountEmail;
     private boolean mAcceptedAccountManagement;
 
     private final PropertyObserver<PropertyKey> mModelPropertyChangedObserver;
@@ -81,7 +84,7 @@ public class AccountPickerBottomSheetMediator
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId accountId) {
         mWindowAndroid = windowAndroid;
-        mActivity = assumeNonNull(windowAndroid.getActivity().get());
+        mActivity = assertNonNull(windowAndroid.getActivity().get());
         mAccountPickerDelegate = accountPickerDelegate;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity);
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
@@ -115,35 +118,22 @@ public class AccountPickerBottomSheetMediator
         mProfileDataCache.addObserver(this);
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
-        mAddedAccountEmail = null;
         initializeViewState(
-                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                        mAccountManagerFacade.getCoreAccountInfos()),
+                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()),
                 accountId);
         mAccountManagerFacade.addObserver(this);
     }
 
     /** Implements {@link AccountPickerCoordinator.Listener}. */
     @Override
-    public void onAccountSelected(String accountName) {
-        if (mPendingSelectedAccountEmail != null) {
-            mPendingSelectedAccountEmail = null;
+    public void onAccountSelected(CoreAccountInfo account) {
+        if (mPendingAddedAccountEmail != null) {
+            // If another account is selected before the added account is available in account
+            // manager facade then clear the pending added account email so that it doesn't get
+            // selected automatically in #updateAccounts().
+            mPendingAddedAccountEmail = null;
         }
-
-        var coreAccountInfos =
-                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                        mAccountManagerFacade.getCoreAccountInfos());
-        @Nullable
-        CoreAccountInfo selectedAccount =
-                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, accountName);
-        if (selectedAccount == null) {
-            // #updateAccounts() will call #onAccountSelected() when the account is available in
-            // AccountManagerFacade.
-            mPendingSelectedAccountEmail = accountName;
-            return;
-        }
-
-        setSelectedAccountName(accountName);
+        setSelectedAccount(account);
         launchDeviceLockIfNeededAndSignIn();
     }
 
@@ -160,15 +150,12 @@ public class AccountPickerBottomSheetMediator
 
         final WindowAndroid.IntentCallback onAddAccountCompleted =
                 (int resultCode, Intent data) -> {
-                    if (resultCode != Activity.RESULT_OK) {
+                    @Nullable String addedAccountEmail =
+                            data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                    if (resultCode != Activity.RESULT_OK || addedAccountEmail == null) {
                         return;
                     }
-                    SigninMetricsUtils.logAccountConsistencyPromoAction(
-                            AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED,
-                            mSigninAccessPoint);
-                    mAddedAccountEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                    assert mAddedAccountEmail != null;
-                    onAccountSelected(mAddedAccountEmail);
+                    onAccountAddedInternal(addedAccountEmail);
                 };
         mAccountManagerFacade.createAddAccountIntent(
                 intent -> {
@@ -187,12 +174,25 @@ public class AccountPickerBottomSheetMediator
      * Called by the embedder when an account is added through the latter. Sign-in the just added
      * user.
      */
-    public void onAccountAdded(String accountEmail) {
+    public void onAccountAdded(@NonNull String accountEmail) {
+        assert mAccountPickerDelegate.canHandleAddAccount();
+        onAccountAddedInternal(accountEmail);
+    }
+
+    private void onAccountAddedInternal(String accountEmail) {
         SigninMetricsUtils.logAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED, mSigninAccessPoint);
 
-        assert mAccountPickerDelegate.canHandleAddAccount();
-        onAccountSelected(accountEmail);
+        var accounts =
+                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts());
+        mAddedAccount = AccountUtils.findAccountByEmail(accounts, accountEmail);
+        if (mAddedAccount == null) {
+            // #updateAccounts() will call #onAccountSelected() when the account is available in
+            // AccountManagerFacade.
+            mPendingAddedAccountEmail = accountEmail;
+            return;
+        }
+        onAccountSelected(mAddedAccount);
     }
 
     /**
@@ -217,7 +217,7 @@ public class AccountPickerBottomSheetMediator
     /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
-        mAccountManagerFacade.getCoreAccountInfos().then(this::updateAccounts);
+        mAccountManagerFacade.getAccounts().then(this::updateAccounts);
     }
 
     /** Implements {@link ProfileDataCache.Observer}. */
@@ -274,8 +274,8 @@ public class AccountPickerBottomSheetMediator
     }
 
     private void initializeViewState(
-            List<CoreAccountInfo> coreAccountInfos, @Nullable CoreAccountId accountId) {
-        if (coreAccountInfos.isEmpty()) {
+            List<AccountInfo> accounts, @Nullable CoreAccountId accountId) {
+        if (accounts.isEmpty()) {
             // If all accounts disappeared, no matter if the account list initial state, we will go
             // to the zero account screen.
             setNoAccountState();
@@ -283,70 +283,72 @@ public class AccountPickerBottomSheetMediator
         }
 
         if (accountId != null) {
-            mDefaultAccountEmail =
-                    assumeNonNull(
-                                    AccountUtils.findCoreAccountInfoByGaiaId(
-                                            coreAccountInfos, accountId.getId()))
-                            .getEmail();
-            setSelectedAccountName(mDefaultAccountEmail);
+            mDefaultAccount =
+                    assertNonNull(AccountUtils.findAccountByGaiaId(accounts, accountId.getId()));
+            setSelectedAccount(mDefaultAccount);
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
             return;
         }
-        mDefaultAccountEmail = coreAccountInfos.get(0).getEmail();
-        setSelectedAccountName(mDefaultAccountEmail);
+        mDefaultAccount = accounts.get(0);
+        setSelectedAccount(mDefaultAccount);
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
     }
 
-    private void updateAccounts(List<CoreAccountInfo> coreAccountInfos) {
-        if (coreAccountInfos.isEmpty()) {
+    private void updateAccounts(List<AccountInfo> accounts) {
+        if (accounts.isEmpty()) {
             // If all accounts disappeared, no matter if the account list is collapsed or expanded,
             // we will go to the zero account screen.
             setNoAccountState();
             return;
         }
 
-        if (mPendingSelectedAccountEmail != null
-                && AccountUtils.findCoreAccountInfoByEmail(
-                                coreAccountInfos, mPendingSelectedAccountEmail)
-                        != null) {
-            onAccountSelected(mPendingSelectedAccountEmail);
+        @Nullable AccountInfo pendingAddedAccount =
+                mPendingAddedAccountEmail == null
+                        ? null
+                        : AccountUtils.findAccountByEmail(accounts, mPendingAddedAccountEmail);
+        if (pendingAddedAccount != null) {
+            mPendingAddedAccountEmail = null;
+            mAddedAccount = pendingAddedAccount;
+            onAccountSelected(mAddedAccount);
             return;
         }
 
-        mDefaultAccountEmail = coreAccountInfos.get(0).getEmail();
+        mDefaultAccount = accounts.get(0);
+        mSelectedAccount =
+                mSelectedAccount == null
+                        ? null
+                        : AccountUtils.findAccountByEmail(accounts, mSelectedAccount.getEmail());
         @ViewState int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
         if (viewState == ViewState.NO_ACCOUNTS) {
             // When a non-empty account list appears while it is currently zero-account screen,
             // we should change the screen to collapsed account list and set the selected account
             // to the first account of the account list
-            setSelectedAccountName(mDefaultAccountEmail);
+            setSelectedAccount(mDefaultAccount);
             mModel.set(
                     AccountPickerBottomSheetProperties.VIEW_STATE,
                     ViewState.COLLAPSED_ACCOUNT_LIST);
-        } else if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST
-                && AccountUtils.findCoreAccountInfoByEmail(
-                                coreAccountInfos, assumeNonNull(mSelectedAccountEmail))
-                        == null) {
+        } else if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST && mSelectedAccount == null) {
             // When it is already collapsed account list, we update the selected account only
             // when the current selected account name is no longer in the new account list
-            setSelectedAccountName(mDefaultAccountEmail);
+            setSelectedAccount(mDefaultAccount);
         }
     }
 
     private void setNoAccountState() {
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.NO_ACCOUNTS);
-        mSelectedAccountEmail = null;
-        mDefaultAccountEmail = null;
+        mSelectedAccount = null;
+        mDefaultAccount = null;
         mModel.set(AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA, null);
     }
 
-    private void setSelectedAccountName(String accountName) {
-        mSelectedAccountEmail = accountName;
-        updateSelectedAccountData(mSelectedAccountEmail);
+    private void setSelectedAccount(CoreAccountInfo account) {
+        mSelectedAccount = account;
+        updateSelectedAccountData(account.getEmail());
     }
 
     private void updateSelectedAccountData(String accountEmail) {
-        if (TextUtils.equals(mSelectedAccountEmail, accountEmail)) {
+        if (mSelectedAccount != null
+                && TextUtils.equals(mSelectedAccount.getEmail(), accountEmail)) {
             mModel.set(
                     AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA,
                     mProfileDataCache.getProfileDataOrDefault(accountEmail));
@@ -398,7 +400,7 @@ public class AccountPickerBottomSheetMediator
         if (BuildInfo.getInstance().isAutomotive) {
             mDeviceLockActivityLauncher.launchDeviceLockActivity(
                     mActivity,
-                    mSelectedAccountEmail,
+                    CoreAccountInfo.getEmailFrom(mSelectedAccount),
                     /* requireDeviceLockReauthentication= */ true,
                     mWindowAndroid,
                     (resultCode, data) -> {
@@ -413,22 +415,17 @@ public class AccountPickerBottomSheetMediator
     }
 
     private void signIn() {
-        mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
-        assumeNonNull(mSelectedAccountEmail);
-        CoreAccountInfo accountInfo =
-                AccountUtils.findCoreAccountInfoByEmail(
-                        mAccountManagerFacade.getCoreAccountInfos().getResult(),
-                        mSelectedAccountEmail);
         // If the account is not available or disappears right after the user adds it, the sign-in
         // can't be done and a general error view with retry button is shown.
-        if (accountInfo == null) {
+        if (mSelectedAccount == null) {
             mModel.set(
                     AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
             return;
         }
 
+        mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
         mAccountPickerDelegate.isAccountManaged(
-                accountInfo,
+                mSelectedAccount,
                 (Boolean isAccountManaged) -> {
                     if (isAccountManaged) {
                         SigninMetricsUtils.logAccountConsistencyPromoAction(
@@ -444,14 +441,23 @@ public class AccountPickerBottomSheetMediator
     }
 
     private void signInAfterCheckingManagement() {
+        // If the account is not available or disappears right after the user adds it, the sign-in
+        // can't be done and a general error view with retry button is shown.
+        if (mSelectedAccount == null) {
+            mModel.set(
+                    AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
+            return;
+        }
+
         if (mAcceptedAccountManagement) {
             mAccountPickerDelegate.setUserAcceptedAccountManagement(true);
         }
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
-        if (TextUtils.equals(mSelectedAccountEmail, mAddedAccountEmail)) {
+
+        if (Objects.equals(mSelectedAccount, mAddedAccount)) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT, mSigninAccessPoint);
-        } else if (TextUtils.equals(mSelectedAccountEmail, mDefaultAccountEmail)) {
+        } else if (Objects.equals(mSelectedAccount, mDefaultAccount)) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
                     mSigninAccessPoint);
@@ -465,20 +471,7 @@ public class AccountPickerBottomSheetMediator
             SigninPreferencesManager.getInstance()
                     .clearWebSigninAccountPickerActiveDismissalCount();
         }
-
-        assumeNonNull(mSelectedAccountEmail);
-        CoreAccountInfo accountInfo =
-                AccountUtils.findCoreAccountInfoByEmail(
-                        mAccountManagerFacade.getCoreAccountInfos().getResult(),
-                        mSelectedAccountEmail);
-        // If the account is not available or disappears right after the user adds it, the sign-in
-        // can't be done and a general error view with retry button is shown.
-        if (accountInfo == null) {
-            mModel.set(
-                    AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
-            return;
-        }
-        mAccountPickerDelegate.signIn(accountInfo, this);
+        mAccountPickerDelegate.signIn(mSelectedAccount, this);
     }
 
     private void updateCredentials() {
@@ -490,9 +483,9 @@ public class AccountPickerBottomSheetMediator
                                 ViewState.COLLAPSED_ACCOUNT_LIST);
                     }
                 };
-        assumeNonNull(mSelectedAccountEmail);
+        assertNonNull(mSelectedAccount);
         mAccountManagerFacade.updateCredentials(
-                AccountUtils.createAccountFromName(mSelectedAccountEmail),
+                CoreAccountInfo.getAndroidAccountFrom(mSelectedAccount),
                 mActivity,
                 onUpdateCredentialsCompleted);
     }

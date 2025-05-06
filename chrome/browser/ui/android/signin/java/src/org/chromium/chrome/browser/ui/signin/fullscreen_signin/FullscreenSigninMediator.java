@@ -298,8 +298,8 @@ public class FullscreenSigninMediator
     }
 
     @Override
-    public void onAccountSelected(String accountName) {
-        setSelectedAccountEmail(accountName);
+    public void onAccountSelected(CoreAccountInfo coreAccountInfo) {
+        setSelectedAccountEmail(coreAccountInfo.getEmail());
         if (mDialogCoordinator != null) mDialogCoordinator.dismissDialog();
     }
 

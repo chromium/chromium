@@ -9,9 +9,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.MainThread;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
@@ -94,15 +92,12 @@ class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.
         mListModel.clear();
 
         // Add an "existing account" row for each account
-        final Callback<DisplayableProfileData> callback =
-                profileData ->
-                        mAccountPickerListener.onAccountSelected(profileData.getAccountEmail());
         for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
             PropertyModel model =
                     ExistingAccountRowProperties.createModel(
                             mProfileDataCache.getProfileDataOrDefault(coreAccountInfo.getEmail()),
                             /* isCurrentlySelected= */ false,
-                            callback);
+                            () -> mAccountPickerListener.onAccountSelected(coreAccountInfo));
             mListModel.add(new MVCListAdapter.ListItem(ItemType.EXISTING_ACCOUNT_ROW, model));
         }
 
