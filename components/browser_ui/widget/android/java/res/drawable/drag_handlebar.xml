@@ -14,6 +14,6 @@ found in the LICENSE file.
   <corners
       android:radius="2dp" />
   <!--  LINT.IfChange(DragHandleBar) -->
-  <solid android:color="@macro/drag_handlebar_color" />
+  <solid android:color="@color/drag_handlebar_color_baseline" />
   <!-- LINT.ThenChange(//components/browser_ui/styles/android/java/src/org/chromium/components/browser_ui/styles/ChromeColors.java) -->
 </shape>
