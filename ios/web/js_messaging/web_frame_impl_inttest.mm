@@ -55,7 +55,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnMainFrame) {
 
   __block bool called = false;
   main_frame->CallJavaScriptFunction(
-      "message.getFrameId", base::Value::List(),
+      "getFrameId", base::Value::List(),
       base::BindOnce(^(const base::Value* value) {
         ASSERT_TRUE(value->is_string());
         EXPECT_EQ(value->GetString(), main_frame->GetFrameId());
@@ -84,7 +84,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnIframe) {
 
   __block bool called = false;
   iframe->CallJavaScriptFunction(
-      "message.getFrameId", base::Value::List(),
+      "getFrameId", base::Value::List(),
       base::BindOnce(^(const base::Value* value) {
         ASSERT_TRUE(value->is_string());
         EXPECT_EQ(value->GetString(), iframe->GetFrameId());

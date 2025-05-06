@@ -447,10 +447,7 @@ source_set("ios_web_web_state_js_unittests") {
     "//ui/base:test_support",
   ]
 
-  sources = [
-    "web_state/js/common_js_unittest.mm",
-    "web_state/js/message_js_unittest.mm",
-  ]
+  sources = [ "web_state/js/common_js_unittest.mm" ]
 }
 
 source_set("ios_web_web_state_ui_unittests") {

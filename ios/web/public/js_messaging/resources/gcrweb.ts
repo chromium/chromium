@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {generateRandomId} from '//ios/web/public/js_messaging/resources/utils.js';
+
 /**
  * @fileoverview This file exports `gCrWeb` API to be used by other
  * files to augment its functionality. `gCrWeb` is intended
@@ -12,6 +14,7 @@
 
 class CrWeb {
   private readonly registeredApis: {[id: string]: CrWebApi} = {};
+  private frameId: string = generateRandomId();
 
   /*
    * Register a Javascript API into the CrWeb object. In case
@@ -26,6 +29,19 @@ class CrWeb {
 
   getRegisteredApi(apiIdentifier: string): CrWebApi|undefined {
     return this.registeredApis[apiIdentifier];
+  }
+
+  /**
+   * Returns the frameId associated with this frame. A new value will be created
+   * for this frame the first time it is called. The frameId will persist as
+   * long as this JavaScript context lives. For example, the frameId will be the
+   * same when navigating 'back' to this frame.
+   */
+  getFrameId(): string {
+    if (!this.frameId) {
+      this.frameId = generateRandomId();
+    }
+    return this.frameId;
   }
 }
 

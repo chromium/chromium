@@ -7,7 +7,7 @@
  * the native code.
  */
 
-import {getFrameId, registerFrame} from '//ios/web/public/js_messaging/resources/frame_id.js';
+import {registerFrame} from '//ios/web/public/js_messaging/resources/frame_id.js';
 import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
@@ -36,6 +36,5 @@ function getExistingFrames() {
 }
 
 gCrWebLegacy.message = {
-  getFrameId,
   getExistingFrames,
 };

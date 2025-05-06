@@ -1949,7 +1949,7 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnIFrameDetach) {
                // Reattaching it manually for test purposes.
                "       frames[0].addEventListener('unload', function(event) {"
                "  window.webkit.messageHandlers['FrameBecameUnavailable']."
-               "      postMessage(frames[0].__gCrWeb.message.getFrameId());"
+               "      postMessage(frames[0].__gCrWeb.getFrameId());"
                "});"
                "}"
                "</script>"
@@ -2019,7 +2019,7 @@ TEST_F(PasswordControllerTest,
                // Reattaching it manually for test purposes.
                "       frames[0].addEventListener('unload', function(event) {"
                "  window.webkit.messageHandlers['FrameBecameUnavailable']."
-               "      postMessage(frames[0].__gCrWeb.message.getFrameId());"
+               "      postMessage(frames[0].__gCrWeb.getFrameId());"
                "});"
                "}"
                "</script>"

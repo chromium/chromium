@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -70,7 +70,7 @@ function showBottomSheet(hasUserGesture: boolean): void {
   // the conversion to TypeScript is done.
 
   const msg = {
-    'frameID': gCrWebLegacy.message.getFrameId(),
+    'frameID': gCrWeb.getFrameId(),
     'formName': gCrWebLegacy.form.getFormIdentifier(form),
     'formRendererID': gCrWebLegacy.fill.getUniqueID(form),
     'fieldIdentifier': gCrWebLegacy.form.getFieldIdentifier(field),

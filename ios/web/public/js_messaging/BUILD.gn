@@ -61,6 +61,8 @@ compile_ts("error_reporting") {
 # compiled TypeScript to be used as a dependency by other TypeScript targets.
 compile_ts("gcrweb") {
   sources = [ "resources/gcrweb.ts" ]
+
+  deps = [ ":util_scripts" ]
 }
 
 optimize_js("gcrweb_js") {

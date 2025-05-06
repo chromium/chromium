@@ -11,7 +11,7 @@
 // Requires functions from fill.ts, form.ts, autofill_form_features.ts and
 // child_frame_registration_lib.ts.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -143,7 +143,7 @@ function formActivity(evt: Event): void {
 
   const msg = {
     'command': 'form.activity',
-    'frameID': gCrWebLegacy.message.getFrameId(),
+    'frameID': gCrWeb.getFrameId(),
     'formName': gCrWebLegacy.form.getFormIdentifier(form),
     'formRendererID': formRendererID,
     'fieldIdentifier': gCrWebLegacy.form.getFieldIdentifier(field),
@@ -362,7 +362,7 @@ function trackFormMutations(delay: number): void {
       if (!addedFormMessage && formWasAdded) {
         addedFormMessage = {
           'command': 'form.activity',
-          'frameID': gCrWebLegacy.message.getFrameId(),
+          'frameID': gCrWeb.getFrameId(),
           'formName': '',
           'formRendererID': '',
           'fieldIdentifier': '',
@@ -404,7 +404,7 @@ function trackFormMutations(delay: number): void {
               forms.map(form => gCrWebLegacy.fill.getUniqueID(form));
           removedFormMessage = {
             'command': 'form.removal',
-            'frameID': gCrWebLegacy.message.getFrameId(),
+            'frameID': gCrWeb.getFrameId(),
             'removedFormIDs': gCrWebLegacy.stringify(filteredFormIDs),
             'removedFieldIDs': gCrWebLegacy.stringify(removedFormlessFieldsIds),
           };
@@ -416,7 +416,7 @@ function trackFormMutations(delay: number): void {
         // Handle the removed formless field case.
         removedFormMessage = {
           'command': 'form.removal',
-          'frameID': gCrWebLegacy.message.getFrameId(),
+          'frameID': gCrWeb.getFrameId(),
           'removedFieldIDs': gCrWebLegacy.stringify(removedFormlessFieldsIds),
         };
         continue;
@@ -430,7 +430,7 @@ function trackFormMutations(delay: number): void {
         // mutation that is treated the same way as adding a new form.
         addedFormMessage = {
           'command': 'form.activity',
-          'frameID': gCrWebLegacy.message.getFrameId(),
+          'frameID': gCrWeb.getFrameId(),
           'formName': '',
           'formRendererID': '',
           'fieldIdentifier': '',

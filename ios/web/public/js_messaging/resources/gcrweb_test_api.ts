@@ -24,5 +24,6 @@ function setupRegisterApi() {
 gCrWebLegacy.unit_tests = {
   registerApi: gCrWeb.registerApi.bind(gCrWeb),
   getRegisteredApi: gCrWeb.getRegisteredApi.bind(gCrWeb),
+  getFrameId: gCrWeb.getFrameId.bind(gCrWeb),
   setupRegisterApi,
 };

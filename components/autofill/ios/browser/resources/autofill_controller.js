@@ -4,8 +4,7 @@
 
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
-import {getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 
@@ -325,7 +324,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
         sendWebKitMessage(NATIVE_MESSAGE_HANDLER, {
           'command': FORM_FILLED_COMMAND,
           'form_data': formData,
-          'frame': getFrameId(),
+          'frame': gCrWeb.getFrameId(),
         });
       }
     }, _delay);

@@ -8,7 +8,7 @@
 
 import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {getRemoteFrameToken} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -346,7 +346,7 @@ function formSubmitted(
 
   const message = {
     command: 'form.submit',
-    frameID: gCrWebLegacy.message.getFrameId(),
+    frameID: gCrWeb.getFrameId(),
     formName: gCrWebLegacy.form.getFormIdentifier(form),
     href: getFullyQualifiedUrl(action),
     formData: gCrWebLegacy.fill.autofillSubmissionData(form),

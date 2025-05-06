@@ -76,3 +76,37 @@ TEST_F(CrWebJavaScriptTest, ThrowExceptionInCollision) {
   EXPECT_NSEQ(@"Error: API crWebAPI already registered.",
               execution_error.userInfo[@"WKJavaScriptExceptionMessage"]);
 }
+
+// Tests that a frameId is created.
+TEST_F(CrWebJavaScriptTest, FrameId) {
+  id frame_id1 = web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.unit_tests.getFrameId()");
+
+  ASSERT_TRUE(frame_id1);
+  ASSERT_TRUE([frame_id1 isKindOfClass:[NSString class]]);
+  EXPECT_GT([frame_id1 length], 0ul);
+
+  // Validating that once created the frame id remain the same if the page isn't
+  // reloaded.
+  id frame_id2 = web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.unit_tests.getFrameId()");
+  EXPECT_NSEQ(frame_id1, frame_id2);
+}
+
+// Tests that the frameId is unique between two page loads.
+TEST_F(CrWebJavaScriptTest, UniqueFrameID) {
+  ASSERT_TRUE(LoadHtml(@"<p>"));
+  id frame_id1 = web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.unit_tests.getFrameId()");
+
+  ASSERT_TRUE(LoadHtml(@"<p>"));
+  id frame_id2 = web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.unit_tests.getFrameId()");
+
+  // Validate second frameId.
+  ASSERT_TRUE(frame_id2);
+  ASSERT_TRUE([frame_id2 isKindOfClass:[NSString class]]);
+  EXPECT_GT([frame_id2 length], 0ul);
+
+  EXPECT_NSNE(frame_id1, frame_id2);
+}

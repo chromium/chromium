@@ -162,7 +162,7 @@ class WebViewAutofillTest : public WebViewInttestBase {
   }
 
   NSString* GetMainFrameId() {
-    NSString* main_frame_id_script = @"__gCrWeb.message.getFrameId();";
+    NSString* main_frame_id_script = @"__gCrWeb.getFrameId();";
     return test::EvaluateJavaScript(web_view_, main_frame_id_script);
   }
 

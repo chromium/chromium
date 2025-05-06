@@ -8,7 +8,7 @@ import * as fillConstants from '//components/autofill/ios/form_util/resources/fi
 import {inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import type * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // This file provides methods used to fill forms in JavaScript.
@@ -353,7 +353,7 @@ function formOrFieldsetsToFormData(
   // Protect against custom implementation of Array.toJSON in host pages.
   (form.fields as any).toJSON = null;
 
-  form.host_frame = gCrWebLegacy.message.getFrameId();
+  form.host_frame = gCrWeb.getFrameId();
 
   if (childFrames.length > 0) {
     form.child_frames = childFrames;
@@ -427,7 +427,7 @@ gCrWebLegacy.fill.webFormElementToFormData = function(
 
   form.renderer_id = gCrWebLegacy.fill.getUniqueID(formElement);
 
-  form.host_frame = frame.__gCrWeb.message.getFrameId();
+  form.host_frame = frame.__gCrWeb.getFrameId();
 
   // Note different from form_autofill_util.cc version of this method, which
   // computes |form.action| using document.completeURL(form_element.action())

@@ -1844,7 +1844,7 @@ TEST_F(AutofillAcrossIframesTest, FrameAndFormIdsDontMatch) {
 
     // Change the frame ID provided by getFrameId() to simulate a different
     // frame receiving the forms extraction request.
-    std::u16string script = u"__gCrWeb.message.getFrameId = () => "
+    std::u16string script = u"__gCrWeb.getFrameId = () => "
                             "'1effd8f52a067c8d3a01762d3c41dfd8'; true";
     ASSERT_TRUE(ExecuteJavaScriptInFrame(main_frame, script));
   }
