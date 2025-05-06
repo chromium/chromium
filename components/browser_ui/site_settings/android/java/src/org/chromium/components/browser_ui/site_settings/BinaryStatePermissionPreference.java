@@ -19,6 +19,7 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.ui.base.ViewUtils;
 
 /** A binary state radio group preference for components/permissions/features.cc */
 @NullMarked
@@ -105,6 +106,10 @@ public class BinaryStatePermissionPreference extends Preference
 
         RadioButtonWithDescription selectedRadioButton = findRadioButton(mSetting);
         if (selectedRadioButton != null) selectedRadioButton.setChecked(true);
+
+        if (mManagedPrefDelegate != null && mManagedPrefDelegate.isPreferenceClickDisabled(this)) {
+            ViewUtils.setEnabledRecursive(holder.itemView, false);
+        }
     }
 
     public void setIconMarginEnd(int marginEnd) {
