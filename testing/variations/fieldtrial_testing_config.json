@@ -13517,6 +13517,27 @@
             ]
         }
     ],
+    "LocalNetworkAccessChecks": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWarning",
+                    "params": {
+                        "LocalNetworkAccessChecksWarn": "true"
+                    },
+                    "enable_features": [
+                        "LocalNetworkAccessChecks"
+                    ]
+                }
+            ]
+        }
+    ],
     "LocalWebApprovalsIos": [
         {
             "platforms": [
