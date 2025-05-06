@@ -85,26 +85,17 @@ class ObjectTracker {
   }
 
  private:
-  // Constructs an object of type T through the regular constructor using |id|
-  // and |args|.
-  template <class... Args,
-            typename std::enable_if<
-                std::is_constructible_v<T, typename T::IdType, Args...>,
-                bool>::type = true>
+  // Constructs an object of type T using `id` and `args`. If available, it uses
+  // the regular constructor. Otherwise, it falls back to using th `T::Create()`
+  // static method.
+  template <class... Args>
   static std::unique_ptr<T> ConstructObject(typename T::IdType id,
                                             Args&&... args) {
-    return std::make_unique<T>(id, std::forward<Args>(args)...);
-  }
-
-  // Constructs an object of type T through the T::Create() static method using
-  // |id| and |args|.
-  template <class... Args,
-            typename std::enable_if<
-                !std::is_constructible_v<T, typename T::IdType, Args...>,
-                bool>::type = true>
-  static std::unique_ptr<T> ConstructObject(typename T::IdType id,
-                                            Args&&... args) {
-    return T::Create(id, std::forward<Args>(args)...);
+    if constexpr (std::is_constructible_v<T, typename T::IdType, Args...>) {
+      return std::make_unique<T>(id, std::forward<Args>(args)...);
+    } else {
+      return T::Create(id, std::forward<Args>(args)...);
+    }
   }
 
   base::Lock lock_;

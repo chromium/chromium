@@ -107,29 +107,29 @@ struct MEDIA_EXPORT StatusData {
   UKMPackedType packed_root_cause = 0;
 };
 
-#define NAME_DETECTOR(detector_name, field)                            \
-  template <typename T>                                                \
-  struct detector_name {                                               \
-    template <typename, typename>                                      \
-    struct field##is_enum {                                            \
-      constexpr static bool value = false;                             \
-    };                                                                 \
-    template <typename V>                                              \
-    struct field##is_enum<V, decltype(V::field)> {                     \
-      constexpr static bool value = true;                              \
-    };                                                                 \
-    template <typename, typename>                                      \
-    struct field##_is_member {                                         \
-      constexpr static bool value = false;                             \
-    };                                                                 \
-    template <typename V>                                              \
-    struct field##_is_member<                                          \
-        V,                                                             \
-        std::enable_if_t<std::is_pointer_v<decltype(&V::field)>, V>> { \
-      constexpr static bool value = true;                              \
-    };                                                                 \
-    constexpr static bool as_enum_value = field##is_enum<T, T>::value; \
-    constexpr static bool as_method = field##_is_member<T, T>::value;  \
+#define NAME_DETECTOR(detector_name, field)                         \
+  template <typename T>                                             \
+  struct detector_name {                                            \
+    template <typename>                                             \
+    struct field##is_enum {                                         \
+      constexpr static bool value = false;                          \
+    };                                                              \
+    template <typename V>                                           \
+      requires(requires { V::field; })                              \
+    struct field##is_enum<V> {                                      \
+      constexpr static bool value = true;                           \
+    };                                                              \
+    template <typename>                                             \
+    struct field##_is_member {                                      \
+      constexpr static bool value = false;                          \
+    };                                                              \
+    template <typename V>                                           \
+      requires(requires { &V::field; })                             \
+    struct field##_is_member<V> {                                   \
+      constexpr static bool value = true;                           \
+    };                                                              \
+    constexpr static bool as_enum_value = field##is_enum<T>::value; \
+    constexpr static bool as_method = field##_is_member<T>::value;  \
   }
 
 NAME_DETECTOR(HasOkCode, kOk);
@@ -262,9 +262,8 @@ class MEDIA_EXPORT TypedStatus {
 
   // Used to allow returning {TypedStatus::Codes::kValue, CastFrom} implicitly
   // iff TypedStatus::Traits::OnCreateFrom is implemented.
-  template <
-      typename _T = Traits,
-      typename = std::enable_if<std::is_pointer_v<decltype(&_T::OnCreateFrom)>>>
+  template <typename _T = Traits>
+    requires(requires { &_T::OnCreateFrom; })
   TypedStatus(
       Codes code,
       const typename internal::SecondArgType<decltype(_T::OnCreateFrom)>::Type&
@@ -278,9 +277,8 @@ class MEDIA_EXPORT TypedStatus {
 
   // Used to allow returning {TypedStatus::Codes::kValue, "message", CastFrom}
   // implicitly iff TypedStatus::Traits::OnCreateFrom is implemented.
-  template <
-      typename _T = Traits,
-      typename = std::enable_if<std::is_pointer_v<decltype(&_T::OnCreateFrom)>>>
+  template <typename _T = Traits>
+    requires(requires { &_T::OnCreateFrom; })
   TypedStatus(
       Codes code,
       std::string_view message,
@@ -294,11 +292,11 @@ class MEDIA_EXPORT TypedStatus {
 
   // Used to allow returning {TypedStatus::Codes::kValue, cause}
   template <typename CausalStatusType>
+    requires(!std::is_same_v<CausalStatusType, Traits>)
   TypedStatus(Codes code,
               TypedStatus<CausalStatusType>&& cause,
               const base::Location& location = base::Location::Current())
       : TypedStatus(code, "", location) {
-    static_assert(!std::is_same_v<CausalStatusType, Traits>);
     DCHECK(data_);
     AddCause(std::move(cause));
   }
