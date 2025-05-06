@@ -22,6 +22,7 @@ NATIVE_MESSAGING_HOST_BUNDLE_NAME=@@NATIVE_MESSAGING_HOST_BUNDLE_NAME@@
 REMOTE_ASSISTANCE_HOST_BUNDLE_NAME=@@REMOTE_ASSISTANCE_HOST_BUNDLE_NAME@@
 HOST_EXE="$HELPERTOOLS/$HOST_BUNDLE_NAME/Contents/MacOS/remoting_me2me_host"
 USERS_TMP_FILE="$HOST_SERVICE_BINARY.users"
+BROKER_SERVICE_TARGET="system/org.chromium.chromoting.broker"
 
 # ksadmin moved from MacOS to Helpers in Keystone 1.2.13.112, 2019-11-12. A
 # symbolic link from the old location was left in place, but may not remain
@@ -138,6 +139,8 @@ ln -s "$HELPERTOOLS/$HOST_BUNDLE_NAME/Contents/Resources/icudtl.dat" \
 # started until a host process connects to
 # chromoting.agent_process_broker_mojo_ipc.
 logger Loading broker service
+logger launchctl enable $BROKER_SERVICE_TARGET
+launchctl enable $BROKER_SERVICE_TARGET
 logger launchctl bootstrap system $BROKER_PLIST
 launchctl bootstrap system $BROKER_PLIST
 
