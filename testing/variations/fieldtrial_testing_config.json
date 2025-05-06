@@ -16475,7 +16475,7 @@
                         "hats_survey_ukm_id": "1027171324",
                         "ppm_survey_segment_name1": "ChromeOS",
                         "ppm_survey_uniform_sample": "true",
-                        "probability": "0.88",
+                        "probability": "0.088",
                         "survey": "performance-ppm"
                     },
                     "enable_features": [
