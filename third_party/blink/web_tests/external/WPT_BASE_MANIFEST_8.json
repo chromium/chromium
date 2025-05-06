@@ -5863,6 +5863,13 @@
        {}
       ]
      ],
+     "root-preserve3d-crash.html": [
+      "1123280187506b326adc9378465bfc560af4415e",
+      [
+       null,
+       {}
+      ]
+     ],
      "scoped": {
       "crashtests": {
        "shadow-dom.html": [
@@ -6116,6 +6123,13 @@
     "filter-effects": {
      "backdrop-filter-feimage-crash.html": [
       "762452e8e604c8c57b06c67d58b069720decc1ad",
+      [
+       null,
+       {}
+      ]
+     ],
+     "backdrop-filter-transform-popover-crash.html": [
+      "582f0c119656020aaa5167b0547cfbde20d11b95",
       [
        null,
        {}
@@ -21674,6 +21688,19 @@
        [
         [
          "/css/css-break/overflowing-block-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "root-margin-001-print.html": [
+      "b2ec34fe0799d7cab5ac4dacb237780b6f7503e0",
+      [
+       null,
+       [
+        [
+         "/css/css-break/root-margin-001-print-ref.html",
          "=="
         ]
        ],
@@ -74165,6 +74192,19 @@
         [
          [
           "/css/css-align/blocks/align-content-block-overflow-000-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "justify-items-anonymous.tentative.html": [
+       "641dea1f54b2f0cea29bc4c4c82e023a479e3d3c",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
           "=="
          ]
         ],
@@ -335915,6 +335955,10 @@
       "8c19f1cf4c6c0173b45face28d624368d365ec70",
       []
      ],
+     "root-margin-001-print-ref.html": [
+      "320da2e0f551b82e2e699500179fe06db612151b",
+      []
+     ],
      "rounded-clipped-border-ref.html": [
       "be08126fd2c3bab356a3a4fd5ff1cc1579184662",
       []
@@ -410289,10 +410333,6 @@
     "input-events-get-target-ranges.js": [
      "004416ec2a02e0abc254f9b2b7d0a0c41b751a7d",
      []
-    ],
-    "input-events-spin-button-click-on-number-input-delete-document-expected.txt": [
-     "48c71785d6036556cc379d0859818f8c9bb972be",
-     []
     ]
    },
    "installedapp": {
@@ -426501,18 +426541,6 @@
       "d56c7b8cb737d21aa2df4a803fa333ad5ebd56ae",
       []
      ],
-     "discard-check-removal-order-expected.txt": [
-      "5345a9cfb5c6c9d7c8fb285ad94fabf8efda394c",
-      []
-     ],
-     "reftests": {
-      "reference": {
-       "green-100x100.svg": [
-        "120941444a4898197d6b6001f9908a6cd48b62ba",
-        []
-       ]
-      }
-     },
      "support": {
       "animated-path-helpers.js": [
        "8fd4492265c2eb8aa00fb173bd8d625f119adaac",
@@ -663594,7 +663622,7 @@
      ]
     ],
     "input-events-spin-button-click-on-number-input-delete-document.html": [
-     "fb3655398dbd1bdde84f032df392b6352b7fcafe",
+     "9e5d9b9ef99a4290b4195ff5901eab324935c3fe",
      [
       null,
       {
@@ -728802,13 +728830,6 @@
        {}
       ]
      ],
-     "discard-check-removal-order.html": [
-      "2935a69addaabdeee2eb381de847cd7f77688ce3",
-      [
-       null,
-       {}
-      ]
-     ],
      "end-attribute-change-end-time.html": [
       "9f05d7d405d364a1eadfa104c1c4bd90a2bf3b8c",
       [
@@ -730030,7 +730051,7 @@
      ]
     ],
     "idlharness.window.js": [
-     "b363128c25a9068df93b26966b82b50cdd9b87f7",
+     "a26fa2bef6d71efea2981f1122b3455ffbac25cd",
      [
       "svg/idlharness.window.html",
       {
