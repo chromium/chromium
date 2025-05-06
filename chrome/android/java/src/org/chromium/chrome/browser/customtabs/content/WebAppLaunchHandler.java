@@ -8,6 +8,9 @@ import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -18,6 +21,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -34,13 +38,13 @@ import java.util.List;
  */
 @JNINamespace("webapps")
 public class WebAppLaunchHandler {
-
-    public static final @ClientMode int DEFAULT_CLIENT_MODE = NAVIGATE_EXISTING;
-
+    private static final String TAG = WebAppLaunchHandler.class.getSimpleName();
+    private static final @ClientMode int DEFAULT_CLIENT_MODE = NAVIGATE_EXISTING;
     private final WebContents mWebContents;
     private final CustomTabActivityNavigationController mNavigationController;
     private final Verifier mVerifier;
-    private final CurrentPageVerifier mCurrentPageVerfier;
+    private final CurrentPageVerifier mCurrentPageVerifier;
+    private final Activity mActivity;
 
     /**
      * Retrieves the ClientMode enum value from a given AndroidX enum. Defaults to
@@ -72,20 +76,23 @@ public class WebAppLaunchHandler {
             Verifier verifier,
             CurrentPageVerifier currentPageVerifier,
             CustomTabActivityNavigationController navigationController,
-            WebContents webContents) {
+            WebContents webContents,
+            Activity activity) {
         return new WebAppLaunchHandler(
-                verifier, currentPageVerifier, navigationController, webContents);
+                verifier, currentPageVerifier, navigationController, webContents, activity);
     }
 
     private WebAppLaunchHandler(
             Verifier verifier,
             CurrentPageVerifier currentPageVerifier,
             CustomTabActivityNavigationController navigationController,
-            WebContents webContents) {
+            WebContents webContents,
+            Activity activity) {
         mWebContents = webContents;
         mNavigationController = navigationController;
         mVerifier = verifier;
-        mCurrentPageVerfier = currentPageVerifier;
+        mCurrentPageVerifier = currentPageVerifier;
+        mActivity = activity;
     }
 
     /**
@@ -145,7 +152,10 @@ public class WebAppLaunchHandler {
     public void handleNewIntent(BrowserServicesIntentDataProvider intentDataProvider) {
         @ClientMode int clientMode = getClientMode(intentDataProvider.getLaunchHandlerClientMode());
 
-        if (clientMode != NAVIGATE_NEW) {
+        if (clientMode == NAVIGATE_NEW) {
+            launchNewIntent(
+                    intentDataProvider.getUrlToLoad(), intentDataProvider.getClientPackageName());
+        } else {
             boolean startNavigation =
                     clientMode == NAVIGATE_EXISTING
                             && !TextUtils.isEmpty(intentDataProvider.getUrlToLoad());
@@ -166,12 +176,41 @@ public class WebAppLaunchHandler {
         }
     }
 
+    /**
+     * Launches a new instance of TWA in a separate task. In order to support navigate-new client
+     * mode we need to support several running instances of the same TWA app simultaneously in
+     * separate tasks. If client_mode is navigate-new we will resend an intent with action VIEW to
+     * create one more running instance of the TWA app. We achieve it adding FLAG_ACTIVITY_NEW_TASK
+     * and FLAG_ACTIVITY_MULTIPLE_TASK to the new intent
+     *
+     * @param targetUrl The URL the web app was launched with
+     * @param packageName Chrome will take a package name from the TWA session to ensure the intent
+     *     is sent to the application it is received from
+     */
+    private void launchNewIntent(String targetUrl, String packageName) {
+        if (packageName == null) {
+            return;
+        }
+
+        Intent newIntent = new Intent();
+        newIntent.setAction(Intent.ACTION_VIEW);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        newIntent.setData(Uri.parse(targetUrl));
+        newIntent.setPackage(packageName);
+        try {
+            mActivity.startActivity(newIntent);
+        } catch (ActivityNotFoundException exception) {
+            Log.w(TAG, "Couldn't start new activity in a separate task.");
+        }
+    }
+
     private void maybeNotifyLaunchQueue(WebAppLaunchParams launchParams) {
 
         if (!launchParams.newNavigationStarted) {
             // Check if the URL of the current page is in the web app scope.
             // Launch params should not be sent to a not verified origin.
-            CurrentPageVerifier.VerificationState state = mCurrentPageVerfier.getState();
+            CurrentPageVerifier.VerificationState state = mCurrentPageVerifier.getState();
             if (state == null || state.status != CurrentPageVerifier.VerificationStatus.SUCCESS) {
                 return;
             }

@@ -659,7 +659,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getCustomTabActivityNavigationController(),
                         getCustomTabObserver(),
                         getVerifier(),
-                        getCurrentPageVerifier());
+                        getCurrentPageVerifier(),
+                        this);
         if (getActivityType() == ActivityType.TRUSTED_WEB_ACTIVITY
                 || getActivityType() == ActivityType.WEB_APK) {
             TwaSharingController controller =

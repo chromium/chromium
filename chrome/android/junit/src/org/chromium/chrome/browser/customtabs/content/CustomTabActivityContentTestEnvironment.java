@@ -236,7 +236,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                         navigationController,
                         customTabObserver,
                         verifier,
-                        currentPageVerifier),
+                        currentPageVerifier,
+                        activity),
                 activity,
                 mMinimizationManagerHolder);
     }

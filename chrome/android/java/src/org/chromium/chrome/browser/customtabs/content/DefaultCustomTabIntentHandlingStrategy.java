@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import android.app.Activity;
 import android.text.TextUtils;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -25,19 +26,22 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     private final CustomTabActivityNavigationController mNavigationController;
     private final CustomTabObserver mCustomTabObserver;
     private final Verifier mVerifier;
-    private final CurrentPageVerifier mCurrentPageVerfier;
+    private final CurrentPageVerifier mCurrentPageVerifier;
+    private final Activity mActivity;
 
     public DefaultCustomTabIntentHandlingStrategy(
             CustomTabActivityTabProvider tabProvider,
             CustomTabActivityNavigationController navigationController,
             CustomTabObserver customTabObserver,
             Verifier verifier,
-            CurrentPageVerifier currentPageVerfier) {
+            CurrentPageVerifier currentPageVerifier,
+            Activity activity) {
         mTabProvider = tabProvider;
         mNavigationController = navigationController;
         mCustomTabObserver = customTabObserver;
         mVerifier = verifier;
-        mCurrentPageVerfier = currentPageVerfier;
+        mCurrentPageVerifier = currentPageVerifier;
+        mActivity = activity;
     }
 
     @Override
@@ -62,9 +66,10 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
             WebAppLaunchHandler launchHandler =
                     WebAppLaunchHandler.create(
                             mVerifier,
-                            mCurrentPageVerfier,
+                            mCurrentPageVerifier,
                             mNavigationController,
-                            mTabProvider.getTab().getWebContents());
+                            mTabProvider.getTab().getWebContents(),
+                            mActivity);
             launchHandler.handleInitialIntent(intentDataProvider);
         }
     }
@@ -122,9 +127,10 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
             WebAppLaunchHandler launchHandler =
                     WebAppLaunchHandler.create(
                             mVerifier,
-                            mCurrentPageVerfier,
+                            mCurrentPageVerifier,
                             mNavigationController,
-                            mTabProvider.getTab().getWebContents());
+                            mTabProvider.getTab().getWebContents(),
+                            mActivity);
             launchHandler.handleNewIntent(intentDataProvider);
         } else {
             loadUrl(intentDataProvider);
