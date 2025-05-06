@@ -21951,7 +21951,8 @@
                         "ShopCardVariant": "arm_3"
                     },
                     "enable_features": [
-                        "ShopCard"
+                        "ShopCard",
+                        "ShopCardImpressionLimits"
                     ]
                 }
             ]
