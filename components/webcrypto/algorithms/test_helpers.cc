@@ -75,10 +75,6 @@ bool operator==(const Status& a, const Status& b) {
          a.error_details() == b.error_details();
 }
 
-bool operator!=(const Status& a, const Status& b) {
-  return !(a == b);
-}
-
 static std::string ErrorTypeToString(blink::WebCryptoErrorType type) {
   switch (type) {
     case blink::kWebCryptoErrorTypeNotSupported:
