@@ -137,6 +137,12 @@ class DualReadingListModel : public ReadingListModel,
   // sync.
   base::flat_set<GURL> GetKeysThatNeedUploadToSyncServer() const;
 
+  // Uploads entries corresponding to `keys` that required upload to sync
+  // server. The upload itself may take long to complete (depending on network
+  // connectivity and many other factors).
+  void MarkEntriesForUploadToSyncServerIfNeeded(
+      const base::flat_set<GURL>& keys);
+
   StorageStateForTesting GetStorageStateForURLForTesting(const GURL& url);
 
   // Returns the model responsible for the local/syncable reading list.
