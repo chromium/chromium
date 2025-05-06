@@ -20,6 +20,8 @@ static_library("test_support") {
   sources = [
     "test/bookmark_entity_builder.cc",
     "test/bookmark_entity_builder.h",
+    "test/collaboration_group_util.cc",
+    "test/collaboration_group_util.h",
     "test/data_type_manager_mock.cc",
     "test/data_type_manager_mock.h",
     "test/data_type_store_test_util.cc",

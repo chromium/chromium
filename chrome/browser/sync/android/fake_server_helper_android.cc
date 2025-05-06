@@ -18,13 +18,20 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
+#include "components/sync/model/data_type_sync_bridge.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
+#include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/collaboration_group_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/bookmark_entity_builder.h"
+#include "components/sync/test/collaboration_group_util.h"
 #include "components/sync/test/entity_builder_factory.h"
 #include "components/sync/test/fake_server.h"
 #include "components/sync/test/fake_server_network_resources.h"
@@ -401,4 +408,33 @@ static void JNI_FakeServerHelper_RemoveCollaboration(
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   fake_server_ptr->RemoveCollaboration(collaboration_id);
+}
+
+static void JNI_FakeServerHelper_AddCollaborationGroupToFakeServer(
+    JNIEnv* env,
+    jlong fake_server,
+    std::string& collaboration_id) {
+  const data_sharing::GroupId group_id =
+      data_sharing::GroupId(collaboration_id);
+  const sync_pb::CollaborationGroupSpecifics collab_specifics =
+      collaboration_group_utils::MakeCollaborationGroupSpecifics(
+          group_id.value());
+
+  sync_pb::EntitySpecifics entity_specifics;
+  *entity_specifics.mutable_collaboration_group() = collab_specifics;
+
+  sync_pb::SyncEntity::CollaborationMetadata metadata;
+  metadata.set_collaboration_id(collaboration_id);
+
+  std::string client_tag = collab_specifics.collaboration_id();
+  int64_t creation_time =
+      collab_specifics.changed_at_timestamp_millis_since_unix_epoch();
+  int64_t update_time = creation_time;
+
+  fake_server::FakeServer* fake_server_ptr =
+      reinterpret_cast<fake_server::FakeServer*>(fake_server);
+  fake_server_ptr->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSharedSpecificsForTesting(
+          "non_unique_name", client_tag, entity_specifics, creation_time,
+          update_time, metadata));
 }

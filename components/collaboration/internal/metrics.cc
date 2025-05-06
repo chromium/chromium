@@ -285,6 +285,7 @@ std::string CreateLatencyLogToString(CollaborationServiceStep step,
 
 void RecordJoinEvent(data_sharing::Logger* logger,
                      CollaborationServiceJoinEvent event) {
+  VLOG(1) << "RecordJoinEvent:" << (CreateJoinEventLogString(event));
   base::UmaHistogramEnumeration("CollaborationService.JoinFlow", event);
   DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
                    logger, CreateJoinEventLogString(event));
@@ -292,6 +293,8 @@ void RecordJoinEvent(data_sharing::Logger* logger,
 
 void RecordShareOrManageEvent(data_sharing::Logger* logger,
                               CollaborationServiceShareOrManageEvent event) {
+  VLOG(1) << "RecordShareOrManageEvent:"
+          << (CreateShareOrManageEventLogString(event));
   base::UmaHistogramEnumeration("CollaborationService.ShareOrManageFlow",
                                 event);
   DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
