@@ -153,7 +153,9 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   if ([self
           isRunningTest:@selector(testRestoreToWarningPagePreservesHistory)] ||
       [self isRunningTest:@selector(testMalwarePage)] ||
-      [self isRunningTest:@selector(testProceedingPastMalwareWarning)]) {
+      [self isRunningTest:@selector(testProceedingPastMalwareWarning)] ||
+      [self
+          isRunningTest:@selector(testProceedingPastMalwareWarningReported)]) {
     config.additional_args.push_back(std::string(
         "--disable-features=SafeBrowsingHashPrefixRealTimeLookups"));
   } else {
@@ -172,6 +174,7 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
     config.additional_args.push_back(
         base::StrCat({"<dict><key>", kEnrollmentTokenPolicyName,
                       "</key><string>", kEnrollmentToken, "</string></dict>"}));
+    config.relaunch_policy = ForceRelaunchByKilling;
   }
 
   config.additional_args.push_back(
@@ -300,7 +303,9 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
 
 - (BOOL)isRunningEnterpriseReportingTest {
   return
-      [self isRunningTest:@selector(testProceedingPastPhishingWarningReported)];
+      [self
+          isRunningTest:@selector(testProceedingPastPhishingWarningReported)] ||
+      [self isRunningTest:@selector(testProceedingPastMalwareWarningReported)];
 }
 
 - (void)waitForEnterpriseReports:(int)count {
@@ -582,9 +587,7 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
 
 // Tests expanding the details on a malware warning, and proceeding past the
 // warning is reported to an enterprise connector.
-// TODO(crbug.com/415736132): Re-enable test and add to Enterprise reporting
-// list `isRunningEnterpriseReportingTest`.
-- (void)DISABLED_testProceedingPastMalwareWarningReported {
+- (void)testProceedingPastMalwareWarningReported {
   [ChromeEarlGrey loadURL:_safeURL1];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
 
