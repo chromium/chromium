@@ -66,6 +66,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/update_channel.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"

@@ -12,7 +12,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
@@ -24,6 +23,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
+#include "components/webapps/isolated_web_apps/update_channel.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace web_app {
@@ -91,42 +91,6 @@ ParseChannels(const base::Value::Dict& channels) {
 }
 
 }  // namespace
-
-// static
-const UpdateChannel& UpdateChannel::default_channel() {
-  static const base::NoDestructor<UpdateChannel> kDefaultChannel(
-      [] { return *UpdateChannel::Create("default"); }());
-  return *kDefaultChannel;
-}
-
-// static
-base::expected<UpdateChannel, std::monostate> UpdateChannel::Create(
-    std::string input) {
-  if (input.empty() || !base::IsStringUTF8(input)) {
-    return base::unexpected(std::monostate());
-  }
-  return UpdateChannel(std::move(input));
-}
-
-void PrintTo(const UpdateChannel& channel, std::ostream* os) {
-  *os << channel.ToString();
-}
-
-UpdateChannel::UpdateChannel(std::string channel) : name_(std::move(channel)) {}
-
-UpdateChannel::UpdateChannel(const UpdateChannel&) = default;
-
-UpdateChannel::UpdateChannel(UpdateChannel&&) = default;
-
-UpdateChannel& UpdateChannel::operator=(const UpdateChannel&) = default;
-
-UpdateChannel& UpdateChannel::operator=(UpdateChannel&&) = default;
-
-UpdateChannel::~UpdateChannel() = default;
-
-bool UpdateChannel::operator==(const UpdateChannel& other) const = default;
-auto UpdateChannel::operator<=>(const UpdateChannel& other) const = default;
-bool UpdateChannel::operator<(const UpdateChannel& other) const = default;
 
 // static
 base::expected<UpdateManifest, UpdateManifest::JsonFormatError>

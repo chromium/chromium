@@ -12,6 +12,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/webapps/isolated_web_apps/update_channel.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"

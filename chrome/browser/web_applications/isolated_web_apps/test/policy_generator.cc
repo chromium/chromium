@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
+#include "components/webapps/isolated_web_apps/update_channel.h"
 
 namespace web_app {
 

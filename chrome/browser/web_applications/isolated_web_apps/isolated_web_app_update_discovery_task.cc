@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/update_channel.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 
