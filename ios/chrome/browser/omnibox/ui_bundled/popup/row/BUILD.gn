@@ -23,7 +23,6 @@ source_set("row") {
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_icon",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup/resources",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
