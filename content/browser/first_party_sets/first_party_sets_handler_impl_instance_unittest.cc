@@ -177,7 +177,7 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
   }
 
   net::FirstPartySetsContextConfig GetContextConfigForPolicy(
-      const base::Value::Dict* policy) {
+      base::optional_ref<const base::Value::Dict> policy) {
     base::test::TestFuture<net::FirstPartySetsContextConfig> future;
     handler().GetContextConfigForPolicy(policy, future.GetCallback());
     return future.Take();
@@ -269,10 +269,10 @@ TEST_F(FirstPartySetsHandlerImplDisabledTest, InitImmediately) {
   // Should already be able to answer queries, even before Init is called.
   EXPECT_THAT(handler().GetSets(base::NullCallback()), Optional(_));
 
-  EXPECT_EQ(GetContextConfigForPolicy(nullptr),
+  EXPECT_EQ(GetContextConfigForPolicy(std::nullopt),
             net::FirstPartySetsContextConfig());
 
-  base::Value::Dict policy = base::test::ParseJsonDict(R"(
+  EXPECT_EQ(GetContextConfigForPolicy(base::test::ParseJsonDict(R"(
                 {
                 "replacements": [
                   {
@@ -281,8 +281,7 @@ TEST_F(FirstPartySetsHandlerImplDisabledTest, InitImmediately) {
                   }
                 ]
               }
-            )");
-  EXPECT_EQ(GetContextConfigForPolicy(&policy),
+            )")),
             net::FirstPartySetsContextConfig());
 
   // The local set declaration should be ignored, since the handler is disabled.
@@ -798,9 +797,9 @@ class FirstPartySetsHandlerGetContextConfigForPolicyTest
 
 TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
        DefaultOverridesPolicy_DefaultContextConfigs) {
-  base::Value::Dict policy;
   base::test::TestFuture<net::FirstPartySetsContextConfig> future;
-  handler().GetContextConfigForPolicy(&policy, future.GetCallback());
+  handler().GetContextConfigForPolicy(base::Value::Dict(),
+                                      future.GetCallback());
 
   InitPublicFirstPartySets();
   EXPECT_EQ(future.Take(), net::FirstPartySetsContextConfig());
@@ -808,12 +807,12 @@ TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
 
 TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
        MalformedOverridesPolicy_DefaultContextConfigs) {
-  base::Value::Dict policy = base::test::ParseJsonDict(R"({
+  base::test::TestFuture<net::FirstPartySetsContextConfig> future;
+  handler().GetContextConfigForPolicy(base::test::ParseJsonDict(R"({
     "replacements": 123,
     "additions": true
-  })");
-  base::test::TestFuture<net::FirstPartySetsContextConfig> future;
-  handler().GetContextConfigForPolicy(&policy, future.GetCallback());
+  })"),
+                                      future.GetCallback());
 
   InitPublicFirstPartySets();
   EXPECT_EQ(future.Take(), net::FirstPartySetsContextConfig());
@@ -821,7 +820,8 @@ TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
 
 TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
        NonDefaultOverridesPolicy_NonDefaultContextConfigs) {
-  base::Value::Dict policy = base::test::ParseJsonDict(R"(
+  base::test::TestFuture<net::FirstPartySetsContextConfig> future;
+  handler().GetContextConfigForPolicy(base::test::ParseJsonDict(R"(
                 {
                 "replacements": [
                   {
@@ -836,15 +836,14 @@ TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
                   }
                 ]
               }
-            )");
-  base::test::TestFuture<net::FirstPartySetsContextConfig> future;
-  handler().GetContextConfigForPolicy(&policy, future.GetCallback());
+            )"),
+                                      future.GetCallback());
 
   InitPublicFirstPartySets();
   // We don't care what the customizations are, here; we only care that they're
   // not a no-op.
   EXPECT_FALSE(future.Take().empty());
-  EXPECT_EQ(GetContextConfigForPolicy(nullptr),
+  EXPECT_EQ(GetContextConfigForPolicy(std::nullopt),
             net::FirstPartySetsContextConfig());
 }
 

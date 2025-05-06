@@ -43,7 +43,7 @@ ScopedMockFirstPartySetsHandler::FindEntry(
 }
 
 void ScopedMockFirstPartySetsHandler::GetContextConfigForPolicy(
-    const base::Value::Dict* policy,
+    base::optional_ref<const base::Value::Dict> policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   if (invoke_callbacks_asynchronously_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

@@ -46,7 +46,7 @@ class ScopedMockFirstPartySetsHandler
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const override;
   void GetContextConfigForPolicy(
-      const base::Value::Dict* policy,
+      base::optional_ref<const base::Value::Dict> policy,
       base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)
       override;
   void ClearSiteDataOnChangedSetsForContext(

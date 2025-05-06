@@ -63,7 +63,7 @@ ScopedMockFirstPartySetsHandler::GetSets(
 }
 
 void ScopedMockFirstPartySetsHandler::GetContextConfigForPolicy(
-    const base::Value::Dict* policy,
+    base::optional_ref<const base::Value::Dict> policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   if (should_deadlock_) {
     return;
