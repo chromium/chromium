@@ -254,7 +254,7 @@ TEST_P(MachPortRendezvousServerTest, DestroyRight) {
 MULTIPROCESS_TEST_MAIN(FailToRendezvous) {
   // The rendezvous system uses the BaseBundleID to construct the bootstrap
   // server name, so changing it will result in a failure to look it up.
-  base::apple::SetBaseBundleID("org.chromium.totallyfake");
+  apple::SetBaseBundleIDOverride("org.chromium.totallyfake");
   CHECK_EQ(nullptr, base::MachPortRendezvousClient::GetInstance());
   return 0;
 }

@@ -31,7 +31,7 @@
 namespace web_app {
 
 namespace {
-const char kFakeChromeBundleId[] = "fake.cfbundleidentifier";
+constexpr char kFakeChromeBundleId[] = "fake.cfbundleidentifier";
 }
 
 class ShortcutsVersioningMacTest : public WebAppTest {
@@ -42,7 +42,7 @@ class ShortcutsVersioningMacTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    base::apple::SetBaseBundleID(kFakeChromeBundleId);
+    base::apple::SetBaseBundleIDOverride(kFakeChromeBundleId);
     // Put shortcuts somewhere under the home dir, as otherwise LaunchServices
     // won't be able to find them.
     override_registration_ =

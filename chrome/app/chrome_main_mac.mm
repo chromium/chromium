@@ -83,7 +83,8 @@ void SetUpBundleOverrides() {
         chrome::GetFrameworkBundlePath());
 
     NSBundle* base_bundle = chrome::OuterAppBundle();
-    base::apple::SetBaseBundleID(base_bundle.bundleIdentifier.UTF8String);
+    base::apple::SetBaseBundleIDOverride(
+        base::SysNSStringToUTF8(base_bundle.bundleIdentifier));
 
     base::FilePath child_exe_path =
         chrome::GetFrameworkBundlePath().Append("Helpers").Append(

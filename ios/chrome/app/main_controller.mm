@@ -555,8 +555,8 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
 - (void)startUpBrowserBackgroundInitialization {
   NSBundle* baseBundle = base::apple::OuterBundle();
-  base::apple::SetBaseBundleID(
-      base::SysNSStringToUTF8([baseBundle bundleIdentifier]).c_str());
+  base::apple::SetBaseBundleIDOverride(
+      base::SysNSStringToUTF8(baseBundle.bundleIdentifier));
 
   // Register default values for experimental settings (Application Preferences)
   // and set the "Version" key in the UserDefaults.

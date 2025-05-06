@@ -141,10 +141,11 @@ int ChromeWebAppShortcutCopierMain(int argc, char** argv) {
   NSString* outer_app_dir_ns = base::SysUTF8ToNSString(outer_app_dir.value());
   NSBundle* base_bundle = [NSBundle bundleWithPath:outer_app_dir_ns];
   // In tests we might not be running from inside an app bundle, in that case
-  // there is also no need to overide the bundle ID, as the default value should
-  // already match that of the caller process.
+  // there is also no need to override the bundle ID, as the default value
+  // should already match that of the caller process.
   if (base_bundle && base_bundle.bundleIdentifier) {
-    base::apple::SetBaseBundleID(base_bundle.bundleIdentifier.UTF8String);
+    base::apple::SetBaseBundleIDOverride(
+        base::SysNSStringToUTF8(base_bundle.bundleIdentifier));
   }
 
   auto requirement = CallerProcessRequirement();

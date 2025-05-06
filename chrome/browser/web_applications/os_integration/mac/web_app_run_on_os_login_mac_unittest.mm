@@ -79,7 +79,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
  public:
   void SetUp() override {
     WebAppTest::SetUp();
-    base::apple::SetBaseBundleID(kFakeChromeBundleId);
+    base::apple::SetBaseBundleIDOverride(kFakeChromeBundleId);
 
     override_registration_ =
         OsIntegrationTestOverrideImpl::OverrideForTesting();
