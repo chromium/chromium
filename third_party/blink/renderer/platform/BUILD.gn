@@ -1977,7 +1977,10 @@ static_library("test_support") {
   ]
   testonly = true
 
+  defines = [ "BLINK_PLATFORM_TEST_IMPLEMENTATION" ]
+
   sources = [
+    "graphics/gpu/drawing_buffer_test_helpers.cc",
     "graphics/gpu/drawing_buffer_test_helpers.h",
     "graphics/paint/paint_controller_test.h",
     "graphics/test/fake_canvas_resource_host.h",
@@ -1990,6 +1993,7 @@ static_library("test_support") {
     "graphics/test/mock_compositor_frame_sink_client.h",
     "graphics/test/mock_embedded_frame_sink_provider.h",
     "graphics/test/mock_frame_sink_bundle.h",
+    "graphics/test/mock_image_decoder.cc",
     "graphics/test/mock_image_decoder.h",
     "graphics/test/mock_paint_canvas.h",
     "graphics/test/stub_image.h",

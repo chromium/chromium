@@ -16,7 +16,8 @@ namespace blink {
 class InvalidationTracingFlag {
  public:
   ALWAYS_INLINE static bool IsEnabled() {
-    static const unsigned char* is_tracing_enabled = GetCategoryGroupEnabled();
+    static const unsigned char* const is_tracing_enabled =
+        GetCategoryGroupEnabled();
     return *is_tracing_enabled;
   }
 
