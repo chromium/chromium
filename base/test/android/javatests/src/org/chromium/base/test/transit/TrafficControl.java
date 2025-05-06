@@ -23,48 +23,52 @@ public class TrafficControl {
     private static final List<Pair<String, String>> sAllStationNames = new ArrayList<>();
     private static @Nullable String sCurrentTestCase;
 
-    private static @Nullable Station<?> sActiveStation;
+    private static List<Station<?>> sActiveStations = new ArrayList<>();
 
     static void notifyCreatedStation(Station<?> station) {
         sAllStationNames.add(Pair.create(sCurrentTestCase, station.getName()));
     }
 
     static void notifyEntryPointSentinelStationCreated(EntryPointSentinelStation sentinelStation) {
-        if (sActiveStation != null) {
+        for (Station<?> station : sActiveStations) {
             // Happens when test is batched, but the Activity is not kept between tests; Public
             // Transit's Station/Facility state need to reflect that and start from a new
             // {@link EntryPointSentinelStation}.
-            sActiveStation.setStateTransitioningFrom();
-            sActiveStation.setStateFinished();
+            station.setStateTransitioningFrom();
+            station.setStateFinished();
         }
-        sActiveStation = sentinelStation;
+        sActiveStations.clear();
     }
 
-    static void notifyActiveStationChanged(Station<?> newActiveStation) {
-        assert newActiveStation.getPhase() == Phase.ACTIVE : "New active Station must be ACTIVE";
-        if (sActiveStation != null) {
-            assert sActiveStation.getPhase() != Phase.ACTIVE
+    static void notifyActiveStationsChanged(
+            List<Station<?>> exitedStations, List<Station<?>> enteredStations) {
+        for (Station<?> enteredStation : enteredStations) {
+            assert enteredStation.getPhase() == Phase.ACTIVE : "New active Station must be ACTIVE";
+        }
+        for (Station<?> exitedStation : exitedStations) {
+            assert exitedStation.getPhase() != Phase.ACTIVE
                     : "Previously active station was not ACTIVE";
         }
-        sActiveStation = newActiveStation;
+        sActiveStations.removeAll(exitedStations);
+        sActiveStations.addAll(enteredStations);
     }
 
     /**
-     * Hop off Public Transit - set the active station to null so that a subsequent test can go
-     * through an entry point again on the same process.
+     * Hop off Public Transit - clear the active stations so that a subsequent test can go through
+     * an entry point again on the same process.
      *
      * <p>Useful in Robolectric tests.
      */
     public static void hopOffPublicTransit() {
-        sActiveStation = null;
+        sActiveStations.clear();
     }
 
     public static List<Pair<String, String>> getAllStationsNames() {
         return sAllStationNames;
     }
 
-    public static @Nullable Station<?> getActiveStation() {
-        return sActiveStation;
+    public static List<Station<?>> getActiveStations() {
+        return sActiveStations;
     }
 
     static void onTestStarted(String testName) {

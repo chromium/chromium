@@ -288,4 +288,14 @@ public abstract class Transition {
             }
         }
     }
+
+    protected String getStateListString(List<? extends ConditionalState> states) {
+        if (states.isEmpty()) {
+            return "<none>";
+        } else if (states.size() == 1) {
+            return states.get(0).toString();
+        } else {
+            return states.toString();
+        }
+    }
 }

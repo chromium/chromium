@@ -10,7 +10,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
-import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TrafficControl;
 import org.chromium.build.annotations.NullMarked;
@@ -19,6 +18,8 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
+
+import java.util.List;
 
 /**
  * Rule for integration tests that reuse a ChromeTabbedActivity but reset tab state between cases.
@@ -54,18 +55,23 @@ public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implemen
      * <p>From the second test onwards, state was reset by {@link BlankCTATabInitialStateRule}.
      */
     public WebPageStation startOnBlankPage() {
-        // Null in the first test, non-null from the second test onwards.
-        Station<?> homeStation = TrafficControl.getActiveStation();
-        if (homeStation == null) {
-            EntryPointSentinelStation entryPoint = new EntryPointSentinelStation();
-            entryPoint.setAsEntryPoint();
-            homeStation = entryPoint;
+        // Empty in the first test, should be size 1 from the second test onwards.
+        List<Station<?>> activeStations = TrafficControl.getActiveStations();
+        if (activeStations.size() > 1) {
+            throw new IllegalStateException(
+                    String.format(
+                            "Expected at most one active station, found %d",
+                            activeStations.size()));
         }
+
+        // Remove the last station of the previous test from |activeStations| to go to an entry
+        // point again.
+        TrafficControl.hopOffPublicTransit();
 
         WebPageStation entryPageStation = WebPageStation.newBuilder().withEntryPoint().build();
 
         // Wait for the Conditions to be met to return an active PageStation.
-        return homeStation.travelToSync(entryPageStation, /* trigger= */ null);
+        return Station.spawnSync(entryPageStation, /* trigger= */ null);
     }
 
     /**
