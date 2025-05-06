@@ -259,6 +259,27 @@ void PeerConnectionTrackerHost::StopEventLog(int lid) {
   tracker_->StopEventLog(lid);
 }
 
+void PeerConnectionTrackerHost::StartDataChannelLog(int lid) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  tracker_->StartDataChannelLog(lid);
+}
+
+void PeerConnectionTrackerHost::StopDataChannelLog(int lid) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  tracker_->StopDataChannelLog(lid);
+}
+
+void PeerConnectionTrackerHost::WebRtcDataChannelLogWrite(
+    int lid,
+    const std::vector<uint8_t>& output) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  std::string message(output.begin(), output.end());
+  for (auto& observer : GetObserverList()) {
+    observer.OnWebRtcDataChannelLogWrite(frame_id_, lid, message);
+  }
+}
+
 void PeerConnectionTrackerHost::GetStandardStats() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   tracker_->GetStandardStats();

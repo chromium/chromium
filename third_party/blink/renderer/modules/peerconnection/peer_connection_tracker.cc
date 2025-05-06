@@ -702,6 +702,18 @@ void PeerConnectionTracker::StopEventLog(int peer_connection_local_id) {
   }
 }
 
+void PeerConnectionTracker::StartDataChannelLog(int peer_connection_local_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+  // TODO(chromium:407785197): Start the DataChannel log on the PeerConnection
+  // specified by `peer_connection_local_id`.
+}
+
+void PeerConnectionTracker::StopDataChannelLog(int peer_connection_local_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+  // TODO(chromium:407785197): Stop the DataChannel log on the PeerConnection
+  // specified by `peer_connection_local_id`.
+}
+
 void PeerConnectionTracker::GetStandardStats() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
 
@@ -1185,6 +1197,18 @@ void PeerConnectionTracker::TrackRtcEventLogWrite(
     return;
 
   peer_connection_tracker_host_->WebRtcEventLogWrite(id, output);
+}
+
+void PeerConnectionTracker::TrackRtcDataChannelLogWrite(
+    RTCPeerConnectionHandler* pc_handler,
+    const WTF::Vector<uint8_t>& output) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+  int id = GetLocalIDForHandler(pc_handler);
+  if (id == -1) {
+    return;
+  }
+
+  peer_connection_tracker_host_->WebRtcDataChannelLogWrite(id, output);
 }
 
 int PeerConnectionTracker::GetNextLocalID() {

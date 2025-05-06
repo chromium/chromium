@@ -18157,13 +18157,11 @@ void RenderFrameHostImpl::DisableWebRtcEventLogOutput(int lid) {
 }
 
 void RenderFrameHostImpl::EnableWebRtcDataChannelLogOutput(int lid) {
-  // TODO(chromium:407785197): Call start DataChannel log on the
-  // PeerConnectionTrackerHost.
+  GetPeerConnectionTrackerHost().StartDataChannelLog(lid);
 }
 
 void RenderFrameHostImpl::DisableWebRtcDataChannelLogOutput(int lid) {
-  // TODO(chromium:407785197): Call start DataChannel log on the
-  // PeerConnectionTrackerHost.
+  GetPeerConnectionTrackerHost().StopDataChannelLog(lid);
 }
 
 bool RenderFrameHostImpl::IsDocumentOnLoadCompletedInMainFrame() {
