@@ -2544,6 +2544,7 @@ static_library("browser") {
     "//third_party/libyuv",
     "//third_party/metrics_proto",
     "//third_party/re2",
+    "//third_party/search_engines_data:search_engines_scaled_resources_grit",
     "//third_party/webrtc_overrides:webrtc_component",
     "//third_party/widevine/cdm:buildflags",
     "//third_party/widevine/cdm:headers",

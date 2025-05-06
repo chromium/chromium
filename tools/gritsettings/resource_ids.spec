@@ -1508,6 +1508,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/third_party/blink/public/strings/permission_element_generated_strings.grd": {
     "META": {"sizes": {"messages": [2000],}},
     "messages": [10080],
+  },
+
+  "third_party/search_engines_data/resources/search_engines_scaled_resources.grd": {
+    "structures": [10100],
   }
 
   # END "everything else" section.

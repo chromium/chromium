@@ -70,6 +70,10 @@ template("chrome_repack_percent") {
         "//ui/views/resources",
       ]
     }
+    if (!is_android) {
+      sources += [ "$root_gen_dir/third_party/search_engines_data/search_engines_resources_${percent}_percent.pak" ]
+      deps += [ "//third_party/search_engines_data:resources" ]
+    }
     if (is_chromeos) {
       sources += [
         "$root_gen_dir/ash/login/resources/login_resources_${percent}_percent.pak",
