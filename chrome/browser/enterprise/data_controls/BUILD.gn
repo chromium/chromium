@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -66,6 +67,7 @@ source_set("data_controls") {
     }
     deps += [
       "//components/constrained_window",
+      "//components/guest_view/browser",
       "//components/reporting/client:report_queue",
       "//components/reporting/client:report_queue_configuration",
       "//components/reporting/client:report_queue_factory",
@@ -73,6 +75,9 @@ source_set("data_controls") {
       "//components/reporting/util:status",
       "//ui/views",
     ]
+  }
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
   }
   if (enable_extensions) {
     deps += [ "//chrome/browser/extensions" ]
