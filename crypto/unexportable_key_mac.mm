@@ -29,13 +29,16 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/scoped_policy.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "crypto/apple_keychain_util.h"
 #include "crypto/apple_keychain_v2.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key_mac.h"
+#include "crypto/unexportable_key_metrics.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
@@ -94,6 +97,27 @@ std::optional<std::vector<uint8_t>> Convertx963ToDerSpki(
   return ret;
 }
 
+// Logs `status` to an error histogram capturing that `operation` failed for a
+// key backed by Secure Enclave.
+void LogKeychainOperationError(TPMOperation operation, OSStatus status) {
+  static constexpr char kKeyErrorStatusHistogramFormat[] =
+      "Crypto.SecureEnclaveOperation.Mac.%s.Error";
+  base::UmaHistogramSparse(
+      base::StringPrintf(kKeyErrorStatusHistogramFormat,
+                         OperationToString(operation).c_str()),
+      status);
+}
+
+// Logs `error` to an error histogram capturing that `operation` failed for a
+// key backed by Secure Enclave. Defaults to `errSecCoreFoundationUnknown` if
+// `error` is missing.
+void LogKeychainOperationError(
+    TPMOperation operation,
+    base::apple::ScopedCFTypeRef<CFErrorRef>& error) {
+  LogKeychainOperationError(operation, error ? CFErrorGetCode(error.get())
+                                             : errSecCoreFoundationUnknown);
+}
+
 // UnexportableSigningKeyMac is an implementation of the UnexportableSigningKey
 // interface on top of Apple's Secure Enclave.
 class UnexportableSigningKeyMac : public UnexportableSigningKey {
@@ -149,6 +173,7 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
             error.InitializeInto()));
     if (!signature) {
       LOG(ERROR) << "Error signing with key: " << error.get();
+      LogKeychainOperationError(TPMOperation::kMessageSigning, error);
       return std::nullopt;
     }
     return CFDataToVec(signature.get());
@@ -271,6 +296,7 @@ UnexportableKeyProviderMac::GenerateSigningKeySlowly(
           NSToCFPtrCast(attributes), error.InitializeInto()));
   if (!private_key) {
     LOG(ERROR) << "Could not create private key: " << error.get();
+    LogKeychainOperationError(TPMOperation::kNewKeyCreation, error);
     return nullptr;
   }
   base::apple::ScopedCFTypeRef<CFDictionaryRef> key_metadata =
@@ -304,11 +330,13 @@ UnexportableKeyProviderMac::FromWrappedSigningKeySlowly(
   if (lacontext) {
     query[CFToNSPtrCast(kSecUseAuthenticationContext)] = lacontext;
   }
-  AppleKeychainV2::GetInstance().ItemCopyMatching(NSToCFPtrCast(query),
-                                                  key_data.InitializeInto());
+  OSStatus status = AppleKeychainV2::GetInstance().ItemCopyMatching(
+      NSToCFPtrCast(query), key_data.InitializeInto());
   CFDictionaryRef key_attributes =
       base::apple::CFCast<CFDictionaryRef>(key_data.get());
   if (!key_attributes) {
+    LOG(ERROR) << "Could not load private key from wrapped: " << status;
+    LogKeychainOperationError(TPMOperation::kWrappedKeyExport, status);
     return nullptr;
   }
   base::apple::ScopedCFTypeRef<SecKeyRef> key(
