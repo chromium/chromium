@@ -61,6 +61,7 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
+  bool ShouldHideInFullscreen() const override;
 
   // The WebContents's corresponding profile.
   raw_ptr<Profile> profile_;

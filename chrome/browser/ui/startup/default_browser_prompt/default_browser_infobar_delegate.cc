@@ -154,3 +154,7 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
 
   return ConfirmInfoBarDelegate::Accept();
 }
+
+bool DefaultBrowserInfoBarDelegate::ShouldHideInFullscreen() const {
+  return true;
+}

@@ -84,6 +84,10 @@ bool InfoBarDelegate::ShouldAnimate() const {
   return true;
 }
 
+bool InfoBarDelegate::ShouldHideInFullscreen() const {
+  return false;
+}
+
 ConfirmInfoBarDelegate* InfoBarDelegate::AsConfirmInfoBarDelegate() {
   return nullptr;
 }

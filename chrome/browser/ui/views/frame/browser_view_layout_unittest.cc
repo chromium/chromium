@@ -303,7 +303,7 @@ TEST_F(BrowserViewLayoutTest, Layout) {
   // Top views are zero-height.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0), tab_strip()->bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 0), toolbar()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 0), infobar_container()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 0, 0), infobar_container()->bounds());
   // Contents split fills the window.
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), contents_container()->bounds());
 
@@ -316,7 +316,7 @@ TEST_F(BrowserViewLayoutTest, Layout) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, kToolbarHeight), toolbar()->bounds());
   EXPECT_EQ(gfx::Rect(0, kToolbarHeight, 800, views::Separator::kThickness),
             separator()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 30, 800, 0), infobar_container()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 30, 0, 0), infobar_container()->bounds());
   EXPECT_EQ(gfx::Rect(0, 30, 800, 570), contents_container()->bounds());
 
   // Disable the contents separator.
@@ -327,7 +327,7 @@ TEST_F(BrowserViewLayoutTest, Layout) {
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0), tab_strip()->bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 800, kToolbarHeight), toolbar()->bounds());
   EXPECT_FALSE(separator()->GetVisible());
-  EXPECT_EQ(gfx::Rect(0, 29, 800, 0), infobar_container()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 29, 0, 0), infobar_container()->bounds());
   EXPECT_EQ(gfx::Rect(0, 29, 800, 571), contents_container()->bounds());
 
   // TODO(jamescook): Tab strip and bookmark bar.

@@ -285,6 +285,10 @@ class InfoBarDelegate {
   // default.
   virtual bool ShouldAnimate() const;
 
+  // Returns true if the InfoBar should hide when the browser is in fullscreen
+  // mode. True by default.
+  virtual bool ShouldHideInFullscreen() const;
+
   // Type-checking downcast routines:
   virtual ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate();
   virtual blocked_content::PopupBlockedInfoBarDelegate*

@@ -603,9 +603,13 @@ int BrowserViewLayout::LayoutInfoBar(int top) {
   int content_top = infobar_top + infobar_container_->height();
   infobar_top += delegate_->GetExtraInfobarOffset();
   SetViewVisibility(infobar_container_, IsInfobarVisible());
-  infobar_container_->SetBounds(
-      vertical_layout_rect_.x(), infobar_top, vertical_layout_rect_.width(),
-      infobar_container_->GetPreferredSize().height());
+  if (infobar_container_->GetVisible()) {
+    infobar_container_->SetBounds(
+        vertical_layout_rect_.x(), infobar_top, vertical_layout_rect_.width(),
+        infobar_container_->GetPreferredSize().height());
+  } else {
+    infobar_container_->SetBounds(vertical_layout_rect_.x(), infobar_top, 0, 0);
+  }
   return content_top;
 }
 
@@ -868,5 +872,7 @@ int BrowserViewLayout::GetMinWebContentsWidth() const {
 }
 
 bool BrowserViewLayout::IsInfobarVisible() const {
-  return !infobar_container_->IsEmpty();
+  return !infobar_container_->IsEmpty() &&
+         (!browser_view_->IsFullscreen() ||
+          !infobar_container_->ShouldHideInFullscreen());
 }

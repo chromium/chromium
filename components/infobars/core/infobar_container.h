@@ -61,6 +61,8 @@ class InfoBarContainer : public InfoBarManager::Observer {
 
   const Delegate* delegate() const { return delegate_; }
 
+  bool ShouldHideInFullscreen() const;
+
  protected:
   // Subclasses must call this during destruction, so that we can remove
   // infobars (which will call the pure virtual functions below) while the
