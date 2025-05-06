@@ -19,9 +19,6 @@
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTabContents);
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
-                                    kTabSelectedState);
 
 constexpr char kDocumentWithTitle[] = "/title3.html";
 
@@ -65,26 +62,4 @@ IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest, HoverEffectShowsOnMouseOver) {
                             ->GetHoverAnimationValue() > 0;
                }),
       WaitForState(kTabStripHoverState, true));
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest, SelectionAndDeselection) {
-  const GURL test_url = embedded_test_server()->GetURL(kDocumentWithTitle);
-  RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, test_url),
-      AddInstrumentedTab(kSecondTabContents, test_url),
-      AddInstrumentedTab(kThirdTabContents, test_url),
-      SelectTab(kTabStripElementId, 0), HoverTabAt(1),
-      ClickMouse(ui_controls::LEFT, /*release =*/true,
-#if BUILDFLAG(IS_MAC)
-                 ui_controls::AcceleratorState::kCommand
-#else
-                 ui_controls::AcceleratorState::kControl
-#endif
-                 ),
-      HoverTabAt(2),
-      PollState(
-          kTabSelectedState,
-          [this]() { return browser()->tab_strip_model()->IsTabSelected(1); }),
-      WaitForState(kTabSelectedState, true));
 }

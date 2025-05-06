@@ -30,6 +30,8 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event_constants.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "url/gurl.h"
 
@@ -1423,6 +1425,44 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupHeaderAccessibleState) {
   ui::AXNodeData data;
   group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kEditable));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ToggleTabSelection) {
+  AppendTab();
+  AppendTab();
+  tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
+
+  const ui::EventFlags modifier =
+#if BUILDFLAG(IS_MAC)
+      ui::EF_COMMAND_DOWN;
+#else
+      ui::EF_CONTROL_DOWN;
+#endif
+  ui::MouseEvent click(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                       gfx::Point(0, 0), ui::EventTimeForNow(),
+                       ui::EF_LEFT_MOUSE_BUTTON | modifier,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  tab_strip()->tab_at(1)->OnMousePressed(click);
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ExtendTabSelection) {
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  tab_strip()->SelectTab(tab_strip()->tab_at(1), GetDummyEvent());
+
+  ui::MouseEvent click(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                       gfx::Point(0, 0), ui::EventTimeForNow(),
+                       ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  tab_strip()->tab_at(3)->OnMousePressed(click);
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(3)));
 }
 
 class TabStripSaveBrowsertest : public TabStripBrowsertest {
