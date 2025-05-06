@@ -6299,6 +6299,8 @@ crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/se
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-interactive-element-focus.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-parsing.tentative.html [ Failure ]
 
+crbug.com/415205686 editing/input/selectall-in-input-with-text-security.html [ Failure Crash ]
+
 # Flaky on headless_shell_wpt_tests
 crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.tentative.html [ Failure Pass ]
 

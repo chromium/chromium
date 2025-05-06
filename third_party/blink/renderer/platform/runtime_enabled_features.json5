@@ -4920,7 +4920,6 @@
       // This flag uses the original DOM text for input when the password
       // echo is enabled to create the offset_map.
       name: "UseOriginalDomOffsetsForOffsetMap",
-      status: "stable",
     },
     {
       name: "UsePositionForPointInFlexibleBoxWithSingleChildElement",
