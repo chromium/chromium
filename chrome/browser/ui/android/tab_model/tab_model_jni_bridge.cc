@@ -127,7 +127,7 @@ void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
 
 WebContents* TabModelJniBridge::GetWebContentsAt(int index) const {
   TabAndroid* tab = GetTabAt(index);
-  return tab == NULL ? NULL : tab->web_contents();
+  return tab == nullptr ? nullptr : tab->web_contents();
 }
 
 TabAndroid* TabModelJniBridge::GetTabAt(int index) const {
@@ -135,7 +135,7 @@ TabAndroid* TabModelJniBridge::GetTabAt(int index) const {
   ScopedJavaLocalRef<jobject> jtab =
       Java_TabModelJniBridge_getTabAt(env, java_object_.get(env), index);
 
-  return jtab.is_null() ? NULL : TabAndroid::GetNativeTab(env, jtab);
+  return jtab.is_null() ? nullptr : TabAndroid::GetNativeTab(env, jtab);
 }
 
 ScopedJavaLocalRef<jobject> TabModelJniBridge::GetJavaObject() const {
@@ -169,12 +169,12 @@ WebContents* TabModelJniBridge::CreateNewTabForDevTools(const GURL& url,
           url::GURLAndroid::FromNativeGURL(env, url), new_window);
   if (obj.is_null()) {
     VLOG(0) << "Failed to create java tab";
-    return NULL;
+    return nullptr;
   }
   TabAndroid* tab = TabAndroid::GetNativeTab(env, obj);
   if (!tab) {
     VLOG(0) << "Failed to create java tab";
-    return NULL;
+    return nullptr;
   }
   return tab->web_contents();
 }
@@ -253,9 +253,7 @@ void TabModelJniBridge::DuplicateTab(int index) {
 }
 
 tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
-  return nullptr;
+  return GetTabAt(index);
 }
 
 void TabModelJniBridge::HighlightTabs(std::set<int> indicies) {
@@ -269,8 +267,7 @@ void TabModelJniBridge::MoveTab(int from_index, int to_index) {
 }
 
 void TabModelJniBridge::CloseTab(int index) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
+  CloseTabAt(index);
 }
 
 std::vector<tabs::TabInterface*> TabModelJniBridge::GetAllTabs() {
