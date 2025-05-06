@@ -537,6 +537,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::DataType type) override;
+  void OnBrowserShutdown(syncer::DataType type) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // Processes a TemplateURL change for Sync. `turl` is the TemplateURL

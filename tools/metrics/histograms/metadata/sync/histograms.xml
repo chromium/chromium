@@ -1867,14 +1867,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.SearchEngine.HasLocalDataDuringStopSyncing"
+<histogram name="Sync.SearchEngine.HasLocalDataDuringStopSyncing2"
     enum="Boolean" expires_after="2026-03-07">
   <owner>ankushkush@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
     Recorded whenever search engines sync is being stopped, for example, upon
     signout. For each search engine with account data, records whether there
-    exists local data.
+    exists local data. Note that this is not recorded upon browser shutdown.
   </summary>
 </histogram>
 

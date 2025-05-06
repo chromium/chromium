@@ -2101,8 +2101,9 @@ void TemplateURLService::StopSyncing(syncer::DataType type) {
     // updating turl with a new TemplateURL containing only the local data
     // instead of just dropping the account data to ensure all the mappings are
     // correctly updated. Else, remove turl.
-    base::UmaHistogramBoolean("Sync.SearchEngine.HasLocalDataDuringStopSyncing",
-                              turl->GetLocalData().has_value());
+    base::UmaHistogramBoolean(
+        "Sync.SearchEngine.HasLocalDataDuringStopSyncing2",
+        turl->GetLocalData().has_value());
     if (turl->GetLocalData()) {
       Update(turl, TemplateURL(*turl->GetLocalData()));
       ++i;
@@ -2119,6 +2120,15 @@ void TemplateURLService::StopSyncing(syncer::DataType type) {
       ++i;
     }
   }
+}
+
+void TemplateURLService::OnBrowserShutdown(syncer::DataType type) {
+  CHECK_EQ(type, syncer::SEARCH_ENGINES);
+  models_associated_ = false;
+  sync_processor_.reset();
+  // Skip removing the account search engines on browser shutdown, as this is
+  // not really needed, plus the TemplateURLs will all be regenerated upon
+  // browser startup.
 }
 
 void TemplateURLService::ProcessTemplateURLChange(

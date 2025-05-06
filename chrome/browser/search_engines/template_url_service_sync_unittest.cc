@@ -4404,7 +4404,7 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
   EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid"));
   // Logged when removing the account only turl.
   histogram_tester.ExpectUniqueSample(
-      "Sync.SearchEngine.HasLocalDataDuringStopSyncing", false, 1);
+      "Sync.SearchEngine.HasLocalDataDuringStopSyncing2", false, 1);
 }
 
 TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
@@ -4434,7 +4434,7 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
   model()->StopSyncing(syncer::SEARCH_ENGINES);
 
   histogram_tester.ExpectUniqueSample(
-      "Sync.SearchEngine.HasLocalDataDuringStopSyncing", true, 1);
+      "Sync.SearchEngine.HasLocalDataDuringStopSyncing2", true, 1);
   // Only account data is removed.
   EXPECT_TRUE(model()->GetTemplateURLForGUID("guid"));
   EXPECT_EQ(turl->keyword(), u"localkey");
@@ -7192,4 +7192,49 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
   ASSERT_EQ(turl3, model()->GetTemplateURLForGUID("guid3"));
   EXPECT_EQ(turl3->keyword(), u"localkey3");
   EXPECT_FALSE(processor()->contains_guid("guid3"));
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       ShouldNotRemoveAccountDataUponBrowserShutdown) {
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  TemplateURLData data1 =
+      CreateTestTemplateURL(u"key1", "http://key1.com", "guid1")->data();
+  // Add a local-and-account search engine.
+  const TemplateURL* turl1 =
+      model()->Add(std::make_unique<TemplateURL>(data1, data1));
+  ASSERT_TRUE(turl1->GetAccountData());
+  ASSERT_TRUE(turl1->GetLocalData());
+
+  base::HistogramTester histogram_tester;
+  model()->OnBrowserShutdown(syncer::SEARCH_ENGINES);
+
+  ASSERT_EQ(turl1, model()->GetTemplateURLForGUID("guid1"));
+  EXPECT_TRUE(turl1->GetAccountData());
+  histogram_tester.ExpectTotalCount(
+      "Sync.SearchEngine.HasLocalDataDuringStopSyncing2", 0);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       ShouldRemoveAccountDataUponStopSyncing) {
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  TemplateURLData data1 =
+      CreateTestTemplateURL(u"key1", "http://key1.com", "guid1")->data();
+  // Add a local-and-account search engine.
+  const TemplateURL* turl1 =
+      model()->Add(std::make_unique<TemplateURL>(data1, data1));
+
+  ASSERT_TRUE(turl1->GetAccountData());
+  ASSERT_TRUE(turl1->GetLocalData());
+
+  base::HistogramTester histogram_tester;
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+
+  ASSERT_EQ(turl1, model()->GetTemplateURLForGUID("guid1"));
+  EXPECT_FALSE(turl1->GetAccountData());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SearchEngine.HasLocalDataDuringStopSyncing2", true, 1);
 }
