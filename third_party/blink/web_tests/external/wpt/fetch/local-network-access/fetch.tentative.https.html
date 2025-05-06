@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>LNA Fetch tests: HTTPS and Public source </title>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/support.sub.js"></script>
+<script>
+  "use strict";
+
+  promise_test(t => {
+    const source = { server: Server.HTTPS_PUBLIC };
+    const sourceUrl =
+        resolveUrl("resources/fetch-private.html", sourceResolveOptions(source));
+
+    function checkResult(evt) {
+      const { error, ok, type, body } = evt.data;
+
+      assert_equals(ok, true, "response ok mismatch");
+      assert_equals(body, "success", "response body mismatch");
+
+      t.done();
+    }
+
+    const promise = new Promise((resolve) => {
+                      window.addEventListener('message', resolve);
+                    }).then(checkResult);
+    const popup = window.open(sourceUrl);
+    t.add_cleanup(() => popup.close());
+
+    return promise;
+}, 'LNA Public to private with permission');
+</script>
+</body>

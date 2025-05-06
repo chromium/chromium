@@ -131,6 +131,19 @@
     "expires": "July 31, 2025"
   },
 
+  {
+    "prefix": "lna",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/fetch/local-network-access"],
+    "args": ["--enable-features=LocalNetworkAccessChecks:LocalNetworkAccessChecksWarn/false"],
+    "exclusive_tests": "ALL",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"],
+    "expires": "Oct 2, 2025"
+  },
+
   "This never expires because it tests a shipping configuration",
   {
     "prefix": "gpu",
