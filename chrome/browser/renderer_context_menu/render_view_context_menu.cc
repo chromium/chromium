@@ -531,7 +531,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
-       //     tools/metrics/histograms/enums.xml.
+       //     tools/metrics/histograms/metadata/ui/enums.xml.
        {0, 156}});
 
   // These UMA values are for the ContextMenuOptionDesktop enum, used for
@@ -4513,6 +4513,14 @@ void RenderViewContextMenu::ExecCopyVideoFrame() {
   MediaPlayerAction(blink::mojom::MediaPlayerAction(
       blink::mojom::MediaPlayerActionType::kCopyVideoFrame,
       /*enable=*/true));
+#if !BUILDFLAG(IS_ANDROID)
+  if (toast_features::IsEnabled(toast_features::kVideoFrameCopiedToast)) {
+    auto* const toast_controller = GetToastController();
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(ToastParams(ToastId::kVideoFrameCopied));
+    }
+  }
+#endif
 }
 
 void RenderViewContextMenu::ExecSearchForVideoFrame(int event_flags,

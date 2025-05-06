@@ -41,6 +41,11 @@ BASE_FEATURE(kImageCopiedToast,
              "ImageCopiedToast",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the video frame copied confirmation toast.
+BASE_FEATURE(kVideoFrameCopiedToast,
+             "VideoFrameCopiedToast",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the link to highlight copied confirmation toast.
 BASE_FEATURE(kLinkToHighlightCopiedToast,
              "LinkToHighlightCopiedToast",

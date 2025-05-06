@@ -67,6 +67,11 @@ void ToastService::RegisterToasts(
       ToastId::kImageCopied,
       ToastSpecification::Builder(kCopyMenuIcon, IDS_IMAGE_COPIED_TOAST_BODY)
           .Build());
+  toast_registry_->RegisterToast(
+      ToastId::kVideoFrameCopied,
+      ToastSpecification::Builder(kCopyMenuIcon,
+                                  IDS_VIDEO_FRAME_COPIED_TOAST_BODY)
+          .Build());
 
   toast_registry_->RegisterToast(
       ToastId::kLinkToHighlightCopied,
