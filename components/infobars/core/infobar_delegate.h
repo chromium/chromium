@@ -58,10 +58,10 @@ class InfoBarDelegate {
 
   // Unique identifier for every InfoBarDelegate subclass.  Use suffixes to mark
   // infobars specific to particular OSes/platforms.
-  // KEEP IN SYNC WITH THE InfoBarIdentifier ENUM IN enums.xml.
   // NEW VALUES MUST BE APPENDED AND AVOID CHANGING ANY PRE-EXISTING VALUES.
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.infobar
+  // LINT.IfChange(InfoBarIdentifier)
   enum InfoBarIdentifier {
     INVALID = -1,
     TEST_INFOBAR = 0,
@@ -188,7 +188,9 @@ class InfoBarDelegate {
     ENHANCED_SAFE_BROWSING_INFOBAR_DELEGATE = 121,
     CREDENTIAL_PROVIDER_INFOBAR_DELEGATE_IOS = 122,
     PDF_INFOBAR_DELEGATE = 123,
+    INSTALLER_DOWNLOADER_INFOBAR_DELEGATE = 124,
   };
+  // LINT.ThenChange(//metrics/histograms/metadata/browser/enums.xml)
 
   // Describes navigation events, used to decide whether infobars should be
   // dismissed.

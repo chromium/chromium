@@ -1,0 +1,51 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_STARTUP_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_INFOBAR_DELEGATE_H_
+#define CHROME_BROWSER_UI_STARTUP_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_INFOBAR_DELEGATE_H_
+
+#include <memory>
+#include <string>
+
+#include "base/functional/callback_forward.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar_delegate.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/window_open_disposition.h"
+
+namespace installer_downloader {
+
+class InstallerDownloaderInfoBarDelegate : public ConfirmInfoBarDelegate {
+ public:
+  // Creates a installer downloader infobar and adds it to the provided
+  // `infobar_manager`. The `infobar_manager` will own the returned infobar.
+  // `accept_cb` is called when the user accepts the infobar.
+  static void Show(content::WebContents* contents,
+                   base::RepeatingCallback<void()> accept_cb);
+
+  InstallerDownloaderInfoBarDelegate& operator=(
+      const InstallerDownloaderInfoBarDelegate&) = delete;
+
+  explicit InstallerDownloaderInfoBarDelegate(
+      base::RepeatingCallback<void()> accept_cb);
+  ~InstallerDownloaderInfoBarDelegate() override;
+
+  // ConfirmInfoBarDelegate:
+  infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
+  const gfx::VectorIcon& GetVectorIcon() const override;
+  bool ShouldExpire(const NavigationDetails& details) const override;
+  std::u16string GetMessageText() const override;
+  std::u16string GetLinkText() const override;
+  int GetButtons() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
+  bool LinkClicked(WindowOpenDisposition disposition) override;
+
+ private:
+  base::RepeatingCallback<void()> accept_cb_;
+};
+
+}  // namespace installer_downloader
+
+#endif  // CHROME_BROWSER_UI_STARTUP_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_INFOBAR_DELEGATE_H_

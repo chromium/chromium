@@ -7165,6 +7165,7 @@ test("unit_tests") {
       "../browser/task_manager/sampling/shared_sampler_win_unittest.cc",
       "../browser/tracing/windows_system_tracing_client_impl_unittest_win.cc",
       "../browser/ui/startup/credential_provider_signin_info_fetcher_win_unittest.cc",
+      "../browser/ui/startup/installer_downloader/installer_downloader_infobar_delegate_unittest.cc",
       "../browser/ui/views/frame/windows_caption_button_unittest.cc",
       "../browser/ui/views/uninstall_view_unittest.cc",
       "../browser/ui/webui/version/version_handler_win_unittest.cc",

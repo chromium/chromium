@@ -190,6 +190,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="User opened survey"/>
 </enum>
 
+<!-- LINT.IfChange(InfoBarIdentifier) -->
+
 <enum name="InfoBarIdentifier">
   <int value="1" label="APP_BANNER_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="2" label="APP_BANNER_INFOBAR_DELEGATE_DESKTOP (Obsolete)"/>
@@ -324,7 +326,10 @@ chromium-metrics-reviews@google.com.
   <int value="121" label="ENHANCED_SAFE_BROWSING_INFOBAR_DELEGATE"/>
   <int value="122" label="CREDENTIAL_PROVIDER_INFOBAR_DELEGATE_IOS"/>
   <int value="123" label="PDF_INFOBAR_DELEGATE"/>
+  <int value="124" label="INSTALLER_DOWNLOADER_INFOBAR_DELEGATE"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/infobars/core/infobar_delegate.h:InfoBarIdentifier) -->
 
 <!-- LINT.IfChange(NoSpareRendererReason) -->
 
