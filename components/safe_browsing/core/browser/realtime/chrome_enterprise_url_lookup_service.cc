@@ -13,6 +13,7 @@
 #include "components/enterprise/connectors/core/connectors_service_base.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
@@ -108,10 +109,12 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
   DCHECK(CanPerformFullURLLookup());
 
   // Don't allow using the access token if the managed profile doesn't match the
-  // managed device.
+  // managed device and the URL check is set at device level.
   if (management_service_->HasManagementAuthority(
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) &&
-      !is_profile_affiliated_callback_.Run()) {
+      !is_profile_affiliated_callback_.Run() &&
+      connectors_service_->GetRealtimeUrlCheckScope().value() ==
+          policy::POLICY_SCOPE_MACHINE) {
     return false;
   }
 

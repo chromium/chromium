@@ -46,6 +46,9 @@ class ConnectorsServiceBase {
   // affiliation.
   EnterpriseRealTimeUrlCheckMode GetAppliedRealTimeUrlCheck() const;
 
+  // Returns the policy scope of enterprise real-time URL check
+  std::optional<policy::PolicyScope> GetRealtimeUrlCheckScope() const;
+
   // Returns whether the Connectors are enabled.
   virtual bool IsConnectorEnabled(AnalysisConnector connector) const = 0;
 
