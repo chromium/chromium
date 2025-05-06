@@ -31,10 +31,6 @@ bool operator==(MatchPatternRef a, MatchPatternRef b) {
          test_api(a).index() == test_api(b).index();
 }
 
-bool operator!=(MatchPatternRef a, MatchPatternRef b) {
-  return !(a == b);
-}
-
 void PrintTo(MatchPatternRef p, std::ostream* os) {
   *os << "MatchPatternRef(" << test_api(p).is_supplementary() << ","
       << test_api(p).index() << ")";
