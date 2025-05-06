@@ -58,18 +58,17 @@ constexpr size_t kBitsPerByte = 8;
 constexpr std::string_view kHistogramValue = "histogram";
 constexpr std::string_view kOperationKey = "operation";
 
-// TODO(linnan): Refactoring to return `std::optional<GURL>`.
-std::vector<GURL> GetDefaultProcessingUrls(
+std::optional<GURL> GetProcessingUrl(
     const std::optional<url::Origin>& aggregation_coordinator_origin) {
   if (!aggregation_coordinator_origin.has_value()) {
-    return {GetAggregationServiceProcessingUrl(
-        ::aggregation_service::GetDefaultAggregationCoordinatorOrigin())};
+    return GetAggregationServiceProcessingUrl(
+        ::aggregation_service::GetDefaultAggregationCoordinatorOrigin());
   }
   if (!::aggregation_service::IsAggregationCoordinatorOriginAllowed(
           *aggregation_coordinator_origin)) {
-    return {};
+    return std::nullopt;
   }
-  return {GetAggregationServiceProcessingUrl(*aggregation_coordinator_origin)};
+  return GetAggregationServiceProcessingUrl(*aggregation_coordinator_origin);
 }
 
 // TODO(crbug.com/40215445): Replace with `base/numerics/byte_conversions.h` if
@@ -547,18 +546,22 @@ std::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
     std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
     int failed_send_attempts) {
-  std::vector<GURL> processing_urls =
-      GetDefaultProcessingUrls(payload_contents.aggregation_coordinator_origin);
-  return CreateInternal(std::move(processing_urls), std::move(payload_contents),
-                        std::move(shared_info), delay_type,
-                        std::move(reporting_path), debug_key,
-                        std::move(additional_fields), failed_send_attempts);
+  if (std::optional<GURL> processing_url =
+          GetProcessingUrl(payload_contents.aggregation_coordinator_origin);
+      processing_url.has_value()) {
+    return CreateInternal(*std::move(processing_url),
+                          std::move(payload_contents), std::move(shared_info),
+                          delay_type, std::move(reporting_path), debug_key,
+                          std::move(additional_fields), failed_send_attempts);
+  }
+
+  return std::nullopt;
 }
 
 // static
 std::optional<AggregatableReportRequest>
 AggregatableReportRequest::CreateForTesting(
-    std::vector<GURL> processing_urls,
+    GURL processing_url,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
     std::optional<AggregatableReportRequest::DelayType> delay_type,
@@ -566,7 +569,7 @@ AggregatableReportRequest::CreateForTesting(
     std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
     int failed_send_attempts) {
-  return CreateInternal(std::move(processing_urls), std::move(payload_contents),
+  return CreateInternal(std::move(processing_url), std::move(payload_contents),
                         std::move(shared_info), delay_type,
                         std::move(reporting_path), debug_key,
                         std::move(additional_fields), failed_send_attempts);
@@ -575,7 +578,7 @@ AggregatableReportRequest::CreateForTesting(
 // static
 std::optional<AggregatableReportRequest>
 AggregatableReportRequest::CreateInternal(
-    std::vector<GURL> processing_urls,
+    GURL processing_url,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
     std::optional<AggregatableReportRequest::DelayType> delay_type,
@@ -583,15 +586,8 @@ AggregatableReportRequest::CreateInternal(
     std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
     int failed_send_attempts) {
-  if (!AggregatableReport::IsNumberOfProcessingUrlsValid(
-          processing_urls.size())) {
-    DVLOG(1) << "Invalid number of processing URLs";
-    return std::nullopt;
-  }
-
-  if (!std::ranges::all_of(processing_urls,
-                           network::IsUrlPotentiallyTrustworthy)) {
-    DVLOG(1) << "Not all processing URLs are potentially trustworthy";
+  if (!network::IsUrlPotentiallyTrustworthy(processing_url)) {
+    DVLOG(1) << "Processing URL is not potentially trustworthy";
     return std::nullopt;
   }
 
@@ -640,18 +636,14 @@ AggregatableReportRequest::CreateInternal(
     return std::nullopt;
   }
 
-  // Ensure the ordering of urls is deterministic. This is required for
-  // AggregatableReport construction later.
-  std::ranges::sort(processing_urls);
-
   return AggregatableReportRequest(
-      std::move(processing_urls), std::move(payload_contents),
+      std::move(processing_url), std::move(payload_contents),
       std::move(shared_info), delay_type, std::move(reporting_path), debug_key,
       std::move(additional_fields), failed_send_attempts);
 }
 
 AggregatableReportRequest::AggregatableReportRequest(
-    std::vector<GURL> processing_urls,
+    GURL processing_url,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
     std::optional<AggregatableReportRequest::DelayType> delay_type,
@@ -659,7 +651,7 @@ AggregatableReportRequest::AggregatableReportRequest(
     std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
     int failed_send_attempts)
-    : processing_urls_(std::move(processing_urls)),
+    : processing_url_(std::move(processing_url)),
       payload_contents_(std::move(payload_contents)),
       shared_info_(std::move(shared_info)),
       reporting_path_(std::move(reporting_path)),
@@ -729,12 +721,12 @@ AggregatableReport::AggregationServicePayload::~AggregationServicePayload() =
     default;
 
 AggregatableReport::AggregatableReport(
-    std::vector<AggregationServicePayload> payloads,
+    std::optional<AggregationServicePayload> payload,
     std::string shared_info,
     std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
     std::optional<url::Origin> aggregation_coordinator_origin)
-    : payloads_(std::move(payloads)),
+    : payload_(std::move(payload)),
       shared_info_(std::move(shared_info)),
       debug_key_(debug_key),
       additional_fields_(std::move(additional_fields)),
@@ -767,15 +759,12 @@ void AggregatableReport::Provider::SetDisableEncryptionForTestingTool(
 AggregatableReport::Provider::~Provider() = default;
 
 std::optional<AggregatableReport>
-AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
+AggregatableReport::Provider::CreateFromRequestAndPublicKey(
     const AggregatableReportRequest& report_request,
-    std::vector<PublicKey> public_keys) const {
-  const size_t num_processing_urls = public_keys.size();
-  CHECK_EQ(num_processing_urls, report_request.processing_urls().size());
-
-  std::optional<std::vector<uint8_t>> payload =
+    PublicKey public_key) const {
+  std::optional<std::vector<uint8_t>> unencrypted_payload =
       ConstructUnencryptedPayload(report_request.payload_contents());
-  if (!payload.has_value()) {
+  if (!unencrypted_payload.has_value()) {
     return std::nullopt;
   }
 
@@ -786,10 +775,7 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
           report_request.payload_contents().max_contributions_allowed,
           report_request.payload_contents().filtering_id_max_bytes)
           .value();
-  CHECK_EQ(payload->size(), expected_payload_length);
-
-  std::vector<std::vector<uint8_t>> unencrypted_payloads;
-  unencrypted_payloads.emplace_back(*std::move(payload));
+  CHECK_EQ(unencrypted_payload->size(), expected_payload_length);
 
   std::string encoded_shared_info =
       report_request.shared_info().SerializeAsJson();
@@ -799,35 +785,30 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   base::span<const uint8_t> authenticated_info =
       base::as_byte_span(authenticated_info_str);
 
-  std::vector<AggregatableReport::AggregationServicePayload> encrypted_payloads;
-  CHECK_EQ(unencrypted_payloads.size(), num_processing_urls);
-  for (size_t i = 0; i < num_processing_urls; ++i) {
-    std::vector<uint8_t> encrypted_payload =
-        g_disable_encryption_for_testing_tool_
-            ? unencrypted_payloads[i]
-            : EncryptAggregatableReportPayloadWithHpke(
-                  /*report_payload_plaintext=*/unencrypted_payloads[i],
-                  /*public_key=*/public_keys[i].key,
-                  /*report_authenticated_info=*/authenticated_info);
+  std::vector<uint8_t> encrypted_payload =
+      g_disable_encryption_for_testing_tool_
+          ? *unencrypted_payload
+          : EncryptAggregatableReportPayloadWithHpke(
+                /*report_payload_plaintext=*/*unencrypted_payload,
+                /*public_key=*/public_key.key,
+                /*report_authenticated_info=*/authenticated_info);
 
-    if (encrypted_payload.empty()) {
-      return std::nullopt;
-    }
+  if (encrypted_payload.empty()) {
+    return std::nullopt;
+  }
 
-    std::optional<std::vector<uint8_t>> debug_cleartext_payload;
-    if (report_request.shared_info().debug_mode ==
-        AggregatableReportSharedInfo::DebugMode::kEnabled) {
-      debug_cleartext_payload = std::move(unencrypted_payloads[i]);
-    }
-
-    encrypted_payloads.emplace_back(std::move(encrypted_payload),
-                                    std::move(public_keys[i]).id,
-                                    std::move(debug_cleartext_payload));
+  std::optional<std::vector<uint8_t>> debug_cleartext_payload;
+  if (report_request.shared_info().debug_mode ==
+      AggregatableReportSharedInfo::DebugMode::kEnabled) {
+    debug_cleartext_payload = *std::move(unencrypted_payload);
   }
 
   return AggregatableReport(
-      std::move(encrypted_payloads), std::move(encoded_shared_info),
-      report_request.debug_key(), report_request.additional_fields(),
+      AggregationServicePayload(std::move(encrypted_payload),
+                                std::move(public_key).id,
+                                std::move(debug_cleartext_payload)),
+      std::move(encoded_shared_info), report_request.debug_key(),
+      report_request.additional_fields(),
       report_request.payload_contents().aggregation_coordinator_origin);
 }
 
@@ -836,24 +817,20 @@ base::Value::Dict AggregatableReport::GetAsJson() const {
 
   value.Set("shared_info", shared_info_);
 
-  // When invoked for reports being shown in the WebUI, `payloads_` may be empty
-  // prior to assembly or if assembly failed.
-  if (!payloads_.empty()) {
-    base::Value::List payloads_list_value;
-    for (const AggregationServicePayload& payload : payloads_) {
-      base::Value::Dict payload_dict_value;
-      payload_dict_value.Set("payload", base::Base64Encode(payload.payload));
-      payload_dict_value.Set("key_id", payload.key_id);
-      if (payload.debug_cleartext_payload.has_value()) {
-        payload_dict_value.Set(
-            "debug_cleartext_payload",
-            base::Base64Encode(payload.debug_cleartext_payload.value()));
-      }
-
-      payloads_list_value.Append(std::move(payload_dict_value));
+  // When invoked for reports being shown in the WebUI, `payload_` may be
+  // `std::nullopt` prior to assembly or if assembly failed.
+  if (payload_.has_value()) {
+    base::Value::Dict payload_dict_value;
+    payload_dict_value.Set("payload", base::Base64Encode(payload_->payload));
+    payload_dict_value.Set("key_id", payload_->key_id);
+    if (payload_->debug_cleartext_payload.has_value()) {
+      payload_dict_value.Set(
+          "debug_cleartext_payload",
+          base::Base64Encode(payload_->debug_cleartext_payload.value()));
     }
 
-    value.Set("aggregation_service_payloads", std::move(payloads_list_value));
+    value.Set("aggregation_service_payloads",
+              base::Value::List().Append(std::move(payload_dict_value)));
   }
 
   if (debug_key_.has_value()) {
@@ -874,11 +851,6 @@ base::Value::Dict AggregatableReport::GetAsJson() const {
   }
 
   return value;
-}
-
-// static
-bool AggregatableReport::IsNumberOfProcessingUrlsValid(size_t number) {
-  return number == 1u;
 }
 
 // static

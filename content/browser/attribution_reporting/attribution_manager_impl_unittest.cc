@@ -167,14 +167,6 @@ auto InvokeReportSentCallback(SentResult result) {
 }
 
 AggregatableReport CreateExampleAggregatableReport() {
-  std::vector<AggregatableReport::AggregationServicePayload> payloads;
-  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
-                        /*key_id=*/"key_1",
-                        /*debug_cleartext_payload=*/std::nullopt);
-  payloads.emplace_back(/*payload=*/kEFGH5678AsBytes,
-                        /*key_id=*/"key_2",
-                        /*debug_cleartext_payload=*/std::nullopt);
-
   base::Value::Dict additional_fields;
   additional_fields.Set("source_registration_time", "1234569600");
   additional_fields.Set(
@@ -190,21 +182,17 @@ AggregatableReport CreateExampleAggregatableReport() {
       /*api_version=*/"",
       /*api_identifier=*/"attribution-reporting");
 
-  return AggregatableReport(std::move(payloads), shared_info.SerializeAsJson(),
+  return AggregatableReport(AggregatableReport::AggregationServicePayload(
+                                /*payload=*/kABCD1234AsBytes,
+                                /*key_id=*/"key_1",
+                                /*debug_cleartext_payload=*/std::nullopt),
+                            shared_info.SerializeAsJson(),
                             /*debug_key=*/std::nullopt,
                             /*additional_fields=*/{},
                             /*aggregation_coordinator_origin=*/std::nullopt);
 }
 
 AggregatableReport CreateExampleAggregatableDebugReport() {
-  std::vector<AggregatableReport::AggregationServicePayload> payloads;
-  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
-                        /*key_id=*/"key_1",
-                        /*debug_cleartext_payload=*/std::nullopt);
-  payloads.emplace_back(/*payload=*/kEFGH5678AsBytes,
-                        /*key_id=*/"key_2",
-                        /*debug_cleartext_payload=*/std::nullopt);
-
   base::Value::Dict additional_fields;
   additional_fields.Set(
       "attribution_destination",
@@ -219,7 +207,11 @@ AggregatableReport CreateExampleAggregatableDebugReport() {
       /*api_version=*/"0.1",
       /*api_identifier=*/"attribution-reporting-debug");
 
-  return AggregatableReport(std::move(payloads), shared_info.SerializeAsJson(),
+  return AggregatableReport(AggregatableReport::AggregationServicePayload(
+                                /*payload=*/kABCD1234AsBytes,
+                                /*key_id=*/"key_1",
+                                /*debug_cleartext_payload=*/std::nullopt),
+                            shared_info.SerializeAsJson(),
                             /*debug_key=*/std::nullopt,
                             /*additional_fields=*/{},
                             /*aggregation_coordinator_origin=*/std::nullopt);

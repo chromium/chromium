@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "base/strings/string_split.h"
 #include "base/values.h"
@@ -49,9 +48,9 @@ class AggregationServiceTool {
   // after serialization.
   void SetDisablePayloadEncryption(bool should_disable);
 
-  // Sets public keys to storage from the url-filename pairs and returns
+  // Sets public keys to storage from the url-filename pair and returns
   // whether it's successful.
-  bool SetPublicKeys(const std::vector<UrlKeyFile>& key_files);
+  bool SetPublicKeys(const UrlKeyFile& key_file);
 
   // Construct an aggregatable report from the specified information and returns
   // a `base::Value::Dict` for its JSON representation. Empty
@@ -60,7 +59,7 @@ class AggregationServiceTool {
                                    std::string bucket_str,
                                    std::string value_str,
                                    url::Origin reporting_origin,
-                                   std::vector<GURL> processing_urls,
+                                   GURL processing_url,
                                    bool is_debug_mode_enabled,
                                    base::Value::Dict additional_fields,
                                    std::string api_version,

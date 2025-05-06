@@ -7,14 +7,12 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "url/gurl.h"
 #include "url/origin.h"
-
-class GURL;
 
 template <class T>
 class scoped_refptr;
@@ -48,7 +46,7 @@ class TestAggregationService {
                     absl::uint128 bucket,
                     int value,
                     url::Origin reporting_origin,
-                    std::vector<GURL> processing_urls,
+                    GURL processing_url,
                     bool is_debug_mode_enabled,
                     base::Value::Dict additional_fields,
                     std::string api_version,
@@ -67,8 +65,8 @@ class TestAggregationService {
     url::Origin reporting_origin;
     // Specifies the key for the aggregation servers to do privacy budgeting.
     std::string privacy_budget_key;
-    // Specifies the aggregation server URLs.
-    std::vector<GURL> processing_urls;
+    // Specifies the aggregation server URL.
+    GURL processing_url;
     // Whether debug_mode should be enabled for the report.
     bool is_debug_mode_enabled;
 

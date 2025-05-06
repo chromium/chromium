@@ -139,7 +139,7 @@ void TestAggregationServiceImpl::AssembleReport(
 
   std::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::CreateForTesting(
-          std::move(request.processing_urls), std::move(payload_contents),
+          std::move(request.processing_url), std::move(payload_contents),
           std::move(shared_info));
   if (!report_request.has_value()) {
     std::move(callback).Run(base::Value::Dict());

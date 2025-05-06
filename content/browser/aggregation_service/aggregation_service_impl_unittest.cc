@@ -59,11 +59,11 @@ auto InvokeCallback(std::optional<AggregatableReport> report,
 }
 
 AggregatableReport CreateExampleAggregatableReport() {
-  std::vector<AggregatableReport::AggregationServicePayload> payloads;
-  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
-                        /*key_id=*/"key_1",
-                        /*debug_cleartext_payload=*/std::nullopt);
-  return AggregatableReport(std::move(payloads), "example_shared_info",
+  return AggregatableReport(AggregatableReport::AggregationServicePayload(
+                                /*payload=*/kABCD1234AsBytes,
+                                /*key_id=*/"key_1",
+                                /*debug_cleartext_payload=*/std::nullopt),
+                            "example_shared_info",
                             /*debug_key=*/std::nullopt,
                             /*additional_fields=*/{},
                             /*aggregation_coordinator_origin=*/std::nullopt);

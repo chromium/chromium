@@ -35,8 +35,9 @@ namespace {
 
 std::optional<content::TestAggregationService::Operation> ConvertToOperation(
     std::string_view operation_string) {
-  if (operation_string == "histogram")
+  if (operation_string == "histogram") {
     return content::TestAggregationService::Operation::kHistogram;
+  }
 
   return std::nullopt;
 }
@@ -63,17 +64,14 @@ void AggregationServiceTool::SetDisablePayloadEncryption(bool should_disable) {
   agg_service_->SetDisablePayloadEncryption(should_disable);
 }
 
-bool AggregationServiceTool::SetPublicKeys(
-    const std::vector<UrlKeyFile>& key_files) {
-  // Send each url's specified public keys to the tool's storage.
-  for (const auto& key_file : key_files) {
-    if (!network::IsUrlPotentiallyTrustworthy(key_file.url)) {
-      LOG(ERROR) << "Invalid processing url: " << key_file.url;
-      return false;
-    }
+bool AggregationServiceTool::SetPublicKeys(const UrlKeyFile& key_file) {
+  if (!network::IsUrlPotentiallyTrustworthy(key_file.url)) {
+    LOG(ERROR) << "Invalid processing url: " << key_file.url;
+    return false;
+  }
 
-    if (!SetPublicKeysFromFile(key_file.url, key_file.key_file))
-      return false;
+  if (!SetPublicKeysFromFile(key_file.url, key_file.key_file)) {
+    return false;
   }
 
   return true;
@@ -109,7 +107,7 @@ base::Value::Dict AggregationServiceTool::AssembleReport(
     std::string bucket_str,
     std::string value_str,
     url::Origin reporting_origin,
-    std::vector<GURL> processing_urls,
+    GURL processing_url,
     bool is_debug_mode_enabled,
     base::Value::Dict additional_fields,
     std::string api_version,
@@ -142,7 +140,7 @@ base::Value::Dict AggregationServiceTool::AssembleReport(
 
   content::TestAggregationService::AssembleRequest request(
       operation.value(), bucket, value, std::move(reporting_origin),
-      std::move(processing_urls), is_debug_mode_enabled,
+      std::move(processing_url), is_debug_mode_enabled,
       std::move(additional_fields), std::move(api_version),
       std::move(api_identifier));
 
