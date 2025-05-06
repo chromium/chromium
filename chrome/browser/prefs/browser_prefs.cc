@@ -558,12 +558,6 @@ constexpr char kOsCryptAppBoundFixedData3PrefName[] =
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 04/2024
-constexpr char kLastUploadedEuiccStatusPrefLegacy[] =
-    "esim.last_upload_euicc_status";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 05/2024.
 // A preference to keep track of the device registered time.
 constexpr char kDeviceRegisteredTime[] = "DeviceRegisteredTime";
@@ -1119,9 +1113,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 05/2024.
   registry->RegisterTimePref(kDeviceRegisteredTime, base::Time());
   registry->RegisterDictionaryPref(kArcKioskDictionaryName);
-
-  // Deprecated 04/2024.
-  registry->RegisterDictionaryPref(kLastUploadedEuiccStatusPrefLegacy);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2366,9 +2357,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 05/2024.
   local_state->ClearPref(kDeviceRegisteredTime);
   local_state->ClearPref(kArcKioskDictionaryName);
-
-  // Added 04/2024.
-  local_state->ClearPref(kLastUploadedEuiccStatusPrefLegacy);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
