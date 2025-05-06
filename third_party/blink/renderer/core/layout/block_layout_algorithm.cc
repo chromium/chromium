@@ -446,7 +446,7 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
     builder.SetPercentageResolutionBlockSize(
         PercentageSizeForChild(child).block_size);
     // Pass the replaced %-size down to inline layout.
-    if ((child.IsAnonymous() || child.IsInline()) &&
+    if ((child.IsAnonymousBlock() || child.IsInline()) &&
         replaced_child_percentage_size_.block_size !=
             child_percentage_size_.block_size) {
       builder.SetReplacedChildPercentageResolutionBlockSize(
@@ -3252,7 +3252,7 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   builder.SetPercentageResolutionSize(PercentageSizeForChild(child));
 
   // Pass the replaced %-size down to inline layout.
-  if ((child.IsAnonymous() || child.IsInline()) &&
+  if ((child.IsAnonymousBlock() || child.IsInline()) &&
       replaced_child_percentage_size_ != child_percentage_size_) {
     builder.SetReplacedChildPercentageResolutionSize(
         replaced_child_percentage_size_);
