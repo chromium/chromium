@@ -1591,7 +1591,7 @@ bool OperationValidationContext::ValidateGruCell(const mojom::GruCell& gru_cell,
     return false;
   }
 
-  const std::optional<uint32_t>& bias_operand_id = gru_cell.bias_operand_id;
+  const std::optional<OperandId>& bias_operand_id = gru_cell.bias_operand_id;
   if (bias_operand_id.has_value()) {
     if (!id_to_operand_map_->contains(bias_operand_id.value()) ||
         !processed_operands_.contains(gru_cell.bias_operand_id)) {
@@ -1599,7 +1599,7 @@ bool OperationValidationContext::ValidateGruCell(const mojom::GruCell& gru_cell,
     }
     NoteInputDependency(bias_operand_id.value(), operation_id);
   }
-  const std::optional<uint32_t>& recurrent_bias_operand_id =
+  const std::optional<OperandId>& recurrent_bias_operand_id =
       gru_cell.recurrent_bias_operand_id;
   if (recurrent_bias_operand_id.has_value()) {
     if (!id_to_operand_map_->contains(recurrent_bias_operand_id.value()) ||
