@@ -68,24 +68,24 @@ using ResourceContext = std::variant<FrameContext,
                                      OriginInBrowsingInstanceContext>;
 
 // Returns true iff `context` currently holds a resource context of type T.
-template <typename T,
-          internal::EnableIfIsVariantAlternative<T, ResourceContext> = true>
+template <typename T>
+  requires(internal::kIsVariantAlternative<T, ResourceContext>)
 constexpr bool ContextIs(const ResourceContext& context) {
   return std::holds_alternative<T>(context);
 }
 
 // If `context` currently holds a resource context of type T, returns a
 // reference to that context. Otherwise, crashes.
-template <typename T,
-          internal::EnableIfIsVariantAlternative<T, ResourceContext> = true>
+template <typename T>
+  requires(internal::kIsVariantAlternative<T, ResourceContext>)
 constexpr const T& AsContext(const ResourceContext& context) {
   return std::get<T>(context);
 }
 
 // If `context` currently holds a resource context of type T, returns a
 // copy of that context. Otherwise, returns nullopt.
-template <typename T,
-          internal::EnableIfIsVariantAlternative<T, ResourceContext> = true>
+template <typename T>
+  requires(internal::kIsVariantAlternative<T, ResourceContext>)
 constexpr std::optional<T> AsOptionalContext(const ResourceContext& context) {
   return internal::GetAsOptional<T>(context);
 }
@@ -106,8 +106,8 @@ class ResourceContextTypeId
   constexpr explicit ResourceContextTypeId(const ResourceContext& context)
       : Super(context.index()) {}
 
-  template <typename T,
-            internal::EnableIfIsVariantAlternative<T, ResourceContext> = true>
+  template <typename T>
+    requires(internal::kIsVariantAlternative<T, ResourceContext>)
   static constexpr ResourceContextTypeId ForType() {
     return ResourceContextTypeId(
         base::VariantIndexOfType<ResourceContext, T>());

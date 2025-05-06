@@ -17,33 +17,6 @@ namespace resource_attribution::internal {
 
 namespace {
 
-// gtest EXPECT macros interpret spaces as parameter breaks, so won't compile
-// with parameters like "IsVariantAlternative<T, V>". This class wraps functions
-// in type_helpers.h in methods that take only a single template param.
-template <typename V>
-class VariantTester {
- public:
-  template <typename T>
-  static bool IsVariantAlternativeValue() {
-    return IsVariantAlternative<T, V>::value;
-  }
-
-  // Template resolution will match this version of the function if T is an
-  // alternative of the variant V.
-  template <typename T, EnableIfIsVariantAlternative<T, V> = true>
-  static bool ConditionallyEnabled() {
-    return true;
-  }
-
-  // Template resolution will match this version of the function if T is NOT an
-  // alternative of the variant V.
-  template <typename T,
-            std::enable_if_t<!IsVariantAlternative<T, V>::value, bool> = true>
-  static bool ConditionallyEnabled() {
-    return false;
-  }
-};
-
 template <typename T>
 ::testing::AssertionResult TestOptionalConstRef(base::optional_ref<T> opt_ref,
                                                 auto expected_value) {
@@ -60,35 +33,26 @@ template <typename T>
 }
 
 TEST(ResourceAttrTypeHelpersTest, IsVariantAlternativeEmptyVariant) {
-  using Tester = VariantTester<std::variant<>>;
-  EXPECT_FALSE(Tester::IsVariantAlternativeValue<int>());
-  EXPECT_FALSE(Tester::ConditionallyEnabled<int>());
+  static_assert(!kIsVariantAlternative<int, std::variant<>>);
 }
 
 TEST(ResourceAttrTypeHelpersTest, IsVariantAlternativeSingleAlternative) {
-  using Tester = VariantTester<std::variant<int>>;
-  EXPECT_TRUE(Tester::IsVariantAlternativeValue<int>());
-  EXPECT_TRUE(Tester::ConditionallyEnabled<int>());
-  EXPECT_FALSE(Tester::IsVariantAlternativeValue<double>());
-  EXPECT_FALSE(Tester::ConditionallyEnabled<double>());
+  using V = std::variant<int>;
+  static_assert(kIsVariantAlternative<int, V>);
+  static_assert(!kIsVariantAlternative<double, V>);
 }
 
 TEST(ResourceAttrTypeHelpersTest, IsVariantAlternativeManyAlternatives) {
-  using Tester = VariantTester<std::variant<int, double>>;
-  EXPECT_TRUE(Tester::IsVariantAlternativeValue<int>());
-  EXPECT_TRUE(Tester::ConditionallyEnabled<int>());
-  EXPECT_TRUE(Tester::IsVariantAlternativeValue<double>());
-  EXPECT_TRUE(Tester::ConditionallyEnabled<double>());
-  EXPECT_FALSE(Tester::IsVariantAlternativeValue<bool>());
-  EXPECT_FALSE(Tester::ConditionallyEnabled<bool>());
+  using V = std::variant<int, double>;
+  static_assert(kIsVariantAlternative<int, V>);
+  static_assert(kIsVariantAlternative<double, V>);
+  static_assert(!kIsVariantAlternative<bool, V>);
 }
 
 TEST(ResourceAttrTypeHelpersTest, IsVariantAlternativeWithMonostate) {
-  using Tester = VariantTester<std::variant<std::monostate, int>>;
-  EXPECT_TRUE(Tester::IsVariantAlternativeValue<int>());
-  EXPECT_TRUE(Tester::ConditionallyEnabled<int>());
-  EXPECT_FALSE(Tester::IsVariantAlternativeValue<double>());
-  EXPECT_FALSE(Tester::ConditionallyEnabled<double>());
+  using V = std::variant<std::monostate, int>;
+  static_assert(kIsVariantAlternative<int, V>);
+  static_assert(!kIsVariantAlternative<double, V>);
 }
 
 // Can't test GetAsOptional() with std::variant<> because it can't be

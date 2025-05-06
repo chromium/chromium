@@ -166,9 +166,8 @@ class QueryBuilder {
   // contexts to query. Whenever the query causes a resource measurement, all
   // resource contexts of the given type that exist at that moment will be
   // measured.
-  template <typename ContextType,
-            internal::EnableIfIsVariantAlternative<ContextType,
-                                                   ResourceContext> = true>
+  template <typename ContextType>
+    requires(internal::kIsVariantAlternative<ContextType, ResourceContext>)
   QueryBuilder& AddAllContextsOfType() {
     return AddAllContextsWithTypeId(
         internal::ResourceContextTypeId::ForType<ContextType>());
