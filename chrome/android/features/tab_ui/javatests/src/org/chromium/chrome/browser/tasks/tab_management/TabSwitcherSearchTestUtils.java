@@ -16,13 +16,10 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
-
-import java.util.List;
 
 /** Test utils for hub search. */
 public class TabSwitcherSearchTestUtils {
@@ -55,35 +52,5 @@ public class TabSwitcherSearchTestUtils {
             ChromeTabbedActivityTestRule activityTestRule, int serverPort) {
         activityTestRule.getEmbeddedTestServerRule().setServerPort(serverPort);
         return activityTestRule.getTestServer();
-    }
-
-    /**
-     * Opens the given urls, the first URL will be opened in the current active tab (unless
-     * incognito). The rest of the URLs will be opened in new tabs.
-     *
-     * @return The {@link WebPageStation} of the last opened URL.
-     */
-    // TODO(crbug.com/393653256): Consider reusing for more tab suites.
-    public static WebPageStation openUrls(
-            EmbeddedTestServer testServer,
-            WebPageStation webPageStation,
-            List<String> urlsToOpen,
-            boolean incognito) {
-        WebPageStation lastStation = webPageStation;
-        for (int i = 0; i < urlsToOpen.size(); i++) {
-            String url = testServer.getURL(urlsToOpen.get(i));
-            if (i == 0) {
-                if (incognito) {
-                    lastStation =
-                            lastStation.openNewIncognitoTabFast().loadWebPageProgrammatically(url);
-                } else {
-                    lastStation = lastStation.loadWebPageProgrammatically(url);
-                }
-            } else {
-                lastStation = lastStation.openFakeLinkToWebPage(url);
-            }
-        }
-
-        return lastStation;
     }
 }

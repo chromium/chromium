@@ -18,6 +18,7 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabThumbnailCondition;
 import org.chromium.chrome.test.util.TabBinningUtil;
 import org.chromium.chrome.test.util.tabmodel.TabBinList;
@@ -49,11 +50,13 @@ public class Journeys {
             int numIncognitoTabs,
             String url,
             Supplier<PageStation.Builder<T>> pageStationFactory) {
+        List<String> regularTabs = getListOfIdenticalUrls(numRegularTabs, url);
+        List<String> incognitoTabs = getListOfIdenticalUrls(numIncognitoTabs, url);
+
         return doPrepareTabs(
                 startingStation,
-                numRegularTabs,
-                numIncognitoTabs,
-                url,
+                regularTabs,
+                incognitoTabs,
                 pageStationFactory,
                 /* captureThumbnails= */ false);
     }
@@ -68,54 +71,31 @@ public class Journeys {
             int numIncognitoTabs,
             String url,
             Supplier<PageStation.Builder<T>> pageStationFactory) {
+        List<String> regularTabs = getListOfIdenticalUrls(numRegularTabs, url);
+        List<String> incognitoTabs = getListOfIdenticalUrls(numIncognitoTabs, url);
+
         return doPrepareTabs(
                 startingStation,
-                numRegularTabs,
-                numIncognitoTabs,
-                url,
+                regularTabs,
+                incognitoTabs,
                 pageStationFactory,
                 /* captureThumbnails= */ true);
     }
 
-    private static <T extends PageStation> T doPrepareTabs(
-            PageStation startingStation,
-            int numRegularTabs,
-            int numIncognitoTabs,
-            String url,
-            Supplier<PageStation.Builder<T>> pageStationFactory,
-            boolean captureThumbnails) {
-        assert numRegularTabs >= 1;
-        assert url != null;
-        TabModelSelector tabModelSelector =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> startingStation.getActivity().getTabModelSelector());
-        int currentTabCount = tabModelSelector.getModel(/* incognito= */ false).getCount();
-        int currentIncognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();
-        assert currentTabCount == 1;
-        assert currentIncognitoTabCount == 0;
-        T station = startingStation.loadPageProgrammatically(url, pageStationFactory.get());
-        // One tab already exists.
-        if (numRegularTabs > 1) {
-            station =
-                    doCreateTabs(
-                            station,
-                            numRegularTabs - 1,
-                            url,
-                            /* isIncognito= */ false,
-                            pageStationFactory,
-                            captureThumbnails);
-        }
-        if (numIncognitoTabs > 0) {
-            station =
-                    doCreateTabs(
-                            station,
-                            numIncognitoTabs,
-                            url,
-                            /* isIncognito= */ true,
-                            pageStationFactory,
-                            captureThumbnails);
-        }
-        return station;
+    /**
+     * Open and display multiple web pages in regular tabs, return the last page.
+     *
+     * <p>The first URL will be opened in the current active tab, the rest of the URLs will be
+     * opened in new tabs.
+     */
+    public static WebPageStation prepareRegularTabsWithWebPages(
+            WebPageStation webPageStation, List<String> urlsToOpen) {
+        return doPrepareTabs(
+                webPageStation,
+                urlsToOpen,
+                List.of(),
+                WebPageStation::newBuilder,
+                /* captureThumbnails= */ false);
     }
 
     /**
@@ -123,66 +103,124 @@ public class Journeys {
      *
      * @param <T> specific type of PageStation for all opened tabs.
      * @param startingPage The current active station.
-     * @param numTabs The number of tabs to create.
-     * @param url The URL to load.
+     * @param urls The URLs to load.
      * @param isIncognito Whether to open an incognito tab.
      * @param pageStationFactory A factory method to create the PageStations for each tab.
      * @return the last opened tab's PageStation.
      */
-    public static <T extends PageStation> T createTabs(
+    @SuppressWarnings("unused")
+    private static <T extends PageStation> T createTabs(
             final PageStation startingPage,
-            int numTabs,
-            String url,
+            List<String> urls,
             boolean isIncognito,
             Supplier<PageStation.Builder<T>> pageStationFactory) {
         return doCreateTabs(
                 startingPage,
-                numTabs,
-                url,
+                urls,
                 isIncognito,
                 pageStationFactory,
                 /* captureThumbnails= */ false);
     }
 
-    /**
-     * Same as {@link #createTabs(PageStation, int, String, boolean, Supplier)}, but ensures tab
-     * thumbnails are captured to disk.
-     */
+    /** Creates identical tabs and ensures tab thumbnails are captured to disk. */
     public static <T extends PageStation> T createTabsWithThumbnails(
             final PageStation startingPage,
             int numTabs,
             String url,
             boolean isIncognito,
             Supplier<PageStation.Builder<T>> pageStationFactory) {
+        List<String> urls = getListOfIdenticalUrls(numTabs, url);
+        return doCreateTabs(
+                startingPage, urls, isIncognito, pageStationFactory, /* captureThumbnails= */ true);
+    }
+
+    /** Open and display multiple web pages in regular tabs, return the last page. */
+    public static WebPageStation createRegularTabsWithWebPages(
+            final PageStation startingPage, List<String> urls) {
         return doCreateTabs(
                 startingPage,
-                numTabs,
-                url,
-                isIncognito,
-                pageStationFactory,
-                /* captureThumbnails= */ true);
+                urls,
+                /* isIncognito= */ false,
+                WebPageStation::newBuilder,
+                /* captureThumbnails= */ false);
+    }
+
+    /** Open and display multiple web pages in incognito tabs, return the last page. */
+    public static WebPageStation createIncognitoTabsWithWebPages(
+            final PageStation startingPage, List<String> urls) {
+        return doCreateTabs(
+                startingPage,
+                urls,
+                /* isIncognito= */ true,
+                () -> WebPageStation.newBuilder().withIncognito(true),
+                /* captureThumbnails= */ false);
+    }
+
+    // TODO(crbug.com/411430975): Open all tabs at once instead of one by one.
+    private static <T extends PageStation> T doPrepareTabs(
+            PageStation startingStation,
+            List<String> urlsForRegularTabs,
+            List<String> urlsForIncognitoTabs,
+            Supplier<PageStation.Builder<T>> pageStationFactory,
+            boolean captureThumbnails) {
+        assert urlsForRegularTabs.size() >= 1;
+        TabModelSelector tabModelSelector =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> startingStation.getActivity().getTabModelSelector());
+        int currentTabCount = tabModelSelector.getModel(/* incognito= */ false).getCount();
+        int currentIncognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();
+        assert currentTabCount == 1;
+        assert currentIncognitoTabCount == 0;
+        T station =
+                startingStation.loadPageProgrammatically(
+                        urlsForRegularTabs.get(0), pageStationFactory.get());
+        // One tab already exists.
+        if (urlsForRegularTabs.size() > 1) {
+            var urlsForRegularTabsMinusFirst = new ArrayList<>(urlsForRegularTabs);
+            urlsForRegularTabsMinusFirst.remove(0);
+            station =
+                    doCreateTabs(
+                            station,
+                            urlsForRegularTabsMinusFirst,
+                            /* isIncognito= */ false,
+                            pageStationFactory,
+                            captureThumbnails);
+        }
+        if (urlsForIncognitoTabs.size() > 0) {
+            station =
+                    doCreateTabs(
+                            station,
+                            urlsForIncognitoTabs,
+                            /* isIncognito= */ true,
+                            pageStationFactory,
+                            captureThumbnails);
+        }
+        return station;
     }
 
     private static <T extends PageStation> T doCreateTabs(
             final PageStation startingPage,
-            int numTabs,
-            String url,
+            List<String> urls,
             boolean isIncognito,
             Supplier<PageStation.Builder<T>> pageStationFactory,
             boolean captureThumbnails) {
-        assert numTabs > 0;
+        assert !urls.isEmpty();
 
         TabModelSelector tabModelSelector = startingPage.getActivity().getTabModelSelector();
 
         PageStation currentPage = startingPage;
-        for (int i = 0; i < numTabs; i++) {
+        for (int i = 0; i < urls.size(); i++) {
+            String url = urls.get(i);
             PageStation previousPage = currentPage;
             Tab previousTab = previousPage.loadedTabElement.get();
-            currentPage =
-                    isIncognito
-                            ? currentPage.openNewIncognitoTabFast()
-                            : currentPage.openNewTabFast();
-            currentPage = currentPage.loadPageProgrammatically(url, pageStationFactory.get());
+            if (i == 0 && startingPage.isIncognito() && !isIncognito) {
+                currentPage = currentPage.openNewTabFast().loadWebPageProgrammatically(url);
+            } else if (i == 0 && !startingPage.isIncognito() && isIncognito) {
+                currentPage =
+                        currentPage.openNewIncognitoTabFast().loadWebPageProgrammatically(url);
+            } else {
+                currentPage = currentPage.openFakeLinkToWebPage(url);
+            }
 
             if (!captureThumbnails) {
                 continue;
@@ -286,5 +324,13 @@ public class Journeys {
         for (Token token : tabGroupIdsOfGroupedTabs) {
             assert Objects.equals(baseToken, token);
         }
+    }
+
+    private static List<String> getListOfIdenticalUrls(int n, String url) {
+        List<String> regularTabs = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            regularTabs.add(url);
+        }
+        return regularTabs;
     }
 }
