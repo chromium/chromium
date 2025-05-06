@@ -785,25 +785,37 @@ public class MainSettingsFragmentTest {
         intended(IntentMatchers.hasData("https://test.plusaddresses.google.com"));
     }
 
+    /**
+     * Verifies that when the feature flag is enabled, the PREF_HOME_MODULES_CONFIG is removed from
+     * the settings page.
+     */
     @Test
     @SmallTest
-    public void testHomeModulesConfigSettingsWithCustomizableModule() {
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION)
+    public void testHomeModulesConfigSettingsWithCustomizableModuleWhileFeatureTurnOn() {
+        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
+        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
+        startSettings();
+        assertSettingsNotExists(MainSettings.PREF_HOME_MODULES_CONFIG);
+    }
+
+    /**
+     * Verifies that when the feature flag is disabled by default, the PREF_HOME_MODULES_CONFIG is
+     * removed from the settings page, only if hasModuleShownInSettings returns false.
+     */
+    @Test
+    @SmallTest
+    public void testHomeModulesConfigSettingsWithCustomizableModuleWhileFeatureTurnOff() {
         when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
         HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
         startSettings();
         assertSettingsExists(
                 MainSettings.PREF_HOME_MODULES_CONFIG, HomeModulesConfigSettings.class);
-    }
 
-    @Test
-    @SmallTest
-    public void testHomeModulesConfigSettingsWithoutCustomizableModule() {
         when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(false);
         HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
         startSettings();
-        Assert.assertNull(
-                "Home modules config setting should not be shown on automotive",
-                mMainSettings.findPreference(MainSettings.PREF_HOME_MODULES_CONFIG));
+        assertSettingsNotExists(MainSettings.PREF_HOME_MODULES_CONFIG);
     }
 
     @Test
@@ -1085,6 +1097,11 @@ public class MainSettingsFragmentTest {
             throw new AssertionError("Pref fragment <" + pref.getFragment() + "> is not found.");
         }
         return pref;
+    }
+
+    private void assertSettingsNotExists(String prefKey) {
+        Preference pref = mMainSettings.findPreference(prefKey);
+        Assert.assertNull(pref);
     }
 
     private boolean supportAddressBarSettings() {
