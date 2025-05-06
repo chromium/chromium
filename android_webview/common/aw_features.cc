@@ -89,12 +89,6 @@ BASE_FEATURE(kWebViewMuteAudio,
              "WebViewMuteAudio",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Only allow extra headers added via loadUrl() to be sent to the original
-// origin; strip them from the request if a cross-origin redirect occurs.
-BASE_FEATURE(kWebViewExtraHeadersSameOriginOnly,
-             "WebViewExtraHeadersSameOriginOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Whether to record size of the embedding app's data directory to the UMA
 // histogram Android.WebView.AppDataDirectorySize.
 BASE_FEATURE(kWebViewRecordAppDataDirectorySize,
