@@ -476,6 +476,35 @@ TEST_F(GroupDataModelTest, ShouldNotifyAboutGroupChanges) {
   WaitForGroupUpdated(group_id);
 }
 
+TEST_F(GroupDataModelTest,
+       ShouldNotifyAboutGroupChanges_MultipleMembersAddedRemoved) {
+  WaitForModelLoaded();
+
+  const GroupId group_id = MimicGroupAddedServerSide("group");
+  WaitForGroupAdded(group_id);
+
+  // Test that OnMemberAdded() is called when a member is added.
+  const GaiaId member_gaia_id1("gaia_id99");
+  EXPECT_CALL(model_observer(),
+              OnMemberAdded(group_id, member_gaia_id1, NotNullTime()));
+  MimicMemberAddedServerSide(group_id, member_gaia_id1);
+  WaitForGroupUpdated(group_id);
+  testing::Mock::VerifyAndClearExpectations(&model_observer());
+
+  const GaiaId member_gaia_id2("gaia_id2");
+  EXPECT_CALL(model_observer(),
+              OnMemberAdded(group_id, member_gaia_id2, NotNullTime()));
+  MimicMemberAddedServerSide(group_id, member_gaia_id2);
+  WaitForGroupUpdated(group_id);
+  testing::Mock::VerifyAndClearExpectations(&model_observer());
+
+  // Test that OnMemberRemoved() is called when a member is removed.
+  EXPECT_CALL(model_observer(),
+              OnMemberRemoved(group_id, member_gaia_id1, NotNullTime()));
+  MimicMemberRemovedServerSide(group_id, member_gaia_id1);
+  WaitForGroupUpdated(group_id);
+}
+
 TEST_F(GroupDataModelTest, ShouldNotifyOnSyncBridgeUpdateTypeChanged) {
   EXPECT_CALL(model_observer(), OnSyncBridgeUpdateTypeChanged(
                                     Eq(SyncBridgeUpdateType::kDisableSync)))
