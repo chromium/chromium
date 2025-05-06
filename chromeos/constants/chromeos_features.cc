@@ -357,7 +357,7 @@ BASE_FEATURE(kFileSystemProviderContentCache,
 // in user sessions.
 BASE_FEATURE(kSystemFeaturesDisableListHidden,
              "SystemFeaturesDisableListHidden",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kRoundedWindowsRadius[] = "window_radius";
 
