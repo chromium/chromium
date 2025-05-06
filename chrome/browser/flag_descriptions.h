@@ -2829,9 +2829,6 @@ extern const char kFeedCloseRefreshDescription[];
 extern const char kFeedContainmentName[];
 extern const char kFeedContainmentDescription[];
 
-extern const char kFeedDynamicColorsName[];
-extern const char kFeedDynamicColorsDescription[];
-
 extern const char kFeedDiscoFeedEndpointName[];
 extern const char kFeedDiscoFeedEndpointDescription[];
 

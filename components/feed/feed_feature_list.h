@@ -101,10 +101,6 @@ BASE_DECLARE_FEATURE(kSyntheticCapabilities);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedSignedOutViewDemotion);
 
-// Feature that enables dynamic colors in the feed.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kFeedDynamicColors);
-
 // Feature that enables UI update for Follow.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedFollowUiUpdate);

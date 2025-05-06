@@ -174,9 +174,7 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(Capability::SYNTHETIC_CAPABILITIES);
   }
 
-  if (base::FeatureList::IsEnabled(kFeedDynamicColors)) {
-    feed_request.add_client_capability(Capability::DYNAMIC_COLORS);
-  }
+  feed_request.add_client_capability(Capability::DYNAMIC_COLORS);
 
   if (base::FeatureList::IsEnabled(kFeedStreaming)) {
     feed_request.add_client_capability(Capability::STREAMING_FULL);

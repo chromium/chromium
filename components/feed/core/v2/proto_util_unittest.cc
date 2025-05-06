@@ -83,7 +83,8 @@ TEST(ProtoUtilTest, DefaultCapabilities) {
            feedwire::Capability::PREFETCH_METADATA, feedwire::Capability::SHARE,
            feedwire::Capability::CONTENT_LIFETIME,
            feedwire::Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING,
-           feedwire::Capability::SPORTS_IN_GAME_UPDATE}));
+           feedwire::Capability::SPORTS_IN_GAME_UPDATE,
+           feedwire::Capability::DYNAMIC_COLORS}));
 }
 
 // SYNC_STRING_REMOVAL is mobile-only.
@@ -203,21 +204,6 @@ TEST(ProtoUtilTest, StampEnabled) {
               Contains(feedwire::Capability::AMP_STORY_PLAYER));
   ASSERT_THAT(request.client_capability(),
               Contains(feedwire::Capability::AMP_GROUP_DATASTORE));
-}
-
-TEST(ProtoUtilTest, DynamicColorEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kFeedDynamicColors}, {});
-  feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
-          /*request_metadata=*/{},
-          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
-          /*doc_view_counts=*/{})
-          .feed_request();
-
-  ASSERT_THAT(request.client_capability(),
-              Contains(feedwire::Capability::DYNAMIC_COLORS));
 }
 
 // ReadLater is enabled by default everywhere with the exception of iOS which
