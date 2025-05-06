@@ -3045,12 +3045,6 @@ ci.thin_tester(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.7600.gl_tests_passthrough.filter",
                 ],
             ),
-            "media_foundation_browser_tests": targets.remove(
-                reason = [
-                    "TODO(crbug.com/40912267): Enable Media Foundation browser tests on ",
-                    "gpu bots once the Windows OS supports HW secure decryption.",
-                ],
-            ),
         },
     ),
     targets_settings = targets.settings(
