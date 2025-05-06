@@ -36,6 +36,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
+#include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/encoder_status.h"
@@ -47,6 +49,7 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
@@ -555,11 +558,12 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
   for (size_t i = 0; i < count; i++) {
     switch (output_config.storage_type) {
       case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+        CHECK(sii_);
         image_processor_output_buffers_[i] = CreateGmbOrMappableSIVideoFrame(
             output_config.fourcc.ToVideoPixelFormat(), output_config.size,
             output_config.visible_rect, output_config.visible_rect.size(),
             base::TimeDelta(),
-            gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+            gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE, sii_.get());
         break;
       default:
         LOG(ERROR) << "Unsupported output storage type of image processor: "
@@ -703,6 +707,33 @@ void V4L2VideoEncodeAccelerator::FlushTask(FlushCallback flush_callback) {
 
 bool V4L2VideoEncodeAccelerator::IsFlushSupported() {
   return is_flush_supported_;
+}
+
+void V4L2VideoEncodeAccelerator::OnSharedImageInterfaceAvailable(
+    scoped_refptr<gpu::SharedImageInterface> sii) {
+  sii_ = std::move(sii);
+}
+
+void V4L2VideoEncodeAccelerator::SetCommandBufferHelperCB(
+    base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+        get_command_buffer_helper_cb,
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
+  gpu_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+                 get_command_buffer_helper_cb)
+              -> scoped_refptr<gpu::SharedImageInterface> {
+            auto helper = get_command_buffer_helper_cb.Run();
+            if (helper && helper->GetSharedImageStub()) {
+              return helper->GetSharedImageStub()->shared_image_interface();
+            }
+            return nullptr;
+          },
+          get_command_buffer_helper_cb),
+      base::BindOnce(
+          &V4L2VideoEncodeAccelerator::OnSharedImageInterfaceAvailable,
+          weak_this_));
 }
 
 VideoEncodeAccelerator::SupportedProfiles
