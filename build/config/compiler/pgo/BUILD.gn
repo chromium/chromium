@@ -101,12 +101,26 @@ config("pgo_optimization_flags") {
     }
 
     if (_pgo_target != "" && pgo_data_path == "") {
+      common_args = [
+        "--target",
+        _pgo_target,
+      ]
+      if (pgo_override_filename != "") {
+        common_args += [
+          "--override-filename",
+          pgo_override_filename,
+        ]
+
+        # This is slow but it is only expected to be run on the orderfile bots
+        # that require this special step.
+        exec_script("//tools/update_pgo_profiles.py",
+                    common_args + [
+                          "update",
+                          "--gs-url-base=$pgo_gs_bucket/$pgo_gs_bucket_path",
+                        ])
+      }
       pgo_data_path = exec_script("//tools/update_pgo_profiles.py",
-                                  [
-                                    "--target",
-                                    _pgo_target,
-                                    "get_profile_path",
-                                  ],
+                                  common_args + [ "get_profile_path" ],
                                   "value")
     }
     assert(pgo_data_path != "",
