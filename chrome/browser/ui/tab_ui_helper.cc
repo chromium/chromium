@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tab_ui_helper.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -11,6 +12,17 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/resources/grit/ui_resources.h"
+
+namespace {
+
+// Whether the throbber should be shown for a restored tab after it becomes
+// visible, instead of when it's active in the tab strip (this signal is known
+// to be broken crbug.com/413080225#comment8).
+BASE_FEATURE(kSessionRestoreShowThrobberOnVisible,
+             "SessionRestoreShowThrobberOnVisible",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 TabUIHelper::TabUIHelper(content::WebContents* contents)
     : WebContentsObserver(contents),
@@ -47,11 +59,24 @@ bool TabUIHelper::ShouldHideThrobber() const {
   return false;
 }
 
+void TabUIHelper::SetWasActiveAtLeastOnce() {
+  if (!base::FeatureList::IsEnabled(kSessionRestoreShowThrobberOnVisible)) {
+    was_active_at_least_once_ = true;
+  }
+}
+
 void TabUIHelper::DidStopLoading() {
   // Reset the properties after the initial navigation finishes loading, so that
   // latter navigations are not affected. Note that the prerendered page won't
   // reset the properties because DidStopLoading is not called for prerendering.
   created_by_session_restore_ = false;
+}
+
+void TabUIHelper::OnVisibilityChanged(content::Visibility visiblity) {
+  if (base::FeatureList::IsEnabled(kSessionRestoreShowThrobberOnVisible) &&
+      visiblity == content::Visibility::VISIBLE) {
+    was_active_at_least_once_ = true;
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabUIHelper);

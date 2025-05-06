@@ -33,10 +33,12 @@ class TabUIHelper : public content::WebContentsObserver,
   // Return true if the throbber should be hidden during a page load.
   bool ShouldHideThrobber() const;
 
+  void SetWasActiveAtLeastOnce();
+
   // content::WebContentsObserver implementation
   void DidStopLoading() override;
+  void OnVisibilityChanged(content::Visibility visiblity) override;
 
-  void set_was_active_at_least_once() { was_active_at_least_once_ = true; }
   void set_created_by_session_restore(bool created_by_session_restore) {
     created_by_session_restore_ = created_by_session_restore;
   }

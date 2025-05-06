@@ -831,8 +831,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
     content::WebContents* new_contents = selection.new_contents;
     std::optional<size_t> index = selection.new_model.active();
     if (new_contents && index.has_value()) {
-      TabUIHelper::FromWebContents(new_contents)
-          ->set_was_active_at_least_once();
+      TabUIHelper::FromWebContents(new_contents)->SetWasActiveAtLeastOnce();
       SetTabDataAt(new_contents, index.value());
     }
   }
