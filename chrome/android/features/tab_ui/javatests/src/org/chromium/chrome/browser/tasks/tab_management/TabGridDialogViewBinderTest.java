@@ -434,8 +434,7 @@ public class TabGridDialogViewBinderTest {
     @UiThreadTest
     public void testSetDialogBackgroundColor() {
         int incognitoColor =
-                ContextCompat.getColor(
-                        sActivity, R.color.incognito_tab_grid_dialog_background_color);
+                ContextCompat.getColor(sActivity, R.color.gm3_baseline_surface_container_low_dark);
 
         mModel.set(TabGridDialogProperties.DIALOG_BACKGROUND_COLOR, incognitoColor);
 
@@ -447,8 +446,7 @@ public class TabGridDialogViewBinderTest {
     @UiThreadTest
     public void testSetUngroupbarBackgroundColor() {
         int incognitoColor =
-                ContextCompat.getColor(
-                        sActivity, R.color.incognito_tab_grid_dialog_background_color);
+                ContextCompat.getColor(sActivity, R.color.gm3_baseline_surface_container_low_dark);
 
         mModel.set(TabGridDialogProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR, incognitoColor);
 
