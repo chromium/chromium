@@ -2704,13 +2704,25 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const gfx::HDRMetadata& src_hdr_metadata =
       resource_provider()->GetHDRMetadata(quad->resource_id);
 
-  const bool needs_tone_map =
-      ((quad->is_video_frame && src_color_space.IsHDR()) ||
-       src_color_space.IsToneMappedByDefault()) &&
-      // Don't do tone mapping for stream video unless
-      // FixAndroidToneMapping is enabled.
-      (!quad->is_stream_video ||
-       base::FeatureList::IsEnabled(kFixAndroidToneMapping));
+  const bool needs_tone_map = [&]() {
+    // Don't do tone mapping for stream video unless FixAndroidToneMapping is
+    // enabled.
+    if (quad->is_stream_video &&
+        !base::FeatureList::IsEnabled(kFixAndroidToneMapping)) {
+      return false;
+    }
+    if (quad->is_video_frame && src_color_space.IsHDR()) {
+      return true;
+    }
+    if (src_color_space.IsToneMappedByDefault()) {
+      return true;
+    }
+    if (gfx::HdrMetadataAgtm::IsEnabled() &&
+        src_hdr_metadata.agtm.has_value()) {
+      return true;
+    }
+    return false;
+  }();
 
   sk_sp<SkColorSpace> override_color_space;
   if (overlay_color_space) {
