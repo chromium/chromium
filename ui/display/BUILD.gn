@@ -69,6 +69,8 @@ component("display") {
       "mac/display_link_mac.h",
       "mac/display_link_mac.mm",
       "mac/screen_mac.mm",
+      "mac/screen_mac_headless.h",
+      "mac/screen_mac_headless.mm",
     ]
   }
 
@@ -147,6 +149,7 @@ component("display") {
   }
 
   if (is_mac) {
+    deps += [ "//components/headless/screen_info" ]
     frameworks = [
       "AppKit.framework",
       "CoreGraphics.framework",
