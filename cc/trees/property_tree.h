@@ -747,7 +747,7 @@ struct DrawTransforms {
 
 struct DrawTransformData {
   int update_number = kInvalidUpdateNumber;
-  int target_id = kInvalidPropertyNodeId;
+  int effect_id = kInvalidPropertyNodeId;
 
   // TODO(sunxd): Move screen space transforms here if it can improve
   // performance.
