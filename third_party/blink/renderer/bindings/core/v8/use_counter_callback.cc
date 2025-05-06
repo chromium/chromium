@@ -466,6 +466,9 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kExplicitResourceManagement:
       webdx_feature = WebDXFeature::kDRAFT_ExplicitResourceManagement;
       break;
+    case v8::Isolate::kUint8ArrayToFromBase64AndHex:
+      webdx_feature = WebDXFeature::kDRAFT_Uint8ArrayToFromBase64AndHex;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.
