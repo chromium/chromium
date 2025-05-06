@@ -11,10 +11,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.build.BuildConfig;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
@@ -27,23 +27,37 @@ public class DeviceFormFactor {
     /**
      * Desktop form factor.
      *
-     * <p>Identified by <code>isDesktop() == true</code>.
+     * <p>Based on gn build argument, as identified by <code>isDesktop() == true</code>.
      */
     public static final String DESKTOP = "Desktop";
 
     /**
      * Phone form factor.
      *
-     * <p>Identified by <code>isNonMultiDisplayContextOnTablet() == false</code>.
+     * <p>Based on screen size of the device, as identified by <code>
+     * isNonMultiDisplayContextOnTablet() == false</code>.
      */
     public static final String PHONE = "Phone";
 
     /**
-     * Tablet form factor, including {@code #LARGETABLET} below.
+     * Tablet or desktop form factor, including {@code #LARGETABLET} below.
      *
-     * <p>Identified by <code>isNonMultiDisplayContextOnTablet() == true</code>.
+     * <p>Based on screen size of the device, as identified by <code>
+     * isNonMultiDisplayContextOnTablet() == true</code>.
+     *
+     * <p>TODO(crbug.com/415126396): Change to mean <code>
+     * isNonMultiDisplayContextOnTablet() == true &&
+     * isDesktop() == false</code>.
      */
     public static final String TABLET = "Tablet";
+
+    /**
+     * Tablet or desktop form factor, including {@code #LARGETABLET} below.
+     *
+     * <p>Based on screen size of the device, as identified by <code>
+     * isNonMultiDisplayContextOnTablet() == true</code>.
+     */
+    public static final String TABLET_OR_DESKTOP = "TabletOrDesktop";
 
     /**
      * Minimum screen size in dp to be considered a tablet. Matches the value used by res/

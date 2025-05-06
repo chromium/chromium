@@ -32,16 +32,18 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
         }
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    boolean isDesktop = DeviceFormFactor.isDesktop();
+                    boolean isDesktopBuild = DeviceFormFactor.isDesktop();
                     boolean isTablet =
                             DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTargetContext);
                     switch (type) {
-                        case DeviceFormFactor.DESKTOP:
-                            return DeviceFormFactor.isDesktop();
                         case DeviceFormFactor.PHONE:
-                            return !DeviceFormFactor.isDesktop() && !isTablet;
+                            return !isDesktopBuild && !isTablet;
                         case DeviceFormFactor.TABLET:
-                            return !DeviceFormFactor.isDesktop() && isTablet;
+                            return !isDesktopBuild && isTablet;
+                        case DeviceFormFactor.DESKTOP:
+                            return isDesktopBuild;
+                        case DeviceFormFactor.TABLET_OR_DESKTOP:
+                            return isTablet;
                         default:
                             return false;
                     }
