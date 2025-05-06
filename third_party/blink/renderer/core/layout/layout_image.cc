@@ -167,16 +167,8 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   // FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform).
   SetNeedsPaintPropertyUpdate();
 
-  const bool dimensions_changed = UpdateNaturalSizeIfNeeded();
-
-  // In the case of generated image content using :before/:after/content, we
-  // might not be in the layout tree yet. In that case, we just need to update
-  // our natural size. layout() will be called after we are inserted in the
-  // tree which will take care of what we are doing here.
-  if (ContainingBlock()) {
-    if (!dimensions_changed || !InvalidateLayoutOnNaturalSizeChange()) {
-      InvalidatePaintWithoutLayoutChange(defer);
-    }
+  if (!UpdateNaturalSizeIfNeeded() || !InvalidateLayoutOnNaturalSizeChange()) {
+    InvalidatePaintWithoutLayoutChange(defer);
   }
 
   if (!did_increment_visually_non_empty_pixel_count_) {
