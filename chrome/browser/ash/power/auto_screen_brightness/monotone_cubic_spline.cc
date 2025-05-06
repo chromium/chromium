@@ -184,10 +184,6 @@ bool MonotoneCubicSpline::operator==(const MonotoneCubicSpline& spline) const {
   return true;
 }
 
-bool MonotoneCubicSpline::operator!=(const MonotoneCubicSpline& spline) const {
-  return !(*this == spline);
-}
-
 double MonotoneCubicSpline::Interpolate(double x) const {
   DCHECK_GT(num_points_, 1u);
 
