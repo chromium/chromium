@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
+#include "chrome/browser/ui/plus_addresses/android/plus_address_creation_controller_android.h"
 
 #include <memory>
 #include <optional>

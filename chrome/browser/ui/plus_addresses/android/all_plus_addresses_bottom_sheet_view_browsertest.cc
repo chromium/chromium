@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_view.h"
+#include "chrome/browser/ui/plus_addresses/android/all_plus_addresses_bottom_sheet_view.h"
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
+#include "chrome/browser/ui/plus_addresses/android/all_plus_addresses_bottom_sheet_controller.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/plus_addresses/fake_plus_address_service.h"

@@ -8,7 +8,7 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
+#include "chrome/browser/ui/plus_addresses/android/plus_address_creation_controller_android.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/plus_addresses/fake_plus_address_service.h"

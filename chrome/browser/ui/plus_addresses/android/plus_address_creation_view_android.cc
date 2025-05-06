@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
+#include "chrome/browser/ui/plus_addresses/android/plus_address_creation_view_android.h"
 
 #include <string>
 
@@ -11,8 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/plus_addresses/android/plus_address_creation_controller_android.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -24,9 +24,9 @@
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressCreationErrorStateInfo_jni.h"
-#include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressCreationNormalStateInfo_jni.h"
-#include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressCreationViewBridge_jni.h"
+#include "chrome/browser/ui/plus_addresses/android/jni_headers/PlusAddressCreationErrorStateInfo_jni.h"
+#include "chrome/browser/ui/plus_addresses/android/jni_headers/PlusAddressCreationNormalStateInfo_jni.h"
+#include "chrome/browser/ui/plus_addresses/android/jni_headers/PlusAddressCreationViewBridge_jni.h"
 
 namespace plus_addresses {
 

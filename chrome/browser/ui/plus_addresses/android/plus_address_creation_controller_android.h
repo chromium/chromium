@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ANDROID_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_ANDROID_H_
-#define CHROME_BROWSER_UI_ANDROID_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_ANDROID_H_
+#ifndef CHROME_BROWSER_UI_PLUS_ADDRESSES_ANDROID_PLUS_ADDRESS_CREATION_CONTROLLER_ANDROID_H_
+#define CHROME_BROWSER_UI_PLUS_ADDRESSES_ANDROID_PLUS_ADDRESS_CREATION_CONTROLLER_ANDROID_H_
 
 #include <memory>
 #include <optional>
 
-#include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
+#include "chrome/browser/ui/plus_addresses/android/plus_address_creation_view_android.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/plus_address_survey_type.h"
@@ -113,4 +113,4 @@ class PlusAddressCreationControllerAndroid
 
 }  // namespace plus_addresses
 
-#endif  // CHROME_BROWSER_UI_ANDROID_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_ANDROID_H_
+#endif  // CHROME_BROWSER_UI_PLUS_ADDRESSES_ANDROID_PLUS_ADDRESS_CREATION_CONTROLLER_ANDROID_H_

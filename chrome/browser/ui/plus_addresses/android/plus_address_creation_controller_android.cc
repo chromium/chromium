@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
+#include "chrome/browser/ui/plus_addresses/android/plus_address_creation_controller_android.h"
 
 #include <optional>
 
@@ -15,9 +15,9 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/plus_addresses/android/plus_address_creation_view_android.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
