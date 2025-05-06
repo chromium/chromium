@@ -4169,6 +4169,14 @@
       base_feature: "none",
     },
     {
+      // Implements improved accessibility mappings for having an <input>
+      // inside of a <select> by reparenting the child <input> in the
+      // accessibility tree to be a sibling of the menu list popup.
+      name: "SelectAccessibilityReparentInput",
+      status: "test",
+      depends_on: ["CustomizableSelect"],
+    },
+    {
       // SelectAudioOutput API
       // https://chromestatus.com/feature/5164535504437248
       name: "SelectAudioOutput",

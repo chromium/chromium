@@ -1008,6 +1008,18 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
                : nullptr;
   }
 
+  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+    if (auto* input = DynamicTo<HTMLInputElement>(node)) {
+      if (auto* select = input->FirstAncestorSelectElement()) {
+        if (input->IsFirstTextInputInAncestorSelect() && input->IsTextField()) {
+          // The first descendant <input> in a <select> is reparented to be a
+          // direct child of the <select> in the a11y tree.
+          return select;
+        }
+      }
+    }
+  }
+
   return CanComputeAsNaturalParent(parent) ? parent : nullptr;
 }
 

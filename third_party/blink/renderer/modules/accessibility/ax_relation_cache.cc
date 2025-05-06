@@ -294,7 +294,9 @@ bool AXRelationCache::IsAriaOwned(const AXObject* child, bool check) const {
           << "\n* Child: " << child << "\n* Actual parent: " << parent
           << "\n* Natural ax parent: " << object_cache_->Get(natural_parent)
           << "\n* Natural dom parent: " << natural_parent << " #"
-          << natural_parent->GetDomNodeId() << "\n* Owners to update:";
+          << natural_parent->GetDomNodeId()
+          << "\n* parent->GetNode(): " << parent->GetNode()
+          << "\n* Owners to update:";
       for (AXID id : owner_axids_to_update_) {
         msg << " " << id;
       }

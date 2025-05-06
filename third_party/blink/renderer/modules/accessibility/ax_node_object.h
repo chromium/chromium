@@ -416,6 +416,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AddPopupChildren();
   bool HasValidHTMLTableStructureAndLayout() const;
   void AddTableChildren();
+  void AddSelectChildren();
   bool FindAllTableCellsWithRole(ax::mojom::blink::Role, AXObjectVector&) const;
   void AddValidationMessageChild();
   void AddAccessibleNodeChildren();

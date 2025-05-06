@@ -730,6 +730,10 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
       if (key == keywords::kArrowUp) {
         if (auto* previous_option = options.PreviousFocusableOption(*this)) {
           previous_option->Focus(focus_params);
+        } else if (RuntimeEnabledFeatures::
+                       SelectAccessibilityReparentInputEnabled() &&
+                   select->FirstDescendantTextInput()) {
+          select->FirstDescendantTextInput()->Focus(focus_params);
         }
         event.SetDefaultHandled();
         return;

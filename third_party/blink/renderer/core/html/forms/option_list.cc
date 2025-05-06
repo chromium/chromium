@@ -171,4 +171,17 @@ HTMLOptionElement* OptionList::FindFocusableOption(HTMLOptionElement& option,
   }
 }
 
+HTMLOptionElement* OptionList::FirstKeyboardFocusableOption() {
+  if (Empty()) {
+    return nullptr;
+  }
+  for (OptionListIterator it = begin(); it; ++it) {
+    if (it->IsKeyboardFocusableSlow(
+            Element::UpdateBehavior::kAssertNoLayoutUpdates)) {
+      return &*it;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace blink

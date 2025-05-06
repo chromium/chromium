@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/tree_ordered_list.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_selected_content_element.h"
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
 #include "third_party/blink/renderer/core/html/forms/type_ahead.h"
@@ -317,6 +318,13 @@ class CORE_EXPORT HTMLSelectElement final
   void SelectedContentElementRemoved(
       HTMLSelectedContentElement* selectedcontent);
 
+  // These methods are used to track all descendant <input>s elements of this
+  // <select>. This is only used for customizable select and is populated by
+  // this select's MutationObserver.
+  void AddDescendantTextInput(HTMLInputElement* input);
+  void RemoveDescendantTextInput(HTMLInputElement* input);
+  HTMLInputElement* FirstDescendantTextInput() const;
+
   // This will only return an element if IsAppearanceBase(). The element
   // is a popover inside the UA shadowroot which is used to show the user a
   // preview of what is going to be autofilled. This should only be called if
@@ -434,6 +442,7 @@ class CORE_EXPORT HTMLSelectElement final
   Member<HTMLOptionElement> last_on_change_option_;
   Member<HTMLOptionElement> suggested_option_;
   TreeOrderedList<HTMLSelectedContentElement> descendant_selectedcontents_;
+  TreeOrderedList<HTMLInputElement> descendant_text_inputs_;
   bool uses_menu_list_ = true;
   bool is_multiple_;
   mutable bool should_recalc_list_items_;

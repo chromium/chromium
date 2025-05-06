@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/input_type.h"
 #include "third_party/blink/renderer/core/html/forms/radio_button_group_scope.h"
 #include "third_party/blink/renderer/core/html/forms/search_input_type.h"
@@ -160,6 +161,7 @@ void HTMLInputElement::Trace(Visitor* visitor) const {
   visitor->Trace(input_type_view_);
   visitor->Trace(list_attribute_target_observer_);
   visitor->Trace(image_loader_);
+  visitor->Trace(first_ancestor_select_);
   TextControlElement::Trace(visitor);
 }
 
@@ -2472,6 +2474,21 @@ void HTMLInputElement::SetFocused(bool is_focused,
       UserHasEditedTheField()) {
     SetUserHasEditedTheFieldAndBlurred();
   }
+}
+
+bool HTMLInputElement::IsFirstTextInputInAncestorSelect() const {
+  if (!RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
+      !first_ancestor_select_) {
+    return false;
+  }
+  return first_ancestor_select_->FirstDescendantTextInput() == this;
+}
+
+HTMLSelectElement* HTMLInputElement::FirstAncestorSelectElement() const {
+  if (!RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+    return nullptr;
+  }
+  return first_ancestor_select_;
 }
 
 }  // namespace blink

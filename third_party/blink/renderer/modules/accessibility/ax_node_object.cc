@@ -555,6 +555,17 @@ bool IsAddedOnlyViaSpecialTraversal(const Node* node) {
       node->IsScrollButtonPseudoElement()) {
     return true;
   }
+
+  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+    // The first descendant <input> in a <select> gets taken out of the listbox
+    // because it is not an <option>. It controls the listbox.
+    if (auto* input = DynamicTo<HTMLInputElement>(node)) {
+      if (input->IsFirstTextInputInAncestorSelect()) {
+        return true;
+      }
+    }
+  }
+
   return false;
 }
 
@@ -4448,6 +4459,22 @@ KURL AXNodeObject::Url() const {
 }
 
 AXObject* AXNodeObject::ChooserPopup() const {
+  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+    // The first input inside of a select filters the listbox, and therefore
+    // controls it.
+    if (auto* input = DynamicTo<HTMLInputElement>(GetNode())) {
+      if (input->IsTextField()) {
+        if (auto* select = input->FirstAncestorSelectElement()) {
+          if (auto* popover = select->PopoverForAppearanceBase()) {
+            if (auto* axobject = AXObjectCache().Get(popover)) {
+              return axobject;
+            }
+          }
+        }
+      }
+    }
+  }
+
   // When color & date chooser popups are visible, they can be found in the tree
   // as a group child of the <input> control itself.
   switch (native_role_) {
@@ -5926,6 +5953,19 @@ void AXNodeObject::AddNodeChildren() {
   }
 }
 
+void AXNodeObject::AddSelectChildren() {
+  auto* select = DynamicTo<HTMLSelectElement>(GetNode());
+  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() &&
+      select) {
+    if (auto* input = select->FirstDescendantTextInput()) {
+      // Reparent the first descendant <input> element of this <select> to be
+      // adjacent to the listbox in the a11y tree.
+      AddNodeChild(input);
+    }
+  }
+  AddNodeChildren();
+}
+
 void AXNodeObject::AddOwnedChildren() {
   AXObjectVector owned_children;
   AXObjectCache().ValidatedAriaOwnedChildren(this, owned_children);
@@ -5975,7 +6015,9 @@ void AXNodeObject::AddChildrenImpl() {
     AddValidationMessageChild();
   CHECK_ATTACHED();
 
-  if (HasValidHTMLTableStructureAndLayout()) {
+  if (IsA<HTMLSelectElement>(GetNode())) {
+    AddSelectChildren();
+  } else if (HasValidHTMLTableStructureAndLayout()) {
     AddTableChildren();
   } else if (GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement()) {
     AddScrollMarkerGroupChildren();
