@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Extensions.InstallTimedOut" enum="BooleanYesNo"
-    expires_after="2025-06-15">
+    expires_after="2026-05-10">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.NewBrowserWindow" enum="KioskBrowserWindowType"
-    expires_after="2025-06-15">
+    expires_after="2026-05-10">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Kiosk.RamUsagePercentage" units="%" expires_after="2025-06-15">
+<histogram name="Kiosk.RamUsagePercentage" units="%" expires_after="2026-05-10">
   <owner>vkovalova@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -285,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Session.NetworkDrops" units="network drops"
-    expires_after="2025-06-15">
+    expires_after="2026-05-10">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -295,7 +295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionDuration.Crashed" units="ms"
-    expires_after="2025-06-15">
+    expires_after="2026-05-10">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionDuration.Normal" units="ms"
-    expires_after="2025-06-15">
+    expires_after="2026-05-10">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionDurationInDays.Crashed" units="days"
-    expires_after="2025-06-15">
+    expires_after="2026-05-10">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionDurationInDays.Normal" units="days"
-    expires_after="2025-06-15">
+    expires_after="2026-05-10">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -395,7 +395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SwapUsagePercentage" units="%"
-    expires_after="2025-06-15">
+    expires_after="2026-05-10">
   <owner>vkovalova@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
