@@ -560,8 +560,6 @@ class TestingProfile : public Profile {
 
   std::unique_ptr<policy::PolicyService> policy_service_;
 
-  scoped_refptr<TestingPrefStore> supervised_user_pref_store_ = nullptr;
-
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 

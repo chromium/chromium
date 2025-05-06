@@ -6947,6 +6947,7 @@ test("unit_tests") {
     "//components/subresource_filter/core/browser:test_support",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:fetcher",
+    "//components/supervised_user/core/browser:test_support",
     "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/common",
     "//components/supervised_user/core/common",

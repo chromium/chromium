@@ -8,6 +8,7 @@
 
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -25,60 +26,64 @@ class SupervisedUserPreferencesTest : public ::testing::Test {
  public:
   void SetUp() override {
     auto* registry = pref_service_.registry();
-    supervised_user::RegisterProfilePrefs(registry);
+    RegisterProfilePrefs(registry);
+    supervised_user_sync_data_fake_.Init(pref_service_);
   }
 
  protected:
   TestingPrefServiceSimple pref_service_;
+  SupervisedUserSyncDataFake supervised_user_sync_data_fake_;
 };
 
-TEST_F(SupervisedUserPreferencesTest, RegisterProfilePrefs) {
+TEST_F(SupervisedUserPreferencesTest, RegisterProfilePrefsAndCheckDefaults) {
   // Checks the preference registration from the Setup.
   EXPECT_EQ(
       pref_service_.GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior),
-      static_cast<int>(supervised_user::FilteringBehavior::kAllow));
-  EXPECT_EQ(pref_service_.GetBoolean(prefs::kSupervisedUserSafeSites), true);
-  EXPECT_FALSE(supervised_user::IsSubjectToParentalControls(pref_service_));
+      static_cast<int>(FilteringBehavior::kAllow));
+
+  // This is browser's default kSupervisedUserSafeSites setting (for
+  // unsupervised user).
+  EXPECT_EQ(pref_service_.GetBoolean(prefs::kSupervisedUserSafeSites), false);
+  EXPECT_FALSE(IsSubjectToParentalControls(pref_service_));
   // TODO(b/306376651): When we migrate more preference reading methods in this
   // library, add more test cases for their correct default values.
 }
 
 TEST_F(SupervisedUserPreferencesTest, ToggleParentalControlsSetsUserId) {
-  supervised_user::EnableParentalControls(pref_service_);
+  EnableParentalControls(pref_service_);
   EXPECT_EQ(pref_service_.GetString(prefs::kSupervisedUserId),
-            supervised_user::kChildAccountSUID);
+            kChildAccountSUID);
 
-  supervised_user::DisableParentalControls(pref_service_);
+  DisableParentalControls(pref_service_);
   EXPECT_EQ(pref_service_.GetString(prefs::kSupervisedUserId), std::string());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SupervisedUserPreferencesTest, ToggleParentalControlsSetsChildStatus) {
-  supervised_user::EnableParentalControls(pref_service_);
-  EXPECT_TRUE(supervised_user::IsChildAccountStatusKnown(pref_service_));
+  EnableParentalControls(pref_service_);
+  EXPECT_TRUE(IsChildAccountStatusKnown(pref_service_));
 
-  supervised_user::DisableParentalControls(pref_service_);
-  EXPECT_TRUE(supervised_user::IsChildAccountStatusKnown(pref_service_));
+  DisableParentalControls(pref_service_);
+  EXPECT_TRUE(IsChildAccountStatusKnown(pref_service_));
 }
 #endif
 
 TEST_F(SupervisedUserPreferencesTest, StartFetchingFamilyInfo) {
   kidsmanagement::ListMembersResponse list_family_members_response;
-  supervised_user::SetFamilyMemberAttributesForTesting(
+  SetFamilyMemberAttributesForTesting(
       list_family_members_response.add_members(),
       kidsmanagement::HEAD_OF_HOUSEHOLD, "username_hoh");
-  supervised_user::SetFamilyMemberAttributesForTesting(
+  SetFamilyMemberAttributesForTesting(
       list_family_members_response.add_members(), kidsmanagement::PARENT,
       "username_parent");
-  supervised_user::SetFamilyMemberAttributesForTesting(
+  SetFamilyMemberAttributesForTesting(
       list_family_members_response.add_members(), kidsmanagement::CHILD,
       "username_child");
-  supervised_user::SetFamilyMemberAttributesForTesting(
+  SetFamilyMemberAttributesForTesting(
       list_family_members_response.add_members(), kidsmanagement::MEMBER,
       "username_member");
 
-  supervised_user::RegisterFamilyPrefs(pref_service_,
-                                       list_family_members_response);
+  RegisterFamilyPrefs(pref_service_, list_family_members_response);
 
   EXPECT_EQ("username_hoh",
             pref_service_.GetString(prefs::kSupervisedUserCustodianName));
@@ -89,26 +94,24 @@ TEST_F(SupervisedUserPreferencesTest, StartFetchingFamilyInfo) {
 TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
   {
     kidsmanagement::ListMembersResponse list_family_members_response;
-    supervised_user::SetFamilyMemberAttributesForTesting(
+    SetFamilyMemberAttributesForTesting(
         list_family_members_response.add_members(),
         kidsmanagement::HEAD_OF_HOUSEHOLD, "username_hoh");
-    supervised_user::SetFamilyMemberAttributesForTesting(
+    SetFamilyMemberAttributesForTesting(
         list_family_members_response.add_members(), kidsmanagement::PARENT,
         "username_parent");
 
-    supervised_user::RegisterFamilyPrefs(pref_service_,
-                                         list_family_members_response);
+    RegisterFamilyPrefs(pref_service_, list_family_members_response);
 
-    for (const char* property : supervised_user::kCustodianInfoPrefs) {
+    for (const char* property : kCustodianInfoPrefs) {
       EXPECT_THAT(pref_service_.GetString(property), Not(IsEmpty()));
     }
   }
 
   {
     kidsmanagement::ListMembersResponse list_family_members_response;
-    supervised_user::RegisterFamilyPrefs(pref_service_,
-                                         list_family_members_response);
-    for (const char* property : supervised_user::kCustodianInfoPrefs) {
+    RegisterFamilyPrefs(pref_service_, list_family_members_response);
+    for (const char* property : kCustodianInfoPrefs) {
       EXPECT_THAT(pref_service_.GetString(property), IsEmpty());
     }
   }
@@ -116,35 +119,36 @@ TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
 
 TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledSupervisedUser) {
   // Enables parental controls with safe sites checks.
-  pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
-                                      base::Value(true));
-  pref_service_.SetString(prefs::kSupervisedUserId,
-                            supervised_user::kChildAccountSUID);
-
-  EXPECT_TRUE(supervised_user::IsSafeSitesEnabled(pref_service_));
+  EnableParentalControls(pref_service_);
+  EXPECT_TRUE(IsSafeSitesEnabled(pref_service_));
 }
 
 TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledNonSupervisedUser) {
   // Requests safe sites check without parental controls.
-  pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
-                                      base::Value(true));
+  EnableParentalControls(pref_service_);
+  // Clear the main switch
   pref_service_.SetString(prefs::kSupervisedUserId, std::string());
 
-  EXPECT_FALSE(supervised_user::IsSafeSitesEnabled(pref_service_));
+  EXPECT_FALSE(IsSafeSitesEnabled(pref_service_));
 }
 
 TEST_F(SupervisedUserPreferencesTest, IsSafeSitesDisabled) {
   // Sanity check for disabled safe sites (also gated by kSupervisedUserId).
   pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
                                       base::Value(false));
-  EXPECT_FALSE(supervised_user::IsSafeSitesEnabled(pref_service_));
+  ASSERT_FALSE(IsSubjectToParentalControls(pref_service_));
+  EXPECT_FALSE(IsSafeSitesEnabled(pref_service_));
+
+  pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                      base::Value(true));
+  ASSERT_FALSE(IsSubjectToParentalControls(pref_service_));
+  EXPECT_FALSE(IsSafeSitesEnabled(pref_service_));
 }
 
 TEST_F(SupervisedUserPreferencesTest,
        IsSubjectToParentalControlsForSupervisedUser) {
   // Simply enables parental controls.
-  pref_service_.SetString(prefs::kSupervisedUserId,
-                          supervised_user::kChildAccountSUID);
+  EnableParentalControls(pref_service_);
   EXPECT_TRUE(supervised_user::IsSubjectToParentalControls(pref_service_));
 
   // Safe sites is enabled by default.
@@ -155,7 +159,7 @@ TEST_F(SupervisedUserPreferencesTest,
        IsSubjectToParentalControlsForNonSupervisedUser) {
   // Set non-supervised user preference.
   pref_service_.SetString(prefs::kSupervisedUserId, std::string());
-  EXPECT_FALSE(supervised_user::IsSubjectToParentalControls(pref_service_));
+  EXPECT_FALSE(IsSubjectToParentalControls(pref_service_));
 }
 
 
