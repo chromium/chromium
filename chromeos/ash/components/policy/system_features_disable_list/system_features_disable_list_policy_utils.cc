@@ -40,8 +40,13 @@ bool IsDisabledAppsModeHidden(const PrefService& local_state) {
       user_manager::UserManager::Get();
 
   const user_manager::User* active_user = user_manager->GetActiveUser();
-  DUMP_WILL_BE_CHECK(active_user);
-  DUMP_WILL_BE_CHECK(active_user->is_managed());
+  if (!active_user) {
+    return false;
+  }
+
+  if (!active_user->is_managed()) {
+    return false;
+  }
 
   // For Managed Guest Sessions (MGS): Behavior remains determined by the
   // SystemFeaturesDisableMode pref's current value.
