@@ -497,9 +497,12 @@ void StartShouldInterceptRequest(
   TRACE_EVENT0("android_webview", "RunShouldInterceptRequest");
   // The app may perform blocking calls as part of synchronous
   // shouldInterceptRequest, so mark the rest of this scope as possibly
-  // blocking.
+  // blocking. This will ensure that the thread pool is expanded to avoid it
+  // being exhausted if all the threads end up waiting at the same time.
+  // See https://crbug.com/404563944 for an example of this happening.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> obj = ref.get(env);
   if (!obj) {

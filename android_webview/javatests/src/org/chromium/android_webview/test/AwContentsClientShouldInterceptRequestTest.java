@@ -11,6 +11,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebViewClient;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import com.google.common.util.concurrent.SettableFuture;
@@ -49,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -582,7 +584,9 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         awContents, contentsClient, syncGetJs);
 
-        if (header.equals("null")) return null;
+        if (header.equals("null")) {
+            return null;
+        }
         // JSON stringification applied by executeJavaScriptAndWaitForResult adds quotes
         // around returned strings.
         Assert.assertTrue(header.length() > 2);
@@ -1818,5 +1822,77 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
 
         Assert.assertEquals(
                 shouldInterceptRequestCallCount, mShouldInterceptRequestHelper.getCallCount());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Network"})
+    public void testInterceptRequestAllowsThreadBlocking() throws Throwable {
+        // This test asserts that WebView is resilient against blocking operations on the thread
+        // pool where shouldInterceptRequest calls are made.
+        //
+        // It works by creating a web page with a large (`parallelRequestCount`) number of sub
+        // requests.
+        // The number of sub resource requests is chosen to be high enough to exhaust the number of
+        // available threads in the default `base::ThreadPool` SequencedTaskRunner if no care is
+        // taken to handle blocking threads.
+        //
+        // Each call to shouldInterceptRequest will block until all the expected calls have been
+        // made, and only then will they be allowed to complete.
+        //
+        // If the thread pool can be exhausted, then WebView will be prevented from calling
+        // `shouldInterceptRequest` for some of the expected parallel pages, and the test will
+        // eventually time out.
+        //
+        // See https://crbug.com/404563944 for background.
+
+        final int parallelRequestCount = 10;
+
+        // Configure the main page with a number of iframes that load different pages.
+        String iframeTemplate = "<iframe src=\"/sub.html?idx=%d\"></iframe>\n";
+        StringBuilder sb = new StringBuilder("<html>");
+        for (int i = 0; i < parallelRequestCount; i++) {
+            sb.append(String.format(Locale.ROOT, iframeTemplate, i));
+        }
+        sb.append("</html>");
+        final String mainPageUrl = addPageToTestServer(mWebServer, "/", sb.toString());
+        addPageToTestServer(mWebServer, "/sub.html", "subpage");
+
+        final CountDownLatch latch = new CountDownLatch(parallelRequestCount);
+        mContentsClient =
+                new TestAwContentsClient() {
+                    @Override
+                    public WebResourceResponseInfo shouldInterceptRequest(
+                            AwWebResourceRequest request) {
+                        if (request.getUrl().contains("sub.html")) {
+                            latch.countDown();
+                            try {
+                                // Block until all expected calls to `shouldInterceptRequest` have
+                                // been made.
+                                latch.await();
+                            } catch (InterruptedException e) {
+                                throw new AssertionError("latch wait was interrupted", e);
+                            }
+                        }
+                        return super.shouldInterceptRequest(request);
+                    }
+                };
+
+        mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        mAwContents = mTestContainerView.getAwContents();
+
+        int onPageFinishedCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
+        mShouldInterceptRequestHelper = mContentsClient.getShouldInterceptRequestHelper();
+        int callCount = mShouldInterceptRequestHelper.getCallCount();
+
+        mActivityTestRule.loadUrlAsync(mAwContents, mainPageUrl);
+
+        // Wait until all calls to shouldInterceptRequest (main page + subpages) have completed.
+        // This will time out if the thread pool has been exhausted.
+        mShouldInterceptRequestHelper.waitForCallback(callCount, 1 + parallelRequestCount);
+        Assert.assertTrue(
+                "We should have seen at least all the requests for html pages.",
+                mShouldInterceptRequestHelper.getUrls().size() >= 1 + parallelRequestCount);
+        mContentsClient.getOnPageFinishedHelper().waitForCallback(onPageFinishedCallCount);
     }
 }
