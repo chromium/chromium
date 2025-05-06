@@ -10,7 +10,7 @@
 namespace arc {
 
 namespace {
-constexpr char kArcActiveWindowThrottleObserverName[] =
+inline constexpr char kArcActiveWindowThrottleObserverName[] =
     "ArcWindowIsActiveWindow";
 }  // namespace
 

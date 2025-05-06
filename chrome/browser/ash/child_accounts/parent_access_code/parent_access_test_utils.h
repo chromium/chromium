@@ -21,7 +21,8 @@ namespace ash {
 namespace parent_access {
 
 // Values used in default parent access code configuration for tests.
-constexpr char kTestSharedSecret[] = "AIfVJHITSar8keeq3779V70dWiS1xbPv8g";
+inline constexpr char kTestSharedSecret[] =
+    "AIfVJHITSar8keeq3779V70dWiS1xbPv8g";
 constexpr base::TimeDelta kDefaultCodeValidity = base::Minutes(10);
 constexpr base::TimeDelta kDefaultClockDrift = base::Minutes(5);
 

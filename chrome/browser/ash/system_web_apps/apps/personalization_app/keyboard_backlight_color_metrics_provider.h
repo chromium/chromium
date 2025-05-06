@@ -9,8 +9,9 @@
 
 namespace {
 
-constexpr char kPersonalizationKeyboardBacklightColorSettledHistogramName[] =
-    "Ash.Personalization.KeyboardBacklight.Color.Settled";
+inline constexpr char
+    kPersonalizationKeyboardBacklightColorSettledHistogramName[] =
+        "Ash.Personalization.KeyboardBacklight.Color.Settled";
 
 constexpr char
     kPersonalizationKeyboardBacklightDisplayTypeSettledHistogramName[] =

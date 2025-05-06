@@ -9,7 +9,7 @@ namespace ash {
 namespace eche_app {
 
 // The Eche's app ID.
-const char kEcheAppId[] = "pcmgemncoejjdplpoaekhfgkckffggcb";
+inline constexpr char kEcheAppId[] = "pcmgemncoejjdplpoaekhfgkckffggcb";
 
 }  // namespace eche_app
 }  // namespace ash

@@ -24,8 +24,8 @@
 
 namespace arc::input_overlay {
 
-constexpr char kKeyboard[] = "keyboard";
-constexpr char kMouse[] = "mouse";
+inline constexpr char kKeyboard[] = "keyboard";
+inline constexpr char kMouse[] = "mouse";
 
 class ActionView;
 class DisplayOverlayController;

@@ -19,7 +19,8 @@ class BrowserContext;
 
 namespace kcer {
 
-const char kKcerPkcs12MigrationUma[] = "Ash.KcerPkcs12Migration.Events";
+inline constexpr char kKcerPkcs12MigrationUma[] =
+    "Ash.KcerPkcs12Migration.Events";
 
 // Used for UMA counters, the entries should not be re-numbered or re-used.
 enum class KcerPkcs12MigrationEvent {

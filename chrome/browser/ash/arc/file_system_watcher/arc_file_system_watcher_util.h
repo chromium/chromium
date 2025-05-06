@@ -17,7 +17,7 @@ constexpr base::FilePath::CharType kCrosRemovableMediaDir[] =
 // The prefix for device label used in Android paths for removable media.
 // A removable device mounted at /media/removable/UNTITLED is mounted at
 // /storage/removable_UNTITLED in Android.
-constexpr char kRemovableMediaLabelPrefix[] = "removable_";
+inline constexpr char kRemovableMediaLabelPrefix[] = "removable_";
 
 // Appends |cros_path|'s relative path from "/media/removable" to |android_path|
 // with the altered device label which is used in Android removable media paths.

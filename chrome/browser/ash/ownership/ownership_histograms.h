@@ -78,7 +78,8 @@ void RecordOwnerKeyEvent(OwnerKeyEvent event, bool success);
 
 // The path for the OwnerKeyUmaEvent histogram. Accessible for testing. Prefer
 // using through the  `RecordOwnerKeyEvent` method.
-constexpr char kOwnerKeyHistogramName[] = "ChromeOS.Ownership.OwnerKeyUmaEvent";
+inline constexpr char kOwnerKeyHistogramName[] =
+    "ChromeOS.Ownership.OwnerKeyUmaEvent";
 
 // Events related to owner key loading, generation and usage that are sent to
 // UMA. Produced from the events above by combining with a success/failure

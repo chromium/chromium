@@ -40,24 +40,24 @@ enum class LaunchTemplateFailureType {
   kMaxValue = kDesksCountCheckFailedError,
 };
 
-constexpr char kFloatingWorkspaceV1Initialized[] =
+inline constexpr char kFloatingWorkspaceV1Initialized[] =
     "Ash.FloatingWorkspace.FloatingWorkspaceV1Initialized";
-constexpr char kFloatingWorkspaceV1RestoredSessionType[] =
+inline constexpr char kFloatingWorkspaceV1RestoredSessionType[] =
     "Ash.FloatingWorkspace.FloatingWorkspaceV1RestoredSessionType";
 
-constexpr char kFloatingWorkspaceV2TemplateLaunchFailureStatus[] =
+inline constexpr char kFloatingWorkspaceV2TemplateLaunchFailureStatus[] =
     "Ash.FloatingWorkspace.TemplateLaunchFailureStatus";
-constexpr char kFloatingWorkspaceV2TemplateLaunchTimedOut[] =
+inline constexpr char kFloatingWorkspaceV2TemplateLaunchTimedOut[] =
     "Ash.FloatingWorkspace.TemplateLaunchTimeOut";
-constexpr char kFloatingWorkspaceV2TemplateLoadTime[] =
+inline constexpr char kFloatingWorkspaceV2TemplateLoadTime[] =
     "Ash.FloatingWorkspace.TemplateLoadTime";
-constexpr char kFloatingWorkspaceV2TemplateSize[] =
+inline constexpr char kFloatingWorkspaceV2TemplateSize[] =
     "Ash.FloatingWorkspace.TemplateSize";
-constexpr char kFloatingWorkspaceV2TemplateUploadStatus[] =
+inline constexpr char kFloatingWorkspaceV2TemplateUploadStatus[] =
     "Ash.FloatingWorkspace.TemplateUploadStatus";
-constexpr char kFloatingWorkspaceV2Initialized[] =
+inline constexpr char kFloatingWorkspaceV2Initialized[] =
     "Ash.FloatingWorkspace.FloatingWorkspaceV2Initialized";
-constexpr char kFloatingWorkspaceV2TemplateNotFound[] =
+inline constexpr char kFloatingWorkspaceV2TemplateNotFound[] =
     "Ash.FloatingWorkspace.TemplateNotFound";
 
 void RecordFloatingWorkspaceV1InitializedHistogram();
