@@ -57,6 +57,10 @@
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "ui/gfx/icc_profile.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -150,6 +154,43 @@ void LogDesktopCaptureRequestRefreshRate(DesktopMediaID::Type capturer_type,
                              rrf_rate_fps);
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+bool IsWgcEnabledForScreenCapture() {
+  bool enabled =
+      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer);
+  if (enabled) {
+    return true;
+  }
+
+  if (base::FeatureList::GetInstance() &&
+      base::FeatureList::GetInstance()->IsFeatureOverridden(
+          features::kWebRtcAllowWgcScreenCapturer.name)) {
+    return enabled;
+  }
+
+  // Starting from WIN11 24H2 (build 26100), the Capture API returns empty
+  // frame when the captured content is unchanged, helping to maintain
+  // performance for 0Hz capture scenarios.
+  enabled = (base::win::GetVersion() >= base::win::Version::WIN11_24H2);
+  return enabled;
+}
+
+bool IsWgcZeroHzEnabledForScreenCapture() {
+  bool enabled =
+      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenZeroHz);
+  if (enabled) {
+    return true;
+  }
+
+  if (base::FeatureList::GetInstance() &&
+      base::FeatureList::GetInstance()->IsFeatureOverridden(
+          features::kWebRtcAllowWgcScreenZeroHz.name)) {
+    return enabled;
+  }
+  return IsWgcEnabledForScreenCapture();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // Helper class which request that the system-global Windows timer interrupt
 // frequency be raised at construction. The corresponding deactivation is done
@@ -871,7 +912,7 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   // set to true. GDI does not use this option.
   options.set_prefer_cursor_embedded(true);
 
-  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer)) {
+  if (IsWgcEnabledForScreenCapture()) {
     options.set_allow_wgc_screen_capturer(true);
 
     // 0Hz support is by default disabled for WGC but it can be enabled using
@@ -882,8 +923,7 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
     // has changed and contain one (damage) region corresponding to the complete
     // screen or window being captured if any change is detected.
     if (source.type == DesktopMediaID::TYPE_SCREEN) {
-      options.set_allow_wgc_zero_hertz(
-          base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenZeroHz));
+      options.set_allow_wgc_zero_hertz(IsWgcZeroHzEnabledForScreenCapture());
     }
   }
   if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer)) {
@@ -1009,12 +1049,10 @@ DesktopCaptureDevice::DesktopCaptureDevice(
 #endif
   bool zero_hertz_is_supported = true;
 #if BUILDFLAG(IS_WIN)
-  const bool wgc_screen_zero_hertz =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenZeroHz);
+  const bool wgc_screen_zero_hertz = IsWgcZeroHzEnabledForScreenCapture();
   const bool wgc_window_zero_hertz =
       base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz);
-  const bool wgc_screen_capturer =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer);
+  const bool wgc_screen_capturer = IsWgcEnabledForScreenCapture();
   const bool wgc_window_capturer =
       base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer);
   if (!wgc_window_capturer && !wgc_screen_capturer) {
