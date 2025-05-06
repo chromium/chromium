@@ -118,6 +118,9 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // EventTarget overrides
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
+  void AddedEventListener(
+      const AtomicString& event_type,
+      RegisteredEventListener& registered_listener) override;
 
   void SetExecutionContext(ExecutionContext* context);
 

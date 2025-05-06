@@ -714,6 +714,38 @@ test(function() {
 
   test.remove();
 }, 'firstRectForCharacterRange empty control bounds and empty selection bounds fallbacks');
+
+test(function(){
+  // Webfeature values for textformatupdate event.
+  const kEditContextTextFormatUpdateAddListener = 5552;
+  const kEditContextTextFormatUpdateFireEvent = 5553;
+  const kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone = 5554;
+  internals.clearUseCounter(document, kEditContextTextFormatUpdateAddListener);
+  internals.clearUseCounter(document, kEditContextTextFormatUpdateFireEvent);
+  internals.clearUseCounter(document, kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone);
+
+  const editContext = new EditContext();
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  test.editContext = editContext;
+  test.focus();
+  textInputController.setComposition("foo");
+
+  assert_false(internals.isUseCounted(document, kEditContextTextFormatUpdateAddListener));
+  assert_false(internals.isUseCounted(document, kEditContextTextFormatUpdateFireEvent));
+
+  editContext.addEventListener("textformatupdate", e => {});
+
+  assert_true(internals.isUseCounted(document, kEditContextTextFormatUpdateAddListener));
+  assert_false(internals.isUseCounted(document, kEditContextTextFormatUpdateFireEvent));
+
+  textInputController.setComposition("bar");
+
+  assert_true(internals.isUseCounted(document, kEditContextTextFormatUpdateFireEvent));
+  assert_true(internals.isUseCounted(document, kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone));
+
+  test.remove();
+}, 'Testing UseCounter for textformatupdate event.');
 </script>
 </body>
 </html>
