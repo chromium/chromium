@@ -460,14 +460,8 @@ public class WebViewChromiumAwInit {
                     PostTask.postTask(
                             TaskTraits.BEST_EFFORT,
                             () -> {
-                                mFactory.setWebViewContextExperimentValue(
-                                        AwFeatureMap.isEnabled(
-                                                AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT));
-                                mFactory.setWebViewDisableCHIPSExperimentValue(
-                                        AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_DISABLE_CHIPS));
-                                mFactory.setWebViewUseStartupTasksExperimentValue(
-                                        AwFeatureMap.isEnabled(
-                                                AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC));
+                                WebViewCachedFlags.get()
+                                        .onStartupCompleted(mFactory.getWebViewPrefs());
                             });
 
                     if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY)
