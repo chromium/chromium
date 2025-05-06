@@ -2710,7 +2710,6 @@ public class StripLayoutHelper
         List<Animator> tabStripAnimators = new ArrayList<>();
 
         // 1. Add tabs expanding animators to expand remaining tabs to fill scrollable area.
-        finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
         List<Animator> tabExpandAnimators = computeAndUpdateTabWidth(true, true, closedTab);
         if (tabExpandAnimators != null) tabStripAnimators.addAll(tabExpandAnimators);
 
@@ -3642,6 +3641,7 @@ public class StripLayoutHelper
     @Override
     public void resizeTabStrip(
             boolean animate, StripLayoutTab tabToAnimate, boolean tabAddedAnimation) {
+        finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
         if (tabToAnimate != null) {
             assert animate;
             if (!tabAddedAnimation) {
@@ -3649,7 +3649,6 @@ public class StripLayoutHelper
                 // Resize the tab strip accordingly.
                 resizeStripOnTabClose(getTabById(tabToAnimate.getTabId()));
             } else {
-                finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
                 List<Animator> animationList =
                         computeAndUpdateTabWidth(
                                 /* animate= */ true,
@@ -3658,7 +3657,6 @@ public class StripLayoutHelper
                 if (animationList != null) runTabAddedAnimator(animationList, tabToAnimate);
             }
         } else {
-            finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
             computeAndUpdateTabWidth(
                     animate, /* deferAnimations= */ animate, /* closedTab= */ null);
         }
