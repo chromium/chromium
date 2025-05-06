@@ -1132,5 +1132,19 @@
     <message name="IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES" desc="The avatar button label for the history sync promo. When clicked, it opens the turn on sync dialog.">
       See tabs from other devices?
     </message>
+    <!-- Profile Menu Sync Promo Desktop -->
+    <!-- TODO(crbug.com/415748973): Finalize the strings and make them translateable. -->
+    <message translateable="false" name="IDS_PROFILE_MENU_SYNC_PROMO_BROWSE_ACROSS_DEVICES_DESCRIPTION" desc="">
+      To pick up where you left off on other devices, sync your history to <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
+    </message>
+    <message translateable="false" name="IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION" desc="">
+      To easily get back to sites you’ve visited, sync your history to <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
+    </message>
+    <message translateable="false" name="IDS_PROFILE_MENU_SYNC_PROMO_SEE_TABS_FROM_OTHER_DEVICES_DESCRIPTION" desc="">
+      To see open tabs from your other computers and phones, sync your history to <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
+    </message>
+    <message translateable="false" name="IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL" desc="">
+      Turn on
+    </message>
   </if>
 </grit-part>
