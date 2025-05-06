@@ -179,7 +179,15 @@ void AddSharedGroup(BOOL owner) {
 
 // Tests that when closing the last tab of shared group as an member of the
 // group, an alert is displayed and works.
-- (void)testTabStripLastTabCloseInSharedGroupAlertAsMember {
+// TODO(crbug.com/415929742): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsMember \
+  DISABLED_testTabStripLastTabCloseInSharedGroupAlertAsMember
+#else
+#define MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsMember \
+  testTabStripLastTabCloseInSharedGroupAlertAsMember
+#endif
+- (void)MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsMember {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -260,7 +268,15 @@ void AddSharedGroup(BOOL owner) {
 
 // Tests that when closing the last tab of shared group as owner of the group,
 // an alert is displayed and works.
-- (void)testTabStripLastTabCloseInSharedGroupAlertAsOwner {
+// TODO(crbug.com/415929742): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsOwner \
+  DISABLED_testTabStripLastTabCloseInSharedGroupAlertAsOwner
+#else
+#define MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsOwner \
+  testTabStripLastTabCloseInSharedGroupAlertAsOwner
+#endif
+- (void)MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsOwner {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
