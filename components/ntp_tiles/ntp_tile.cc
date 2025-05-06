@@ -20,8 +20,4 @@ bool operator==(const NTPTile& a, const NTPTile& b) {
          (a.from_most_visited == b.from_most_visited);
 }
 
-bool operator!=(const NTPTile& a, const NTPTile& b) {
-  return !(a == b);
-}
-
 }  // namespace ntp_tiles
