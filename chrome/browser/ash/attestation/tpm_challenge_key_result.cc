@@ -166,18 +166,6 @@ bool TpmChallengeKeyResult::IsSuccess() const {
   return result_code == TpmChallengeKeyResultCode::kSuccess;
 }
 
-bool TpmChallengeKeyResult::operator==(
-    const TpmChallengeKeyResult& other) const {
-  return ((result_code == other.result_code) &&
-          (public_key == other.public_key) &&
-          (challenge_response == other.challenge_response));
-}
-
-bool TpmChallengeKeyResult::operator!=(
-    const TpmChallengeKeyResult& other) const {
-  return !(*this == other);
-}
-
 std::ostream& operator<<(std::ostream& os,
                          const TpmChallengeKeyResult& result) {
   base::Value::Dict value;
