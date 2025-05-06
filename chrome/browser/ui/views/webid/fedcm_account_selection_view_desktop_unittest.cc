@@ -303,8 +303,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     return base::MakeRefCounted<content::IdentityProviderData>(
         /*idp_for_display=*/"", content::IdentityProviderMetadata(),
         content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
-        blink::mojom::RpContext::kSignIn, disclosure_fields,
-        has_login_status_mismatch);
+        blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+        disclosure_fields, has_login_status_mismatch);
   }
 
   IdentityRequestAccountPtr CreateAccount(

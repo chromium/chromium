@@ -135,7 +135,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
         gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(1));
     idp_data_ = base::MakeRefCounted<content::IdentityProviderData>(
         kIdpForDisplay, idp_metadata, CreateTestClientMetadata(),
-        blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+        blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+        kDefaultDisclosureFields,
         /*has_login_status_mismatch=*/false);
     accounts_ = {CreateAccount(idp_data_)};
   }
@@ -850,12 +851,14 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
       base::MakeRefCounted<content::IdentityProviderData>(
           kIdpForDisplay, content::IdentityProviderMetadata(),
           CreateTestClientMetadata(kTermsOfServiceUrl),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false),
       base::MakeRefCounted<content::IdentityProviderData>(
           kSecondIdpForDisplay, content::IdentityProviderMetadata(),
           CreateTestClientMetadata("https://tos-2.com"),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false)};
   std::vector<IdentityRequestAccountPtr> account_list = {
       CreateTestIdentityRequestAccount(kAccountSuffixes1[0], idp_list[0]),
@@ -893,12 +896,14 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
       base::MakeRefCounted<content::IdentityProviderData>(
           kIdpForDisplay, content::IdentityProviderMetadata(),
           CreateTestClientMetadata(kTermsOfServiceUrl),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false),
       base::MakeRefCounted<content::IdentityProviderData>(
           kSecondIdpForDisplay, content::IdentityProviderMetadata(),
           CreateTestClientMetadata("https://tos-2.com"),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/true)};
   std::vector<IdentityRequestAccountPtr> accounts_list =
       CreateTestIdentityRequestAccounts(kAccountSuffixes1, idp_list[0]);
@@ -937,12 +942,14 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
       base::MakeRefCounted<content::IdentityProviderData>(
           kIdpForDisplay, idp_with_supports_add,
           CreateTestClientMetadata(kTermsOfServiceUrl),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false),
       base::MakeRefCounted<content::IdentityProviderData>(
           kSecondIdpForDisplay, idp_with_supports_add,
           CreateTestClientMetadata("https://tos-2.com"),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false)};
   std::vector<IdentityRequestAccountPtr> accounts_list = {
       CreateTestIdentityRequestAccount(kAccountSuffixes1[0], idp_list[0]),
@@ -978,22 +985,26 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, ShowSingleReturningAccount) {
   idp_list_ = {base::MakeRefCounted<content::IdentityProviderData>(
                    kIdpForDisplay, content::IdentityProviderMetadata(),
                    CreateTestClientMetadata(kTermsOfServiceUrl),
-                   blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+                   blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+                   kDefaultDisclosureFields,
                    /*has_login_status_mismatch=*/false),
                base::MakeRefCounted<content::IdentityProviderData>(
                    kSecondIdpForDisplay, content::IdentityProviderMetadata(),
                    CreateTestClientMetadata("https://tos-2.com"),
-                   blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+                   blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+                   kDefaultDisclosureFields,
                    /*has_login_status_mismatch=*/false),
                base::MakeRefCounted<content::IdentityProviderData>(
                    "idp3.com", content::IdentityProviderMetadata(),
                    CreateTestClientMetadata("https://tos-3.com"),
-                   blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+                   blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+                   kDefaultDisclosureFields,
                    /*has_login_status_mismatch=*/true),
                base::MakeRefCounted<content::IdentityProviderData>(
                    "idp4.com", content::IdentityProviderMetadata(),
                    CreateTestClientMetadata("https://tos-4.com"),
-                   blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+                   blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+                   kDefaultDisclosureFields,
                    /*has_login_status_mismatch=*/true)};
   accounts_ = {
       CreateTestIdentityRequestAccount(kAccountSuffixes2[0], idp_list_[1],
@@ -1036,12 +1047,14 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpWithAllIdpsMismatch) {
       base::MakeRefCounted<content::IdentityProviderData>(
           kIdpForDisplay, content::IdentityProviderMetadata(),
           CreateTestClientMetadata(kTermsOfServiceUrl),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/true),
       base::MakeRefCounted<content::IdentityProviderData>(
           kSecondIdpForDisplay, content::IdentityProviderMetadata(),
           CreateTestClientMetadata("https://tos-2.com"),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/true)};
   CreateAndShowMultiIdpAccountPicker(std::vector<IdentityRequestAccountPtr>(),
                                      idp_list);
@@ -1068,12 +1081,14 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleReturningAccounts) {
       base::MakeRefCounted<content::IdentityProviderData>(
           kIdpForDisplay, content::IdentityProviderMetadata(),
           CreateTestClientMetadata(kTermsOfServiceUrl),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false),
       base::MakeRefCounted<content::IdentityProviderData>(
           kSecondIdpForDisplay, content::IdentityProviderMetadata(),
           CreateTestClientMetadata("https://tos-2.com"),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false)};
   // The UI code receives the accounts sorted in the order in which they should
   // be displayed.
@@ -1117,12 +1132,14 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
       base::MakeRefCounted<content::IdentityProviderData>(
           kIdpForDisplay, content::IdentityProviderMetadata(),
           CreateTestClientMetadata(kTermsOfServiceUrl),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false),
       base::MakeRefCounted<content::IdentityProviderData>(
           kSecondIdpForDisplay, content::IdentityProviderMetadata(),
           CreateTestClientMetadata("https://tos-2.com"),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false)};
   // Note that `new2` is last despite having last_used_timestamp because it is
   // not considered a returning account.

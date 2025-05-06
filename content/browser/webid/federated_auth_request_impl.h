@@ -159,7 +159,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   struct IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderRequestOptionsPtr,
                             blink::mojom::RpContext rp_context,
-                            blink::mojom::RpMode rp_mode);
+                            blink::mojom::RpMode rp_mode,
+                            std::optional<blink::mojom::Format> format);
     ~IdentityProviderGetInfo();
     IdentityProviderGetInfo(const IdentityProviderGetInfo&);
     IdentityProviderGetInfo& operator=(const IdentityProviderGetInfo& other);
@@ -167,6 +168,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     blink::mojom::IdentityProviderRequestOptionsPtr provider;
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
     blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
+    std::optional<blink::mojom::Format> format;
   };
 
   struct IdentityProviderInfo {
@@ -174,7 +176,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                          IdpNetworkRequestManager::Endpoints,
                          IdentityProviderMetadata,
                          blink::mojom::RpContext rp_context,
-                         blink::mojom::RpMode rp_mode);
+                         blink::mojom::RpMode rp_mode,
+                         std::optional<blink::mojom::Format> format);
     ~IdentityProviderInfo();
     IdentityProviderInfo(const IdentityProviderInfo&);
 
@@ -184,6 +187,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     bool has_failing_idp_signin_status{false};
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
     blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
+    std::optional<blink::mojom::Format> format;
     IdentityProviderDataPtr data;
     gfx::Image decoded_idp_brand_icon;
   };

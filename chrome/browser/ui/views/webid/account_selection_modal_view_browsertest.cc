@@ -62,6 +62,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
             content::IdentityProviderMetadata(),
             CreateTestClientMetadata(),
             blink::mojom::RpContext::kSignIn,
+            /*format=*/std::nullopt,
             kDefaultDisclosureFields,
             /*has_login_status_mismatch=*/false)) {
     test_shared_url_loader_factory_ =

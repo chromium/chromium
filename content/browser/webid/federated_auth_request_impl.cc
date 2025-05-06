@@ -469,8 +469,12 @@ FederatedAuthRequestImpl::FetchData::~FetchData() = default;
 FederatedAuthRequestImpl::IdentityProviderGetInfo::IdentityProviderGetInfo(
     blink::mojom::IdentityProviderRequestOptionsPtr provider,
     blink::mojom::RpContext rp_context,
-    blink::mojom::RpMode rp_mode)
-    : provider(std::move(provider)), rp_context(rp_context), rp_mode(rp_mode) {}
+    blink::mojom::RpMode rp_mode,
+    std::optional<blink::mojom::Format> format)
+    : provider(std::move(provider)),
+      rp_context(rp_context),
+      rp_mode(rp_mode),
+      format(format) {}
 
 FederatedAuthRequestImpl::IdentityProviderGetInfo::~IdentityProviderGetInfo() =
     default;
@@ -485,6 +489,7 @@ FederatedAuthRequestImpl::IdentityProviderGetInfo::operator=(
   provider = other.provider->Clone();
   rp_context = other.rp_context;
   rp_mode = other.rp_mode;
+  format = other.format;
   return *this;
 }
 
@@ -493,12 +498,14 @@ FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
     IdpNetworkRequestManager::Endpoints endpoints,
     IdentityProviderMetadata metadata,
     blink::mojom::RpContext rp_context,
-    blink::mojom::RpMode rp_mode)
+    blink::mojom::RpMode rp_mode,
+    std::optional<blink::mojom::Format> format)
     : provider(provider->Clone()),
       endpoints(std::move(endpoints)),
       metadata(std::move(metadata)),
       rp_context(rp_context),
-      rp_mode(rp_mode) {}
+      rp_mode(rp_mode),
+      format(format) {}
 
 FederatedAuthRequestImpl::IdentityProviderInfo::~IdentityProviderInfo() =
     default;
@@ -511,6 +518,7 @@ FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
   rp_context = other.rp_context;
   rp_mode = other.rp_mode;
   data = other.data;
+  format = other.format;
 }
 
 FederatedAuthRequestImpl::FederatedAuthRequestImpl(
@@ -1018,9 +1026,11 @@ void FederatedAuthRequestImpl::RequestToken(
       blink::mojom::RpContext rp_context = idp_get_params_ptr->context;
       blink::mojom::RpMode rp_mode = idp_get_params_ptr->mode;
       const GURL& idp_config_url = idp_ptr->config->config_url;
+      std::optional<blink::mojom::Format> format =
+          IsFedCmDelegationEnabled() ? idp_ptr->format : std::nullopt;
       token_request_get_infos_.emplace(
-          idp_config_url,
-          IdentityProviderGetInfo(std::move(idp_ptr), rp_context, rp_mode));
+          idp_config_url, IdentityProviderGetInfo(std::move(idp_ptr),
+                                                  rp_context, rp_mode, format));
     }
   }
   if (any_idp_has_parameters || any_idp_has_custom_scopes) {
@@ -1296,7 +1306,8 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
             get_info_it->second.provider, std::move(fetch_result.endpoints),
             fetch_result.metadata ? std::move(*fetch_result.metadata)
                                   : IdentityProviderMetadata(),
-            get_info_it->second.rp_context, get_info_it->second.rp_mode);
+            get_info_it->second.rp_context, get_info_it->second.rp_mode,
+            get_info_it->second.format);
 
     if (fetch_result.error) {
       const FederatedProviderFetcher::FetchError& fetch_error =
@@ -1535,7 +1546,7 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
       ClientMetadata{client_metadata.terms_of_service_url,
                      client_metadata.privacy_policy_url,
                      client_metadata.brand_icon_url, rp_brand_icon},
-      idp_info->rp_context, disclosure_fields,
+      idp_info->rp_context, idp_info->format, disclosure_fields,
       /*has_login_status_mismatch=*/false);
   for (auto& account : accounts) {
     account->identity_provider = idp_info->data;
@@ -2016,7 +2027,8 @@ void FederatedAuthRequestImpl::OnIdpMismatch(
   idp_info->data = base::MakeRefCounted<IdentityProviderData>(
       idp_for_display, idp_info->metadata,
       ClientMetadata{GURL(), GURL(), GURL(), gfx::Image()},
-      idp_info->rp_context, GetDisclosureFields(*idp_info->provider),
+      idp_info->rp_context, idp_info->format,
+      GetDisclosureFields(*idp_info->provider),
       /*has_login_status_mismatch=*/true);
   idp_infos_[idp_config_url] = std::move(idp_info);
 

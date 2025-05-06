@@ -169,7 +169,8 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
         base::MakeRefCounted<content::IdentityProviderData>(
             kIdpEtldPlusOne, content::IdentityProviderMetadata(),
             content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
-            blink::mojom::RpContext::kSignIn, kDefaultPermissions,
+            blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+            kDefaultPermissions,
             /*has_login_status_mismatch=*/false);
     for (auto& account : accounts) {
       account->identity_provider = idp_data;
