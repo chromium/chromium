@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="test_controller_unstable_v1">
+  <copyright>
+    Copyright 2024 The Chromium Authors.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice (including the next
+    paragraph) shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  </copyright>
+
+  <interface name="zcr_test_controller_v1" version="1">
+    <description summary="APIs for tests">
+      Contains APIs intended for use in integration tests.
+    </description>
+    <request name="mock_event_tick_clock_start" since="1">
+      <description summary="initialize a test-controlled event tick clock">
+        Replace the compositor's real-time event tick clock with a
+        client-controlled event tick clock. Useful for tighter control of input
+        event timing.
+      </description>
+    </request>
+    <request name="mock_event_tick_clock_advance" since="1">
+      <arg name="milliseconds" type="uint"/>
+      <description summary="advance the mock event tick clock">
+        Advance the client-controlled event tick clock by the given number of
+        milliseconds.
+      </description>
+    </request>
+  </interface>
+</protocol>
