@@ -5870,6 +5870,13 @@
        {}
       ]
      ],
+     "root-replace-crash.html": [
+      "165eec41b6bc56db131cc7fc19f23701bc291b8c",
+      [
+       null,
+       {}
+      ]
+     ],
      "scoped": {
       "crashtests": {
        "shadow-dom.html": [
@@ -132342,6 +132349,19 @@
        [
         [
          "/css/css-fonts/font-variant-emoji-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-variant-emoji-005.html": [
+      "0f5c2d7a98a615323b1adc0babb479fdb738537d",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-variant-emoji-005-ref.html",
          "=="
         ]
        ],
@@ -342823,6 +342843,10 @@
       "633a94c4e51f32328bc68eeb74837aada6f4aff0",
       []
      ],
+     "font-variant-emoji-005-ref.html": [
+      "d4275b5c951c05ea270f1a2a474ff4ccaf9afc4a",
+      []
+     ],
      "font-variant-emoji-1-notref.html": [
       "bbf3654ccfcdd415fe5a28468e3329ba94ce63da",
       []
@@ -381429,6 +381453,10 @@
      }
     },
     "observable": {
+     "WEB_FEATURES.yml": [
+      "3e872791165e41402949da13fedd7a8780aaf660",
+      []
+     ],
      "tentative": {
       "observable-from.any-expected.txt": [
        "90faca59d59d4199fa430ee25c80f061257f089b",
@@ -387350,6 +387378,30 @@
       ],
       "split-cache-popup.html": [
        "edb579479414fe980782b54fd39305c12b3de9e7",
+       []
+      ]
+     }
+    },
+    "local-network-access": {
+     "META.yml": [
+      "4c5c6983ed0467f3ebca3182a6b5d095270f85d2",
+      []
+     ],
+     "README.md": [
+      "95066cdcd0ba6f2baed3cd02d67610420367b6df",
+      []
+     ],
+     "resources": {
+      "fetch-private.html": [
+       "ede16badf338dc50defad0251f83f8b02f1d3fec",
+       []
+      ],
+      "support.sub.js": [
+       "299f004ecc362e29202b80b68d8e47b1300b8604",
+       []
+      ],
+      "target.py": [
+       "eabcdd47517c8938d12cd08a0d66f0db2e518456",
        []
       ]
      }
@@ -420397,7 +420449,7 @@
      []
     ],
     "testdriver.js": [
-     "6e8410b7ea46064438c8d276274b6fbb689f81d2",
+     "992b9e3ab2ce0b63b94be2a5aa671b321f65e334",
      []
     ],
     "testdriver.js.headers": [
@@ -432997,11 +433049,11 @@
        ],
        "set_geolocation_override": {
         "__init__.py": [
-         "7861734b5087e3486ef0a03c2b8cc8364682c5fd",
+         "5e1fd1aa8637529a20b48356fe20e4f970b8428c",
          []
         ],
         "conftest.py": [
-         "a90895c74ed90c04b5f181af22c3bddec9ac132d",
+         "5fb9451f0a23821bbd7d25ac59efeb928f84b5ac",
          []
         ]
        }
@@ -528768,6 +528820,13 @@
         {}
        ]
       ],
+      "sibling-index-keyframe-value-dynamic.html": [
+       "286e0d3d3e2eecdd091df74c8c47f738cb700dd1",
+       [
+        null,
+        {}
+       ]
+      ],
       "tree-scoped-sibling-function.html": [
        "979466bb7cf3d5e5c4e9a2681f02f969858953e6",
        [
@@ -577965,6 +578024,17 @@
       [
        null,
        {}
+      ]
+     ]
+    },
+    "local-network-access": {
+     "fetch.tentative.https.html": [
+      "a01bad6a420d61e13188fda314232c6a31332623",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ]
     },
@@ -663133,7 +663203,7 @@
       },
       "emulation": {
        "set_geolocation_override.https.html": [
-        "5cbcf546423c772a98fd3725531754c366ab7b91",
+        "e339f39dcd89aa311e91c744669bf2cd9aadc103",
         [
          null,
          {
@@ -727920,6 +727990,26 @@
       {}
      ]
     ],
+    "tentative": {
+     "integrity-policy": {
+      "parsing.https.html": [
+       "99cf822d30d110f2adb96307ceff3c30a63aa901",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
+       ]
+      ],
+      "script.https.html": [
+       "53cf35dd8d044cd1b781d00bc251103b1b8350d6",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
+    },
     "unencoded-digest": {
      "tentative": {
       "fetch.any.js": [
@@ -834227,21 +834317,21 @@
       "emulation": {
        "set_geolocation_override": {
         "contexts.py": [
-         "8a0e43475da52609a362bf5f3e0853ceb2a9725f",
+         "068bb804e73bd06e2d901363280792d479cfb38f",
          [
           null,
           {}
          ]
         ],
         "coordinates.py": [
-         "b23354e9e42ef1bdd9d6684d11b782ce15f4eb8c",
+         "ea4fe643c3ecfc6e3609172706b51df17456e2e7",
          [
           null,
           {}
          ]
         ],
         "error.py": [
-         "ec905e384822b6af73e1ca68f21c93d5b6b0d6ed",
+         "27c23dc7811458feb7cd43c8a286c83809d9d2d0",
          [
           null,
           {}
@@ -834255,7 +834345,7 @@
          ]
         ],
         "user_contexts.py": [
-         "008dee5698de43a3371c1f7d697bb69014cf1b65",
+         "b3038bb59587b661e75945c5b8eeb4e943c72d9e",
          [
           null,
           {}

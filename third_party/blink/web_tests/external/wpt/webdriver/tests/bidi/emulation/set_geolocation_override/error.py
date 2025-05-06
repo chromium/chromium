@@ -3,7 +3,6 @@ import pytest
 from webdriver.bidi.modules.script import ContextTarget
 
 from ... import remote_mapping_to_dict
-from . import get_current_geolocation
 
 pytestmark = pytest.mark.asyncio
 
@@ -12,7 +11,7 @@ EXPECTED_ERROR = {"code": 2}
 
 
 async def test_get_current_position(bidi_session, new_tab, url,
-        set_geolocation_permission):
+        get_current_geolocation, set_geolocation_permission):
     test_url = url("/common/blank.html")
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"],
@@ -25,8 +24,7 @@ async def test_get_current_position(bidi_session, new_tab, url,
         contexts=[new_tab["context"]], error=ERROR
     )
 
-    assert await get_current_geolocation(bidi_session,
-                                         new_tab) == EXPECTED_ERROR
+    assert await get_current_geolocation(new_tab) == EXPECTED_ERROR
 
 
 async def test_watch_position(
@@ -72,7 +70,7 @@ async def test_watch_position(
 
 
 async def test_persists_on_reload(
-        bidi_session, url, new_tab, set_geolocation_permission
+        bidi_session, url, new_tab, get_current_geolocation, set_geolocation_permission
 ):
     test_url = url("/common/blank.html")
     await bidi_session.browsing_context.navigate(
@@ -88,19 +86,17 @@ async def test_persists_on_reload(
         error=ERROR,
     )
 
-    assert await get_current_geolocation(bidi_session,
-                                         new_tab) == EXPECTED_ERROR
+    assert await get_current_geolocation(new_tab) == EXPECTED_ERROR
 
     await bidi_session.browsing_context.reload(
         context=new_tab["context"], wait="complete"
     )
 
-    assert await get_current_geolocation(bidi_session,
-                                         new_tab) == EXPECTED_ERROR
+    assert await get_current_geolocation(new_tab) == EXPECTED_ERROR
 
 
 async def test_persists_on_navigation(
-        bidi_session, url, new_tab, set_geolocation_permission
+        bidi_session, url, new_tab, get_current_geolocation, set_geolocation_permission
 ):
     test_url = url("/common/blank.html")
     await bidi_session.browsing_context.navigate(
@@ -116,8 +112,7 @@ async def test_persists_on_navigation(
         error=ERROR,
     )
 
-    assert await get_current_geolocation(bidi_session,
-                                         new_tab) == EXPECTED_ERROR
+    assert await get_current_geolocation(new_tab) == EXPECTED_ERROR
 
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"],
@@ -125,5 +120,4 @@ async def test_persists_on_navigation(
         wait="complete",
     )
 
-    assert await get_current_geolocation(bidi_session,
-                                         new_tab) == EXPECTED_ERROR
+    assert await get_current_geolocation(new_tab) == EXPECTED_ERROR
