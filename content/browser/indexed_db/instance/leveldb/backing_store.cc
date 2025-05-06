@@ -2354,31 +2354,6 @@ Status BackingStore::Transaction::ClearObjectStore(int64_t object_store_id) {
       LevelDBScopeDeletionMode::kImmediateWithRangeEndExclusive));
 }
 
-Status BackingStore::Transaction::DeleteRecord(
-    int64_t object_store_id,
-    const RecordIdentifier& record_identifier) {
-  TRACE_EVENT0("IndexedDB", "BackingStore::DeleteRecord");
-  if (!KeyPrefix::ValidIds(database_id(), object_store_id)) {
-    return InvalidDBKeyStatus();
-  }
-  TransactionalLevelDBTransaction* leveldb_transaction = transaction();
-
-  const std::string object_store_data_key = ObjectStoreDataKey::Encode(
-      database_id(), object_store_id, record_identifier.primary_key());
-  Status s(leveldb_transaction->Remove(object_store_data_key));
-  if (!s.ok()) {
-    return s;
-  }
-  s = PutExternalObjectsIfNeeded(object_store_data_key, nullptr);
-  if (!s.ok()) {
-    return s;
-  }
-
-  const std::string exists_entry_key = ExistsEntryKey::Encode(
-      database_id(), object_store_id, record_identifier.primary_key());
-  return Status(leveldb_transaction->Remove(exists_entry_key));
-}
-
 Status BackingStore::Transaction::DeleteRange(
     int64_t object_store_id,
     const IndexedDBKeyRange& key_range) {

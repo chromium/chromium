@@ -102,12 +102,6 @@ Status FakeTransaction::PutRecord(int64_t object_store_id,
   return wrapped_transaction_->PutRecord(object_store_id, key, value, record);
 }
 
-Status FakeTransaction::DeleteRecord(
-    int64_t object_store_id,
-    const BackingStore::RecordIdentifier& record) {
-  return wrapped_transaction_->DeleteRecord(object_store_id, record);
-}
-
 Status FakeTransaction::DeleteRange(int64_t object_store_id,
                                     const blink::IndexedDBKeyRange& key_range) {
   return wrapped_transaction_->DeleteRange(object_store_id, key_range);

@@ -182,8 +182,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                      IndexedDBValue* value,
                      RecordIdentifier* record) override;
     Status ClearObjectStore(int64_t object_store_id) override;
-    Status DeleteRecord(int64_t object_store_id,
-                        const RecordIdentifier& record) override;
     Status DeleteRange(int64_t object_store_id,
                        const blink::IndexedDBKeyRange&) override;
     Status GetKeyGeneratorCurrentNumber(int64_t object_store_id,

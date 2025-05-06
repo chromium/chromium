@@ -53,8 +53,6 @@ class FakeTransaction : public BackingStore::Transaction {
                    const blink::IndexedDBKey& key,
                    IndexedDBValue* value,
                    BackingStore::RecordIdentifier* record) override;
-  Status DeleteRecord(int64_t object_store_id,
-                      const BackingStore::RecordIdentifier& record) override;
   Status DeleteRange(int64_t object_store_id,
                      const blink::IndexedDBKeyRange&) override;
   Status GetKeyGeneratorCurrentNumber(int64_t object_store_id,

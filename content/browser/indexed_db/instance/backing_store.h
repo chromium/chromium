@@ -158,9 +158,6 @@ class BackingStore {
                                            const blink::IndexedDBKey& key,
                                            IndexedDBValue* value,
                                            RecordIdentifier* record) = 0;
-    [[nodiscard]] virtual Status DeleteRecord(
-        int64_t object_store_id,
-        const RecordIdentifier& record) = 0;
     [[nodiscard]] virtual Status DeleteRange(
         int64_t object_store_id,
         const blink::IndexedDBKeyRange&) = 0;
