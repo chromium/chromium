@@ -1231,6 +1231,35 @@ int SuggestMgr::movechar_utf(std::vector<std::string>& wlst,
   return wlst.size();
 }
 
+namespace
+{
+  class ngsuggest_guard
+  {
+    bool m_nonbmp;
+    cs_info* m_origconv;
+    int* m_utf8;
+    cs_info** m_csconv;
+
+    public:
+
+    ngsuggest_guard(bool nonbmp, cs_info* origconv, int* utf8, cs_info** csconv)
+      : m_nonbmp(nonbmp)
+      , m_origconv(origconv)
+      , m_utf8(utf8)
+      , m_csconv(csconv)
+    {
+    }
+
+    ~ngsuggest_guard()
+    {
+      if (m_nonbmp) {
+        *m_csconv = m_origconv;
+        *m_utf8 = 1;
+      }
+    }
+  };
+}
+
 // generate a set of suggestions for very poorly spelled words
 void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
                           const char* w,
@@ -1250,6 +1279,8 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
     rootsphon[i] = NULL;
     scoresphon[i] = -100 * i;
   }
+  bool has_roots = false;
+  bool has_rootsphon = false;
   lp = MAX_ROOTS - 1;
   lpphon = MAX_ROOTS - 1;
   int low = NGRAM_LOWERING;
@@ -1285,6 +1316,7 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
     nonbmp = 1;
     low = 0;
   }
+  ngsuggest_guard restore_state(nonbmp, origconv, &utf8, &csconv);
 
   struct hentry* hp = NULL;
   int col = -1;
@@ -1422,6 +1454,7 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
 #else
         roots[lp] = hp;
 #endif
+        has_roots = true;
         lval = sc;
         for (int j = 0; j < MAX_ROOTS; j++)
           if (scores[j] < lval) {
@@ -1433,6 +1466,7 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
       if (scphon > scoresphon[lpphon]) {
         scoresphon[lpphon] = scphon;
         rootsphon[lpphon] = HENTRY_WORD(hp);
+        has_rootsphon = true;
         lval = scphon;
         for (int j = 0; j < MAX_ROOTS; j++)
           if (scoresphon[j] < lval) {
@@ -1441,6 +1475,12 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
           }
       }
     }
+  }
+
+  if (!has_roots && !has_rootsphon) {
+    // with no roots there will be no guesses and no point running
+    // ngram
+    return;
   }
 
   // find minimum threshold for a passable suggestion
@@ -1766,11 +1806,6 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
         }
       }
     }
-
-  if (nonbmp) {
-    csconv = origconv;
-    utf8 = 1;
-  }
 }
 
 // see if a candidate suggestion is spelled correctly
@@ -2101,7 +2136,7 @@ int SuggestMgr::ngram(int n,
                       const std::vector<w_char>& su1,
                       const std::vector<w_char>& su2,
                       int opt) {
-  int nscore = 0, ns, test = 0, l1 = su1.size(), l2 = su2.size();
+  int nscore = 0, ns, l1 = su1.size(), l2 = su2.size();
 
   if (l2 == 0)
     return 0;
@@ -2121,7 +2156,6 @@ int SuggestMgr::ngram(int n,
       }
       if (k != j && opt & NGRAM_WEIGHTED) {
         ns--;
-        test++;
         if (i == 0 || i == l1 - j)
           ns--;  // side weight
       }
@@ -2145,7 +2179,7 @@ int SuggestMgr::ngram(int n,
                       const std::string& s1,
                       const std::string& s2,
                       int opt) {
-  int nscore = 0, ns, l1, l2 = s2.size(), test = 0;
+  int nscore = 0, ns, l1, l2 = s2.size();
   
   if (l2 == 0)
     return 0;
@@ -2158,7 +2192,6 @@ int SuggestMgr::ngram(int n,
         ns++;
       } else if (opt & NGRAM_WEIGHTED) {
         ns--;
-        test++;
         if (i == 0 || i == l1 - j)
           ns--;  // side weight
       }

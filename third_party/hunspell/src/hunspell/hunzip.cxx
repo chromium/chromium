@@ -201,6 +201,10 @@ int Hunzip::getbuf() {
   return fail(MSG_FORMAT, filename);
 }
 
+bool Hunzip::is_open() {
+  return fin.is_open();
+}
+
 bool Hunzip::getline(std::string& dest) {
   char linebuf[BUFSIZE];
   int l = 0, eol = 0, left = 0, right = 0;

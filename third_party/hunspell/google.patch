@@ -351,7 +351,7 @@ index b933f95..6d20ad6 100644
  #endif
 +#endif
 diff --git a/src/hunspell/hashmgr.cxx b/src/hunspell/hashmgr.cxx
-index 1818da5..ecd035a 100644
+index 480f1eb..969a954 100644
 --- a/src/hunspell/hashmgr.cxx
 +++ b/src/hunspell/hashmgr.cxx
 @@ -85,18 +85,30 @@
@@ -500,7 +500,7 @@ index 1818da5..ecd035a 100644
    return 0;
  }
  
-@@ -550,6 +626,44 @@ int HashMgr::add_with_affix(const std::string& word, const std::string& example)
+@@ -547,6 +623,44 @@ int HashMgr::add_with_affix(const std::string& word, const std::string& example)
  // walk the hash table entry by entry - null at end
  // initialize: col=-1; hp = NULL; hp = walk_hashtable(&col, hp);
  struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
@@ -545,7 +545,7 @@ index 1818da5..ecd035a 100644
    if (hp && hp->next != NULL)
      return hp->next;
    for (col++; col < (int)tableptr.size(); ++col) {
-@@ -559,10 +673,12 @@ struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
+@@ -556,10 +670,12 @@ struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
    // null at end and reset to start
    col = -1;
    return NULL;
@@ -558,7 +558,7 @@ index 1818da5..ecd035a 100644
    // open dictionary file
    FileMgr* dict = new FileMgr(tpath, key);
    if (dict == NULL)
-@@ -692,12 +808,16 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
+@@ -689,12 +805,16 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
    }
  
    delete dict;
@@ -575,7 +575,7 @@ index 1818da5..ecd035a 100644
    unsigned long hv = 0;
    size_t i = 0;
    while (i < 4 && i < len)
-@@ -707,6 +827,7 @@ int HashMgr::hash(const char* word, size_t len) const {
+@@ -704,6 +824,7 @@ int HashMgr::hash(const char* word, size_t len) const {
      hv ^= word[i++];
    }
    return (unsigned long)hv % tableptr.size();
@@ -583,7 +583,7 @@ index 1818da5..ecd035a 100644
  }
  
  int HashMgr::decode_flags(unsigned short** result, const std::string& flags, FileMgr* af) const {
-@@ -947,7 +1068,12 @@ int HashMgr::load_config(const char* affpath, const char* key) {
+@@ -944,7 +1065,12 @@ int HashMgr::load_config(const char* affpath, const char* key) {
    int firstline = 1;
  
    // open the affix file
@@ -596,7 +596,7 @@ index 1818da5..ecd035a 100644
    if (!afflst) {
      HUNSPELL_WARNING(
          stderr, "Error - could not open affix description file %s\n", affpath);
-@@ -1160,6 +1286,132 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
+@@ -1157,6 +1283,132 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
    return true;
  }
  
@@ -730,7 +730,7 @@ index 1818da5..ecd035a 100644
    return !aliasf.empty();
  }
 diff --git a/src/hunspell/hashmgr.hxx b/src/hunspell/hashmgr.hxx
-index eb8c21f..e911497 100644
+index 792b2f1..8590ee3 100644
 --- a/src/hunspell/hashmgr.hxx
 +++ b/src/hunspell/hashmgr.hxx
 @@ -79,6 +79,13 @@
@@ -1171,7 +1171,7 @@ index e3462b9..cd66ee3 100644
  
  #include <string>
 diff --git a/src/hunspell/suggestmgr.cxx b/src/hunspell/suggestmgr.cxx
-index eb346eb..9b72d20 100644
+index 19a24f8..405861e 100644
 --- a/src/hunspell/suggestmgr.cxx
 +++ b/src/hunspell/suggestmgr.cxx
 @@ -82,7 +82,112 @@ const w_char W_VLINE = {'\0', '|'};
@@ -1317,7 +1317,7 @@ index eb346eb..9b72d20 100644
        testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
        // check REP suggestions with space
        size_t sp = candidate.find(' ');
-@@ -1167,6 +1288,9 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
+@@ -1199,6 +1320,9 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
  
    struct hentry* hp = NULL;
    int col = -1;
@@ -1327,7 +1327,7 @@ index eb346eb..9b72d20 100644
    phonetable* ph = (pAMgr) ? pAMgr->get_phonetable() : NULL;
    std::string target;
    std::string candidate;
-@@ -1293,7 +1417,11 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
+@@ -1325,7 +1449,11 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
  
        if (sc > scores[lp]) {
          scores[lp] = sc;
@@ -1336,10 +1336,10 @@ index eb346eb..9b72d20 100644
 +#else
          roots[lp] = hp;
 +#endif
+         has_roots = true;
          lval = sc;
          for (int j = 0; j < MAX_ROOTS; j++)
-           if (scores[j] < lval) {
-@@ -2202,12 +2330,8 @@ char* SuggestMgr::lcs(const char* s,
+@@ -2235,12 +2363,8 @@ char* SuggestMgr::lcs(const char* s,
      m = strlen(s);
      n = strlen(s2);
    }

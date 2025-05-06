@@ -118,7 +118,7 @@ HashMgr::HashMgr(const char* tpath, const char* apath, const char* key)
   }
 }
 
-void HashMgr::free_flag(unsigned short* astr, short alen) {
+void HashMgr::free_flag(unsigned short* astr, int alen) {
   if (astr && (aliasf.empty() || TESTAFF(astr, ONLYUPCASEFLAG, alen)))
     delete[] astr;
 }
@@ -568,29 +568,26 @@ int HashMgr::remove(const std::string& word) {
 }
 
 /* remove forbidden flag to add a personal word to the hash */
-int HashMgr::remove_forbidden_flag(const std::string& word) {
+void HashMgr::remove_forbidden_flag(const std::string& word) {
   struct hentry* dp = lookup(word.c_str(), word.size());
   if (!dp)
-    return 1;
+    return;
   while (dp) {
     if (dp->astr && TESTAFF(dp->astr, forbiddenword, dp->alen))
       dp->alen = 0;  // XXX forbidden words of personal dic.
     dp = dp->next_homonym;
   }
-  return 0;
 }
 
 // add a custom dic. word to the hash table (public)
 int HashMgr::add(const std::string& word) {
-  if (remove_forbidden_flag(word)) {
-    int captype, al = 0;
-    unsigned short* flags = NULL;
-    int wcl = get_clen_and_captype(word, &captype);
-    add_word(word, wcl, flags, al, NULL, false, captype);
-    return add_hidden_capitalized_word(word, wcl, flags, al, NULL,
-                                       captype);
-  }
-  return 0;
+  remove_forbidden_flag(word);
+  int captype, al = 0;
+  unsigned short* flags = NULL;
+  int wcl = get_clen_and_captype(word, &captype);
+  add_word(word, wcl, flags, al, NULL, false, captype);
+  return add_hidden_capitalized_word(word, wcl, flags, al, NULL,
+                                     captype);
 }
 
 int HashMgr::add_with_flags(const std::string& word, const std::string& flags, const std::string& desc) {
@@ -868,7 +865,7 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
       for (size_t p = 0; p < flags.size(); ++p) {
         if (flags[p] == ',') {
           int i = atoi(src);
-          if (i >= DEFAULTFLAGS && af != NULL) {
+          if ((i >= DEFAULTFLAGS || i < 0) && af != NULL) {
             HUNSPELL_WARNING(
                 stderr, "error: line %d: flag id %d is too large (max: %d)\n",
                 af->getlinenum(), i, DEFAULTFLAGS - 1);
@@ -883,7 +880,7 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
         }
       }
       int i = atoi(src);
-      if (i >= DEFAULTFLAGS) {
+      if (i >= DEFAULTFLAGS || i < 0) {
         HUNSPELL_WARNING(stderr,
                          "error: line %d: flag id %d is too large (max: %d)\n",
                          af->getlinenum(), i, DEFAULTFLAGS - 1);

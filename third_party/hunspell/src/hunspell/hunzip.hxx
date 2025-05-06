@@ -78,7 +78,7 @@ class LIBHUNSPELL_DLL_EXPORTED Hunzip {
   Hunzip(const Hunzip&) = delete;
   Hunzip& operator=(const Hunzip&) = delete;
   ~Hunzip();
-  bool is_open() { return fin.is_open(); }
+  bool is_open();
   bool getline(std::string& dest);
 };
 
