@@ -514,6 +514,8 @@ class HashtableSize {
   // Sets the has_infoz bit.
   void set_has_infoz() { data_ |= kHasInfozMask; }
 
+  void set_no_seed_for_testing() { data_ &= ~kSeedMask; }
+
  private:
   static constexpr size_t kSizeShift = 64 - kSizeBitCount;
   static constexpr uint64_t kSizeOneNoMetadata = uint64_t{1} << kSizeShift;
@@ -1037,6 +1039,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
   // `kGenerateSeed && !empty() && !is_single_group(capacity())` because H1 is
   // being changed. In such cases, we will need to rehash the table.
   void generate_new_seed() { size_.generate_new_seed(); }
+  void set_no_seed_for_testing() { size_.set_no_seed_for_testing(); }
 
   // The total number of available slots.
   size_t capacity() const { return capacity_; }
@@ -1637,7 +1640,7 @@ struct PolicyFunctions {
   uint32_t value_size;
   uint32_t slot_size;
   uint16_t slot_align;
-  uint8_t soo_capacity;
+  bool soo_enabled;
   bool is_hashtablez_eligible;
 
   // Returns the pointer to the hash function stored in the set.
@@ -1675,6 +1678,10 @@ struct PolicyFunctions {
       void* probed_storage,
       void (*encode_probed_element)(void* probed_storage, h2_t h2,
                                     size_t source_offset, size_t h1));
+
+  uint8_t soo_capacity() const {
+    return static_cast<uint8_t>(soo_enabled ? SooCapacity() : 0);
+  }
 };
 
 // Returns the maximum valid size for a table with 1-byte slots.
@@ -3606,8 +3613,7 @@ class raw_hash_set {
         static_cast<uint32_t>(sizeof(key_type)),
         static_cast<uint32_t>(sizeof(value_type)),
         static_cast<uint16_t>(sizeof(slot_type)),
-        static_cast<uint16_t>(alignof(slot_type)),
-        static_cast<uint8_t>(SooEnabled() ? SooCapacity() : 0),
+        static_cast<uint16_t>(alignof(slot_type)), SooEnabled(),
         ShouldSampleHashtablezInfoForAlloc<CharAlloc>(),
         // TODO(b/328722020): try to type erase
         // for standard layout and alignof(Hash) <= alignof(CommonFields).

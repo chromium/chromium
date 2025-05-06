@@ -2072,6 +2072,7 @@ EXPORTS
     ??0ScopedEnable@SchedulingGuard@base_internal@absl@@QEAA@XZ
     ??0ScopedMinLogLevel@log_internal@absl@@QEAA@W4LogSeverityAtLeast@2@@Z
     ??0ScopedStderrThreshold@absl@@QEAA@W4LogSeverityAtLeast@1@@Z
+    ??0ShiftState@strings_internal@absl@@QEAA@XZ
     ??0SpinLock@base_internal@absl@@QEAA@W4SchedulingMode@12@@Z
     ??0SpinLock@base_internal@absl@@QEAA@XZ
     ??0SpinLockHolder@base_internal@absl@@QEAA@PEAVSpinLock@12@@Z
@@ -4290,6 +4291,7 @@ EXPORTS
     ?WebSafeBase64Escape@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@@Z
     ?WebSafeBase64Escape@absl@@YAXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
     ?WebSafeBase64Unescape@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
+    ?WideToUtf8@strings_internal@absl@@YA_K_WPEADAEAUShiftState@12@@Z
     ?WithMetadataFrom@LogMessage@log_internal@absl@@QEAAAEAV123@AEBVLogEntry@3@@Z
     ?WithPerror@LogMessage@log_internal@absl@@QEAAAEAV123@XZ
     ?WithThreadID@LogMessage@log_internal@absl@@QEAAAEAV123@I@Z
@@ -5388,6 +5390,7 @@ EXPORTS
     ?slot_array@HeapOrSoo@container_internal@absl@@QEBA?ATMaybeInitializedPtr@23@XZ
     ?slot_offset@RawHashSetLayout@container_internal@absl@@QEBA_KXZ
     ?slots_union@CommonFields@container_internal@absl@@QEBA?ATMaybeInitializedPtr@23@XZ
+    ?soo_capacity@PolicyFunctions@container_internal@absl@@QEBAEXZ
     ?soo_data@CommonFields@container_internal@absl@@QEAAPEAXXZ
     ?soo_data@CommonFields@container_internal@absl@@QEBAPEBXXZ
     ?soo_iterator@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@AEAA?AViterator@123@XZ

@@ -1278,6 +1278,7 @@ EXPORTS
     ?WebSafeBase64Escape@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@@Z
     ?WebSafeBase64Escape@absl@@YAXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
     ?WebSafeBase64Unescape@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
+    ?WideToUtf8@strings_internal@absl@@YAI_WPADAAUShiftState@12@@Z
     ?WithMetadataFrom@LogMessage@log_internal@absl@@QAEAAV123@ABVLogEntry@3@@Z
     ?WithPerror@LogMessage@log_internal@absl@@QAEAAV123@XZ
     ?WithThreadID@LogMessage@log_internal@absl@@QAEAAV123@I@Z

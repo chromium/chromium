@@ -2072,6 +2072,7 @@ EXPORTS
     ??0ScopedEnable@SchedulingGuard@base_internal@absl@@QAE@XZ
     ??0ScopedMinLogLevel@log_internal@absl@@QAE@W4LogSeverityAtLeast@2@@Z
     ??0ScopedStderrThreshold@absl@@QAE@W4LogSeverityAtLeast@1@@Z
+    ??0ShiftState@strings_internal@absl@@QAE@XZ
     ??0SpinLock@base_internal@absl@@QAE@W4SchedulingMode@12@@Z
     ??0SpinLock@base_internal@absl@@QAE@XZ
     ??0SpinLockHolder@base_internal@absl@@QAE@PAVSpinLock@12@@Z
@@ -4292,6 +4293,7 @@ EXPORTS
     ?WebSafeBase64Escape@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@@Z
     ?WebSafeBase64Escape@absl@@YAXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
     ?WebSafeBase64Unescape@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
+    ?WideToUtf8@strings_internal@absl@@YAI_WPADAAUShiftState@12@@Z
     ?WithMetadataFrom@LogMessage@log_internal@absl@@QAEAAV123@ABVLogEntry@3@@Z
     ?WithPerror@LogMessage@log_internal@absl@@QAEAAV123@XZ
     ?WithThreadID@LogMessage@log_internal@absl@@QAEAAV123@I@Z
@@ -5391,6 +5393,7 @@ EXPORTS
     ?slot_array@HeapOrSoo@container_internal@absl@@QBE?ATMaybeInitializedPtr@23@XZ
     ?slot_offset@RawHashSetLayout@container_internal@absl@@QBEIXZ
     ?slots_union@CommonFields@container_internal@absl@@QBE?ATMaybeInitializedPtr@23@XZ
+    ?soo_capacity@PolicyFunctions@container_internal@absl@@QBEEXZ
     ?soo_data@CommonFields@container_internal@absl@@QAEPAXXZ
     ?soo_data@CommonFields@container_internal@absl@@QBEPBXXZ
     ?soo_iterator@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@AAE?AViterator@123@XZ

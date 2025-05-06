@@ -4238,9 +4238,8 @@ TEST(Table, GrowExtremelyLargeTable) {
   // artificially update growth info to force resize.
   absl::flat_hash_set<uint8_t, ConstUint8Hash> t(63, ConstUint8Hash{&hash});
   CommonFields& common = RawHashSetTestOnlyAccess::GetCommon(t);
-  // Assign value to the seed, so that H1 is always 0.
-  // That helps to test all buffer overflows in GrowToNextCapacity.
-  hash = common.seed().seed() << 7;
+  // Set 0 seed so that H1 is always 0.
+  common.set_no_seed_for_testing();
   ASSERT_EQ(H1(t.hash_function()(75), common.seed()), 0);
   uint8_t inserted_till = 210;
   for (uint8_t i = 0; i < inserted_till; ++i) {

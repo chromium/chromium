@@ -329,6 +329,7 @@ cc_test(
     visibility = ["//visibility:private"],
     deps = [
         ":internal",
+        ":string_view",
         "//absl/base:core_headers",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
@@ -1316,6 +1317,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = ["//visibility:private"],
     deps = [
+        ":internal",
         ":strings",
         "//absl/base:config",
         "//absl/base:core_headers",
