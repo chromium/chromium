@@ -2837,12 +2837,16 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Both read and wrote cookies"/>
 </enum>
 
+<!-- LINT.IfChange(CookieControlsMode) -->
+
 <enum name="CookieControlsMode">
   <int value="0" label="Off"/>
   <int value="1" label="BlockThirdParty"/>
   <int value="2" label="IncognitoOnly"/>
   <int value="3" label="Limited"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/content_settings/core/browser/cookie_settings.h:CookieControlsMode, /chrome/browser/resources/settings/site_settings/constants.ts:CookieControlsMode) -->
 
 <enum name="CookieDeprecationFacilitatedTestingProfileEligibility">
   <int value="0" label="Eligible"/>
