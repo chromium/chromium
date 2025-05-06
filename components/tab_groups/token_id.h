@@ -33,13 +33,8 @@ class COMPONENT_EXPORT(TAB_GROUPS) TokenId {
 
   TokenId<T>& operator=(const TokenId<T>& other) = default;
 
-  bool operator==(const TokenId<T>& other) const {
-    return token_ == other.token_;
-  }
-  bool operator!=(const TokenId<T>& other) const { return !(*this == other); }
-  bool operator<(const TokenId<T>& other) const {
-    return token_ < other.token_;
-  }
+  friend bool operator==(const TokenId<T>&, const TokenId<T>&) = default;
+  friend auto operator<=>(const TokenId<T>&, const TokenId<T>&) = default;
 
   const base::Token& token() const { return token_; }
 

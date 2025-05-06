@@ -44,23 +44,14 @@ class SESSIONS_EXPORT SessionID {
     inline std::size_t operator()(SessionID id) const { return id.id(); }
   };
 
+  friend bool operator==(const SessionID&, const SessionID&) = default;
+  friend auto operator<=>(const SessionID&, const SessionID&) = default;
+
  private:
   explicit constexpr SessionID(id_type id) : id_(id) {}
 
   id_type id_;
 };
-
-inline bool operator==(SessionID lhs, SessionID rhs) {
-  return lhs.id() == rhs.id();
-}
-
-inline bool operator!=(SessionID lhs, SessionID rhs) {
-  return lhs.id() != rhs.id();
-}
-
-inline bool operator<(SessionID lhs, SessionID rhs) {
-  return lhs.id() < rhs.id();
-}
 
 // For use in gtest-based unit tests.
 SESSIONS_EXPORT std::ostream& operator<<(std::ostream& out, SessionID id);

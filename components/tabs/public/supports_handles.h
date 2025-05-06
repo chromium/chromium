@@ -114,15 +114,8 @@ class SupportsHandles<T>::Handle {
   ObjectType* Get() const;
 
   // Handles are comparable and sortable.
-  bool operator==(const Handle& other) const {
-    return raw_value_ == other.raw_value_;
-  }
-  bool operator!=(const Handle& other) const {
-    return raw_value_ != other.raw_value_;
-  }
-  bool operator<(const Handle& other) const {
-    return raw_value_ < other.raw_value_;
-  }
+  friend bool operator==(const Handle&, const Handle&) = default;
+  friend auto operator<=>(const Handle&, const Handle&) = default;
 
   // Explicitly provide the null value and handle.
   static constexpr int32_t NullValue = 0;
