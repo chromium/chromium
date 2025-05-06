@@ -196,7 +196,7 @@ class ReportSchedulerTest : public ::testing::Test {
     params.delegate = report_delegate_factory_.GetReportSchedulerDelegate();
     params.report_generator = std::move(generator_ptr_);
     scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
-    scheduler_->SetReportUploaderForTesting(std::move(uploader_ptr_));
+    scheduler_->QueueReportUploaderForTesting(std::move(uploader_ptr_));
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -213,7 +213,7 @@ class ReportSchedulerTest : public ::testing::Test {
     params.profile_request_generator =
         std::move(profile_request_generator_ptr_);
     scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
-    scheduler_->SetReportUploaderForTesting(std::move(uploader_ptr_));
+    scheduler_->QueueReportUploaderForTesting(std::move(uploader_ptr_));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -841,7 +841,7 @@ TEST_F(ReportSchedulerTest, DeferredTimer) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 
   this->uploader_ = new_uploader.get();
-  this->scheduler_->SetReportUploaderForTesting(std::move(new_uploader));
+  this->scheduler_->QueueReportUploaderForTesting(std::move(new_uploader));
 
   task_environment_.RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(uploader_);
@@ -990,6 +990,57 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   task_environment_.FastForwardBy(base::TimeDelta());
 }
 
+// Edge case where:
+// - Security signals reporting is disabled, but reporting is turned on
+// - Before status report finishes, security signals reporting is enabled, so a
+// signals-only report is scheduled
+// - We need to make sure that the first report does not affect signals
+// reporting timer/trigger, and the signals-only report is generated/uploaded
+// afterwards
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       SignalsReportingRaceConditionPrevented) {
+  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
+  SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
+
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .Times(2)
+      .WillRepeatedly(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ReportGenerationConfig(ReportType::kProfileReport,
+                                         SecuritySignalsMode::kNoSignals,
+                                         /*use_cookies=*/false),
+                  _, _))
+      .WillOnce([&](const ReportGenerationConfig&, ReportRequestQueue,
+                    ReportUploader::ReportCallback callback) {
+        // Trigger a signals-only report before the no-signals status report
+        // finishes generating. This trigger will be added to pending triggers.
+        SetUserSecuritySignalsPolicy(profile, /*enabled=*/true,
+                                     /*use_cookies=*/true);
+        std::move(callback).Run(ReportUploader::kSuccess);
+      });
+
+  profile->GetTestingPrefService()->SetManagedPref(
+      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  CreateSchedulerForProfileReporting(profile);
+  ASSERT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Create another uploader for the second upload.
+  auto second_uploader = std::make_unique<MockReportUploader>();
+  EXPECT_CALL(*second_uploader,
+              SetRequestAndUpload(
+                  ReportGenerationConfig(ReportType::kProfileReport,
+                                         SecuritySignalsMode::kSignalsOnly,
+                                         /*use_cookies=*/true),
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+  scheduler_->QueueReportUploaderForTesting(std::move(second_uploader));
+
+  // Trigger a status report without signals, which will then trigger a
+  // signals-only report before it finishes.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
 // Tests the use-case where a report is being requested manually when profile
 // reporting is enabled but not security signals.
 TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
@@ -1057,7 +1108,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
                                          /*use_cookies=*/true),
                   _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
-  scheduler_->SetReportUploaderForTesting(std::move(second_uploader));
+  scheduler_->QueueReportUploaderForTesting(std::move(second_uploader));
 
   base::RunLoop run_loop;
   scheduler_->UploadFullReport(run_loop.QuitClosure());
@@ -1101,7 +1152,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
                                          /*use_cookies=*/true),
                   _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
-  scheduler_->SetReportUploaderForTesting(std::move(second_uploader));
+  scheduler_->QueueReportUploaderForTesting(std::move(second_uploader));
 
   base::RunLoop run_loop;
   scheduler_->UploadFullReport(run_loop.QuitClosure());

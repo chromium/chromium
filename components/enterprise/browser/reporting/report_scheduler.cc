@@ -102,9 +102,9 @@ ReportScheduler::ReportTrigger ReportScheduler::GetActiveTriggerForTesting()
   return active_trigger_;
 }
 
-void ReportScheduler::SetReportUploaderForTesting(
+void ReportScheduler::QueueReportUploaderForTesting(
     std::unique_ptr<ReportUploader> uploader) {
-  report_uploader_ = std::move(uploader);
+  report_uploaders_for_test_.push_back(std::move(uploader));
 }
 
 ReportScheduler::Delegate* ReportScheduler::GetDelegateForTesting() {
@@ -300,7 +300,10 @@ void ReportScheduler::OnReportGenerated(ReportRequestQueue requests) {
     return;
   }
   VLOG(1) << "Uploading enterprise report.";
-  if (!report_uploader_) {
+  if (!report_uploader_ && report_uploaders_for_test_.size() > 0) {
+    report_uploader_ = std::move(report_uploaders_for_test_.front());
+    report_uploaders_for_test_.erase(report_uploaders_for_test_.begin());
+  } else if (!report_uploader_) {
     report_uploader_ =
         std::make_unique<ReportUploader>(cloud_policy_client_, kMaximumRetry);
   }
@@ -358,12 +361,15 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
       std::move(on_manual_report_uploaded_).Run();
     }
 
-    delegate_->OnSecuritySignalsUploaded();
+    if (active_report_generation_config_.security_signals_mode !=
+        SecuritySignalsMode::kNoSignals) {
+      delegate_->OnSecuritySignalsUploaded();
 
-    // A full report includes security signals already, we don't need another
-    // security signals only report until the timer runs out again.
-    if (pending_triggers_ & kTriggerSecurity) {
-      pending_triggers_ -= kTriggerSecurity;
+      // A full report includes security signals already, we don't need another
+      // security signals only report until the timer runs out again.
+      if (pending_triggers_ & kTriggerSecurity) {
+        pending_triggers_ -= kTriggerSecurity;
+      }
     }
   }
 
