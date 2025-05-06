@@ -701,7 +701,7 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
 #if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   const int max_allowed = (std::numeric_limits<int>::max() - 1 - nExtra) / int(sizeof(struct hentry*));
 #else
-  const int max_allowed = (268435456 - 1 - nExtra) / int(sizeof(struct hentry*));
+  const int max_allowed = (100000 - 1 - nExtra) / int(sizeof(struct hentry*));
 #endif
 
   if (tablesize <= 0 || tablesize >= max_allowed) {

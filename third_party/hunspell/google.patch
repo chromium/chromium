@@ -1,5 +1,5 @@
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
-index 3e39696..d36f639 100644
+index 5d35540..80ce539 100644
 --- a/src/hunspell/affixmgr.cxx
 +++ b/src/hunspell/affixmgr.cxx
 @@ -87,11 +87,19 @@
@@ -165,7 +165,7 @@ index 3e39696..d36f639 100644
  
   return 0;
  }
-@@ -4472,6 +4547,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4482,6 +4557,7 @@ bool AffixMgr::parse_affix(const std::string& line,
        case 1: {
          np++;
          aflag = pHMgr->decode_flag(std::string(start_piece, iter));
@@ -173,7 +173,7 @@ index 3e39696..d36f639 100644
          if (((at == 'S') && (dupflags[aflag] & dupSFX)) ||
              ((at == 'P') && (dupflags[aflag] & dupPFX))) {
            HUNSPELL_WARNING(
-@@ -4480,6 +4556,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4490,6 +4566,7 @@ bool AffixMgr::parse_affix(const std::string& line,
                af->getlinenum());
          }
          dupflags[aflag] += (char)((at == 'S') ? dupSFX : dupPFX);
@@ -181,7 +181,7 @@ index 3e39696..d36f639 100644
          break;
        }
        // piece 3 - is cross product indicator
-@@ -4734,9 +4811,9 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4744,9 +4821,9 @@ bool AffixMgr::parse_affix(const std::string& line,
    auto start = affentries.begin(), end = affentries.end();
    for (auto affentry = start; affentry != end; ++affentry) {
      if (at == 'P') {
@@ -351,7 +351,7 @@ index b933f95..6d20ad6 100644
  #endif
 +#endif
 diff --git a/src/hunspell/hashmgr.cxx b/src/hunspell/hashmgr.cxx
-index ee13b66..e793785 100644
+index a9ae8e0..0cb8dd8 100644
 --- a/src/hunspell/hashmgr.cxx
 +++ b/src/hunspell/hashmgr.cxx
 @@ -85,18 +85,30 @@
@@ -857,7 +857,7 @@ index 2b896fb..f3fa34b 100644
  
  #define ROTATE(v, q) \
 diff --git a/src/hunspell/hunspell.cxx b/src/hunspell/hunspell.cxx
-index e326552..be5dfe0 100644
+index 51e0937..c4a29fc 100644
 --- a/src/hunspell/hunspell.cxx
 +++ b/src/hunspell/hunspell.cxx
 @@ -77,21 +77,30 @@
@@ -1012,7 +1012,7 @@ index e326552..be5dfe0 100644
    // word reversing wrapper for complex prefixes
    if (complexprefixes) {
      if (utf8)
-@@ -1054,6 +1104,9 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
+@@ -1060,6 +1110,9 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
          std::vector<std::string>& spell_candidate_stack,
          std::vector<std::string>& suggest_candidate_stack,
          bool& capwords, size_t& abbv, int& captype) {
@@ -1022,7 +1022,7 @@ index e326552..be5dfe0 100644
    captype = NOCAP;
    abbv = 0;
    capwords = false;
-@@ -2114,18 +2167,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
+@@ -2120,18 +2173,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
    return 0;
  }
  
@@ -1048,7 +1048,7 @@ index e326552..be5dfe0 100644
  
  bool Hunspell::spell(const std::string& word, int* info, std::string* root) {
    std::vector<std::string> candidate_stack;
-@@ -2257,22 +2317,32 @@ int Hunspell::input_conv(const char* word, char* dest, size_t destsize) {
+@@ -2263,22 +2323,32 @@ int Hunspell::input_conv(const char* word, char* dest, size_t destsize) {
  }
  
  Hunhandle* Hunspell_create(const char* affpath, const char* dpath) {
@@ -1172,12 +1172,12 @@ index e3462b9..cd66ee3 100644
  
  #include <string>
 diff --git a/src/hunspell/suggestmgr.cxx b/src/hunspell/suggestmgr.cxx
-index 19a24f8..405861e 100644
+index 5f480f9..ebffdf1 100644
 --- a/src/hunspell/suggestmgr.cxx
 +++ b/src/hunspell/suggestmgr.cxx
-@@ -82,7 +82,112 @@ const w_char W_VLINE = {'\0', '|'};
- 
+@@ -84,7 +84,112 @@ const w_char W_VLINE = {'\0', '|'};
  #define MAX_CHAR_DISTANCE 4
+ #define MAXWORDUTF8LEN (MAXWORDLEN * 3)
  
 +#ifdef HUNSPELL_CHROME_CLIENT
 +namespace {
@@ -1288,7 +1288,7 @@ index 19a24f8..405861e 100644
    // register affix manager and check in string of chars to
    // try when building candidate suggestions
    pAMgr = aptr;
-@@ -488,6 +593,21 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
+@@ -496,6 +601,21 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
    int wl = word.size();
    if (wl < 2 || !pAMgr)
      return wlst.size();
@@ -1310,15 +1310,15 @@ index 19a24f8..405861e 100644
    const std::vector<replentry>& reptable = pAMgr->get_reptable();
    for (const auto& entry : reptable) {
      size_t r = 0;
-@@ -506,6 +626,7 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
+@@ -514,6 +634,7 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
        candidate.assign(word, 0, r);
        candidate.append(entry.outstrings[type]);
        candidate.append(word, r + entry.pattern.size(), std::string::npos);
 +#endif
-       testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
-       // check REP suggestions with space
        size_t sp = candidate.find(' ');
-@@ -1199,6 +1320,9 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
+       size_t oldns = wlst.size();
+       testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
+@@ -1225,6 +1346,9 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
  
    struct hentry* hp = NULL;
    int col = -1;
@@ -1328,7 +1328,7 @@ index 19a24f8..405861e 100644
    phonetable* ph = (pAMgr) ? pAMgr->get_phonetable() : NULL;
    std::string target;
    std::string candidate;
-@@ -1325,7 +1449,11 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
+@@ -1351,7 +1475,11 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
  
        if (sc > scores[lp]) {
          scores[lp] = sc;
@@ -1340,7 +1340,7 @@ index 19a24f8..405861e 100644
          has_roots = true;
          lval = sc;
          for (int j = 0; j < MAX_ROOTS; j++)
-@@ -2235,12 +2363,8 @@ char* SuggestMgr::lcs(const char* s,
+@@ -2261,12 +2389,8 @@ char* SuggestMgr::lcs(const char* s,
      m = strlen(s);
      n = strlen(s2);
    }
@@ -1356,7 +1356,7 @@ index 19a24f8..405861e 100644
      for (j = 1; j <= n; j++) {
        if (((utf8) && (su[i - 1] == su2[j - 1])) ||
 diff --git a/src/hunspell/suggestmgr.hxx b/src/hunspell/suggestmgr.hxx
-index 1215a3b..7c52ee9 100644
+index 7fa1a6b..369d6e3 100644
 --- a/src/hunspell/suggestmgr.hxx
 +++ b/src/hunspell/suggestmgr.hxx
 @@ -112,7 +112,11 @@ class SuggestMgr {

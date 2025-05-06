@@ -828,7 +828,7 @@ int AffixMgr::build_pfxtree(PfxEntry* pfxptr) {
   pFlag[flg] = ep;
 
   // handle the special case of null affix string
-  if (strlen(key) == 0) {
+  if (*key == '\0') {
     // always inset them at head of list at element 0
     ptr = pStart[0];
     ep->setNext(ptr);
@@ -894,7 +894,7 @@ int AffixMgr::build_sfxtree(SfxEntry* sfxptr) {
   // next index by affix string
 
   // handle the special case of null affix string
-  if (strlen(key) == 0) {
+  if (*key == '\0') {
     // always inset them at head of list at element 0
     ptr = sStart[0];
     ep->setNext(ptr);
@@ -1754,11 +1754,20 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
         // compound words, overriding the effect of COMPOUNDPERMITFLAG
         if ((rv) && compoundforbidflag &&
                 TESTAFF(rv->astr, compoundforbidflag, rv->alen) && !hu_mov_rule) {
-            // given the while conditions that continue jumps to, this situation
-            // never ends
-            if (!scpd && !onlycpdrule && simplifiedcpd) {
+            bool would_continue = !onlycpdrule && simplifiedcpd;
+            if (!scpd && would_continue) {
+                // given the while conditions that continue jumps to, this situation
+                // never ends
                 HUNSPELL_WARNING(stderr, "break infinite loop\n");
                 break;
+            }
+
+            if (scpd > 0 && would_continue) {
+                // under these conditions we loop again, but the assumption above
+                // appears to be that cmin and cmax are the original values they
+                // had in the outside loop
+                cmin = oldcmin;
+                cmax = oldcmax;
             }
             continue;
         }
@@ -4097,6 +4106,7 @@ bool AffixMgr::parse_checkcpdtable(const std::string& line, FileMgr* af) {
           if (nl.compare(start_piece - nl.begin(), 20, "CHECKCOMPOUNDPATTERN", 20) != 0) {
             HUNSPELL_WARNING(stderr, "error: line %d: table is corrupt\n",
                              af->getlinenum());
+            checkcpdtable.clear();
             return false;
           }
           break;

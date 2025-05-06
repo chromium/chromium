@@ -993,9 +993,15 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
   return he;
 }
 
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+#define MAX_CANDIDATE_STACK_DEPTH 512
+#else
+#define MAX_CANDIDATE_STACK_DEPTH 2048
+#endif
+
 std::vector<std::string> HunspellImpl::suggest(const std::string& word, std::vector<std::string>& suggest_candidate_stack) {
 
-  if (suggest_candidate_stack.size() > 2048 || // apply a fairly arbitrary depth limit
+  if (suggest_candidate_stack.size() > MAX_CANDIDATE_STACK_DEPTH || // apply a fairly arbitrary depth limit
       // something very broken if suggest ends up calling itself with the same word
       std::find(suggest_candidate_stack.begin(), suggest_candidate_stack.end(), word) != suggest_candidate_stack.end()) {
     return { };

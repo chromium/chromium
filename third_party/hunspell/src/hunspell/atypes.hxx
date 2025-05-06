@@ -82,6 +82,7 @@ static inline void HUNSPELL_WARNING(FILE*, const char*, ...) {}
 #define SPELL_ORIGCAP (1 << 5)
 #define SPELL_WARN (1 << 6)
 #define SPELL_COMPOUND_2 (1 << 7)  // permit only 2 dictionary words in the compound
+#define SPELL_BEST_SUG (1 << 8)    // limit suggestions for the best ones, i.e. ph:
 
 #define MINCPDLEN 3
 #define MAXCOMPOUND 10
