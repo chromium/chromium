@@ -532,67 +532,32 @@ ScriptPromise<IDLString> LanguageModel::prompt(
     const V8LanguageModelPromptInput* input,
     const LanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    ThrowInvalidContextException(exception_state);
-    return ScriptPromise<IDLString>();
+  std::optional<ValidateAndProcessPromptInputResult> processed_input =
+      ValidateAndProcessPromptInput(script_state, input, options,
+                                    exception_state);
+  if (!processed_input.has_value()) {
+    return EmptyPromise();
   }
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kSessionPrompt);
 
   ScriptPromiseResolver<IDLString>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   auto promise = resolver->Promise();
 
-  // The API impl only accepts a string by default for now, more to come soon!
-  if (!input->IsString() &&
-      !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
-    resolver->RejectWithTypeError("Input type not supported");
-    return promise;
-  }
-
-  auto prompts = BuildPrompts(input, script_state, exception_state,
-                              GetExecutionContext(), input_types_);
-  if (!prompts.has_value()) {
-    return promise;
-  }
-
-  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
-                                    AIMetrics::AISessionType::kLanguageModel),
-                                AIMetrics::AIAPI::kSessionPrompt);
-
-  // TODO(crbug.com/411470034): Aggregate other input type sizes for UMA.
-  if (input->IsString()) {
-    base::UmaHistogramCounts1M(
-        AIMetrics::GetAISessionRequestSizeMetricName(
-            AIMetrics::AISessionType::kLanguageModel),
-        int(input->GetAsString().CharactersSizeInBytes()));
-  }
-
-  if (!language_model_remote_) {
-    ThrowSessionDestroyedException(exception_state);
-    return promise;
-  }
-
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    resolver->Reject(signal->reason(script_state));
-    return promise;
-  }
-
-  on_device_model::mojom::blink::ResponseConstraintPtr constraint;
-  if (!ParseConstraint(script_state, options, exception_state, constraint)) {
-    // ParseConstraint will throw an exception when false is returned.
-    return promise;
-  }
-
   auto pending_remote = CreateModelExecutionResponder(
-      script_state, signal, resolver, task_runner_,
+      script_state, options->getSignalOr(nullptr), resolver, task_runner_,
       AIMetrics::AISessionType::kLanguageModel,
       WTF::BindOnce(&LanguageModel::OnResponseComplete,
                     WrapWeakPersistent(this)),
       WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
                          WrapWeakPersistent(this)));
-  language_model_remote_->Prompt(std::move(prompts).value(),
-                                 std::move(constraint),
-                                 std::move(pending_remote));
+
+  language_model_remote_->Prompt(
+      std::move(processed_input->processed_prompts),
+      std::move(processed_input->processed_constraint),
+      std::move(pending_remote));
   return promise;
 }
 
@@ -601,65 +566,82 @@ ReadableStream* LanguageModel::promptStreaming(
     const V8LanguageModelPromptInput* input,
     const LanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    ThrowInvalidContextException(exception_state);
+  std::optional<ValidateAndProcessPromptInputResult> processed_input =
+      ValidateAndProcessPromptInput(script_state, input, options,
+                                    exception_state);
+  if (!processed_input.has_value()) {
     return nullptr;
   }
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kSessionPromptStreaming);
 
-  // The API impl only accepts a string by default for now, more to come soon!
+  auto [stream, remote] = CreateModelExecutionStreamingResponder(
+      script_state, options->getSignalOr(nullptr), task_runner_,
+      AIMetrics::AISessionType::kLanguageModel,
+      WTF::BindOnce(&LanguageModel::OnResponseComplete,
+                    WrapWeakPersistent(this)),
+      WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
+                         WrapWeakPersistent(this)));
+
+  language_model_remote_->Prompt(
+      std::move(processed_input->processed_prompts),
+      std::move(processed_input->processed_constraint), std::move(remote));
+
+  return stream;
+}
+
+std::optional<LanguageModel::ValidateAndProcessPromptInputResult>
+LanguageModel::ValidateAndProcessPromptInput(
+    ScriptState* script_state,
+    const V8LanguageModelPromptInput* input,
+    const LanguageModelPromptOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return std::nullopt;
+  }
+
   if (!input->IsString() &&
       !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
     exception_state.ThrowTypeError("Input type not supported");
-    return nullptr;
+    return std::nullopt;
+  }
+
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
+    return std::nullopt;
+  }
+
+  on_device_model::mojom::blink::ResponseConstraintPtr constraint;
+  if (!ParseConstraint(script_state, options, exception_state, constraint)) {
+    // ParseConstraint will throw an exception when false is returned.
+    return std::nullopt;
   }
 
   auto prompts = BuildPrompts(input, script_state, exception_state,
                               GetExecutionContext(), input_types_);
   if (!prompts.has_value()) {
-    return nullptr;
+    return std::nullopt;
   }
-
-  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
-                                    AIMetrics::AISessionType::kLanguageModel),
-                                AIMetrics::AIAPI::kSessionPromptStreaming);
 
   // TODO(crbug.com/411470034): Aggregate other input type sizes for UMA.
   if (input->IsString()) {
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionRequestSizeMetricName(
             AIMetrics::AISessionType::kLanguageModel),
-        int(input->GetAsString().CharactersSizeInBytes()));
+        static_cast<int>(input->GetAsString().CharactersSizeInBytes()));
   }
 
   if (!language_model_remote_) {
     ThrowSessionDestroyedException(exception_state);
-    return nullptr;
+    return std::nullopt;
   }
 
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (HandleAbortSignal(signal, script_state, exception_state)) {
-    return nullptr;
-  }
-
-  on_device_model::mojom::blink::ResponseConstraintPtr constraint;
-  if (!ParseConstraint(script_state, options, exception_state, constraint)) {
-    // ParseConstraint will throw an exception when false is returned.
-    return nullptr;
-  }
-
-  auto [readable_stream, pending_remote] =
-      CreateModelExecutionStreamingResponder(
-          script_state, signal, task_runner_,
-          AIMetrics::AISessionType::kLanguageModel,
-          WTF::BindOnce(&LanguageModel::OnResponseComplete,
-                        WrapWeakPersistent(this)),
-          WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
-                             WrapWeakPersistent(this)));
-
-  language_model_remote_->Prompt(std::move(prompts).value(),
-                                 std::move(constraint),
-                                 std::move(pending_remote));
-  return readable_stream;
+  return ValidateAndProcessPromptInputResult{
+      .processed_constraint = std::move(constraint),
+      .processed_prompts = std::move(prompts).value(),
+  };
 }
 
 ScriptPromise<LanguageModel> LanguageModel::clone(
