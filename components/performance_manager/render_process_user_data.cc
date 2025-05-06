@@ -49,8 +49,8 @@ RenderProcessUserData::RenderProcessUserData(
 }
 
 RenderProcessUserData::~RenderProcessUserData() {
-  PerformanceManagerImpl::DeleteNode(std::move(process_node_));
   host_->RemoveObserver(this);
+  PerformanceManagerImpl::DeleteNode(std::move(process_node_));
 
   if (destruction_observer_) {
     destruction_observer_->OnRenderProcessUserDataDestroying(host_);
