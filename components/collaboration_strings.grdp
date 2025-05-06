@@ -158,8 +158,8 @@
   <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_UNKNOWN_USER" desc="The user name to show on the recent activity bottom sheet row if the user info cannot be found, e.g. deleted their account.">
     Deleted account
   </message>
-  <message name ="IDS_DATA_SHARING_RECENT_ACTIVITY_SHOW_ALL" desc="The text on the button to show the full recent activity logs." formatter_data="android_java">
-    See full activity
+  <message name ="IDS_DATA_SHARING_SHARED_TAB_GROUP_ACTIVITY" desc="The text on the button to show the full recent activity logs and manage screen menu options." formatter_data="android_java">
+    Shared tab group activity
   </message>
   <!-- Recent Activity -->
 

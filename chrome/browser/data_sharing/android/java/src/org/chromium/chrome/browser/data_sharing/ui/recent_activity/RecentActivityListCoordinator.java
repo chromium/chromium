@@ -159,14 +159,14 @@ public class RecentActivityListCoordinator {
             ModelList modelList = new ModelList();
             modelList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.data_sharing_recent_activity_show_all,
+                            R.string.data_sharing_shared_tab_group_activity,
                             R.id.see_full_activity,
                             0,
                             /* enabled= */ true));
             ListMenu.Delegate delegate =
                     (model) -> {
                         int textId = model.get(ListMenuItemProperties.TITLE_ID);
-                        if (textId == R.string.data_sharing_recent_activity_show_all) {
+                        if (textId == R.string.data_sharing_shared_tab_group_activity) {
                             mShowFullActivityRunnable.run();
                         }
                     };
