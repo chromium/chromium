@@ -48,6 +48,7 @@ class ScreenAILibraryWrapperImpl : public ScreenAILibraryWrapper {
       const std::string& serialized_view_hierarchy) override;
 
   bool InitOCR() override;
+  uint32_t GetMaxImageDimension() override;
   std::optional<chrome_screen_ai::VisualAnnotation> PerformOcr(
       const SkBitmap& image) override;
 
@@ -106,6 +107,12 @@ class ScreenAILibraryWrapperImpl : public ScreenAILibraryWrapper {
   // Initializes the pipeline for OCR.
   typedef bool (*InitOCRFn)();
   InitOCRFn init_ocr_ = nullptr;
+
+  // Returns the maximum image dimension that is not downsampled before OCR.
+  // The result of this function is expected to stay constant after each
+  // initialize.
+  typedef uint32_t (*GetMaxImageDimensionFn)();
+  GetMaxImageDimensionFn get_max_image_dimension_ = nullptr;
 
   // Sends the given bitmap to the OCR pipeline and returns visual
   // annotations. The annotations will be returned as a serialized

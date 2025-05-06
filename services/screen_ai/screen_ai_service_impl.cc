@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -46,11 +47,6 @@
 namespace screen_ai {
 
 namespace {
-
-// Maximum image dimension that OCR service processes. Images with width or
-// height larger than this threshold are downsampled before processing.
-// TODO(crbug.com/413318481): Get this threshold from the library.
-constexpr int kMaxOcrDimension = 2048;
 
 // How often it would be checked that the service is idle and can be shutdown.
 // LINT.IfChange(kIdleCheckingDelay)
@@ -378,6 +374,9 @@ void ScreenAIService::InitializeOCR(
     return;
   }
 
+  max_ocr_dimension_ = library_->GetMaxImageDimension();
+  CHECK(max_ocr_dimension_);
+
   // This interface should be created only once.
   CHECK(!ocr_receiver_.is_bound());
 
@@ -436,7 +435,8 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
         "Accessibility.ScreenAI.OCR.Failed.ClientType", client_type);
   }
 
-  if (image.width() > kMaxOcrDimension || image.height() > kMaxOcrDimension) {
+  int max_dimension = base::checked_cast<int>(max_ocr_dimension_);
+  if (image.width() > max_dimension || image.height() > max_dimension) {
     base::UmaHistogramEnumeration(
         "Accessibility.ScreenAI.OCR.Downsampled.ClientType", client_type);
   }
@@ -447,7 +447,7 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
                               lines_count);
   base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize10M",
                               image.width() * image.height());
-  if (image.width() < kMaxOcrDimension && image.height() < kMaxOcrDimension) {
+  if (image.width() < max_dimension && image.height() < max_dimension) {
     base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.NotDownsampled",
                             elapsed_time);
   } else {
@@ -513,7 +513,8 @@ void ScreenAIService::MceReceiverDisconnected() {
 
 void ScreenAIService::GetMaxImageDimension(
     GetMaxImageDimensionCallback callback) {
-  std::move(callback).Run(kMaxOcrDimension);
+  CHECK(max_ocr_dimension_);
+  std::move(callback).Run(max_ocr_dimension_);
 }
 
 void ScreenAIService::PerformOcrAndReturnAnnotation(
