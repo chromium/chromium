@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -147,6 +148,9 @@ void GlicProfileManager::OnUnloadingClientForService(GlicKeyedService* glic) {
 void GlicProfileManager::ShouldPreloadForProfile(
     Profile* profile,
     ShouldPreloadCallback callback) {
+  if (IsProfileDirectoryMarkedForDeletion(profile->GetPath())) {
+    return;
+  }
   if (!base::FeatureList::IsEnabled(features::kGlicWarming) ||
       !GlicEnabling::IsReadyForProfile(profile)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
