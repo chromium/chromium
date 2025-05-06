@@ -78,6 +78,12 @@ class WebRtcEventLogManager final
 
     virtual void DisableWebRtcEventLogging(
         const WebRtcEventLogPeerConnectionKey& key) = 0;
+
+    virtual void EnableWebRtcDataChannelLogging(
+        const WebRtcEventLogPeerConnectionKey& key) = 0;
+
+    virtual void DisableWebRtcDataChannelLogging(
+        const WebRtcEventLogPeerConnectionKey& key) = 0;
   };
 
   // Ensures that no previous instantiation of the class was performed, then
@@ -129,7 +135,7 @@ class WebRtcEventLogManager final
                              const std::string& message) override;
   void OnWebRtcDataChannelLogWrite(content::GlobalRenderFrameHostId frame_id,
                                    int lid,
-                                   const std::string& message);
+                                   const std::string& message) override;
 
   // content::WebRtcEventLogger implementation.
   void EnableLocalLogging(const base::FilePath& base_path) override;

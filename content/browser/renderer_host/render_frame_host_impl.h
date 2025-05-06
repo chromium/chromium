@@ -2856,6 +2856,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost> receiver);
   void EnableWebRtcEventLogOutput(int lid, int output_period_ms) override;
   void DisableWebRtcEventLogOutput(int lid) override;
+  void EnableWebRtcDataChannelLogOutput(int lid) override;
+  void DisableWebRtcDataChannelLogOutput(int lid) override;
   bool IsDocumentOnLoadCompletedInMainFrame() override;
   const std::vector<blink::mojom::FaviconURLPtr>& FaviconURLs() override;
 

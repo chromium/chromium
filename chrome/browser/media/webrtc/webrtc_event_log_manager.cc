@@ -58,6 +58,31 @@ class PeerConnectionTrackerProxyImpl
             key));
   }
 
+  void EnableWebRtcDataChannelLogging(
+      const WebRtcEventLogPeerConnectionKey& key) override {
+    auto enable_logging = [](const WebRtcEventLogPeerConnectionKey& key) {
+      if (auto* host = RenderFrameHost::FromID(key.render_process_id,
+                                               key.render_frame_id)) {
+        host->EnableWebRtcDataChannelLogOutput(key.lid);
+      }
+    };
+
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(enable_logging, key));
+  }
+
+  void DisableWebRtcDataChannelLogging(
+      const WebRtcEventLogPeerConnectionKey& key) override {
+    auto disable_logging = [](const WebRtcEventLogPeerConnectionKey& key) {
+      if (auto* host = RenderFrameHost::FromID(key.render_process_id,
+                                               key.render_frame_id)) {
+        host->DisableWebRtcDataChannelLogOutput(key.lid);
+      }
+    };
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(disable_logging, key));
+  }
+
  private:
   static void EnableWebRtcEventLoggingInternal(
       WebRtcEventLogPeerConnectionKey key,
@@ -647,6 +672,13 @@ void WebRtcEventLogManager::DisableLocalLogging(
 void WebRtcEventLogManager::OnWebRtcDataChannelLogWrite(
     content::GlobalRenderFrameHostId frame_id,
     int lid,
+    const std::string& message) {
+  OnWebRtcDataChannelLogWrite(frame_id, lid, message, base::NullCallback());
+}
+
+void WebRtcEventLogManager::OnWebRtcDataChannelLogWrite(
+    content::GlobalRenderFrameHostId frame_id,
+    int lid,
     const std::string& message,
     base::OnceCallback<void(bool)> reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -728,6 +760,8 @@ void WebRtcEventLogManager::OnLocalDataChannelLogStarted(
     const base::FilePath& file_path) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
+  pc_tracker_proxy_->EnableWebRtcDataChannelLogging(peer_connection);
+
   if (local_logs_observer_) {
     local_logs_observer_->OnLocalDataChannelLogStarted(peer_connection,
                                                        file_path);
@@ -737,6 +771,8 @@ void WebRtcEventLogManager::OnLocalDataChannelLogStarted(
 void WebRtcEventLogManager::OnLocalDataChannelLogStopped(
     PeerConnectionKey peer_connection) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  pc_tracker_proxy_->DisableWebRtcDataChannelLogging(peer_connection);
 
   if (local_logs_observer_) {
     local_logs_observer_->OnLocalDataChannelLogStopped(peer_connection);
