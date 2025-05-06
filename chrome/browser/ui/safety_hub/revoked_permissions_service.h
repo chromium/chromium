@@ -36,7 +36,7 @@
 class PrefChangeRegistrar;
 class PrefService;
 
-constexpr char kRevokedPermissionsResultKey[] = "permissions";
+inline constexpr char kRevokedPermissionsResultKey[] = "permissions";
 
 namespace url {
 class Origin;

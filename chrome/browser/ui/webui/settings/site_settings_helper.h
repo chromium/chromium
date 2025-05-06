@@ -92,35 +92,35 @@ typedef std::map<std::pair<ContentSettingsPattern, SiteSettingSource>,
 using ChooserExceptionDetails =
     std::set<std::tuple<GURL, SiteSettingSource, bool>>;
 
-constexpr char kChooserType[] = "chooserType";
-constexpr char kCloseDescription[] = "closeDescription";
-constexpr char kDisabled[] = "disabled";
-constexpr char kDisplayName[] = "displayName";
-constexpr char kDescription[] = "description";
-constexpr char kEmbeddingOrigin[] = "embeddingOrigin";
-constexpr char kEmbeddingDisplayName[] = "embeddingDisplayName";
-constexpr char kExceptions[] = "exceptions";
-constexpr char kFileSystemFilePath[] = "filePath";
-constexpr char kFileSystemIsDirectory[] = "isDirectory";
-constexpr char kFileSystemEditGrants[] = "editGrants";
-constexpr char kFileSystemViewGrants[] = "viewGrants";
-constexpr char kHostOrSpec[] = "hostOrSpec";
-constexpr char kIncognito[] = "incognito";
-constexpr char kIsEmbargoed[] = "isEmbargoed";
-constexpr char kObject[] = "object";
-constexpr char kOpenDescription[] = "openDescription";
-constexpr char kOrigin[] = "origin";
-constexpr char kOrigins[] = "origins";
-constexpr char kOriginForFavicon[] = "originForFavicon";
-constexpr char kPermissions[] = "permissions";
-constexpr char kPolicyIndicator[] = "indicator";
-constexpr char kReaderName[] = "readerName";
-constexpr char kRecentPermissions[] = "recentPermissions";
-constexpr char kSetting[] = "setting";
-constexpr char kSites[] = "sites";
-constexpr char kSource[] = "source";
-constexpr char kType[] = "type";
-constexpr char kNotificationPermissionsReviewListMaybeChangedEvent[] =
+inline constexpr char kChooserType[] = "chooserType";
+inline constexpr char kCloseDescription[] = "closeDescription";
+inline constexpr char kDisabled[] = "disabled";
+inline constexpr char kDisplayName[] = "displayName";
+inline constexpr char kDescription[] = "description";
+inline constexpr char kEmbeddingOrigin[] = "embeddingOrigin";
+inline constexpr char kEmbeddingDisplayName[] = "embeddingDisplayName";
+inline constexpr char kExceptions[] = "exceptions";
+inline constexpr char kFileSystemFilePath[] = "filePath";
+inline constexpr char kFileSystemIsDirectory[] = "isDirectory";
+inline constexpr char kFileSystemEditGrants[] = "editGrants";
+inline constexpr char kFileSystemViewGrants[] = "viewGrants";
+inline constexpr char kHostOrSpec[] = "hostOrSpec";
+inline constexpr char kIncognito[] = "incognito";
+inline constexpr char kIsEmbargoed[] = "isEmbargoed";
+inline constexpr char kObject[] = "object";
+inline constexpr char kOpenDescription[] = "openDescription";
+inline constexpr char kOrigin[] = "origin";
+inline constexpr char kOrigins[] = "origins";
+inline constexpr char kOriginForFavicon[] = "originForFavicon";
+inline constexpr char kPermissions[] = "permissions";
+inline constexpr char kPolicyIndicator[] = "indicator";
+inline constexpr char kReaderName[] = "readerName";
+inline constexpr char kRecentPermissions[] = "recentPermissions";
+inline constexpr char kSetting[] = "setting";
+inline constexpr char kSites[] = "sites";
+inline constexpr char kSource[] = "source";
+inline constexpr char kType[] = "type";
+inline constexpr char kNotificationPermissionsReviewListMaybeChangedEvent[] =
     "notification-permission-review-list-maybe-changed";
 
 // Returns whether a group name has been registered for the given type.

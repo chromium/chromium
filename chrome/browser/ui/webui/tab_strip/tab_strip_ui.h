@@ -28,8 +28,9 @@ class TabStripPageHandler;
 class TabStripUIEmbedder;
 
 // These data types must be in all lowercase.
-constexpr char16_t kWebUITabIdDataType[] = u"application/vnd.chromium.tab";
-constexpr char16_t kWebUITabGroupIdDataType[] =
+inline constexpr char16_t kWebUITabIdDataType[] =
+    u"application/vnd.chromium.tab";
+inline constexpr char16_t kWebUITabGroupIdDataType[] =
     u"application/vnd.chromium.tabgroup";
 
 class TabStripUI;

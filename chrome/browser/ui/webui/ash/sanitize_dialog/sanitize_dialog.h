@@ -13,7 +13,7 @@ namespace ash {
 namespace {
 
 // ID used to check if there are any other instances of the dialog open.
-constexpr char kSanitizeDialogId[] = "sanitize-dialog";
+inline constexpr char kSanitizeDialogId[] = "sanitize-dialog";
 
 }  // namespace
 

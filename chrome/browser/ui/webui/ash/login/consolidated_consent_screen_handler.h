@@ -16,9 +16,9 @@ namespace ash {
 class ConsolidatedConsentScreen;
 
 namespace {
-const char kGoogleEulaDefaultUrl[] =
+inline constexpr char kGoogleEulaDefaultUrl[] =
     "https://policies.google.com/terms/embedded?hl=en";
-const char kCrosEulaDefaultUrl[] =
+inline constexpr char kCrosEulaDefaultUrl[] =
     "https://www.google.com/intl/en/chrome/terms/";
 }  // namespace
 

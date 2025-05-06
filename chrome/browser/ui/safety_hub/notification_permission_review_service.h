@@ -18,8 +18,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 
-constexpr char kSafetyHubNotificationInfoString[] = "notificationInfoString";
-constexpr char kSafetyHubNotificationPermissionsResultKey[] =
+inline constexpr char kSafetyHubNotificationInfoString[] =
+    "notificationInfoString";
+inline constexpr char kSafetyHubNotificationPermissionsResultKey[] =
     "notificationPermissions";
 
 struct NotificationPermissions {

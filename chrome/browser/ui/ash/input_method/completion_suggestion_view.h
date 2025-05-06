@@ -27,7 +27,7 @@ struct SuggestionDetails;
 class CompletionSuggestionLabelView;
 
 // Font-related constants
-constexpr char kFontStyle[] = "Roboto";
+inline constexpr char kFontStyle[] = "Roboto";
 constexpr int kAnnotationFontSize = 10;
 constexpr int kIndexFontSize = 10;
 
@@ -38,7 +38,7 @@ constexpr int kPadding = 8;
 constexpr int kAnnotationPaddingLeft = 12;
 constexpr int kAnnotationPaddingBottom = 16;
 constexpr int kAnnotationPaddingTop = 6;
-constexpr char kTabKey[] = "tab";
+inline constexpr char kTabKey[] = "tab";
 constexpr cros_styles::ColorName kButtonHighlightColor =
     cros_styles::ColorName::kRippleColor;
 

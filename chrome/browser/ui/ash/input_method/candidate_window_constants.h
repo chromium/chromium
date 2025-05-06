@@ -13,7 +13,7 @@ namespace ime {
 const int kFontSizeDelta = 2;
 
 // Currently the infolist window only supports Japanese font.
-const char kJapaneseFontName[] = "Noto Sans CJK JP";
+inline constexpr char kJapaneseFontName[] = "Noto Sans CJK JP";
 
 // The minimum width of candidate labels in the vertical candidate
 // window. We use this value to prevent the candidate window from being

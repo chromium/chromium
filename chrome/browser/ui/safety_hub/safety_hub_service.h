@@ -19,8 +19,8 @@
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-constexpr char kSafetyHubTimestampResultKey[] = "timestamp";
-constexpr char kSafetyHubOriginKey[] = "origin";
+inline constexpr char kSafetyHubTimestampResultKey[] = "timestamp";
+inline constexpr char kSafetyHubOriginKey[] = "origin";
 
 // Base class for Safety Hub services. The background and UI tasks of the
 // derived classes will be executed periodically, according to the time delta
