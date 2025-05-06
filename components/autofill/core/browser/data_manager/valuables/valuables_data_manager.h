@@ -58,6 +58,9 @@ class ValuablesDataManager : public KeyedService,
   // The returned span may be invalidated asynchronously.
   base::span<const LoyaltyCard> GetLoyaltyCards() const;
 
+  // Returns if there are any pending queries to the web database.
+  bool HasPendingQueries() const;
+
   // Returns the cached image for the `image_url` if it was synced locally to
   // the client. The image is extracted from the local cache in
   // `AutofillImageFetcher`. If the card art image is not present in the cache,

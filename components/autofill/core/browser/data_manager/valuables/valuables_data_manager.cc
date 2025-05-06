@@ -96,6 +96,10 @@ void ValuablesDataManager::ProcessLoyaltyCardIconUrlChanges() {
   image_fetcher_->FetchValuableImagesForURLs(updated_urls);
 }
 
+bool ValuablesDataManager::HasPendingQueries() const {
+  return pending_query_ != 0;
+}
+
 void ValuablesDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
   if (data_type == syncer::DataType::AUTOFILL_VALUABLE) {
     LoadLoyaltyCards();
