@@ -4,6 +4,7 @@
 
 # TODO(crbug.com/394567614): Remove after moving internal.
 source_set("omnibox_icon_type_constants") {
+  sources = [ "omnibox_icon_type.h" ]
   public_deps =
       [ "//ios/chrome/browser/omnibox/ui:omnibox_icon_type_constants" ]
 }
