@@ -123,7 +123,8 @@ class AccountMenuMediatorTest
               identityManager:identity_manager_
                         prefs:profile_->GetPrefs()
                   accessPoint:AccountMenuAccessPoint::kNewTabPage
-                          URL:GURL()];
+                          URL:GURL()
+         prepareChangeProfile:nil];
     mediator_.delegate = delegate_mock_;
     mediator_.consumer = consumer_mock_;
     authentication_flow_mock_ = OCMStrictClassMock([AuthenticationFlow class]);

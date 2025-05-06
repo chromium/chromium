@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -169,6 +170,13 @@
 
   PrefService* prefs = profile->GetPrefs();
 
+  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                         BrowserCoordinatorCommands);
+  void (^prepareChangeProfile)() = ^() {
+    [browserCoordinatorCommandsHandler closeCurrentTab];
+  };
+
   _mediator =
       [[AccountMenuMediator alloc] initWithSyncService:_syncService
                                  accountManagerService:_accountManagerService
@@ -176,7 +184,8 @@
                                        identityManager:_identityManager
                                                  prefs:prefs
                                            accessPoint:_accessPoint
-                                                   URL:_url];
+                                                   URL:_url
+                                  prepareChangeProfile:prepareChangeProfile];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;

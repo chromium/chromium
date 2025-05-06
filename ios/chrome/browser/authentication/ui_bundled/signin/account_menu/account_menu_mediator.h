@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_data_source.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mutator.h"
 
@@ -42,7 +43,9 @@ class SyncService;
                     identityManager:(signin::IdentityManager*)identityManager
                               prefs:(PrefService*)prefs
                         accessPoint:(AccountMenuAccessPoint)accessPoint
-                                URL:(const GURL&)url NS_DESIGNATED_INITIALIZER;
+                                URL:(const GURL&)url
+               prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator.

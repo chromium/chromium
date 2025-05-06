@@ -85,6 +85,9 @@
   // The URL which the the account menu was viewed from when
   // AccountMenuAccessPoint::kWeb.
   GURL _url;
+  // Block to execute before a change in profile when
+  // AccountMenuAccessPoint::kWeb.
+  ProceduralBlock _prepareChangeProfile;
 }
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
@@ -94,7 +97,8 @@
                     identityManager:(signin::IdentityManager*)identityManager
                               prefs:(PrefService*)prefs
                         accessPoint:(AccountMenuAccessPoint)accessPoint
-                                URL:(const GURL&)url {
+                                URL:(const GURL&)url
+               prepareChangeProfile:(ProceduralBlock)prepareChangeProfile {
   self = [super init];
   if (self) {
     CHECK(syncService);
@@ -113,6 +117,7 @@
     _prefs = prefs;
     _accessPoint = accessPoint;
     _url = url;
+    _prepareChangeProfile = prepareChangeProfile;
     _primaryIdentityBeforeSignin = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     _syncService = syncService;
@@ -454,8 +459,12 @@
       return CreateChangeProfileOpensNTPContinuation();
     case AccountMenuAccessPoint::kSettings:
       return CreateChangeProfileSettingsContinuation();
-    case AccountMenuAccessPoint::kWeb:
+    case AccountMenuAccessPoint::kWeb: {
+      if (_prepareChangeProfile) {
+        _prepareChangeProfile();
+      };
       return CreateChangeProfileOpensURLContinuation(_url);
+    }
   }
 }
 
