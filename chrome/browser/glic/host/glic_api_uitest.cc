@@ -38,6 +38,8 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/permissions/system/mock_platform_handle.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -48,6 +50,8 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/metrics/metrics_service.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/proto/glic_page_context_eligibility_metadata.pb.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -78,6 +82,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithFastTimeout",
       "GlicApiTestSystemSettingsTest",
       "GlicApiTestWithOneTabAndContextualCueing",
+      "GlicApiTestPageContextEligibilityTest",
   };
 }
 
@@ -300,12 +305,15 @@ class GlicApiTestWithOneTab : public GlicApiTest {
     GlicApiTest::SetUpOnMainThread();
 
     // Load the test page in a tab, so that there is some page context.
-    GURL page_url =
-        InProcessBrowserTest::embedded_test_server()->GetURL("/glic/test.html");
     RunTestSequence(InstrumentTab(kFirstTab),
-                    NavigateWebContents(kFirstTab, page_url),
+                    NavigateWebContents(kFirstTab, page_url()),
                     OpenGlicWindow(GlicWindowMode::kDetached,
                                    GlicInstrumentMode::kHostAndContents));
+  }
+
+  GURL page_url() {
+    return InProcessBrowserTest::embedded_test_server()->GetURL(
+        "/glic/test.html");
   }
 };
 
@@ -1120,6 +1128,65 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
   gfx::Size valid_real_size = window_controller().GetSize();
   ASSERT_EQ(expected_size.width(), valid_real_size.width());
   ASSERT_EQ(expected_size.height(), valid_real_size.height());
+}
+
+class GlicApiTestPageContextEligibilityTest : public GlicApiTest {
+ public:
+  GlicApiTestPageContextEligibilityTest() {
+    eligibility_feature_list_.InitAndEnableFeature(
+        features::kGlicPageContextEligibility);
+  }
+
+  void SetEligibilityHint(bool is_eligible) {
+    optimization_guide::proto::GlicPageContextEligibilityMetadata
+        page_context_eligibility_metadata;
+    page_context_eligibility_metadata.set_is_eligible(is_eligible);
+    optimization_guide::OptimizationMetadata metadata;
+    metadata.SetAnyMetadataForTesting(page_context_eligibility_metadata);
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->AddHintForTesting(
+            page_url(),
+            optimization_guide::proto::GLIC_PAGE_CONTEXT_ELIGIBILITY, metadata);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(optimization_guide::switches::
+                                   kDisableCheckingUserPermissionsForTesting);
+  }
+
+  GURL page_url() {
+    return InProcessBrowserTest::embedded_test_server()->GetURL(
+        "/glic/test.html");
+  }
+
+ private:
+  base::test::ScopedFeatureList eligibility_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestPageContextEligibilityTest,
+                       testGetContextFromFocusedTabWithIneligiblePage) {
+  SetEligibilityHint(/*is_eligible=*/false);
+
+  // Load the test page in a tab, so that there is some page context.
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  NavigateWebContents(kFirstTab, page_url()),
+                  OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestPageContextEligibilityTest,
+                       testGetContextFromFocusedTabWithEligiblePage) {
+  SetEligibilityHint(/*is_eligible=*/true);
+
+  // Load the test page in a tab, so that there is some page context.
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  NavigateWebContents(kFirstTab, page_url()),
+                  OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  ExecuteJsTest();
 }
 
 class GlicApiTestSystemSettingsTest : public GlicApiTestWithOneTab {

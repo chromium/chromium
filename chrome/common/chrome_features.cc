@@ -527,6 +527,14 @@ BASE_FEATURE(kGlicUserStatusCheck,
 BASE_FEATURE(kGlicClosedCaptioning,
              "GlicClosedCaptioning",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicPageContextEligibility,
+             "GlicPageContextEligibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kGlicPageContextEligibilityAllowNoMetadata{
+    &kGlicPageContextEligibility,
+    "glic-page-context-eligibility-allow-no-metadata", true};
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 BASE_FEATURE(kTabstripComboButton,

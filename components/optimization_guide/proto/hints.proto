@@ -322,6 +322,8 @@ enum OptimizationType {
   // Provides information about FedCM API clickthrough rate aggregated across
   // all users on the page.
   FEDCM_CLICKTHROUGH_RATE = 93;
+  // Provides information about whether the page is eligible for GLIC.
+  GLIC_PAGE_CONTEXT_ELIGIBILITY = 96;
 }
 
 // Presents semantics for how page load URLs should be matched.

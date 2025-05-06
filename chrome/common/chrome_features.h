@@ -304,6 +304,12 @@ extern const base::FeatureParam<std::string> kGlicTieredRolloutAllowedGroup;
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicRollout);
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicClosedCaptioning);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicPageContextEligibility);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool>
+    kGlicPageContextEligibilityAllowNoMetadata;
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kTabstripComboButton);

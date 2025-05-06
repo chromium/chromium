@@ -53,6 +53,7 @@ class ExtensionSidePanelManager;
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
+class GlicPageContextEligibilityObserver;
 class GlicTabIndicatorHelper;
 }
 #endif
@@ -216,6 +217,13 @@ class TabFeatures {
     return inactive_window_mouse_event_controller_.get();
   }
 
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicPageContextEligibilityObserver*
+  glic_page_context_eligibility_observer() {
+    return glic_page_context_eligibility_observer_.get();
+  }
+#endif
+
   // Called exactly once to initialize features.
   // Can be overridden in tests to initialize nothing.
   virtual void Init(TabInterface& tab, Profile* profile);
@@ -330,6 +338,9 @@ class TabFeatures {
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
+
+  std::unique_ptr<glic::GlicPageContextEligibilityObserver>
+      glic_page_context_eligibility_observer_;
 #endif
 
   std::unique_ptr<memory_saver::MemorySaverChipController>
