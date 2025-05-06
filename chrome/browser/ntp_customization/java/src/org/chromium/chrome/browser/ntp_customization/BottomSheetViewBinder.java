@@ -8,10 +8,12 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Class responsible for binding a back press handler to the back button in a bottom sheet. */
+@NullMarked
 public class BottomSheetViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == BACK_PRESS_HANDLER) {

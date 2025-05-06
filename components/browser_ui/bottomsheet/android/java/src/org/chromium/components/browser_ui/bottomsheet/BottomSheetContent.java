@@ -208,7 +208,7 @@ public interface BottomSheetContent {
      * feature/content that is showing. It can be a dynamic string. 'Swipe down to close.' will be
      * automatically appended after the content description.
      */
-    String getSheetContentDescription(Context context);
+    @Nullable String getSheetContentDescription(Context context);
 
     /**
      * @return The resource id of the string announced when the sheet is opened at half height. This

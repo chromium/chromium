@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization.feed;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
@@ -26,10 +27,11 @@ import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
@@ -51,6 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Mediator for the feed settings bottom sheet in the NTP customization. */
+@NullMarked
 public class FeedSettingsMediator {
     private static final String TRUSTED_APPLICATION_CODE_EXTRA = "trusted_application_code_extra";
     private static final String ACTIVITY_CLICK_URL =
@@ -69,8 +72,8 @@ public class FeedSettingsMediator {
     private final BottomSheetDelegate mBottomSheetDelegate;
     private final Profile mProfile;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
-    private static PrefService sPrefServiceForTest;
-    private static PrefChangeRegistrar sPrefChangeRegistarForTest;
+    private static @Nullable PrefService sPrefServiceForTest;
+    private static @Nullable PrefChangeRegistrar sPrefChangeRegistarForTest;
     private List<Integer> mListItemsContent;
 
     public FeedSettingsMediator(
@@ -165,7 +168,7 @@ public class FeedSettingsMediator {
             }
 
             @Override
-            public Integer getTrailingIcon(int type) {
+            public @Nullable Integer getTrailingIcon(int type) {
                 return null;
             }
         };
@@ -206,7 +209,7 @@ public class FeedSettingsMediator {
                 return resources.getString(R.string.feed_manage_interests);
             default:
                 assert false : "Section type not supported!";
-                return null;
+                return assumeNonNull(null);
         }
     }
 
@@ -228,7 +231,7 @@ public class FeedSettingsMediator {
                 return resources.getString(R.string.feed_manage_interests_description);
             default:
                 assert false : "Section type not supported!";
-                return null;
+                return assumeNonNull(null);
         }
     }
 
@@ -236,7 +239,7 @@ public class FeedSettingsMediator {
      * @param sectionType Type of the feed bottom sheet section.
      * @return The on click listener for the feed bottom sheet section type.
      */
-    private static OnClickListener getListenerForSectionType(
+    private static @Nullable OnClickListener getListenerForSectionType(
             @FeedSettingsBottomSheetSection int sectionType) {
         switch (sectionType) {
             case ACTIVITY:

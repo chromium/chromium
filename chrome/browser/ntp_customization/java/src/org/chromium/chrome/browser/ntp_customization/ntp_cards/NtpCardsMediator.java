@@ -14,6 +14,7 @@ import android.view.View;
 
 import org.jni_zero.internal.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
@@ -25,6 +26,7 @@ import java.util.List;
  * A mediator class that manages navigation between bottom sheets and manages the container view on
  * the NTP cards bottom sheet.
  */
+@NullMarked
 public class NtpCardsMediator {
 
     private final PropertyModel mContainerPropertyModel;
@@ -59,7 +61,7 @@ public class NtpCardsMediator {
             }
 
             @Override
-            public String getListItemSubtitle(int type, Context context) {
+            public @Nullable String getListItemSubtitle(int type, Context context) {
                 return null;
             }
 
@@ -69,7 +71,7 @@ public class NtpCardsMediator {
             }
 
             @Override
-            public Integer getTrailingIcon(int type) {
+            public @Nullable Integer getTrailingIcon(int type) {
                 return null;
             }
         };

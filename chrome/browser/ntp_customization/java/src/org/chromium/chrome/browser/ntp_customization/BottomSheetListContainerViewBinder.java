@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Class responsible for binding a delegate to a {@link BottomSheetListContainerView}. The delegate
  * provides list content and event handlers to the list container view.
  */
+@NullMarked
 public class BottomSheetListContainerViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == LIST_CONTAINER_VIEW_DELEGATE) {

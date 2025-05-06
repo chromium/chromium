@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This delegate interface is responsible for recording the position of the bottom sheet layout in
  * the view flipper view, as well as handling back button clicks on the bottom sheet.
  */
+@NullMarked
 public interface BottomSheetDelegate {
     /**
      * Records the position of the bottom sheet layout in the view flipper view. The position index

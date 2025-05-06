@@ -14,9 +14,11 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.widget.TextViewWithLeading;
 
 /** The list item view within a {@link BottomSheetListContainerView} of a bottom sheet. */
+@NullMarked
 public class BottomSheetListItemView extends LinearLayout {
     private TextViewWithLeading mTitleView;
     private TextViewWithLeading mSubtitleView;

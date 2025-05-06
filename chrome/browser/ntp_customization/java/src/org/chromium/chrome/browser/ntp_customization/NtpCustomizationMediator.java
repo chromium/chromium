@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
@@ -12,13 +13,14 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.widget.ViewFlipper;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,6 +42,7 @@ import java.util.Map;
  * A mediator class that manages the view flipper and {@link BottomSheetContent} of NTP
  * customization bottom sheets.
  */
+@NullMarked
 public class NtpCustomizationMediator {
     /**
      * A map of <{@link NtpCustomizationCoordinator.BottomSheetType}, view's position index in the
@@ -55,9 +58,9 @@ public class NtpCustomizationMediator {
     private List<Integer> mListContent;
     private final PropertyModel mContainerPropertyModel;
     private final Supplier<ProfileProvider> mProfileSupplier;
-    private Profile mProfile;
-    private Integer mCurrentBottomSheet;
-    private static PrefService sPrefServiceForTest;
+    private @Nullable Profile mProfile;
+    private @Nullable Integer mCurrentBottomSheet;
+    private static @Nullable PrefService sPrefServiceForTest;
 
     public NtpCustomizationMediator(
             BottomSheetController bottomSheetController,
@@ -167,13 +170,12 @@ public class NtpCustomizationMediator {
                         return context.getString(R.string.ntp_customization_feed_settings_title);
                     default:
                         assert false : "Bottom sheet type not supported!";
-                        return null;
+                        return assumeNonNull(null);
                 }
             }
 
             @Override
-            @Nullable
-            public String getListItemSubtitle(int type, Context context) {
+            public @Nullable String getListItemSubtitle(int type, Context context) {
                 if (type == FEED) {
                     return context.getString(getFeedSectionSubtitleId());
                 }
@@ -181,13 +183,12 @@ public class NtpCustomizationMediator {
             }
 
             @Override
-            public View.OnClickListener getListener(int type) {
+            public View.@Nullable OnClickListener getListener(int type) {
                 return mTypeToListenersMap.get(type);
             }
 
             @Override
-            @Nullable
-            public Integer getTrailingIcon(int type) {
+            public @Nullable Integer getTrailingIcon(int type) {
                 return R.drawable.forward_arrow_icon;
             }
         };
@@ -272,6 +273,7 @@ public class NtpCustomizationMediator {
         return mViewFlipperMap;
     }
 
+    @SuppressWarnings("NullAway") // The call sites require non-null but the value is nullable.
     @NtpCustomizationCoordinator.BottomSheetType
     Integer getCurrentBottomSheetType() {
         return mCurrentBottomSheet;

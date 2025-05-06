@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
@@ -19,6 +20,9 @@ import android.view.View;
 import android.widget.ViewFlipper;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -31,6 +35,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Coordinator of the NTP customization main bottom sheet. */
+@NullMarked
 public class NtpCustomizationCoordinator {
     /**
      * mDelegate will be passed to every bottom sheet coordinator created by {@link
@@ -41,8 +46,8 @@ public class NtpCustomizationCoordinator {
     private final Context mContext;
     private final Supplier<ProfileProvider> mProfileSupplier;
     private NtpCustomizationMediator mMediator;
-    private NtpCardsCoordinator mNtpCardsCoordinator;
-    private FeedSettingsCoordinator mFeedSettingsCoordinator;
+    private @MonotonicNonNull NtpCardsCoordinator mNtpCardsCoordinator;
+    private @Nullable FeedSettingsCoordinator mFeedSettingsCoordinator;
     private ViewFlipper mViewFlipperView;
 
     @IntDef({BottomSheetType.MAIN, BottomSheetType.NTP_CARDS, BottomSheetType.FEED})
@@ -152,7 +157,7 @@ public class NtpCustomizationCoordinator {
                 };
             default:
                 assert false : "Bottom sheet type not supported!";
-                return null;
+                return assumeNonNull(null);
         }
     }
 
@@ -205,7 +210,7 @@ public class NtpCustomizationCoordinator {
         return mDelegate;
     }
 
-    NtpCardsCoordinator getNtpCardsCoordinatorForTesting() {
+    @Nullable NtpCardsCoordinator getNtpCardsCoordinatorForTesting() {
         return mNtpCardsCoordinator;
     }
 

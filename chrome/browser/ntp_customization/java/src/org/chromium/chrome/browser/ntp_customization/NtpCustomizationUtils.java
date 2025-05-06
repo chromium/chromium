@@ -8,7 +8,10 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Utility class of the NTP customization. */
+@NullMarked
 public class NtpCustomizationUtils {
 
     /**
