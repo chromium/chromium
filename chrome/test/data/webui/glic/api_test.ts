@@ -725,7 +725,7 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testResizeWindowTooLarge() {
     assertTrue(!!this.host.resizeWindow);
-    await this.host.resizeWindow(2000, 2000);
+    await this.host.resizeWindow(20000, 20000);
   }
 
   async testResizeWindowWithinBounds() {

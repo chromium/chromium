@@ -1091,43 +1091,38 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testManualResizeChanged) {
   ContinueJsTest();
 }
 
-// TODO(crbug.com/409712213): Test fails for Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_testResizeWindowTooSmall DISABLED_testResizeWindowTooSmall
-#else
-#define MAYBE_testResizeWindowTooSmall testResizeWindowTooSmall
-#endif
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, MAYBE_testResizeWindowTooSmall) {
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testResizeWindowTooSmall) {
   // Web client requests the window to be resized to 0x0, bellow the minimum
   // dimensions (see GlicWindowController#GetLastRequestedSizeClamped), so it
-  // gets discarded in favor of the initial size.≈
+  // gets discarded in favor of the initial size.
+  gfx::Size expected_size = GlicWidget::GetInitialSize();
+  GlicWidget* glic_widget = window_controller().GetGlicWidget();
+  ASSERT_TRUE(glic_widget);
+
   ExecuteJsTest();
-  gfx::Size initial_size = GlicWidget::GetInitialSize();
-  gfx::Size min_real_size = window_controller().GetSize();
-  ASSERT_EQ(initial_size.width(), min_real_size.width());
-  ASSERT_EQ(initial_size.height(), min_real_size.height());
+
+  gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
+  ASSERT_EQ(expected_size,
+            glic_widget->WidgetToVisibleBounds(final_widget_bounds).size());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testResizeWindowTooLarge) {
-  // Web client requests the window to be resized to 2000x2000, above the
+  // Web client requests the window to be resized to 20000x20000, above the
   // maximum dimensions (see GlicWindowController#GetLastRequestedSizeClamped),
-  // so it gets discarded in favor of the display work area.
+  // so it gets discarded in favor of the max size. This max size is still
+  // larger than the display work area so we clamp the dimensions down to fit on
+  // screen.
   ExecuteJsTest();
   gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-  gfx::Size max_real_size = window_controller().GetSize();
-  ASSERT_EQ(display_bounds.width(), max_real_size.width());
-  ASSERT_EQ(display_bounds.height(), max_real_size.height());
+  GlicWidget* glic_widget = window_controller().GetGlicWidget();
+  ASSERT_TRUE(glic_widget);
+  gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
+
+  ASSERT_TRUE(display_bounds.Contains(final_widget_bounds));
 }
 
-// TODO(crbug.com/409712213): Test fails for Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_testResizeWindowWithinBounds DISABLED_testResizeWindowWithinBounds
-#else
-#define MAYBE_testResizeWindowWithinBounds testResizeWindowWithinBounds
-#endif
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
-                       MAYBE_testResizeWindowWithinBounds) {
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testResizeWindowWithinBounds) {
   // Web client requests the window to be resized to 800x700, which are valid
   // dimensions.
   gfx::Size expected_size = gfx::Size(800, 700);
@@ -1135,9 +1130,11 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
       {.params = base::Value(base::Value::Dict()
                                  .Set("width", expected_size.width())
                                  .Set("height", expected_size.height()))});
-  gfx::Size valid_real_size = window_controller().GetSize();
-  ASSERT_EQ(expected_size.width(), valid_real_size.width());
-  ASSERT_EQ(expected_size.height(), valid_real_size.height());
+  GlicWidget* glic_widget = window_controller().GetGlicWidget();
+  ASSERT_TRUE(glic_widget);
+  gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
+  ASSERT_EQ(expected_size,
+            glic_widget->WidgetToVisibleBounds(final_widget_bounds).size());
 }
 
 class GlicApiTestPageContextEligibilityTest : public GlicApiTest {
