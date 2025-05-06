@@ -25,8 +25,7 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.R;
-
-import java.util.function.IntConsumer;
+import org.chromium.ui.util.ClickWithMetaStateCallback;
 
 /**
  * View for a button in the bookmark bar which provides users with bookmark access from top chrome.
@@ -78,8 +77,9 @@ class BookmarkBarButton extends LinearLayout {
      *
      * @param callback the callback to notify.
      */
-    public void setClickCallback(@Nullable IntConsumer callback) {
-        setOnClickListener(callback != null ? (v) -> callback.accept(mLastEventMetaState) : null);
+    public void setClickCallback(@Nullable ClickWithMetaStateCallback callback) {
+        setOnClickListener(
+                callback != null ? (v) -> callback.onClickWithMeta(mLastEventMetaState) : null);
     }
 
     /**

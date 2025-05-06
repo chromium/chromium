@@ -9,7 +9,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.view.View;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
@@ -19,6 +18,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.ClickWithMetaStateCallback;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -36,9 +36,9 @@ public class BackButtonCoordinator {
      * Creates an instance of {@link BackButtonCoordinator}.
      *
      * @param view an Android {@link ChromeImageButton}.
-     * @param onBackPressed a {@link Callback<Integer>} (taking a parameter of meta key state) that
-     *     is invoked on back button click event. Allows parent components to intercept click and
-     *     navigate back in the history or hide custom UI components.
+     * @param onBackPressed a {@link ClickWithMetaStateCallback} (taking a parameter of meta key
+     *     state) that is invoked on back button click event. Allows parent components to intercept
+     *     click and navigate back in the history or hide custom UI components.
      * @param themeColorProvider a provider that notifies about theme changes.
      * @param tabSupplier a supplier that provides current active tab.
      * @param historyDelegate a delegate that allows parent components to decide how to display
@@ -46,7 +46,7 @@ public class BackButtonCoordinator {
      */
     public BackButtonCoordinator(
             ChromeImageButton view,
-            Callback<Integer> onBackPressed,
+            ClickWithMetaStateCallback onBackPressed,
             ThemeColorProvider themeColorProvider,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> enabledSupplier,

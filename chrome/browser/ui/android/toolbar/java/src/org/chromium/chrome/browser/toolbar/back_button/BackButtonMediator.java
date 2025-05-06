@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
+import org.chromium.ui.util.ClickWithMetaStateCallback;
 
 /**
  * A class responsible for mediating external events like theme changes or visibility changes from
@@ -51,7 +52,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
      */
     public BackButtonMediator(
             PropertyModel model,
-            Callback<Integer> onBackPressed,
+            ClickWithMetaStateCallback onBackPressed,
             ThemeColorProvider themeColorProvider,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
@@ -62,7 +63,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
         mModel.set(
                 BackButtonProperties.CLICK_LISTENER,
                 (metaState) -> {
-                    onBackPressed.onResult(metaState);
+                    onBackPressed.onClickWithMeta(metaState);
                     updateButtonEnabledState();
                 });
         mModel.set(

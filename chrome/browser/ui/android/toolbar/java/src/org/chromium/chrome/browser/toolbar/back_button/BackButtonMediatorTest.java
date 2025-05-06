@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.ClickWithMetaStateCallback;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -40,7 +41,7 @@ public class BackButtonMediatorTest {
     private static final int TAB_ID = 0;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
-    @Mock public Callback<Integer> mOnBackPressed;
+    @Mock public ClickWithMetaStateCallback mOnBackPressed;
     @Mock public ThemeColorProvider mThemeColorProvider;
     @Mock public Callback<Tab> mShowNavigationPopup;
     @Mock public Profile mProfile;
@@ -149,8 +150,8 @@ public class BackButtonMediatorTest {
 
     @Test
     public void testClick_shouldForwardCallToParent() {
-        mModel.get(BackButtonProperties.CLICK_LISTENER).onResult(0);
-        verify(mOnBackPressed).onResult(0);
+        mModel.get(BackButtonProperties.CLICK_LISTENER).onClickWithMeta(0);
+        verify(mOnBackPressed).onClickWithMeta(0);
     }
 
     @Test

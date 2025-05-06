@@ -13,9 +13,9 @@ import android.view.MotionEvent;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.util.ClickWithMetaStateCallback;
 
 // TODO(crbug.com/40883889): See if we still need this class.
 /**
@@ -86,7 +86,8 @@ public class ChromeImageButton extends AppCompatImageButton {
      *
      * @param callback the callback to notify.
      */
-    public void setClickCallback(@Nullable Callback<Integer> callback) {
-        setOnClickListener(callback != null ? (v) -> callback.onResult(mLastEventMetaState) : null);
+    public void setClickCallback(@Nullable ClickWithMetaStateCallback callback) {
+        setOnClickListener(
+                callback != null ? (v) -> callback.onClickWithMeta(mLastEventMetaState) : null);
     }
 }
