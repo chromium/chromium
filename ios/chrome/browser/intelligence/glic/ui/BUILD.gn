@@ -11,11 +11,21 @@ source_set("ui") {
     "glic_promo_display_handler.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//components/feature_engagement/public:feature_constants",
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/promos_manager/ui_bundled:promos",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "glic_constants.h",
+    "glic_constants.mm",
+  ]
 }
