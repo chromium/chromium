@@ -1381,21 +1381,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_SPORTS_SETTINGS_TOGGLE_TITLE" desc="The label for the notification settings item title for sports notifications.">
         Sports
       </message>
-      <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_PRIMARY_BUTTON_TEXT" desc="Text for the Notifications promo secondary button.">
-          Turn on notifications..
-      </message>
-      <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_SECONDARY_BUTTON_TEXT" desc="Text for the Notifications promo secondary button.">
-          No thanks
-      </message>
-      <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_SUBTITLE" desc="Text for the Notifications promo subtitle.">
-          Receive notificarions for news, sports and more based on your interest
-      </message>
-      <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_TERTIARY_BUTTON_TEXT" desc="Text for the Notifications promo tertiary button.">
-          Remind me later
-      </message>
-      <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_TITLE" desc="Text for the Notifications promo title.">
-          Get content that matters to you
-      </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE" desc="Text for the Chrome content notifications confirmation snackbar action.">
         Manage
       </message>

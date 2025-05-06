@@ -59,7 +59,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check",
     "//ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self",
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:content_notification_promo",
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:default_browser_promo",
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:utils",
     "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card",

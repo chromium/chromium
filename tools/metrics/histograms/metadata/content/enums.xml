@@ -75,18 +75,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Disabled Sports Notifications Toggle."/>
 </enum>
 
-<enum name="ContentNotificationSetUpListPromoAction">
-  <int value="0" label="Accept"/>
-  <int value="1" label="Cancel"/>
-  <int value="2" label="Remind Me Later"/>
-</enum>
-
-<enum name="ContentNotificationSetUpListPromoEvent">
-  <int value="0" label="Notification promo Sheet shown"/>
-  <int value="1" label="Notification promo Sheet dismissed"/>
-  <int value="2" label="OS Notification permission prompt shown"/>
-</enum>
-
 <enum name="ContentNotificationSnackbarEvent">
   <int value="0" label="Notification confirmation snackbar shown"/>
   <int value="1"

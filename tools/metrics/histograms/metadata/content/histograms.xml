@@ -184,23 +184,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentNotifications.Promo.SetUpList.Action"
-    enum="ContentNotificationSetUpListPromoAction" expires_after="2026-01-20">
-  <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    The action taken by the user in response to the Set Up List Content
-    Notification promo.
-  </summary>
-</histogram>
-
-<histogram name="ContentNotifications.Promo.SetUpList.Event"
-    enum="ContentNotificationSetUpListPromoEvent" expires_after="2026-01-20">
-  <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>Log the Set Up List Content Notification promo events.</summary>
-</histogram>
-
 <histogram name="ContentNotifications.Promo.Snackbar.Event"
     enum="ContentNotificationSnackbarEvent" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>

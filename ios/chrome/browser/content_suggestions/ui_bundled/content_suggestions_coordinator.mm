@@ -64,8 +64,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/types.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/send_tab_promo_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_content_notification_promo_coordinator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_content_notification_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_item_view.h"
@@ -204,7 +202,6 @@ using segmentation_platform::TipIdentifier;
     NotificationsOptInAlertCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
     PriceTrackingPromoActionDelegate,
-    SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     SetUpListTapDelegate,
     ShopCardActionDelegate>
@@ -227,10 +224,6 @@ using segmentation_platform::TipIdentifier;
   // The coordinator that displays the Default Browser Promo for the Set Up
   // List.
   SetUpListDefaultBrowserPromoCoordinator* _defaultBrowserPromoCoordinator;
-
-  // The coordinator that displays the Content Notification Promo for the Set Up
-  // List.
-  SetUpListContentNotificationPromoCoordinator* _contentNotificationCoordinator;
 
   // The coordinator that displays the opt-in notification settings view for the
   // Set Up List.
@@ -1388,13 +1381,6 @@ using segmentation_platform::TipIdentifier;
 - (void)setUpListDefaultBrowserPromoDidFinish:(BOOL)success {
   [_defaultBrowserPromoCoordinator stop];
   _defaultBrowserPromoCoordinator = nil;
-}
-
-#pragma mark - SetUpListContentNotificationPromoCoordinatorDelegate
-
-- (void)setUpListContentNotificationPromoDidFinish {
-  [_contentNotificationCoordinator stop];
-  _contentNotificationCoordinator = nil;
 }
 
 #pragma mark - ShopCardActionDelegate
