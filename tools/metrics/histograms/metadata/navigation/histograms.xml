@@ -3135,6 +3135,20 @@ chromium-metrics-reviews@google.com.
   <token key="Initiator" variants="Initiator"/>
 </histogram>
 
+<histogram name="Navigation{Initiator}.ShouldDispatchBeforeUnload"
+    enum="Boolean" expires_after="2025-11-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether a {Initiator} navigation required to use the beforeunload
+    logic or not. If using the beforeunload logic in the browser process to post
+    a task is necessary for legacy reasons, as described in the code comment of
+    RenderFrameHostImpl::SendBeforeUnload(), true will be recorded. This is
+    recorded on each {Initiator} navigation.
+  </summary>
+  <token key="Initiator" variants="Initiator"/>
+</histogram>
+
 <histogram
     name="Prerender.CanceledForInactivePageRestriction.DisallowActivationReason{PreloadingTriggerType}"
     enum="InactiveFrameDisallowActivationReason" expires_after="2025-08-01">

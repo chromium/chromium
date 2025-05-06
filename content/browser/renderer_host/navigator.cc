@@ -924,7 +924,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   // navigation via Navigator::Navigate(). We should fix that, so that
   // post-commit error page navigations don't bypass other important checks in
   // this function.
-  bool should_dispatch_beforeunload =
+  const bool should_dispatch_beforeunload =
       !NavigationTypeUtils::IsSameDocument(
           request->common_params().navigation_type) &&
       !request->common_params().is_history_navigation_in_new_child_frame &&
@@ -932,6 +932,10 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
           false /* check_subframes_only */) &&
       request->browser_initiated_error_navigation_type() ==
           NavigationRequest::BrowserInitiatedErrorNavigationType::kNone;
+
+  base::UmaHistogramBoolean(
+      "Navigation.BrowserInitiated.ShouldDispatchBeforeUnload",
+      should_dispatch_beforeunload);
 
   int nav_entry_id = request->nav_entry_id();
   bool is_pending_entry =
@@ -1284,9 +1288,12 @@ void Navigator::OnBeginNavigation(
   // those frames.
   DCHECK(!NavigationTypeUtils::IsSameDocument(
       navigation_request->common_params().navigation_type));
-  bool should_dispatch_beforeunload =
+  const bool should_dispatch_beforeunload =
       frame_tree_node->current_frame_host()->ShouldDispatchBeforeUnload(
           true /* check_subframes_only */);
+  base::UmaHistogramBoolean(
+      "Navigation.RendererInitiated.ShouldDispatchBeforeUnload",
+      should_dispatch_beforeunload);
   if (should_dispatch_beforeunload) {
     frame_tree_node->navigation_request()->WillStartBeforeUnload();
     frame_tree_node->current_frame_host()->DispatchBeforeUnload(
