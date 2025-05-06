@@ -46,35 +46,39 @@ struct timespec TimeDelta::ToTimeSpec() const {
 
 // static
 Time Time::FromTimeVal(struct timeval t) {
-  DCHECK_LT(t.tv_usec, static_cast<int>(Time::kMicrosecondsPerSecond));
+  DCHECK_LT(t.tv_usec, static_cast<int>(kMicrosecondsPerSecond));
   DCHECK_GE(t.tv_usec, 0);
-  if (t.tv_usec == 0 && t.tv_sec == 0) {
-    return Time();
-  }
+
+  // TODO(crbug.com/41405098): Handle negative values including Time::Min().
+
   if (t.tv_usec == static_cast<suseconds_t>(Time::kMicrosecondsPerSecond) - 1 &&
       t.tv_sec == std::numeric_limits<time_t>::max()) {
     return Max();
   }
-  return Time((static_cast<int64_t>(t.tv_sec) * Time::kMicrosecondsPerSecond) +
-              t.tv_usec + kTimeTToMicrosecondsOffset);
+
+  return Time::UnixEpoch() + Seconds(t.tv_sec) + Microseconds(t.tv_usec);
 }
 
 struct timeval Time::ToTimeVal() const {
-  struct timeval result;
   if (is_null()) {
-    result.tv_sec = 0;
-    result.tv_usec = 0;
-    return result;
+    return {
+        .tv_sec = 0,
+        .tv_usec = 0,
+    };
   }
-  if (is_max()) {
-    result.tv_sec = std::numeric_limits<time_t>::max();
-    result.tv_usec = static_cast<suseconds_t>(Time::kMicrosecondsPerSecond) - 1;
-    return result;
-  }
-  int64_t us = us_ - kTimeTToMicrosecondsOffset;
-  result.tv_sec = static_cast<time_t>(us / Time::kMicrosecondsPerSecond);
-  result.tv_usec = us % Time::kMicrosecondsPerSecond;
-  return result;
+
+  // TODO(crbug.com/41405098): Handle negative values including Time::Min().
+
+  const int64_t us = us_ - kTimeTToMicrosecondsOffset;
+  return {
+      .tv_sec = is_max()
+                    ? std::numeric_limits<time_t>::max()
+                    : saturated_cast<time_t>(us / Time::kMicrosecondsPerSecond),
+      .tv_usec =
+          is_max()
+              ? static_cast<suseconds_t>(Time::kMicrosecondsPerSecond) - 1
+              : saturated_cast<suseconds_t>(us % Time::kMicrosecondsPerSecond),
+  };
 }
 
 }  // namespace base
