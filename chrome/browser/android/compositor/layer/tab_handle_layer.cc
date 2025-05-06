@@ -214,6 +214,9 @@ void TabHandleLayer::SetProperties(
                                            2);
   close_y = content_offset_y - std::abs(close_y_offset_tsr);
 
+  // The keyboard focus ring should not be drawn by default. Make sure this
+  // happens whether the parent tab is selected or unselected.
+  close_keyboard_focus_ring_->SetIsDrawable(false);
   if (close_button_alpha == 0.f) {
     close_button_->SetIsDrawable(false);
     close_button_hover_highlight_->SetIsDrawable(false);
@@ -244,10 +247,6 @@ void TabHandleLayer::SetProperties(
       close_keyboard_focus_ring_->SetBounds(gfx::Size(
           close_button_keyboard_focus_ring_resource->size().width(),
           close_button_keyboard_focus_ring_resource->size().height()));
-    } else {
-      // Clean up the keyboard focus ring if it was previously showing but
-      // shouldn't be showing now.
-      close_keyboard_focus_ring_->SetIsDrawable(false);
     }
   }
   if (is_keyboard_focused) {

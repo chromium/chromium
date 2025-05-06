@@ -1641,8 +1641,11 @@ public class CompositorViewHolder extends FrameLayout
                         }
 
                         @Override
-                        public boolean dispatchKeyEvent(KeyEvent event) {
-                            return CompositorViewHolder.this.dispatchKeyEvent(event);
+                        public void onFocusChanged(
+                                boolean gainFocus, int direction, Rect previouslyFocusedRect) {
+                            super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+                            // Clear focus ring indicators.
+                            if (!gainFocus) resetKeyboardFocus();
                         }
                     };
             addView(mAccessibilityView);
@@ -1740,7 +1743,7 @@ public class CompositorViewHolder extends FrameLayout
         if (isA11ySetUp()) {
             // If a11y is set up, mAccessibilityView needs to hold keyboard focus.
             // mNodeProvider.requestKeyboardFocusForVirtualView will fail otherwise.
-            if (mAccessibilityView.hasFocus()) mAccessibilityView.requestFocus();
+            if (!mAccessibilityView.hasFocus()) mAccessibilityView.requestFocus();
             mNodeProvider.requestKeyboardFocusForVirtualView(mKeyboardFocusIndex);
         } else {
             // If a11y is not set up, CompositorViewHolder needs to hold the keyboard focus so that
