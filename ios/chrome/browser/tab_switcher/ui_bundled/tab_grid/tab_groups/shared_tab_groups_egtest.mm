@@ -167,7 +167,6 @@ void AddSharedGroup(BOOL owner) {
 AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
     bool join_only = false) {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kTabGroupSync);
   config.features_enabled.push_back(kTabGroupIndicator);
   config.features_enabled.push_back(

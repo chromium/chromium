@@ -501,12 +501,10 @@ BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGroupsIPad, "TabGroupsIPad", base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsTabGroupInGridEnabled() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (@available(iOS 17, *)) {
-      return base::FeatureList::IsEnabled(kTabGroupsIPad);
+      return true;
     }
     return false;
   }

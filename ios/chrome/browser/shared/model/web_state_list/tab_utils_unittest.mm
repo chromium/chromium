@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -33,9 +32,6 @@ class TabUtilsTest : public PlatformTest {
 // Tests that `MoveWebStateWithIdentifierToInsertionParams` correctly moves
 // webStates to the desired `insertion_params` with one group.
 TEST_F(TabUtilsTest, MoveWebStateWithIdentifierToInsertionParams_oneGroup) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
-
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [ 0 b c ] d"));
 
@@ -86,9 +82,6 @@ TEST_F(TabUtilsTest, MoveWebStateWithIdentifierToInsertionParams_oneGroup) {
 // webStates to the desired `insertion_params` with multiple groups.
 TEST_F(TabUtilsTest,
        MoveWebStateWithIdentifierToInsertionParams_multipleGroups) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
-
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(
       builder.BuildWebStateListFromDescription("| a [ 0 b c ] d [ 1 e f g ]"));
@@ -136,9 +129,6 @@ TEST_F(TabUtilsTest,
 // the collection view.
 TEST_F(TabUtilsTest,
        MoveWebStateWithIdentifierToInsertionParams_notSameCollection) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
-
   const int increase_index = 1;
 
   WebStateListBuilderFromDescription builder(web_state_list_);

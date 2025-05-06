@@ -820,9 +820,6 @@ extern const char kEnableLensContextMenuUnifiedExperienceDescription[];
 extern const char kTabGridNewTransitionsName[];
 extern const char kTabGridNewTransitionsDescription[];
 
-extern const char kTabGroupsIPadName[];
-extern const char kTabGroupsIPadDescription[];
-
 extern const char kTabResumptionName[];
 extern const char kTabResumptionDescription[];
 

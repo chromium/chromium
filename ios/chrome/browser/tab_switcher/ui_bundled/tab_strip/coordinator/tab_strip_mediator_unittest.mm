@@ -105,12 +105,7 @@ class TabStripMediatorTest : public PlatformTest {
  public:
   TabStripMediatorTest() {
     feature_list_.InitWithFeatures(
-        {
-            kTabGroupsIPad,
-            kTabGroupSync,
-            data_sharing::features::kDataSharingFeature,
-        },
-        {});
+        {kTabGroupSync, data_sharing::features::kDataSharingFeature}, {});
     TestProfileIOS::Builder profile_builder;
     profile_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),

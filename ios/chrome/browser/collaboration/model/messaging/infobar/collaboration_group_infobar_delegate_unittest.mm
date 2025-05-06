@@ -96,7 +96,6 @@ class CollaborationGroupInfoBarDelegateTest : public PlatformTest {
         /*enabled_features=*/
         {
             kTabGroupSync,
-            kTabGroupsIPad,
             data_sharing::features::kDataSharingFeature,
             collaboration::features::kCollaborationMessaging,
         },

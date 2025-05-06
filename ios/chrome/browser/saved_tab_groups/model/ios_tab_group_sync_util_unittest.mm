@@ -82,9 +82,7 @@ class TabGroupSyncUtilTest : public PlatformTest {
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {kTabGroupsIPad, kTabGroupSync,
-         data_sharing::features::kDataSharingFeature},
-        {});
+        {kTabGroupSync, data_sharing::features::kDataSharingFeature}, {});
     AppendNewWebState(browser_.get());
     AppendNewWebState(browser_.get());
     AppendNewWebState(browser_.get());

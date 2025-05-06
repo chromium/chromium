@@ -82,9 +82,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {kTabGroupsIPad, kTabGroupSync,
-         data_sharing::features::kDataSharingFeature},
-        {});
+        {kTabGroupSync, data_sharing::features::kDataSharingFeature}, {});
 
     GridMediatorTestClass::SetUp();
 

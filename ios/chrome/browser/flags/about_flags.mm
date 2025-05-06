@@ -1926,9 +1926,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"fullscreen-improvement", flag_descriptions::kFullscreenImprovementName,
      flag_descriptions::kFullscreenImprovementDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kFullscreenImprovement)},
-    {"tab-groups-on-ipad", flag_descriptions::kTabGroupsIPadName,
-     flag_descriptions::kTabGroupsIPadDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabGroupsIPad)},
     {"autofill-enable-dynamically-loading-fields-on-input",
      flag_descriptions::
          kAutofillEnableDynamicallyLoadingFieldsForAddressInputName,

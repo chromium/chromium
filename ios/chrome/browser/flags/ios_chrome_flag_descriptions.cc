@@ -1392,10 +1392,6 @@ const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"
     "are used.";
 
-const char kTabGroupsIPadName[] = "Enable Tab Groups on iPad";
-const char kTabGroupsIPadDescription[] =
-    "When enabled, tab groups can be created and edited on iPad.";
-
 const char kTabResumptionName[] = "Enable Tab Resumption";
 const char kTabResumptionDescription[] =
     "When enabled, offer users with a quick shortcut to resume the last synced "

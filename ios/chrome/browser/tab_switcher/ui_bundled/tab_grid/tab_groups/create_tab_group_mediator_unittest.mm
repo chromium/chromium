@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_mediator.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -67,14 +66,12 @@ class FakeWebStateListDelegateWithSnapshotTabHelper
 class CreateTabGroupMediatorTest : public PlatformTest {
  protected:
   CreateTabGroupMediatorTest() {
-    feature_list_.InitWithFeatures({kTabGroupsIPad}, {});
     EXPECT_TRUE(
         builder_.BuildWebStateListFromDescription("a | b [ 0 c ] [ 1 d ]"));
     consumer_ = [[TabGroupCreationConsumer alloc] init];
     delegate_ = [[FakeCreateTabMediatorDelegate alloc] init];
   }
 
-  base::test::ScopedFeatureList feature_list_;
   TabGroupCreationConsumer* consumer_;
   FakeWebStateListDelegateWithSnapshotTabHelper web_state_list_delegate_;
   WebStateList web_state_list_{&web_state_list_delegate_};

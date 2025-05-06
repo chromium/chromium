@@ -32,7 +32,6 @@ class ShareKitServiceFactoryTest : public PlatformTest {
         /*enabled_features=*/
         {
             kTabGroupSync,
-            kTabGroupsIPad,
             data_sharing::features::kDataSharingJoinOnly,
         },
         /*disable_features=*/{});

@@ -21,7 +21,6 @@ class MessagingBackendServiceFactoryTest : public PlatformTest {
         /*enabled_features=*/
         {
             kTabGroupSync,
-            kTabGroupsIPad,
             data_sharing::features::kDataSharingFeature,
         },
         /*disable_features=*/{});

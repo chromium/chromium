@@ -71,7 +71,7 @@ std::unique_ptr<KeyedService> BuildTestShareKitService(
 class TabGroupCoordinatorTest : public PlatformTest {
  protected:
   TabGroupCoordinatorTest() {
-    feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
+    feature_list_.InitWithFeatures({kTabGroupSync}, {});
   }
 
   void SetUp() override {
@@ -172,9 +172,7 @@ class TabGroupCoordinatorWithSharedTabGroupsJoinOnlyTest
   TabGroupCoordinatorWithSharedTabGroupsJoinOnlyTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        {kTabGroupsIPad, kTabGroupSync,
-         data_sharing::features::kDataSharingJoinOnly},
-        {});
+        {kTabGroupSync, data_sharing::features::kDataSharingJoinOnly}, {});
   }
 };
 
@@ -186,9 +184,7 @@ class TabGroupCoordinatorWithSharedTabGroupsTest
   TabGroupCoordinatorWithSharedTabGroupsTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        {kTabGroupsIPad, kTabGroupSync,
-         data_sharing::features::kDataSharingFeature},
-        {});
+        {kTabGroupSync, data_sharing::features::kDataSharingFeature}, {});
   }
 };
 

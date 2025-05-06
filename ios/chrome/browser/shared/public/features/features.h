@@ -523,9 +523,6 @@ extern const char kDeliveredNAUMaxPerSession[];
 // Feature flag to enable a more stable fullscreen.
 BASE_DECLARE_FEATURE(kFullscreenImprovement);
 
-// Feature flag to enable Tab Groups on iPad.
-BASE_DECLARE_FEATURE(kTabGroupsIPad);
-
 // Whether the Tab Groups should be enabled in the Grid.
 bool IsTabGroupInGridEnabled();
 

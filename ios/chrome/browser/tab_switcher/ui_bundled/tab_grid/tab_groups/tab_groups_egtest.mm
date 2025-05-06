@@ -276,7 +276,6 @@ UIViewController* TopPresentedViewController() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kTabGroupIndicator);
   if ([self isRunningTest:@selector(testCloseFromSelectionSyncDisabled)]) {
     config.features_disabled.push_back(kTabGroupSync);

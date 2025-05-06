@@ -6,7 +6,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/numerics/safe_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -165,8 +164,6 @@ TEST_F(GridUtilsTest,
 // Test that `WebStateIndexFromGridDropItemIndex:` returns the correct
 // index when there is a group.
 TEST_F(GridUtilsTest, WebStateIndexFromGridDropItemIndex_group_sameCollection) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -221,8 +218,6 @@ TEST_F(GridUtilsTest, WebStateIndexFromGridDropItemIndex_group_sameCollection) {
 // collection.
 TEST_F(GridUtilsTest,
        WebStateIndexFromGridDropItemIndex_group_otherCollection) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -260,8 +255,6 @@ TEST_F(GridUtilsTest,
     return;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -318,8 +311,6 @@ TEST_F(GridUtilsTest,
 // index when there is a group.
 TEST_F(GridUtilsTest,
        WebStateIndexAfterGridDropItemIndex_group_sameCollection) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -366,8 +357,6 @@ TEST_F(GridUtilsTest,
 // index when there are groups and pinned tabs.
 TEST_F(GridUtilsTest,
        WebStateIndexAfterGridDropItemIndex_pinnedAndGroup_sameCollection) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;

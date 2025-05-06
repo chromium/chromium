@@ -72,7 +72,6 @@ void AddSharedGroup(BOOL owner) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kTabGroupSync);
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
