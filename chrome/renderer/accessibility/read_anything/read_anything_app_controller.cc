@@ -638,7 +638,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // has been added to the tree list in AccessibilityEventReceived. In that
   // case, do not distill.
   if (model_.active_tree_id() != ui::AXTreeIDUnknown() &&
-      model_.ContainsTree(model_.active_tree_id())) {
+      model_.ContainsActiveTree()) {
     Distill();
   }
 }
@@ -687,7 +687,7 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
 
   model_.set_requires_distillation(false);
 
-  ui::AXSerializableTree* tree = model_.GetTreeFromId(model_.active_tree_id());
+  ui::AXSerializableTree* tree = model_.GetActiveTree();
   std::unique_ptr<
       ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>>
       tree_source(tree->CreateTreeSource());
@@ -782,8 +782,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 
   // AXNode's language code is BCP 47. Only the base language is needed to
   // record the metric.
-  std::string language =
-      model_.GetTreeFromId(model_.active_tree_id())->root()->GetLanguage();
+  std::string language = model_.GetActiveTree()->root()->GetLanguage();
   if (!language.empty()) {
     base::UmaHistogramSparse(
         "Accessibility.ReadAnything.Language",
@@ -807,8 +806,8 @@ bool ReadAnythingAppController::PostProcessSelection() {
   // when it takes a long time to compute the display nodes. If this happens,
   // return false rather than trying to continue to process information on a
   // destroyed tree.
-  DUMP_WILL_BE_CHECK(model_.ContainsTree(model_.active_tree_id()));
-  if (!model_.ContainsTree(model_.active_tree_id())) {
+  DUMP_WILL_BE_CHECK(model_.ContainsActiveTree());
+  if (!model_.ContainsActiveTree()) {
     return false;
   }
   bool did_draw = false;
@@ -1065,7 +1064,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
-  ui::AXSerializableTree* tree = model_.GetTreeFromId(model_.active_tree_id());
+  ui::AXSerializableTree* tree = model_.GetActiveTree();
   DCHECK(tree);
   DCHECK(tree->root());
   return tree->root()->id();

@@ -286,9 +286,11 @@ class ReadAnythingAppModel {
   // displayed in the Read Anything app.ts by default.
   void ComputeDisplayNodeIdsForDistilledTree();
 
-  ui::AXSerializableTree* GetTreeFromId(const ui::AXTreeID& tree_id) const;
+  ui::AXSerializableTree* GetActiveTree() const;
 
   bool ContainsTree(const ui::AXTreeID& tree_id) const;
+
+  bool ContainsActiveTree() const;
 
   void UnserializePendingUpdates(const ui::AXTreeID& tree_id);
 
@@ -337,6 +339,8 @@ class ReadAnythingAppModel {
     ui::AXNodeID id = ui::kInvalidAXNodeID;
     int offset = -1;
   };
+
+  ui::AXSerializableTree* GetTreeFromId(const ui::AXTreeID& tree_id) const;
 
   void ResetSelection();
 

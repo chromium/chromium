@@ -358,6 +358,10 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
   }
 }
 
+ui::AXSerializableTree* ReadAnythingAppModel::GetActiveTree() const {
+  return GetTreeFromId(active_tree_id_);
+}
+
 ui::AXSerializableTree* ReadAnythingAppModel::GetTreeFromId(
     const ui::AXTreeID& tree_id) const {
   // If the tree id is unknown or not associated with a tree, fail gracefully,
@@ -375,6 +379,10 @@ ui::AXSerializableTree* ReadAnythingAppModel::GetTreeFromId(
 
 bool ReadAnythingAppModel::ContainsTree(const ui::AXTreeID& tree_id) const {
   return base::Contains(tree_infos_, tree_id);
+}
+
+bool ReadAnythingAppModel::ContainsActiveTree() const {
+  return ContainsTree(active_tree_id_);
 }
 
 void ReadAnythingAppModel::SetUrlInformationCallback(
