@@ -35,7 +35,9 @@ bool AreProgressMarkersEquivalent(const std::string& serialized1,
   if (syncer::GetDataTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
           syncer::AUTOFILL_WALLET_DATA ||
       syncer::GetDataTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
-          syncer::AUTOFILL_WALLET_OFFER) {
+          syncer::AUTOFILL_WALLET_OFFER ||
+      syncer::GetDataTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
+          syncer::AUTOFILL_VALUABLE) {
     return fake_server::AreFullUpdateTypeDataProgressMarkersEquivalent(marker1,
                                                                        marker2);
   }

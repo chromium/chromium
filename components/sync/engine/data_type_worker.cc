@@ -143,15 +143,20 @@ void AdaptClientTagForFullUpdateData(DataType data_type,
   }
   DCHECK(!data->specifics.has_encrypted());
   if (data_type == AUTOFILL_WALLET_DATA) {
-    DCHECK(data->specifics.has_autofill_wallet());
+    CHECK(data->specifics.has_autofill_wallet());
     data->client_tag_hash = ClientTagHash::FromUnhashed(
         AUTOFILL_WALLET_DATA, GetUnhashedClientTagFromAutofillWalletSpecifics(
                                   data->specifics.autofill_wallet()));
   } else if (data_type == AUTOFILL_WALLET_OFFER) {
-    DCHECK(data->specifics.has_autofill_offer());
+    CHECK(data->specifics.has_autofill_offer());
     data->client_tag_hash = ClientTagHash::FromUnhashed(
         AUTOFILL_WALLET_OFFER, GetUnhashedClientTagFromAutofillOfferSpecifics(
                                    data->specifics.autofill_offer()));
+  } else if (data_type == AUTOFILL_VALUABLE) {
+    CHECK(data->specifics.has_autofill_valuable());
+    data->client_tag_hash = ClientTagHash::FromUnhashed(
+        AUTOFILL_VALUABLE, GetUnhashedClientTagFromAutofillValuableSpecifics(
+                               data->specifics.autofill_valuable()));
   } else {
     NOTREACHED();
   }
@@ -727,7 +732,8 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
     // done by BookmarkDataTypeProcessor, with logic implemented in
     // components/sync_bookmarks/parent_guid_preprocessing.cc.
   } else if (data_type == AUTOFILL_WALLET_DATA ||
-             data_type == AUTOFILL_WALLET_OFFER) {
+             data_type == AUTOFILL_WALLET_OFFER ||
+             data_type == AUTOFILL_VALUABLE) {
     AdaptClientTagForFullUpdateData(data_type, &data);
   } else if (data_type == WEBAUTHN_CREDENTIAL) {
     AdaptWebAuthnClientTagHash(&data);

@@ -21,7 +21,7 @@ class ValuablesDataChangedWaiter : public ValuablesDataManager::Observer {
   ~ValuablesDataChangedWaiter() override;
 
   // Waits for `OnValuablesDataChanged()` to trigger.
-  void Wait(const base::Location& location = FROM_HERE) &&;
+  void Wait(const base::Location& location = FROM_HERE);
 
   // ValuablesDataManager::Observer:
   void OnValuablesDataChanged() override;

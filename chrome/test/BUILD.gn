@@ -12156,6 +12156,7 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser/affiliations",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/autofill",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/plus_addresses",

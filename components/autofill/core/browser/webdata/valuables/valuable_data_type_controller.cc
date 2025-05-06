@@ -32,16 +32,10 @@ void AutofillValuableDataTypeController::LoadModels(
 void AutofillValuableDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                               StopCallback callback) {
   DCHECK(CalledOnValidThread());
-  // In transport-only mode, storage is scoped to the Gaia account. That means
-  // it should be cleared if Sync is stopped for any reason (other than browser
-  // shutdown).
-  // In particular the data should be removed when the user is in pending state.
-  // This behavior is specific to autofill, and does not apply to other data
-  // types.
-  if (sync_mode_ == syncer::SyncMode::kTransportOnly) {
-    fate = syncer::SyncStopMetadataFate::CLEAR_METADATA;
-  }
-  DataTypeController::Stop(fate, std::move(callback));
+  // For Valuable-related data types, we want to clear all data even when Sync
+  // is stopped temporarily, regardless of incoming fate value.
+  DataTypeController::Stop(syncer::SyncStopMetadataFate::CLEAR_METADATA,
+                           std::move(callback));
 }
 
 }  // namespace autofill

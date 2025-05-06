@@ -155,6 +155,16 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   base::Time SetOfferData(
       const std::vector<sync_pb::SyncEntity>& offer_entities);
 
+  // Sets the Google Wallet valuable data to be served in following GetUpdates
+  // requests (any further GetUpdates response will be empty, indicating no
+  // change, if the client already has received `valuable_entities`).
+  //
+  // The returned value represents the timestamp of the write, such that any
+  // progress marker greater or equal to this timestamp must have processed the
+  // changes. See GetProgressMarkerTimestamp() below.
+  base::Time SetValuableData(
+      const std::vector<sync_pb::SyncEntity>& valuable_entities);
+
   // Allows the caller to know the timestamp corresponding to
   // `progress_marker` as annotated by the FakeServer during the GetUpdates
   // request that returned the progress marker.
@@ -369,6 +379,10 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // The LoopbackServer does not know how to handle offer data properly, so
   // the FakeServer handles those itself.
   std::vector<sync_pb::SyncEntity> offer_entities_;
+
+  // The LoopbackServer does not know how to handle valuable data properly, so
+  // the FakeServer handles those itself.
+  std::vector<sync_pb::SyncEntity> valuable_entities_;
 
   // Collaborations the user is a member of, used for all shared types.
   std::set<std::string> collaborations_;

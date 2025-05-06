@@ -17,7 +17,7 @@ ValuablesDataChangedWaiter::ValuablesDataChangedWaiter(
 
 ValuablesDataChangedWaiter::~ValuablesDataChangedWaiter() = default;
 
-void ValuablesDataChangedWaiter::Wait(const base::Location& location) && {
+void ValuablesDataChangedWaiter::Wait(const base::Location& location) {
   // Log the location from where `Wait` was called in case of timeout.
   base::test::ScopedRunLoopTimeout timeout(location, std::nullopt,
                                            base::NullCallback());
