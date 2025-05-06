@@ -438,8 +438,6 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (codec == AudioCodec::kAAC) {
-    config->set_aac_extra_data(extra_data);
-
     // TODO(dalecurtis): Just use the profile from the codec context if ffmpeg
     // ever starts supporting xHE-AAC.
     // FFmpeg provides the (defined_profile - 1) for AVCodecContext::profile

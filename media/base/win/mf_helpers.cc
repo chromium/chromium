@@ -460,9 +460,7 @@ HRESULT GetAacAudioType(const AudioDecoderConfig& decoder_config,
   ComPtr<IMFMediaType> media_type;
   RETURN_IF_FAILED(GetDefaultAudioType(decoder_config, &media_type));
 
-  // On Windows `extra_data` is not populated for AAC in `decoder_config`. Use
-  // `aac_extra_data` instead. See crbug.com/1245123.
-  const auto& extra_data = decoder_config.aac_extra_data();
+  const auto& extra_data = decoder_config.extra_data();
 
   size_t wave_format_size = sizeof(HEAACWAVEINFO) + extra_data.size();
   std::vector<uint8_t> wave_format_buffer(wave_format_size);

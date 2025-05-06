@@ -164,10 +164,10 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
       break;
     }
     case AudioCodec::kAAC: {
-      if (config.aac_extra_data().empty()) {
+      if (config.extra_data().empty()) {
         return false;
       }
-      *output_csd0 = config.aac_extra_data();
+      *output_csd0 = config.extra_data();
       *output_frame_has_adts_header =
           config.profile() != AudioCodecProfile::kXHE_AAC;
       break;

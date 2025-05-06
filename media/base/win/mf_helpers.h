@@ -135,7 +135,7 @@ GetDefaultAudioType(const AudioDecoderConfig decoder_config,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 // Given an AudioDecoderConfig which represents AAC audio, get its
 // corresponding IMFMediaType format (by calling GetDefaultAudioType)
-// and populate the aac_extra_data in the decoder_config into the
+// and copy the extra_data from the decoder_config into the
 // returned IMFMediaType.
 MEDIA_EXPORT HRESULT GetAacAudioType(const AudioDecoderConfig& decoder_config,
                                      IMFMediaType** media_type_out);

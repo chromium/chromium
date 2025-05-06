@@ -206,7 +206,6 @@ struct AudioDecoderConfig {
   ChannelLayout target_output_channel_layout;
   SampleFormat target_output_sample_format;
   bool should_discard_decoder_delay;
-  array<uint8> aac_extra_data;
 };
 
 // This defines a mojo transport format for media::VideoDecoderConfig.
