@@ -288,6 +288,31 @@ source_set("profile_bucket_metrics_unittest") {
   ]
 }
 
+source_set("survey_desktop_controller_unittest") {
+  testonly = true
+  if (!is_android) {
+    sources = [ "privacy_sandbox_survey_desktop_controller_unittest.cc" ]
+    deps = [
+      "//base/test:test_support",
+      "//base/version_info:channel",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/common:channel_info",
+      "//chrome/test:test_support",
+      "//components/prefs",
+      "//components/prefs:test_support",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//components/privacy_sandbox:privacy_sandbox_survey_service",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/version_info",
+      "//content/test:test_support",
+    ]
+  }
+}
+
 group("unit_tests") {
   testonly = true
   deps = [
@@ -295,6 +320,7 @@ group("unit_tests") {
     ":profile_bucket_metrics_unittest",
     ":service_impl_unittest",
     ":settings_delegate_unittest",
+    ":survey_desktop_controller_unittest",
     ":utils_unittest",
     "notice:unit_tests",
   ]
