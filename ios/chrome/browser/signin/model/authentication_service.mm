@@ -46,12 +46,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_util.h"
-#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
-
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-#import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
-#endif
 
 using signin::constants::kNoHostedDomainFound;
 
@@ -173,8 +168,8 @@ void AuthenticationService::Initialize(
       base::BindRepeating(&AuthenticationService::OnSigninAllowedChanged,
                           base::Unretained(this));
   pref_change_registrar_.Add(prefs::kSigninAllowed, signin_allowed_callback);
-// Migrate primary identity info to widgets if needed.
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+
+  // Migrate primary identity info to widgets if needed.
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
   NSString* primary_account =
       [shared_defaults objectForKey:app_group::kPrimaryAccount];
@@ -187,7 +182,6 @@ void AuthenticationService::Initialize(
                           forKey:app_group::kPrimaryAccount];
     }
   }
-#endif
 
   // Reload credentials to ensure the accounts from the token service are
   // up-to-date.
