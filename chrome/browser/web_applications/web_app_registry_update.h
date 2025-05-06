@@ -47,10 +47,7 @@ class WebAppRegistryUpdate {
   WebAppRegistryUpdate& operator=(const WebAppRegistryUpdate&) = delete;
   ~WebAppRegistryUpdate();
 
-  // DO NOT USE THIS TO INSTALL A WEB APP IN TESTS.
-  // Please use web_app_install_test_utils.h or web_app_browsertest_util.h.
-  // TODO(https://crbug.com/411126942): Add a passkey or make this private so
-  // only system internals can call this.
+  // Register a new app.
   void CreateApp(std::unique_ptr<WebApp> web_app);
   // Delete registered app.
   void DeleteApp(const webapps::AppId& app_id);
