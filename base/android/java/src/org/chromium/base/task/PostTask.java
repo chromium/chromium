@@ -15,6 +15,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -174,9 +175,10 @@ public class PostTask {
      * @param r The task to be run with the specified traits.
      */
     public static void runSynchronously(@TaskTraits int taskTraits, Runnable r) {
-        runSynchronouslyInternal(taskTraits, new FutureTask<Void>(r, null));
+        runSynchronouslyInternal(taskTraits, new FutureTask<@Nullable Void>(r, null));
     }
 
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
     private static <T extends @Nullable Object> T runSynchronouslyInternal(
             @TaskTraits int taskTraits, FutureTask<T> task) {
         // Ensure no task origin "caused by" is added, since we are wrapping in a RuntimeException

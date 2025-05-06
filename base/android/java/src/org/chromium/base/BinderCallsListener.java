@@ -325,6 +325,7 @@ public class BinderCallsListener {
                             SystemClock.uptimeMillis() - mCurrentTransactionStartTimeMillis;
                     mTotalTimeSpentInBinderCallsMillis += transactionDurationMillis;
                     if (mObserver != null) {
+                        assert mCurrentInterfaceDescriptor != null;
                         mObserver.accept("onTransactEnded", mCurrentInterfaceDescriptor);
                     }
 

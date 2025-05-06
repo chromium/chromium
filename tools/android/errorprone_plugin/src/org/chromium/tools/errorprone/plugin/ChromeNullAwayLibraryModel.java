@@ -98,13 +98,32 @@ public class ChromeNullAwayLibraryModel implements LibraryModels {
 
     @Override
     public ImmutableSetMultimap<String, Integer> typeVariablesWithNullableUpperBounds() {
+        // TODO(https://github.com/uber/NullAway/issues/1212): Add FutureTask:
+        //      .put("java.util.concurrent.FutureTask", 0)
         return new ImmutableSetMultimap.Builder<String, Integer>()
+                .put("java.util.concurrent.Callable", 0)
+                .put("java.util.concurrent.CompletableFuture", 0)
+                .put("java.util.concurrent.CompletionStage", 0)
+                .put("java.util.concurrent.Future", 0)
+                .put("java.util.concurrent.RunnableFuture", 0)
+                .put("java.util.function.BiConsumer", 0)
+                .put("java.util.function.BiConsumer", 1)
+                .put("java.util.function.BiFunction", 0)
+                .put("java.util.function.BiFunction", 1)
+                .put("java.util.function.BiFunction", 2)
+                .put("java.util.function.Consumer", 0)
+                .put("java.util.function.DoubleFunction", 0)
+                .put("java.util.function.IntFunction", 0)
+                .put("java.util.function.Function", 0)
+                .put("java.util.function.Function", 1)
+                .put("java.util.function.LongFunction", 0)
+                .put("java.util.function.Predicate", 0)
                 .put("java.util.function.Supplier", 0)
                 .build();
     }
 
     @Override
     public ImmutableSet<String> nullMarkedClasses() {
-        return ImmutableSet.of("java.util.function.Supplier");
+        return typeVariablesWithNullableUpperBounds().keySet();
     }
 }

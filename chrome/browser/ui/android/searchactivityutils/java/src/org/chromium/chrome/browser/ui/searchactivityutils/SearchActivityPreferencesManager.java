@@ -137,7 +137,9 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
 
     /** Returns current knowh SharedActivityPreferences values. */
     public static SearchActivityPreferences getCurrent() {
-        return assumeNonNull(get().mCurrentlyLoadedPreferences);
+        SearchActivityPreferences ret = get().mCurrentlyLoadedPreferences;
+        assert ret != null;
+        return ret;
     }
 
     /**
@@ -244,9 +246,10 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
     public static void addObserver(Consumer<SearchActivityPreferences> observer) {
         ThreadUtils.assertOnUiThread();
         SearchActivityPreferencesManager self = get();
-        if (!self.mObservers.hasObserver(observer)) {
-            self.mObservers.addObserver(observer);
-            observer.accept(self.mCurrentlyLoadedPreferences);
+        if (self.mObservers.addObserver(observer)) {
+            if (self.mCurrentlyLoadedPreferences != null) {
+                observer.accept(self.mCurrentlyLoadedPreferences);
+            }
         }
     }
 

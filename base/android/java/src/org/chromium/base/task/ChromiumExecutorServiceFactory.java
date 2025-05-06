@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.Collection;
@@ -40,7 +41,8 @@ public final class ChromiumExecutorServiceFactory {
         return System.nanoTime();
     }
 
-    private static final class ScheduledFutureTask<V> extends FutureTask<V>
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1212
+    private static final class ScheduledFutureTask<V extends @Nullable Object> extends FutureTask<V>
             implements RunnableScheduledFuture<V> {
         /** The time in nanoseconds when the task is scheduled to execute. */
         private long mNanoTaskScheduledStartTime;
@@ -57,7 +59,7 @@ public final class ChromiumExecutorServiceFactory {
         /** The time in nanoseconds when the task is actually executed. */
         private long mNanoTaskActualStartTime;
 
-        ScheduledFutureTask(Runnable runnable, @Nullable V result, long nanoDelay) {
+        ScheduledFutureTask(Runnable runnable, V result, long nanoDelay) {
             super(runnable, result);
             mNanoTaskScheduledStartTime = getCurrentTimeNanos() + nanoDelay;
             mNanoTaskPeriod = 0;
@@ -73,7 +75,7 @@ public final class ChromiumExecutorServiceFactory {
 
         ScheduledFutureTask(
                 Runnable runnable,
-                @Nullable V result,
+                V result,
                 long nanoInitialDelay,
                 long nanoPeriod,
                 long nanoInterTaskDelay) {
@@ -137,14 +139,15 @@ public final class ChromiumExecutorServiceFactory {
 
         @Override
         public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-            ScheduledFutureTask<Void> t =
+            ScheduledFutureTask<@Nullable Void> t =
                     new ScheduledFutureTask<>(command, null, unit.toNanos(delay));
             postTask(t);
             return t;
         }
 
         @Override
-        public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
+        public <V extends @Nullable Object> ScheduledFuture<V> schedule(
+                Callable<V> callable, long delay, TimeUnit unit) {
             ScheduledFutureTask<V> t = new ScheduledFutureTask<V>(callable, unit.toNanos(delay));
             postTask(t);
             return t;
@@ -153,7 +156,7 @@ public final class ChromiumExecutorServiceFactory {
         @Override
         public ScheduledFuture<?> scheduleAtFixedRate(
                 Runnable command, long initialDelay, long period, TimeUnit unit) {
-            ScheduledFutureTask<Void> t =
+            ScheduledFutureTask<@Nullable Void> t =
                     new ScheduledFutureTask<>(
                             command,
                             null,
@@ -167,7 +170,7 @@ public final class ChromiumExecutorServiceFactory {
         @Override
         public ScheduledFuture<?> scheduleWithFixedDelay(
                 Runnable command, long initialDelay, long delay, TimeUnit unit) {
-            ScheduledFutureTask<Void> t =
+            ScheduledFutureTask<@Nullable Void> t =
                     new ScheduledFutureTask<>(
                             command,
                             null,
@@ -259,11 +262,12 @@ public final class ChromiumExecutorServiceFactory {
             PostTask.postDelayedTask(mTaskTraits, runnable, 0);
         }
 
-        private <T> void postTask(ScheduledFutureTask<T> task) {
+        @NullUnmarked // https://github.com/uber/NullAway/issues/1075
+        private <T extends @Nullable Object> void postTask(ScheduledFutureTask<T> task) {
             PostTask.postDelayedTask(mTaskTraits, () -> runTask(task), task.getDelay(MILLISECONDS));
         }
 
-        private <T> void runTask(ScheduledFutureTask<T> task) {
+        private <T extends @Nullable Object> void runTask(ScheduledFutureTask<T> task) {
             task.run();
             if (!task.isPeriodic() || task.isCancelled()) {
                 return;
