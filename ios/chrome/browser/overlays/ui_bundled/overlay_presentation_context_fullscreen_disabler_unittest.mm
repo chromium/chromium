@@ -37,6 +37,7 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
   OverlayPresentationContextFullscreenDisablerTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
 
     disabler_ = std::make_unique<OverlayContainerFullscreenDisabler>(
         browser_.get(), kModality);

@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_alert_delegate.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
@@ -52,6 +53,7 @@ class BrowserContainerCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_handler_
                      forProtocol:@protocol(ApplicationCommands)];
+    FullscreenController::CreateForBrowser(browser_.get());
   }
 
   BrowserContainerCoordinator* CreateAndStartCoordinator() {

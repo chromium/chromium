@@ -62,6 +62,7 @@ source_set("unit_tests") {
   ]
   deps = [
     "//components/strings",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/sad_tab/ui_bundled",
     "//ios/chrome/browser/sad_tab/ui_bundled:coordinator",

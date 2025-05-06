@@ -204,6 +204,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/collaboration/model/messaging",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/policy/model:policy_util",

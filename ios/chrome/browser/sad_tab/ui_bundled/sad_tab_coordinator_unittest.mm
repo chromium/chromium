@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_coordinator.h"
 
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -32,6 +33,7 @@ class SadTabCoordinatorTest : public PlatformTest {
     AddSameConstraints(guide, base_view_controller_.view);
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
   }
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -145,6 +147,7 @@ TEST_F(SadTabCoordinatorTest, FirstFailureInIncognito) {
   web_state.WasShown();
   std::unique_ptr<Browser> otr_browser = std::make_unique<TestBrowser>(
       browser_->GetProfile()->GetOffTheRecordProfile());
+  FullscreenController::CreateForBrowser(otr_browser.get());
   SadTabCoordinator* coordinator = [[SadTabCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:otr_browser.get()];
@@ -172,6 +175,7 @@ TEST_F(SadTabCoordinatorTest, FirstFailureInIncognito) {
 TEST_F(SadTabCoordinatorTest, ShowFirstFailureInIncognito) {
   std::unique_ptr<Browser> otr_browser = std::make_unique<TestBrowser>(
       browser_->GetProfile()->GetOffTheRecordProfile());
+  FullscreenController::CreateForBrowser(otr_browser.get());
   SadTabCoordinator* coordinator = [[SadTabCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:otr_browser.get()];

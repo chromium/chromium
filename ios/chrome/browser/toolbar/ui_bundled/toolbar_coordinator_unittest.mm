@@ -6,6 +6,7 @@
 
 #import "base/scoped_observation.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -116,6 +117,7 @@ class ToolbarCoordinatorTest : public PlatformTest {
                                      ContextualPanelEntrypointIPHCommands)];
 
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
   }
 
   ~ToolbarCoordinatorTest() override {}

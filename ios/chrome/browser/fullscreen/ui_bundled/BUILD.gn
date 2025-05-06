@@ -7,7 +7,6 @@ source_set("ui_bundled") {
     "animated_scoped_fullscreen_disabler.h",
     "animated_scoped_fullscreen_disabler.mm",
     "fullscreen_controller.h",
-    "fullscreen_controller.mm",
     "fullscreen_controller_observer.h",
     "fullscreen_controller_observer.mm",
     "fullscreen_reason.h",

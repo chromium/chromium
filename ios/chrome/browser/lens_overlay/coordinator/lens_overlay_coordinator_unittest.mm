@@ -100,6 +100,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     base_view_controller_ = [[UIViewController alloc] init];
 
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
 
     // LensOverlayCoordinator
     coordinator_ = [[LensOverlayCoordinator alloc]

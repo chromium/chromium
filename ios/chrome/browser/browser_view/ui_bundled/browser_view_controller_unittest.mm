@@ -160,6 +160,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
 
     WebUsageEnablerBrowserAgent::FromBrowser(browser_.get())
         ->SetWebUsageEnabled(true);
