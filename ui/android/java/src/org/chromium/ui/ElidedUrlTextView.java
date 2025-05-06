@@ -11,6 +11,7 @@ import android.text.Layout;
 import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -124,7 +125,8 @@ public class ElidedUrlTextView extends AppCompatTextView {
     }
 
     private void announceForAccessibilityOnToggleTruncation(boolean isUrlTruncated) {
-        announceForAccessibility(
+        ViewCompat.setAccessibilityPaneTitle(
+                this,
                 getResources()
                         .getString(
                                 isUrlTruncated
