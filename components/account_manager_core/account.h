@@ -37,9 +37,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountKey {
   const std::string& id() const { return id_; }
   AccountType account_type() const { return account_type_; }
 
-  bool operator<(const AccountKey& other) const;
-  bool operator==(const AccountKey& other) const;
-  bool operator!=(const AccountKey& other) const;
+  friend bool operator==(const AccountKey&, const AccountKey&) = default;
+  friend auto operator<=>(const AccountKey&, const AccountKey&) = default;
 
  private:
   // Fields are not const to allow assignment operator.
@@ -55,9 +54,8 @@ struct COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) Account {
   // The raw, un-canonicalized email id for this account.
   std::string raw_email;
 
-  bool operator<(const Account& other) const;
-  bool operator==(const Account& other) const;
-  bool operator!=(const Account& other) const;
+  friend bool operator==(const Account&, const Account&) = default;
+  friend auto operator<=>(const Account&, const Account&) = default;
 };
 
 // For logging.
