@@ -32,12 +32,8 @@ class SharedURLLoaderFactory;
 
 class QuerySuggestion {
  public:
-  bool operator==(const QuerySuggestion& other) const {
-    return query == other.query && destination_url == other.destination_url;
-  }
-  bool operator!=(const QuerySuggestion& other) const {
-    return !(this == &other);
-  }
+  friend bool operator==(const QuerySuggestion&,
+                         const QuerySuggestion&) = default;
 
   // Query suggestion.
   std::u16string query;
