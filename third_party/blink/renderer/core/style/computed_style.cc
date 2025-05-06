@@ -761,8 +761,208 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     const ComputedStyle& other) const {
   StyleDifference diff;
   uint64_t field_diff = FieldInvalidationDiff(*this, other);
+  while (field_diff) {
+    FieldDifference field =
+        static_cast<FieldDifference>(field_diff & (~field_diff + 1));
+    field_diff &= field_diff - 1;  // Clear the lowest bit.
 
-  if ((field_diff & kReshape) || ShouldWrapLine() != other.ShouldWrapLine()) {
+    switch (field) {
+      case kAccentColor:
+        if (AccentColorResolved() != other.AccentColorResolved()) {
+          diff.SetNeedsNormalPaintInvalidation();
+        }
+        break;
+      case kBackground:
+        if (!BackgroundInternal().VisuallyEqual(other.BackgroundInternal())) {
+          diff.SetNeedsNormalPaintInvalidation();
+        }
+        break;
+      case kBackgroundColor:
+        // If the background-color change is not due to a composited animation,
+        // then paint invalidation is required; but we can defer the decision
+        // until we know whether the color change will be rendered by the
+        // compositor.
+        diff.SetBackgroundColorChanged();
+        break;
+      case kBlendMode:
+        diff.SetBlendModeChanged();
+        break;
+      case kBorderImage:
+        if (!BorderVisualOverflowEqual(other)) {
+          diff.SetNeedsRecomputeVisualOverflow();
+        }
+        break;
+      case kBorderOutlineVisitedColor:
+        if (BorderOutlineVisitedColorChanged(other)) {
+          diff.SetNeedsNormalPaintInvalidation();
+        }
+        break;
+      case kBorderRadius:
+        diff.SetBorderRadiusChanged();
+        break;
+      case kBorderVisual:
+        if (!BorderVisuallyEqual(other)) {
+          diff.SetNeedsNormalPaintInvalidation();
+        }
+        break;
+      case kBorderWidth:
+        if (BorderTopWidth() != other.BorderTopWidth() ||
+            BorderRightWidth() != other.BorderRightWidth() ||
+            BorderBottomWidth() != other.BorderBottomWidth() ||
+            BorderLeftWidth() != other.BorderLeftWidth()) {
+          diff.SetNeedsFullLayout();
+        }
+        break;
+      case kClip: {
+        bool has_clip = HasOutOfFlowPosition() && !HasAutoClip();
+        bool other_has_clip =
+            other.HasOutOfFlowPosition() && !other.HasAutoClip();
+        if (has_clip != other_has_clip ||
+            (has_clip && Clip() != other.Clip())) {
+          diff.SetCSSClipChanged();
+        }
+        break;
+      }
+      case kClipPath:
+        diff.SetClipPathChanged();
+        break;
+      case kColor:
+        diff.SetTextDecorationOrColorChanged();
+        // If the (current)color changes and a filter or backdrop-filter uses
+        // it, the filter or backdrop-filter needs to be updated.
+        if (HasFilter() && Filter().UsesCurrentColor()) {
+          diff.SetFilterChanged();
+        }
+        if (HasBackdropFilter() && BackdropFilter().UsesCurrentColor()) {
+          diff.SetCompositingReasonsChanged();
+        }
+        break;
+      case kCompositing:
+        diff.SetCompositingReasonsChanged();
+        break;
+      case kCornerShape:
+        // Unused.
+        break;
+      case kCurrentcolor:
+        // If a property has a value that contains a <color> that depends on
+        // 'currentcolor', for example:
+        //
+        //   background-image: linear-gradient(currentColor, #fff)
+        //   background-color: color-mix(in srgb, currentcolor ...)
+        //
+        // If the (current)color has changed, we need to recompute it even
+        // though the old and new property values are identical.
+        //
+        // NOTE: This is also handled to some degree by
+        // LayoutObject::AdjustStyleDifference. We should probably
+        // re-distribute the responsibilities between these two locations.
+        if ((GetCurrentColor() != other.GetCurrentColor() ||
+             GetInternalVisitedCurrentColor() !=
+                 other.GetInternalVisitedCurrentColor()) &&
+            HasPropertyDependingOnCurrentColor()) {
+          diff.SetNeedsNormalPaintInvalidation();
+        }
+        break;
+      case kFilterData:
+        diff.SetFilterChanged();
+        break;
+      case kHasTransform:
+        if (HasTransform() != other.HasTransform()) {
+          diff.SetOtherTransformPropertyChanged();
+        }
+        break;
+      case kInset:
+        if (!diff.NeedsFullLayout() && HasInFlowPosition()) {
+          diff.SetNeedsPositionedMovementLayout();
+        }
+        break;
+      case kLayout:
+        diff.SetNeedsFullLayout();
+        break;
+      case kMargin:
+        if (!HasOutOfFlowPosition()) {
+          diff.SetNeedsFullLayout();
+        }
+        break;
+      case kMask:
+        diff.SetMaskChanged();
+        break;
+      case kOpacity:
+        diff.SetOpacityChanged();
+        break;
+      case kOutline:
+        if (!OutlineVisuallyEqual(other)) {
+          diff.SetNeedsNormalPaintInvalidation();
+          diff.SetNeedsRecomputeVisualOverflow();
+        }
+        break;
+      case kOutOfFlow:
+        if (!diff.NeedsFullLayout() && HasOutOfFlowPosition()) {
+          diff.SetNeedsPositionedMovementLayout();
+        }
+        break;
+      case kPaint:
+        diff.SetNeedsNormalPaintInvalidation();
+        break;
+      case kReshape:
+        diff.SetNeedsReshape();
+        diff.SetNeedsFullLayout();
+        diff.SetNeedsNormalPaintInvalidation();
+        break;
+      case kScrollAnchor:
+        diff.SetScrollAnchorDisablingPropertyChanged();
+        break;
+      case kScrollbarColor:
+        if (UsedScrollbarColor() != other.UsedScrollbarColor()) {
+          diff.SetNeedsNormalPaintInvalidation();
+        }
+        break;
+      case kScrollbarStyle:
+        if (HasPseudoElementStyle(kPseudoIdScrollbar) !=
+                other.HasPseudoElementStyle(kPseudoIdScrollbar) ||
+            UsesStandardScrollbarStyle() !=
+                other.UsesStandardScrollbarStyle()) {
+          diff.SetNeedsFullLayout();
+          diff.SetNeedsNormalPaintInvalidation();
+        }
+        break;
+      case kStroke:
+        if (HasStroke() != other.HasStroke() ||
+            HasDashArray() != other.HasDashArray()) {
+          diff.SetNeedsFullLayout();
+        }
+        break;
+      case kTextDecoration:
+        diff.SetTextDecorationOrColorChanged();
+        if (TextDecorationVisualOverflowChanged(other)) {
+          diff.SetNeedsRecomputeVisualOverflow();
+        }
+        break;
+      case kTransformData:
+        diff.SetTransformDataChanged();
+        break;
+      case kTransformOther:
+        diff.SetOtherTransformPropertyChanged();
+        break;
+      case kTransformProperty:
+        diff.SetTransformPropertyChanged();
+        break;
+      case kVisibility:
+        if ((Visibility() == EVisibility::kCollapse) !=
+            (other.Visibility() == EVisibility::kCollapse)) {
+          diff.SetNeedsFullLayout();
+        }
+        break;
+      case kVisualOverflow:
+        diff.SetNeedsRecomputeVisualOverflow();
+        break;
+      case kZIndex:
+        diff.SetZIndexChanged();
+        break;
+    }
+  }
+
+  if (ShouldWrapLine() != other.ShouldWrapLine()) {
     diff.SetNeedsReshape();
     diff.SetNeedsFullLayout();
     diff.SetNeedsNormalPaintInvalidation();
@@ -781,124 +981,34 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetNeedsNormalPaintInvalidation();
   }
 
-  if (!diff.NeedsFullLayout() &&
-      DiffNeedsFullLayout(document, other, field_diff)) {
-    diff.SetNeedsFullLayout();
-  }
-
-  if (!diff.NeedsLayout()) {
-    if ((field_diff & kOutOfFlow) && HasOutOfFlowPosition()) {
-      diff.SetNeedsPositionedMovementLayout();
-    } else if ((field_diff & kInset) && HasInFlowPosition()) {
-      diff.SetNeedsPositionedMovementLayout();
+  if (!diff.NeedsFullLayout()) {
+    if (IsDisplayLayoutCustomBox() &&
+        DiffNeedsFullLayoutForLayoutCustom(document, other)) {
+      diff.SetNeedsFullLayout();
+    }
+    if (DisplayLayoutCustomParentName() &&
+        DiffNeedsFullLayoutForLayoutCustomChild(document, other)) {
+      diff.SetNeedsFullLayout();
     }
   }
 
-  if (!diff.NeedsNormalPaintInvalidation() &&
-      DiffNeedsNormalPaintInvalidation(document, other, field_diff)) {
-    diff.SetNeedsNormalPaintInvalidation();
-  }
-
-  if (DiffNeedsRecomputeVisualOverflow(other, field_diff)) {
-    diff.SetNeedsRecomputeVisualOverflow();
+  if (!diff.NeedsNormalPaintInvalidation() && PaintImagesInternal()) {
+    for (const auto& image : PaintImagesInternal()->Images()) {
+      DCHECK(image);
+      if (DiffNeedsPaintInvalidationForPaintImage(*image, other, document)) {
+        diff.SetNeedsNormalPaintInvalidation();
+        break;
+      }
+    }
   }
 
   if (DiffCompositingReasonsChanged(other, field_diff)) {
     diff.SetCompositingReasonsChanged();
   }
 
-  if (field_diff & kBackgroundColor) {
-    // If the background color change is not due to a composited animation,
-    // then paint invalidation is required; but we can defer the decision until
-    // we know whether the color change will be rendered by the compositor.
-    diff.SetBackgroundColorChanged();
-  }
-  if (field_diff & kBlendMode) {
-    diff.SetBlendModeChanged();
-  }
-  if (field_diff & kBorderRadius) {
-    diff.SetBorderRadiusChanged();
-  }
-  if (field_diff & kClip) {
-    bool has_clip = HasOutOfFlowPosition() && !HasAutoClip();
-    bool other_has_clip = other.HasOutOfFlowPosition() && !other.HasAutoClip();
-    if (has_clip != other_has_clip || (has_clip && Clip() != other.Clip())) {
-      diff.SetCSSClipChanged();
-    }
-  }
-  if (field_diff & kClipPath) {
-    diff.SetClipPathChanged();
-  }
-  if (field_diff & kColor) {
-    diff.SetTextDecorationOrColorChanged();
-  }
-  if (field_diff & kFilterData) {
-    diff.SetFilterChanged();
-  }
-  if (field_diff & kHasTransform) {
-    if (HasTransform() != other.HasTransform()) {
-      diff.SetOtherTransformPropertyChanged();
-    }
-  }
-  if (field_diff & kMask) {
-    diff.SetMaskChanged();
-  }
-  if (field_diff & kOpacity) {
-    diff.SetOpacityChanged();
-  }
-  if (field_diff & kScrollbarColor) {
-    if (UsedScrollbarColor() != other.UsedScrollbarColor()) {
-      diff.SetNeedsNormalPaintInvalidation();
-    }
-  }
-  if (field_diff & kScrollbarStyle) {
-    if (HasPseudoElementStyle(kPseudoIdScrollbar) !=
-            other.HasPseudoElementStyle(kPseudoIdScrollbar) ||
-        UsesStandardScrollbarStyle() != other.UsesStandardScrollbarStyle()) {
-      diff.SetNeedsFullLayout();
-      diff.SetNeedsNormalPaintInvalidation();
-    }
-  }
-  if (field_diff & kTextDecoration) {
-    diff.SetTextDecorationOrColorChanged();
-  }
-  if (field_diff & kTransformData) {
-    diff.SetTransformDataChanged();
-  }
-  if (field_diff & kTransformOther) {
-    diff.SetOtherTransformPropertyChanged();
-  }
-  if (field_diff & kTransformProperty) {
-    diff.SetTransformPropertyChanged();
-  }
-  if (field_diff & kVisibility) {
-    if ((Visibility() == EVisibility::kCollapse) !=
-        (other.Visibility() == EVisibility::kCollapse)) {
-      diff.SetNeedsFullLayout();
-    }
-  }
-  if (field_diff & kZIndex) {
-    diff.SetZIndexChanged();
-  }
-
-  // If the (current)color changes and a filter or backdrop-filter uses it, the
-  // filter or backdrop-filter needs to be updated. This reads
-  // `diff.TextDecorationOrColorChanged()` and so needs to be after the setters,
-  // above.
-  if (diff.TextDecorationOrColorChanged()) {
-    if (HasFilter() && Filter().UsesCurrentColor()) {
-      diff.SetFilterChanged();
-    }
-    if (HasBackdropFilter() && BackdropFilter().UsesCurrentColor()) {
-      // This could be optimized with a targeted backdrop-filter-changed
-      // invalidation.
-      diff.SetCompositingReasonsChanged();
-    }
-  }
-
   // The following condition needs to be at last, because it may depend on
   // conditions in diff computed above.
-  if ((field_diff & kScrollAnchor) || diff.TransformChanged()) {
+  if (diff.TransformChanged()) {
     diff.SetScrollAnchorDisablingPropertyChanged();
   }
 
@@ -942,48 +1052,6 @@ bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
 
   // Movement of non-static-positioned object is special cased in
   // ComputedStyle::VisualInvalidationDiff().
-
-  return false;
-}
-
-bool ComputedStyle::DiffNeedsFullLayout(const Document& document,
-                                        const ComputedStyle& other,
-                                        uint64_t field_diff) const {
-  if (field_diff & kLayout) {
-    return true;
-  }
-
-  if (field_diff & kBorderWidth) {
-    if (BorderTopWidth() != other.BorderTopWidth() ||
-        BorderRightWidth() != other.BorderRightWidth() ||
-        BorderBottomWidth() != other.BorderBottomWidth() ||
-        BorderLeftWidth() != other.BorderLeftWidth()) {
-      return true;
-    }
-  }
-
-  if ((field_diff & kMargin) && !HasOutOfFlowPosition()) {
-    return true;
-  }
-
-  if (field_diff & kStroke) {
-    if (HasStroke() != other.HasStroke()) {
-      return true;
-    }
-    if (HasDashArray() != other.HasDashArray()) {
-      return true;
-    }
-  }
-
-  if (IsDisplayLayoutCustomBox() &&
-      DiffNeedsFullLayoutForLayoutCustom(document, other)) {
-    return true;
-  }
-
-  if (DisplayLayoutCustomParentName() &&
-      DiffNeedsFullLayoutForLayoutCustomChild(document, other)) {
-    return true;
-  }
 
   return false;
 }
@@ -1042,70 +1110,6 @@ bool ComputedStyle::DiffNeedsFullLayoutForLayoutCustomChild(
   if (!CustomPropertiesEqual(definition->ChildCustomInvalidationProperties(),
                              other)) {
     return true;
-  }
-
-  return false;
-}
-
-bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
-    const Document& document,
-    const ComputedStyle& other,
-    uint64_t field_diff) const {
-  if (field_diff & kPaint) {
-    return true;
-  }
-
-  if ((field_diff & kAccentColor) &&
-      AccentColorResolved() != other.AccentColorResolved()) {
-    return true;
-  }
-
-  if ((field_diff & kOutline) && !OutlineVisuallyEqual(other)) {
-    return true;
-  }
-
-  if ((field_diff & kBackground) &&
-      !BackgroundInternal().VisuallyEqual(other.BackgroundInternal())) {
-    return true;
-  }
-
-  if (field_diff & kCurrentcolor) {
-    // If a property has a value that contains a <color> that depends on
-    // 'currentcolor', for example:
-    //
-    //   background-image: linear-gradient(currentColor, #fff)
-    //   background-color: color-mix(in srgb, currentcolor ...)
-    //
-    // If the (current)color has changed, we need to recompute it even though
-    // the old and new property values are identical.
-    //
-    // NOTE: This is also handled to some degree by
-    // LayoutObject::AdjustStyleDifference. We should probably re-distribute
-    // the responsibilities between these two locations.
-    if ((GetCurrentColor() != other.GetCurrentColor() ||
-         GetInternalVisitedCurrentColor() !=
-             other.GetInternalVisitedCurrentColor()) &&
-        HasPropertyDependingOnCurrentColor()) {
-      return true;
-    }
-  }
-
-  if ((field_diff & kBorderVisual) && !BorderVisuallyEqual(other)) {
-    return true;
-  }
-
-  if ((field_diff & kBorderOutlineVisitedColor) &&
-      BorderOutlineVisitedColorChanged(other)) {
-    return true;
-  }
-
-  if (PaintImagesInternal()) {
-    for (const auto& image : PaintImagesInternal()->Images()) {
-      DCHECK(image);
-      if (DiffNeedsPaintInvalidationForPaintImage(*image, other, document)) {
-        return true;
-      }
-    }
   }
 
   return false;
@@ -1192,35 +1196,8 @@ bool ComputedStyle::PotentialCompositingReasonsFor3DTransformChanged(
              other);
 }
 
-bool ComputedStyle::DiffNeedsRecomputeVisualOverflow(
-    const ComputedStyle& other,
-    uint64_t field_diff) const {
-  if (field_diff & kVisualOverflow) {
-    return true;
-  }
-
-  if ((field_diff & kBorderImage) && !BorderVisualOverflowEqual(other)) {
-    return true;
-  }
-
-  if ((field_diff & kOutline) && !OutlineVisuallyEqual(other)) {
-    return true;
-  }
-
-  if ((field_diff & kTextDecoration) &&
-      TextDecorationVisualOverflowChanged(other)) {
-    return true;
-  }
-
-  return false;
-}
-
 bool ComputedStyle::DiffCompositingReasonsChanged(const ComputedStyle& other,
                                                   uint64_t field_diff) const {
-  if (field_diff & kCompositing) {
-    return true;
-  }
-
   if (UsedTransformStyle3D() != other.UsedTransformStyle3D()) {
     return true;
   }

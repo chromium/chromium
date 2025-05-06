@@ -2611,22 +2611,14 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool DiffNeedsFullLayoutAndPaintInvalidation(const ComputedStyle& other,
                                                uint64_t field_diff) const;
-  bool DiffNeedsFullLayout(const Document&,
-                           const ComputedStyle& other,
-                           uint64_t field_diff) const;
   bool DiffNeedsFullLayoutForLayoutCustom(const Document&,
                                           const ComputedStyle& other) const;
   bool DiffNeedsFullLayoutForLayoutCustomChild(
       const Document&,
       const ComputedStyle& other) const;
-  bool DiffNeedsNormalPaintInvalidation(const Document&,
-                                        const ComputedStyle& other,
-                                        uint64_t field_diff) const;
   bool DiffNeedsPaintInvalidationForPaintImage(const StyleImage&,
                                                const ComputedStyle& other,
                                                const Document&) const;
-  bool DiffNeedsRecomputeVisualOverflow(const ComputedStyle& other,
-                                        uint64_t field_diff) const;
   bool DiffCompositingReasonsChanged(const ComputedStyle& other,
                                      uint64_t field_diff) const;
   bool PotentialCompositingReasonsFor3DTransformChanged(
