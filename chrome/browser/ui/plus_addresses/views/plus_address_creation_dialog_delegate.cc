@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
+#include "chrome/browser/ui/plus_addresses/views/plus_address_creation_dialog_delegate.h"
 
 #include <memory>
 #include <optional>

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_DIALOG_DELEGATE_H_
-#define CHROME_BROWSER_UI_VIEWS_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_DIALOG_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_PLUS_ADDRESSES_VIEWS_PLUS_ADDRESS_CREATION_DIALOG_DELEGATE_H_
+#define CHROME_BROWSER_UI_PLUS_ADDRESSES_VIEWS_PLUS_ADDRESS_CREATION_DIALOG_DELEGATE_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -102,4 +102,4 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
 
 }  // namespace plus_addresses
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_DIALOG_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_PLUS_ADDRESSES_VIEWS_PLUS_ADDRESS_CREATION_DIALOG_DELEGATE_H_
