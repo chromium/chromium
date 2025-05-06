@@ -715,7 +715,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AffiliationBackend.SubsequentFetchDelay"
-    units="ms" expires_after="2025-06-08">
+    units="ms" expires_after="M145">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -753,7 +753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AffiliationFetcher.FailedToParseResponse"
-    enum="Boolean" expires_after="2025-06-08">
+    enum="Boolean" expires_after="M145">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1596,7 +1596,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FilledCredentialWasFromAndroidApp2"
-    enum="PasswordManagerFilledAndroidCredentials" expires_after="2025-06-08">
+    enum="PasswordManagerFilledAndroidCredentials" expires_after="M145">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2173,7 +2173,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.ObtainAccessTokenTime"
-    units="ms" expires_after="2025-06-08">
+    units="ms" expires_after="M145">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
