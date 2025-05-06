@@ -364,12 +364,15 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
       *suggestions_request_,
       /*execution_timeout=*/std::nullopt,
       base::BindOnce(&ZeroStateSuggestionsPageData::OnModelExecutionResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
+    base::TimeTicks mes_begin_time,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  base::UmaHistogramTimes("ContextualCueing.GlicSuggestions.MesFetchLatency",
+                          base::TimeTicks::Now() - mes_begin_time);
   const GURL url = GetUrl();
 
   // Clear out suggestions request as it's been fulfilled.

@@ -331,6 +331,8 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
   EXPECT_EQ("suggestion 3", future.Get().value()[2]);
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
@@ -387,6 +389,9 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   EXPECT_EQ("suggestion 1", future2.Get().value()[0]);
   EXPECT_EQ("suggestion 2", future2.Get().value()[1]);
   EXPECT_EQ("suggestion 3", future2.Get().value()[2]);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
@@ -410,6 +415,8 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.MesFetchLatency", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
@@ -500,6 +507,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
   // Set up initial flow.
   {
     base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+    base::HistogramTester histogram_tester;
 
     SetUpHints(/*allow_contextual=*/true, /*suggestions=*/{});
     SetUpSuccessfulModelExecution();
@@ -512,6 +520,8 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
     EXPECT_EQ("suggestion 1", future.Get().value()[0]);
     EXPECT_EQ("suggestion 2", future.Get().value()[1]);
     EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
   }
 
   testing::Mock::VerifyAndClearExpectations(
@@ -520,6 +530,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
   // Make sure model execution not called.
   {
     EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
+    base::HistogramTester histogram_tester;
 
     base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
@@ -531,6 +542,8 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
     EXPECT_EQ("suggestion 1", future.Get().value()[0]);
     EXPECT_EQ("suggestion 2", future.Get().value()[1]);
     EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 0);
   }
 }
 
@@ -545,6 +558,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
 
   // Set up initial flow.
   {
+    base::HistogramTester histogram_tester;
     base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
     EXPECT_CALL(mock_optimization_guide_keyed_service(),
@@ -569,6 +583,8 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
     page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
     ASSERT_TRUE(future.Wait());
     EXPECT_FALSE(future.Get().has_value());
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
   }
 
   testing::Mock::VerifyAndClearExpectations(
@@ -576,6 +592,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
 
   // Make sure model execution not called.
   {
+    base::HistogramTester histogram_tester;
     EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
 
     base::test::TestFuture<std::optional<std::vector<std::string>>> future;
@@ -585,6 +602,8 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
     page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
     ASSERT_TRUE(future.Wait());
     EXPECT_FALSE(future.Get().has_value());
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 0);
   }
 }
 
@@ -600,6 +619,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
 
   // Set up initial flow.
   {
+    base::HistogramTester histogram_tester;
     base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
     SetUpHints(/*allow_contextual=*/true, /*suggestions=*/{});
@@ -625,6 +645,8 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
     page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
     ASSERT_TRUE(future.Wait());
     EXPECT_FALSE(future.Get().has_value());
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
   }
 
   testing::Mock::VerifyAndClearExpectations(
@@ -632,6 +654,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
 
   // Make sure model execution called after a transient error.
   {
+    base::HistogramTester histogram_tester;
     SetUpSuccessfulModelExecution();
 
     base::test::TestFuture<std::optional<std::vector<std::string>>> future;
@@ -644,6 +667,9 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
     EXPECT_EQ("suggestion 1", future.Get().value()[0]);
     EXPECT_EQ("suggestion 2", future.Get().value()[1]);
     EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+    // The count should increase because MES should be queried again.
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
   }
 }
 

@@ -98,6 +98,7 @@ class ZeroStateSuggestionsPageData
 
   // Called when a zero state suggestions server response is received.
   void OnModelExecutionResponse(
+      base::TimeTicks mes_begin_time,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
