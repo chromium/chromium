@@ -78,7 +78,6 @@
 ../../third_party/catapult/devil/devil/utils/__init__.py
 ../../third_party/catapult/devil/devil/utils/cmd_helper.py
 ../../third_party/catapult/devil/devil/utils/file_utils.py
-../../third_party/catapult/devil/devil/utils/host_utils.py
 ../../third_party/catapult/devil/devil/utils/lazy/__init__.py
 ../../third_party/catapult/devil/devil/utils/lazy/weak_constant.py
 ../../third_party/catapult/devil/devil/utils/logging_common.py
