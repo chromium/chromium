@@ -6,7 +6,6 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -108,39 +107,21 @@ public class AwServiceWorkerController {
         }
     }
 
-    @AnyThread
-    public void setAsyncShouldInterceptRequestCallback(
-            AsyncShouldInterceptRequestCallback callback) {
-        mShouldInterceptRequestMediator.setAsyncCallback(callback);
-    }
-
-    @AnyThread
-    public void clearAsyncShouldInterceptRequestCallback() {
-        mShouldInterceptRequestMediator.setAsyncCallback(null);
-    }
-
     private class ServiceWorkerShouldInterceptRequestMediator
             extends ShouldInterceptRequestMediator {
         // All methods are called on the background thread.
         @Override
         public void shouldInterceptRequest(
-                AwWebResourceRequest request,
-                WebResponseCallback callback,
-                @Nullable AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
+                AwWebResourceRequest request, WebResponseCallback callback) {
             // TODO: Consider analogy with AwContentsClient, i.e.
             //  - do we need an onloadresource callback?
             //  - do we need to post an error if the response data == null?
             synchronized (mLock) {
-                if (asyncShouldInterceptRequestCallback == null) {
-                    WebResourceResponseInfo response = null;
-                    if (mServiceWorkerClient != null) {
-                        response = mServiceWorkerClient.shouldInterceptRequest(request);
-                    }
-                    callback.intercept(response);
-                } else {
-                    asyncShouldInterceptRequestCallback.shouldInterceptRequestAsync(
-                            request, callback);
+                WebResourceResponseInfo response = null;
+                if (mServiceWorkerClient != null) {
+                    response = mServiceWorkerClient.shouldInterceptRequest(request);
                 }
+                callback.intercept(response);
             }
         }
     }

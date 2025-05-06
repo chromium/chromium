@@ -54,8 +54,6 @@ public abstract class ShouldInterceptRequestMediator {
         int COUNT = 5;
     }
 
-    @Nullable private volatile AsyncShouldInterceptRequestCallback mAsyncCallback;
-
     // If the embedder hasn't overridden WebViewClient#shouldInterceptRequest (or
     // ServiceWorkerClient#shouldInterceptRequest), we don't need to call it (and pay for the thread
     // hops).
@@ -67,11 +65,6 @@ public abstract class ShouldInterceptRequestMediator {
     @Nullable private volatile String mNoSkipUrl;
 
     @AnyThread
-    public void setAsyncCallback(@Nullable AsyncShouldInterceptRequestCallback callback) {
-        mAsyncCallback = callback;
-    }
-
-    @AnyThread
     public boolean canSkipShouldInterceptRequest(String url) {
         // A user is only put into an experiment group when the feature is checked. By having the
         // feature check be the last clause in the conditional our experiment will only involve
@@ -79,7 +72,6 @@ public abstract class ShouldInterceptRequestMediator {
         // of this optimization without it being diluted by all the users for whom
         // shouldInterceptRequest will need to be called anyway.
         return mCanSkipSyncShouldInterceptRequest
-                && mAsyncCallback == null
                 && !url.equals(mNoSkipUrl)
                 && AwFeatureMap.isEnabled(
                         AwFeatures.WEBVIEW_SHORT_CIRCUIT_SHOULD_INTERCEPT_REQUEST);
@@ -136,9 +128,7 @@ public abstract class ShouldInterceptRequestMediator {
     @AnyThread // @AnyThread implies the method needs to be threadsafe, I'd use @BackgroundThread
     // if it existed.
     public abstract void shouldInterceptRequest(
-            AwWebResourceRequest request,
-            WebResponseCallback responseCallback,
-            @Nullable AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback);
+            AwWebResourceRequest request, WebResponseCallback responseCallback);
 
     // Protected methods ---------------------------------------------------------------------------
 
@@ -149,7 +139,7 @@ public abstract class ShouldInterceptRequestMediator {
             JniOnceCallback<AwWebResourceInterceptResponse> responseCallback) {
         WebResponseCallback callback = new WebResponseCallback(request, responseCallback);
         try {
-            shouldInterceptRequest(request, callback, mAsyncCallback);
+            shouldInterceptRequest(request, callback);
         } catch (Throwable e) {
             Log.e(
                     TAG,

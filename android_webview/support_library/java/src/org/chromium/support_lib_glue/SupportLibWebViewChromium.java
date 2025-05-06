@@ -59,49 +59,6 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     }
 
     @Override
-    public void setAsyncInterceptRequestCallback(
-            /* AsyncShouldInterceptRequestCallback */ InvocationHandler callbackInvoHandler) {
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.AndroidX.SET_ASYNC_SHOULD_INTERCEPT_REQUEST")) {
-            recordApiCall(ApiCall.SET_ASYNC_SHOULD_INTERCEPT_REQUEST);
-            if (!ThreadUtils.runningOnUiThread()) {
-                throw new IllegalStateException(
-                        "setAsyncInterceptRequestCallback() should be called on UI thread");
-            }
-            SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
-            WebView webView = mWebView.get();
-            if (sharedWebViewChromium == null || webView == null) {
-                throw new IllegalStateException(
-                        "Support lib method called on WebView that no longer exists.");
-            }
-            sharedWebViewChromium
-                    .getAwContents()
-                    .setAsyncShouldInterceptRequestCallback(
-                            new AsyncShouldInterceptRequestCallbackAdapter(
-                                    webView, callbackInvoHandler));
-        }
-    }
-
-    @Override
-    public void clearAsyncInterceptRequestCallback() {
-        try (TraceEvent event =
-                TraceEvent.scoped(
-                        "WebView.APICall.AndroidX.CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST")) {
-            recordApiCall(ApiCall.CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST);
-            if (!ThreadUtils.runningOnUiThread()) {
-                throw new IllegalStateException(
-                        "clearAsyncInterceptRequestCallback() should be called on UI thread");
-            }
-            SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
-            if (sharedWebViewChromium == null) {
-                throw new IllegalStateException(
-                        "Support lib method called on WebView that no longer exists.");
-            }
-            sharedWebViewChromium.getAwContents().clearAsyncShouldInterceptRequestCallback();
-        }
-    }
-
-    @Override
     public void insertVisualStateCallback(long requestId, InvocationHandler callbackInvoHandler) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.INSERT_VISUAL_STATE_CALLBACK")) {

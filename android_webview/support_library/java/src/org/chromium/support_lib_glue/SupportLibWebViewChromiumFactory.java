@@ -110,7 +110,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.SPECULATIVE_LOADING_CONFIG,
                 Features.SAVE_STATE,
                 Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE,
-                Features.ASYNC_SHOULD_INTERCEPT_REQUEST + Features.DEV_SUFFIX,
                 Features.PROVIDER_WEAKLY_REF_WEBVIEW,
                 Features.PAYMENT_REQUEST,
                 Features.WEBVIEW_BUILDER + Features.DEV_SUFFIX,
@@ -122,6 +121,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     // LINT.IfChange(ApiCall)
+
     @IntDef({
         ApiCall.ADD_WEB_MESSAGE_LISTENER,
         ApiCall.CLEAR_PROXY_OVERRIDE,
@@ -408,7 +408,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int NAVIGATION_DID_COMMIT = 131;
         int NAVIGATION_DID_COMMIT_ERROR_PAGE = 132;
         int NAVIGATION_GET_STATUS_CODE = 133;
+        @Deprecated // Never launched
         int CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST = 134;
+        @Deprecated // Never launched
         int SET_ASYNC_SHOULD_INTERCEPT_REQUEST = 135;
         int SERVICE_WORKER_CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST = 136;
         int SERVICE_WORKER_SET_ASYNC_SHOULD_INTERCEPT_REQUEST = 137;

@@ -685,17 +685,6 @@ public class AwContents implements SmartClipProvider {
     private CleanupReference mCleanupReference;
 
     @AnyThread
-    public void setAsyncShouldInterceptRequestCallback(
-            AsyncShouldInterceptRequestCallback callback) {
-        mShouldInterceptRequestMediator.setAsyncCallback(callback);
-    }
-
-    @AnyThread
-    public void clearAsyncShouldInterceptRequestCallback() {
-        mShouldInterceptRequestMediator.setAsyncCallback(null);
-    }
-
-    @AnyThread
     public void onWebViewClientUpdated(WebViewClient client) {
         mShouldInterceptRequestMediator.onWebViewClientUpdated(client);
     }
@@ -706,9 +695,7 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void shouldInterceptRequest(
-                AwWebResourceRequest request,
-                WebResponseCallback callback,
-                @Nullable AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
+                AwWebResourceRequest request, WebResponseCallback callback) {
             String url = request.getUrl();
             WebResourceResponseInfo webResourceResponseInfo;
             callback.setAwContentsClient(mContentsClient);
@@ -719,12 +706,8 @@ public class AwContents implements SmartClipProvider {
                 return;
             }
 
-            if (asyncShouldInterceptRequestCallback == null) {
-                webResourceResponseInfo = mContentsClient.shouldInterceptRequest(request);
-                callback.intercept(webResourceResponseInfo);
-            } else {
-                asyncShouldInterceptRequestCallback.shouldInterceptRequestAsync(request, callback);
-            }
+            webResourceResponseInfo = mContentsClient.shouldInterceptRequest(request);
+            callback.intercept(webResourceResponseInfo);
         }
     }
 

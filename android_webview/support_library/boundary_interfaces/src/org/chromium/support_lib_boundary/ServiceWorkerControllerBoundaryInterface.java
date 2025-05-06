@@ -15,9 +15,4 @@ public interface ServiceWorkerControllerBoundaryInterface {
     /* ServiceWorkerWebSettings */ InvocationHandler getServiceWorkerWebSettings();
 
     void setServiceWorkerClient(/* ServiceWorkerClient */ @Nullable InvocationHandler client);
-
-    public void setAsyncInterceptRequestCallback(
-            /* AsyncShouldInterceptRequestCallback */ InvocationHandler callback);
-
-    public void clearAsyncInterceptRequestCallback();
 }

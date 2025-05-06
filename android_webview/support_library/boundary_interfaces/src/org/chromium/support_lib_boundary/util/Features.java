@@ -342,20 +342,6 @@ public class Features {
     public static final String WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE =
             "WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE";
 
-    // WebViewCompat.setAsyncShouldInterceptRequestCallback
-    // WebViewCompat.clearAsyncShouldInterceptRequestCallback
-    // ServiceWorkerControllerCompat.setAsyncShouldInterceptRequestCallback
-    // ServiceWorkerControllerCompat.clearAsyncShouldInterceptRequestCallback
-    // AsyncShouldInterceptRequestCallback.shouldInterceptRequestAsync
-    // WebResponseCallback.intercept
-    // WebResponseCallback.doNotIntercept
-    // WebResourceRequest#getRequestHeadersMultiMap
-    // WebResourceResponse#setResponseHeaders
-    // WebResourceResponse#getResponseHeaders
-    // WebResourceResponse#setResponseHeadersMultiMap
-    // WebResourceResponse#getResponseHeadersMultiMap
-    public static final String ASYNC_SHOULD_INTERCEPT_REQUEST = "ASYNC_SHOULD_INTERCEPT_REQUEST";
-
     // SupportLibWebViewChromium weakly reference WebView
     public static final String PROVIDER_WEAKLY_REF_WEBVIEW = "PROVIDER_WEAKLY_REF_WEBVIEW";
 
