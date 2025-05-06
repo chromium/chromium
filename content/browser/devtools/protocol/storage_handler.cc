@@ -1455,7 +1455,7 @@ void StorageHandler::ResetSharedStorageBudget(
           std::move(callback)));
 }
 
-GlobalRenderFrameHostId StorageHandler::AssociatedMainFrameId() const {
+GlobalRenderFrameHostId StorageHandler::AssociatedFrameHostId() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return frame_host_ ? frame_host_->GetGlobalId() : GlobalRenderFrameHostId();
 }

@@ -17,13 +17,14 @@ bool ShouldSendObserverReportForMainFrameId(
     const SharedStorageRuntimeManager::SharedStorageObserverInterface& observer,
     GlobalRenderFrameHostId main_frame_id) {
   // We should send a report if and only if (1) the observer is subscribed to
-  // receiving all reports, or (2) the observer has a valid associated main
-  // frame ID (i.e. is an observer attached to a main render frame host), and
-  // that main frame ID matches the main frame ID passed as a parameter of the
-  // report.
+  // receiving all reports, or (2) the observer has a valid associated render
+  // frame host ID (i.e. the observer is attached to a render frame host), and
+  // that global render frame host ID matches the main frame ID passed as a
+  // parameter of the report (and hence the observer is attached to the relevant
+  // main render frame host).
   return observer.ShouldReceiveAllReports() ||
-         (observer.AssociatedMainFrameId() &&
-          observer.AssociatedMainFrameId() == main_frame_id);
+         (observer.AssociatedFrameHostId() &&
+          observer.AssociatedFrameHostId() == main_frame_id);
 }
 
 }  // namespace

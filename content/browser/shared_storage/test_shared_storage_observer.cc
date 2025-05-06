@@ -94,7 +94,7 @@ void ExpectObservations(const std::string& observation_name,
 TestSharedStorageObserver::TestSharedStorageObserver() = default;
 TestSharedStorageObserver::~TestSharedStorageObserver() = default;
 
-GlobalRenderFrameHostId TestSharedStorageObserver::AssociatedMainFrameId()
+GlobalRenderFrameHostId TestSharedStorageObserver::AssociatedFrameHostId()
     const {
   return GlobalRenderFrameHostId();
 }

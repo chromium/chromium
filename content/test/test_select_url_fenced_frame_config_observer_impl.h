@@ -20,7 +20,7 @@ class TestSelectURLFencedFrameConfigObserverImpl
   TestSelectURLFencedFrameConfigObserverImpl();
   ~TestSelectURLFencedFrameConfigObserverImpl() override;
 
-  GlobalRenderFrameHostId AssociatedMainFrameId() const override;
+  GlobalRenderFrameHostId AssociatedFrameHostId() const override;
   bool ShouldReceiveAllReports() const override;
 
   void OnSharedStorageAccessed(base::Time access_time,

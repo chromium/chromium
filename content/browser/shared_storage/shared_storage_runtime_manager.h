@@ -60,7 +60,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       kRemainingBudget,
     };
 
-    virtual GlobalRenderFrameHostId AssociatedMainFrameId() const = 0;
+    virtual GlobalRenderFrameHostId AssociatedFrameHostId() const = 0;
 
     virtual bool ShouldReceiveAllReports() const = 0;
 

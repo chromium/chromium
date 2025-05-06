@@ -17,7 +17,7 @@ TestSelectURLFencedFrameConfigObserverImpl::
     ~TestSelectURLFencedFrameConfigObserverImpl() = default;
 
 GlobalRenderFrameHostId
-TestSelectURLFencedFrameConfigObserverImpl::AssociatedMainFrameId() const {
+TestSelectURLFencedFrameConfigObserverImpl::AssociatedFrameHostId() const {
   return GlobalRenderFrameHostId();
 }
 

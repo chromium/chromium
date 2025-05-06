@@ -46,7 +46,7 @@ class TestSharedStorageObserver
   TestSharedStorageObserver();
   ~TestSharedStorageObserver() override;
 
-  GlobalRenderFrameHostId AssociatedMainFrameId() const override;
+  GlobalRenderFrameHostId AssociatedFrameHostId() const override;
 
   bool ShouldReceiveAllReports() const override;
 
