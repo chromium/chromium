@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v5.0.0...chromium-bidi-v5.1.0) (2025-05-06)
+
+
+### Features
+
+* support GATT connection simulation ([#3366](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3366)) ([b165c7a](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b165c7a6256b289d3a685024265fa9ae5107aa29))
+
+
+### Bug Fixes
+
+* allow no frameId in javascript dialog events ([#3372](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3372)) ([6d01991](https://github.com/GoogleChromeLabs/chromium-bidi/commit/6d019914a2012e2111e0bacbb110ae77711ccfdf))
+
 ## [5.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v4.2.0...chromium-bidi-v5.0.0) (2025-05-05)
 
 
