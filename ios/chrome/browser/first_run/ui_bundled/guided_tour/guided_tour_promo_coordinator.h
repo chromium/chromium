@@ -22,7 +22,7 @@
 // Coordinator to present the Guided Tour Promo.
 @interface GuidedTourPromoCoordinator : ChromeCoordinator
 
-@property(nonatomic, assign) id<GuidedTourPromoCoordinatorDelegate> delegate;
+@property(nonatomic, weak) id<GuidedTourPromoCoordinatorDelegate> delegate;
 
 // Designated stop method with `completion` executed after the promo is
 // dismissed.
