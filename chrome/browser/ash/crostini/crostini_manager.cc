@@ -1593,23 +1593,26 @@ void CrostiniManager::CreateDiskImage(
 
   if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
     if (!disk_image.has_value()) {
-      LOG(ERROR) << "No disk image was provided for baguette installation";
-      std::move(callback).Run(CrostiniResult::UNKNOWN_ERROR, base::FilePath());
+      // CreateDiskImage will still run, as a no-op that provides the location
+      // of the disk image.
+      LOG(WARNING)
+          << "No disk image was provided for baguette installation, this "
+             "should indicate an existing baguette disk image";
+    } else {
+      request.set_copy_baguette_image(true);
+
+      GetConciergeClient()->CreateDiskImageWithFd(
+          std::move(disk_image.value()), std::move(request),
+          base::BindOnce(&CrostiniManager::OnCreateDiskImage,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
       return;
     }
-
-    request.set_copy_baguette_image(true);
-
-    GetConciergeClient()->CreateDiskImageWithFd(
-        std::move(disk_image.value()), std::move(request),
-        base::BindOnce(&CrostiniManager::OnCreateDiskImage,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  } else {
-    GetConciergeClient()->CreateDiskImage(
-        std::move(request),
-        base::BindOnce(&CrostiniManager::OnCreateDiskImage,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
+
+  GetConciergeClient()->CreateDiskImage(
+      std::move(request),
+      base::BindOnce(&CrostiniManager::OnCreateDiskImage,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CrostiniManager::StartTerminaVm(std::string name,

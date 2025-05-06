@@ -24,8 +24,10 @@
 #include "chrome/browser/ash/crostini/baguette_download.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/prefs/pref_service.h"
 #include "url/origin.h"
 
@@ -99,11 +101,6 @@ void BaguetteInstaller::OnInstallDlc(
     return;
   }
 
-  GetBaguetteImageUrl(std::move(callback));
-}
-
-void BaguetteInstaller::GetBaguetteImageUrl(
-    BaguetteInstallerCallback callback) {
   auto* concierge_client = ash::ConciergeClient::Get();
   concierge_client->WaitForServiceToBeAvailable(
       base::BindOnce(&BaguetteInstaller::OnConciergeAvailable,
@@ -115,6 +112,42 @@ void BaguetteInstaller::OnConciergeAvailable(BaguetteInstallerCallback callback,
   if (!service_is_available) {
     LOG(ERROR) << "vm_concierge service is unavailable.";
     std::move(callback).Run(InstallResult::Failure, {});
+  }
+
+  // We always need to check if tools DLC is present for kernel, but we may
+  // already have a baguette disk image, check for that first.
+  auto* concierge_client = ash::ConciergeClient::Get();
+  vm_tools::concierge::ListVmDisksRequest request;
+  request.set_vm_name(kCrostiniDefaultVmName);
+  request.set_cryptohome_id(
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
+  concierge_client->ListVmDisks(
+      request,
+      base::BindOnce(&BaguetteInstaller::OnListVmDisks,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BaguetteInstaller::OnListVmDisks(
+    BaguetteInstallerCallback callback,
+    std::optional<vm_tools::concierge::ListVmDisksResponse> response) {
+  if (!response) {
+    LOG(WARNING) << "Unable to query disk image status, will potentially "
+                    "re-download baguette image needlessly.";
+  }
+  if (!response->success()) {
+    LOG(WARNING) << "Unsuccessful disk image response, will potentially "
+                    "re-download baguette image needlessly.";
+  }
+
+  if (std::any_of(
+          response->images().cbegin(), response->images().cend(),
+          [](auto image) {
+            return image.vm_type() ==
+                   vm_tools::concierge::VmInfo_VmType::VmInfo_VmType_BAGUETTE;
+          })) {
+    std::move(callback).Run(InstallResult::Success, {});
+    return;
   }
 
   auto* concierge_client = ash::ConciergeClient::Get();
