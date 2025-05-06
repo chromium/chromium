@@ -95,7 +95,7 @@ ExtensionFunction::ResponseAction InstanceIDGetCreationTimeFunction::DoWork() {
 
 void InstanceIDGetCreationTimeFunction::GetCreationTimeCompleted(
     const base::Time& creation_time) {
-  Respond(WithArguments(creation_time.InSecondsFSinceUnixEpoch()));
+  Respond(WithArguments(creation_time.InMillisecondsFSinceUnixEpoch()));
 }
 
 InstanceIDGetTokenFunction::InstanceIDGetTokenFunction() = default;
