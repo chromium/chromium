@@ -35,7 +35,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
 
@@ -61,7 +63,10 @@ public class WebAppHeaderLayoutMediatorTest {
     private ObservableSupplierImpl<List<Rect>> mNonDraggableAreasSupplier;
     @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock public ThemeColorProvider mThemeColorProvider;
+    @Mock public ScrimManager mScrimManager;
+    @Mock public WebAppHeaderDelegate mHeaderDelegate;
     @Mock public Tab mTab;
+    private ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier;
     private @Nullable AppHeaderState mAppHeaderState;
     private ShadowLooper mShadowLooper;
 
@@ -71,13 +76,18 @@ public class WebAppHeaderLayoutMediatorTest {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
         when(mThemeColorProvider.getThemeColor()).thenReturn(LIGHT_COLOR);
 
+        mScrimVisibilitySupplier = new ObservableSupplierImpl<>();
+        when(mScrimManager.getScrimVisibilitySupplier()).thenReturn(mScrimVisibilitySupplier);
+
         mTabSupplier = new ObservableSupplierImpl<>();
         mNonDraggableAreasSupplier = new ObservableSupplierImpl<>();
         mModel = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         mMediator =
                 new WebAppHeaderLayoutMediator(
                         mModel,
+                        mHeaderDelegate,
                         mDesktopWindowStateManager,
+                        mScrimManager,
                         mTabSupplier,
                         mNonDraggableAreasSupplier,
                         mThemeColorProvider,
@@ -107,7 +117,9 @@ public class WebAppHeaderLayoutMediatorTest {
         mMediator =
                 new WebAppHeaderLayoutMediator(
                         mModel,
+                        mHeaderDelegate,
                         mDesktopWindowStateManager,
+                        mScrimManager,
                         mTabSupplier,
                         mNonDraggableAreasSupplier,
                         mThemeColorProvider,
@@ -152,7 +164,9 @@ public class WebAppHeaderLayoutMediatorTest {
         mMediator =
                 new WebAppHeaderLayoutMediator(
                         mModel,
+                        mHeaderDelegate,
                         mDesktopWindowStateManager,
+                        mScrimManager,
                         mTabSupplier,
                         mNonDraggableAreasSupplier,
                         mThemeColorProvider,
@@ -319,5 +333,39 @@ public class WebAppHeaderLayoutMediatorTest {
                 DARK_COLOR,
                 mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_COLOR));
         verify(mDesktopWindowStateManager).updateForegroundColor(DARK_COLOR);
+    }
+
+    @Test
+    public void testScrimOverlaysWebContent_DisableHeaderControls() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+        mMediator.getScrimVisibilityObserver().onResult(true);
+        verify(mHeaderDelegate).disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
+    }
+
+    @Test
+    public void testClearPreviousTokenAndAcquireNewOnSecondScrimOverlay() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+        when(mHeaderDelegate.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN))
+                .thenReturn(0);
+        mMediator.getScrimVisibilityObserver().onResult(true);
+        verify(mHeaderDelegate).disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
+
+        when(mHeaderDelegate.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN))
+                .thenReturn(1);
+        mMediator.getScrimVisibilityObserver().onResult(true);
+        verify(mHeaderDelegate).disableControlsAndClearOldToken(0);
+    }
+
+    @Test
+    public void testScrimOverlaysAndThenHides_EnableHeaderControls() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+        when(mHeaderDelegate.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN))
+                .thenReturn(0);
+
+        mMediator.getScrimVisibilityObserver().onResult(true);
+        verify(mHeaderDelegate).disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
+
+        mMediator.getScrimVisibilityObserver().onResult(false);
+        verify(mHeaderDelegate).releaseDisabledControlsToken(0);
     }
 }

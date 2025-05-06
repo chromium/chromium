@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.ui.web_app_header;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -31,6 +33,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -45,7 +48,9 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.util.TokenHolder;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -70,6 +75,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Mock public Profile mProfile;
     @Mock public ThemeColorProvider mThemeColorProvider;
     @Mock public BrowserServicesIntentDataProvider mIntentDataProvider;
+    @Mock public ScrimManager mScrimManager;
     @Mock public NavigationPopup.HistoryDelegate mHistoryDelegate;
     @Mock public WebappExtras mWebAppExtras;
     @Mock public Tab mTab;
@@ -79,11 +85,17 @@ public class WebAppHeaderLayoutCoordinatorTest {
     private ViewGroup mContentView;
     private ViewStub mViewStub;
     private ObservableSupplierImpl<Tab> mTabSupplier;
+    private ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier;
     private AppHeaderState mAppHeaderState;
+    private ShadowLooper mShadowLooper;
 
     @Before
     public void setup() {
+        mShadowLooper = shadowOf(Looper.getMainLooper());
         setupStandaloneMode();
+
+        mScrimVisibilitySupplier = new ObservableSupplierImpl<>();
+        when(mScrimManager.getScrimVisibilitySupplier()).thenReturn(mScrimVisibilitySupplier);
 
         mTabSupplier = new ObservableSupplierImpl<>();
         mActivityScenarioRule.getScenario().onActivity(testActivity -> mActivity = testActivity);
@@ -102,6 +114,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         mTabSupplier,
                         mThemeColorProvider,
                         mIntentDataProvider,
+                        mScrimManager,
                         mHistoryDelegate);
     }
 
@@ -155,6 +168,30 @@ public class WebAppHeaderLayoutCoordinatorTest {
         when(mIntentDataProvider.getWebappExtras()).thenReturn(mWebAppExtras);
     }
 
+    private void setupTab(boolean isLoading, boolean canGoBack) {
+        when(mTab.isLoading()).thenReturn(isLoading);
+        when(mTab.canGoBack()).thenReturn(canGoBack);
+        mTabSupplier.set(mTab);
+    }
+
+    private void verifyControlsEnabled() {
+        assertTrue(
+                "Refresh button should be enabled",
+                mActivity.findViewById(R.id.refresh_button).isEnabled());
+        assertTrue(
+                "Back button should be enabled",
+                mActivity.findViewById(R.id.back_button).isEnabled());
+    }
+
+    private void verifyControlsDisabled() {
+        assertFalse(
+                "Refresh button should be disabled",
+                mActivity.findViewById(R.id.refresh_button).isEnabled());
+        assertFalse(
+                "Back button should be disabled",
+                mActivity.findViewById(R.id.back_button).isEnabled());
+    }
+
     @Test
     public void testInitNoAppHeaderState_shouldNotInitCoordinator() {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
@@ -179,22 +216,33 @@ public class WebAppHeaderLayoutCoordinatorTest {
     public void testMinUiDisplayMode_shouldMakeMinUiVisible() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupMinUiMode();
-        mTabSupplier.set(mTab);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
         createCoordinator();
 
         // Wait for animation to finish and update the view.
-        shadowOf(Looper.getMainLooper()).idle();
+        mShadowLooper.idle();
 
-        assertEquals(View.VISIBLE, mActivity.findViewById(R.id.refresh_button).getVisibility());
-        assertEquals(View.VISIBLE, mActivity.findViewById(R.id.back_button).getVisibility());
+        assertEquals(
+                "Reload button should be visible",
+                View.VISIBLE,
+                mActivity.findViewById(R.id.refresh_button).getVisibility());
+        assertEquals(
+                "Back button should be visible",
+                View.VISIBLE,
+                mActivity.findViewById(R.id.back_button).getVisibility());
+        assertTrue(
+                "Reload button should be enabled",
+                mActivity.findViewById(R.id.refresh_button).isEnabled());
+        assertFalse(
+                "Back button should be disabled",
+                mActivity.findViewById(R.id.back_button).isEnabled());
     }
 
     @Test
     public void testReload_shouldReloadTab() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupMinUiMode();
-        mTabSupplier.set(mTab);
-        when(mTab.isLoading()).thenReturn(false);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
         createCoordinator();
 
         mCoordinator.refreshTab(false);
@@ -205,8 +253,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
     public void testReloadWhileReloading_shouldStopReloading() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupMinUiMode();
-        mTabSupplier.set(mTab);
-        when(mTab.isLoading()).thenReturn(true);
+        setupTab(/* isLoading= */ true, /* canGoBack= */ false);
         createCoordinator();
 
         mCoordinator.refreshTab(false);
@@ -217,11 +264,56 @@ public class WebAppHeaderLayoutCoordinatorTest {
     public void testReloadTabIgnoringCache_shouldReloadIgnoringCache() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupMinUiMode();
-        mTabSupplier.set(mTab);
-        when(mTab.isLoading()).thenReturn(false);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
         createCoordinator();
 
         mCoordinator.refreshTab(true);
         verify(mTab).reloadIgnoringCache();
+    }
+
+    @Test
+    public void testDisableControls() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupMinUiMode();
+        setupTab(/* isLoading= */ false, /* canGoBack= */ true);
+        createCoordinator();
+
+        mShadowLooper.idle();
+
+        mCoordinator.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
+        verifyControlsDisabled();
+    }
+
+    @Test
+    public void testEnableControls() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupMinUiMode();
+        setupTab(/* isLoading= */ false, /* canGoBack= */ true);
+        createCoordinator();
+
+        mShadowLooper.idle();
+
+        int token = mCoordinator.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
+        verifyControlsDisabled();
+
+        mCoordinator.releaseDisabledControlsToken(token);
+        verifyControlsEnabled();
+    }
+
+    @Test
+    public void testDisableControlsOnManyTokens() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupMinUiMode();
+        setupTab(/* isLoading= */ false, /* canGoBack= */ true);
+        createCoordinator();
+
+        mShadowLooper.idle();
+
+        int firstToken = mCoordinator.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
+        mCoordinator.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
+        verifyControlsDisabled();
+
+        mCoordinator.releaseDisabledControlsToken(firstToken);
+        verifyControlsDisabled();
     }
 }

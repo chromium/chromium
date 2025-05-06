@@ -8,6 +8,7 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.web_app_header"
 
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderLayout.java",
     "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderLayoutCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderLayoutMediator.java",
@@ -26,6 +27,7 @@ android_library("java") {
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//components/browser_ui/desktop_windowing/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
@@ -72,6 +74,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//components/browser_ui/desktop_windowing/android:java",
+    "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",

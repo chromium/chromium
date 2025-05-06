@@ -49,6 +49,7 @@ public class BackButtonCoordinator {
             Callback<Integer> onBackPressed,
             ThemeColorProvider themeColorProvider,
             ObservableSupplier<@Nullable Tab> tabSupplier,
+            ObservableSupplier<Boolean> enabledSupplier,
             NavigationPopup.HistoryDelegate historyDelegate) {
         mView = view;
         mTabSupplier = tabSupplier;
@@ -70,6 +71,7 @@ public class BackButtonCoordinator {
                         onBackPressed,
                         themeColorProvider,
                         tabSupplier,
+                        enabledSupplier,
                         this::showNavigationPopup);
         PropertyModelChangeProcessor.create(model, view, BackButtonViewBinder::bind);
     }
@@ -86,15 +88,6 @@ public class BackButtonCoordinator {
                         mTabSupplier,
                         mHistoryDelegate);
         popup.show(mView);
-    }
-
-    /**
-     * Indicates that parent entered a tab switcher mode.
-     *
-     * @param isTabSwitcherMode whether tab switcher is showing or not.
-     */
-    public void setTabSwitcherMode(boolean isTabSwitcherMode) {
-        mMediator.setTabSwitcherMode(isTabSwitcherMode);
     }
 
     /**

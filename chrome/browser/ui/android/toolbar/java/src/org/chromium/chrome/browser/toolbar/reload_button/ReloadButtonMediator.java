@@ -40,6 +40,8 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     private final TabSupplierObserver mTabObserver;
     private final ObservableSupplier<Boolean> mNtpLoadingSupplier;
     private final Callback<Boolean> mNtpLoadingObserver;
+    private final ObservableSupplier<Boolean> mEnabledSupplier;
+    private final Callback<Boolean> mEnabledObserver;
     private boolean mIsShiftDownForReload;
     private boolean mIsReloading;
     private @Nullable Tab mCurrentTab;
@@ -62,6 +64,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
             ThemeColorProvider themeColorProvider,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> ntpLoadingSupplier,
+            ObservableSupplier<Boolean> enabledSupplier,
             Callback<String> showToast,
             Resources resources) {
         mModel = model;
@@ -69,6 +72,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         mShowToastCallback = showToast;
         mThemeColorProvider = themeColorProvider;
         mNtpLoadingSupplier = ntpLoadingSupplier;
+        mEnabledSupplier = enabledSupplier;
 
         Callback<MotionEvent> onTouchListener =
                 (event) ->
@@ -90,6 +94,9 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
                     }
                 };
         mNtpLoadingSupplier.addObserver(mNtpLoadingObserver);
+
+        mEnabledObserver = (isEnabled) -> mModel.set(ReloadButtonProperties.IS_ENABLED, isEnabled);
+        mEnabledSupplier.addObserver(mEnabledObserver);
 
         mTabObserver =
                 new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ true) {
@@ -178,15 +185,6 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     }
 
     /**
-     * Changes reload button enabled state.
-     *
-     * @param isEnabled indicates whether the button should be enabled or disabled.
-     */
-    public void setEnabled(boolean isEnabled) {
-        mModel.set(ReloadButtonProperties.IS_ENABLED, isEnabled);
-    }
-
-    /**
      * Sets reload button visibility.
      *
      * @param isVisible indicated whether view should be visible or gone.
@@ -220,6 +218,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         mModel.set(ReloadButtonProperties.KEY_LISTENER, null);
 
         mNtpLoadingSupplier.removeObserver(mNtpLoadingObserver);
+        mEnabledSupplier.removeObserver(mEnabledObserver);
         mThemeColorProvider.removeTintObserver(this);
         mTabObserver.destroy();
     }

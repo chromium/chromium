@@ -54,6 +54,7 @@ public class ReloadButtonCoordinator {
             ReloadButtonCoordinator.Delegate delegate,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> ntpLoadingSupplier,
+            ObservableSupplier<Boolean> enabledSupplier,
             ThemeColorProvider themeColorProvider) {
         mView = view;
 
@@ -81,18 +82,10 @@ public class ReloadButtonCoordinator {
                         themeColorProvider,
                         tabSupplier,
                         ntpLoadingSupplier,
+                        enabledSupplier,
                         (text) -> Toast.showAnchoredToast(mView.getContext(), mView, text),
                         mView.getResources());
         PropertyModelChangeProcessor.create(model, mView, ReloadButtonViewBinder::bind);
-    }
-
-    /**
-     * Changes reload button enabled state.
-     *
-     * @param isEnabled indicates whether the button should be enabled or disabled.
-     */
-    public void setEnabled(boolean isEnabled) {
-        mMediator.setEnabled(isEnabled);
     }
 
     /**

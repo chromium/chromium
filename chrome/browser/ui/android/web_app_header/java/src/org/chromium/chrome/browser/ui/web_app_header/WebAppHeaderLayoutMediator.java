@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.graphics.Rect;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -17,7 +19,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
 
@@ -34,8 +38,10 @@ class WebAppHeaderLayoutMediator
     private static final Rect EMPTY_NON_DRAGGABLE_AREA = new Rect(0, 0, 0, 0);
 
     private final PropertyModel mModel;
+    private final WebAppHeaderDelegate mHeaderDelegate;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final ScrimManager mScrimManager;
     private final Supplier<List<Rect>> mNonDraggableAreasSupplier;
     private final ObservableSupplierImpl<Integer> mWidthSupplier;
     private final Callback<Integer> mOnWidthChangedCallback;
@@ -43,6 +49,9 @@ class WebAppHeaderLayoutMediator
     private final int mWebAppMinHeaderHeight;
     private @Nullable AppHeaderState mCurrentHeaderState;
     private final ObservableSupplierImpl<Integer> mAppHeaderUnoccludedWidthSupplier;
+    private final Callback<Boolean> mScrimVisibilityObserver;
+
+    private int mDisabledControlsToken = TokenHolder.INVALID_TOKEN;
 
     /**
      * Constructs the instance of {@link WebAppHeaderLayoutMediator}.
@@ -58,16 +67,32 @@ class WebAppHeaderLayoutMediator
      */
     public WebAppHeaderLayoutMediator(
             PropertyModel model,
+            WebAppHeaderDelegate headerDelegate,
             DesktopWindowStateManager desktopWindowStateManager,
+            ScrimManager scrimManager,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             Supplier<List<Rect>> nonDraggableAreasSupplier,
             ThemeColorProvider themeColorProvider,
             int webAppHeaderMinHeightFromResources) {
         mThemeColorProvider = themeColorProvider;
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;
+        mHeaderDelegate = headerDelegate;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTabSupplier = tabSupplier;
         mNonDraggableAreasSupplier = nonDraggableAreasSupplier;
+
+        mScrimVisibilityObserver =
+                (isScrimVisible) -> {
+                    if (isScrimVisible) {
+                        mDisabledControlsToken =
+                                mHeaderDelegate.disableControlsAndClearOldToken(
+                                        mDisabledControlsToken);
+                    } else {
+                        mHeaderDelegate.releaseDisabledControlsToken(mDisabledControlsToken);
+                    }
+                };
+        mScrimManager = scrimManager;
+        mScrimManager.getScrimVisibilitySupplier().addObserver(mScrimVisibilityObserver);
 
         mWidthSupplier = new ObservableSupplierImpl<>();
         mAppHeaderUnoccludedWidthSupplier = new ObservableSupplierImpl<>();
@@ -167,5 +192,11 @@ class WebAppHeaderLayoutMediator
         mDesktopWindowStateManager.removeObserver(this);
         mWidthSupplier.removeObserver(mOnWidthChangedCallback);
         mThemeColorProvider.removeThemeColorObserver(this);
+        mScrimManager.getScrimVisibilitySupplier().removeObserver(mScrimVisibilityObserver);
+    }
+
+    @VisibleForTesting
+    Callback<Boolean> getScrimVisibilityObserver() {
+        return mScrimVisibilityObserver;
     }
 }

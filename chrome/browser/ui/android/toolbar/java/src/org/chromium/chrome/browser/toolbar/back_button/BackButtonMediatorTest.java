@@ -45,6 +45,7 @@ public class BackButtonMediatorTest {
     @Mock public Callback<Tab> mShowNavigationPopup;
     @Mock public Profile mProfile;
     private ObservableSupplierImpl<Tab> mTabSupplier;
+    private ObservableSupplierImpl<Boolean> mEnabledSupplier;
     private PropertyModel mModel;
     private BackButtonMediator mMediator;
 
@@ -55,6 +56,7 @@ public class BackButtonMediatorTest {
     public void setup() {
         mTab = new MockTab(TAB_ID, mProfile);
         mTabSupplier = new ObservableSupplierImpl<>();
+        mEnabledSupplier = new ObservableSupplierImpl<>(true);
         mModel =
                 new PropertyModel.Builder(BackButtonProperties.ALL_KEYS)
                         .with(BackButtonProperties.CLICK_LISTENER, mOnBackPressed)
@@ -65,6 +67,7 @@ public class BackButtonMediatorTest {
                         mOnBackPressed,
                         mThemeColorProvider,
                         mTabSupplier,
+                        mEnabledSupplier,
                         mShowNavigationPopup);
 
         shadowOf(Looper.getMainLooper()).idle();
@@ -254,21 +257,21 @@ public class BackButtonMediatorTest {
     }
 
     @Test
-    public void testEnterExitTabSwitcherMode_shouldDisableButton() {
+    public void testDisabledControl_shouldDisableButton() {
         mTab.setCanGoBack(true);
         mTabSupplier.set(mTab);
+        mEnabledSupplier.set(false);
 
-        mMediator.setTabSwitcherMode(true);
         verifyDisabled(mModel);
     }
 
     @Test
-    public void testExitedTabSwitcherMode_shouldEnableButton() {
+    public void testEnabledControl_shouldEnableButton() {
         mTab.setCanGoBack(true);
         mTabSupplier.set(mTab);
-        mMediator.setTabSwitcherMode(true);
+        mEnabledSupplier.set(false);
+        mEnabledSupplier.set(true);
 
-        mMediator.setTabSwitcherMode(false);
         verifyEnabled(mModel);
     }
 

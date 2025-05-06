@@ -181,6 +181,7 @@ public class TopToolbarCoordinator implements Toolbar {
             @Nullable OnLongClickListener onLongClickListener,
             ToolbarProgressBar progressBar,
             ObservableSupplier<@Nullable Tab> tabSupplier,
+            ObservableSupplier<Boolean> toolbarNavControlsEnabledSupplier,
             @Nullable BackButtonCoordinator backButtonCoordinator) {
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -220,6 +221,7 @@ public class TopToolbarCoordinator implements Toolbar {
                             },
                             tabSupplier,
                             mNtpLoadingSupplier,
+                            toolbarNavControlsEnabledSupplier,
                             normalThemeColorProvider);
         }
 
@@ -623,10 +625,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void setTabSwitcherMode(boolean inTabSwitcherMode) {
         mToolbarLayout.setTabSwitcherMode(inTabSwitcherMode);
-
-        if (mReloadButtonCoordinator != null) {
-            mReloadButtonCoordinator.setEnabled(!inTabSwitcherMode);
-        }
     }
 
     /**

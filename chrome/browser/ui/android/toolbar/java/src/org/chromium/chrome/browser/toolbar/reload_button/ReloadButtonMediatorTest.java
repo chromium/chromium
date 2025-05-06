@@ -64,6 +64,7 @@ public class ReloadButtonMediatorTest {
     private MockTab mNtpTab;
     private ObservableSupplierImpl<Tab> mTabSupplier;
     private ObservableSupplierImpl<Boolean> mNtpLoadingSupplier;
+    private ObservableSupplierImpl<Boolean> mEnabledSupplier;
     private PropertyModel mModel;
     private ReloadButtonMediator mMediator;
 
@@ -86,6 +87,7 @@ public class ReloadButtonMediatorTest {
 
         mTabSupplier = new ObservableSupplierImpl<>(mTab);
         mNtpLoadingSupplier = new ObservableSupplierImpl<>();
+        mEnabledSupplier = new ObservableSupplierImpl<>();
         mModel = new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS).build();
         mMediator =
                 new ReloadButtonMediator(
@@ -94,6 +96,7 @@ public class ReloadButtonMediatorTest {
                         mThemeColorProvider,
                         mTabSupplier,
                         mNtpLoadingSupplier,
+                        mEnabledSupplier,
                         mShowToastCallback,
                         mResources);
 
@@ -308,6 +311,29 @@ public class ReloadButtonMediatorTest {
 
         mNtpLoadingSupplier.set(false);
         verifyStartLoadingState(mModel);
+    }
+
+    @Test
+    public void testDisabledControl_shouldDisableButton() {
+        mTab.setCanGoBack(true);
+        mTabSupplier.set(mTab);
+        mEnabledSupplier.set(false);
+
+        assertFalse(
+                "Button is enabled, but should be disabled.",
+                mModel.get(ReloadButtonProperties.IS_ENABLED));
+    }
+
+    @Test
+    public void testEnabledControl_shouldEnableButton() {
+        mTab.setCanGoBack(true);
+        mTabSupplier.set(mTab);
+        mEnabledSupplier.set(false);
+        mEnabledSupplier.set(true);
+
+        assertTrue(
+                "Button is disabled, but should be enabled.",
+                mModel.get(ReloadButtonProperties.IS_ENABLED));
     }
 
     @Test

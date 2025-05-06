@@ -35,7 +35,8 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
     private final ThemeColorProvider mThemeColorProvider;
     private final TabSupplierObserver mTabObserver;
     private @Nullable Tab mCurrentTab;
-    private boolean mIsTabSwitcherMode;
+    private final ObservableSupplier<Boolean> mEnabledSupplier;
+    private final Callback<Boolean> mEnabledObserver;
 
     /**
      * Create an instance of {@link BackButtonMediator}.
@@ -53,6 +54,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
             Callback<Integer> onBackPressed,
             ThemeColorProvider themeColorProvider,
             ObservableSupplier<@Nullable Tab> tabSupplier,
+            ObservableSupplier<Boolean> enabledSupplier,
             Callback<Tab> showNavigationPopup) {
         mModel = model;
         mThemeColorProvider = themeColorProvider;
@@ -72,6 +74,10 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
 
         updateBackgroundHighlight(mThemeColorProvider.getBrandedColorScheme());
         mThemeColorProvider.addTintObserver(this);
+
+        mEnabledSupplier = enabledSupplier;
+        mEnabledObserver = (isEnabled) -> updateButtonEnabledState();
+        mEnabledSupplier.addObserver(mEnabledObserver);
 
         // From web_contents_impl.cc and browser.cc back button's enabled state is updated based on
         // the InvalidateType.{TAB, LOAD, and URL} flags that are mapped to the callbacks below.
@@ -116,7 +122,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
 
     private void updateButtonEnabledState() {
         final boolean canGoBack =
-                mCurrentTab != null && mCurrentTab.canGoBack() && !mIsTabSwitcherMode;
+                mCurrentTab != null && mCurrentTab.canGoBack() && mEnabledSupplier.get();
 
         mModel.set(BackButtonProperties.IS_ENABLED, canGoBack);
         mModel.set(BackButtonProperties.IS_FOCUSABLE, canGoBack);
@@ -137,16 +143,6 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
                         ? R.drawable.default_icon_background_baseline
                         : R.drawable.default_icon_background;
         mModel.set(BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE, backgroundRes);
-    }
-
-    /**
-     * Indicates that parent entered a tab switcher mode.
-     *
-     * @param isTabSwitcherMode whether tab switcher is showing or not.
-     */
-    public void setTabSwitcherMode(boolean isTabSwitcherMode) {
-        mIsTabSwitcherMode = isTabSwitcherMode;
-        updateButtonEnabledState();
     }
 
     /**
@@ -206,6 +202,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
         mModel.set(BackButtonProperties.LONG_CLICK_LISTENER, null);
         mThemeColorProvider.removeTintObserver(this);
         mTabObserver.destroy();
+        mEnabledSupplier.removeObserver(mEnabledObserver);
     }
 
     @VisibleForTesting

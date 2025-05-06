@@ -701,6 +701,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             mActivityTabProvider,
                             mWebAppThemeColorProvider.get(),
                             intentDataProvider,
+                            getScrimManager(),
                             (tab) -> {
                                 Intent fullHistoryIntent = new Intent(Intent.ACTION_MAIN);
                                 fullHistoryIntent.setClass(mActivity, ChromeLauncherActivity.class);

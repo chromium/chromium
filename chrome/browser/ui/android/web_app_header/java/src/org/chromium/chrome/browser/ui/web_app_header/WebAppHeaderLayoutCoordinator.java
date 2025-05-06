@@ -27,10 +27,12 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
@@ -43,7 +45,8 @@ import java.util.List;
  */
 @NullMarked
 @RequiresApi(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.AppHeaderObserver {
+public class WebAppHeaderLayoutCoordinator
+        implements DesktopWindowStateManager.AppHeaderObserver, WebAppHeaderDelegate {
     private @Nullable WebAppHeaderLayoutMediator mMediator;
     private @Nullable WebAppHeaderLayout mView;
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
@@ -51,12 +54,15 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
     private final ViewStub mViewStub;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final ScrimManager mScrimManager;
     private final ThemeColorProvider mThemeColorProvider;
     private final @DisplayMode.EnumType int mDisplayMode;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
     private int mMinUIControlsMinWidthPx;
     private int mAppHeaderUnoccludedWidthPx;
     private final Callback<Integer> mOnUnoccludedWidthCallback;
+    private final ObservableSupplierImpl<Boolean> mControlsEnabledSupplier;
+    private final TokenHolder mDisabledControlsHolder;
 
     // 48dp * 2 (back and reload button) + 4dp (start padding).
     private static final int MIN_HEADER_WIDTH_DP = 100;
@@ -73,11 +79,15 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ThemeColorProvider themeColorProvider,
             BrowserServicesIntentDataProvider browserServicesIntentDataProvider,
+            ScrimManager scrimManager,
             NavigationPopup.HistoryDelegate historyDelegate) {
         final var webAppExtras = browserServicesIntentDataProvider.getWebappExtras();
         assert webAppExtras != null;
         mDisplayMode = webAppExtras.displayMode;
         mHistoryDelegate = historyDelegate;
+        mControlsEnabledSupplier = new ObservableSupplierImpl<>(true);
+        mDisabledControlsHolder = new TokenHolder(this::updateControlsEnabledState);
+        mScrimManager = scrimManager;
 
         mViewStub = viewStub;
         mViewStub.setLayoutResource(R.layout.web_app_header_layout);
@@ -117,7 +127,9 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         mMediator =
                 new WebAppHeaderLayoutMediator(
                         model,
+                        this,
                         mDesktopWindowStateManager,
+                        mScrimManager,
                         mTabSupplier,
                         this::collectNonDraggableAreas,
                         mThemeColorProvider,
@@ -141,6 +153,7 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
                         this::refreshTab,
                         mTabSupplier,
                         new ObservableSupplierImpl<>(),
+                        mControlsEnabledSupplier,
                         mThemeColorProvider);
 
         final ChromeImageButton backButton = mView.findViewById(R.id.back_button);
@@ -152,6 +165,7 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
                         },
                         mThemeColorProvider,
                         mTabSupplier,
+                        mControlsEnabledSupplier,
                         mHistoryDelegate);
     }
 
@@ -168,6 +182,10 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         if (mBackButtonCoordinator != null) {
             mBackButtonCoordinator.setVisibility(showButtons);
         }
+    }
+
+    private void updateControlsEnabledState() {
+        mControlsEnabledSupplier.set(!mDisabledControlsHolder.hasTokens());
     }
 
     private List<Rect> collectNonDraggableAreas() {
@@ -196,6 +214,18 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         } else {
             tab.reload();
         }
+    }
+
+    @Override
+    public int disableControlsAndClearOldToken(int token) {
+        int newToken = mDisabledControlsHolder.acquireToken();
+        releaseDisabledControlsToken(token);
+        return newToken;
+    }
+
+    @Override
+    public void releaseDisabledControlsToken(int token) {
+        mDisabledControlsHolder.releaseToken(token);
     }
 
     /**

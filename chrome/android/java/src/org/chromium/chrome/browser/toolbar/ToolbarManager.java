@@ -340,6 +340,8 @@ public class ToolbarManager
     private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mToolbarNavControlsEnabledSupplier =
+            new ObservableSupplierImpl<>(true);
 
     private boolean mIsDestroyed;
 
@@ -1001,6 +1003,7 @@ public class ToolbarManager
                             this::back,
                             browsingModeThemeColorProvider,
                             mActivityTabProvider,
+                            mToolbarNavControlsEnabledSupplier,
                             historyDelegate);
         }
 
@@ -1515,9 +1518,7 @@ public class ToolbarManager
                             mInTabSwitcherTransition = true;
                             mLocationBarModel.updateForNonStaticLayout();
                             mToolbar.setTabSwitcherMode(false);
-                            if (mBackButtonCoordinator != null) {
-                                mBackButtonCoordinator.setTabSwitcherMode(false);
-                            }
+                            mToolbarNavControlsEnabledSupplier.set(true);
                             mIsTabSwitcherFinishedShowingSupplier.set(false);
                             updateButtonStatus();
                         }
@@ -1702,10 +1703,8 @@ public class ToolbarManager
     private void updateForLayout(@LayoutType int layoutType) {
         if (layoutType == LayoutType.TAB_SWITCHER) {
             mLocationBarModel.updateForNonStaticLayout();
-            mToolbar.setTabSwitcherMode(layoutType == LayoutType.TAB_SWITCHER);
-            if (mBackButtonCoordinator != null) {
-                mBackButtonCoordinator.setTabSwitcherMode(true);
-            }
+            mToolbar.setTabSwitcherMode(true);
+            mToolbarNavControlsEnabledSupplier.set(false);
             updateButtonStatus();
         }
         mIsTabSwitcherFinishedShowingSupplier.set(
@@ -1751,6 +1750,7 @@ public class ToolbarManager
                         onLongClickListener,
                         progressBar,
                         mActivityTabProvider,
+                        mToolbarNavControlsEnabledSupplier,
                         mBackButtonCoordinator);
 
         mHomepageStateListener =
