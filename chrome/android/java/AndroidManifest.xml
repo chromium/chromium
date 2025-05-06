@@ -1204,7 +1204,7 @@ by a child template that "extends" this file.
             {{ self.chrome_activity_common() }}
             android:excludeFromRecents="true"
             android:noHistory="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstancePerTask"
             android:exported="false"
             android:resizeableActivity="false"
             android:screenOrientation="landscape"

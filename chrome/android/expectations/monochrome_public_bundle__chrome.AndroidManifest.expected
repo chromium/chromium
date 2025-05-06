@@ -464,7 +464,7 @@
         android:exported="false"
         android:hardwareAccelerated="false"
         android:label="WebXR"
-        android:launchMode="singleTask"
+        android:launchMode="singleInstancePerTask"
         android:noHistory="true"
         android:resizeableActivity="false"
         android:screenOrientation="landscape"

@@ -198,6 +198,7 @@ public class XrSessionCoordinator {
 
         if (needsSeparateActivity) {
             Intent intent = XrHostActivity.createIntent(getApplicationContext());
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
         } else {
             XrSessionCoordinatorJni.get()
