@@ -72,7 +72,8 @@ DrmInfoWrapper DrmInfoWrapper::Create(const CastDecoderBuffer& buffer) {
   // Populate drm_info->initialization_vector.
   base::span<uint8_t>(drm_info->initialization_vector)
       .first(iv_size)
-      .copy_from(base::as_byte_span(decrypt_config->iv()).first(iv_size));
+      .copy_from_nonoverlapping(
+          base::as_byte_span(decrypt_config->iv()).first(iv_size));
   drm_info->initialization_vector_size = iv_size;
 
   size_t id_size = decrypt_config->key_id().size();
@@ -86,7 +87,8 @@ DrmInfoWrapper DrmInfoWrapper::Create(const CastDecoderBuffer& buffer) {
   // Populate drm_info->identifier.
   base::span<uint8_t>(drm_info->identifier)
       .first(id_size)
-      .copy_from(base::as_byte_span(decrypt_config->key_id()).first(id_size));
+      .copy_from_nonoverlapping(
+          base::as_byte_span(decrypt_config->key_id()).first(id_size));
   drm_info->identifier_size = id_size;
 
   // Populate subsample_mappings.
