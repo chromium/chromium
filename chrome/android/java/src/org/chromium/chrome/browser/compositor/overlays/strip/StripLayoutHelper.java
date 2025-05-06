@@ -2656,18 +2656,16 @@ public class StripLayoutHelper
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        // Removes all dying tabs from TabModel.
+                        finishAnimationsAndCloseDyingTabs(allowUndo);
+
                         if (runImprovedTabAnimations) {
-                            // This removes any closed tabs from the tabModel.
-                            finishAnimationsAndCloseDyingTabs(allowUndo);
                             resizeStripOnTabClose(getTabById(tab.getTabId()));
                         } else {
                             mMultiStepTabCloseAnimRunning = false;
                             mNewTabButtonAnimRunning = false;
 
                             // Resize the tabs appropriately.
-                            // TODO(crbug.com/375468032): also respect "allowUndo" here.
-                            // This is for when there is only one tab to close.
-                            finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
                             computeAndUpdateTabWidth(
                                     /* animate= */ true,
                                     /* deferAnimations= */ false,

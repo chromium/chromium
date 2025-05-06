@@ -4021,29 +4021,49 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testTabClosing_CloseButtonClickedWithTouchInput_AllowUndo() {
+    public void testTabClosing_OnlyOneTabOpen_CloseButtonClickedWithTouchInput_AllowUndo() {
         testUndoDuringTabClosing(
-                MotionEventUtils.MOTION_EVENT_BUTTON_NONE, /* shouldAllowUndo= */ true);
+                /* tabCount= */ 1,
+                MotionEventUtils.MOTION_EVENT_BUTTON_NONE,
+                /* shouldAllowUndo= */ true);
     }
 
     @Test
-    public void testTabClosing_CloseButtonClickedWithPeripheralButton_DisallowUndo() {
-        testUndoDuringTabClosing(MotionEvent.BUTTON_PRIMARY, /* shouldAllowUndo= */ false);
+    public void
+            testTabClosing_OnlyOneTabOpen_CloseButtonClickedWithPeripheralButton_DisallowUndo() {
+        testUndoDuringTabClosing(
+                /* tabCount= */ 1, MotionEvent.BUTTON_PRIMARY, /* shouldAllowUndo= */ false);
+    }
+
+    @Test
+    public void testTabClosing_MultipleTabsOpen_CloseButtonClickedWithTouchInput_AllowUndo() {
+        testUndoDuringTabClosing(
+                /* tabCount= */ 15,
+                MotionEventUtils.MOTION_EVENT_BUTTON_NONE,
+                /* shouldAllowUndo= */ true);
+    }
+
+    @Test
+    public void
+            testTabClosing_MultipleTabsOpen_CloseButtonClickedWithPeripheralButton_DisallowUndo() {
+        testUndoDuringTabClosing(
+                /* tabCount= */ 15, MotionEvent.BUTTON_PRIMARY, /* shouldAllowUndo= */ false);
     }
 
     /**
      * Tests the "allowUndo" behavior during {@link
      * StripLayoutHelper#handleCloseButtonClick(StripLayoutTab, int)}.
      *
+     * @param tabCount number of tabs to set up.
      * @param motionEventButtonState parameter for {@link
      *     StripLayoutHelper#handleCloseButtonClick(StripLayoutTab, int)}
      * @param shouldAllowUndo whether to allow undo tab closure; this is a field in {@link
      *     TabClosureParams} for {@link TabRemover}.
      */
-    private void testUndoDuringTabClosing(int motionEventButtonState, boolean shouldAllowUndo) {
+    private void testUndoDuringTabClosing(
+            int tabCount, int motionEventButtonState, boolean shouldAllowUndo) {
         // Setup
-        int tabCount = 15;
-        int selectedTabIndex = 14;
+        int selectedTabIndex = tabCount - 1;
         initializeTest(/* rtl= */ false, /* incognito= */ false, selectedTabIndex, tabCount);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.onSizeChanged(
