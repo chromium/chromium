@@ -543,6 +543,7 @@ absl_cc_library(
     absl::memory
     absl::meta
     absl::no_destructor
+    absl::random_random
     absl::strings
   TESTONLY
 )
@@ -658,6 +659,7 @@ absl_cc_test(
   DEPS
     absl::config
     absl::hashtablez_sampler
+    absl::random_random
     GTest::gmock_main
 )
 
@@ -824,6 +826,7 @@ absl_cc_test(
     absl::node_hash_set
     absl::optional
     absl::prefetch
+    absl::random_random
     absl::raw_hash_set
     absl::strings
     absl::test_allocator

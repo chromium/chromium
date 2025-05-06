@@ -193,6 +193,7 @@ absl_cc_test(
     absl::core_headers
     absl::log
     absl::memory
+    absl::random_random
     absl::time
     GTest::gmock_main
 )

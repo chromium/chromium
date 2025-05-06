@@ -266,6 +266,7 @@ cc_test(
         "//absl/log",
         "//absl/log:check",
         "//absl/memory",
+        "//absl/random",
         "//absl/time",
         "@googletest//:gtest",
         "@googletest//:gtest_main",

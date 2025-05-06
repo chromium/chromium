@@ -173,6 +173,7 @@ absl_test("str_format_extension_test") {
     ":str_format",
     ":str_format_internal",
     ":strings",
+    "//third_party/abseil-cpp/absl/random",
   ]
 }
 

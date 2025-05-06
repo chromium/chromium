@@ -126,6 +126,7 @@ static void **NextStackFrame(void **old_frame_pointer, const void *uc,
       if (pre_signal_frame_pointer >= old_frame_pointer) {
         new_frame_pointer = pre_signal_frame_pointer;
       }
+    }
   }
 #endif
 
@@ -137,7 +138,7 @@ static void **NextStackFrame(void **old_frame_pointer, const void *uc,
   // prevent "double fault" in case we hit the first fault due to e.g.
   // stack corruption.
   if (!absl::debugging_internal::AddressIsReadable(
-          new_frame_pointer))
+          new_frame_pointer)) {
     return nullptr;
   }
 

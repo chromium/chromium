@@ -250,6 +250,7 @@ cc_binary(
     visibility = ["//visibility:private"],
     deps = [
         ":strings",
+        "//absl/random",
         "@google_benchmark//:benchmark_main",
     ],
 )
@@ -360,6 +361,7 @@ cc_binary(
         ":strings",
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
+        "//absl/random",
         "@google_benchmark//:benchmark_main",
     ],
 )
@@ -1358,6 +1360,7 @@ cc_test(
         ":str_format",
         ":str_format_internal",
         ":strings",
+        "//absl/random",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],

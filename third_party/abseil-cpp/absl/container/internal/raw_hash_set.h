@@ -1753,6 +1753,11 @@ void ReserveEmptyNonAllocatedTableToFitBucketCount(
 // Type erased version of raw_hash_set::rehash.
 void Rehash(CommonFields& common, const PolicyFunctions& policy, size_t n);
 
+// Type erased version of copy constructor.
+void Copy(CommonFields& common, const PolicyFunctions& policy,
+          const CommonFields& other,
+          absl::FunctionRef<void(void*, const void*)> copy_fn);
+
 // Returns the optimal size for memcpy when transferring SOO slot.
 // Otherwise, returns the optimal size for memcpy SOO slot transfer
 // to SooSlotIndex().
@@ -2166,7 +2171,7 @@ class raw_hash_set {
       std::is_nothrow_default_constructible<key_equal>::value &&
       std::is_nothrow_default_constructible<allocator_type>::value) {}
 
-  ABSL_ATTRIBUTE_NOINLINE explicit raw_hash_set(
+  explicit raw_hash_set(
       size_t bucket_count, const hasher& hash = hasher(),
       const key_equal& eq = key_equal(),
       const allocator_type& alloc = allocator_type())
@@ -2278,73 +2283,17 @@ class raw_hash_set {
                                allocator_type(that.char_alloc_ref()))) {}
 
   raw_hash_set(const raw_hash_set& that, const allocator_type& a)
-      : raw_hash_set(SizeToCapacity(that.size()), that.hash_ref(),
-                     that.eq_ref(), a) {
+      : raw_hash_set(0, that.hash_ref(), that.eq_ref(), a) {
     that.AssertNotDebugCapacity();
-    const size_t size = that.size();
-    if (size == 0) {
-      return;
-    }
-    // We don't use `that.is_soo()` here because `that` can have non-SOO
-    // capacity but have a size that fits into SOO capacity.
-    if (fits_in_soo(size)) {
-      ABSL_SWISSTABLE_ASSERT(size == 1);
-      common().set_full_soo();
-      emplace_at(soo_iterator(), *that.begin());
-      if (should_sample_soo()) {
-        GrowFullSooTableToNextCapacityForceSampling(common(),
-                                                    GetPolicyFunctions());
-      }
-      return;
-    }
-    ABSL_SWISSTABLE_ASSERT(!that.is_soo());
-    const size_t cap = capacity();
-    // Note about single group tables:
-    // 1. It is correct to have any order of elements.
-    // 2. Order has to be non deterministic.
-    // 3. We are assigning elements with arbitrary `shift` starting from
-    //    `capacity + shift` position.
-    // 4. `shift` must be coprime with `capacity + 1` in order to be able to use
-    //     modular arithmetic to traverse all positions, instead if cycling
-    //     through a subset of positions. Odd numbers are coprime with any
-    //     `capacity + 1` (2^N).
-    size_t offset = cap;
-    const size_t shift =
-        is_single_group(cap) ? (common().seed().seed() | 1) : 0;
-    IterateOverFullSlots(
-        that.common(), sizeof(slot_type),
-        [&](const ctrl_t* that_ctrl, void* that_slot_void) {
-          slot_type* that_slot = static_cast<slot_type*>(that_slot_void);
-          if (shift == 0) {
-            // Big tables case. Position must be searched via probing.
-            // The table is guaranteed to be empty, so we can do faster than
-            // a full `insert`.
-            const size_t hash = PolicyTraits::apply(
-                HashElement{hash_ref()}, PolicyTraits::element(that_slot));
-            FindInfo target = find_first_non_full(common(), hash);
-            infoz().RecordInsert(hash, target.probe_length);
-            offset = target.offset;
-          } else {
-            // Small tables case. Next position is computed via shift.
-            offset = (offset + shift) & cap;
-          }
-          const h2_t h2 = static_cast<h2_t>(*that_ctrl);
-          ABSL_SWISSTABLE_ASSERT(  // We rely that hash is not changed for small
-                                   // tables.
-              H2(PolicyTraits::apply(HashElement{hash_ref()},
-                                     PolicyTraits::element(that_slot))) == h2 &&
-              "hash function value changed unexpectedly during the copy");
-          SetCtrl(common(), offset, h2, sizeof(slot_type));
-          emplace_at(iterator_at(offset), PolicyTraits::element(that_slot));
-          common().maybe_increment_generation_on_insert();
-        });
-    if (shift != 0) {
-      // On small table copy we do not record individual inserts.
-      // RecordInsert requires hash, but it is unknown for small tables.
-      infoz().RecordStorageChanged(size, cap);
-    }
-    common().increment_size(size);
-    growth_info().OverwriteManyEmptyAsFull(size);
+    if (that.empty()) return;
+    Copy(common(), GetPolicyFunctions(), that.common(),
+         [this](void* dst, const void* src) {
+           // TODO(b/413598253): type erase for trivially copyable types via
+           // PolicyTraits.
+           construct(to_slot(dst),
+                     PolicyTraits::element(
+                         static_cast<slot_type*>(const_cast<void*>(src))));
+         });
   }
 
   ABSL_ATTRIBUTE_NOINLINE raw_hash_set(raw_hash_set&& that) noexcept(
@@ -2414,7 +2363,7 @@ class raw_hash_set {
 
   iterator begin() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (ABSL_PREDICT_FALSE(empty())) return end();
-    if (is_soo()) return soo_iterator();
+    if (capacity() == 1) return single_iterator();
     iterator it = {control(), common().slots_union(),
                    common().generation_ptr()};
     it.skip_empty_or_deleted();
@@ -2883,7 +2832,7 @@ class raw_hash_set {
     // Avoid probing if we won't be able to prefetch the addresses received.
 #ifdef ABSL_HAVE_PREFETCH
     prefetch_heap_block();
-    auto seq = probe(common(), hash_ref()(key));
+    auto seq = probe(common(), hash_of(key));
     PrefetchToLocalCache(control() + seq.offset());
     PrefetchToLocalCache(slot_array() + seq.offset());
 #endif  // ABSL_HAVE_PREFETCH
@@ -2900,9 +2849,9 @@ class raw_hash_set {
   template <class K = key_type>
   iterator find(const key_arg<K>& key) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     AssertOnFind(key);
-    if (is_soo()) return find_soo(key);
+    if (capacity() <= 1) return find_small(key);
     prefetch_heap_block();
-    return find_non_soo(key, hash_ref()(key));
+    return find_large(key, hash_of(key));
   }
 
   template <class K = key_type>
@@ -3079,16 +3028,18 @@ class raw_hash_set {
   // TODO(b/289225379): consider having a helper class that has the impls for
   // SOO functionality.
   template <class K = key_type>
-  iterator find_soo(const key_arg<K>& key) {
-    ABSL_SWISSTABLE_ASSERT(is_soo());
-    return empty() || !PolicyTraits::apply(EqualElement<K>{key, eq_ref()},
-                                           PolicyTraits::element(soo_slot()))
+  iterator find_small(const key_arg<K>& key) {
+    ABSL_SWISSTABLE_ASSERT(capacity() <= 1);
+    return empty() || !PolicyTraits::apply(
+                          EqualElement<K>{key, eq_ref()},
+                          PolicyTraits::element(single_slot()))
                ? end()
-               : soo_iterator();
+               : single_iterator();
   }
 
   template <class K = key_type>
-  iterator find_non_soo(const key_arg<K>& key, size_t hash) {
+  iterator find_large(const key_arg<K>& key, size_t hash) {
+    ABSL_SWISSTABLE_ASSERT(capacity() > 1);
     ABSL_SWISSTABLE_ASSERT(!is_soo());
     auto seq = probe(common(), hash);
     const h2_t h2 = H2(hash);
@@ -3178,6 +3129,10 @@ class raw_hash_set {
                   sizeof(slot_type));
   }
 
+  template <class K>
+  size_t hash_of(const K& key) const {
+    return hash_ref()(key);
+  }
   size_t hash_of(slot_type* slot) const {
     return PolicyTraits::apply(HashElement{hash_ref()},
                                PolicyTraits::element(slot));
@@ -3310,7 +3265,7 @@ class raw_hash_set {
         PolicyTraits::transfer_uses_memcpy() && SooEnabled();
     size_t index = GrowSooTableToNextCapacityAndPrepareInsert<
         kUseMemcpy ? OptimalMemcpySizeForSooSlotTransfer(sizeof(slot_type)) : 0,
-        kUseMemcpy>(common(), GetPolicyFunctions(), hash_ref()(key),
+        kUseMemcpy>(common(), GetPolicyFunctions(), hash_of(key),
                     soo_slot_ctrl);
     return {iterator_at(index), true};
   }
@@ -3319,7 +3274,7 @@ class raw_hash_set {
   std::pair<iterator, bool> find_or_prepare_insert_non_soo(const K& key) {
     ABSL_SWISSTABLE_ASSERT(!is_soo());
     prefetch_heap_block();
-    const size_t hash = hash_ref()(key);
+    const size_t hash = hash_of(key);
     auto seq = probe(common(), hash);
     const h2_t h2 = H2(hash);
     const ctrl_t* ctrl = control();
@@ -3404,7 +3359,7 @@ class raw_hash_set {
     }
     if (empty()) return;
 
-    const size_t hash_of_arg = hash_ref()(key);
+    const size_t hash_of_arg = hash_of(key);
     const auto assert_consistent = [&](const ctrl_t*, void* slot) {
       const value_type& element =
           PolicyTraits::element(static_cast<slot_type*>(slot));
@@ -3452,7 +3407,10 @@ class raw_hash_set {
   void emplace_at(iterator iter, Args&&... args) {
     construct(iter.slot(), std::forward<Args>(args)...);
 
-    assert(PolicyTraits::apply(FindElement{*this}, *iter) == iter &&
+    // When capacity is 1, find calls find_small and if size is 0, then it will
+    // return an end iterator. This can happen in the raw_hash_set copy ctor.
+    assert((capacity() == 1 ||
+            PolicyTraits::apply(FindElement{*this}, *iter) == iter) &&
            "constructed value does not match the lookup key");
   }
 
@@ -3527,6 +3485,20 @@ class raw_hash_set {
   }
   const_iterator soo_iterator() const {
     return const_cast<raw_hash_set*>(this)->soo_iterator();
+  }
+  slot_type* single_slot() {
+    ABSL_SWISSTABLE_ASSERT(capacity() <= 1);
+    return SooEnabled() ? soo_slot() : slot_array();
+  }
+  const slot_type* single_slot() const {
+    return const_cast<raw_hash_set*>(this)->single_slot();
+  }
+  iterator single_iterator() {
+    return {SooEnabled() ? SooControl() : control(), single_slot(),
+            common().generation_ptr()};
+  }
+  const_iterator single_iterator() const {
+    return const_cast<raw_hash_set*>(this)->single_iterator();
   }
   HashtablezInfoHandle infoz() {
     ABSL_SWISSTABLE_ASSERT(!is_soo());
@@ -3749,7 +3721,7 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
                              const typename Set::key_type& key) {
     if (set.is_soo()) return 0;
     size_t num_probes = 0;
-    const size_t hash = set.hash_ref()(key);
+    const size_t hash = set.hash_of(key);
     auto seq = probe(set.common(), hash);
     const h2_t h2 = H2(hash);
     const ctrl_t* ctrl = set.control();

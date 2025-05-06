@@ -32,7 +32,6 @@
 #include "absl/container/internal/raw_hash_set_resize_impl.h"
 #include "absl/functional/function_ref.h"
 #include "absl/hash/hash.h"
-#include "absl/numeric/bits.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -190,15 +189,8 @@ constexpr bool is_small(size_t capacity) {
   return capacity < Group::kWidth - 1;
 }
 
-}  // namespace
-
-FindInfo find_first_non_full(const CommonFields& common, size_t hash) {
-  return find_first_non_full_from_h1(common.control(), H1(hash, common.seed()),
-                                     common.capacity());
-}
-
-void IterateOverFullSlots(const CommonFields& c, size_t slot_size,
-                          absl::FunctionRef<void(const ctrl_t*, void*)> cb) {
+template <class Fn>
+void IterateOverFullSlotsImpl(const CommonFields& c, size_t slot_size, Fn cb) {
   const size_t cap = c.capacity();
   const ctrl_t* ctrl = c.control();
   void* slot = c.slot_array();
@@ -245,6 +237,8 @@ void IterateOverFullSlots(const CommonFields& c, size_t slot_size,
                          "hash table was modified unexpectedly");
 }
 
+}  // namespace
+
 void ConvertDeletedToEmptyAndFullToDeleted(ctrl_t* ctrl, size_t capacity) {
   ABSL_SWISSTABLE_ASSERT(ctrl[capacity] == ctrl_t::kSentinel);
   ABSL_SWISSTABLE_ASSERT(IsValidCapacity(capacity));
@@ -254,6 +248,16 @@ void ConvertDeletedToEmptyAndFullToDeleted(ctrl_t* ctrl, size_t capacity) {
   // Copy the cloned ctrl bytes.
   std::memcpy(ctrl + capacity + 1, ctrl, NumClonedBytes());
   ctrl[capacity] = ctrl_t::kSentinel;
+}
+
+FindInfo find_first_non_full(const CommonFields& common, size_t hash) {
+  return find_first_non_full_from_h1(common.control(), H1(hash, common.seed()),
+                                     common.capacity());
+}
+
+void IterateOverFullSlots(const CommonFields& c, size_t slot_size,
+                          absl::FunctionRef<void(const ctrl_t*, void*)> cb) {
+  IterateOverFullSlotsImpl(c, slot_size, cb);
 }
 
 namespace {
@@ -761,6 +765,7 @@ void ResizeFullSooTable(CommonFields& common, const PolicyFunctions& policy,
   if (has_infoz) {
     common.set_has_infoz();
     common.set_infoz(infoz);
+    infoz.RecordStorageChanged(common.size(), new_capacity);
   }
 }
 
@@ -1628,6 +1633,81 @@ void Rehash(CommonFields& common, const PolicyFunctions& policy, size_t n) {
     // and have potentially sampled the hashtable.
     common.infoz().RecordReservation(n);
   }
+}
+
+void Copy(CommonFields& common, const PolicyFunctions& policy,
+          const CommonFields& other,
+          absl::FunctionRef<void(void*, const void*)> copy_fn) {
+  const size_t size = other.size();
+  ABSL_SWISSTABLE_ASSERT(size > 0);
+  const size_t soo_capacity = policy.soo_capacity;
+  const size_t slot_size = policy.slot_size;
+  if (size <= soo_capacity) {
+    ABSL_SWISSTABLE_ASSERT(size == 1);
+    common.set_full_soo();
+    const void* other_slot =
+        other.capacity() <= soo_capacity
+            ? other.soo_data()
+            : SlotAddress(
+                  other.slot_array(),
+                  FindFirstFullSlot(0, other.capacity(), other.control()),
+                  slot_size);
+    copy_fn(common.soo_data(), other_slot);
+
+    if (policy.is_hashtablez_eligible && ShouldSampleNextTable()) {
+      GrowFullSooTableToNextCapacityForceSampling(common, policy);
+    }
+    return;
+  }
+
+  ReserveTableToFitNewSize(common, policy, size);
+  auto infoz = common.infoz();
+  ABSL_SWISSTABLE_ASSERT(other.capacity() > soo_capacity);
+  const size_t cap = common.capacity();
+  ABSL_SWISSTABLE_ASSERT(cap > soo_capacity);
+  // Note about single group tables:
+  // 1. It is correct to have any order of elements.
+  // 2. Order has to be non deterministic.
+  // 3. We are assigning elements with arbitrary `shift` starting from
+  //    `capacity + shift` position.
+  // 4. `shift` must be coprime with `capacity + 1` in order to be able to use
+  //     modular arithmetic to traverse all positions, instead of cycling
+  //     through a subset of positions. Odd numbers are coprime with any
+  //     `capacity + 1` (2^N).
+  size_t offset = cap;
+  const size_t shift = is_single_group(cap) ? (common.seed().seed() | 1) : 0;
+  const void* hash_fn = policy.hash_fn(common);
+  auto hasher = policy.hash_slot;
+  IterateOverFullSlotsImpl(
+      other, slot_size, [&](const ctrl_t* that_ctrl, void* that_slot) {
+        if (shift == 0) {
+          // Big tables case. Position must be searched via probing.
+          // The table is guaranteed to be empty, so we can do faster than
+          // a full `insert`.
+          const size_t hash = (*hasher)(hash_fn, that_slot);
+          FindInfo target = find_first_non_full(common, hash);
+          infoz.RecordInsert(hash, target.probe_length);
+          offset = target.offset;
+        } else {
+          // Small tables case. Next position is computed via shift.
+          offset = (offset + shift) & cap;
+        }
+        const h2_t h2 = static_cast<h2_t>(*that_ctrl);
+        // We rely on the hash not changing for small tables.
+        ABSL_SWISSTABLE_ASSERT(
+            H2((*hasher)(hash_fn, that_slot)) == h2 &&
+            "hash function value changed unexpectedly during the copy");
+        SetCtrl(common, offset, h2, slot_size);
+        copy_fn(SlotAddress(common.slot_array(), offset, slot_size), that_slot);
+        common.maybe_increment_generation_on_insert();
+      });
+  if (shift != 0) {
+    // On small table copy we do not record individual inserts.
+    // RecordInsert requires hash, but it is unknown for small tables.
+    infoz.RecordStorageChanged(size, cap);
+  }
+  common.increment_size(size);
+  common.growth_info().OverwriteManyEmptyAsFull(size);
 }
 
 void ReserveTableToFitNewSize(CommonFields& common,

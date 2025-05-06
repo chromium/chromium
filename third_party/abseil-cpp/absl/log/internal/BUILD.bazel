@@ -425,10 +425,6 @@ cc_library(
     hdrs = ["proto.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = [
-        ":internal_users",
-        ":structured_proto_users",
-    ],
     deps = [
         "//absl/base",
         "//absl/base:config",
