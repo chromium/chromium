@@ -103,7 +103,6 @@ struct Configuration {
   Configuration& operator=(Configuration&&);
 
   bool operator==(const Configuration& rhs) const;
-  bool operator!=(const Configuration& rhs) const;
 
   void AddToValue(base::trace_event::TracedValue*) const;
   std::unique_ptr<base::trace_event::TracedValue> ToTracedValue() const;
