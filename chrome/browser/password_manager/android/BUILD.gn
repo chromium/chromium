@@ -472,6 +472,18 @@ android_library("backend_interface_java") {
   ]
 }
 
+android_library("sms_otp_fetching_interface_java") {
+  deps = [
+    "//base:base_java",
+    "//base:service_loader_java",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/AndroidSmsOtpFetcher.java",
+    "java/src/org/chromium/chrome/browser/password_manager/AndroidSmsOtpFetcherFactory.java",
+    "java/src/org/chromium/chrome/browser/password_manager/AndroidSmsOtpFetcherFactoryUpstreamImpl.java",
+  ]
+}
+
 generate_jni("test_support_jni_headers") {
   testonly = true
   sources = [ "test_support/java/src/org/chromium/chrome/browser/password_manager/PasswordManagerTestUtilsBridge.java" ]
