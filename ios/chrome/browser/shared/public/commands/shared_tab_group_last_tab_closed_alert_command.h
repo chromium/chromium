@@ -34,7 +34,7 @@ class WebStateID;
 // Group to potentially delete, leave or keep.
 @property(nonatomic, readonly) const TabGroup* group;
 // The title of the group.
-@property(nonatomic, readonly, assign) NSString* groupTitle;
+@property(nonatomic, readonly, copy) NSString* groupTitle;
 // Last tab ID.
 @property(nonatomic, readonly) web::WebStateID tabID;
 // Type of the action.
