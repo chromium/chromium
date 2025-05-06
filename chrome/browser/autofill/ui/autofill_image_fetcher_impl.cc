@@ -98,10 +98,6 @@ GURL AutofillImageFetcherImpl::ResolveImageURL(const GURL& image_url,
 gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
     const GURL& card_art_url,
     const gfx::Image& card_art_image) {
-  if (card_art_image.IsEmpty()) {
-    return card_art_image;
-  }
-
   if (card_art_url == kCapitalOneLargeCardArtUrl) {
     // Render Capital One asset directly. No need to calculate and add grey
     // border to image.

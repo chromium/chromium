@@ -26,12 +26,15 @@ class AutofillImageFetcherImpl : public AutofillImageFetcher,
   // AutofillImageFetcher:
   GURL ResolveImageURL(const GURL& image_url,
                        ImageType image_type) const override;
-  gfx::Image ResolveCardArtImage(const GURL& card_art_url,
-                                 const gfx::Image& card_art_image) override;
   image_fetcher::ImageFetcher* GetImageFetcher() override;
   base::WeakPtr<AutofillImageFetcher> GetWeakPtr() override;
 
   void SetScreenScaleForTesting(CGFloat scale);
+
+ protected:
+  // AutofillImageFetcher:
+  gfx::Image ResolveCardArtImage(const GURL& card_art_url,
+                                 const gfx::Image& card_art_image) override;
 
  private:
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;

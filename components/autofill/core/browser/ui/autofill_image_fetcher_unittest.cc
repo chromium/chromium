@@ -60,9 +60,11 @@ class AutofillImageFetcherForTest : public AutofillImageFetcher {
   image_fetcher::ImageFetcher* GetImageFetcher() override {
     return mock_image_fetcher_.get();
   }
+
   base::WeakPtr<AutofillImageFetcher> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
   GURL ResolveImageURL(const GURL& image_url,
                        ImageType image_type) const override {
     if (image_url.spec() == kCapitalOneCardArtUrl) {
@@ -73,12 +75,11 @@ class AutofillImageFetcherForTest : public AutofillImageFetcher {
     // should be center cropped and of Size(32, 20).
     return GURL(image_url.spec() + "=w32-h20-n");
   }
+
   gfx::Image ResolveCardArtImage(const GURL& card_art_url,
                                  const gfx::Image& card_art_image) override {
-    return !card_art_image_override_.IsEmpty()
-               ? card_art_image_override_
-               : AutofillImageFetcher::ResolveCardArtImage(card_art_url,
-                                                           card_art_image);
+    return !card_art_image_override_.IsEmpty() ? card_art_image_override_
+                                               : card_art_image;
   }
 
  private:
@@ -160,9 +161,9 @@ TEST_F(AutofillImageFetcherTest, FetchCreditCardArtImagesForURLs_Success) {
       BucketsAre(Bucket(false, 0), Bucket(true, 2)));
 }
 
-TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
+TEST_F(AutofillImageFetcherTest, FetchImage_ResolveImage) {
   // Set the AutofillImageFetcher to replace the input `fake_image1` in
-  // ResolveCardArtImage.
+  // ResolveImage.
   gfx::Image override_image = gfx::test::CreateImage(5, 5);
   autofill_image_fetcher()->set_card_art_image_override(override_image);
 
@@ -172,8 +173,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
   autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url1,
                                                           fake_image1);
 
-  // The received image should be `override_image`, because ResolveCardArtImage
-  // should have changed it.
+  // The received image should be `override_image`, because ResolveImage should
+  // have changed it.
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       override_image,
       *autofill_image_fetcher()->GetCachedImageForUrl(

@@ -117,10 +117,20 @@ const gfx::Image* AutofillImageFetcher::GetCachedImageForUrl(
   return it->second.get();
 }
 
-gfx::Image AutofillImageFetcher::ResolveCardArtImage(
-    const GURL& card_art_url,
-    const gfx::Image& card_art_image) {
-  return card_art_image;
+gfx::Image AutofillImageFetcher::ResolveImage(const GURL& image_url,
+                                              const gfx::Image& image,
+                                              ImageType image_type) {
+  if (image.IsEmpty()) {
+    return image;
+  }
+  switch (image_type) {
+    case ImageType::kCreditCardArtImage:
+      return ResolveCardArtImage(image_url, image);
+    case ImageType::kPixAccountImage:
+      NOTREACHED() << "Pix account images are available only on Android";
+    case ImageType::kValuableImage:
+      return image;
+  }
 }
 
 AutofillImageFetcher::AutofillImageFetcher() = default;
