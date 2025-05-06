@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.IndexRuleset.CPUDuration" units="ms"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -274,7 +274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.IndexRuleset.WallDuration" units="ms"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FingerprintingProtection.PageLoad.ActivationDecision"
     enum="FingerprintingProtectionActivationDecision"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>thesalsa@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>rizvis@google.com</owner>
@@ -630,7 +630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.WriteRuleset.Result"
-    enum="SubresourceFilterWriteRulesetResult" expires_after="2025-08-31">
+    enum="SubresourceFilterWriteRulesetResult" expires_after="2025-11-02">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>

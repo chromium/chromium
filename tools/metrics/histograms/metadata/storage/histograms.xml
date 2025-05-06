@@ -444,7 +444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.LevelDbTombstoneSweeper.TombstonesFound"
-    units="count" expires_after="2025-08-30">
+    units="count" expires_after="2025-11-02">
   <owner>leimy@chromium.org</owner>
   <owner>tamartol@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
