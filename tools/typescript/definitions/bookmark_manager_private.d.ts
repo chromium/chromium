@@ -47,6 +47,7 @@ declare global {
           id: string, params?: OpenInNewTabParams): void;
       export function openInNewWindow(idList: string[], incognito: boolean):
           void;
+      export function openInNewTabGroup(idList: string[]): void;
       function importAlias(): Promise<void>;
       function exportAlias(): Promise<void>;
       export {importAlias as import};

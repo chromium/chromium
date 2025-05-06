@@ -253,9 +253,10 @@ export class BookmarksCommandManagerElement extends
         return this.menuSource_ === MenuSource.ITEM && itemIds.size === 1 &&
             this.getState().search.term !== '' &&
             !isRootOrChildOfRoot(this.getState(), Array.from(itemIds)[0]!);
+      case Command.OPEN_INCOGNITO:
+      case Command.OPEN_NEW_GROUP:
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
-      case Command.OPEN_INCOGNITO:
       case Command.OPEN_SPLIT_VIEW:
         return itemIds.size > 0;
       case Command.ADD_BOOKMARK:
@@ -278,6 +279,7 @@ export class BookmarksCommandManagerElement extends
         return !this.containsMatchingNode_(itemIds, function(node) {
           return !canEditNode(state, node.id);
         });
+      case Command.OPEN_NEW_GROUP:
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
         return this.expandIds_(itemIds).length > 0;
@@ -397,9 +399,10 @@ export class BookmarksCommandManagerElement extends
       case Command.REDO:
         chrome.bookmarkManagerPrivate.redo();
         break;
+      case Command.OPEN_INCOGNITO:
+      case Command.OPEN_NEW_GROUP:
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
-      case Command.OPEN_INCOGNITO:
       case Command.OPEN_SPLIT_VIEW:
         this.openBookmarkIds_(this.expandIds_(itemIds), command);
         break;
@@ -521,7 +524,8 @@ export class BookmarksCommandManagerElement extends
         command === Command.OPEN || command === Command.OPEN_NEW_TAB ||
         command === Command.OPEN_NEW_WINDOW ||
         command === Command.OPEN_INCOGNITO ||
-        command === Command.OPEN_SPLIT_VIEW);
+        command === Command.OPEN_SPLIT_VIEW ||
+        command === Command.OPEN_NEW_GROUP);
 
     if (ids.length === 0) {
       return;
@@ -539,6 +543,8 @@ export class BookmarksCommandManagerElement extends
       } else if (command === Command.OPEN_SPLIT_VIEW) {
         BookmarkManagerApiProxyImpl.getInstance().openInNewTab(
             ids.shift()!, {active: false, split: true});
+      } else if (command === Command.OPEN_NEW_GROUP) {
+        BookmarkManagerApiProxyImpl.getInstance().openInNewTabGroup(ids);
       } else {
         if (command === Command.OPEN) {
           BookmarkManagerApiProxyImpl.getInstance().openInNewTab(ids.shift()!);
@@ -679,6 +685,10 @@ export class BookmarksCommandManagerElement extends
         return this.getPluralizedOpenAllString_(
             'menuOpenAllIncognito', 'menuOpenIncognito',
             'menuOpenAllIncognitoWithCount');
+      case Command.OPEN_NEW_GROUP:
+        return this.getPluralizedOpenAllString_(
+            'menuOpenAllNewTabGroup', 'menuOpenNewTabGroup',
+            'menuOpenAllNewTabGroupWithCount');
     }
 
     assertNotReached();
@@ -714,9 +724,10 @@ export class BookmarksCommandManagerElement extends
           Command.COPY,
           Command.PASTE,
           // <hr>
+          Command.OPEN_INCOGNITO,
+          Command.OPEN_NEW_GROUP,
           Command.OPEN_NEW_TAB,
           Command.OPEN_NEW_WINDOW,
-          Command.OPEN_INCOGNITO,
         ];
         if (loadTimeData.getBoolean('splitViewEnabled')) {
           commands.push(Command.OPEN_SPLIT_VIEW);

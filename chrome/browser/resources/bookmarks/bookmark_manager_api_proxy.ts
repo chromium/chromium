@@ -20,6 +20,7 @@ export interface BookmarkManagerApiProxy {
   canPaste(parentId: string): Promise<boolean>;
   openInNewWindow(idList: string[], incognito: boolean): void;
   openInNewTab(id: string, params?: OpenInNewTabParams): void;
+  openInNewTabGroup(idList: string[]): void;
   cut(idList: string[]): Promise<void>;
   paste(parentId: string, selectedIdList?: string[]): Promise<void>;
   copy(idList: string[]): Promise<void>;
@@ -54,6 +55,10 @@ export class BookmarkManagerApiProxyImpl implements BookmarkManagerApiProxy {
   openInNewTab(id: string, params: OpenInNewTabParams) {
     chrome.bookmarkManagerPrivate.openInNewTab(
         id, {active: params.active, split: params.split});
+  }
+
+  openInNewTabGroup(idList: string[]) {
+    chrome.bookmarkManagerPrivate.openInNewTabGroup(idList);
   }
 
   cut(idList: string[]) {

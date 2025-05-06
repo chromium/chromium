@@ -359,8 +359,12 @@ suite('<bookmarks-command-manager>', function() {
         assertFalse(commandItem[Command.OPEN_INCOGNITO].hidden);
 
         assertTrue(!!commandItem[Command.OPEN_SPLIT_VIEW]);
-        assertTrue(commandItem[Command.OPEN_INCOGNITO].disabled);
-        assertFalse(commandItem[Command.OPEN_INCOGNITO].hidden);
+        assertTrue(commandItem[Command.OPEN_SPLIT_VIEW].disabled);
+        assertFalse(commandItem[Command.OPEN_SPLIT_VIEW].hidden);
+
+        assertTrue(!!commandItem[Command.OPEN_NEW_GROUP]);
+        assertTrue(commandItem[Command.OPEN_NEW_GROUP].disabled);
+        assertFalse(commandItem[Command.OPEN_NEW_GROUP].hidden);
       });
 
   test('cannot execute editing commands when editing is disabled', async () => {

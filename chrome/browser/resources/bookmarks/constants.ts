@@ -48,8 +48,10 @@ export enum Command {
 
   OPEN_SPLIT_VIEW = 23,
 
+  OPEN_NEW_GROUP = 24,
+
   // Append new values to the end of the enum.
-  MAX_VALUE = 24,
+  MAX_VALUE = 25,
 }
 
 /**

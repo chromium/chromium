@@ -19,6 +19,7 @@ export class TestBookmarkManagerApiProxy extends TestBrowserProxy implements
       'drop',
       'openInNewTab',
       'openInNewWindow',
+      'openInNewTabGroup',
       'paste',
       'removeTrees',
       'startDrag',
@@ -56,6 +57,10 @@ export class TestBookmarkManagerApiProxy extends TestBrowserProxy implements
 
   openInNewTab(id: string, params?: OpenInNewTabParams) {
     this.methodCalled('openInNewTab', [id, params]);
+  }
+
+  openInNewTabGroup(idList: string[]) {
+    this.methodCalled('openInNewTabGroup', [idList]);
   }
 
   cut(idList: string[]) {

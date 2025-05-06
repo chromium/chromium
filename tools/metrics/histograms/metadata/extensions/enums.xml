@@ -2819,6 +2819,7 @@ Called by update_extension_histograms.py.-->
   <int value="1934" label="EXPERIMENTALACTOR_STARTTASK"/>
   <int value="1935" label="EXPERIMENTALACTOR_EXECUTEACTION"/>
   <int value="1936" label="EXPERIMENTALACTOR_STOPTASK"/>
+  <int value="1937" label="BOOKMARKMANAGERPRIVATE_OPENINNEWTABGROUP"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

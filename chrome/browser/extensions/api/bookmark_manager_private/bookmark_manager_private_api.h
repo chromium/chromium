@@ -319,6 +319,19 @@ class BookmarkManagerPrivateOpenInNewWindowFunction
   ResponseValue RunOnReady() override;
 };
 
+class BookmarkManagerPrivateOpenInNewTabGroupFunction
+    : public extensions::BookmarksFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.openInNewTabGroup",
+                             BOOKMARKMANAGERPRIVATE_OPENINNEWTABGROUP)
+
+ protected:
+  ~BookmarkManagerPrivateOpenInNewTabGroupFunction() override = default;
+
+  // BookmarksFunction:
+  ResponseValue RunOnReady() override;
+};
+
 class BookmarkManagerPrivateIOFunction : public BookmarksFunction,
                                          public ui::SelectFileDialog::Listener {
  public:

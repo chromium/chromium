@@ -307,6 +307,20 @@
         ]
       },
       {
+        "name": "openInNewTabGroup",
+        "type": "function",
+        "description": "Opens the given bookmarks in a new tab group.",
+        "parameters": [
+          {
+            "name": "idList",
+            "description": "An array of string-valued ids.",
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
+          }
+        ]
+      },
+      {
         "name": "import",
         "type": "function",
         "description": "Imports bookmarks from a Chrome html bookmark file",
