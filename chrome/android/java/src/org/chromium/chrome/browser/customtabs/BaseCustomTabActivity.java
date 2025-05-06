@@ -175,6 +175,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private WebappDeferredStartupWithStorageHandler mWebappDeferredStartupWithStorageHandler;
     private TrustedWebActivityModel mTrustedWebActivityModel;
     private SharedActivityCoordinator mSharedActivityCoordinator;
+    private TrustedWebActivityBrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private @Nullable BrowserServicesThemeColorProvider mBrowserServicesThemeColorProvider;
 
@@ -798,6 +799,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
         if (getCustomTabActivityTabController() != null) {
             getCustomTabActivityTabController().destroy();
+        }
+
+        if (mBrowserControlsVisibilityManager != null) {
+            mBrowserControlsVisibilityManager.destroy();
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
@@ -1446,12 +1451,19 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
     private TrustedWebActivityBrowserControlsVisibilityManager
             createTrustedWebActivityBrowserControlsVisibilityManager() {
-        return new TrustedWebActivityBrowserControlsVisibilityManager(
-                getTabObserverRegistrar(),
-                getCustomTabActivityTabProvider(),
-                getCustomTabToolbarCoordinator(),
-                getCloseButtonVisibilityManager(),
-                getIntentDataProvider());
+        if (mBrowserControlsVisibilityManager != null) {
+            return mBrowserControlsVisibilityManager;
+        }
+
+        mBrowserControlsVisibilityManager =
+                new TrustedWebActivityBrowserControlsVisibilityManager(
+                        getTabObserverRegistrar(),
+                        getCustomTabActivityTabProvider(),
+                        getCustomTabToolbarCoordinator(),
+                        getCloseButtonVisibilityManager(),
+                        getAppHeaderCoordinator(),
+                        getIntentDataProvider());
+        return mBrowserControlsVisibilityManager;
     }
 
     private SharedActivityCoordinator getSharedActivityCoordinator() {
