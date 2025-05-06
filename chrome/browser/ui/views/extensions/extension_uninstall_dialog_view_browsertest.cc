@@ -206,8 +206,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
 
 // Test that we don't crash when uninstalling an extension from a web app
 // window in Ash. Context: crbug.com/825554
+// TODO(crbug.com/415937950): Fix and re-enable flaky test.
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
-                       WebAppWindowAshCrash) {
+                       DISABLED_WebAppWindowAshCrash) {
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
   extensions::ExtensionRegistrar::Get(browser()->profile())
       ->AddExtension(extension.get());
