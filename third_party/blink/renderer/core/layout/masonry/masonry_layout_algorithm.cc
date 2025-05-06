@@ -47,12 +47,13 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   const auto track_collection = BuildGridAxisTracks(
       line_resolver, SizingConstraint::kLayout, start_offset);
 
-  auto masonry_items =
-      Node().ConstructMasonryItems(line_resolver, start_offset);
+  const auto& node = Node();
+  auto masonry_items = node.ConstructMasonryItems(line_resolver, start_offset);
   PlaceMasonryItems(track_collection, masonry_items);
 
-  // TODO(ethavar): Compute the actual block size for the fragment.
-  container_builder_.SetFragmentsTotalBlockSize(intrinsic_block_size_);
+  container_builder_.SetFragmentsTotalBlockSize(ComputeBlockSizeForFragment(
+      GetConstraintSpace(), node, BorderPadding(), intrinsic_block_size_,
+      container_builder_.InlineSize()));
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
   return container_builder_.ToBoxFragment();
 }
