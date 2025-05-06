@@ -37,6 +37,7 @@ misc_sources = [
   "dictation/earcons/audio_end.wav",
   "dictation/earcons/audio_initiate.wav",
   "dictation/earcons/null_selection.wav",
+  "dictation/offscreen.html",
 ]
 
 # TS files to build.
@@ -51,6 +52,7 @@ ts_modules = [
   "dictation/metrics_utils.ts",
   "dictation/ui_controller.ts",
   "dictation/macros/list_commands_macro.ts",
+  "dictation/offscreen_audio.ts",
   "dictation/parse/input_text_strategy.ts",
   "dictation/parse/parse_strategy.ts",
   "dictation/parse/pumpkin_parse_strategy.ts",
@@ -72,6 +74,7 @@ ts_modules = [
   "facegaze/macros/mouse_scroll_macro.ts",
   "facegaze/macros/reset_cursor_macro.ts",
   "magnifier/magnifier.ts",
+  "offscreen_command_type.ts",
 ]
 
 # The relative path in the staging directory of TS modules that need to be copied from another directory.
@@ -91,6 +94,7 @@ ts_definitions = [
   "../../definitions/input_method_private.d.ts",
   "../../definitions/language_settings_private.d.ts",
   "../../definitions/metrics_private.d.ts",
+  "../../definitions/offscreen.d.ts",
   "../../definitions/runtime.d.ts",
   "../../definitions/settings_private_mv2.d.ts",
   "../../definitions/speech_recognition_private.d.ts",

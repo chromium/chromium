@@ -36,6 +36,9 @@
     "metricsPrivate",
     "settingsPrivate",
     "languageSettingsPrivate",
+{% if is_manifest_v3 == '1' %}
+    "offscreen",
+{% endif %}
     "speechRecognitionPrivate",
     "tabs",
     "videoCapture"
