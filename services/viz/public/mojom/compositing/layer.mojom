@@ -31,6 +31,11 @@ import "ui/gfx/mojom/transform.mojom";
 struct RareProperties {
   cc.mojom.FilterQuality filter_quality = cc.mojom.FilterQuality.kLow;
 
+  // NOTE: Instances of this struct are initialized by reading the
+  // corresponding instances of the C++-level struct, and thus no explicit
+  // default value is needed here.
+  cc.mojom.DynamicRangeLimit dynamic_range_limit;
+
   // The bounds of elements marked for potential region capture, stored in
   // the coordinate space of this layer.
   // NOTE: This field has no explicitly-set default value in the C++ struct.

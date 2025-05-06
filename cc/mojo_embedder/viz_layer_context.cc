@@ -571,6 +571,7 @@ void SerializeLayer(LayerImpl& layer,
   if (layer.HasAnyRarePropertySet()) {
     auto rare_properties = viz::mojom::RareProperties::New();
     rare_properties->filter_quality = layer.GetFilterQuality();
+    rare_properties->dynamic_range_limit = layer.GetDynamicRangeLimit();
 
     // NOTE: If the layer's RareProperties is present, then `capture_bounds()`
     // is guaranteed to be non-null.
