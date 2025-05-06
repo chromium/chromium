@@ -13,7 +13,9 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.web_app_header.R;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 
 /** Provides predicate utilities related to webapp header. */
 @NullMarked
@@ -42,6 +44,21 @@ public class WebAppHeaderUtils {
                 && ChromeFeatureList.sAndroidMinimalUiLargeScreen.isEnabled()
                 && isTrustedWebApp
                 && isValidDisplayMode;
+    }
+
+    /**
+     * Checks whether minimal ui is visible based on the desktop window state and feature flag
+     * state.
+     *
+     * @param intentDataProvider provides information about web app.
+     * @param desktopWindowStateManager provides desktop windowing state.
+     * @return true when desktop minimal ui is visible, false otherwise.
+     */
+    public static boolean isMinimalUiVisible(
+            BrowserServicesIntentDataProvider intentDataProvider,
+            DesktopWindowStateManager desktopWindowStateManager) {
+        return isMinimalUiEnabled(intentDataProvider)
+                && AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateManager);
     }
 
     /**

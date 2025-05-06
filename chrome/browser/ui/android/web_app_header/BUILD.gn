@@ -22,6 +22,7 @@ android_library("java") {
     "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/desktop_windowing:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//components/browser_ui/desktop_windowing/android:java",

@@ -571,7 +571,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         super.performPreInflationStartup();
 
         mCustomTabToolbarColorController =
-                new CustomTabToolbarColorController(getBrowserServicesThemeColorProvider());
+                new CustomTabToolbarColorController(
+                        this,
+                        getBrowserServicesThemeColorProvider(),
+                        getAppHeaderCoordinator(),
+                        getIntentDataProvider());
 
         mCustomTabCompositorContentInitializer =
                 new CustomTabCompositorContentInitializer(
