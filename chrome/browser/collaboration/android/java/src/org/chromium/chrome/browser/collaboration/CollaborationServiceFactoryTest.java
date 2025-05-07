@@ -36,6 +36,7 @@ import org.chromium.components.collaboration.SigninStatus;
 import org.chromium.components.collaboration.SyncStatus;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.CountDownLatch;
@@ -64,13 +65,13 @@ public class CollaborationServiceFactoryTest {
                     @Override
                     public void startShareOrManageFlow(
                             CollaborationControllerDelegate delegate,
-                            String syncId,
+                            EitherGroupId eitherId,
                             @CollaborationServiceShareOrManageEntryPoint int entry) {}
 
                     @Override
                     public void startLeaveOrDeleteFlow(
                             CollaborationControllerDelegate delegate,
-                            String syncId,
+                            EitherGroupId eitherId,
                             @CollaborationServiceLeaveOrDeleteEntryPoint int entry) {}
 
                     @Override

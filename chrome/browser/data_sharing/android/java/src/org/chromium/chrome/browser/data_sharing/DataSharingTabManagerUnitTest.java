@@ -69,6 +69,7 @@ import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.ParseUrlStatus;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
@@ -238,14 +239,11 @@ public class DataSharingTabManagerUnitTest {
     public void testShareOrManageFlowWithCollaborationService() {
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
+        EitherGroupId either_id = EitherGroupId.createLocalId(LOCAL_ID);
         mDataSharingTabManager.createOrManageFlow(
-                mActivity,
-                /* syncId= */ null,
-                LOCAL_ID,
-                CollaborationServiceShareOrManageEntryPoint.UNKNOWN,
-                null);
+                mActivity, either_id, CollaborationServiceShareOrManageEntryPoint.UNKNOWN, null);
 
-        verify(mCollaborationService).startShareOrManageFlow(any(), eq(SYNC_GROUP_ID1), anyInt());
+        verify(mCollaborationService).startShareOrManageFlow(any(), eq(either_id), anyInt());
     }
 
     @Test
@@ -274,7 +272,8 @@ public class DataSharingTabManagerUnitTest {
                 mCreateGroupFinishedCallback);
 
         verify(mTabGroupModelFilter).createSingleTabGroup(eq(mTab));
-        verify(mCollaborationService).startShareOrManageFlow(any(), eq(SYNC_GROUP_ID1), anyInt());
+        verify(mCollaborationService)
+                .startShareOrManageFlow(any(), eq(EitherGroupId.createLocalId(LOCAL_ID)), anyInt());
     }
 
     @Test
@@ -302,7 +301,8 @@ public class DataSharingTabManagerUnitTest {
                 CollaborationServiceShareOrManageEntryPoint.UNKNOWN,
                 mCreateGroupFinishedCallback);
 
-        verify(mCollaborationService).startShareOrManageFlow(any(), eq(SYNC_GROUP_ID1), anyInt());
+        verify(mCollaborationService)
+                .startShareOrManageFlow(any(), eq(EitherGroupId.createLocalId(LOCAL_ID)), anyInt());
     }
 
     @Test

@@ -52,6 +52,7 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -225,8 +226,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             } else if (menuId == R.id.manage_sharing) {
                 dataSharingTabManager.createOrManageFlow(
                         activity,
-                        /* syncId= */ null,
-                        new LocalTabGroupId(tabGroupId),
+                        EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId)),
                         CollaborationServiceShareOrManageEntryPoint
                                 .ANDROID_TAB_GROUP_CONTEXT_MENU_MANAGE,
                         /* createGroupFinishedCallback= */ null);

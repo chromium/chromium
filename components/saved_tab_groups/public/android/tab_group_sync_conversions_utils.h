@@ -31,6 +31,12 @@ ScopedJavaLocalRef<jstring> UuidToJavaString(JNIEnv* env,
 // Converts a Java string to base::Uuid.
 base::Uuid JavaStringToUuid(JNIEnv* env, const JavaParamRef<jstring>& j_uuid);
 
+// Converts a Java sync or local group ID to EitherGroupID.
+EitherGroupID JavaSyncOrLocalGroupIdToEitherGroupId(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_sync_group_id,
+    const JavaParamRef<jobject>& j_local_group_id);
+
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_ANDROID_TAB_GROUP_SYNC_CONVERSIONS_UTILS_H_

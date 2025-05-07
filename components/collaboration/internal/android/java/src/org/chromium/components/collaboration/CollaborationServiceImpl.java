@@ -14,6 +14,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.url.GURL;
 
 /**
@@ -48,19 +50,37 @@ public class CollaborationServiceImpl implements CollaborationService {
     @Override
     public void startShareOrManageFlow(
             CollaborationControllerDelegate delegate,
-            String syncId,
+            EitherGroupId eitherId,
             @CollaborationServiceShareOrManageEntryPoint int entry) {
+        String syncId = null;
+        LocalTabGroupId localId = null;
+        if (eitherId.isSyncId()) {
+            syncId = eitherId.getSyncId();
+        } else {
+            localId = eitherId.getLocalId();
+        }
+
         CollaborationServiceImplJni.get()
-                .startShareOrManageFlow(mNativePtr, delegate.getNativePtr(), syncId, entry);
+                .startShareOrManageFlow(
+                        mNativePtr, delegate.getNativePtr(), syncId, localId, entry);
     }
 
     @Override
     public void startLeaveOrDeleteFlow(
             CollaborationControllerDelegate delegate,
-            String syncId,
+            EitherGroupId eitherId,
             @CollaborationServiceLeaveOrDeleteEntryPoint int entry) {
+        String syncId = null;
+        LocalTabGroupId localId = null;
+        if (eitherId.isSyncId()) {
+            syncId = eitherId.getSyncId();
+        } else {
+            localId = eitherId.getLocalId();
+        }
+
         CollaborationServiceImplJni.get()
-                .startLeaveOrDeleteFlow(mNativePtr, delegate.getNativePtr(), syncId, entry);
+                .startLeaveOrDeleteFlow(
+                        mNativePtr, delegate.getNativePtr(), syncId, localId, entry);
     }
 
     @Override
@@ -122,13 +142,15 @@ public class CollaborationServiceImpl implements CollaborationService {
         void startShareOrManageFlow(
                 long nativeCollaborationServiceAndroid,
                 long delegateNativePtr,
-                String syncId,
+                @Nullable String syncId,
+                @Nullable LocalTabGroupId localId,
                 int entry);
 
         void startLeaveOrDeleteFlow(
                 long nativeCollaborationServiceAndroid,
                 long delegateNativePtr,
-                String syncId,
+                @Nullable String syncId,
+                @Nullable LocalTabGroupId localId,
                 int entry);
 
         ServiceStatus getServiceStatus(long nativeCollaborationServiceAndroid);

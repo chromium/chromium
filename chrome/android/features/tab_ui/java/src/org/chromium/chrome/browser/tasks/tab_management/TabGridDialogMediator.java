@@ -1071,8 +1071,7 @@ public class TabGridDialogMediator
             RecordUserAction.record("TabGridDialogMenu.ManageSharing");
             mDataSharingTabManager.createOrManageFlow(
                     mActivity,
-                    /* syncId= */ null,
-                    new LocalTabGroupId(tabGroupId),
+                    EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId)),
                     CollaborationServiceShareOrManageEntryPoint.ANDROID_TAB_GRID_DIALOG_MANAGE,
                     /* createGroupFinishedCallback= */ null);
         } else if (menuId == R.id.recent_activity) {

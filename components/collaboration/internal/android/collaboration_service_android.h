@@ -31,11 +31,13 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data,
       JNIEnv* env,
       jlong delegate,
       const base::android::JavaParamRef<jstring>& j_sync_group_id,
+      const base::android::JavaParamRef<jobject>& j_local_group_id,
       jint entry);
   void StartLeaveOrDeleteFlow(
       JNIEnv* env,
       jlong delegate,
       const base::android::JavaParamRef<jstring>& j_sync_group_id,
+      const base::android::JavaParamRef<jobject>& j_local_group_id,
       jint entry);
   base::android::ScopedJavaLocalRef<jobject> GetServiceStatus(JNIEnv* env);
   jint GetCurrentUserRoleForGroup(

@@ -64,6 +64,7 @@ import org.chromium.components.data_sharing.configs.DataSharingRuntimeDataConfig
 import org.chromium.components.data_sharing.configs.DataSharingStringConfig;
 import org.chromium.components.data_sharing.configs.DataSharingUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingUiConfig.DataSharingUserAction;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -537,31 +538,27 @@ public class DataSharingTabManager {
         }
         createOrManageFlow(
                 activity,
-                /* syncId= */ null,
-                new LocalTabGroupId(assumeNonNull(tab.getTabGroupId())),
+                EitherGroupId.createLocalId(
+                        new LocalTabGroupId(assumeNonNull(tab.getTabGroupId()))),
                 entryPoint,
                 createGroupFinishedCallback);
     }
 
     /**
-     * Creates a collaboration group.
+     * Creates or manage a collaboration group.
      *
      * @param activity The activity in which the group is to be created.
-     * @param syncId The sync ID of the tab group.
-     * @param localTabGroupId The tab group ID of the tab in the local tab group model.
+     * @param eitherId The sync ID or local tab group ID of the tab group.
+     * @param entry The entry point of the flow.
      * @param createGroupFinishedCallback Callback invoked when the creation flow is finished.
      */
     public void createOrManageFlow(
             Activity activity,
-            @Nullable String syncId,
-            @Nullable LocalTabGroupId localTabGroupId,
+            EitherGroupId eitherId,
             @CollaborationServiceShareOrManageEntryPoint int entry,
             @Nullable Callback<Boolean> createGroupFinishedCallback) {
         DataSharingMetrics.recordShareActionFlowState(
                 DataSharingMetrics.ShareActionStateAndroid.SHARE_TRIGGERED);
-
-        SavedTabGroup existingGroup = getSavedTabGroupForEitherId(syncId, localTabGroupId);
-        assert existingGroup != null : "Group not found in TabGroupSyncService.";
 
         // TODO(haileywang): Ensure createGroupFinishedCallback is called when the creation is
         // finished.
@@ -569,8 +566,7 @@ public class DataSharingTabManager {
                 mCollaborationControllerDelegateFactory.create(
                         FlowType.SHARE_OR_MANAGE, /* switchToTabSwitcherCallback= */ null);
         assumeNonNull(mCollaborationService);
-        mCollaborationService.startShareOrManageFlow(
-                mCurrentDelegate, assumeNonNull(existingGroup.syncId), entry);
+        mCollaborationService.startShareOrManageFlow(mCurrentDelegate, eitherId, entry);
     }
 
     /**
@@ -900,17 +896,17 @@ public class DataSharingTabManager {
                 () ->
                         createOrManageFlow(
                                 activity,
-                                existingGroup.syncId,
-                                /* localTabGroupId= */ null,
+                                EitherGroupId.createSyncId(assumeNonNull(existingGroup.syncId)),
                                 CollaborationServiceShareOrManageEntryPoint.RECENT_ACTIVITY,
                                 /* createGroupFinishedCallback= */ null);
+        assumeNonNull(existingGroup.syncId);
         RecentActivityActionHandler recentActivityActionHandler =
                 new RecentActivityActionHandlerImpl(
                         tabGroupSyncService,
                         mTabModelSelectorSupplier.get(),
                         mDataSharingTabGroupsDelegate,
                         collaborationId,
-                        assumeNonNull(existingGroup.syncId),
+                        existingGroup.syncId,
                         manageSharingCallback);
 
         Runnable showFullActivityRunnable =

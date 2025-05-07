@@ -134,6 +134,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -171,6 +172,8 @@ public class TabGridDialogMediatorUnitTest {
     private static final int POSITION2 = 1;
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID = new LocalTabGroupId(TAB_GROUP_ID);
+    private static final EitherGroupId EITHER_LOCAL_TAB_GROUP_ID =
+            EitherGroupId.createLocalId(LOCAL_TAB_GROUP_ID);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -323,13 +326,11 @@ public class TabGridDialogMediatorUnitTest {
 
         mModel.get(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER).onClick(null);
         verify(mDataSharingTabManager)
-                .createOrManageFlow(
-                        eq(mActivity), eq(null), eq(LOCAL_TAB_GROUP_ID), anyInt(), any());
+                .createOrManageFlow(eq(mActivity), eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt(), any());
 
         mModel.get(TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER).onClick(null);
         verify(mDataSharingTabManager, times(2))
-                .createOrManageFlow(
-                        eq(mActivity), eq(null), eq(LOCAL_TAB_GROUP_ID), anyInt(), any());
+                .createOrManageFlow(eq(mActivity), eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt(), any());
 
         mModel.get(TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE).run();
         ArgumentCaptor<String> categoryCaptor = ArgumentCaptor.forClass(String.class);
@@ -1525,7 +1526,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.onToolbarMenuItemClick(R.id.manage_sharing, TAB_GROUP_ID, COLLABORATION_ID1);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.ManageSharing"));
         verify(mDataSharingTabManager)
-                .createOrManageFlow(any(), eq(null), eq(LOCAL_TAB_GROUP_ID), anyInt(), eq(null));
+                .createOrManageFlow(any(), eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt(), eq(null));
     }
 
     @Test
