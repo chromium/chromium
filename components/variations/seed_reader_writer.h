@@ -42,20 +42,23 @@ struct StoredSeed {
   StorageFormat storage_format;
   std::string_view data;
   std::string_view signature;
+  int milestone = 0;
 };
 
-// TODO(crbug.com/380465790): Represents the seed and other related info.
-// This info will be stored together in the SeedFile. Once all the seed-related
-// info is stored in the struct, change it to a proto and use it to serialize
-// and deserialize the data.
-struct SeedInfo {
-  std::string data;
-  std::string signature;
+// Groups the data from a seed and other seed-related info that is validated
+// and ready to be stored in a seed file or local state. This struct is passed
+// by value, so it must be copyable and lightweight.
+struct ValidatedSeedInfo {
+  std::string_view compressed_seed_data;
+  std::string_view base64_seed_data;
+  std::string_view signature;
+  int milestone = 0;
 };
 
 struct SeedFieldsPrefs {
   const char* seed;
   const char* signature;
+  const char* milestone;
 };
 
 COMPONENT_EXPORT(VARIATIONS)
@@ -99,9 +102,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // clients (see ShouldUseSeedFile()) and schedules a write of
   // `base64_seed_data` to local state for all other clients. Also stores other
   // seed-related info.
-  void StoreValidatedSeedInfo(std::string_view compressed_seed_data,
-                              std::string_view base64_seed_data,
-                              std::string_view signature);
+  void StoreValidatedSeedInfo(ValidatedSeedInfo seed_info);
 
   // Clears seed data and other seed-related info by overwriting it with an
   // empty string.
@@ -115,14 +116,28 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   void SetTimerForTesting(base::OneShotTimer* timer_override);
 
  private:
+  // TODO(crbug.com/380465790): Represents the seed and other related info.
+  // This info will be stored together in the SeedFile. Once all the
+  // seed-related info is stored in the struct, change it to a proto and use it
+  // to serialize and deserialize the data.
+  struct SeedInfo {
+    std::string data;
+    std::string signature;
+    int milestone = 0;
+  };
+
   // Returns the serialized data to be written to disk. This is done
   // asynchronously during the write process.
   base::ImportantFileWriter::BackgroundDataProducerCallback
   GetSerializedDataProducerForBackgroundSequence() override;
 
-  // Schedules `seed_info` to be written using `seed_writer_`.
-  void ScheduleSeedFileWrite(std::string_view seed_data,
-                             std::string_view signature);
+  // Schedules `seed_info` to be written using `seed_writer_`. Fields with
+  // zero/empty values will be ignored. If you want to clear the seed file, use
+  // ScheduleSeedFileClear() instead.
+  void ScheduleSeedFileWrite(ValidatedSeedInfo seed_info);
+
+  // Schedules `seed_info` to be cleared using `seed_writer_`.
+  void ScheduleSeedFileClear();
 
   // Schedules the deletion of a seed file.
   void DeleteSeedFile();
@@ -134,9 +149,10 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // in `local state_`, additionally clears it.
   void ReadSeedFile();
 
-  // Schedules a write of `base64_seed_data` to `local_state_`.
-  void ScheduleLocalStateWrite(std::string_view base64_seed_data,
-                               std::string_view signature);
+  // Schedules a write of `base64_seed_data` to `local_state_`. Fields with
+  // zero/empty values will be ignored. If you want to clear the seed file, use
+  // ScheduleSeedFileClear() instead.
+  void ScheduleLocalStateWrite(ValidatedSeedInfo seed_info);
 
   // Returns true if a seed file should be used.
   bool ShouldUseSeedFile() const;

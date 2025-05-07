@@ -76,9 +76,11 @@
       ->GetVariationsService()
       ->GetSeedStoreForTesting()
       ->GetSafeSeedReaderWriterForTesting()
-      ->StoreValidatedSeedInfo(variations::kTestSeedData.GetCompressedData(),
-                               variations::kTestSeedData.base64_compressed_data,
-                               variations::kTestSeedData.base64_signature);
+      ->StoreValidatedSeedInfo(variations::ValidatedSeedInfo{
+          .compressed_seed_data = variations::kTestSeedData.GetCompressedData(),
+          .base64_seed_data = variations::kTestSeedData.base64_compressed_data,
+          .signature = variations::kTestSeedData.base64_signature,
+          .milestone = 92});
 }
 
 + (void)setCrashingRegularSeedAndSignature {
@@ -86,10 +88,13 @@
       ->GetVariationsService()
       ->GetSeedStoreForTesting()
       ->GetSeedReaderWriterForTesting()
-      ->StoreValidatedSeedInfo(
-          variations::kCrashingSeedData.GetCompressedData(),
-          variations::kCrashingSeedData.base64_compressed_data,
-          variations::kCrashingSeedData.base64_signature);
+      ->StoreValidatedSeedInfo(variations::ValidatedSeedInfo{
+          .compressed_seed_data =
+              variations::kCrashingSeedData.GetCompressedData(),
+          .base64_seed_data =
+              variations::kCrashingSeedData.base64_compressed_data,
+          .signature = variations::kCrashingSeedData.base64_signature,
+          .milestone = 92});
 }
 
 + (int)crashStreak {

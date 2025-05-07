@@ -234,7 +234,10 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
   const std::string base64_compressed_seed =
       base::Base64Encode(compressed_seed);
   seed_reader_writer.StoreValidatedSeedInfo(
-      compressed_seed, base64_compressed_seed, "signature");
+      ValidatedSeedInfo{.compressed_seed_data = compressed_seed,
+                        .base64_seed_data = base64_compressed_seed,
+                        .signature = "signature",
+                        .milestone = 2});
 
   // Force write.
   timer_.Fire();
@@ -387,7 +390,10 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, WriteSeed) {
   const std::string base64_compressed_seed =
       base::Base64Encode(compressed_seed);
   seed_reader_writer.StoreValidatedSeedInfo(
-      compressed_seed, base64_compressed_seed, "signature");
+      ValidatedSeedInfo{.compressed_seed_data = compressed_seed,
+                        .base64_seed_data = base64_compressed_seed,
+                        .signature = "signature",
+                        .milestone = 2});
 
   // Ensure there's no pending write.
   EXPECT_FALSE(timer_.IsRunning());
@@ -475,7 +481,10 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, EmptySeedFilePathIsValid) {
   const std::string base64_compressed_seed =
       base::Base64Encode(compressed_seed);
   seed_reader_writer.StoreValidatedSeedInfo(
-      compressed_seed, base64_compressed_seed, "signature");
+      ValidatedSeedInfo{.compressed_seed_data = compressed_seed,
+                        .base64_seed_data = base64_compressed_seed,
+                        .signature = "signature",
+                        .milestone = 2});
 
   // Ensure there's no pending write.
   EXPECT_FALSE(timer_.IsRunning());

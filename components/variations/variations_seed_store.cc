@@ -324,7 +324,7 @@ base::Time VariationsSeedStore::GetSafeSeedFetchTime() const {
 }
 
 int VariationsSeedStore::GetLatestMilestone() const {
-  return local_state_->GetInteger(prefs::kVariationsSeedMilestone);
+  return seed_reader_writer_->GetSeedData().milestone;
 }
 
 int VariationsSeedStore::GetSafeSeedMilestone() const {
@@ -727,20 +727,24 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
   if (!country_code.empty())
     local_state_->SetString(prefs::kVariationsCountry, country_code);
 
-  int milestone;
-  if (base::StringToInt(version_info::GetMajorVersionNumber(), &milestone))
-    local_state_->SetInteger(prefs::kVariationsSeedMilestone, milestone);
+  int milestone = version_info::GetMajorVersionNumberAsInt();
 
   // As a space optimization, store an alias to the safe seed if the contents
   // are identical.
   if (seed.MatchesStoredSeed(safe_seed_store_->GetCompressedSeed())) {
-    seed_reader_writer_->StoreValidatedSeedInfo(kIdenticalToSafeSeedSentinel,
-                                                kIdenticalToSafeSeedSentinel,
-                                                seed.base64_seed_signature);
+    seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
+        .compressed_seed_data = kIdenticalToSafeSeedSentinel,
+        .base64_seed_data = kIdenticalToSafeSeedSentinel,
+        .signature = seed.base64_seed_signature,
+        .milestone = milestone,
+    });
   } else {
-    seed_reader_writer_->StoreValidatedSeedInfo(seed.compressed_seed_data,
-                                                seed.base64_seed_data,
-                                                seed.base64_seed_signature);
+    seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
+        .compressed_seed_data = seed.compressed_seed_data,
+        .base64_seed_data = seed.base64_seed_data,
+        .signature = seed.base64_seed_signature,
+        .milestone = milestone,
+    });
   }
   UpdateSeedDateAndLogDayChange(date_fetched);
   latest_serial_number_ = seed.parsed.serial_number();
@@ -752,52 +756,45 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
     const ClientFilterableState& client_state,
     base::Time seed_fetch_time) {
   const StoredSeed previous_safe_seed = safe_seed_store_->GetCompressedSeed();
-  // Avoid overwriting the previous safe seed with an identical copy, which
-  // would be an expensive no-op. This can happen as follows:
+  // Before updating the safe seed, update the latest seed if the latest
+  // seed's value is |kIdenticalToSafeSeedSentinel|.
   //
-  // 1. The client has safe seed A and latest seed B and is applying B.
-  // 2. The client attempts to fetch a seed, receives a 304 Not Modified
-  //    response from the variations server, and promotes B to safe seed. Note
-  //    that B is both the safe seed and the latest seed.
-  // 3. The client attempts to fetch another seed and receives another 304
-  //    response. In this case, the below condition is false and an unnecessary
-  //    write is avoided.
-  if (!seed.MatchesStoredSeed(previous_safe_seed)) {
-    // Before updating the safe seed, update the latest seed if the latest
-    // seed's value is |kIdenticalToSafeSeedSentinel|.
+  // It's theoretically possible for the client to be in the following state:
+  // 1. The client has safe seed A.
+  // 2. The client is applying seed B. In other words, seed B was the latest
+  //    seed when Chrome was started.
+  // 3. The client has just successfully fetched a new latest seed that
+  //    happens to be seed A—perhaps due to a rollback. In this case,
+  //    |kIdenticalToSafeSeedSentinel| is stored as the latest seed value to
+  //    avoid duplicating seed A in storage.
+  // 4. The client is promoting seed B to safe seed.
+  auto latest_seed = seed_reader_writer_->GetSeedData();
+  if (!seed.MatchesStoredSeed(previous_safe_seed) &&
+      latest_seed.data == kIdenticalToSafeSeedSentinel) {
+    // For the below call to StoreValidatedSeed(), there are two possibilities
+    // to consider:
     //
-    // It's theoretically possible for the client to be in the following state:
-    // 1. The client has safe seed A.
-    // 2. The client is applying seed B. In other words, seed B was the latest
-    //    seed when Chrome was started.
-    // 3. The client has just successfully fetched a new latest seed that
-    //    happens to be seed A—perhaps due to a rollback. In this case,
-    //    |kIdenticalToSafeSeedSentinel| is stored as the latest seed value to
-    //    avoid duplicating seed A in storage.
-    // 4. The client is promoting seed B to safe seed.
-    if (seed_reader_writer_->GetSeedData().data ==
-        kIdenticalToSafeSeedSentinel) {
-      // For the below call to StoreValidatedSeed(), there are two possibilities
-      // to consider:
-      //
-      // 1. The client is in the SeedFile experiment's treatment group. In this
-      //    case, StoreValidatedSeedInfo() updates the seed file and ignores the
-      //    local state seed.
-      // 2. The client is either not in the experiment or is in its control or
-      //    default group. In this case, |previous_safe_seed.data| is ignored.
-      seed_reader_writer_->StoreValidatedSeedInfo(
-          previous_safe_seed.data,
-          local_state_->GetString(prefs::kVariationsSafeCompressedSeed),
-          previous_safe_seed.signature);
-    }
-    safe_seed_store_->SetCompressedSeed(seed.compressed_seed_data,
-                                        seed.base64_seed_data,
-                                        seed.base64_seed_signature);
+    // 1. The client is in the SeedFile experiment's treatment group. In this
+    //    case, StoreValidatedSeedInfo() updates the seed file and ignores the
+    //    local state seed.
+    // 2. The client is either not in the experiment or is in its control or
+    //    default group. In this case, |previous_safe_seed.data| is ignored.
+    seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
+        .compressed_seed_data = previous_safe_seed.data,
+        .base64_seed_data =
+            local_state_->GetString(prefs::kVariationsSafeCompressedSeed),
+        .signature = latest_seed.signature,
+        .milestone = latest_seed.milestone});
   }
+
+  safe_seed_store_->SetCompressedSeed(
+      ValidatedSeedInfo{.compressed_seed_data = seed.compressed_seed_data,
+                        .base64_seed_data = seed.base64_seed_data,
+                        .signature = seed.base64_seed_signature,
+                        .milestone = seed_milestone});
 
   safe_seed_store_->SetTimeForStudyDateChecks(client_state.reference_date);
   safe_seed_store_->SetLocale(client_state.locale);
-  safe_seed_store_->SetMilestone(seed_milestone);
   safe_seed_store_->SetPermanentConsistencyCountry(
       client_state.permanent_consistency_country);
   safe_seed_store_->SetSessionConsistencyCountry(
@@ -806,9 +803,11 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
   // As a space optimization, overwrite the stored latest seed data with an
   // alias to the safe seed, if they are identical.
   if (seed.MatchesStoredSeed(seed_reader_writer_->GetSeedData())) {
-    seed_reader_writer_->StoreValidatedSeedInfo(kIdenticalToSafeSeedSentinel,
-                                                kIdenticalToSafeSeedSentinel,
-                                                seed.base64_seed_signature);
+    seed_reader_writer_->StoreValidatedSeedInfo(
+        ValidatedSeedInfo{.compressed_seed_data = kIdenticalToSafeSeedSentinel,
+                          .base64_seed_data = kIdenticalToSafeSeedSentinel,
+                          .signature = latest_seed.signature,
+                          .milestone = latest_seed.milestone});
 
     // Moreover, in this case, the last fetch time for the safe seed should
     // match the latest seed's.
