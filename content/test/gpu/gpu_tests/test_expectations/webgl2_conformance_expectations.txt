@@ -551,8 +551,6 @@ crbug.com/483282 [ amd-0x7340 angle-d3d11 win10 ] conformance2/rendering/blitfra
 
 ## Win / Intel ##
 
-crbug.com/384257970 [ angle-d3d11 intel-0x9bc5 win ] conformance/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
-crbug.com/384257970 [ angle-d3d11 intel-0x9bc5 win ] conformance2/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
 
 crbug.com/401515599 [ win11 amd-0x7480 ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
 crbug.com/401515599 [ win11 amd-0x7480 ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
@@ -846,8 +844,6 @@ crbug.com/906742 [ android-pie android-pixel-2 no-passthrough qualcomm ] conform
 crbug.com/1000354 [ android android-pixel-2 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1276186 [ android android-pixel-2 ] conformance2/glsl3/array-equality.html [ Failure ]
 crbug.com/angleproject/7421 [ android android-pixel-2 angle-disabled no-passthrough ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
-# Slow test that sometimes hits the 300s global timeout
-crbug.com/402726806 [ android android-pixel-2 angle-disabled no-passthrough ] deqp/functional/gles3/vertexarrays/multiple_attributes.stride.html [ RetryOnFailure ]
 
 ## Pixel 4 ##
 
