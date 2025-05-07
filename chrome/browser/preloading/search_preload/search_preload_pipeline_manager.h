@@ -13,6 +13,7 @@
 
 class Profile;
 class AutocompleteResult;
+struct AutocompleteMatch;
 
 namespace content {
 class WebContents;
@@ -49,6 +50,16 @@ class SearchPreloadPipelineManager
   // Called when autocomplete is updated.
   void OnAutocompleteResultChanged(Profile& profile,
                                    const AutocompleteResult& result);
+
+  // Called when a user is likely to navigate to the match.
+  //
+  // Returns true iff a new prefetch is triggered by this call. Note that it
+  // returns false if a prefetch for the same canonical URL has already
+  // triggered.
+  bool OnNavigationLikely(
+      Profile& profile,
+      const AutocompleteMatch& match,
+      omnibox::mojom::NavigationPredictor navigation_predictor);
 
  private:
   friend content::WebContentsUserData<SearchPreloadPipelineManager>;

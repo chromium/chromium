@@ -29,7 +29,10 @@ class SearchPreloadPipeline {
   void UpdateConfidence(content::WebContents& web_contents, int confidence);
 
   // Starts prefetch if not triggered yet.
-  void StartPrefetch(content::WebContents& web_contents,
+  //
+  // Returns true iff prefetch is triggered, i.e. `WebContents::StartPrefetch()`
+  // is called.
+  bool StartPrefetch(content::WebContents& web_contents,
                      const GURL& prefetch_url,
                      content::PreloadingPredictor predictor);
   // Starts prerender if not triggered yet and prefetch is alive.
