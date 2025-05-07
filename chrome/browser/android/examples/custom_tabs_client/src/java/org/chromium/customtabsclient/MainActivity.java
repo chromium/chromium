@@ -967,9 +967,12 @@ public class MainActivity extends AppCompatActivity
             editor.putBoolean(
                     SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON, mEngagementSignalsButton.isEnabled());
             editor.putBoolean(SHARED_PREF_SEARCH_IN_CCT, mSearchInCctCheckbox.isChecked());
-            editor.putBoolean(
-                    SHARED_PREF_OPEN_IN_BROWSER_BUTTON, mOpenInBrowserButtonCheckbox.isChecked());
-            editor.putBoolean(SHARED_PREF_EPHEMERAL_BROWSING, mEphemeralCctCheckbox.isChecked());
+            editor.putInt(
+                    SHARED_PREF_OPEN_IN_BROWSER_BUTTON,
+                    mOpenInBrowserButtonCheckbox.isChecked() ? CHECKED : UNCHECKED);
+            editor.putInt(
+                    SHARED_PREF_EPHEMERAL_BROWSING,
+                    mEphemeralCctCheckbox.isChecked() ? CHECKED : UNCHECKED);
             editor.apply();
         }
         super.onDestroy();
