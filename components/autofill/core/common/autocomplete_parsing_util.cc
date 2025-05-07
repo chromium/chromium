@@ -215,22 +215,23 @@ std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
 
   AutocompleteParsingResult result;
 
-  // Parse the "webauthn" token.
-  if (tokens.back() == "webauthn") {
-    result.webauthn = true;
-    tokens.pop_back();
-    if (tokens.empty()) {
-      return result;
+  // The "webauthn" and "webidentity" tokens can appear in any order at the end
+  // of the list. Note that `tokens` won't be empty by this moment.
+  while (!tokens.empty()) {
+    if (tokens.back() == "webauthn") {
+      result.webauthn = true;
+      tokens.pop_back();
+    } else if (tokens.back() == "webidentity") {
+      result.webidentity = true;
+      tokens.pop_back();
+    } else {
+      // If the last token is neither "webauthn" nor "webidentity",
+      // stop processing these specific tokens.
+      break;
     }
   }
-
-  // Parse the "webidentity" token.
-  if (tokens.back() == "webidentity") {
-    result.webidentity = true;
-    tokens.pop_back();
-    if (tokens.empty()) {
-      return result;
-    }
+  if (tokens.empty()) {
+    return result;
   }
 
   // (1) The final token must be the field type.
