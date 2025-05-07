@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browserservices.trustedwebactivityui.controller;
 
+import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -16,7 +18,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
+import android.os.Build;
+import android.view.ContextThemeWrapper;
+
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsSession;
+import androidx.browser.customtabs.TrustedWebUtils;
+import androidx.browser.trusted.TrustedWebActivityDisplayMode;
+import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,14 +43,19 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -64,6 +83,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     @Mock TrustedWebActivityBrowserControlsVisibilityManager mController;
 
     private @Nullable AppHeaderState mAppHeaderState;
+    private Context mContext;
 
     @Before
     public void setUp() {
@@ -71,6 +91,11 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         when(mTabProvider.getTab()).thenReturn(mTab);
         doReturn(Tab.INVALID_TAB_ID).when(mTab).getParentId();
         setTabSecurityLevel(ConnectionSecurityLevel.NONE);
+
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
     }
 
     /** Browser controls should be shown for pages with certificate errors. */
@@ -127,6 +152,8 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testMinimalUiExitDesktopWindowingInAppMode_ShowBrowserControls() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
         mController = buildController(buildWebApkIntentDataProvider(DisplayMode.MINIMAL_UI));
@@ -134,11 +161,16 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         setupDesktopWindowing(/* isInDesktopWindow= */ false);
 
         mController.onDesktopWindowingModeChanged(mAppHeaderState.isInDesktopWindow());
-        assertEquals(BrowserControlsState.BOTH, getLastBrowserControlsState());
+        assertEquals(
+                "Browser controls should be shown",
+                BrowserControlsState.BOTH,
+                getLastBrowserControlsState());
         assertFalse("Close button should be hidden in minimal ui", getLastCloseButtonVisibility());
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testMinUiExitDwAndEnterAppMode_KeepBrowserControlsHidden() {
         // navigate out of scope in DW
         mController = buildController(buildWebApkIntentDataProvider(DisplayMode.MINIMAL_UI));
@@ -196,7 +228,12 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     /** Browser controls should not be shown for TWAs while in TWA mode. */
     @Test
     public void testTwa() {
-        mController = buildController(mock(BrowserServicesIntentDataProvider.class));
+        var intent = buildTwaIntent();
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
+                new TrustedWebActivityDisplayMode.DefaultMode().toBundle());
+        mController = buildController(buildCustomTabIntentProvider(intent));
+
         mController.updateIsInAppMode(true);
         assertEquals(BrowserControlsState.HIDDEN, getLastBrowserControlsState());
     }
@@ -207,8 +244,65 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         mController = buildController(mock(BrowserServicesIntentDataProvider.class));
         mController.updateIsInAppMode(true);
         mController.updateIsInAppMode(false);
-        assertEquals(BrowserControlsState.BOTH, getLastBrowserControlsState());
-        assertTrue(getLastCloseButtonVisibility());
+        assertEquals(
+                "Browser controls should be visible",
+                BrowserControlsState.BOTH,
+                getLastBrowserControlsState());
+        assertTrue("Close button should be visible", getLastCloseButtonVisibility());
+    }
+
+    @Test
+    public void testTwaMinimalUi_KeepBrowserControlsHidden() {
+        var intent = buildTwaIntent();
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
+                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle());
+        mController = buildController(buildCustomTabIntentProvider(intent));
+
+        mController.updateIsInAppMode(true);
+        assertEquals(
+                "Browser controls should be hidden",
+                BrowserControlsState.HIDDEN,
+                getLastBrowserControlsState());
+        assertTrue(
+                "Close button should be visible for future layout", getLastCloseButtonVisibility());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
+    public void testTwaMinimalUiEnterDesktopWindowing_KeepBrowserControlsHidden() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ false);
+        var intent = buildTwaIntent();
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
+                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle());
+        mController = buildController(buildCustomTabIntentProvider(intent));
+        mController.updateIsInAppMode(true);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+
+        mController.onDesktopWindowingModeChanged(mAppHeaderState.isInDesktopWindow());
+        assertEquals(
+                "Browser controls should be hidden",
+                BrowserControlsState.HIDDEN,
+                getLastBrowserControlsState());
+        assertTrue(
+                "Close button should be visible for future layout", getLastCloseButtonVisibility());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
+    public void testTwaMinimalUiEnterDesktopWindowingNotInAppMode_DoNotUpdateAnything() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ false);
+        var intent = buildTwaIntent();
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
+                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle());
+        mController = buildController(buildCustomTabIntentProvider(intent));
+        mController.updateIsInAppMode(false);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+
+        mController.onDesktopWindowingModeChanged(mAppHeaderState.isInDesktopWindow());
+        verifyNoInteractions(mToolbarCoordinator);
     }
 
     private void setTabSecurityLevel(int securityLevel) {
@@ -220,6 +314,19 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         return new WebApkIntentDataProviderBuilder("org.chromium.webapk.abcd", "https://pwa.rocks/")
                 .setDisplayMode(displayMode)
                 .build();
+    }
+
+    private Intent buildTwaIntent() {
+        CustomTabsSession session =
+                CustomTabsSession.createMockSessionForTesting(
+                        new ComponentName(mContext, ChromeLauncherActivity.class));
+        var intent = new CustomTabsIntent.Builder(session).build().intent;
+        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
+        return intent;
+    }
+
+    private CustomTabIntentDataProvider buildCustomTabIntentProvider(Intent intent) {
+        return new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
     }
 
     private TrustedWebActivityBrowserControlsVisibilityManager buildController(

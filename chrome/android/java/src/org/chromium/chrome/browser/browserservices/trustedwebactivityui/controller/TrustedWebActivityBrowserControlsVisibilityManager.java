@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -92,10 +91,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManager
     }
 
     private boolean shouldShowWebAppControls() {
-        WebappExtras webappExtras = mIntentDataProvider.getWebappExtras();
-        return mInAppMode
-                && webappExtras != null
-                && webappExtras.displayMode == DisplayMode.MINIMAL_UI;
+        return mInAppMode && mIntentDataProvider.getResolvedDisplayMode() == DisplayMode.MINIMAL_UI;
     }
 
     /** Should be called when the browser enters and exits TWA mode. */
@@ -150,8 +146,10 @@ public class TrustedWebActivityBrowserControlsVisibilityManager
             return BrowserControlsState.SHOWN;
         }
 
-        // Fallback to browser controls in fullscreen mode.
-        if (shouldShowWebAppControls() && !mIsInDesktopWindow) {
+        // Fallback to browser controls in fullscreen mode when running WebAPK or shortcut web app.
+        if (mIntentDataProvider.isWebappOrWebApkActivity()
+                && shouldShowWebAppControls()
+                && !mIsInDesktopWindow) {
             return BrowserControlsState.BOTH;
         }
 

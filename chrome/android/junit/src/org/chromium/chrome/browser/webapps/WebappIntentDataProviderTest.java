@@ -98,7 +98,7 @@ public class WebappIntentDataProviderTest {
 
         assertEquals(
                 "Should resolve to standalone",
-                DisplayMode.STANDALONE,
+                DisplayMode.MINIMAL_UI,
                 intentDataProvider.getResolvedDisplayMode());
     }
 
@@ -112,19 +112,6 @@ public class WebappIntentDataProviderTest {
         assertEquals(
                 "Should resolve to minimal ui",
                 DisplayMode.MINIMAL_UI,
-                intentDataProvider.getResolvedDisplayMode());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @DisableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
-    public void testMinUiModeDisabled_ResolveToStandalone() {
-        var intentDataProvider =
-                buildWebAppIntentDataProvider(mIntent, buildWebAppExtras(DisplayMode.MINIMAL_UI));
-
-        assertEquals(
-                "Should resolve to standalone",
-                DisplayMode.STANDALONE,
                 intentDataProvider.getResolvedDisplayMode());
     }
 

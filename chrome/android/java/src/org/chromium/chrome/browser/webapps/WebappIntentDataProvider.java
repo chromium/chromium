@@ -193,22 +193,20 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     private @DisplayMode.EnumType int resolveDisplayMode() {
-        if (mWebappExtras.displayMode == DisplayMode.FULLSCREEN) {
-            return DisplayMode.FULLSCREEN;
+        if (mWebappExtras.displayMode == DisplayMode.BROWSER) {
+            // `browser` display mode web apps are not installable by default, because by the spec
+            // they should be opened in a new tab or browser window, but in Chrome they can be
+            // forcefully installed via app menu. In this case display mode should resolve to the
+            // first supported display mode in the "fullscreen -> standalone -> minimal-ui ->
+            // browser" fallback chain.
+            if (WebAppHeaderUtils.isMinimalUiFlagEnabled()) {
+                return DisplayMode.MINIMAL_UI;
+            } else {
+                return DisplayMode.STANDALONE;
+            }
         }
 
-        // `browser` display mode web apps are not installable by default, because by the spec they
-        // should be opened in a new tab or browser window, but in Chrome they can be forcefully
-        // installed via app menu. In this case display mode should resolve to the first supported
-        // display mode in the "fullscreen -> standalone -> minimal-ui -> browser" fallback chain.
-        boolean shouldUseMinimalUi =
-                mWebappExtras.displayMode == DisplayMode.MINIMAL_UI
-                        || mWebappExtras.displayMode == DisplayMode.BROWSER;
-        if (WebAppHeaderUtils.isMinimalUiFlagEnabled() && shouldUseMinimalUi) {
-            return DisplayMode.MINIMAL_UI;
-        }
-
-        return DisplayMode.STANDALONE;
+        return mWebappExtras.displayMode;
     }
 
     private static final class ColorProviderImpl implements ColorProvider {
