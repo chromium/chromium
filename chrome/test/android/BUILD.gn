@@ -243,6 +243,7 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/omnibox/FakeOmniboxSuggestions.java",
     "javatests/src/org/chromium/chrome/test/transit/omnibox/OmniboxEnteredTextFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/omnibox/OmniboxFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/page/BasePageStation.java",
     "javatests/src/org/chromium/chrome/test/transit/page/IncognitoWebPageAppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/page/NativePageCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/page/PageAppMenuFacility.java",
