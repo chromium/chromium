@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
+#include "chrome/browser/web_applications/navigation_capturing_metrics.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -193,6 +194,21 @@ class NavigationCapturingBrowserNavigatorBrowserTest
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   }
 
+  std::vector<NavigationCapturingDisplayModeResult>
+  GetNavigationCapturingFinalDisplayMetric(
+      const base::HistogramTester& tester) {
+    std::vector<base::Bucket> display_result_buckets =
+        tester.GetAllSamples("Webapp.NavigationCapturing.FinalDisplay.Result");
+    std::vector<NavigationCapturingDisplayModeResult> bucket_list;
+    for (const base::Bucket& bucket : display_result_buckets) {
+      for (int count = 0; count < bucket.count; count++) {
+        bucket_list.push_back(
+            static_cast<NavigationCapturingDisplayModeResult>(bucket.min));
+      }
+    }
+    return bucket_list;
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::vector<base::test::FeatureRefAndParams> enabled_features;
 };
@@ -228,6 +244,10 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
   histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppBrowserTabFinalBrowserTab));
 
   ASSERT_TRUE(new_tab);
 
@@ -284,6 +304,11 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppStandaloneFinalStandalone));
 
   // This is measured twice, once for each launch param obtained.
   histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 2);
@@ -345,6 +370,11 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
 
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppStandaloneFinalStandalone));
+
   // This is measured twice, once for each launch param obtained.
   histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 2);
 }
@@ -395,6 +425,10 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
   histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppStandaloneFinalStandalone));
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
@@ -441,6 +475,10 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
   histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppStandaloneFinalStandalone));
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
@@ -493,6 +531,10 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
   histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppBrowserTabFinalBrowserTab));
 
   EXPECT_NE(contents_navigation_happened_in,
             new_browser->tab_strip_model()->GetActiveWebContents());
@@ -547,6 +589,11 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // With the absence of a consumer set on the site, launch params will not be
   // enqueued, and hence this metric will not be measured.
   histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 0);
+
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppBrowserTabFinalBrowserTab));
 
   // browser() should still be at the GetAppUrl() page.
   EXPECT_EQ(GetAppNoManifestUrl(), browser()
@@ -615,6 +662,11 @@ IN_PROC_BROWSER_TEST_F(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
   histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
 
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppBrowserTabFinalStandalone));
+
   EXPECT_EQ(contents_navigation_happened_in,
             app_browser_to_use->tab_strip_model()->GetActiveWebContents());
   EXPECT_EQ(0, app_browser_to_use->tab_strip_model()->GetIndexOfWebContents(
@@ -673,6 +725,10 @@ IN_PROC_BROWSER_TEST_F(
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
   histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppBrowserTabFinalBrowserTab));
 
   EXPECT_EQ(GetFocusExistingUrl(), app_browser_to_use->tab_strip_model()
                                        ->GetActiveWebContents()
@@ -727,6 +783,59 @@ IN_PROC_BROWSER_TEST_F(LaunchQueueLatencyMetricBrowserTest,
   EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
                   new_tab, "launchParamsTargetUrls"),
               testing::ElementsAre(GetLandingPage()));
+}
+
+using LaunchContainerMetricMeasurementTest =
+    NavigationCapturingBrowserNavigatorBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(LaunchContainerMetricMeasurementTest,
+                       NavigateExistingStandaloneToTab) {
+  // Load 'kNavigateExistingUrl` and `kFocusExistingUrl` in new tabs.
+  chrome::NewTab(browser());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetNavigateExistingUrl()));
+  content::WebContents* target_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  chrome::NewTab(browser());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetFocusExistingUrl()));
+
+  // Install both apps.
+  const webapps::AppId& source_app =
+      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetFocusExistingUrl());
+  const webapps::AppId& dest_app = InstallWebAppFromPageAndCloseAppBrowser(
+      browser(), GetNavigateExistingUrl());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), dest_app),
+            base::ok());
+#endif
+
+  // Trigger a navigation to `kNavigateExistingUrl`. This should end up in the
+  // browser tab.
+  base::HistogramTester histograms;
+  {
+    NavigateParams params(profile(), GetNavigateExistingUrl(),
+                          ui::PAGE_TRANSITION_LINK);
+    params.source_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+    LoadURLInContents(target_contents, GetNavigateExistingUrl(), params);
+  }
+
+  content::WaitForLoadStop(target_contents);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
+
+  // Verify that navigation did indeed end up in the browser tab via navigation
+  // capturing.
+  histograms.ExpectUniqueSample(
+      "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppStandaloneFinalBrowserTab));
 }
 
 class NavigationCapturingWithRedirectionBrowserNavigatorTest
@@ -799,6 +908,11 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
   // Make sure that web contents is a tab in `browser()` and not `new_browser`.
   EXPECT_NE(browser()->tab_strip_model()->GetIndexOfWebContents(new_tab),
             TabStripModel::kNoTab);
+
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppBrowserTabFinalBrowserTab));
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
@@ -831,10 +945,13 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 0);
   histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 0);
+  EXPECT_THAT(GetNavigationCapturingFinalDisplayMetric(histograms),
+              testing::IsEmpty());
 
   // Make sure that web contents is a tab in `browser()` and not `new_browser`.
   EXPECT_NE(browser()->tab_strip_model()->GetIndexOfWebContents(new_tab),
             TabStripModel::kNoTab);
 }
+
 }  // namespace
 }  // namespace web_app

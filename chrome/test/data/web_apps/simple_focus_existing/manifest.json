@@ -15,8 +15,7 @@
   "start_url": "index.html",
   "display": "standalone",
   "launch_handler": {
-      "client_mode": "focus-existing",
-      "client_mode_valid_and_specified": true
+      "client_mode": "focus-existing"
    },
   "scope": "."
 }
