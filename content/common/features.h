@@ -154,6 +154,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebOTPAssertionFeaturePolicy);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUIInProcessResourceLoading);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLimitCrossOriginNonActivatedPaintHolding);
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDisallowRasterInterfaceWithoutSkiaBackend);
+
 // Please keep features in alphabetical order.
 
 }  // namespace features
