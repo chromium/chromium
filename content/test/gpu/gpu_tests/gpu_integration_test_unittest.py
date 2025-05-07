@@ -158,12 +158,12 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       # tempfile_ext.NamedTemporaryFile(), put it in the list of generators
       # starting this with block. Also remove the try finally statement
       # below.
-      temp_file = tempfile.NamedTemporaryFile(delete=False)
-      temp_file.close()
+      with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file_name = temp_file.name
       try:
         test_argv = [
             test_name,
-            f'--write-full-results-to={temp_file.name}',
+            f'--write-full-results-to={temp_file_name}',
             # We don't want the underlying typ-based tests to report their
             # results to ResultDB.
             '--disable-resultsink',
@@ -177,10 +177,10 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         telemetry_args = browser_test_runner.ProcessConfig(
             unittest_config, processed_args)
         run_browser_tests.RunTests(telemetry_args)
-        with open(temp_file.name, encoding='utf-8') as f:
+        with open(temp_file_name, encoding='utf-8') as f:
           self._test_result = json.load(f)
       finally:
-        temp_file.close()
+        os.remove(temp_file_name)
 
   def testOverrideDefaultRetryArgumentsinRunGpuIntegrationTests(self) -> None:
     self._RunGpuIntegrationTests('run_tests_with_expectations_files',

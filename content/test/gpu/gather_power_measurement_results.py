@@ -40,9 +40,8 @@ def GetBuildData(method, request):
   url = ulib_request.Request(
       'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/' + method,
       request, headers)
-  conn = ulib_request.urlopen(url)
-  result = conn.read()
-  conn.close()
+  with ulib_request.urlopen(url) as conn:
+    result = conn.read()
   # Result is a multi-line string the first line of which is
   # deliberate garbage and the rest of which is a JSON payload.
   return json.loads(''.join(result.splitlines()[1:]))
@@ -127,9 +126,8 @@ def ProcessStepStdout(stdout_url, entry):
                 ulib_parse.unquote(stdout_url))
 
   # The following fails with Python 2.7.6, but succeeds with Python 2.7.14.
-  conn = ulib_request.urlopen(stdout_url + '?format=raw')
-  lines = conn.read().splitlines()
-  conn.close()
+  with ulib_request.urlopen(stdout_url + '?format=raw') as conn:
+    lines = conn.read().splitlines()
 
   pattern = re.compile(r'^\[(\d+)/(\d+)\]$')
   results = None

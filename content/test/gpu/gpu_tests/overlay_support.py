@@ -120,7 +120,7 @@ class GpuOverlayConfig:
     if set(self_dict.keys()) != set(other_dict.keys()):
       return False
 
-    return all(self_dict[k] == other_dict[k] for k in self_dict)
+    return all(v == other_dict[k] for k, v in self_dict.items())
 
   def WithDirectComposition(self) -> 'GpuOverlayConfig':
     """Enables direct composition support via software."""

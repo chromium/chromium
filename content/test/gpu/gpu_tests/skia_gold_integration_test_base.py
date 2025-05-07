@@ -344,9 +344,16 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     # PNG to disk, following the pattern in bitmap_unittest.py. The key to
     # avoiding PermissionErrors seems to be to not actually try to write to
     # the temporary file object, but to re-open its name for all operations.
-    temp_file = tempfile.NamedTemporaryFile(suffix='.png').name
-    image_util.WritePngFile(bitmap, temp_file)
-    cloud_storage.Insert(bucket, name, temp_file, publicly_readable=public)
+    with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as temp_file:
+      temp_file_name = temp_file.name
+    try:
+      image_util.WritePngFile(bitmap, temp_file_name)
+      cloud_storage.Insert(bucket,
+                           name,
+                           temp_file_name,
+                           publicly_readable=public)
+    finally:
+      os.remove(temp_file_name)
 
   # Not used consistently, but potentially useful for debugging issues on the
   # bots, so kept around for future use.
@@ -454,25 +461,25 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       test_case: the GPU SkiaGoldTestCase object for the test.
     """
     # Write screenshot to PNG file on local disk.
-    png_temp_file = tempfile.NamedTemporaryFile(
-        suffix='.png', dir=self._skia_gold_temp_dir).name
-    image_util.WritePngFile(screenshot, png_temp_file)
+    with tempfile.NamedTemporaryFile(suffix='.png',
+                                     dir=self._skia_gold_temp_dir,
+                                     delete=False) as png_temp_file:
+      png_temp_file_name = png_temp_file.name
+    image_util.WritePngFile(screenshot, png_temp_file_name)
 
-    gpu_keys = self.GetGoldJsonKeys(test_case)
     gold_session = self.GetSkiaGoldSessionManager().GetSkiaGoldSession(
-        gpu_keys, corpus=SKIA_GOLD_CORPUS)
+        self.GetGoldJsonKeys(test_case), corpus=SKIA_GOLD_CORPUS)
     gold_properties = self.GetSkiaGoldProperties()
     use_luci = not (gold_properties.local_pixel_tests
                     or gold_properties.no_luci_auth)
-    optional_keys = self.GetGoldOptionalKeys()
 
     status, error = gold_session.RunComparison(
         name=image_name,
-        png_file=png_temp_file,
+        png_file=png_temp_file_name,
         inexact_matching_args=test_case.matching_algorithm.GetCmdline(),
         use_luci=use_luci,
         service_account=gold_properties.service_account,
-        optional_keys=optional_keys)
+        optional_keys=self.GetGoldOptionalKeys())
     if not status:
       return
 

@@ -33,9 +33,8 @@ def GetBuildData(method, request):
   url = ulib.Request(
       'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/' + method,
       request, headers)
-  conn = ulib.urlopen(url)
-  result = conn.read().decode('utf-8')
-  conn.close()
+  with ulib.urlopen(url) as conn:
+    result = conn.read().decode('utf-8')
   # Result is a multi-line string the first line of which is
   # deliberate garbage and the rest of which is a JSON payload.
   return json.loads(''.join(result.splitlines()[1:]))
@@ -81,9 +80,8 @@ def GetJsonForLatestGreenBuildSteps(bot):
 
 
 def JsonLoadFromUrl(url):
-  conn = ulib.urlopen(url + '?format=raw')
-  result = conn.read()
-  conn.close()
+  with ulib.urlopen(url + '?format=raw') as conn:
+    result = conn.read()
   return json.loads(result)
 
 
