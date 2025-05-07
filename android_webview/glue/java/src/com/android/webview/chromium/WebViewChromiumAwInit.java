@@ -426,11 +426,12 @@ public class WebViewChromiumAwInit {
                 () -> {
                     AwBrowserProcess.initializeMetricsLogUploader();
 
-                    RecordHistogram.recordSparseHistogram(
-                            "Android.WebView.TargetSdkVersion",
+                    int targetSdkVersion =
                             ContextUtils.getApplicationContext()
                                     .getApplicationInfo()
-                                    .targetSdkVersion);
+                                    .targetSdkVersion;
+                    RecordHistogram.recordSparseHistogram(
+                            "Android.WebView.TargetSdkVersion", targetSdkVersion);
 
                     try (ScopedSysTraceEvent e =
                             ScopedSysTraceEvent.scoped(
@@ -445,7 +446,7 @@ public class WebViewChromiumAwInit {
 
                     if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                             ? CompatChanges.isChangeEnabled(WebSettings.ENABLE_SIMPLIFIED_DARK_MODE)
-                            : BuildInfo.targetsAtLeastT()) {
+                            : targetSdkVersion >= Build.VERSION_CODES.TIRAMISU) {
                         AwDarkMode.enableSimplifiedDarkMode();
                     }
 

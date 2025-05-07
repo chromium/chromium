@@ -34,7 +34,6 @@ import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
@@ -114,8 +113,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.TRACING_CONTROLLER_BASIC_USAGE)) {
             menu.findItem(R.id.menu_enable_tracing).setEnabled(false);
         }
-        if (!WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)
-                || BuildInfo.targetsAtLeastT()) {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
             menu.findItem(R.id.menu_force_dark_off).setEnabled(false);
             menu.findItem(R.id.menu_force_dark_auto).setEnabled(false);
             menu.findItem(R.id.menu_force_dark_on).setEnabled(false);
@@ -126,8 +124,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             menu.findItem(R.id.menu_night_mode_on).setEnabled(false);
         }
-        if (!BuildInfo.targetsAtLeastT()
-                || !WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
             menu.findItem(R.id.menu_algorithmic_darkening_on).setEnabled(false);
         }
         return super.onCreateOptionsMenu(menu);
@@ -142,8 +139,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else {
             menu.findItem(R.id.menu_enable_tracing).setEnabled(false);
         }
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)
-                && !BuildInfo.targetsAtLeastT()) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
             int forceDarkState = WebSettingsCompat.getForceDark(mWebView.getSettings());
             switch (forceDarkState) {
                 case WebSettingsCompat.FORCE_DARK_OFF:
@@ -171,8 +167,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             }
             menu.findItem(R.id.menu_night_mode_on).setChecked(checked);
         }
-        if (BuildInfo.targetsAtLeastT()
-                && WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
             menu.findItem(R.id.menu_algorithmic_darkening_on)
                     .setChecked(
                             WebSettingsCompat.isAlgorithmicDarkeningAllowed(

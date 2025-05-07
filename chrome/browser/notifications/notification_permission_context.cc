@@ -184,7 +184,8 @@ void NotificationPermissionContext::DecidePermission(
       ShortcutHelper::DoesOriginContainAnyInstalledTrustedWebActivity(
           request_data->requesting_origin);
   bool contains_installed_webapp = contains_twa || contains_webapk;
-  if (base::android::BuildInfo::GetInstance()->is_at_least_t() &&
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+          base::android::SDK_VERSION_T &&
       contains_installed_webapp) {
     // WebAPKs match URLs using a scope URL which may contain a path. An origin
     // has no path and would not fall within such a scope. So to find a matching

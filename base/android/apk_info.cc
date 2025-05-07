@@ -35,7 +35,6 @@ struct ApkInfo {
   const char* resources_version;
   const char* installer_package_name;
   bool is_debug_app;
-  bool targets_at_least_u;
   int target_sdk_version;
 };
 
@@ -65,7 +64,6 @@ static void JNI_ApkInfo_FillFields(
     const jni_zero::JavaParamRef<jstring>& resourcesVersion,
     const jni_zero::JavaParamRef<jstring>& installerPackageName,
     jboolean isDebugApp,
-    jboolean targetsAtleastU,
     jint targetSdkVersion) {
   DCHECK(!holder.has_value());
   auto java_string_to_const_char =
@@ -82,7 +80,6 @@ static void JNI_ApkInfo_FillFields(
       .resources_version = java_string_to_const_char(resourcesVersion),
       .installer_package_name = java_string_to_const_char(installerPackageName),
       .is_debug_app = static_cast<bool>(isDebugApp),
-      .targets_at_least_u = static_cast<bool>(targetsAtleastU),
       .target_sdk_version = targetSdkVersion};
 }
 
@@ -126,7 +123,4 @@ int target_sdk_version() {
   return get_apk_info().target_sdk_version;
 }
 
-bool targets_at_least_u() {
-  return get_apk_info().targets_at_least_u;
-}
 }  // namespace base::android::apk_info

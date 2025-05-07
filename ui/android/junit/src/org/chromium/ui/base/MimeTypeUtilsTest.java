@@ -19,8 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.url.GURL;
@@ -115,7 +113,7 @@ public class MimeTypeUtilsTest {
     }
 
     @Test
-    @Config(shadows = {ShadowMimeTypeUtilsForT.class})
+    @Config(sdk = VERSION_CODES.TIRAMISU)
     public void testPermissionForMimeTypeAndroidT() {
         assertEquals(
                 "Wrong permission for audio mime type",
@@ -136,14 +134,5 @@ public class MimeTypeUtilsTest {
 
     private void updateMockGurlSpec(String spec) {
         doReturn(spec).when(mMockedUrl).getSpec();
-    }
-
-    @Implements(MimeTypeUtils.class)
-    @SuppressWarnings("UnusedMethod") // Error Prone does not know about shadows.
-    private static class ShadowMimeTypeUtilsForT {
-        @Implementation
-        public static boolean useExternalStoragePermission() {
-            return false;
-        }
     }
 }
