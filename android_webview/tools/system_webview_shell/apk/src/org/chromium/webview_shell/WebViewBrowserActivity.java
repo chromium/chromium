@@ -232,10 +232,10 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                     try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                         String outFileName = getFilesDir() + "/webview_tracing.json";
                         try {
+                            mIsStoppingTracing = true;
                             tracingController.stop(
                                     new TracingLogger(outFileName, this),
                                     Executors.newSingleThreadExecutor());
-                            mIsStoppingTracing = true;
                         } catch (FileNotFoundException e) {
                             throw new RuntimeException(e);
                         }
@@ -422,19 +422,16 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         @Override
         public void close() throws IOException {
             super.close();
-            showDialog(mByteCount);
-            mIsStoppingTracing = false;
-        }
 
-        private void showDialog(long nbBytes) {
             StringBuilder info = new StringBuilder();
             info.append("Tracing data written to file\n");
-            info.append("number of bytes: " + nbBytes);
+            info.append("number of bytes: " + mByteCount);
 
             mActivity.runOnUiThread(
                     new Runnable() {
                         @Override
                         public void run() {
+                            mIsStoppingTracing = false;
                             AlertDialog dialog =
                                     new AlertDialog.Builder(mActivity)
                                             .setTitle("Tracing API")
