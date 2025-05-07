@@ -147,9 +147,6 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // sum.  `progress_offset` is an percentage that will be added to the progress
   // of the MD5 sum before updating `progress_` but after scaling.
   void GetMD5SumOfFile(const base::FilePath& file,
-                       int64_t file_size,
-                       int progress_offset,
-                       int progress_scale,
                        base::OnceCallback<void(const std::string&)> callback);
 
   bool IsRunningInCorrectSequence() const;
@@ -207,10 +204,8 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
   // Incrementally calculates the MD5 sum of a file.
   void MD5Chunk(base::File file,
-                int64_t bytes_processed,
-                int64_t bytes_total,
-                int progress_offset,
-                int progress_scale,
+                size_t bytes_processed,
+                size_t bytes_total,
                 const base::OnceCallback<void(const std::string&)> callback);
 
   // Callbacks for Extractor.
