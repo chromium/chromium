@@ -22,7 +22,8 @@
 #import "ui/base/mojom/window_show_state.mojom.h"
 
 LiveTabContextBrowserAgent::LiveTabContextBrowserAgent(Browser* browser)
-    : profile_(browser->GetProfile()),
+    : BrowserUserData(browser),
+      profile_(browser->GetProfile()),
       web_state_list_(browser->GetWebStateList()),
       session_id_(SessionID::NewUnique()) {}
 
