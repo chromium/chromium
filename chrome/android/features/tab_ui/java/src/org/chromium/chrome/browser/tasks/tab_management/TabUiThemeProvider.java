@@ -565,4 +565,19 @@ public class TabUiThemeProvider {
                 ? SemanticColorUtils.getColorSurfaceBright(context)
                 : SemanticColorUtils.getColorSurfaceContainerLow(context);
     }
+
+    /**
+     * Returns the color used by dialogs as background.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The color for the dialog background.
+     */
+    public static @ColorInt int getColorPickerDialogBackgroundColor(
+            Context context, boolean isIncognito) {
+        return isIncognito
+                ? ContextCompat.getColor(
+                        context, R.color.tab_group_color_picker_selection_bg_incognito)
+                : SemanticColorUtils.getDialogBgColor(context);
+    }
 }

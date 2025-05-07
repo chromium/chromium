@@ -73,6 +73,7 @@ android_resources("java_resources") {
     "java/res/layout/archived_tabs_dialog.xml",
     "java/res/layout/archived_tabs_message_card_view.xml",
     "java/res/layout/bottom_tab_strip_toolbar.xml",
+    "java/res/layout/color_picker_icon_button_layout.xml",
     "java/res/layout/color_picker_item.xml",
     "java/res/layout/custom_message_card_item.xml",
     "java/res/layout/dynamic_bottom_tab_strip_toolbar.xml",
