@@ -255,10 +255,11 @@ void NetLog::InitializeSourceIdPartition() {
                              "after NextID() or called multiple times";
 }
 
-void NetLog::AddEntryInternal(NetLogEventType type,
-                              const NetLogSource& source,
-                              NetLogEventPhase phase,
-                              const GetParamsInterface* get_params) {
+void NetLog::AddEntryInternal(
+    NetLogEventType type,
+    const NetLogSource& source,
+    NetLogEventPhase phase,
+    base::FunctionRef<base::Value::Dict(NetLogCaptureMode)> get_params) {
   NetLogCaptureModeSet observer_capture_modes = GetObserverCaptureModes();
 
   for (int i = 0; i <= static_cast<int>(NetLogCaptureMode::kLast); ++i) {
@@ -266,7 +267,7 @@ void NetLog::AddEntryInternal(NetLogEventType type,
     if (!NetLogCaptureModeSetContains(capture_mode, observer_capture_modes))
       continue;
 
-    base::Value::Dict params = get_params->GetParams(capture_mode);
+    base::Value::Dict params = get_params(capture_mode);
     if (capture_mode == NetLogCaptureMode::kHeavilyRedacted) {
       HeavilyRedactParams(params);
     }
