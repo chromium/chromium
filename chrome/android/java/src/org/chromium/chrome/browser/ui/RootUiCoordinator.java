@@ -1817,6 +1817,9 @@ public class RootUiCoordinator
                 "EdgeToEdgeChinEligibility", eligible ? "Eligible" : "Not Eligible");
 
         if (supportsEdgeToEdge() && EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
+            assert eligible
+                    : "The edge-to-edge controller is being initialized, though it should not be"
+                            + " eligible!";
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(
                             mActivity,
