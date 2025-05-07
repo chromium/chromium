@@ -10242,7 +10242,7 @@
             ]
         }
     ],
-    "GwpAsanAndroid2024": [
+    "GwpAsan2024Android": [
         {
             "platforms": [
                 "android",
@@ -10250,11 +10250,20 @@
             ],
             "experiments": [
                 {
-                    "name": "TripleBrowserReservation",
+                    "name": "CombinedGreedyArmForVariationsPresubmit",
                     "params": {
+                        "BrowserAllocationSamplingMultiplier": "1500",
+                        "BrowserAllocationSamplingRange": "16",
                         "BrowserMaxAllocations": "210",
                         "BrowserMaxMetadata": "765",
-                        "BrowserTotalPages": "1536"
+                        "BrowserTotalPages": "1536",
+                        "GpuAllocationSamplingMultiplier": "1500",
+                        "GpuAllocationSamplingRange": "16",
+                        "GpuMaxAllocations": "140",
+                        "GpuMaxMetadata": "510",
+                        "GpuTotalPages": "1024",
+                        "RendererAllocationSamplingMultiplier": "1500",
+                        "RendererAllocationSamplingRange": "12"
                     },
                     "enable_features": [
                         "GwpAsanMalloc",
@@ -10264,20 +10273,59 @@
             ]
         }
     ],
-    "GwpAsanDesktop2024": [
+    "GwpAsan2024LinuxCros": [
         {
             "platforms": [
                 "chromeos",
-                "linux",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "CombinedGreedyArmForVariationsPresubmit",
+                    "params": {
+                        "BrowserAllocationSamplingMultiplier": "1200",
+                        "BrowserAllocationSamplingRange": "10",
+                        "BrowserMaxAllocations": "150",
+                        "BrowserMaxMetadata": "630",
+                        "BrowserTotalPages": "6144",
+                        "GpuAllocationSamplingMultiplier": "1200",
+                        "GpuAllocationSamplingRange": "10",
+                        "GpuMaxAllocations": "100",
+                        "GpuMaxMetadata": "420",
+                        "GpuTotalPages": "4096",
+                        "RendererAllocationSamplingMultiplier": "800",
+                        "RendererAllocationSamplingRange": "10"
+                    },
+                    "enable_features": [
+                        "GwpAsanMalloc",
+                        "GwpAsanPartitionAlloc"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GwpAsan2024WinMac": [
+        {
+            "platforms": [
+                "windows",
                 "mac"
             ],
             "experiments": [
                 {
-                    "name": "TripleBrowserReservation",
+                    "name": "CombinedGreedyArmForVariationsPresubmit",
                     "params": {
+                        "BrowserAllocationSamplingMultiplier": "800",
+                        "BrowserAllocationSamplingRange": "10",
                         "BrowserMaxAllocations": "210",
                         "BrowserMaxMetadata": "765",
-                        "BrowserTotalPages": "6144"
+                        "BrowserTotalPages": "6144",
+                        "GpuAllocationSamplingMultiplier": "800",
+                        "GpuAllocationSamplingRange": "10",
+                        "GpuMaxAllocations": "140",
+                        "GpuMaxMetadata": "510",
+                        "GpuTotalPages": "4096",
+                        "RendererAllocationSamplingMultiplier": "600",
+                        "RendererAllocationSamplingRange": "10"
                     },
                     "enable_features": [
                         "GwpAsanMalloc",
@@ -13198,35 +13246,6 @@
                     "name": "Enabled_20250319",
                     "enable_features": [
                         "LegacyTabStateDeprecation"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LightweightUAFDetector": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240130",
-                    "params": {
-                        "AllocationSamplingMultiplier": "100",
-                        "EvictionTaskIntervalMs": "5000",
-                        "MaxAllocations": "1400",
-                        "MaxMetadata": "5100",
-                        "MaxTotalSize": "131072",
-                        "Mode": "Random",
-                        "TotalSizeHighWaterMark": "104857",
-                        "TotalSizeLowWaterMark": "91750"
-                    },
-                    "enable_features": [
-                        "LightweightUafDetector"
-                    ],
-                    "disable_features": [
-                        "GwpAsanMalloc",
-                        "GwpAsanPartitionAlloc"
                     ]
                 }
             ]
