@@ -203,17 +203,24 @@ void XdgForeignWrapper::Instantiate(WaylandConnection* connection,
 }
 
 XdgForeignWrapper::XdgForeignWrapper(WaylandConnection* connection,
-                                     wl::Object<zxdg_exporter_v1> exporter_v1) {
+                                     wl::Object<zxdg_exporter_v1> exporter_v1)
+    : XdgForeignWrapper(connection) {
   impl_ = std::make_unique<
       XdgForeignWrapperImpl<zxdg_exporter_v1, zxdg_exported_v1>>(
       connection, std::move(exporter_v1));
 }
 
 XdgForeignWrapper::XdgForeignWrapper(WaylandConnection* connection,
-                                     wl::Object<zxdg_exporter_v2> exporter_v2) {
+                                     wl::Object<zxdg_exporter_v2> exporter_v2)
+    : XdgForeignWrapper(connection) {
   impl_ = std::make_unique<
       XdgForeignWrapperImpl<zxdg_exporter_v2, zxdg_exported_v2>>(
       connection, std::move(exporter_v2));
+}
+
+XdgForeignWrapper::XdgForeignWrapper(WaylandConnection* connection) {
+  CHECK(connection);
+  window_removal_observer_.Observe(connection->window_manager());
 }
 
 XdgForeignWrapper::~XdgForeignWrapper() = default;

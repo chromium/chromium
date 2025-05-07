@@ -28,6 +28,3 @@
 # in mutter with some additional steps.
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/1
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/1
-
-# TODO(crbug.com/395595608) Failing on exit due to dangling ptr
--IFrameTest.FileChooserInDestroyedSubframe
