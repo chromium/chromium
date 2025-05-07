@@ -39,7 +39,7 @@ const char kBreadcrumbOverlayJsConfirm[] = "#js-confirm";
 const char kBreadcrumbOverlayJsPrompt[] = "#js-prompt";
 
 BreadcrumbManagerBrowserAgent::BreadcrumbManagerBrowserAgent(Browser* browser)
-    : browser_(browser) {
+    : BrowserUserData(browser), browser_(browser) {
   browser_->AddObserver(this);
   browser_->GetWebStateList()->AddObserver(this);
 
