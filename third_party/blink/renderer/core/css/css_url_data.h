@@ -56,8 +56,8 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
   // Document. Returns true if the resolved URL changed, otherwise false.
   bool ReResolveUrl(const Document&) const;
 
-  // Returns an absolutized copy of this URL data (suitable for computed value).
-  const CSSUrlData* MakeAbsolute() const;
+  // Returns a copy of this URL data suitable for computed value.
+  const CSSUrlData* MakeComputed() const;
 
   // Returns a copy where the unresolved URL has been resolved against
   // `base_url` (using `charset` encoding if valid).
@@ -101,14 +101,15 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
   mutable AtomicString absolute_url_;
   const Referrer referrer_;
 
+  // The 'local url flag': https://drafts.csswg.org/css-values/#local-urls
+  const bool is_local_;
+
   // Whether the stylesheet that requested this image is origin-clean:
   // https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag
   const bool is_from_origin_clean_style_sheet_;
 
   // Whether this was created by an ad-related CSSParserContext.
   const bool is_ad_related_;
-
-  const bool is_local_;
 
   // The url passed into the constructor had the PotentiallyDanglingMarkup flag
   // set. That information needs to be passed on to the fetch code to block such

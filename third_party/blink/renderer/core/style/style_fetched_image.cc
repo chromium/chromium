@@ -95,7 +95,7 @@ ImageResourceContent* StyleFetchedImage::CachedImage() const {
 
 CSSValue* StyleFetchedImage::CssValue() const {
   return MakeGarbageCollected<CSSImageValue>(
-      *url_data_->MakeAbsolute(), const_cast<StyleFetchedImage*>(this));
+      *url_data_->MakeComputed(), const_cast<StyleFetchedImage*>(this));
 }
 
 CSSValue* StyleFetchedImage::ComputedCSSValue(const ComputedStyle&,

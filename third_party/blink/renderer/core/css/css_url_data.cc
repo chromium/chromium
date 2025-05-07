@@ -35,9 +35,9 @@ CSSUrlData::CSSUrlData(const AtomicString& unresolved_url,
     : relative_url_(unresolved_url),
       absolute_url_(resolved_url.GetString()),
       referrer_(referrer),
+      is_local_(unresolved_url.StartsWith('#')),
       is_from_origin_clean_style_sheet_(is_from_origin_clean_style_sheet),
       is_ad_related_(is_ad_related),
-      is_local_(unresolved_url.StartsWith('#')),
       potentially_dangling_markup_(resolved_url.PotentiallyDanglingMarkup()) {}
 
 CSSUrlData::CSSUrlData(const AtomicString& resolved_url)
@@ -82,8 +82,8 @@ bool CSSUrlData::ReResolveUrl(const Document& document) const {
   return true;
 }
 
-const CSSUrlData* CSSUrlData::MakeAbsolute() const {
-  if (relative_url_.empty()) {
+const CSSUrlData* CSSUrlData::MakeComputed() const {
+  if (relative_url_.empty() || is_local_ || absolute_url_.empty()) {
     return this;
   }
   return MakeGarbageCollected<CSSUrlData>(

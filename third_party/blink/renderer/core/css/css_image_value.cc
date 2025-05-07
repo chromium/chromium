@@ -167,13 +167,6 @@ bool CSSImageValue::IsLocal(const Document& document) const {
   return UrlData().IsLocal(document);
 }
 
-CSSImageValue* CSSImageValue::ComputedCSSValueMaybeLocal() const {
-  if (UrlData().UnresolvedUrl().StartsWith('#')) {
-    return Clone();
-  }
-  return ComputedCSSValue();
-}
-
 AtomicString CSSImageValue::NormalizedFragmentIdentifier() const {
   // Always use KURL's FragmentIdentifier to ensure that we're handling the
   // fragment in a consistent manner.
