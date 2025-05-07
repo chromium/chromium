@@ -1210,6 +1210,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // ensuring that it's at least 1.
   uint16_t GetBuyerMultiBidLimit(const url::Origin& buyer);
 
+  // Gets the buyer `per-buyer-tkv-signals` in `config` for interest group
+  // buyer.
+  std::optional<std::string> GetBuyerTKVSignals(const url::Origin& buyer) const;
+
   // -----------------------------------
   // Methods not associated with a phase
   // -----------------------------------

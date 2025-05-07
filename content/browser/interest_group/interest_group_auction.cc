@@ -2392,7 +2392,7 @@ class InterestGroupAuction::BuyerHelper
                 *interest_group.trusted_bidding_signals_coordinator,
                 interest_group.trusted_bidding_signals_keys,
                 std::move(additional_params),
-                /*buyer_tkv_signals=*/std::nullopt, partition_id);
+                auction_->GetBuyerTKVSignals(owner_), partition_id);
     return auction_worklet::mojom::TrustedSignalsCacheKey::New(
         bid_state.bidding_signals_handle->compression_group_token(),
         partition_id);
@@ -4788,6 +4788,21 @@ uint16_t InterestGroupAuction::GetBuyerMultiBidLimit(const url::Origin& buyer) {
     val = it->second;
   }
   return std::max(val, uint16_t{1});
+}
+
+std::optional<std::string> InterestGroupAuction::GetBuyerTKVSignals(
+    const url::Origin& owner) const {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedSignalsKVv2ContextualData)) {
+    return std::nullopt;
+  }
+
+  auto it = config_->non_shared_params.per_buyer_tkv_signals.find(owner);
+  if (it != config_->non_shared_params.per_buyer_tkv_signals.end()) {
+    return it->second;
+  }
+
+  return std::nullopt;
 }
 
 std::optional<uint16_t> InterestGroupAuction::GetBuyerExperimentId(
