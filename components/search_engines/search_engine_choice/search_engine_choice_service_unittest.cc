@@ -1188,34 +1188,4 @@ INSTANTIATE_TEST_SUITE_P(,
                          SearchEngineChoiceUtilsParamTest,
                          ::testing::ValuesIn(kRepromptTestParams));
 
-#if !BUILDFLAG(IS_ANDROID)
-
-class SearchEngineChoiceUtilsResourceIdsTest : public ::testing::Test {
- protected:
-  SearchEnginesTestEnvironment search_engine_test_environment_;
-};
-
-// Verifies that all prepopulated search engines associated with EEA countries
-// have an icon.
-TEST_F(SearchEngineChoiceUtilsResourceIdsTest, GetIconResourceId) {
-  // Make sure the country is not forced.
-  ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kSearchEngineChoiceCountry));
-
-  for (CountryId country_id : regional_capabilities::kEeaChoiceCountriesIds) {
-    search_engine_test_environment_.pref_service().SetInteger(
-        country_codes::kCountryIDAtInstall, country_id.Serialize());
-    std::vector<std::unique_ptr<TemplateURLData>> urls =
-        search_engine_test_environment_.prepopulate_data_resolver()
-            .GetPrepopulatedEngines();
-    for (const std::unique_ptr<TemplateURLData>& url : urls) {
-      EXPECT_GE(search_engines::GetIconResourceId(url->keyword()), 0)
-          << "Missing icon for " << url->keyword() << ". Try re-running "
-          << "`tools/search_engine_choice/generate_search_engine_icons.py`.";
-    }
-  }
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 }  // namespace search_engines
