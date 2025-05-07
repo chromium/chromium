@@ -133,7 +133,7 @@ public class SafetyHubPasswordsModuleMediator
 
         if (accountModuleType
                         == SafetyHubAccountPasswordsDataSource.ModuleType.NO_COMPROMISED_PASSWORDS
-                && localModuleType
+                || localModuleType
                         == SafetyHubLocalPasswordsDataSource.ModuleType.NO_COMPROMISED_PASSWORDS) {
             return new SafetyHubNoCompromisedPasswordsModuleHelper(
                     context,
@@ -142,9 +142,19 @@ public class SafetyHubPasswordsModuleMediator
                     /* unifiedModule= */ true);
         }
 
-        // TODO(crbug.com/407930886): Add no password state for account and local passwords.
-        return new SafetyHubAccountPasswordsUnavailableAllPasswordsModuleHelper(
-                context, mModuleDelegate);
+        // By reaching this point, all other states have been exhausted.
+        assert (accountModuleType
+                                == SafetyHubAccountPasswordsDataSource.ModuleType.NO_SAVED_PASSWORDS
+                        || accountModuleType
+                                == SafetyHubAccountPasswordsDataSource.ModuleType.SIGNED_OUT)
+                && localModuleType
+                        == SafetyHubLocalPasswordsDataSource.ModuleType.NO_SAVED_PASSWORDS;
+
+        return new SafetyHubNoSavedPasswordsModuleHelper(
+                context,
+                mModuleDelegate,
+                /* noAccountPasswords= */ true,
+                /* noLocalPasswords= */ true);
     }
 
     private void updateModule(

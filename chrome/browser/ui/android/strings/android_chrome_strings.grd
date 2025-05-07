@@ -1871,6 +1871,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NO_LOCAL_PASSWORDS_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the user does not have any local passwords saved.">
         No saved passwords on this device
       </message>
+      <message name="IDS_SAFETY_HUB_NO_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the user does not have any local or account passwords saved.">
+        No saved passwords
+      </message>
       <message name="IDS_SAFETY_HUB_NO_PASSWORDS_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the user has no passwords saved and that Safety check will start checking for breached passwords when they save them.">
         Chrome can check your passwords when you save them
       </message>

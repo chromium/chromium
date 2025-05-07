@@ -131,6 +131,9 @@ public class SafetyHubAccountPasswordsDataSource
             assert mCompromisedPasswordCount == INVALID_BREACHED_CREDENTIALS_COUNT;
             return ModuleType.SIGNED_OUT;
         }
+        if (getTotalPasswordCount() == 0) {
+            return ModuleType.NO_SAVED_PASSWORDS;
+        }
         if (mCompromisedPasswordCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
             if (isWeakAndReusedFeatureEnabled
                     && mWeakPasswordCount == 0
@@ -139,9 +142,6 @@ public class SafetyHubAccountPasswordsDataSource
             }
 
             return ModuleType.UNAVAILABLE_PASSWORDS;
-        }
-        if (getTotalPasswordCount() == 0) {
-            return ModuleType.NO_SAVED_PASSWORDS;
         }
         if (mCompromisedPasswordCount > 0) {
             return ModuleType.HAS_COMPROMISED_PASSWORDS;

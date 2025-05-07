@@ -1648,6 +1648,79 @@ public final class SafetyHubTest {
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
         ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
     })
+    public void testUnifiedPasswordsModule_NoAccountCompromisedPasswords_NoLocalPasswords() {
+        clearAllPasswords();
+        setAccountCompromisedPasswordsCount(0);
+        setAccountReusedPasswordsCount(0);
+        setAccountWeakPasswordsCount(0);
+        addCredentialToAccountStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the safe state is collapsed by default.
+        String noCompromisedPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_no_compromised_passwords_title);
+        scrollToExpandedPreference(noCompromisedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(noCompromisedPasswordsTitle, false);
+
+        // Verify the information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        clearAccountCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testUnifiedPasswordsModule_NoLocalCompromisedPasswords_NoAccountPasswords() {
+        signIn();
+        clearAllPasswords();
+        setLocalCompromisedPasswordsCount(0);
+        setLocalReusedPasswordsCount(0);
+        setLocalWeakPasswordsCount(0);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the safe state is collapsed by default.
+        String noCompromisedPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_no_compromised_passwords_title);
+        scrollToExpandedPreference(noCompromisedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(noCompromisedPasswordsTitle, false);
+
+        // Verify the information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        clearLocalCompromisedPasswordsCount();
+        clearAccountCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
     public void testUnifiedPasswordsModule_AccountAndLocalPasswordsUnavailable() {
         clearLocalCompromisedPasswordsCount();
         clearAccountCompromisedPasswordsCount();
@@ -1672,6 +1745,36 @@ public final class SafetyHubTest {
 
         clearLocalCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testUnifiedPasswordsModule_NoAccountAndLocalPasswords() {
+        signIn();
+        clearAllPasswords();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the info state is expanded by
+        // default.
+        String noAccountAndLocalPasswords =
+                safetyHubFragment.getString(R.string.safety_hub_no_passwords_title);
+        scrollToExpandedPreference(noAccountAndLocalPasswords);
+        verifyButtonsNextToTextVisibility(noAccountAndLocalPasswords, true);
+
+        // Verify the information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
     }
 
     @Test
@@ -2252,10 +2355,14 @@ public final class SafetyHubTest {
                 });
     }
 
-    private void addCredentialToAccountStore() {
-        // Set up an account with at least one password in the account store.
+    private void signIn() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
+    }
+
+    private void addCredentialToAccountStore() {
+        // Set up an account with at least one password in the account store.
+        signIn();
 
         PasswordStoreBridge passwordStoreBridge =
                 ThreadUtils.runOnUiThreadBlocking(() -> new PasswordStoreBridge(mProfile));
@@ -2289,6 +2396,22 @@ public final class SafetyHubTest {
                             "The local store should've had one password.",
                             passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore(),
                             is(1));
+                });
+    }
+
+    private void clearAllPasswords() {
+        PasswordStoreBridge passwordStoreBridge =
+                ThreadUtils.runOnUiThreadBlocking(() -> new PasswordStoreBridge(mProfile));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    passwordStoreBridge.clearAllPasswords();
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "The account store should've had any passwords",
+                            passwordStoreBridge.getPasswordStoreCredentialsCountForAllStores(),
+                            is(0));
                 });
     }
 

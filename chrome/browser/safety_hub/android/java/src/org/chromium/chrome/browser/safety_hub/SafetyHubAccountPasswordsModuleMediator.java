@@ -76,8 +76,11 @@ public class SafetyHubAccountPasswordsModuleMediator
                 return new SafetyHubAccountPasswordsUnavailableAllPasswordsModuleHelper(
                         context, mModuleDelegate);
             case ModuleType.NO_SAVED_PASSWORDS:
-                return new SafetyHubAccountPasswordsNoPasswordsModuleHelper(
-                        context, mModuleDelegate);
+                return new SafetyHubNoSavedPasswordsModuleHelper(
+                        context,
+                        mModuleDelegate,
+                        /* noAccountPasswords= */ true,
+                        /* noLocalPasswords= */ false);
             case ModuleType.HAS_COMPROMISED_PASSWORDS:
                 return new SafetyHubCompromisedPasswordsModuleHelper(
                         context,
