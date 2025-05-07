@@ -51,19 +51,15 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
   CHECK(!override_captures_by_default || !override_captures_by_default.value());
   // TODO(crbug.com/376922620): Create a feature flag to turn off the v1
   // throttle.
-  if (use_v2) {
-    std::vector<base::test::FeatureRefAndParams> features_to_enable = {
-        {::features::kPwaNavigationCapturing,
-         {{::features::kNavigationCapturingDefaultState.name,
-           "reimpl_default_off"}}}};
-    if (capture_existing_frame_navigations) {
-      features_to_enable.push_back(
-          {features::kNavigationCapturingOnExistingFrames, {}});
-    }
-    return features_to_enable;
-  } else {
-    return {{}, {}};
+  std::vector<base::test::FeatureRefAndParams> features_to_enable = {
+      {::features::kPwaNavigationCapturing,
+       {{::features::kNavigationCapturingDefaultState.name,
+         use_v2 ? "reimpl_default_off" : "off_by_default"}}}};
+  if (capture_existing_frame_navigations && use_v2) {
+    features_to_enable.push_back(
+        {features::kNavigationCapturingOnExistingFrames, {}});
   }
+  return features_to_enable;
 #else
   // `capture_existing_frame_navigations` is ChromeOS only for now.
   CHECK(!capture_existing_frame_navigations);
