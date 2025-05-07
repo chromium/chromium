@@ -143,6 +143,7 @@ void GetAIPageContentWithActionableElementsForModelPrototyping(
 
   auto options = optimization_guide::DefaultAIPageContentOptions();
   options->enable_experimental_actionable_data = true;
+  options->include_geometry = true;
   optimization_guide::OnAIPageContentDone callback = base::BindOnce(
       &OnGotAIPageContentWithActionableElementsForModelPrototyping,
       std::move(continue_callback));
