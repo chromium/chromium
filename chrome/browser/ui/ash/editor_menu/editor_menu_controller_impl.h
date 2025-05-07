@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "ash/lobster/lobster_controller.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_manager.h"
@@ -21,11 +22,12 @@
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "content/public/browser/browser_context.h"
 
+class ApplicationLocaleStorage;
+class Profile;
+
 namespace views {
 class Widget;
 }
-
-class Profile;
 
 namespace chromeos::editor_menu {
 
@@ -34,7 +36,8 @@ namespace chromeos::editor_menu {
 class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
                                  public EditorMenuViewDelegate {
  public:
-  EditorMenuControllerImpl();
+  explicit EditorMenuControllerImpl(
+      const ApplicationLocaleStorage* application_locale_storage);
   EditorMenuControllerImpl(const EditorMenuControllerImpl&) = delete;
   EditorMenuControllerImpl& operator=(const EditorMenuControllerImpl&) = delete;
   ~EditorMenuControllerImpl() override;
@@ -137,6 +140,8 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   // Disables the editor menu. We do this when we don't want the editor menu
   // buttons or textfield to receive keyboard or mouse input.
   void DisableEditorMenu();
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   std::unique_ptr<views::Widget> editor_menu_widget_;
 

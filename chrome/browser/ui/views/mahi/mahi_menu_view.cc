@@ -13,6 +13,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler_view.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
@@ -26,6 +28,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -375,10 +378,15 @@ void MahiMenuView::RequestFocus() {
 }
 
 void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
+  // TODO(crbug.com/416170122): Remove g_browser_process usage.
+  const std::string& app_locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->Get();
+
   // TODO(b/318733414): Move `editor_menu::GetEditorMenuBounds` to a common
   // place for use
   GetWidget()->SetBounds(editor_menu::GetEditorMenuBounds(
-      anchor_view_bounds, this, editor_menu::CardType::kMahiDefaultMenu));
+      anchor_view_bounds, this, app_locale,
+      editor_menu::CardType::kMahiDefaultMenu));
 }
 
 void MahiMenuView::OnWidgetVisibilityChanged(views::Widget* widget,

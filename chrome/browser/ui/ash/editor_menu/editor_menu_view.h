@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler_view.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
@@ -16,6 +17,8 @@
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/layout/flex_layout_view.h"
+
+class ApplicationLocaleStorage;
 
 namespace views {
 class ImageButton;
@@ -35,7 +38,9 @@ class EditorMenuView : public PreTargetHandlerView,
   METADATA_HEADER(EditorMenuView, views::View)
 
  public:
-  EditorMenuView(TextAndImageMode text_and_image_mode,
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  EditorMenuView(const ApplicationLocaleStorage* application_locale_storage,
+                 TextAndImageMode text_and_image_mode,
                  const PresetTextQueries& preset_text_queries,
                  const gfx::Rect& anchor_view_bounds,
                  EditorMenuViewDelegate* delegate);
@@ -45,7 +50,9 @@ class EditorMenuView : public PreTargetHandlerView,
 
   ~EditorMenuView() override;
 
+  // `application_locale_storage` must be non-null and must outlive the widget.
   static std::unique_ptr<views::Widget> CreateWidget(
+      const ApplicationLocaleStorage* application_locale_storage,
       TextAndImageMode text_and_image_mode,
       const PresetTextQueries& preset_text_queries,
       const gfx::Rect& anchor_view_bounds,
@@ -73,8 +80,6 @@ class EditorMenuView : public PreTargetHandlerView,
   static const char* GetWidgetNameForTest();
 
  private:
-  const TextAndImageMode text_and_image_mode_;
-
   void InitLayout(const PresetTextQueries& preset_text_queries);
   gfx::Insets GetTitleContainerInsets() const;
   void AddTitleContainer();
@@ -87,6 +92,10 @@ class EditorMenuView : public PreTargetHandlerView,
 
   void OnSettingsButtonPressed();
   void OnChipButtonPressed(const std::string& text_query_id);
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+
+  const TextAndImageMode text_and_image_mode_;
 
   // `delegate_` outlives `this`.
   raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;

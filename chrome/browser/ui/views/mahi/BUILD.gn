@@ -19,6 +19,8 @@ source_set("mahi") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/ui/ash/editor_menu:utils",
     "//chrome/browser/ui/ash/magic_boost",
     "//chrome/browser/ui/ash/magic_boost:magic_boost_constants",
@@ -29,6 +31,7 @@ source_set("mahi") {
     "//chromeos/constants:constants",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/vector_icons",
+    "//components/application_locale_storage",
     "//ui/accessibility:ax_base",
     "//ui/color",
     "//ui/display",

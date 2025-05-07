@@ -8,12 +8,15 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+class ApplicationLocaleStorage;
 
 namespace views {
 class Label;
@@ -31,15 +34,20 @@ class EditorMenuPromoCardView : public views::View,
   METADATA_HEADER(EditorMenuPromoCardView, views::View)
 
  public:
-  EditorMenuPromoCardView(const gfx::Rect& anchor_view_bounds,
-                          EditorMenuViewDelegate* delegate);
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  EditorMenuPromoCardView(
+      const ApplicationLocaleStorage* application_locale_storage,
+      const gfx::Rect& anchor_view_bounds,
+      EditorMenuViewDelegate* delegate);
 
   EditorMenuPromoCardView(const EditorMenuPromoCardView&) = delete;
   EditorMenuPromoCardView& operator=(const EditorMenuPromoCardView&) = delete;
 
   ~EditorMenuPromoCardView() override;
 
+  // `application_locale_storage` must be non-null and must outlive the widget.
   static std::unique_ptr<views::Widget> CreateWidget(
+      const ApplicationLocaleStorage* application_locale_storage,
       const gfx::Rect& anchor_view_bounds,
       EditorMenuViewDelegate* delegate);
 
@@ -75,6 +83,8 @@ class EditorMenuPromoCardView : public views::View,
   void CloseWidgetWithReason(views::Widget::ClosedReason closed_reason);
 
   void ResetPreTargetHandler();
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   std::unique_ptr<PreTargetHandler> pre_target_handler_;
 

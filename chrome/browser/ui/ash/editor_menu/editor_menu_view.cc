@@ -10,9 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_badge_view.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_chip_view.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
@@ -24,6 +26,7 @@
 #include "chromeos/ash/components/editor_menu/public/cpp/icon.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -108,11 +111,14 @@ int GetChipsContainerHeightWithPaddings(int chip_height, int num_rows) {
   return total_chips_height + total_chips_paddings;
 }
 
-EditorMenuView::EditorMenuView(TextAndImageMode text_and_image_mode,
-                               const PresetTextQueries& preset_text_queries,
-                               const gfx::Rect& anchor_view_bounds,
-                               EditorMenuViewDelegate* delegate)
+EditorMenuView::EditorMenuView(
+    const ApplicationLocaleStorage* application_locale_storage,
+    TextAndImageMode text_and_image_mode,
+    const PresetTextQueries& preset_text_queries,
+    const gfx::Rect& anchor_view_bounds,
+    EditorMenuViewDelegate* delegate)
     : PreTargetHandlerView(CardType::kEditorMenu),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       text_and_image_mode_(text_and_image_mode),
       delegate_(delegate) {
   CHECK(delegate_);
@@ -127,6 +133,7 @@ EditorMenuView::~EditorMenuView() = default;
 
 // static
 std::unique_ptr<views::Widget> EditorMenuView::CreateWidget(
+    const ApplicationLocaleStorage* application_locale_storage,
     TextAndImageMode text_and_image_mode,
     const PresetTextQueries& preset_text_queries,
     const gfx::Rect& anchor_view_bounds,
@@ -144,9 +151,10 @@ std::unique_ptr<views::Widget> EditorMenuView::CreateWidget(
   params.name = kWidgetName;
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
-  EditorMenuView* editor_menu_view = widget->SetContentsView(
-      std::make_unique<EditorMenuView>(text_and_image_mode, preset_text_queries,
-                                       anchor_view_bounds, delegate));
+  EditorMenuView* editor_menu_view =
+      widget->SetContentsView(std::make_unique<EditorMenuView>(
+          application_locale_storage, text_and_image_mode, preset_text_queries,
+          anchor_view_bounds, delegate));
   editor_menu_view->UpdateBounds(anchor_view_bounds);
 
   return widget;
@@ -244,7 +252,8 @@ void EditorMenuView::TabSelectedAt(int index) {
 }
 
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
-  gfx::Rect editor_menu_bounds = GetEditorMenuBounds(anchor_view_bounds, this);
+  gfx::Rect editor_menu_bounds = GetEditorMenuBounds(
+      anchor_view_bounds, this, application_locale_storage_->Get());
   GetWidget()->SetBounds(editor_menu_bounds);
   UpdateChipsContainer(/*editor_menu_width=*/editor_menu_bounds.width());
 }

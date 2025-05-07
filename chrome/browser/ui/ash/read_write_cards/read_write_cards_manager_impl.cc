@@ -49,7 +49,8 @@ ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl(
   if (chromeos::features::IsOrcaEnabled() ||
       ash::features::IsLobsterEnabled()) {
     editor_menu_controller_ =
-        std::make_unique<editor_menu::EditorMenuControllerImpl>();
+        std::make_unique<editor_menu::EditorMenuControllerImpl>(
+            application_locale_storage);
   }
 
   if (chromeos::features::IsMahiEnabled()) {

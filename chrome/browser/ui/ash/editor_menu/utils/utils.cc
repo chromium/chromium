@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
 
-#include "chrome/browser/browser_process.h"
+#include <string>
+
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -13,14 +14,8 @@ namespace chromeos::editor_menu {
 
 namespace {
 
-std::string GetSystemLocale() {
-  return g_browser_process != nullptr
-             ? g_browser_process->GetApplicationLocale()
-             : "";
-}
-
-int ComputeWidthOnSide() {
-  if (GetSystemLocale() == "ta") {
+int ComputeWidthOnSide(const std::string& app_locale) {
+  if (app_locale == "ta") {
     return kBigEditorMenuMinWidthDip;
   }
   return kEditorMenuMinWidthDip;
@@ -31,7 +26,8 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
     const views::View* target,
     const gfx::Rect screen_work_area,
     const gfx::Point cursor_point,
-    const CardType& card_type) {
+    const CardType& card_type,
+    const std::string& application_locale) {
   const int width_on_top_or_bottom = std::max(
       card_type == CardType::kMahiDefaultMenu ? kMahiMenuTopBottomMinWidthDip
                                               : kEditorMenuMinWidthDip,
@@ -39,7 +35,7 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
   const int height_on_top_or_bottom =
       target->GetHeightForWidth(width_on_top_or_bottom);
 
-  const int width_on_side = ComputeWidthOnSide();
+  const int width_on_side = ComputeWidthOnSide(application_locale);
   const int height_on_side = target->GetHeightForWidth(width_on_side);
 
   // The vertical starting position of top side candidates which makes them be
@@ -212,6 +208,7 @@ gfx::Rect PickBestEditorMenuBounds(std::vector<gfx::Rect> candidates,
 
 gfx::Rect GetEditorMenuBounds(const gfx::Rect& anchor_view_bounds,
                               const views::View* target,
+                              const std::string& application_locale,
                               const CardType card_type) {
   display::Screen* screen = display::Screen::GetScreen();
   const gfx::Rect screen_work_area =
@@ -219,7 +216,8 @@ gfx::Rect GetEditorMenuBounds(const gfx::Rect& anchor_view_bounds,
   const gfx::Point cursor_point = screen->GetCursorScreenPoint();
 
   std::vector<gfx::Rect> candidates = GetEditorMenuBoundsCandidates(
-      anchor_view_bounds, target, screen_work_area, cursor_point, card_type);
+      anchor_view_bounds, target, screen_work_area, cursor_point, card_type,
+      application_locale);
   return PickBestEditorMenuBounds(candidates, screen_work_area, cursor_point);
 }
 

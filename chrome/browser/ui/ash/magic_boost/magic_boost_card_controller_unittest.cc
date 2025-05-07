@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -12,13 +13,16 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_metrics.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_opt_in_card.h"
 #include "chrome/browser/ui/ash/magic_boost/test/mock_magic_boost_controller_crosapi.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,6 +30,15 @@
 #include "ui/views/view_utils.h"
 
 namespace chromeos {
+
+namespace {
+const std::string& GetApplicationLocale() {
+  return TestingBrowserProcess::GetGlobal()
+      ->GetFeatures()
+      ->application_locale_storage()
+      ->Get();
+}
+}  // namespace
 
 using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 
@@ -117,17 +130,19 @@ TEST_F(MagicBoostCardControllerTest, BoundsChanged) {
   EXPECT_TRUE(widget);
 
   // Correct bounds should be set.
-  EXPECT_EQ(editor_menu::GetEditorMenuBounds(anchor_bounds,
-                                             widget->GetContentsView()),
-            widget->GetRestoredBounds());
+  EXPECT_EQ(
+      editor_menu::GetEditorMenuBounds(anchor_bounds, widget->GetContentsView(),
+                                       GetApplicationLocale()),
+      widget->GetRestoredBounds());
 
   anchor_bounds = gfx::Rect(0, 50, 55, 80);
 
   // Widget should change bounds accordingly.
   card_controller_.OnAnchorBoundsChanged(anchor_bounds);
-  EXPECT_EQ(editor_menu::GetEditorMenuBounds(anchor_bounds,
-                                             widget->GetContentsView()),
-            widget->GetRestoredBounds());
+  EXPECT_EQ(
+      editor_menu::GetEditorMenuBounds(anchor_bounds, widget->GetContentsView(),
+                                       GetApplicationLocale()),
+      widget->GetRestoredBounds());
 }
 
 TEST_F(MagicBoostCardControllerTest, DisclaimerUi) {

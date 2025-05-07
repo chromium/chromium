@@ -11,13 +11,16 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/mahi/web_contents/test_support/fake_mahi_web_contents_manager.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -84,6 +87,13 @@ void TypeTestResponse(ui::test::EventGenerator* event_generator) {
   }
 }
 
+const std::string& GetApplicationLocale() {
+  return TestingBrowserProcess::GetGlobal()
+      ->GetFeatures()
+      ->application_locale_storage()
+      ->Get();
+}
+
 }  // namespace
 
 TEST_F(MahiMenuViewTest, Bounds) {
@@ -94,7 +104,8 @@ TEST_F(MahiMenuViewTest, Bounds) {
   // The bounds of the created widget should be similar to the value from the
   // utils function.
   EXPECT_EQ(editor_menu::GetEditorMenuBounds(
-                anchor_view_bounds, menu_widget.get()->GetContentsView()),
+                anchor_view_bounds, menu_widget.get()->GetContentsView(),
+                GetApplicationLocale()),
             menu_widget->GetRestoredBounds());
 }
 
