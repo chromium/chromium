@@ -633,7 +633,7 @@ BUILDERS = {
             'pool': 'chrome',
             'os': 'Android',
             'label-pool': 'chrome.tests.perf',
-            'label-board': 'byra',
+            'label-board': 'brya',
         },
         'server':
         'https://chromeos-swarming.appspot.com',

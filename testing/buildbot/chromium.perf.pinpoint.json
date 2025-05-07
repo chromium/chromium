@@ -25,7 +25,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "dut_state": "ready",
-            "label-board": "byra",
+            "label-board": "brya",
             "label-pool": "chrome.tests.perf",
             "os": "Android",
             "pool": "chrome"
