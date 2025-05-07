@@ -525,7 +525,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
       blink::mojom::IDBTransactionDurability durability);
 
   // Create and initialize a BackingStore; verify and report its status.
-  static std::tuple<std::unique_ptr<BackingStore>,
+  static std::tuple<std::unique_ptr<indexed_db::BackingStore>,
                     Status,
                     IndexedDBDataLossInfo,
                     bool /* is_disk_full */>

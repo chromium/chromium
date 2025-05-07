@@ -1611,7 +1611,7 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
 }
 
 // static
-std::tuple<std::unique_ptr<BackingStore>,
+std::tuple<std::unique_ptr<indexed_db::BackingStore>,
            Status,
            IndexedDBDataLossInfo,
            bool /* is_disk_full */>
