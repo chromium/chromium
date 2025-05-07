@@ -479,9 +479,6 @@ crbug.com/370694819 [ win ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ F
 crbug.com/370694819 [ angle-opengl asan graphite-disabled mac ] Pixel_WebGPUDestroyed_OffscreenCanvas* [ Failure ]
 crbug.com/370694819 [ angle-opengl asan graphite-disabled mac ] Pixel_WebGPUDestroyed_OnscreenCanvas* [ Failure ]
 
-# Failure on Mac ARM
-crbug.com/412679361 [ mac mac-arm64 ] Pixel_WebGPUCopyExternalImageWebGPUCanvas [ Failure ]
-
 # Flaky on Win10 Intel with bad image
 crbug.com/413062240 [ win10 intel-0x4680 passthrough ] Pixel_WebGPUDestroyed_OnscreenCanvas_CopyExternalImageToTexture [ RetryOnFailure ]
 
