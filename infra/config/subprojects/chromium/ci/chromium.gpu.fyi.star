@@ -1691,6 +1691,13 @@ ci.thin_tester(
         mixins = [
             "mac_mini_intel_gpu_stable",
         ],
+        per_test_modifications = {
+            "pixel_skia_gold_gl_passthrough_ganesh_test": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.DEBUG,
@@ -2305,6 +2312,13 @@ ci.thin_tester(
         mixins = [
             "mac_retina_amd_gpu_stable",
         ],
+        per_test_modifications = {
+            "pixel_skia_gold_gl_passthrough_ganesh_test": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.DEBUG,
