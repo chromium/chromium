@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -81,13 +82,19 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                       [](std::vector<BatchDatabaseTask> tasks,
                          const DomStorageDatabase& db) {
                         leveldb::WriteBatch batch;
+                        // TODO(crbug.com/40245293): Remove this after debugging
+                        // is complete.
+                        size_t batch_task_count = tasks.size();
                         size_t iteration_count = 0;
+                        size_t current_batch_size = 0;
+                        base::debug::Alias(&batch_task_count);
+                        base::debug::Alias(&iteration_count);
+                        base::debug::Alias(&current_batch_size);
                         for (auto& task : tasks) {
                           iteration_count++;
-                          size_t current_batch_size = batch.ApproximateSize();
                           std::move(task).Run(&batch, db);
-                          size_t new_batch_size = batch.ApproximateSize();
-                          size_t growth = new_batch_size - current_batch_size;
+                          size_t growth =
+                              batch.ApproximateSize() - current_batch_size;
                           base::UmaHistogramCustomCounts(
                               "Storage.DomStorage."
                               "BatchTaskGrowthSizeBytes",
@@ -97,7 +104,7 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                             size_t target_batch_size =
                                 batch_size_mb * 1024 * 1024;
                             if (current_batch_size < target_batch_size &&
-                                new_batch_size >= target_batch_size) {
+                                batch.ApproximateSize() >= target_batch_size) {
                               base::UmaHistogramCounts10000(
                                   base::StringPrintf("Storage.DomStorage."
                                                      "IterationsToReach%zuMB",
