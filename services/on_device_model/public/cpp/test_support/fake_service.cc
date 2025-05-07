@@ -75,10 +75,6 @@ std::string CtxToString(const mojom::AppendOptions& input,
                         const Capabilities& capabilities) {
   std::string suffix;
   std::string context = OnDeviceInputToString(*input.input, capabilities);
-  if (input.token_offset > 0) {
-    context.erase(context.begin(), context.begin() + input.token_offset);
-  }
-  suffix += " off:" + base::NumberToString(input.token_offset);
   if (input.max_tokens > 0) {
     if (input.max_tokens < context.size()) {
       context.resize(input.max_tokens);
@@ -245,8 +241,7 @@ void FakeOnDeviceSession::AppendImpl(
       OnDeviceInputToString(*options->input, capabilities_).size());
   uint32_t max_tokens =
       options->max_tokens > 0 ? options->max_tokens : input_tokens;
-  uint32_t token_offset = options->token_offset;
-  uint32_t tokens_processed = std::min(input_tokens - token_offset, max_tokens);
+  uint32_t tokens_processed = std::min(input_tokens, max_tokens);
   context_.emplace_back(std::move(options));
   if (client) {
     client->OnComplete(tokens_processed);

@@ -132,10 +132,12 @@ struct SessionParams {
   // probable.
   // `top_k` should be a value from 1 to the max top K value the model was
   // initialized with.
-  [MinVersion=1] uint32 top_k;
+  [MinVersion=1]
+  uint32 top_k;
   // `temperature` should be a value greater than 0.0. Values above 1.0 may give
   // poor results.
-  [MinVersion=1] float temperature;
+  [MinVersion=1]
+  float temperature;
 };
 
 // The set of tokens that can be added as part of an input.
@@ -191,8 +193,7 @@ struct AppendOptions {
   // process all tokens from this input.
   uint32 max_tokens = 0;
 
-  // After text is tokenized, the offset into that vector to start processing.
-  // If zero, will start at the first token.
+  // Deprecated. Does nothing.
   uint32 token_offset = 0;
 };
 
@@ -223,11 +224,13 @@ struct GenerateOptions {
   float? temperature;
 
   // Deprecated: use `constraint` instead.
-  [MinVersion=1] string? response_json_schema;
+  [MinVersion=1]
+  string? response_json_schema;
 
   // Specifies any constraints on the output for this Generate() call. Note that
   // only one of the JSON schema or regex constraints should be provided.
-  [MinVersion=2] ResponseConstraint? constraint;
+  [MinVersion=2]
+  ResponseConstraint? constraint;
 };
 
 // Priorities which determine how requests to a session are scheduled.
@@ -290,7 +293,7 @@ interface OnDeviceModel {
   // Starts a session with this model. Sessions are logically independent,
   // but requests may block progress of other sessions.
   StartSession@0(pending_receiver<Session> session,
-      [MinVersion=1] SessionParams? params);
+                 [MinVersion=1] SessionParams? params);
 
   // DEPRECATED: Does nothing
   ClassifyTextSafety@1(string text) => (SafetyInfo? safety_info);

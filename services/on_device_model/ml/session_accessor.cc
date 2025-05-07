@@ -211,7 +211,6 @@ void SessionAccessor::AppendInternal(
   ChromeMLAppendOptions options{
       .input = append_options->input->pieces.data(),
       .input_size = append_options->input->pieces.size(),
-      .token_offset = append_options->token_offset,
       .max_tokens = append_options->max_tokens,
       .context_saved_fn = &context_saved_fn,
   };

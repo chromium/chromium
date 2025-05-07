@@ -241,22 +241,11 @@ bool SessionAppend(ChromeMLSession session,
   for (size_t i = 0; i < options->input_size; i++) {
     // SAFETY: `options->input_size` describes how big `options->input` is.
     const ml::InputPiece& piece = UNSAFE_BUFFERS(options->input[i]);
-    if (!std::holds_alternative<std::string>(piece) &&
-        !std::holds_alternative<ml::Token>(piece)) {
-      // We could write code to handle token options and non-text inputs being
-      // passed together, but it would only be exercised by unit tests so would
-      // not improve real-world coverage.
-      CHECK(options->token_offset == 0);
-    }
-
     CHECK(!std::holds_alternative<SkBitmap>(piece) ||
           instance->enable_image_input);
     CHECK(!std::holds_alternative<ml::AudioBuffer>(piece) ||
           instance->enable_audio_input);
     text += PieceToString(piece);
-  }
-  if (options->token_offset > 0) {
-    text.erase(text.begin(), text.begin() + options->token_offset);
   }
   if (options->max_tokens < text.size()) {
     text.resize(options->max_tokens);
@@ -328,7 +317,6 @@ bool SessionExecuteModel(ChromeMLSession session,
   ChromeMLAppendOptions append_opts{
       .input = options->input,
       .input_size = options->input_size,
-      .token_offset = options->token_offset,
       .max_tokens = options->max_tokens,
       .context_saved_fn = options->context_saved_fn,
   };

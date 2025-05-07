@@ -213,8 +213,6 @@ struct ChromeMLAppendOptions {
   const ml::InputPiece* input;
   // Number of pieces in input.
   size_t input_size;
-  // A number of tokens to skip in input before adding tokens to the context.
-  uint32_t token_offset;
   // The maximum number of tokens to add to the context.
   uint32_t max_tokens;
   // How to return the result on completion.
@@ -236,7 +234,6 @@ struct ChromeMLGenerateOptions {
 struct ChromeMLExecuteOptions {
   int context_mode;
   uint32_t max_tokens;
-  uint32_t token_offset;
   uint32_t max_output_tokens;
   const ChromeMLContextSavedFn* context_saved_fn;
   const ChromeMLExecutionOutputFn* execution_output_fn;

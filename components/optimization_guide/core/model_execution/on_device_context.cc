@@ -211,7 +211,6 @@ void OnDeviceContext::Append(on_device_model::mojom::InputPtr input) {
   // rather than max_tokens for this call.
   options->max_tokens =
       opts_.token_limits.max_context_tokens - tokens_processed_;
-  options->token_offset = 0;
   mojo::PendingRemote<on_device_model::mojom::ContextClient> pending;
   clients_.Add(this, pending.InitWithNewPipeAndPassReceiver());
   session_->Append(std::move(options), std::move(pending));

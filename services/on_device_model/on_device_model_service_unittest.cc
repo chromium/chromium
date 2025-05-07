@@ -380,16 +380,15 @@ TEST_F(OnDeviceModelServiceTest, AppendWithTokenLimits) {
 
   ContextClientWaiter client2;
   auto offset_input = MakeInput("big cheese");
-  offset_input->token_offset = 4;
   session->Append(std::move(offset_input), client2.BindRemote());
-  EXPECT_EQ(client2.WaitForCompletion(), 6);
+  EXPECT_EQ(client2.WaitForCompletion(), 10);
 
   session->Append(MakeInput("cheddar"), {});
   session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
   response.WaitForCompletion();
 
   EXPECT_THAT(response.responses(),
-              ElementsAre("Context: big \n", "Context: cheese\n",
+              ElementsAre("Context: big \n", "Context: big cheese\n",
                           "Context: cheddar\n"));
 }
 
