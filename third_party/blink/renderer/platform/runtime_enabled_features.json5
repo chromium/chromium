@@ -2781,10 +2781,6 @@
       status: "experimental",
     },
     {
-      name: "LayoutWebkitBoxTreeFix",
-      status: "stable",
-    },
-    {
       name: "LazyInitializeMediaControls",
       base_feature: "none",
       public: true,
