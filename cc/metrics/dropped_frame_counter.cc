@@ -115,14 +115,8 @@ std::ostream& operator<<(
   return histogram.Dump(stream);
 }
 
-DroppedFrameCounter::DroppedFrameCounter()
-    : frame_sorter_(base::BindRepeating(&DroppedFrameCounter::NotifyFrameResult,
-                                        base::Unretained(this))) {
-}
-DroppedFrameCounter::~DroppedFrameCounter() {
-  sorted_frame_callback_.Reset();
-  frame_sorter_.Reset();
-}
+DroppedFrameCounter::DroppedFrameCounter() = default;
+DroppedFrameCounter::~DroppedFrameCounter() = default;
 
 uint32_t DroppedFrameCounter::GetAverageThroughput() const {
   size_t good_frames = 0;
@@ -151,12 +145,11 @@ void DroppedFrameCounter::AddDroppedFrame() {
   ++total_dropped_;
 }
 
+// Start with flushing the frames in frame_sorter ignoring the currently
+// pending frames, so all callers should call frame_sorter_.Reset();
+// prior to this function.
+// TODO(crbug.com/409093076): Remove all uses of this function.
 void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
-  // Start with flushing the frames in frame_sorter ignoring the currently
-  // pending frames (In other words calling NotifyFrameResult and update
-  // smoothness metrics tracked for all frames that have received their ack).
-  frame_sorter_.Reset();
-
   // Before resetting the pending frames, update the measurements for the
   // sliding windows.
   if (!latest_sliding_window_start_.is_null()) {
@@ -204,12 +197,6 @@ void DroppedFrameCounter::EnableReportForUI() {
   report_for_ui_ = true;
 }
 
-void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args) {
-  if (first_contentful_paint_received_) {
-    frame_sorter_.AddNewFrame(args);
-  }
-}
-
 void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
                                      const FrameInfo& frame_info) {
   const bool is_dropped = frame_info.IsDroppedAffectingSmoothness();
@@ -219,17 +206,12 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
   // Don't measure smoothness for frames that start before FCP is received, or
   // that have already been reported as dropped.
   if (is_dropped && first_contentful_paint_received_ &&
-      args.frame_time >= time_first_contentful_paint_received_ &&
-      !frame_sorter_.IsAlreadyReportedDropped(args.frame_id)) {
+      args.frame_time >= time_first_contentful_paint_received_) {
     ++total_smoothness_dropped_;
 
     if (!report_for_ui_) {
       ReportFrames();
     }
-  }
-
-  if (first_contentful_paint_received_) {
-    frame_sorter_.AddFrameResult(args, frame_info);
   }
 
   // Report frames on every frame for UI. And this needs to happen after
@@ -289,8 +271,11 @@ void DroppedFrameCounter::SetUkmSmoothnessDestination(
   ukm_smoothness_data_ = smoothness_data;
 }
 
+// Start with flushing the frames in frame_sorter ignoring the currently
+// pending frames, so all callers should call frame_sorter_.Reset();
+// prior to invoking this function.
+// TODO(crbug.com/409093076): Remove all uses of this function.
 void DroppedFrameCounter::Reset() {
-  frame_sorter_.Reset();
   total_frames_ = 0;
   total_partial_ = 0;
   total_dropped_ = 0;
@@ -316,8 +301,8 @@ base::TimeDelta DroppedFrameCounter::ComputeCurrentWindowSize() const {
          sliding_window_.front().first.frame_time;
 }
 
-void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
-                                            const FrameInfo& frame_info) {
+void DroppedFrameCounter::AddSortedFrame(const viz::BeginFrameArgs& args,
+                                         const FrameInfo& frame_info) {
   // Entirely disregard the frames with interval larger than the window --
   // these are violating the assumptions in the below code and should
   // only occur with external frame control, where dropped frame stats
@@ -326,10 +311,7 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
     return;
   }
 
-  if (sorted_frame_callback_)
-    sorted_frame_callback_.Run(args, frame_info);
-
-  sliding_window_.push({args, frame_info});
+  sliding_window_.emplace(args, frame_info);
   UpdateDroppedFrameCountInWindow(frame_info, 1);
 
   const bool is_dropped = frame_info.IsDroppedAffectingSmoothness();
@@ -346,6 +328,8 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
                     args.frame_time);
     in_dropping_ = false;
   }
+
+  OnEndFrame(args, frame_info);
 
   if (ComputeCurrentWindowSize() < kDefaultSlidingWindowInterval) {
     return;
@@ -445,10 +429,6 @@ void DroppedFrameCounter::OnFirstContentfulPaintReceived() {
   DCHECK(!first_contentful_paint_received_);
   first_contentful_paint_received_ = true;
   time_first_contentful_paint_received_ = base::TimeTicks::Now();
-}
-
-void DroppedFrameCounter::SetSortedFrameCallback(SortedFrameCallback callback) {
-  sorted_frame_callback_ = callback;
 }
 
 }  // namespace cc
