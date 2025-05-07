@@ -157,8 +157,15 @@ component("webnn_service") {
 
   if (webnn_use_ort) {
     sources += [
+      "ort/model_editor.cc",
+      "ort/model_editor.h",
+      "ort/ort_data_type.cc",
+      "ort/ort_data_type.h",
+      "ort/ort_status.cc",
+      "ort/ort_status.h",
       "ort/platform_functions_ort.cc",
       "ort/platform_functions_ort.h",
+      "ort/scoped_ort_types.h",
     ]
     deps += [ "//third_party/onnxruntime_headers" ]
   }
@@ -208,7 +215,9 @@ source_set("tests") {
 
   if (webnn_use_ort) {
     sources += [
+      "ort/model_editor_test.cc",
       "ort/platform_functions_ort_test.cc",
+      "ort/test_base_ort.cc",
       "ort/test_base_ort.h",
     ]
   }
