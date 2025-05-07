@@ -45,8 +45,6 @@
 #include "content/common/gpu_pre_sandbox_hook_linux.h"
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/utility/speech/speech_recognition_sandbox_hook_linux.h"
-#include "media/gpu/sandbox/hardware_video_decoding_sandbox_hook_linux.h"
-#include "media/gpu/sandbox/hardware_video_encoding_sandbox_hook_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "services/audio/audio_sandbox_hook_linux.h"
 #include "services/network/network_sandbox_hook_linux.h"
@@ -54,6 +52,8 @@
 
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "gpu/config/gpu_info_collector.h"
+#include "media/gpu/sandbox/hardware_video_decoding_sandbox_hook_linux.h"
+#include "media/gpu/sandbox/hardware_video_encoding_sandbox_hook_linux.h"
 // gn check is not smart enough to realize that this include is guarded behind
 // some BUILDFLAG()s and the BUILD.gn dependencies correctly account for that.
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  //nogncheck
