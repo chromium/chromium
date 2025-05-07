@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -179,11 +180,14 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         String description =
                 getContext()
                         .getString(
-                                R.string.concat_two_strings_with_periods,
+                                R.string.concat_two_strings_with_comma,
                                 getTitle(),
                                 collapseOrExpandedText);
 
         view.setContentDescription(description);
+        if (view.isAccessibilityFocused()) {
+            view.sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION);
+        }
     }
 
     private AccessibilityDelegate createButtonAccessibilityDelegate(View labelView) {

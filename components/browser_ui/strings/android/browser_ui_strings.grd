@@ -372,9 +372,6 @@
       <message name="IDS_CONCAT_TWO_STRINGS_WITH_COMMA" desc="This string concatenates two other strings. In the English language, this particular concatenation is done via a comma and a whitespace in between the other strings. For example: '1 compromised password, 2 weak passwords'">
         <ph name="TYPE_1">%1$s<ex>2 compromised passwords</ex></ph>, <ph name="TYPE_2">%2$s<ex>7 weak passwords</ex></ph>
       </message>
-      <message name="IDS_CONCAT_TWO_STRINGS_WITH_PERIODS" desc="This string concatenates two other strings. In the English language, this particular concatenation is done via a period and a whitespace after the first string, and a period after the second string. For example: '1 compromised password. 2 weak passwords.'">
-        <ph name="TYPE_1">%1$s<ex>2 compromised passwords</ex></ph>. <ph name="TYPE_2">%2$s<ex>7 weak passwords</ex></ph>.
-      </message>
 
       <!-- Certificate viewer -->
       <message name="IDS_CERTTITLE" desc="Dialog box title for viewing security certificates. [CHAR_LIMIT=32]">
