@@ -25,9 +25,9 @@ js_library("reporting_protos") {
           ]) {
     if (use_fuzzing_engine_with_lpm &&
         current_toolchain != "//build/toolchain/cros:target") {
-      # In fuzzing build, code generator targets have "proto_library_" prefix in
+      # In fuzzing build, code generator targets have "__proto" suffix in
       # fuzzable_proto_library template.
-      extra_deps += [ string_replace(extra_dep, ":", ":proto_library_") ]
+      extra_deps += [ string_replace(extra_dep, "_gen", "__proto_gen") ]
     } else {
       extra_deps += [ extra_dep ]
     }

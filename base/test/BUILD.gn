@@ -391,7 +391,6 @@ proto_library("test_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "test_proto.descriptor"
-  generator_visibility = [ "//base:base_test_proto_bundle_data" ]
 }
 
 config("base_test_implementation") {

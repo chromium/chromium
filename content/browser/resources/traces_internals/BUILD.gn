@@ -39,7 +39,6 @@ generate_grd("bufbuild_grdp") {
 }
 
 proto_library("config_proto") {
-  generator_visibility = [ ":copy_mojo" ]
   sources =
       [ "//third_party/perfetto/protos/perfetto/config/perfetto_config.proto" ]
   proto_in_dir = "//third_party/perfetto/"
