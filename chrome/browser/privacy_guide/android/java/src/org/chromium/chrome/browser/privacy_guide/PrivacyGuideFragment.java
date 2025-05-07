@@ -154,10 +154,12 @@ public class PrivacyGuideFragment extends Fragment
         mViewPager.registerOnPageChangeCallback(mOnPageChangeCallback);
 
         mTabLayout = mView.findViewById(R.id.tab_layout);
+        mTabLayout.setFocusable(false);
         new TabLayoutMediator(
                         mTabLayout,
                         mViewPager,
                         (tab, position) -> {
+                            tab.view.setFocusable(false);
                             tab.view.setClickable(false);
                             tab.view.setImportantForAccessibility(
                                     View.IMPORTANT_FOR_ACCESSIBILITY_NO);
