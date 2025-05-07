@@ -575,8 +575,6 @@ struct PasswordForm {
   // An exact equality comparison of all the fields is only useful for tests.
   // Production code should be using `ArePasswordFormUniqueKeysEqual` instead.
   friend bool operator==(const PasswordForm&, const PasswordForm&) = default;
-  friend bool operator!=(const PasswordForm& lhs,
-                         const PasswordForm& rhs) = default;
 #endif
 };
 
