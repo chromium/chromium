@@ -1,4 +1,5 @@
-# TODO(crbug.com/395595608) Failing due to per-surface scaling.
+# TODO(crbug.com/348590032) Failing as test relies on window.devicePixelRatio
+# which doesn't work with per-window scaling.
 -All/GetDisplayMediaHiDpiBrowserTest.Capture/1
 
 # Very flaky/failing on mutter (less flaky/passing on weston)
