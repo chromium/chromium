@@ -113,6 +113,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.PROVIDER_WEAKLY_REF_WEBVIEW,
                 Features.PAYMENT_REQUEST,
                 Features.WEBVIEW_BUILDER + Features.DEV_SUFFIX,
+                Features.COOKIE_INTERCEPT + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -268,6 +269,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.SET_HAS_ENROLLED_INSTRUMENT_ENABLED,
         ApiCall.GET_HAS_ENROLLED_INSTRUMENT_ENABLED,
         ApiCall.GET_WEBVIEW_BUILDER,
+        ApiCall.SET_INCLUDE_COOKIES_ON_INTERCEPT,
+        ApiCall.GET_INCLUDE_COOKIES_ON_INTERCEPT,
+        ApiCall.SERVICE_WORKER_SET_INCLUDE_COOKIES_ON_INTERCEPT,
+        ApiCall.SERVICE_WORKER_GET_INCLUDE_COOKIES_ON_INTERCEPT,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -422,9 +427,13 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int SET_HAS_ENROLLED_INSTRUMENT_ENABLED = 143;
         int GET_HAS_ENROLLED_INSTRUMENT_ENABLED = 144;
         int GET_WEBVIEW_BUILDER = 145;
+        int SET_INCLUDE_COOKIES_ON_INTERCEPT = 146;
+        int GET_INCLUDE_COOKIES_ON_INTERCEPT = 147;
+        int SERVICE_WORKER_SET_INCLUDE_COOKIES_ON_INTERCEPT = 148;
+        int SERVICE_WORKER_GET_INCLUDE_COOKIES_ON_INTERCEPT = 149;
 
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 146;
+        int COUNT = 150;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

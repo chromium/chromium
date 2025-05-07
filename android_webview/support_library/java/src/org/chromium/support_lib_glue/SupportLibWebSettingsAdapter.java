@@ -524,4 +524,22 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             return mAwSettings.getHasEnrolledInstrumentEnabled();
         }
     }
+
+    @Override
+    public void setIncludeCookiesOnIntercept(boolean includeCookiesOnIntercept) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_INCLUDE_COOKIES_ON_INTERCEPT")) {
+            recordApiCall(ApiCall.SET_INCLUDE_COOKIES_ON_INTERCEPT);
+            mAwSettings.setIncludeCookiesOnIntercept(includeCookiesOnIntercept);
+        }
+    }
+
+    @Override
+    public boolean getIncludeCookiesOnIntercept() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_INCLUDE_COOKIES_ON_INTERCEPT")) {
+            recordApiCall(ApiCall.GET_INCLUDE_COOKIES_ON_INTERCEPT);
+            return mAwSettings.getIncludeCookiesOnIntercept();
+        }
+    }
 }

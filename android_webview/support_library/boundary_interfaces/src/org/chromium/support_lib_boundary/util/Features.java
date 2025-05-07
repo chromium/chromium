@@ -353,4 +353,10 @@ public class Features {
 
     // WebViewBuilder
     public static final String WEBVIEW_BUILDER = "WEBVIEW_BUILDER";
+
+    // WebSettingsCompat.setIncludeCookiesOnIntercept
+    // WebSettingsCompat.getIncludeCookiesOnIntercept
+    // ServiceWorkerWebSettingsCompat.setIncludeCookiesOnIntercept
+    // ServiceWorkerWebSettingsCompat.getIncludeCookiesOnIntercept
+    public static final String COOKIE_INTERCEPT = "COOKIE_INTERCEPT";
 }

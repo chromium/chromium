@@ -645,6 +645,12 @@ chromium-metrics-reviews@google.com.
   <int value="143" label="WebSettingsCompat.setHasEnrolledInstrumentEnabled"/>
   <int value="144" label="WebSettingsCompat.getHasEnrolledInstrumentEnabled"/>
   <int value="145" label="WebViewBuilder"/>
+  <int value="146" label="WebSettingsCompat.setIncludeCookiesOnIntercept"/>
+  <int value="147" label="WebSettingsCompat.getIncludeCookiesOnIntercept"/>
+  <int value="148"
+      label="ServiceWorkerWebSettingsCompat.setIncludeCookiesOnIntercept"/>
+  <int value="149"
+      label="ServiceWorkerWebSettingsCompat.getIncludeCookiesOnIntercept"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
