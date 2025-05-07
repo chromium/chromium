@@ -49,6 +49,7 @@
 #include "chrome/browser/webauthn/cablev2_devices.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
+#include "chrome/browser/webauthn/immediate_request_rate_limiter_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -64,6 +65,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/webauthn/core/browser/immediate_request_rate_limiter.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
@@ -945,9 +947,19 @@ bool ChromeAuthenticatorRequestDelegate::MaybeHandleImmediateMediation(
     return false;
   }
 
-  // Always return not found immediate in incognito.
+  // Always return not allowed immediate in incognito.
   if (profile()->IsOffTheRecord()) {
     return true;
+  }
+
+  if (auto* rate_limiter =
+          ImmediateRequestRateLimiterFactory::GetForProfile(profile())) {
+    const url::Origin origin = GetRenderFrameHost()->GetLastCommittedOrigin();
+    if (!rate_limiter->IsRequestAllowed(origin)) {
+      FIDO_LOG(ERROR)
+          << "Immediate request rate limit exceeded for the origin.";
+      return true;
+    }
   }
 
   if (data.recognized_credentials.size() + passwords.size() == 0) {
