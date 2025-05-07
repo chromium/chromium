@@ -59,6 +59,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_utils.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -699,7 +700,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 
   if (IsReaderModeAvailable()) {
-    self.readerModeAction = [self openReaderModeAction];
+    self.readerModeAction = [self toggleReaderModeAction];
   }
 
   if (send_tab_to_self::
@@ -742,20 +743,24 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   ];
 }
 
-- (OverflowMenuAction*)openReaderModeAction {
-  // TODO(crbug.com/409935686): Dynamically update the Reader mode overflow menu
-  // string to "Exit Reader Mode" if Reader mode is already enabled.
+- (OverflowMenuAction*)toggleReaderModeAction {
+  ReaderModeTabHelper* tabHelper =
+      ReaderModeTabHelper::FromWebState(self.webState);
+  BOOL isReaderModeActive = tabHelper->IsActive();
+  int nameID = isReaderModeActive ? IDS_IOS_TOOLS_MENU_HIDE_READER_MODE
+                                  : IDS_IOS_TOOLS_MENU_READER_MODE;
   __weak __typeof(self) weakSelf = self;
   return [self
-      createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_READER_MODE
+      createOverflowMenuActionWithNameID:nameID
                               actionType:overflow_menu::ActionType::ReaderMode
                               symbolName:kReaderModeSymbol
                             systemSymbol:YES
                         monochromeSymbol:NO
-                         accessibilityID:kToolsMenuOpenReaderMode
+                         accessibilityID:kToolsMenuReaderMode
                             hideItemText:nil
                                  handler:^{
-                                   [weakSelf toggleReaderMode];
+                                   [weakSelf setReaderModeVisibility:
+                                                 !isReaderModeActive];
                                  }];
 }
 
@@ -2129,7 +2134,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::SetTabReminder:
       return [self newSetTabReminderAction];
     case overflow_menu::ActionType::ReaderMode:
-      return [self openReaderModeAction];
+      return [self toggleReaderModeAction];
   }
 }
 
@@ -2360,10 +2365,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       showSetTabReminderUI:SetTabReminderEntryPoint::kOverflowMenu];
 }
 
-// Opens or closes the Reader mode UI.
-- (void)toggleReaderMode {
+// Sets the Reader mode UI visibility.
+- (void)setReaderModeVisibility:(BOOL)visible {
   [self dismissMenu];
-  [self.readerModeHandler toggleReaderMode];
+  if (visible) {
+    [self.readerModeHandler showReaderMode];
+  } else {
+    [self.readerModeHandler hideReaderMode];
+  }
 }
 
 #pragma mark - Destinations Handlers
