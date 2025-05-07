@@ -146,6 +146,20 @@ crbug.com/371802469 [ mac intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_cam
 # Same with prefer-hardware
 crbug.com/371802469 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 
+# Flaky crashes that started when upgrading to Mac 15.4
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_detail [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeColorSpace_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_arraybuffer_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_capture_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_hw_decoder_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_sw_decoder_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_Encode_arraybuffer_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_Encode_capture_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+
 crbug.com/389978730 [ win11 nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.08_prefer-hardware [ Failure ]
 
 # Win/AMD RX 7600 Failures
