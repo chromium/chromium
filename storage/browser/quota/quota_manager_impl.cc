@@ -74,7 +74,6 @@
 #include "url/origin.h"
 
 using ::blink::StorageKey;
-using ::blink::mojom::StorageType;
 
 namespace storage {
 

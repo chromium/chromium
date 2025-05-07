@@ -56,7 +56,6 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 using blink::mojom::CacheStorageError;
-using blink::mojom::StorageType;
 
 namespace content {
 

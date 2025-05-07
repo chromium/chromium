@@ -99,7 +99,6 @@ enum class StorageKeyAndBucketTestCase {
   kThirdPartyNamed,
 };
 
-using blink::mojom::StorageType;
 using ResponseHeaderMap = base::flat_map<std::string, std::string>;
 
 constexpr char16_t kReplacementCharacter = 0xFFFD;

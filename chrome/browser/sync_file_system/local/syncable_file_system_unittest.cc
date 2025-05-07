@@ -28,7 +28,6 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
-using blink::mojom::StorageType;
 using storage::FileSystemContext;
 using storage::FileSystemOperationContext;
 using storage::FileSystemURL;

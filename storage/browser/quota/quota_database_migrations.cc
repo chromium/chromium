@@ -27,6 +27,9 @@ namespace {
 // The name for the implicit/default bucket before V10.
 constexpr char kDefaultNamePreV10[] = "default";
 
+// Quota type for deprecated persistent quota.
+constexpr int kDeprecatedPersistentQuotaType = 1;
+
 // Overwrites the buckets table with the new_buckets table after data has been
 // copied from the former into the latter.
 bool OverwriteBucketsTableSetUpIndexes(sql::Database* db) {
@@ -351,8 +354,7 @@ bool QuotaDatabaseMigrations::MigrateFromVersion9ToVersion10(
       "DELETE FROM buckets WHERE type = ? ";
   sql::Statement delete_statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeletePersistentTypeBuckets));
-  delete_statement.BindInt(
-      0, static_cast<int>(blink::mojom::StorageType::kDeprecatedPersistent));
+  delete_statement.BindInt(0, kDeprecatedPersistentQuotaType);
   if (!delete_statement.Run()) {
     return false;
   }

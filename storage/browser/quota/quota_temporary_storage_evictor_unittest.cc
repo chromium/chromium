@@ -25,8 +25,6 @@
 #include "storage/browser/quota/quota_temporary_storage_evictor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::blink::mojom::StorageType;
-
 namespace storage {
 
 class QuotaTemporaryStorageEvictorTest;

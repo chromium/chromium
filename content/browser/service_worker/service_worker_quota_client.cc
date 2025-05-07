@@ -18,7 +18,6 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
-using ::blink::mojom::StorageType;
 using ::storage::mojom::QuotaClient;
 
 namespace content {
