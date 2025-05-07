@@ -19,6 +19,7 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.IntDef;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
@@ -128,6 +129,14 @@ public class PrivacyGuideFragment extends Fragment
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setPageTransformer(new PrivacyGuidePageTransformer());
         mViewPager.setUserInputEnabled(false);
+
+        // Workaround for ViewPager2 bug: https://issuetracker.google.com/issues/284429851.
+        for (int i = 0; i < mViewPager.getChildCount(); i++) {
+            var child = mViewPager.getChildAt(i);
+            if (child instanceof RecyclerView) {
+                child.setFocusable(false);
+            }
+        }
 
         mOnPageChangeCallback =
                 new ViewPager2.OnPageChangeCallback() {

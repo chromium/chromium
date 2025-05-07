@@ -22,4 +22,12 @@ public class WelcomeFragment extends PrivacyGuideBasePage {
             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.privacy_guide_welcome, container, false);
     }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // ScrollView sets focusable to true during construction. So setting focusable to false in
+        // xml file doesn't work. It has to be set after the construction of ScrollView.
+        view.findViewById(R.id.privacy_guide_welcome_scrollview).setFocusable(false);
+    }
 }
