@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hexToColor, Ink2Manager, PluginController, PluginControllerEventType, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -508,75 +508,6 @@ chrome.test.runTests([
 
     // Reset for future tests.
     document.body.appendChild(textbox);
-
-    chrome.test.succeed();
-  },
-
-  async function testCloseAndEvents() {
-    let textBoxStates: TextBoxState[] = [];
-    textbox.addEventListener('state-changed', e => {
-      textBoxStates.push((e as CustomEvent<TextBoxState>).detail);
-    });
-
-    let finishInkStrokeEvents = 0;
-    PluginController.getInstance().getEventTarget().addEventListener(
-        PluginControllerEventType.FINISH_INK_STROKE, () => {
-          finishInkStrokeEvents++;
-        });
-
-    // Initialize to a 100x100 box at 400, 300.
-    initializeBox(100, 100, 400, 300);
-    await microtasksFinished();
-    chrome.test.assertTrue(isVisible(textbox));
-    assertDeepEquals([TextBoxState.NEW], textBoxStates);
-
-    // When a new box has no edits, commitTextAnnotation() will not trigger a
-    // plugin message or a PluginControllerEventType.FINISH_INK_STROKE event.
-    mockPlugin.clearMessages();
-    textbox.commitTextAnnotation();
-    await microtasksFinished();
-    chrome.test.assertFalse(isVisible(textbox));
-    chrome.test.assertEq(
-        undefined, mockPlugin.findMessage('finishTextAnnotation'));
-    chrome.test.assertEq(0, finishInkStrokeEvents);
-    assertDeepEquals([TextBoxState.NEW, TextBoxState.INACTIVE], textBoxStates);
-
-    // When text is edited, commitTextAnnotation() will trigger a plugin message
-    // and a PluginControllerEventType.FINISH_INK_STROKE event.
-    textBoxStates = [];
-    initializeBox(100, 100, 400, 300);
-    await microtasksFinished();
-    chrome.test.assertTrue(isVisible(textbox));
-    assertDeepEquals([TextBoxState.NEW], textBoxStates);
-    textbox.$.textbox.value = 'Hello';
-    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
-    await microtasksFinished();
-    assertDeepEquals([TextBoxState.NEW, TextBoxState.EDITED], textBoxStates);
-
-    textbox.commitTextAnnotation();
-    await microtasksFinished();
-    chrome.test.assertFalse(isVisible(textbox));
-    chrome.test.assertTrue(
-        mockPlugin.findMessage('finishTextAnnotation') !== undefined);
-    chrome.test.assertEq(1, finishInkStrokeEvents);
-    assertDeepEquals(
-        [TextBoxState.NEW, TextBoxState.EDITED, TextBoxState.INACTIVE],
-        textBoxStates);
-
-    // When existing text is not edited, commitTextAnnotation() will trigger a
-    // plugin message but no PluginControllerEventType.FINISH_INK_STROKE event.
-    textBoxStates = [];
-    initializeBox(100, 100, 400, 300, true);
-    await microtasksFinished();
-    chrome.test.assertTrue(isVisible(textbox));
-    assertDeepEquals([TextBoxState.NEW], textBoxStates);
-    textbox.commitTextAnnotation();
-    await microtasksFinished();
-    chrome.test.assertFalse(isVisible(textbox));
-    chrome.test.assertTrue(
-        mockPlugin.findMessage('finishTextAnnotation') !== undefined);
-    chrome.test.assertEq(1, finishInkStrokeEvents);
-    assertDeepEquals([TextBoxState.NEW, TextBoxState.INACTIVE], textBoxStates);
 
     chrome.test.succeed();
   },

@@ -116,7 +116,6 @@ export class ViewerToolbarElement extends CrLitElement {
       // </if> enable_ink
 
       // <if expr="enable_pdf_ink2">
-      enableUndoRedo: {type: Boolean},
       hasInk2Edits: {type: Boolean},
       pdfInk2Enabled: {type: Boolean},
       canRedoAnnotation_: {type: Boolean},
@@ -161,7 +160,6 @@ export class ViewerToolbarElement extends CrLitElement {
 
   // <if expr="enable_pdf_ink2">
   // Ink2 reactive properties
-  accessor enableUndoRedo: boolean = true;
   accessor hasInk2Edits: boolean = false;
   accessor pdfInk2Enabled: boolean = false;
   protected accessor canRedoAnnotation_: boolean = false;
@@ -503,19 +501,11 @@ export class ViewerToolbarElement extends CrLitElement {
     this.canRedoAnnotation_ = false;
   }
 
-  protected computeEnableUndo_(): boolean {
-    return this.canUndoAnnotation_ && this.enableUndoRedo;
-  }
-
-  protected computeEnableRedo_(): boolean {
-    return this.canRedoAnnotation_ && this.enableUndoRedo;
-  }
-
   /**
    * Undo an annotation stroke, if possible.
    */
   undo() {
-    if (!this.computeEnableUndo_()) {
+    if (!this.canUndoAnnotation_) {
       return;
     }
 
@@ -536,7 +526,7 @@ export class ViewerToolbarElement extends CrLitElement {
    * Redo an annotation stroke, if possible.
    */
   redo() {
-    if (!this.computeEnableRedo_()) {
+    if (!this.canRedoAnnotation_) {
       return;
     }
 

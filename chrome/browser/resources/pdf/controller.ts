@@ -111,7 +111,6 @@ export interface ContentController {
   save(requestType: SaveRequestType): Promise<{
     fileName: string,
     dataToSave: ArrayBuffer,
-    bypassSaveFileForTesting?: boolean,
     editModeForTesting?: boolean,
   }|null>;
 

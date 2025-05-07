@@ -9,8 +9,7 @@ import {AnnotationMode} from './constants.js';
     .strings="${this.strings}"
     .hasEnteredAnnotationMode="${this.hasEnteredAnnotationMode_}"
 <if expr="enable_pdf_ink2">
-    .enableUndoRedo="${!this.isTextboxActive_()}"
-    .hasInk2Edits="${this.hasInk2AnnotationEdits_()}"
+    .hasInk2Edits="${this.hasInk2Edits_}"
 </if>
     .rotated="${this.isRotated_()}"
     .formFieldFocus="${this.formFieldFocus_}"
@@ -68,8 +67,7 @@ import {AnnotationMode} from './constants.js';
       <if expr="enable_pdf_ink2">
         ${this.isInTextAnnotationMode_() ? html`
           <div class="text-box-container">
-            <ink-text-box @state-changed="${this.onTextBoxStateChanged_}">
-            </ink-text-box>
+            <ink-text-box></ink-text-box>
           </div>` : ''}
       </if>
       <div id="content">

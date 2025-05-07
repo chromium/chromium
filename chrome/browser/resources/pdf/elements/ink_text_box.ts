@@ -22,7 +22,7 @@ export interface InkTextBoxElement {
   };
 }
 
-export enum TextBoxState {
+enum TextBoxState {
   INACTIVE = 0,  // No active text annotation being edited; box is hidden.
   NEW = 1,  // Box initialized with an annotation, but user has not made edits.
   EDITED = 2,  // User has edited the annotation (position, text, style).
@@ -107,7 +107,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     super.disconnectedCallback();
     // This element is disconnected when the user exits text annotation mode.
     // Send the current annotation to the backend.
-    this.commitTextAnnotation();
+    this.commitTextAnnotation_();
     this.eventTracker_.removeAll();
   }
 
@@ -131,7 +131,6 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
 
     if (changedPrivateProperties.has('state_')) {
       this.hidden = this.state_ === TextBoxState.INACTIVE;
-      this.fire('state-changed', this.state_);
     }
   }
 
@@ -187,7 +186,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     }
   }
 
-  commitTextAnnotation() {
+  private commitTextAnnotation_() {
     // If this is a new/inactive box or a new box edited to empty, nothing to do
     // unless it was initialized from an existing annotation. If this was
     // an existing annotation, we need to notify the backend to re-render it,
@@ -200,20 +199,18 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
 
     // Notify the backend.
     assert(this.attributes_);
-    Ink2Manager.getInstance().commitTextAnnotation(
-        {
-          text: this.textValue_,
-          id: this.id_,
-          pageNumber: this.pageNumber_,
-          textAttributes: this.attributes_,
-          textBoxRect: {
-            height: this.height_,
-            locationX: this.locationX_,
-            locationY: this.locationY_,
-            width: this.width_,
-          },
-        },
-        this.state_ === TextBoxState.EDITED);
+    Ink2Manager.getInstance().commitTextAnnotation({
+      text: this.textValue_,
+      id: this.id_,
+      pageNumber: this.pageNumber_,
+      textAttributes: this.attributes_,
+      textBoxRect: {
+        height: this.height_,
+        locationX: this.locationX_,
+        locationY: this.locationY_,
+        width: this.width_,
+      },
+    });
 
     this.state_ = TextBoxState.INACTIVE;
   }
@@ -222,7 +219,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     // If we are already editing an annotation, commit it first before
     // switching to the new one.
     if (this.state_ !== TextBoxState.INACTIVE) {
-      this.commitTextAnnotation();
+      this.commitTextAnnotation_();
     }
 
     // Update is in screen coordinates.

@@ -7,7 +7,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import type {AnnotationBrush, Color, Point, TextAnnotation, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle} from './constants.js';
-import {PluginController, PluginControllerEventType} from './controller.js';
+import {PluginController} from './controller.js';
 import type {Viewport} from './viewport.js';
 
 export interface ViewportParams {
@@ -304,7 +304,7 @@ export class Ink2Manager extends EventTarget {
    * Updates the stored annotation and notifies the plugin of the new or
    * modified annotation.
    */
-  commitTextAnnotation(annotation: TextAnnotation, edited: boolean) {
+  commitTextAnnotation(annotation: TextAnnotation) {
     annotation.textBoxRect = this.screenToPageCoordinates_(
         annotation.pageNumber, annotation.textBoxRect);
 
@@ -324,15 +324,6 @@ export class Ink2Manager extends EventTarget {
     }
     this.pluginController_.finishTextAnnotation(annotation);
     this.existingAnnotationAttributes_ = null;
-
-    if (edited) {
-      // Using PluginController's event target to dispatch this event, even
-      // though it originates here, because PluginController dispatches this
-      // event for normal ink strokes and this way clients only need to listen
-      // on one instance.
-      this.pluginController_.getEventTarget().dispatchEvent(
-          new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
-    }
   }
 
   /**
