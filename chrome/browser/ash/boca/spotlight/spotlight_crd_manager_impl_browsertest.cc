@@ -188,24 +188,28 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
-                       HidesNotificationWidgetOnCrdSessionEnd) {
-  base::OnceClosure session_finished_callback;
-  EXPECT_CALL(*crd_session_, StartCrdHost)
-      .WillOnce(WithArg<3>(Invoke([&](auto callback) {
-        session_finished_callback = std::move(callback);
-      })));
-  EXPECT_CALL(*crd_session_, TerminateSession)
-      .WillOnce(InvokeWithoutArgs(
-          [&]() { std::move(session_finished_callback).Run(); }));
-  TestFuture<const std::string&> success_future;
-
-  manager_->OnSessionStarted(kUserEmail);
-  manager_->InitiateSpotlightSession(success_future.GetCallback());
+                       HidesNotificationWidgetOnSessionEnd) {
   manager_->ShowPersistentNotification("Teacher");
 
   manager_->OnSessionEnded();
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
   EXPECT_FALSE(notification_bubble_controller_->IsNotificationBubbleVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
+                       TerminatesCrdSessionOnSessionEnd) {
+  TestFuture<void> session_finished_future;
+  EXPECT_CALL(*crd_session_, TerminateSession)
+      .WillOnce(InvokeWithoutArgs(
+          [&]() { std::move(session_finished_future.GetCallback()).Run(); }));
+
+  TestFuture<const std::string&> success_future;
+  manager_->OnSessionStarted(kUserEmail);
+  manager_->InitiateSpotlightSession(success_future.GetCallback());
+
+  manager_->OnSessionEnded();
+  ::testing::Mock::VerifyAndClearExpectations(crd_session_);
+  EXPECT_TRUE(session_finished_future.Wait());
 }
 
 }  // namespace

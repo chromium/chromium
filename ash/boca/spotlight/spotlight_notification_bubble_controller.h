@@ -53,8 +53,12 @@ class ASH_EXPORT SpotlightNotificationBubbleController
   // Returns whether the notification bubble is visible on screen.
   bool IsNotificationBubbleVisible();
 
+  void OnSessionEnded();
+
  private:
   const gfx::Rect CalculateWidgetBounds();
+
+  void CloseNotificationBubbleNow();
 
   WidgetLocation location_ = WidgetLocation::kRight;
   std::unique_ptr<views::Widget> notification_widget_;

@@ -67,6 +67,7 @@ void SpotlightCrdManagerImpl::OnSessionEnded() {
   }
   teacher_email_ = "";
   crd_session_->TerminateSession();
+  persistent_bubble_controller_->OnSessionEnded();
 }
 
 void SpotlightCrdManagerImpl::InitiateSpotlightSession(

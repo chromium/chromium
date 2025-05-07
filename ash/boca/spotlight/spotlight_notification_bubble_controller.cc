@@ -61,11 +61,7 @@ SpotlightNotificationBubbleController::SpotlightNotificationBubbleController() =
 
 SpotlightNotificationBubbleController::
     ~SpotlightNotificationBubbleController() {
-  if (notification_widget_) {
-    event_monitor_.reset();
-    notification_widget_->CloseNow();
-    notification_widget_.reset();
-  }
+  CloseNotificationBubbleNow();
 }
 
 void SpotlightNotificationBubbleController::OnEvent(const ui::Event& event) {
@@ -124,6 +120,10 @@ bool SpotlightNotificationBubbleController::IsNotificationBubbleVisible() {
   return notification_widget_->IsVisible();
 }
 
+void SpotlightNotificationBubbleController::OnSessionEnded() {
+  CloseNotificationBubbleNow();
+}
+
 const gfx::Rect SpotlightNotificationBubbleController::CalculateWidgetBounds() {
   gfx::Rect ash_window_bounds =
       WorkAreaInsets::ForWindow(ash::Shell::GetRootWindowForNewWindows())
@@ -144,6 +144,15 @@ const gfx::Rect SpotlightNotificationBubbleController::CalculateWidgetBounds() {
       break;
   }
   return gfx::Rect(origin, preferred_size);
+}
+
+void SpotlightNotificationBubbleController::CloseNotificationBubbleNow() {
+  if (!notification_widget_) {
+    return;
+  }
+  event_monitor_.reset();
+  notification_widget_->CloseNow();
+  notification_widget_.reset();
 }
 
 }  // namespace ash
