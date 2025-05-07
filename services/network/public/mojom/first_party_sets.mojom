@@ -24,7 +24,6 @@ enum SiteType {
 struct FirstPartySetEntry {
   SchemefulSite primary;
   SiteType site_type;
-  SiteIndex? site_index;
 };
 
 // This struct must match the class fields defined in

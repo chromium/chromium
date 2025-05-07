@@ -71,17 +71,11 @@ class NET_EXPORT FirstPartySetEntry {
 
   SiteType site_type() const { return site_type_; }
 
-  const std::optional<SiteIndex>& site_index() const { return site_index_; }
-
  private:
   // The primary site associated with this site's set.
   SchemefulSite primary_;
   // The type associated with this site.
   SiteType site_type_;
-  // The index of this site in the set declaration, if a meaningful index
-  // exists. Primary sites do not have indices, nor do sites that were defined
-  // or affected by an enterprise policy set.
-  std::optional<SiteIndex> site_index_;
 };
 
 NET_EXPORT std::ostream& operator<<(

@@ -52,11 +52,6 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     return e.site_type();
   }
 
-  static const std::optional<net::FirstPartySetEntry::SiteIndex>& site_index(
-      const net::FirstPartySetEntry& e) {
-    return e.site_index();
-  }
-
   static bool Read(network::mojom::FirstPartySetEntryDataView entry,
                    net::FirstPartySetEntry* out);
 };

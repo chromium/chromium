@@ -41,13 +41,11 @@ FirstPartySetEntry::FirstPartySetEntry(
     SchemefulSite primary,
     SiteType site_type,
     std::optional<FirstPartySetEntry::SiteIndex> site_index)
-    : primary_(std::move(primary)),
-      site_type_(site_type),
-      site_index_(site_index) {
+    : primary_(std::move(primary)), site_type_(site_type) {
   switch (site_type_) {
     case SiteType::kPrimary:
     case SiteType::kService:
-      CHECK(!site_index_.has_value());
+      CHECK(!site_index.has_value());
       break;
     case SiteType::kAssociated:
       break;
@@ -105,13 +103,7 @@ std::ostream& operator<<(std::ostream& os,
 
 std::ostream& operator<<(std::ostream& os, const FirstPartySetEntry& entry) {
   os << "{" << entry.primary() << ", " << static_cast<int>(entry.site_type())
-     << ", ";
-  if (entry.site_index().has_value()) {
-    os << entry.site_index().value();
-  } else {
-    os << "{}";
-  }
-  os << "}";
+     << "}";
   return os;
 }
 

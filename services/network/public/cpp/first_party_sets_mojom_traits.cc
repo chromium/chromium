@@ -76,11 +76,7 @@ bool StructTraits<network::mojom::FirstPartySetEntryDataView,
   if (!entry.ReadSiteType(&site_type))
     return false;
 
-  std::optional<net::FirstPartySetEntry::SiteIndex> site_index;
-  if (!entry.ReadSiteIndex(&site_index))
-    return false;
-
-  *out = net::FirstPartySetEntry(primary, site_type, site_index);
+  *out = net::FirstPartySetEntry(primary, site_type, std::nullopt);
   return true;
 }
 
