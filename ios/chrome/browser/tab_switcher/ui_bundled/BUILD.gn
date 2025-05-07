@@ -89,6 +89,7 @@ source_set("utils") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu:tab_item",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
     "//ios/web/public",
   ]
 

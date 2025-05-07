@@ -13,11 +13,17 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/group_tab_info.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
+
+// Size for the default favicon.
 const CGFloat kFaviconSize = 16;
-}
+// The minimum size of tab favicons.
+constexpr CGFloat kFaviconMinimumSize = 8.0;
+
+}  // namespace
 
 @implementation TabGroupUtils
 
@@ -82,8 +88,21 @@ const CGFloat kFaviconSize = 16;
     completion(groupTabInfo);
     return;
   }
-  // TODO(crbug.com/400966281): Fetch favicon on Google server.
-  completion(groupTabInfo);
+
+  // Asynchronously fetch the favicon.
+  faviconLoader->FaviconForPageUrl(
+      webState->GetVisibleURL(), kFaviconSize, kFaviconMinimumSize,
+      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+        // Synchronously returned default favicon.
+        if (attributes.usesDefaultImage) {
+          return;
+        }
+        // Asynchronously returned favicon.
+        if (attributes.faviconImage) {
+          groupTabInfo.favicon = attributes.faviconImage;
+        }
+        completion(groupTabInfo);
+      });
 }
 
 @end
