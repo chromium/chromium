@@ -6,6 +6,9 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("model") {
   sources = [
+    "reader_mode_content_delegate.h",
+    "reader_mode_content_tab_helper.h",
+    "reader_mode_content_tab_helper.mm",
     "reader_mode_distiller_page.h",
     "reader_mode_distiller_page.mm",
     "reader_mode_java_script_feature.h",
@@ -28,6 +31,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/third_party/material_components_ios",
+    "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//services/metrics/public/cpp:ukm_builders",
@@ -67,6 +71,7 @@ source_set("constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "reader_mode_content_tab_helper_unittest.mm",
     "reader_mode_distiller_page_unittest.mm",
     "reader_mode_java_script_feature_unittest.mm",
     "reader_mode_tab_helper_unittest.mm",
