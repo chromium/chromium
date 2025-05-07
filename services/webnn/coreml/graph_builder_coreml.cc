@@ -1831,7 +1831,7 @@ GraphBuilderCoreml::AddInput(
         AddOperationForReshape(input_id, internal_operand_id, block));
     // Points the input_id to the reshaped node's coreml identifier, so that
     // subsequent operations find the correct inputs.
-    id_to_operand_info_map()[input_id].coreml_name =
+    id_to_operand_info_map()[input_id]->coreml_name =
         GetOperandInfo(internal_operand_id).coreml_name;
   }
   return base::ok();
@@ -5734,12 +5734,12 @@ GraphBuilderCoreml::GenerateInternalOperandInfo(
   // Prefix is added to internal operands generated for WebNN operations that
   // need to be decomposed into multiple CoreML operations.
   CHECK(id_to_operand_info_map()
-            .try_emplace(
-                operand_id,
-                OperandInfo(base::JoinString({kInternalNamePrefix,
+            .try_emplace(operand_id, std::make_unique<OperandInfo>(
+                                         base::JoinString(
+                                             {kInternalNamePrefix,
                                               base::NumberToString(operand_id)},
                                              kStringSeparator),
-                            dimensions, mil_data_type))
+                                         dimensions, mil_data_type))
             .second);
   return operand_id;
 }
@@ -5780,11 +5780,11 @@ void GraphBuilderCoreml::PopulateNamedValueTypeForInput(
 void GraphBuilderCoreml::UpdateCoreMLInputInfoMap(OperandId operand_id) {
   const mojom::Operand& operand = GetOperand(operand_id);
   CHECK(id_to_operand_info_map()
-            .try_emplace(operand_id,
-                         OperandInfo(GetCoreMLNameFromOperand(operand_id),
-                                     operand.descriptor.shape(),
-                                     OperandTypeToMILDataType(
-                                         operand.descriptor.data_type())))
+            .try_emplace(operand_id, std::make_unique<OperandInfo>(
+                                         GetCoreMLNameFromOperand(operand_id),
+                                         operand.descriptor.shape(),
+                                         OperandTypeToMILDataType(
+                                             operand.descriptor.data_type())))
             .second);
 }
 
@@ -6073,7 +6073,7 @@ const GraphBuilderCoreml::OperandInfo&
 GraphBuilderCoreml::Result::GetOperandInfo(OperandId operand_id) const {
   auto it = id_to_operand_info_map.find(operand_id);
   CHECK(it != id_to_operand_info_map.end());
-  return it->second;
+  return *it->second;
 }
 
 }  // namespace webnn::coreml

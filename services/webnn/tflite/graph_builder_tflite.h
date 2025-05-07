@@ -24,6 +24,7 @@
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
 
@@ -825,7 +826,7 @@ class GraphBuilderTflite final {
   //              |                                      Relu
   //           [output]                                   |
   //                                                   [output]
-  std::map<OperandId, TensorInfo> operand_to_tensor_info_map_;
+  absl::flat_hash_map<OperandId, TensorInfo> operand_to_tensor_info_map_;
 
   // The following std::vector<Offset<tflite:XXX>>> stores the weights of model
   // and the tensor information (shape, data type).

@@ -24,6 +24,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/coremltools/mlmodel/format/MIL.pb.h"
 #include "third_party/coremltools/mlmodel/format/Model.pb.h"
 
@@ -100,7 +101,10 @@ class GraphBuilderCoreml {
     [[nodiscard]] const OperandInfo& GetOperandInfo(OperandId operand_id) const;
 
     const base::FilePath ml_package_dir;
-    std::map<OperandId, OperandInfo> id_to_operand_info_map;
+    // `std::unique_ptr` is used for values to provide pointer stabiliy for
+    // `GetOperandInfo`.
+    absl::flat_hash_map<OperandId, std::unique_ptr<OperandInfo>>
+        id_to_operand_info_map;
   };
 
   // Factory method that creates a GraphBuilderCoreml, builds and serializes the
@@ -572,7 +576,8 @@ class GraphBuilderCoreml {
   const base::FilePath& ml_package_dir() const {
     return result_->ml_package_dir;
   }
-  std::map<OperandId, OperandInfo>& id_to_operand_info_map() const {
+  absl::flat_hash_map<OperandId, std::unique_ptr<OperandInfo>>&
+  id_to_operand_info_map() const {
     return result_->id_to_operand_info_map;
   }
 
