@@ -261,6 +261,7 @@
     ],
     'android_args': [
       '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
+      '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote',
       '--initial-find-device-attempts=3',
     ],
     'chromeos_args': [

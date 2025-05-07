@@ -9,7 +9,7 @@ import unittest
 import buildbot_json_magic_substitutions as magic_substitutions
 
 
-def CreateConfigWithPool(pool, device_type=None):
+def CreateConfigWithPool(pool, device_type=None, board=None):
   dims = {
       'name': 'test_name',
       'swarming': {
@@ -20,7 +20,33 @@ def CreateConfigWithPool(pool, device_type=None):
   }
   if device_type:
     dims['swarming']['dimensions']['device_type'] = device_type
+  if board:
+    dims['swarming']['dimensions']['label-board'] = board
   return dims
+
+
+class AndroidDesktopTelemetryRemoteTest(unittest.TestCase):
+
+  def testNonAndroid(self):
+    test_config = CreateConfigWithPool('chromium.tests', board='brya')
+    with self.assertRaises(AssertionError):
+      magic_substitutions.AndroidDesktopTelemetryRemote(test_config, None,
+                                                        {'os_type': 'linux'})
+
+  def testNoBoard(self):
+    test_config = CreateConfigWithPool('chromium.tests')
+    self.assertEqual(
+        magic_substitutions.AndroidDesktopTelemetryRemote(
+            test_config, None, {'os_type': 'android'}), [])
+
+  def testSuccess(self):
+    test_config = CreateConfigWithPool('chromium.tests', board='brya')
+    self.assertEqual(
+        magic_substitutions.AndroidDesktopTelemetryRemote(
+            test_config, None, {'os_type': 'android'}), [
+                '--device=variable_lab_dut_hostname',
+                '--connect-to-device-over-network',
+            ])
 
 
 class ChromeOSTelemetryRemoteTest(unittest.TestCase):
@@ -160,6 +186,40 @@ class GPUExpectedVendorId(unittest.TestCase):
     with self.assertRaises(AssertionError):
       magic_substitutions.GPUExpectedVendorId({}, None, {})
 
+  def testAndroidDesktopKnownBoard(self):
+    test_config = {
+        'name': 'test_name',
+        'swarming': {
+            'dimensions': {
+                'label-board': 'brya',
+            },
+        },
+    }
+    tester_config = {
+        'os_type': 'android',
+    }
+    self.assertEqual(
+        magic_substitutions.GPUExpectedVendorId(test_config, None,
+                                                tester_config),
+        ['--expected-vendor-id', '8086'])
+
+  def testAndroidDesktopUnknownBoard(self):
+    test_config = {
+        'name': 'test_name',
+        'swarming': {
+            'dimensions': {
+                'label-board': 'fake_board',
+            },
+        },
+    }
+    tester_config = {
+        'os_type': 'android',
+    }
+    self.assertEqual(
+        magic_substitutions.GPUExpectedVendorId(test_config, None,
+                                                tester_config),
+        ['--expected-vendor-id', '0'])
+
   def testSkylabKnownBoard(self):
     test_config = {
         'name': 'test_name',
@@ -225,6 +285,38 @@ class GPUExpectedDeviceId(unittest.TestCase):
   def testNoDimensions(self):
     with self.assertRaises(AssertionError):
       magic_substitutions.GPUExpectedDeviceId({}, None, {})
+
+  def testAndroidDesktopKnownBoard(self):
+    test_config = {
+        'name': 'test_name',
+        'swarming': {
+            'dimensions': {
+                'label-board': 'brya',
+            },
+        },
+    }
+    tester_config = {
+        'os_type': 'android',
+    }
+    self.assertDeviceIdCorrectness(
+        magic_substitutions.GPUExpectedDeviceId(test_config, None,
+                                                tester_config), ['46a8'])
+
+  def testAndroidDesktopUnknownBoard(self):
+    test_config = {
+        'name': 'test_name',
+        'swarming': {
+            'dimensions': {
+                'label-board': 'fake_board',
+            },
+        },
+    }
+    tester_config = {
+        'os_type': 'android',
+    }
+    self.assertDeviceIdCorrectness(
+        magic_substitutions.GPUExpectedDeviceId(test_config, None,
+                                                tester_config), ['0'])
 
   def testSkylabKnownBoard(self):
     test_config = {

@@ -822,6 +822,7 @@ targets.mixin(
     ],
     android_args = [
         targets.magic_args.GPU_TELEMETRY_NO_ROOT_FOR_UNROOTED_DEVICES,
+        targets.magic_args.ANDROID_DESKTOP_TELEMETRY_REMOTE,
         # See crbug.com/333414298 for context on why this is necessary.
         "--initial-find-device-attempts=3",
     ],

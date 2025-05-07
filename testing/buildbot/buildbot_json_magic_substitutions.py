@@ -20,6 +20,9 @@ import collections
 MAGIC_SUBSTITUTION_PREFIX = '$$MAGIC_SUBSTITUTION_'
 
 GpuDevice = collections.namedtuple('GpuDevice', ['vendor', 'device'])
+ANDROID_DESKTOP_BOARD_GPUS = {
+    'brya': GpuDevice('8086', '46a8'),
+}
 CROS_BOARD_GPUS = {
     'volteer': GpuDevice('8086', '9a49'),
 }
@@ -46,6 +49,18 @@ ANDROID_VULKAN_DEVICES = {
     # Pixel 6 phones map to multiple GPU models.
     'oriole': GpuDevice('13b5', '92020010,92020000'),
 }
+
+
+def AndroidDesktopTelemetryRemote(test_config, _, tester_config):
+  """Substitutes the correct Android Desktop remote Telemetry arguments."""
+  assert _IsAndroid(tester_config)
+  if not _GetAndroidDesktopBoardName(test_config):
+    return []
+  return [
+      '--device=variable_lab_dut_hostname',
+      '--connect-to-device-over-network',
+  ]
+
 
 def ChromeOSTelemetryRemote(test_config, _, tester_config):
   """Substitutes the correct CrOS remote Telemetry arguments.
@@ -93,6 +108,13 @@ def ChromeOSGtestFilterFile(test_config, _, tester_config):
   ]
 
 
+def _GetAndroidDesktopBoardName(test_config):
+  """Helper function to determine what Android Desktop board is being used."""
+  dimensions = test_config.get('swarming', {}).get('dimensions')
+  assert dimensions is not None
+  return dimensions.get('label-board')
+
+
 def _GetChromeOSBoardName(test_config):
   """Helper function to determine what ChromeOS board is being used."""
 
@@ -120,6 +142,11 @@ def _GetChromeOSBoardName(test_config):
   return dimensions.get('device_type', 'amd64-generic')
 
 
+def _IsAndroidDesktopBot(test_config, tester_config):
+  """Helper function to determine if a bot is an Android Desktop bot."""
+  return _IsAndroid(tester_config) and _GetAndroidDesktopBoardName(test_config)
+
+
 def _IsSkylabBot(tester_config):
   """Helper function to determine if a bot is a Skylab ChromeOS bot."""
   return (tester_config.get('browser_config') == 'cros-chrome'
@@ -142,6 +169,8 @@ def GPUExpectedVendorId(test_config, _, tester_config):
     tester_config: A dict containing the configuration for the builder
         that |test_config| is for.
   """
+  if _IsAndroidDesktopBot(test_config, tester_config):
+    return _GPUExpectedVendorIdAndroidDesktop(test_config)
   if _IsSkylabBot(tester_config):
     return _GPUExpectedVendorIdSkylab(test_config)
   dimensions = test_config.get('swarming', {}).get('dimensions')
@@ -173,6 +202,13 @@ def GPUExpectedVendorId(test_config, _, tester_config):
   return ['--expected-vendor-id', vendor_ids.pop()]
 
 
+def _GPUExpectedVendorIdAndroidDesktop(test_config):
+  board = _GetAndroidDesktopBoardName(test_config)
+  assert board is not None
+  gpu_device = ANDROID_DESKTOP_BOARD_GPUS.get(board, GpuDevice('0', '0'))
+  return ['--expected-vendor-id', gpu_device.vendor]
+
+
 def _GPUExpectedVendorIdSkylab(test_config):
   cros_board = test_config.get('cros_board')
   assert cros_board is not None
@@ -192,6 +228,8 @@ def GPUExpectedDeviceId(test_config, _, tester_config):
     tester_config: A dict containing the configuration for the builder
         that |test_config| is for.
   """
+  if _IsAndroidDesktopBot(test_config, tester_config):
+    return _GPUExpectedDeviceIdAndroidDesktop(test_config)
   if _IsSkylabBot(tester_config):
     return _GPUExpectedDeviceIdSkylab(test_config)
   dimensions = test_config.get('swarming', {}).get('dimensions')
@@ -227,6 +265,13 @@ def GPUExpectedDeviceId(test_config, _, tester_config):
   for device_id in sorted(device_ids):
     retval.extend(['--expected-device-id', device_id])
   return retval
+
+
+def _GPUExpectedDeviceIdAndroidDesktop(test_config):
+  board = _GetAndroidDesktopBoardName(test_config)
+  assert board is not None
+  gpu_device = ANDROID_DESKTOP_BOARD_GPUS.get(board, GpuDevice('0', '0'))
+  return ['--expected-device-id', gpu_device.device]
 
 
 def _GPUExpectedDeviceIdSkylab(test_config):
