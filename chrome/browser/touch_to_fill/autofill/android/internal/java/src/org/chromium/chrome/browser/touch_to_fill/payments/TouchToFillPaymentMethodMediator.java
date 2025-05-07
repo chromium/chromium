@@ -27,7 +27,11 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.NON_TRANSFORMING_LOYALTY_CARD_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
@@ -49,6 +53,7 @@ import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMeth
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.IbanRecordType;
+import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -137,6 +142,7 @@ class TouchToFillPaymentMethodMediator {
     private PropertyModel mModel;
     private List<CreditCard> mCards;
     private List<Iban> mIbans;
+    private List<LoyaltyCard> mLoyaltyCards;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
     private InputProtector mInputProtector = new InputProtector();
@@ -160,6 +166,7 @@ class TouchToFillPaymentMethodMediator {
         assert cards != null;
         mCards = cards;
         mIbans = null;
+        mLoyaltyCards = null;
         assert mCards.size() == suggestions.size()
                 : "The number of cards and suggestions should be same.";
 
@@ -204,6 +211,7 @@ class TouchToFillPaymentMethodMediator {
         assert ibans != null;
         mIbans = ibans;
         mCards = null;
+        mLoyaltyCards = null;
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
@@ -229,6 +237,28 @@ class TouchToFillPaymentMethodMediator {
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN, mIbans.size());
     }
 
+    public void showLoyaltyCards(List<LoyaltyCard> loyaltyCards) {
+        mInputProtector.markShowTime();
+
+        assert loyaltyCards != null;
+        mLoyaltyCards = loyaltyCards;
+        mCards = null;
+        mIbans = null;
+
+        ModelList sheetItems = mModel.get(SHEET_ITEMS);
+        sheetItems.clear();
+
+        for (LoyaltyCard loyaltyCard : mLoyaltyCards) {
+            final PropertyModel model = createLoyaltyCardModel(loyaltyCard);
+            sheetItems.add(new ListItem(LOYALTY_CARD, model));
+        }
+
+        mBottomSheetFocusHelper.registerForOneTimeUse();
+        mModel.set(VISIBLE, true);
+
+        // TODO: crbug.com/404437211 - Log the number of loyalty cards shown.
+    }
+
     void hideSheet() {
         onDismissed(BottomSheetController.StateChangeReason.NONE);
     }
@@ -248,12 +278,14 @@ class TouchToFillPaymentMethodMediator {
                         TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
                         TouchToFillCreditCardOutcome.DISMISS,
                         TouchToFillCreditCardOutcome.MAX_VALUE);
-            } else {
-                assert mIbans != null;
+            } else if (mIbans != null) {
                 RecordHistogram.recordEnumeratedHistogram(
                         TOUCH_TO_FILL_IBAN_OUTCOME_HISTOGRAM,
                         TouchToFillIbanOutcome.DISMISS,
                         TouchToFillIbanOutcome.MAX_VALUE);
+            } else {
+                assert mLoyaltyCards != null;
+                // TODO: crbug.com/404437211 - Log loyalty card metrics.
             }
         }
     }
@@ -342,6 +374,15 @@ class TouchToFillPaymentMethodMediator {
                         .with(IBAN_NICKNAME, iban.getNickname())
                         .with(ON_IBAN_CLICK_ACTION, () -> this.onSelectedIban(iban));
         return ibanModelBuilder.build();
+    }
+
+    private PropertyModel createLoyaltyCardModel(LoyaltyCard loyaltyCard) {
+        PropertyModel.Builder loyaltyCardModelBuilder =
+                new PropertyModel.Builder(NON_TRANSFORMING_LOYALTY_CARD_KEYS)
+                        .with(LOYALTY_CARD_NUMBER, loyaltyCard.getLoyaltyCardNumber())
+                        .with(MERCHANT_NAME, loyaltyCard.getMerchantName());
+
+        return loyaltyCardModelBuilder.build();
     }
 
     private ListItem buildTermsLabel(boolean cardBenefitsTermsAvailable) {

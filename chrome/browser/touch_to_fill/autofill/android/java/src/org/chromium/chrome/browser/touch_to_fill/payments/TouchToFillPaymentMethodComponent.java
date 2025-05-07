@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.List;
@@ -90,6 +91,9 @@ interface TouchToFillPaymentMethodComponent {
 
     /** Displays a new IBAN bottom sheet. */
     void showIbans(List<PersonalDataManager.Iban> ibans);
+
+    /** Displays a new loyalty card bottom sheet. */
+    void showLoyaltyCards(List<LoyaltyCard> loyaltyCards);
 
     /** Hides the bottom sheet if shown. */
     void hideSheet();

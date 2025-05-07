@@ -254,6 +254,7 @@ android_library("main_autofill_java") {
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
     "java/src/org/chromium/components/autofill/AutofillSuggestion.java",
     "java/src/org/chromium/components/autofill/DropdownKeyValue.java",
+    "java/src/org/chromium/components/autofill/LoyaltyCard.java",
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
   srcjar_deps = [
@@ -270,6 +271,7 @@ generate_jni("main_autofill_jni_headers") {
     "java/src/org/chromium/components/autofill/AutofillAddressUiComponent.java",
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
     "java/src/org/chromium/components/autofill/DropdownKeyValue.java",
+    "java/src/org/chromium/components/autofill/LoyaltyCard.java",
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
 }
