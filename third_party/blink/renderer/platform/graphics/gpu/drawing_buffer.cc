@@ -1753,7 +1753,8 @@ GLenum DrawingBuffer::StorageFormat() const {
   return requested_format_;
 }
 
-sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToRGBADataArray(
+scoped_refptr<StaticBitmapImage>
+DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
     SourceDrawingBuffer source_buffer) {
   ScopedStateRestorer scoped_state_restorer(this);
 
@@ -1808,7 +1809,11 @@ sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToRGBADataArray(
     front_color_buffer_->EndAccess();
   }
 
-  return dst_buffer;
+  return StaticBitmapImage::Create(
+      std::move(dst_buffer),
+      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
+                        color_type, kUnpremul_SkAlphaType,
+                        color_space_.ToSkColorSpace()));
 }
 
 void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
