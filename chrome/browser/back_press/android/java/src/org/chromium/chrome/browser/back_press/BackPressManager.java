@@ -490,6 +490,10 @@ public class BackPressManager implements Destroyable {
         mLastCalledHandlerType = -1;
     }
 
+    public ObserverList<OnSystemNavigationObserver> getObserverListForTesting() {
+        return mOnSystemNavigationObservers;
+    }
+
     public static String getHistogramForTesting() {
         return HISTOGRAM;
     }

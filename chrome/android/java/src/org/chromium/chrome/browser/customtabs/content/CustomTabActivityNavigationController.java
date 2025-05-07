@@ -475,11 +475,6 @@ public class CustomTabActivityNavigationController
         assert false : assertMsg;
     }
 
-    static void enablePredictiveBackGestureForTesting() {
-        sVersionForTesting = Build.VERSION_CODES.BAKLAVA;
-        ResettersForTesting.register(() -> sVersionForTesting = null);
-    }
-
     public BrowserServicesIntentDataProvider getIntentDataProviderForTesting() {
         return mIntentDataProvider;
     }
@@ -490,5 +485,10 @@ public class CustomTabActivityNavigationController
 
     public Integer getVersionForTesting() {
         return sVersionForTesting;
+    }
+
+    public static void enablePredictiveBackGestureForTesting() {
+        sVersionForTesting = Build.VERSION_CODES.BAKLAVA;
+        ResettersForTesting.register(() -> sVersionForTesting = null);
     }
 }
