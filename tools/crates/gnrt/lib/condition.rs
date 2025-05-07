@@ -14,99 +14,91 @@ use std::{
 /// Representation of a `Condition` associated with a conditional/optional
 /// dependency.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Condition {
-    /// The condition is always false.  In other words, supported Chromium
-    /// builds never meet this condition.
-    ///
-    /// Example: `#[cfg(target_arch = "powerpc")]`.
-    AlwaysFalse,
-    /// The condition is always true.
-    ///
-    /// Example: `#[cfg(not(target_arch = "powerpc"))]`.
-    AlwaysTrue,
-    /// The conditional dependency applies to a subset of target triples
-    ///
-    /// For example `#[cfg(target_os = "windows")]` translates into
-    /// `Condition::TripleSet(...)`.
-    TripleSet(HashSet<RustTargetTriple>),
-    /// Some of the [conditional
-    /// compilation](https://doc.rust-lang.org/reference/conditional-compilation.html) directives
-    /// weren't recognized by `gnrt`.
-    ///
-    /// The `String` is an error message.
-    ///
-    /// In some cases such terms will "disappear" - e.g. `unknown_cfg &&
-    /// always_false` is the same as `always_false`.  When these terms do
-    /// not disappear, then it may mean that supporting a new crate would
-    /// require teaching `gnrt` about the new kinds of configuration.
-    Unsupported(String),
-}
+pub struct Condition(Result<HashSet<RustTargetTriple>, String>);
 
 impl Condition {
     pub fn is_always_false(&self) -> bool {
-        *self == Condition::AlwaysFalse
+        self.0.as_ref().is_ok_and(|triple_set| triple_set.is_empty())
+    }
+
+    /// Creates a `Condition` that is never met - target platforms supported in
+    /// Chromium builds never meet this condition.  For example
+    /// `#[cfg(target_arch = "powerpc")]` is effectively equivalent to
+    /// `Condition::always_false()`.
+    pub fn always_false() -> Self {
+        Condition(Ok(HashSet::new()))
+    }
+
+    fn is_always_true(&self) -> bool {
+        self.0.as_ref().is_ok_and(|triple_set| *triple_set == *RustTargetTriple::all())
+    }
+
+    /// Creates a `Condition` that is always true - *all* target platforms
+    /// supported in Chromium builds meet this condition.  For example
+    /// `#[cfg(not(target_arch = "powerpc"))]` is effectively equivalent to
+    /// `Condition::always_true()`.
+    pub fn always_true() -> Self {
+        Condition(Ok(RustTargetTriple::all().clone()))
     }
 
     fn from_triple(triple: RustTargetTriple) -> Self {
-        Condition::TripleSet([triple].into())
+        Self::from_triple_set([triple].into())
     }
 
     fn from_triple_set(set: HashSet<RustTargetTriple>) -> Self {
-        if set.is_empty() {
-            Condition::AlwaysFalse
-        } else if set == *RustTargetTriple::all() {
-            Condition::AlwaysTrue
-        } else {
-            Condition::TripleSet(set)
-        }
+        Condition(Ok(set))
     }
 
     pub fn or(lhs: Condition, rhs: Condition) -> Self {
+        // First check if one of the operands (potentially an `Err` variant!)
+        // can be ignored (when the other operand `is_always_true`).
+        if lhs.is_always_true() {
+            return lhs;
+        }
+        if rhs.is_always_true() {
+            return rhs;
+        }
         match (lhs, rhs) {
-            (Condition::AlwaysFalse, other) | (other, Condition::AlwaysFalse) => other.clone(),
-            (Condition::AlwaysTrue, _) | (_, Condition::AlwaysTrue) => Condition::AlwaysTrue,
-            (err @ Condition::Unsupported(_), _) | (_, err @ Condition::Unsupported(_)) => {
-                err.clone()
-            }
-            (Condition::TripleSet(lhs), Condition::TripleSet(rhs)) => {
-                Condition::from_triple_set(&lhs | &rhs)
-            }
+            (err @ Condition(Err(_)), _) | (_, err @ Condition(Err(_))) => err.clone(),
+            (Condition(Ok(lhs)), Condition(Ok(rhs))) => Condition::from_triple_set(&lhs | &rhs),
         }
     }
 
     pub fn and(lhs: Condition, rhs: Condition) -> Self {
+        // First check if one of the operands (potentially an `Err` variant!)
+        // can be ignored (when the other operand `is_always_false`).
+        if lhs.is_always_false() {
+            return lhs;
+        }
+        if rhs.is_always_false() {
+            return rhs;
+        }
         match (lhs, rhs) {
-            (Condition::AlwaysFalse, _) | (_, Condition::AlwaysFalse) => Condition::AlwaysFalse,
-            (Condition::AlwaysTrue, other) | (other, Condition::AlwaysTrue) => other,
-            (err @ Condition::Unsupported(_), _) | (_, err @ Condition::Unsupported(_)) => err,
-            (Condition::TripleSet(lhs), Condition::TripleSet(rhs)) => {
-                Condition::from_triple_set(&lhs & &rhs)
-            }
+            (err @ Condition(Err(_)), _) | (_, err @ Condition(Err(_))) => err.clone(),
+            (Condition(Ok(lhs)), Condition(Ok(rhs))) => Condition::from_triple_set(&lhs & &rhs),
         }
     }
 
     fn not(other: Condition) -> Self {
         match other {
-            Condition::AlwaysFalse => Condition::AlwaysTrue,
-            Condition::AlwaysTrue => Condition::AlwaysFalse,
-            err @ Condition::Unsupported(_) => err,
-            Condition::TripleSet(value) => Condition::TripleSet(negate_triple_set(&value)),
+            err @ Condition(Err(_)) => err,
+            Condition(Ok(triple_set)) => Condition(Ok(negate_triple_set(&triple_set))),
         }
     }
 
     pub fn to_handlebars_value(&self) -> Result<Option<String>> {
-        match self {
-            Condition::AlwaysTrue => Ok(None),
-            Condition::TripleSet(set) => Ok(Some(format_as_gn_expr::format(set))),
-            Condition::AlwaysFalse => unreachable!(
-                "AlwaysFalse dependencies should be filtered out \
-                              by `fn collect_dependencies` from `deps.rs`"
-            ),
-            Condition::Unsupported(err) => {
-                Err(anyhow!("{err}")
-                    .context("Failed to translate `#[cfg(...)]` into a GN condition"))
+        assert!(
+            !self.is_always_false(),
+            "'always false' dependencies should be filtered out \
+             by `fn collect_dependencies` from `deps.rs`"
+        );
+        self.0.as_ref().map_err(|msg| anyhow!("{msg}")).map(|triple_set| {
+            if *triple_set == *RustTargetTriple::all() {
+                None
+            } else {
+                Some(format_as_gn_expr::format(triple_set))
             }
-        }
+        })
     }
 
     pub fn from_target_spec(spec: &target_spec::TargetSpec) -> Self {
@@ -313,7 +305,7 @@ fn cfg_expr_to_condition(cfg_expr: &cargo_platform::CfgExpr) -> Condition {
             exprs
                 .iter()
                 .map(cfg_expr_to_condition)
-                .fold(Condition::AlwaysTrue, |accumulated, condition| {
+                .fold(Condition::always_true(), |accumulated, condition| {
                     Condition::and(accumulated, condition)
                 })
         }
@@ -324,7 +316,7 @@ fn cfg_expr_to_condition(cfg_expr: &cargo_platform::CfgExpr) -> Condition {
             exprs
                 .iter()
                 .map(cfg_expr_to_condition)
-                .fold(Condition::AlwaysFalse, |accumulated, condition| {
+                .fold(Condition::always_false(), |accumulated, condition| {
                     Condition::or(accumulated, condition)
                 })
         }
@@ -364,8 +356,8 @@ fn cfg_key_value_pair_to_condition(key: &str, value: &str) -> Condition {
 
     if let Some(value_to_triple_set_map) = PROP_NAME_TO_PROP_VALUE_TO_TRIPLE_SET.get(key) {
         match value_to_triple_set_map.get(value) {
-            None => return Condition::AlwaysFalse,
-            Some(set) => return Condition::TripleSet(set.clone()),
+            None => return Condition::always_false(),
+            Some(set) => return Condition::from_triple_set(set.clone()),
         }
     }
 
@@ -376,7 +368,7 @@ fn cfg_key_value_pair_to_condition(key: &str, value: &str) -> Condition {
     // therefore we treat this as `AlwaysFalse`.  See also
     // https://crbug.com/404598090#comment4.
     log::warn!("Treating unrecogized `#[cfg({key} = \"{value}\")]` as `AlwaysFalse");
-    Condition::AlwaysFalse
+    Condition::always_false()
 }
 
 /// `name` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#r-cfg.option-name
@@ -390,24 +382,24 @@ fn cfg_name_to_condition(name: &str) -> Condition {
     // We don't support `windows_raw_dylib` in Chromium.  See also
     // https://github.com/rust-lang/rust/issues/58713
     if ["windows_raw_dylib"].contains(&name) {
-        return Condition::AlwaysFalse;
+        return Condition::always_false();
     }
 
     // See https://doc.rust-lang.org/reference/conditional-compilation.html#debug_assertions
     if name == "debug_assertions" {
-        // Returning `AlwaysTrue` is not 100% correct and may bring in unnecessary
+        // Returning "always true" is not 100% correct and may bring in unnecessary
         // dependencies. But this conservative behavior shouldn't cause any
         // major issues.
         //
         // TODO(https://crbug.com/402096443): Handle this by tracking not only a set of
         // `RustTargetTriple` but also a parallel set/bitflag of `RustDebugConfig` (with
         // just two bits - on and off).
-        return Condition::AlwaysTrue;
+        return Condition::always_true();
     }
 
     // See https://doc.rust-lang.org/reference/conditional-compilation.html#test
     if name == "test" {
-        // Returning `AlwaysTrue` is not 100% correct and may bring in unnecessary
+        // Returning "always true" is not 100% correct and may bring in unnecessary
         // dependencies. But this seems unlikely, given that test-only
         // dependencies should be listed in the `[dev-dependencies]` section of
         // `Cargo.toml` and reported as `guppy::DependencyKind::Development`.
@@ -415,7 +407,7 @@ fn cfg_name_to_condition(name: &str) -> Condition {
         // issues.
         //
         // TODO(https://crbug.com/402096443): Handle this better.
-        return Condition::AlwaysTrue;
+        return Condition::always_true();
     }
 
     // `name` is not something that is documented in
@@ -424,7 +416,7 @@ fn cfg_name_to_condition(name: &str) -> Condition {
     // And therefore we treat this as `AlwaysFalse`.  See also
     // https://crbug.com/404598090#comment4.
     log::warn!("Treating unrecogized `#[cfg({name})]` as `AlwaysFalse");
-    Condition::AlwaysFalse
+    Condition::always_false()
 }
 
 /// `value` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#r-cfg.panic.values
@@ -432,19 +424,21 @@ fn panic_cfg_to_condition(value: &str) -> Condition {
     // `//build/config/compiler/BUILD.gn` always hardcodes `-Cpanic=abort` into
     // `rustflags`.
     match value {
-        "abort" => Condition::AlwaysTrue,
-        "unwind" => Condition::AlwaysFalse,
-        _ => Condition::Unsupported(format!(
+        "abort" => Condition::always_true(),
+        "unwind" => Condition::always_false(),
+        _ => Condition(Err(format!(
             "Unrecognized panic configuration: `#[cfg(panic = \"{value}\")]`"
-        )),
+        ))),
     }
 }
 
 fn triple_to_condition(triple: &str) -> Condition {
-    match triple.parse() {
-        Ok(triple) => Condition::from_triple(triple),
-        Err(_) => Condition::AlwaysFalse,
-    }
+    triple.parse().map(Condition::from_triple).unwrap_or_else(
+        // Triples outside of `//build/rust/known-target-triples.txt` won't parse.
+        // Such target triples are never used in Chromium builds and therefore we
+        // represent tham as "always false".
+        |_err| Condition::always_false(),
+    )
 }
 
 #[cfg(test)]
@@ -470,7 +464,7 @@ mod tests {
         let condition = condition_from_test_expr(expr);
         match condition.to_handlebars_value() {
             Ok(Some(s)) => s,
-            Ok(None) => panic!("Got `AlwaysTrue` / `None` when formatting `{expr}`"),
+            Ok(None) => panic!("Got 'always true' / `None` when formatting `{expr}`"),
             Err(err) => panic!("Error when formatting `{expr}`: `{err}`"),
         }
     }
@@ -605,7 +599,7 @@ mod tests {
                 // Simplification of one of the real expressions below.
                 "all(target_os = \"linux\", target_env = \"\")",
             ),
-            Condition::AlwaysFalse,
+            Condition::always_false(),
         );
         assert_eq!(
             gn_condition_from_test_expr(
@@ -619,6 +613,23 @@ mod tests {
                             getrandom_backend = \"rndr\")))",
             ),
             "(is_linux || is_chromeos) || is_android",
+        );
+    }
+
+    /// Test that unsupported terms disappear when possible
+    /// (i.e. that we don't needlessly propagate an error).
+    #[test]
+    fn test_err_suppression() {
+        let err = Condition(Err("some err msg".to_string()));
+        assert_eq!(Condition::always_true(), Condition::or(Condition::always_true(), err.clone()),);
+        assert_eq!(Condition::always_true(), Condition::or(err.clone(), Condition::always_true()),);
+        assert_eq!(
+            Condition::always_false(),
+            Condition::and(Condition::always_false(), err.clone()),
+        );
+        assert_eq!(
+            Condition::always_false(),
+            Condition::and(err.clone(), Condition::always_false()),
         );
     }
 }

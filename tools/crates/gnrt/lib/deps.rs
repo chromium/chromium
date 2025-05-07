@@ -282,7 +282,7 @@ pub fn collect_dependencies(
         |link: &PackageLink, dep_kind: DependencyKind| -> Condition {
             let key = get_link_key(link);
             if !cargo_set_links.contains(&key) {
-                return Condition::AlwaysFalse;
+                return Condition::always_false();
             }
             let dep_kind = match dep_kind {
                 DependencyKind::Normal => guppy::DependencyKind::Normal,
@@ -354,7 +354,7 @@ fn resolve_root_package_set<'g>(
 }
 
 /// Graph traversal resolver that rejects dependency links that would have been
-/// `AlwaysFalse` on Chromium platforms.
+/// `Condition::is_always_false` on Chromium platforms.
 struct PackageResolver<'a> {
     extra_config: &'a BuildConfig,
     memoization_tables: &'a mut MemoizationTables,
@@ -390,7 +390,7 @@ impl MemoizationTables {
                 ]
             })
             .reduce(Condition::or)
-            .unwrap_or(Condition::AlwaysTrue);
+            .unwrap_or_else(Condition::always_true);
         self.package_conditions.insert(package.into(), condition.clone());
         condition
     }
@@ -402,7 +402,7 @@ impl MemoizationTables {
     ) -> Condition {
         let req = link.req_for_kind(dep_kind);
         if !req.is_present() {
-            Condition::AlwaysFalse
+            Condition::always_false()
         } else {
             let baseline_condition = self.get_package_condition(&link.from());
             Condition::and(
@@ -457,7 +457,7 @@ fn get_reverse_dependency_kinds(
     let mut result = HashMap::new();
     let mut insert_if_present = |link: PackageLink, kind: DependencyKind| {
         let condition = condition_getter(&link, kind);
-        if condition != Condition::AlwaysFalse {
+        if !condition.is_always_false() {
             let features = match kind {
                 // ... => `build.rs` deps only care about host-side features.
                 DependencyKind::Build => get_features(cargo_set.host_features()),
@@ -490,13 +490,13 @@ fn get_reverse_dependency_kinds(
 fn get_condition(platform_status: PlatformStatus) -> Condition {
     use PlatformStatus::*;
     match platform_status {
-        Never => Condition::AlwaysFalse,
-        Always => Condition::AlwaysTrue,
+        Never => Condition::always_false(),
+        Always => Condition::always_true(),
         PlatformDependent { eval } => eval
             .target_specs()
             .iter()
             .map(Condition::from_target_spec)
-            .fold(Condition::AlwaysFalse, Condition::or),
+            .fold(Condition::always_false(), Condition::or),
     }
 }
 
@@ -506,10 +506,8 @@ fn get_package_dependencies(
 ) -> Vec<DepOfDep> {
     package
         .direct_links()
-        .filter_map(|link| match condition_getter(&link) {
-            Condition::AlwaysFalse => None,
-            other_condition => Some((link, other_condition)),
-        })
+        .map(|link| (link, condition_getter(&link)))
+        .filter(|&(_link, ref condition)| !condition.is_always_false())
         .map(|(link, condition)| DepOfDep {
             package_name: link.to().name().to_string(),
             use_name: link.resolved_name().to_string(),
@@ -678,7 +676,7 @@ mod tests {
                 package_name: "bar".to_string(),
                 use_name: "baz".to_string(),
                 version: Version::new(0, 1, 0),
-                condition: Condition::AlwaysTrue,
+                condition: Condition::always_true(),
             }
         );
         assert_eq!(
@@ -687,7 +685,7 @@ mod tests {
                 package_name: "time".to_string(),
                 use_name: "time".to_string(),
                 version: Version::new(0, 3, 14),
-                condition: Condition::AlwaysTrue,
+                condition: Condition::always_true(),
             }
         );
 
@@ -717,7 +715,7 @@ mod tests {
                 package_name: "autocfg".to_string(),
                 use_name: "autocfg".to_string(),
                 version: Version::new(1, 1, 0),
-                condition: Condition::AlwaysTrue,
+                condition: Condition::always_true(),
             }
         );
         assert!(dependencies[i].build_script.as_ref().is_some_and(|path| {
@@ -784,7 +782,7 @@ mod tests {
                 package_name: "serde_derive".to_string(),
                 use_name: "serde_derive".to_string(),
                 version: Version::new(1, 0, 139),
-                condition: Condition::AlwaysTrue,
+                condition: Condition::always_true(),
             }
         );
 
@@ -806,7 +804,7 @@ mod tests {
                 package_name: "proc-macro2".to_string(),
                 use_name: "proc_macro2".to_string(),
                 version: Version::new(1, 0, 40),
-                condition: Condition::AlwaysTrue,
+                condition: Condition::always_true(),
             }
         );
         assert_eq!(
@@ -815,7 +813,7 @@ mod tests {
                 package_name: "quote".to_string(),
                 use_name: "quote".to_string(),
                 version: Version::new(1, 0, 20),
-                condition: Condition::AlwaysTrue,
+                condition: Condition::always_true(),
             }
         );
         assert_eq!(
@@ -824,7 +822,7 @@ mod tests {
                 package_name: "syn".to_string(),
                 use_name: "syn".to_string(),
                 version: Version::new(1, 0, 98),
-                condition: Condition::AlwaysTrue,
+                condition: Condition::always_true(),
             }
         );
 
@@ -845,7 +843,7 @@ mod tests {
                 package_name: "proc-macro2".to_string(),
                 use_name: "proc_macro2".to_string(),
                 version: Version::new(1, 0, 40),
-                condition: Condition::AlwaysTrue,
+                condition: Condition::always_true(),
             }
         );
         assert_eq!(
@@ -854,7 +852,7 @@ mod tests {
                 package_name: "quote".to_string(),
                 use_name: "quote".to_string(),
                 version: Version::new(1, 0, 20),
-                condition: Condition::AlwaysTrue,
+                condition: Condition::always_true(),
             }
         );
         assert_eq!(
@@ -863,7 +861,7 @@ mod tests {
                 package_name: "unicode-ident".to_string(),
                 use_name: "unicode_ident".to_string(),
                 version: Version::new(1, 0, 1),
-                condition: Condition::AlwaysTrue,
+                condition: Condition::always_true(),
             }
         );
 
