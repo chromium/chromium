@@ -212,16 +212,17 @@ class AutofillField : public FormFieldData {
   bool ShouldSuppressSuggestionsAndFillingByDefault() const;
 
   // Returns the current value, formatted as desired for import:
-  // (1) If the user left a field unchanged, returns the empty string.
-  // (2) If the field has FormControlType::kSelect* and has a selected text,
-  //     it is FormFieldData::selected_text().
+  // (1) If the field value hasn't changed since it was seen and the field is a
+  //     non-<select>, returns the empty string.
+  // (2) If the field has FormControlType::kSelect* and has a selected option,
+  //     returns that option's human-readable text.
+  // (3) Otherwise returns value().
   //
   // The motivation behind (1) is that unchanged values usually carry little
-  // value for importing. The exception are <select> fields, which often have
-  // a correct default value, so we consider them for import even if their value
-  // didn't change.
-  // TODO: crbug.com/40137859 - Consider making an exception for also for
-  // non-<select> ADDRESS_HOME_{STATE,COUNTRY} fields.
+  // value for importing. <select> fields are exempted because their default
+  // value is often correct (e.g., in ADDRESS_HOME_COUNTRY fields).
+  // TODO(crbug.com/40137859): Consider also exempting non-<select>
+  // ADDRESS_HOME_{STATE,COUNTRY} fields.
   //
   // The motivation behind (2) is that the human-readable text of an <option> is
   // usually better suited for import than the its value. See the documentation
@@ -237,6 +238,8 @@ class AutofillField : public FormFieldData {
   // - When the field has moved to another form.
   // - When the form has been extracted without the field. For example, this
   //   could happen because the field was temporarily removed from the DOM.
+  //
+  // For the field's current value, see FormFieldData::value().
   const std::u16string& initial_value() const { return initial_value_; }
 
   // Sets the field's current value.
