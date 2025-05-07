@@ -1046,16 +1046,15 @@ public class ChildProcessConnection {
         }
     }
 
-    public void updateGroupImportance(int group, int importanceInGroup) {
+    public boolean updateGroupImportance(int group, int importanceInGroup) {
         assert isRunningOnLauncherThread();
         assert group != 0 || importanceInGroup == 0;
         if (mGroup != group || mImportanceInGroup != importanceInGroup) {
             mGroup = group;
             mImportanceInGroup = importanceInGroup;
-            if (isConnected()) {
-                mWaivedBinding.updateGroupImportance(group, importanceInGroup);
-            }
+            return isConnected() && mWaivedBinding.updateGroupImportance(group, importanceInGroup);
         }
+        return false;
     }
 
     public int getGroup() {

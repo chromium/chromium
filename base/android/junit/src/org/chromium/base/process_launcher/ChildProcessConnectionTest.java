@@ -82,9 +82,10 @@ public class ChildProcessConnectionTest {
         }
 
         @Override
-        public void updateGroupImportance(int group, int importanceInGroup) {
+        public boolean updateGroupImportance(int group, int importanceInGroup) {
             mGroup = group;
             mImportanceInGroup = importanceInGroup;
+            return true;
         }
 
         @Override
