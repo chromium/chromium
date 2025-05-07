@@ -265,8 +265,7 @@ void FindAppServiceTasks(Profile* profile,
     if (app_type == apps::AppType::kWeb ||
         app_type == apps::AppType::kSystemWeb) {
       // Check the origin trial and feature flag for file handling in web apps.
-      // TODO(1240018): Remove when this feature is fully launched. This check
-      // will not work for lacros web apps.
+      // TODO(crbug.com/255838199): Remove when this feature is fully launched.
       web_app::WebAppProvider* provider =
           web_app::WebAppProvider::GetDeprecated(profile_with_app_service);
       web_app::OsIntegrationManager& os_integration_manager =

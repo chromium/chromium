@@ -90,11 +90,10 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
     if (!volume || volume->type() != file_manager::VOLUME_TYPE_PROVIDED ||
         volume->file_system_type() == file_manager::util::kFuseBox) {
       // Provided volume types are served via two file system types: fusebox
-      // (usable from ash or lacros, but requires ChromeOS' /usr/bin/fusebox
-      // daemon process to be running) and non-fusebox (ash only, no separate
-      // process required). The Files app runs in ash and could use either.
-      // Using both would return duplicate results. We therefore filter out
-      // the fusebox file system type.
+      // (requires ChromeOS' /usr/bin/fusebox daemon process to be running) and
+      // non-fusebox. The Files app runs in ash and could use either. Using both
+      // would return duplicate results. We therefore filter out the fusebox
+      // file system type.
       continue;
     }
     sources.emplace_back(std::make_unique<RecentDiskSource>(

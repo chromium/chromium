@@ -459,8 +459,7 @@ bool IsQuickOfficeInstalled(Profile* profile) {
   if (!proxy) {
     return false;
   }
-  // The AppRegistryCache will contain the QuickOffice extension whether on Ash
-  // or Lacros.
+  // The AppRegistryCache will contain the QuickOffice extension on Ash.
   bool installed = false;
   proxy->AppRegistryCache().ForOneApp(
       extension_misc::kQuickOfficeComponentExtensionId,

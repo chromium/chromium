@@ -860,8 +860,6 @@ bool ExecuteFileTask(Profile* profile,
       task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
       task.task_type == TASK_TYPE_CROSTINI_APP ||
       task.task_type == TASK_TYPE_PLUGIN_VM_APP) {
-    // TODO(petermarshall): Implement GetProfileForExtensionTask in Lacros if
-    // necessary, for Chrome Apps.
     extensions::app_file_handler_util::MimeTypeCollector* mime_collector =
         new extensions::app_file_handler_util::MimeTypeCollector(profile);
     mime_collector->CollectForURLs(
