@@ -184,19 +184,26 @@ void ConfigureDesiredBoundsDelegate(
       widget, host_browser_window));
 }
 
+// The dialog widget should be visible if and only if the tab is in the
+// foreground and activated, and the host window is not minimized.
+bool GetDialogWidgetVisibility(bool activated, bool minimized) {
+  return activated && !minimized;
+}
+
 }  // namespace
 
 // Applies positioning changes from the browser window widget to the tracked
-// Widget.
+// Widget. This class relies on the assumption that it is scoped to the lifetime
+// of a single tab, in a single browser, and that it will be destroyed
+// before the tab moves between browser windows.
 class BrowserWindowWidgetObserver : public views::WidgetObserver {
  public:
-  BrowserWindowWidgetObserver(BrowserWindowInterface* host_browser_window,
+  BrowserWindowWidgetObserver(TabInterface* tab_interface,
                               views::Widget* dialog_widget)
-      : host_(host_browser_window), dialog_widget_(dialog_widget) {
-    CHECK(host_);
+      : tab_(tab_interface), dialog_widget_(dialog_widget) {
     CHECK(dialog_widget_);
     browser_window_widget_observation_.Observe(
-        host_browser_window->TopContainer()->GetWidget());
+        tab_->GetBrowserWindowInterface()->TopContainer()->GetWidget());
   }
   BrowserWindowWidgetObserver(const BrowserWindowWidgetObserver&) = delete;
   BrowserWindowWidgetObserver& operator=(const BrowserWindowWidgetObserver&) =
@@ -206,17 +213,22 @@ class BrowserWindowWidgetObserver : public views::WidgetObserver {
   // WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override {
-    CHECK(host_);
     if (dialog_widget_->IsVisible()) {
       UpdateModalDialogPosition(
-          dialog_widget_, host_,
+          dialog_widget_, tab_->GetBrowserWindowInterface(),
           dialog_widget_->GetRootView()->GetPreferredSize({}));
     }
   }
 
+  void OnWidgetShowStateChanged(views::Widget* widget) override {
+    bool minimized = widget->IsMinimized();
+    bool activated = tab_->IsActivated();
+    dialog_widget_->SetVisible(GetDialogWidgetVisibility(activated, minimized));
+  }
+
  private:
-  // The modal host for the widget that owns this observer.
-  raw_ptr<BrowserWindowInterface> host_;
+  // The tab that owns this dialog manager.
+  raw_ptr<TabInterface> tab_;
 
   // The widget being tracked.
   raw_ptr<views::Widget> dialog_widget_;
@@ -268,12 +280,13 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
   tab_dialog_widget_observer_ =
       std::make_unique<TabDialogWidgetObserver>(this, widget_.get());
   showing_modal_ui_ = tab_interface_->ShowModalUI();
-  if (tab_interface_->IsActivated()) {
-    browser_window_widget_observer_ =
-        std::make_unique<BrowserWindowWidgetObserver>(browser_window_interface,
-                                                      widget_.get());
-    widget_->Show();
-  }
+  browser_window_widget_observer_ =
+      std::make_unique<BrowserWindowWidgetObserver>(tab_interface_,
+                                                    widget_.get());
+  bool minimized = browser_window_interface->IsMinimized();
+  bool activated = tab_interface_->IsActivated();
+  widget_->Show();
+  widget_->SetVisible(GetDialogWidgetVisibility(activated, minimized));
 }
 
 std::unique_ptr<views::Widget>
@@ -343,8 +356,8 @@ void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
                               tab_interface_->GetBrowserWindowInterface(),
                               widget_->GetRootView()->GetPreferredSize({}));
     browser_window_widget_observer_ =
-        std::make_unique<BrowserWindowWidgetObserver>(
-            tab_interface_->GetBrowserWindowInterface(), widget_.get());
+        std::make_unique<BrowserWindowWidgetObserver>(tab_interface_,
+                                                      widget_.get());
     // Check if the tab was detached and dragged to a new browser window. This
     // ensures the widget is properly reparented.
     auto* parent_widget =
@@ -352,7 +365,8 @@ void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
     if (parent_widget != widget_->parent()) {
       widget_->Reparent(parent_widget);
     }
-    widget_->SetVisible(true);
+    widget_->SetVisible(
+        GetDialogWidgetVisibility(/*activated=*/true, widget_->IsMinimized()));
   }
 }
 
