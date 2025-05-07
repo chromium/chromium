@@ -23,7 +23,8 @@
 static constexpr base::TimeDelta kRecentlyAddedDelay = base::Seconds(5);
 
 CredentialProviderBrowserAgent::CredentialProviderBrowserAgent(Browser* browser)
-    : browser_(browser),
+    : BrowserUserData(browser),
+      browser_(browser),
       model_(IOSPasskeyModelFactory::GetForProfile(
           // Here, we want to observe the user's passkey model, so we need the
           // original profile.
