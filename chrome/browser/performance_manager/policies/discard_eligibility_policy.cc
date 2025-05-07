@@ -36,16 +36,17 @@ const PageLiveStateDecorator::Data* GetPageNodeLiveStateData(
 
 }  // namespace
 
-PageNodeSortProxy::PageNodeSortProxy(base::WeakPtr<const PageNode> page_node,
-                                     CanDiscardResult can_discard_result,
-                                     bool is_visible,
-                                     bool is_focused,
-                                     base::TimeDelta last_visible)
+PageNodeSortProxy::PageNodeSortProxy(
+    base::WeakPtr<const PageNode> page_node,
+    CanDiscardResult can_discard_result,
+    bool is_visible,
+    bool is_focused,
+    base::TimeTicks last_visibility_change_time)
     : page_node_(std::move(page_node)),
       can_discard_result_(can_discard_result),
       is_visible_(is_visible),
       is_focused_(is_focused),
-      last_visible_(last_visible) {}
+      last_visibility_change_time_(last_visibility_change_time) {}
 
 PageNodeSortProxy::PageNodeSortProxy(PageNodeSortProxy&&) = default;
 PageNodeSortProxy& PageNodeSortProxy::operator=(PageNodeSortProxy&&) = default;
@@ -179,7 +180,8 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
   if (page_node->IsVisible()) {
     add_reason_and_update_result(CannotDiscardReason::kVisible,
                                  CanDiscardResult::kProtected);
-  } else if (page_node->GetTimeSinceLastVisibilityChange() <
+  } else if ((base::TimeTicks::Now() -
+              page_node->GetLastVisibilityChangeTime()) <
              minimum_time_in_background) {
     add_reason_and_update_result(CannotDiscardReason::kRecentlyVisible,
                                  CanDiscardResult::kProtected);

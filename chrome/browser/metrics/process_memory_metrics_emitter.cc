@@ -1740,6 +1740,7 @@ ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
     base::flat_set<const performance_manager::PageNode*> page_nodes =
         performance_manager::GraphOperations::GetAssociatedPageNodes(
             process_node);
+    const base::TimeTicks now = base::TimeTicks::Now();
     for (const performance_manager::PageNode* page_node : page_nodes) {
       if (page_node->GetUkmSourceID() == ukm::kInvalidSourceId)
         continue;
@@ -1759,7 +1760,7 @@ ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
       page_info.hosts_main_frame = HostsMainFrame(process_node, page_node);
       page_info.is_visible = page_node->IsVisible();
       page_info.time_since_last_visibility_change =
-          page_node->GetTimeSinceLastVisibilityChange();
+          now - page_node->GetLastVisibilityChangeTime();
       page_info.time_since_last_navigation =
           page_node->GetTimeSinceLastNavigation();
     }

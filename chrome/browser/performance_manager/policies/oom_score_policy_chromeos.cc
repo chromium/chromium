@@ -83,7 +83,7 @@ void OomScorePolicyChromeOS::HandlePageNodeEvents() {
     bool is_focused = page_node->IsFocused();
     candidates.emplace_back(page_node->GetWeakPtr(), can_discard_result,
                             is_visible, is_focused,
-                            page_node->GetTimeSinceLastVisibilityChange());
+                            page_node->GetLastVisibilityChangeTime());
   }
 
   // Sorts with descending importance.

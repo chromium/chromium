@@ -387,8 +387,10 @@ bool BackgroundTabLoadingPolicy::ShouldLoad(
     return false;
 
   // Enforce a max time since last use.
-  if (page_node_data.page_node->GetTimeSinceLastVisibilityChange() >
-      kMaxTimeSinceLastUseToLoad) {
+  const base::TimeDelta time_since_last_visibility_change =
+      base::TimeTicks::Now() -
+      page_node_data.page_node->GetLastVisibilityChangeTime();
+  if (time_since_last_visibility_change > kMaxTimeSinceLastUseToLoad) {
     return false;
   }
 
@@ -492,9 +494,10 @@ void BackgroundTabLoadingPolicy::ScoreTab(
 
   // Refine the score using the age of the tab. More recently used tabs have
   // higher scores.
-  score += CalculateAgeScore(
-      page_node_to_load_data->page_node->GetTimeSinceLastVisibilityChange()
-          .InSecondsF());
+  const base::TimeDelta time_since_last_visibility_change =
+      base::TimeTicks::Now() -
+      page_node_to_load_data->page_node->GetLastVisibilityChangeTime();
+  score += CalculateAgeScore(time_since_last_visibility_change.InSecondsF());
 
   ++tabs_scored_;
   page_node_to_load_data->score = score;

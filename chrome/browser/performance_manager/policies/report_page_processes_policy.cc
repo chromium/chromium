@@ -143,7 +143,7 @@ void ReportPageProcessesPolicy::HandlePageNodeEvents() {
     bool is_focused = page_node->IsFocused();
     candidates.emplace_back(page_node->GetWeakPtr(), can_discard_result,
                             is_visible, is_focused,
-                            page_node->GetTimeSinceLastVisibilityChange());
+                            page_node->GetLastVisibilityChangeTime());
   }
 
   // Sorts with descending importance.
@@ -158,8 +158,6 @@ void ReportPageProcessesPolicy::HandlePageNodeEvents() {
 void ReportPageProcessesPolicy::ListPageProcesses(
     const std::vector<PageNodeSortProxy>& candidates) {
   base::flat_map<base::ProcessId, PageState> current_pages;
-
-  base::TimeTicks report_time = base::TimeTicks::Now();
 
   for (auto& candidate : candidates) {
     // Only list candidates that could be discarded.
@@ -182,7 +180,7 @@ void ReportPageProcessesPolicy::ListPageProcesses(
           std::piecewise_construct, std::forward_as_tuple(pid),
           std::forward_as_tuple(candidate.is_protected(),
                                 candidate.is_visible(), candidate.is_focused(),
-                                report_time - candidate.last_visible()));
+                                candidate.last_visibility_change_time()));
     }
   }
 

@@ -86,7 +86,7 @@ class PageNodeImpl
   PageType GetType() const override;
   bool IsFocused() const override;
   bool IsVisible() const override;
-  base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
+  base::TimeTicks GetLastVisibilityChangeTime() const override;
   bool IsAudible() const override;
   std::optional<base::TimeDelta> GetTimeSinceLastAudibleChange() const override;
   bool HasPictureInPicture() const override;

@@ -111,18 +111,18 @@ class PageNode : public TypedNode<PageNode> {
   // See PageNodeObserver::OnIsVisibleChanged.
   virtual bool IsVisible() const = 0;
 
-  // Returns the time since the last visibility change. It is always well
-  // defined as the visibility property is set at node creation.
-  virtual base::TimeDelta GetTimeSinceLastVisibilityChange() const = 0;
+  // Returns the time of the last visibility change. It is always well defined
+  // as the visibility property is set at node creation.
+  virtual base::TimeTicks GetLastVisibilityChangeTime() const = 0;
 
   // Returns true if this page is currently audible, false otherwise.
   // See PageNodeObserver::OnIsAudibleChanged.
   virtual bool IsAudible() const = 0;
 
   // Returns the time since the last audible change. Unlike
-  // GetTimeSinceLastVisibilityChange(), this returns nullopt for a node which
-  // has never been audible. If a node is audible when created, it is considered
-  // to change from inaudible to audible at that point.
+  // GetLastVisibilityChangeTime(), this returns nullopt for a node which has
+  // never been audible. If a node is audible when created, it is considered to
+  // change from inaudible to audible at that point.
   virtual std::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
       const = 0;
 
@@ -295,7 +295,7 @@ class PageNodeObserver : public base::CheckedObserver {
 
   // Invoked when the IsVisible property changes.
   //
-  // GetTimeSinceLastVisibilityChange() will return the time since the previous
+  // GetLastVisibilityChangeTime() will return the time of the previous
   // IsVisible change. After all observers have fired it will return the time of
   // this property change.
   virtual void OnIsVisibleChanged(const PageNode* page_node) {}

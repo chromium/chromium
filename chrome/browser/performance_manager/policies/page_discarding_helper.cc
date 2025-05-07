@@ -155,7 +155,7 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
     }
     candidates.emplace_back(page_node->GetWeakPtr(), can_discard_result,
                             page_node->IsVisible(), page_node->IsFocused(),
-                            page_node->GetTimeSinceLastVisibilityChange());
+                            page_node->GetLastVisibilityChangeTime());
   }
 
   // Sorts with descending importance.
