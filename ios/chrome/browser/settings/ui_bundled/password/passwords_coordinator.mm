@@ -390,10 +390,8 @@
 - (void)performReauthenticationForRetrievingTrustedVaultKey {
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
-  // TODO(crbug.com/407605858): Add to `TrustedVaultUserActionTriggerForUMA` a
-  // separate enum entry for representing the GPM management UI.
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+      syncer::TrustedVaultUserActionTriggerForUMA::kPasswordManagerSettings;
   CHECK(!_trustedVaultReauthenticationCoordinator, base::NotFatalUntil::M145);
   _trustedVaultReauthenticationCoordinator =
       [[TrustedVaultReauthenticationCoordinator alloc]
