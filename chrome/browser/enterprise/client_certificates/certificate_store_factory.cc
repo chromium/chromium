@@ -9,7 +9,9 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/enterprise/client_certificates/cert_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/client_certificates/core/leveldb_certificate_store.h"
+#include "components/enterprise/client_certificates/core/prefs_certificate_store.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -38,8 +40,16 @@ std::unique_ptr<KeyedService>
 CertificateStoreFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
+  if (!profile) {
+    return nullptr;
+  }
 
-  if (!profile || !profile->GetDefaultStoragePartition() ||
+  if (features::IsManagedUserClientCertificateInPrefsEnabled()) {
+    return std::make_unique<PrefsCertificateStore>(profile->GetPrefs(),
+                                                   CreatePrivateKeyFactory());
+  }
+
+  if (!profile->GetDefaultStoragePartition() ||
       !profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider()) {
     return nullptr;
   }
