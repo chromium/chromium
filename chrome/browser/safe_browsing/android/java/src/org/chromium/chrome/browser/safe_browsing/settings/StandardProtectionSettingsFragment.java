@@ -96,4 +96,9 @@ public class StandardProtectionSettingsFragment extends SafeBrowsingSettingsFrag
             }
         };
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

@@ -46,4 +46,9 @@ public class EnhancedProtectionSettingsFragment extends SafeBrowsingSettingsFrag
     private void onLearnMoreClicked(View view) {
         getCustomTabLauncher().openUrlInCct(getContext(), SAFE_BROWSING_IN_CHROME_URL);
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }
