@@ -74,14 +74,20 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final LinearLayout mErrorLayout;
     private final LinearLayout mLoadingLayout;
 
+    private final PlaybackModeIphController mPlaybackModeIphController;
+
     public ExpandedPlayerSheetContent(
-            Context context, BottomSheetController bottomSheetController, PropertyModel model) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            PropertyModel model,
+            PlaybackModeIphController playbackModeIphController) {
         this(
                 context,
                 bottomSheetController,
                 LayoutInflater.from(context)
                         .inflate(R.layout.readaloud_expanded_player_layout, null),
-                model);
+                model,
+                playbackModeIphController);
     }
 
     @VisibleForTesting
@@ -89,11 +95,14 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
             Context context,
             BottomSheetController bottomSheetController,
             View contentView,
-            PropertyModel model) {
+            PropertyModel model,
+            PlaybackModeIphController playbackModeIphController) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mContentView = contentView;
         mModel = model;
+        mPlaybackModeIphController = playbackModeIphController;
+
         Resources res = mContext.getResources();
         mSpeedButton = (TextView) mContentView.findViewById(R.id.readaloud_playback_speed);
         mContentView
@@ -119,6 +128,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mScrollView = (ScrollView) mContentView.findViewById(R.id.scroll_view);
         mModeSelectorButton = mContentView.findViewById(R.id.readaloud_mode_selector);
         mModeSelectorButton.setSelected(mIsModeActive);
+        mPlaybackModeIphController.setAnchorView(mModeSelectorButton);
 
         mLoadingTextView = mContentView.findViewById(R.id.readaloud_loading_text);
 
@@ -230,9 +240,13 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     public void show() {
-        mBottomSheetController.requestShowContent(this, /* animate= */ true);
+        boolean shown = mBottomSheetController.requestShowContent(this, /* animate= */ true);
         // Reset scrolling if needed.
         mScrollView.scrollTo(0, 0);
+
+        if (shown) {
+          mPlaybackModeIphController.maybeShowPlaybackModeIph();
+        }
     }
 
     public void hide() {

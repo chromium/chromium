@@ -293,6 +293,7 @@ android_library("player_java") {
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/MenuSheetContent.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/NegativeFeedbackMenuSheetContent.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/OptionsMenuSheetContent.java",
+    "java/src/org/chromium/chrome/browser/readaloud/player/expanded/PlaybackModeIphController.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/SingleMenuSheetContent.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/SpeedMenuSheetContent.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/VoiceMenu.java",

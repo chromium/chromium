@@ -342,6 +342,9 @@
       <message name="IDS_READALOUD_EXPANDED_PLAYER_IPH" desc="Text shown on in-product-help bubble to inform a user that tapping on the mini player will expand it, allowing to access more options.">
           Tap to expand the player for more options.
       </message>
+      <message name="IDS_READALOUD_PLAYBACK_MODE_IPH" desc="Text shown on IPH for playback mode selector.">
+          Tap to switch playback mode
+      </message>
       <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_RUBY" desc="Display name of a text-to-speech voice named Ruby.">
           Ruby
       </message>

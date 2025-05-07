@@ -107,7 +107,10 @@ public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
                 model,
                 new ExpandedPlayerMediator(model),
                 new ExpandedPlayerSheetContent(
-                        context, delegate.getBottomSheetController(), model));
+                        context,
+                        delegate.getBottomSheetController(),
+                        model,
+                        new PlaybackModeIphController(delegate.getUserEducationHelper())));
     }
 
     @VisibleForTesting
