@@ -96,6 +96,12 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         return mMostVisitedSites.hasCustomLink(keyUrl);
     }
 
+    @Override
+    public boolean reorderCustomLink(GURL keyUrl, int newPos) {
+        assert !mIsDestroyed;
+        return mMostVisitedSites.reorderCustomLink(keyUrl, newPos);
+    }
+
     // TileGroup.Delegate implementation.
     @Override
     @Initializer

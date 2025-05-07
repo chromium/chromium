@@ -55,6 +55,8 @@ class MostVisitedSitesBridge {
 
   jboolean HasCustomLink(JNIEnv* env, const GURL& key_url);
 
+  jboolean ReorderCustomLink(JNIEnv* env, const GURL& key_url, jint new_pos);
+
   void AddOrRemoveBlockedUrl(JNIEnv* env,
                              const base::android::JavaParamRef<jobject>& obj,
                              const base::android::JavaParamRef<jobject>& j_url,

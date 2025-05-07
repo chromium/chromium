@@ -352,6 +352,7 @@ public class MostVisitedMediatorUnitTest {
     private void createMediator(boolean isTablet) {
         mMvTilesLayout = Mockito.mock(MostVisitedTilesLayout.class);
 
+        when(mMvTilesLayout.getResources()).thenReturn(mResources);
         when(mMvTilesLayout.getChildCount()).thenReturn(1);
         when(mMvTilesLayout.getChildAt(0)).thenReturn(mTileView);
         when(mMvTilesLayout.getTileCount()).thenReturn(1);

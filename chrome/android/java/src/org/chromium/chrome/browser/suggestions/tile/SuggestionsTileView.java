@@ -27,6 +27,12 @@ public class SuggestionsTileView extends TileView {
         super(context, attrs);
     }
 
+    // TileView override.
+    @Override
+    public boolean isDraggable() {
+        return mData.source == TileSource.CUSTOM_LINKS;
+    }
+
     /**
      * Initializes the view using the data held by {@code tile}. This should be called immediately
      * after inflation.

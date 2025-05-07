@@ -322,6 +322,13 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         return true;
     }
 
+    /** Dismisses the context menu shown by {@link showListContextMenu()}, if any. */
+    public void hideListContextMenu() {
+        if (mListContextMenu != null) {
+            mListContextMenu.dismiss();
+        }
+    }
+
     @Override
     public void onContextMenuClosed() {
         if (mAnchorView == null) return;
