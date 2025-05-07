@@ -113,51 +113,12 @@ class AuthenticationFlowTest : public PlatformTest,
     }
 
     run_loop_ = std::make_unique<base::RunLoop>();
-    sign_in_completion_ = ^(SigninCoordinatorResult result) {
-      run_loop_->Quit();
-      switch (result) {
-        case SigninCoordinatorResult::SigninCoordinatorResultSuccess:
-          signin_result_ = signin::Tribool::kTrue;
-          break;
-        case SigninCoordinatorResult::SigninCoordinatorResultInterrupted:
-        case SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser:
-        case SigninCoordinatorResult::SigninCoordinatorResultDisabled:
-        case SigninCoordinatorResult::SigninCoordinatorUINotAvailable:
-        case SigninCoordinatorResult::SigninCoordinatorProfileSwitch:
-          signin_result_ = signin::Tribool::kFalse;
-          break;
-      }
-    };
-    continuation_provider_ = base::BindRepeating(
-        [](signin_ui::SigninCompletionCallback sign_in_completion) {
-          ChangeProfileContinuation continuation = base::BindOnce(
-              [](signin_ui::SigninCompletionCallback sign_in_completion,
-                 SceneState* sceneState, base::OnceClosure closure) {
-                sign_in_completion(
-                    SigninCoordinatorResult::SigninCoordinatorResultSuccess);
-                std::move(closure).Run();
-              },
-              sign_in_completion);
-          return continuation;
-        },
-        sign_in_completion_);
   }
 
   void TearDown() override {
     PlatformTest::TearDown();
     EXPECT_OCMOCK_VERIFY((id)view_controller_mock_);
     EXPECT_OCMOCK_VERIFY((id)performer_mock_);
-  }
-  // Reset the authentication_flow_’s request helper.
-  // Must be call before each `startSignIn`
-  void ResetAuthenticationFlowRequestHelper() {
-    // Each mock expect its methods to be called at most once.
-    test_authentication_flow_request_helper_ =
-        [[TestAuthenticationFlowRequest alloc]
-             initWithSigninCompletionCallback:sign_in_completion_
-            changeProfileContinuationProvider:continuation_provider_];
-    authentication_flow_.requestHelper =
-        test_authentication_flow_request_helper_;
   }
 
   TestProfileIOS* CreateProfile(
@@ -197,6 +158,7 @@ class AuthenticationFlowTest : public PlatformTest,
                                 signin_metrics::AccessPoint accessPoint,
                                 BOOL shouldHandOverToFlowInProfile) {
     view_controller_mock_ = OCMClassMock([UIViewController class]);
+    CHECK(!authentication_flow_);
     authentication_flow_ =
         [[AuthenticationFlow alloc] initWithBrowser:personal_browser_.get()
                                            identity:identity
@@ -230,6 +192,47 @@ class AuthenticationFlowTest : public PlatformTest,
           })
           .andReturn(performer_mock_);
     }
+
+    signin_ui::SigninCompletionCallback sign_in_completion =
+        ^(SigninCoordinatorResult result) {
+          run_loop_->Quit();
+          switch (result) {
+            case SigninCoordinatorResult::SigninCoordinatorResultSuccess:
+              signin_result_ = signin::Tribool::kTrue;
+              break;
+            case SigninCoordinatorResult::SigninCoordinatorResultInterrupted:
+            case SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser:
+            case SigninCoordinatorResult::SigninCoordinatorResultDisabled:
+            case SigninCoordinatorResult::SigninCoordinatorUINotAvailable:
+            case SigninCoordinatorResult::SigninCoordinatorProfileSwitch:
+              signin_result_ = signin::Tribool::kFalse;
+              break;
+          }
+          authentication_flow_ = nil;
+        };
+    // Runs the sign_in_completion with Success and the closure.
+    ChangeProfileContinuationProvider continuation_provider =
+        base::BindRepeating(
+            [](signin_ui::SigninCompletionCallback sign_in_completion) {
+              ChangeProfileContinuation continuation = base::BindOnce(
+                  [](signin_ui::SigninCompletionCallback sign_in_completion,
+                     SceneState* sceneState, base::OnceClosure closure) {
+                    sign_in_completion(SigninCoordinatorResult::
+                                           SigninCoordinatorResultSuccess);
+                    std::move(closure).Run();
+                  },
+                  sign_in_completion);
+              return continuation;
+            },
+            sign_in_completion);
+
+    // Each mock expect its methods to be called at most once.
+    test_authentication_flow_request_helper_ =
+        [[TestAuthenticationFlowRequest alloc]
+             initWithSigninCompletionCallback:sign_in_completion
+            changeProfileContinuationProvider:continuation_provider];
+    authentication_flow_.requestHelper =
+        test_authentication_flow_request_helper_;
   }
 
   // Checks if the AuthenticationFlow operation has completed, and whether it
@@ -393,7 +396,6 @@ class AuthenticationFlowTest : public PlatformTest,
                                                  browser:final_browser
                                              accessPoint:access_point]);
 
-    ResetAuthenticationFlowRequestHelper();
     [authentication_flow_ startSignIn];
     // The completion block should not be called synchronously.
     EXPECT_EQ(signin::Tribool::kUnknown, signin_result_);
@@ -435,8 +437,6 @@ class AuthenticationFlowTest : public PlatformTest,
   AuthenticationFlowInProfile<AuthenticationFlowPerformerDelegate>*
       authentication_flow_in_profile_ = nil;
   AuthenticationFlowPerformer* performer_mock_ = nil;
-  signin_ui::SigninCompletionCallback sign_in_completion_;
-  ChangeProfileContinuationProvider continuation_provider_;
   UIViewController* view_controller_mock_;
   // Used to verify histogram logging.
   base::HistogramTester histogram_tester_;
@@ -480,7 +480,6 @@ TEST_P(AuthenticationFlowTest, TestFailFetchManagedStatus) {
         [invocation getArgument:&completionBlock atIndex:3];
         completionBlock();
       });
-  ResetAuthenticationFlowRequestHelper();
   [authentication_flow_ startSignIn];
 
   CheckSignInCompletion(/*expected_signed_in=*/false);
@@ -580,7 +579,6 @@ TEST_P(AuthenticationFlowTest, TestDontShowUnsyncedDataConfirmation) {
         run_loop_->Quit();
       });
 
-  ResetAuthenticationFlowRequestHelper();
   [authentication_flow_ startSignIn];
   run_loop_->Run();
 }
@@ -623,7 +621,6 @@ TEST_P(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
         run_loop_->Quit();
       });
 
-  ResetAuthenticationFlowRequestHelper();
   [authentication_flow_ startSignIn];
   run_loop_->Run();
 }
