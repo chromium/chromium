@@ -347,10 +347,10 @@ PhysicalBoxFragment::PhysicalBoxFragment(
   DCHECK(layout_object_->IsBoxModelObject());
   DCHECK(!builder->break_token_ || builder->break_token_->IsBlockType());
 
-  children_.ReserveInitialCapacity(builder->children_.size());
-  PhysicalSize size = Size();
   const WritingModeConverter converter(
-      {block_or_line_writing_mode, builder->Direction()}, size);
+      {block_or_line_writing_mode, builder->Direction()}, Size());
+
+  children_.ReserveInitialCapacity(builder->children_.size());
   for (auto& child : builder->children_) {
     children_.emplace_back(
         std::move(child.fragment),

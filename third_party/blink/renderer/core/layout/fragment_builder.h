@@ -37,6 +37,7 @@ class CORE_EXPORT FragmentBuilder {
  public:
   ~FragmentBuilder() {
     // Clear collections so the backing gets promptly freed, and reused.
+    children_.clear();
     oof_positioned_candidates_.clear();
     oof_positioned_fragmentainer_descendants_.clear();
     oof_positioned_descendants_.clear();
