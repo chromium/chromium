@@ -10,6 +10,8 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_manager.h"
 
+class ProfileIOS;
+
 namespace policy {
 class UserCloudPolicyManager;
 }  // namespace policy
@@ -26,10 +28,7 @@ namespace enterprise_connectors {
 // - OnSecurityEventEnterpriseConnectors
 class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
  public:
-  ConnectorsService(bool off_the_record,
-                    PrefService* pref_service,
-                    policy::UserCloudPolicyManager* user_cloud_policy_manager,
-                    signin::IdentityManager* identity_manager);
+  ConnectorsService(ProfileIOS* profile);
   ~ConnectorsService() override;
 
   // Returns the CBCM domain or profile domain that enables connector policies.
@@ -60,9 +59,7 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, GetBrowserDmToken);
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, ConnectorsEnabled);
 
-  bool off_the_record_;
-  raw_ptr<PrefService> prefs_;
-  raw_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
+  raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<ConnectorsManager> connectors_manager_;
   // Unowned pointer used for retrieving the management domain for connectors
   // policies. Can be null for incognito profiles.
