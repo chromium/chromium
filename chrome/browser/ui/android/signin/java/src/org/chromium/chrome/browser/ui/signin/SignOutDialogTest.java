@@ -41,6 +41,9 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -60,6 +63,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Instrumentation tests for {@link SignOutDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
 public class SignOutDialogTest {
     private static final String TEST_DOMAIN = "test.domain.example.com";
 
@@ -209,7 +213,8 @@ public class SignOutDialogTest {
 
     @Test
     @MediumTest
-    public void testFooterWhenAccountIsNotManaged_UPMDisabled() {
+    @DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
+    public void testFooterWhenAccountIsNotManaged_PasswordManagerSplitStoresDisabled() {
         setUpMocks();
         mockAllowDeletingBrowserHistoryPref(true);
         when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
@@ -224,11 +229,26 @@ public class SignOutDialogTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
     public void testFooterWhenAccountIsNotManaged_UPMEnabled() {
         setUpMocks();
         mockAllowDeletingBrowserHistoryPref(true);
         when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
                 .thenReturn(true);
+
+        showSignOutDialog(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
+
+        onView(withText(R.string.turn_off_sync_and_signout_message_without_passwords))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
+    public void testFooterWhenAccountIsNotManaged_AfterLoginDbDeprecation() {
+        setUpMocks();
+        mockAllowDeletingBrowserHistoryPref(true);
 
         showSignOutDialog(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
 
