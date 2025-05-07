@@ -99,8 +99,24 @@ found in the LICENSE file.
     border-color: red;
   }
 
+  #screenWakeLockStatus::before {
+    content: "Can sleep normally.";
+  }
+  #screenWakeLockStatus[lockStatus*="acquired"]::before {
+    content: "Locked in awake state!";
+    background-color: fuchsia;
+  }
+  #screenWakeLockStatus[lockStatus*="unexpectedRelease"]::before {
+    content: "Awake lock was released unexpectedly.";
+    background-color: yellow;
+  }
+  #screenWakeLockStatus[lockStatus*="error"]::before {
+    content: "Error acquiring awake lock! (can still sleep)";
+    background-color: red;
+  }
+
   #successUI {
-      border-color: green;
+    border-color: green;
   }
 
   .fitWindow html {
@@ -408,6 +424,14 @@ found in the LICENSE file.
   <audio id="mic" controls></audio><br />
   <div></div>
   <div id="audioStatus"></div>
+</div>
+<div class="section">
+  <h1>Screen Wake Lock</h1>
+  <label for="screenWakeLockSwitch">Keep screen awake:
+    <input type="checkbox" id="screenWakeLockSwitch" />
+  </label>
+  <br />
+  <label id="screenWakeLockStatus" lockStatus="released"/>
 </div>
 <div class="section">
   <h1>Desktop Screenshot</h1>

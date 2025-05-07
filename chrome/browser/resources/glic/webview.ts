@@ -222,6 +222,7 @@ export class WebviewController {
         return;
       }
     }
+    console.warn(`Webview permission request was denied: ${e.permission}`);
     e.request.deny();
   }
 

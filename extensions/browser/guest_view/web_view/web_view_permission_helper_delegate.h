@@ -98,6 +98,8 @@ class WebViewPermissionHelperDelegate {
   virtual bool ForwardEmbeddedMediaPermissionChecksAsEmbedder(
       const url::Origin& embedder_origin);
 
+  // Allows the delegate to override the results of permission requests; useful
+  // when custom handling is needed for specific webviews.
   virtual std::optional<content::PermissionResult> OverridePermissionResult(
       ContentSettingsType type);
 

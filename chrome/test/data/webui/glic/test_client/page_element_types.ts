@@ -82,6 +82,8 @@ export interface PageElementTypes {
   fileDropList: HTMLDivElement;
   showDirectoryPicker: HTMLButtonElement;
   failInitializationCheckbox: HTMLInputElement;
+  screenWakeLockSwitch: HTMLInputElement;
+  screenWakeLockStatus: HTMLLabelElement;
   setExperiment: HTMLButtonElement;
   trialName: HTMLInputElement;
   groupName: HTMLInputElement;
