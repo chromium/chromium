@@ -378,6 +378,36 @@ TEST_F(CertificateProvisioningServiceTest,
       4U);
 }
 
+// Tests what happens when the GetIdentity provisioning step fails with
+// a key loading store error. The provisioning service should then provision
+// a new identity.
+TEST_F(CertificateProvisioningServiceTest,
+       CreatedWithPref_Empty_GetIdentityFailsDueToKeyLoad_Fallback) {
+  EXPECT_CALL(mock_store_, GetIdentity(kIdentityName, _))
+      .WillOnce(
+          RunOnceCallback<1>(base::unexpected(StoreError::kLoadKeyFailed)));
+
+  auto mocked_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
+  auto fake_cert = LoadTestCert();
+  EXPECT_CALL(mock_store_, CreatePrivateKey(kTempIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(mocked_private_key));
+
+  auto mock_client = std::make_unique<StrictMock<MockKeyUploadClient>>();
+  EXPECT_CALL(*mock_client,
+              CreateCertificate(testing::Eq(mocked_private_key), _))
+      .WillOnce(RunOnceCallback<1>(kSuccessUploadCode, fake_cert));
+
+  EXPECT_CALL(mock_store_,
+              CommitIdentity(kTempIdentityName, kIdentityName, fake_cert, _))
+      .WillOnce(RunOnceCallback<3>(std::nullopt));
+
+  CreateProvisioningService(CreateContextDelegate(), std::move(mock_client));
+  ASSERT_TRUE(service_);
+  SetPolicyPref(true);
+
+  VerifySuccessState(mocked_private_key, fake_cert);
+}
+
 // Tests what happens when the CreateKey provisioning step fails.
 TEST_F(CertificateProvisioningServiceTest,
        CreatedWithPref_Empty_CreateKeyFails) {
