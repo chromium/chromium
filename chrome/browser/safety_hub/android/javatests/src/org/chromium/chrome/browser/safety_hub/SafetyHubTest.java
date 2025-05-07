@@ -1512,6 +1512,7 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
 
         clearLocalCompromisedPasswordsCount();
+        clearAccountCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
     }
 
@@ -1553,6 +1554,7 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
 
         clearLocalCompromisedPasswordsCount();
+        clearAccountCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
     }
 
@@ -1593,6 +1595,7 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
 
         clearLocalCompromisedPasswordsCount();
+        clearAccountCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
     }
 
@@ -1605,7 +1608,7 @@ public final class SafetyHubTest {
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
         ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
     })
-    public void testUnifiedPasswordsModule_NoCompromisedPasswords() {
+    public void testUnifiedPasswordsModule_NoAccountAndLocalCompromisedPasswords() {
         setAccountCompromisedPasswordsCount(0);
         setLocalCompromisedPasswordsCount(0);
         setAccountReusedPasswordsCount(0);
@@ -1619,12 +1622,47 @@ public final class SafetyHubTest {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
-        // Verify that unified passwords module which is in the safe state is collapsed by
-        // default.
+        // Verify that unified passwords module which is in the safe state is collapsed by default.
         String noCompromisedPasswordsTitle =
                 safetyHubFragment.getString(R.string.safety_hub_no_compromised_passwords_title);
         scrollToExpandedPreference(noCompromisedPasswordsTitle);
         verifyButtonsNextToTextVisibility(noCompromisedPasswordsTitle, false);
+
+        // Verify the information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        clearLocalCompromisedPasswordsCount();
+        clearAccountCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testUnifiedPasswordsModule_AccountAndLocalPasswordsUnavailable() {
+        clearLocalCompromisedPasswordsCount();
+        clearAccountCompromisedPasswordsCount();
+        addCredentialToProfileStore();
+        addCredentialToAccountStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the unavailable state is expanded by
+        // default.
+        String unavailablePasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_password_check_unavailable_title);
+        scrollToExpandedPreference(unavailablePasswordsTitle);
+        verifyButtonsNextToTextVisibility(unavailablePasswordsTitle, true);
 
         // Verify the information module is expanded.
         String safeBrowsingTitle =

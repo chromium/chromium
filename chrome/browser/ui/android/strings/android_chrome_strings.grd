@@ -1909,6 +1909,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_LOCAL_PASSWORD_CHECK_UNAVAILABLE_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the local password checkup could not be completed.">
         Can’t check passwords on this device
       </message>
+      <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_UNAVAILABLE_TITLE" desc="Title for the password check row in the Safety Check page indicating that the local and/or account password checkup could not be completed.">
+        Can’t check passwords
+      </message>
       <message name="IDS_SAFETY_HUB_UNAVAILABLE_SUMMARY" desc="Summary for the rows in the Safety Check page indicating that the checkup for the specific module could not be run at this time and to check again later.">
         Try again later
       </message>

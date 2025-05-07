@@ -87,7 +87,6 @@ public class SafetyHubPasswordsModuleMediator
             @SafetyHubLocalPasswordsDataSource.ModuleType int localModuleType) {
         Context context = mPreference.getContext();
 
-        // TODO(crbug.com/407930886): Add all states for account and local passwords.
         if (accountModuleType
                         == SafetyHubAccountPasswordsDataSource.ModuleType.HAS_COMPROMISED_PASSWORDS
                 || localModuleType
@@ -98,6 +97,16 @@ public class SafetyHubPasswordsModuleMediator
                     mAccountPasswordsDataSource.getCompromisedPasswordCount(),
                     mLocalPasswordsDataSource.getCompromisedPasswordCount(),
                     /* unifiedModule= */ true);
+        }
+
+        if (accountModuleType
+                        == SafetyHubAccountPasswordsDataSource.ModuleType.UNAVAILABLE_PASSWORDS
+                || accountModuleType
+                        == SafetyHubAccountPasswordsDataSource.ModuleType
+                                .UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS
+                || localModuleType
+                        == SafetyHubLocalPasswordsDataSource.ModuleType.UNAVAILABLE_PASSWORDS) {
+            return new SafetyHubUnavailablePasswordsModuleHelper(context, mModuleDelegate);
         }
 
         if (accountModuleType == SafetyHubAccountPasswordsDataSource.ModuleType.HAS_REUSED_PASSWORDS
@@ -133,6 +142,7 @@ public class SafetyHubPasswordsModuleMediator
                     /* unifiedModule= */ true);
         }
 
+        // TODO(crbug.com/407930886): Add no password state for account and local passwords.
         return new SafetyHubAccountPasswordsUnavailableAllPasswordsModuleHelper(
                 context, mModuleDelegate);
     }
