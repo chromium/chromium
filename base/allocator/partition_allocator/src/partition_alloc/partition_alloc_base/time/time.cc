@@ -122,6 +122,10 @@ TimeDelta TimeDelta::RoundToMultiple(TimeDelta interval) const {
                       : (*this + half).FloorToMultiple(interval);
 }
 
+std::ostream& operator<<(std::ostream& os, TimeDelta time_delta) {
+  return os << time_delta.InSecondsF() << " s";
+}
+
 // Time -----------------------------------------------------------------------
 
 // static

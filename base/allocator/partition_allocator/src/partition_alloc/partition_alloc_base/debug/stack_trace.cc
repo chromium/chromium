@@ -12,6 +12,10 @@
 #include "partition_alloc/partition_alloc_base/process/process_handle.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 
+#if PA_BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+#include <algorithm>
+#endif
+
 #if (PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
 extern "C" void* __libc_stack_end;
 #endif
