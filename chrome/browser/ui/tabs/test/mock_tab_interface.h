@@ -70,6 +70,10 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               GetBrowserWindowInterface,
               (),
               (override));
+  MOCK_METHOD(const BrowserWindowInterface*,
+              GetBrowserWindowInterface,
+              (),
+              (const override));
   MOCK_METHOD(TabFeatures*, GetTabFeatures, (), (override));
   MOCK_METHOD(bool, IsPinned, (), (const override));
   MOCK_METHOD(bool, IsSplit, (), (const override));

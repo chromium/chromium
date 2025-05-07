@@ -191,6 +191,7 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // TabFeatures or BrowserWindowFeatures, you can safely assume that this is
   // always non-nullptr.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
+  virtual const BrowserWindowInterface* GetBrowserWindowInterface() const = 0;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Returns the feature controllers scoped to this tab.

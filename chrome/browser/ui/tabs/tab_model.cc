@@ -265,6 +265,10 @@ BrowserWindowInterface* TabModel::GetBrowserWindowInterface() {
   return GetModelForTabInterface()->delegate()->GetBrowserWindowInterface();
 }
 
+const BrowserWindowInterface* TabModel::GetBrowserWindowInterface() const {
+  return GetModelForTabInterface()->delegate()->GetBrowserWindowInterface();
+}
+
 tabs::TabFeatures* TabModel::GetTabFeatures() {
   return tab_features_.get();
 }

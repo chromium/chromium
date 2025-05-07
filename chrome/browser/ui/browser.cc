@@ -1229,7 +1229,7 @@ void Browser::OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) {
           /*navigation_handle_callback=*/{});
 }
 
-const SessionID& Browser::GetSessionID() {
+const SessionID& Browser::GetSessionID() const {
   return session_id_;
 }
 

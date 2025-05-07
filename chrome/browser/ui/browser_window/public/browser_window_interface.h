@@ -78,7 +78,7 @@ class BrowserWindowInterface : public content::PageNavigator {
                         WindowOpenDisposition disposition) = 0;
 
   // Returns a session-unique ID.
-  virtual const SessionID& GetSessionID() = 0;
+  virtual const SessionID& GetSessionID() const = 0;
 
   virtual TabStripModel* GetTabStripModel() = 0;
 

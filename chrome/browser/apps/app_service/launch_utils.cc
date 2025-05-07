@@ -19,10 +19,10 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -33,6 +33,8 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -267,12 +269,14 @@ int GetSessionIdForRestoreFromWebContents(
     return SessionID::InvalidValue().id();
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  const tabs::TabInterface* tab =
+      tabs::TabInterface::GetFromContents(web_contents);
+  const BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   if (!browser) {
     return SessionID::InvalidValue().id();
   }
 
-  return browser->session_id().id();
+  return browser->GetSessionID().id();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
