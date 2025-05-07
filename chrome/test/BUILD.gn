@@ -8913,6 +8913,7 @@ test("unit_tests") {
   # Unit tests that run on Win/Mac/Linux and Android desktop.
   if (enable_extensions_core) {
     sources += [
+      "../browser/extensions/api/bookmarks/bookmarks_api_unittest.cc",
       "../browser/extensions/api/declarative_net_request/action_tracker_unittest.cc",
       "../browser/extensions/api/declarative_net_request/declarative_net_request_unittest.cc",
       "../browser/extensions/api/declarative_net_request/dnr_test_base.cc",
@@ -9021,7 +9022,6 @@ test("unit_tests") {
       "../browser/extensions/activity_log/fullstream_ui_policy_unittest.cc",
       "../browser/extensions/api/activity_log_private/activity_log_private_api_unittest.cc",
       "../browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api_unittest.cc",
-      "../browser/extensions/api/bookmarks/bookmarks_api_unittest.cc",
       "../browser/extensions/api/browsing_data/browsing_data_unittest.cc",
       "../browser/extensions/api/chrome_extensions_api_client_unittest.cc",
       "../browser/extensions/api/cookies/cookies_helpers_unittest.cc",

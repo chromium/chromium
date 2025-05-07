@@ -13,6 +13,7 @@ assert(enable_extensions_core)
 # TODO(https://crbug.com/356905053): Continue moving more here.
 schema_sources_ = [
   "activity_log_private.json",
+  "bookmarks.json",
   "cookies.json",
   "developer_private.idl",
   "identity.idl",
@@ -47,7 +48,6 @@ if (enable_extensions) {
     "autofill_private.idl",
     "autotest_private.idl",
     "bookmark_manager_private.json",
-    "bookmarks.json",
     "braille_display_private.idl",
     "chrome_web_view_internal.json",
     "command_line_private.json",
