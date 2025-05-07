@@ -68,8 +68,6 @@ constexpr auto kEmacsBindings =
          ui::TextEditCommand::MOVE_UP},
         {{ui::KeyboardCode::VKEY_P, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN},
          ui::TextEditCommand::MOVE_UP_AND_MODIFY_SELECTION},
-        {{ui::KeyboardCode::VKEY_T, ui::EF_CONTROL_DOWN},
-         ui::TextEditCommand::TRANSPOSE},
         {{ui::KeyboardCode::VKEY_U, ui::EF_CONTROL_DOWN},
          ui::TextEditCommand::DELETE_TO_BEGINNING_OF_LINE},
         {{ui::KeyboardCode::VKEY_W, ui::EF_CONTROL_DOWN},
