@@ -139,6 +139,13 @@
                 on-shortcut-updated="onFocusToggleShortcutUpdated_">
             </cr-shortcut-input>
           </div>
+          <settings-toggle-button
+              id="closedCaptionsToggle"
+              pref="{{prefs.glic.closed_captioning_enabled}}"
+              label="$i18n{glicClosedCaptionsToggle}"
+              sub-label="$i18n{glicClosedCaptionsToggleSublabel}"
+              on-settings-boolean-control-change="onClosedCaptionsToggleChange_">
+          </settings-toggle-button>
         </template>
       </div>
       <div class="section">

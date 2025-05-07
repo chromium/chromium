@@ -408,6 +408,36 @@ suite('GlicPage', function() {
       assertFalse(infoCard.opened);
     });
 
+    test('ClosedCaptionsToggleEnabled', () => {
+      page.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, true);
+
+      assertTrue(
+          $<SettingsToggleButtonElement>('closedCaptionsToggle')!.checked);
+    });
+
+    test('ClosedCaptionsToggleDisabled', () => {
+      page.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, false);
+
+      assertFalse(
+          $<SettingsToggleButtonElement>('closedCaptionsToggle')!.checked);
+    });
+
+    test('ClosedCaptionsToggleChanged', () => {
+      page.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, false);
+
+      const closedCaptionsToggle =
+          $<SettingsToggleButtonElement>('closedCaptionsToggle')!;
+      assertTrue(!!closedCaptionsToggle);
+
+      closedCaptionsToggle.click();
+      assertTrue(page.getPref(PrefName.CLOSED_CAPTIONS_ENABLED).value);
+      assertTrue(closedCaptionsToggle.checked);
+
+      closedCaptionsToggle.click();
+      assertFalse(page.getPref(PrefName.CLOSED_CAPTIONS_ENABLED).value);
+      assertFalse(closedCaptionsToggle.checked);
+    });
+
     suite('Metrics', () => {
       async function verifyUserAction(userAction: string) {
         const userActions = await metricsBrowserProxy.getArgs('recordAction');
@@ -456,6 +486,20 @@ suite('GlicPage', function() {
 
         tabAccessToggle.click();
         await verifyUserAction('Glic.Settings.TabContext.Disabled');
+      });
+
+      test('ClosedCaptionsToggle', async () => {
+        page.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, false);
+
+        const closedCaptionsToggle =
+            $<SettingsToggleButtonElement>('closedCaptionsToggle')!;
+        assertTrue(!!closedCaptionsToggle);
+
+        closedCaptionsToggle.click();
+        await verifyUserAction('Glic.Settings.ClosedCaptions.Enabled');
+
+        closedCaptionsToggle.click();
+        await verifyUserAction('Glic.Settings.ClosedCaptions.Disabled');
       });
     });
 

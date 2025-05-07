@@ -12434,6 +12434,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Settings.ClosedCaptions.Disabled">
+  <owner>sanaakbani@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>
+    Logged if the user disables closed captions in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.ClosedCaptions.Enabled">
+  <owner>sanaakbani@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>
+    Logged if the user enables closed captions in glic settings.
+  </description>
+</action>
+
 <action name="Glic.Settings.Geolocation.Disabled">
   <owner>tommasin@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

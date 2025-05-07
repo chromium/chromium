@@ -33,6 +33,7 @@ import {GlicBrowserProxyImpl} from './glic_browser_proxy.js';
 import {getTemplate} from './glic_page.html.js';
 
 export enum SettingsGlicPageFeaturePrefName {
+  CLOSED_CAPTIONS_ENABLED = 'glic.closed_captioning_enabled',
   GEOLOCATION_ENABLED = 'glic.geolocation_enabled',
   LAUNCHER_ENABLED = 'glic.launcher_enabled',
   MICROPHONE_ENABLED = 'glic.microphone_enabled',
@@ -264,6 +265,12 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
 
   private disallowedByAdminChanged_(disallowed: boolean) {
     this.disallowedByAdmin_ = disallowed;
+  }
+
+  private onClosedCaptionsToggleChange_(event: Event) {
+    const enabled = (event.target as SettingsToggleButtonElement).checked;
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.Settings.ClosedCaptions.' + (enabled ? 'Enabled' : 'Disabled'));
   }
 }
 
