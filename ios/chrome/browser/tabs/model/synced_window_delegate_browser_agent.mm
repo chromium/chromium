@@ -14,7 +14,8 @@
 
 SyncedWindowDelegateBrowserAgent::SyncedWindowDelegateBrowserAgent(
     Browser* browser)
-    : web_state_list_(browser->GetWebStateList()),
+    : BrowserUserData(browser),
+      web_state_list_(browser->GetWebStateList()),
       session_id_(SessionID::NewUnique()) {
   browser->AddObserver(this);
   for (int index = 0; index < web_state_list_->count(); ++index) {

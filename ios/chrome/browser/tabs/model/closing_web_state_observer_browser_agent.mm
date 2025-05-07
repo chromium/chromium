@@ -24,7 +24,7 @@
 
 ClosingWebStateObserverBrowserAgent::ClosingWebStateObserverBrowserAgent(
     Browser* browser)
-    : browser_(browser) {
+    : BrowserUserData(browser), browser_(browser) {
   DCHECK(!browser_->GetProfile()->IsOffTheRecord());
   browser_->AddObserver(this);
   browser_->GetWebStateList()->AddObserver(this);
