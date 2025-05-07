@@ -112,6 +112,11 @@ BASE_FEATURE(kMigrateAccountPrefs,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
+// Enabled by default, intended as a kill switch.
+BASE_FEATURE(kSyncReadingListBatchUploadSelectedItems,
+             "SyncReadingListBatchUploadSelectedItems",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSeparateLocalAndAccountThemes,
              "SeparateLocalAndAccountThemes",
              base::FEATURE_DISABLED_BY_DEFAULT);

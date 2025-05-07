@@ -9,11 +9,14 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,6 +28,7 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Return;
+using ::testing::VariantWith;
 
 class ReadingListLocalDataBatchUploaderTest : public ::testing::Test {
  public:
@@ -72,6 +76,8 @@ TEST_F(ReadingListLocalDataBatchUploaderTest, DescriptionEmptyIfModelNull) {
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
+  EXPECT_EQ(description.Get().type, syncer::DataType::UNSPECIFIED);
+  EXPECT_THAT(description.Get().local_data_models, IsEmpty());
   EXPECT_EQ(description.Get().item_count, 0u);
   EXPECT_EQ(description.Get().domain_count, 0u);
   EXPECT_THAT(description.Get().domains, IsEmpty());
@@ -84,6 +90,8 @@ TEST_F(ReadingListLocalDataBatchUploaderTest,
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
+  EXPECT_EQ(description.Get().type, syncer::DataType::UNSPECIFIED);
+  EXPECT_THAT(description.Get().local_data_models, IsEmpty());
   EXPECT_EQ(description.Get().item_count, 0u);
   EXPECT_EQ(description.Get().domain_count, 0u);
   EXPECT_THAT(description.Get().domains, IsEmpty());
@@ -103,6 +111,42 @@ TEST_F(ReadingListLocalDataBatchUploaderTest, DescriptionHasOnlyLocalData) {
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
+  EXPECT_EQ(description.Get().type, syncer::DataType::READING_LIST);
+  auto local_data_models = description.Get().local_data_models;
+  EXPECT_EQ(local_data_models.size(), 1u);
+  auto item = local_data_models.back();
+  EXPECT_EQ(std::get<GURL>(item.id), GURL("https://local.com"));
+  EXPECT_EQ(item.title, "local");
+  EXPECT_THAT(item.subtitle, IsEmpty());
+  EXPECT_THAT(item.icon, VariantWith<syncer::LocalDataItemModel::PageUrlIcon>(
+                             GURL("https://local.com/")));
+
+  EXPECT_EQ(description.Get().item_count, 1u);
+  EXPECT_EQ(description.Get().domain_count, 1u);
+  EXPECT_THAT(description.Get().domains, ElementsAre("local.com"));
+}
+
+TEST_F(ReadingListLocalDataBatchUploaderTest,
+       LocalDescriptionEmptyItemsWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      syncer::kSyncReadingListBatchUploadSelectedItems);
+
+  LoadModel();
+  dual_reading_list_model()->GetLocalOrSyncableModel()->AddOrReplaceEntry(
+      GURL("https://local.com"), "local", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+  dual_reading_list_model()->GetAccountModelIfSyncing()->AddOrReplaceEntry(
+      GURL("https://account.com"), "account",
+      reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+  ReadingListLocalDataBatchUploader uploader(dual_reading_list_model());
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+
+  uploader.GetLocalDataDescription(description.GetCallback());
+
+  EXPECT_EQ(description.Get().type, syncer::DataType::UNSPECIFIED);
+  EXPECT_THAT(description.Get().local_data_models, IsEmpty());
   EXPECT_EQ(description.Get().item_count, 1u);
   EXPECT_EQ(description.Get().domain_count, 1u);
   EXPECT_THAT(description.Get().domains, ElementsAre("local.com"));

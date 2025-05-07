@@ -8,6 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
 
+class GURL;
+
 namespace reading_list {
 
 class DualReadingListModel;
@@ -34,6 +36,8 @@ class ReadingListLocalDataBatchUploader
 
  private:
   bool CanUpload() const;
+  // Returns the `LocalDataItemModel` corresponding to the given `url`.
+  syncer::LocalDataItemModel DataItemModelFromURL(const GURL& url) const;
 
   const raw_ptr<DualReadingListModel> dual_reading_list_model_;
 };

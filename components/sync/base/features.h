@@ -111,6 +111,19 @@ BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);
 BASE_DECLARE_FEATURE(kMigrateAccountPrefs);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
+// If enabled, support displaying and uploading individual Reading List items in
+// the Batch Upload UI.
+//
+// Batch Upload of all items is supported regardless of this feature flag.
+//
+// On Windows/Mac/Linux: this flag only affects behavior if the
+// `syncer::kReadingListEnableSyncTransportModeUponSignIn` feature is also
+// enabled.
+//
+// On Android: this flag does not affect user-visiable behavior, but does enable
+// new code paths.
+BASE_DECLARE_FEATURE(kSyncReadingListBatchUploadSelectedItems);
+
 // If enabled, distinguishes between local and account themes.
 BASE_DECLARE_FEATURE(kSeparateLocalAndAccountThemes);
 
