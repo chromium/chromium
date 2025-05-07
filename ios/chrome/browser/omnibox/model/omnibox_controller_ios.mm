@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/trace_event/trace_event.h"
@@ -144,11 +145,10 @@ void OmniboxControllerIOS::OnResultChanged(AutocompleteController* controller,
   // passed in to eliminate the potential for crashes on shutdown.
   // `should_preload` is set to `controller->done()` as prerender may only want
   // to start preloading a result after all Autocomplete results are ready.
-  client_->OnResultChanged(
-      autocomplete_controller_->result(), default_match_changed,
-      /*should_preload=*/controller->done(),
-      base::BindRepeating(&OmniboxControllerIOS::SetRichSuggestionBitmap,
-                          weak_ptr_factory_.GetWeakPtr()));
+  client_->OnResultChanged(autocomplete_controller_->result(),
+                           default_match_changed,
+                           /*should_preload=*/controller->done(),
+                           /*on_bitmap_fetched=*/base::DoNothing());
 }
 
 void OmniboxControllerIOS::ClearPopupKeywordMode() const {
@@ -195,16 +195,6 @@ void OmniboxControllerIOS::SetSuggestionGroupHidden(
   if (PrefService* prefs = client_->GetPrefs()) {
     autocomplete_controller_->result().SetSuggestionGroupHidden(
         prefs, suggestion_group_id, hidden);
-  }
-}
-
-void OmniboxControllerIOS::SetRichSuggestionBitmap(int result_index,
-                                                   const GURL& icon_url,
-                                                   const SkBitmap& bitmap) {
-  if (!icon_url.is_empty()) {
-    edit_model_->SetIconBitmap(icon_url, bitmap);
-  } else {
-    edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
   }
 }
 

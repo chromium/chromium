@@ -28,8 +28,6 @@ class OmniboxEditModelIOS;
 
 class OmniboxViewBase {
  public:
-  using IconFetchedCallback = base::OnceCallback<void(const gfx::Image& icon)>;
-
   // Represents the changes between two State objects.  This is used by the
   // model to determine how its internal state should be updated after the view
   // state changes.  See OmniboxEditModelIOS::OnAfterPossibleChange().
@@ -66,27 +64,6 @@ class OmniboxViewBase {
   // `true` if the user is in the process of editing the field, or if
   // the field is empty.
   bool IsEditingOrEmpty() const;
-
-  // Returns the icon to display as the location icon. If a favicon is
-  // available, `on_icon_fetched` may be called later asynchronously.
-  // `color_current_page_icon` is used for the page icon (i.e. when the popup is
-  // closed, there is no input in progress, and there's a URL displayed) (e.g.
-  // the secure page lock). `color_vectors` is used for vector icons e.g. the
-  // history clock or bookmark star. `color_bright_vectors` is used for special
-  // vector icons e.g. the history cluster squiggle.
-  // `color_vectors_with_background` is used for vector icons that are drawn
-  // atop a background e.g. action suggestions. Favicons aren't custom-colored.
-  // `dark_mode` returns the dark_mode version of an icon. This should usually
-  // be handled by `color_current_page_icon` but in cases where the icon has
-  // hardcoded colors this can be used to return a different icon. E.g., the
-  // SuperGIcon will return different icons in dark and light modes.
-  ui::ImageModel GetIcon(int dip_size,
-                         SkColor color_current_page_icon,
-                         SkColor color_vectors,
-                         SkColor color_bright_vectors,
-                         SkColor color_vectors_with_background,
-                         IconFetchedCallback on_icon_fetched,
-                         bool dark_mode) const;
 
   // The user text is the text the user has manually keyed in.  When present,
   // this is shown in preference to the permanent text; hitting escape will

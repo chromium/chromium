@@ -159,22 +159,6 @@ bool OmniboxViewBase::IsEditingOrEmpty() const {
           model()->PopupIsOpen());
 }
 
-// OmniboxViewBase::GetIcon is very similar to
-// OmniboxPopupModel::GetMatchIcon. They contain certain inconsistencies
-// concerning what flags are required to display url favicons and bookmark star
-// icons. OmniboxPopupModel::GetMatchIcon also doesn't display default search
-// provider icons. It's possible they have other inconsistencies as well. We may
-// want to consider reusing the same code for both the popup and omnibox icons.
-ui::ImageModel OmniboxViewBase::GetIcon(int dip_size,
-                                        SkColor color_current_page_icon,
-                                        SkColor color_vectors,
-                                        SkColor color_bright_vectors,
-                                        SkColor color_vectors_with_background,
-                                        IconFetchedCallback on_icon_fetched,
-                                        bool dark_mode) const {
-  NOTREACHED();
-}
-
 void OmniboxViewBase::SetUserText(const std::u16string& text) {
   SetUserText(text, true);
 }

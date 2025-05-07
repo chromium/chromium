@@ -71,18 +71,12 @@
 #import "third_party/icu/source/common/unicode/ubidi.h"
 #import "third_party/metrics_proto/omnibox_event.pb.h"
 #import "third_party/metrics_proto/omnibox_focus_type.pb.h"
-#import "third_party/skia/include/core/SkBitmap.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/color_palette.h"
 #import "ui/gfx/geometry/rect.h"
 #import "ui/gfx/image/image.h"
 #import "url/third_party/mozilla/url_parse.h"
 #import "url/url_util.h"
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#import "ui/gfx/paint_vector_icon.h"
-#import "ui/gfx/vector_icon_types.h"
-#endif
 
 constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
@@ -362,8 +356,6 @@ void OmniboxEditModelIOS::set_popup_view(OmniboxPopupViewBase* popup_view) {
   popup_view_ = popup_view;
 
   // Clear/reset popup-related state.
-  rich_suggestion_bitmaps_.clear();
-  icon_bitmaps_.clear();
   old_focused_url_ = GURL();
   popup_selection_ = OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
                                            OmniboxPopupSelection::NORMAL);
@@ -676,34 +668,6 @@ void OmniboxEditModelIOS::AdjustTextForCopy(int sel_min,
     *write_url = true;
     *text = base::UTF8ToUTF16(url_from_text->spec());
   }
-}
-
-bool OmniboxEditModelIOS::ShouldShowCurrentPageIcon() const {
-  // If the popup is open, don't show the current page's icon. The caller is
-  // instead expected to show the current match's icon.
-  if (PopupIsOpen()) {
-    return false;
-  }
-
-  // On the New Tab Page, the omnibox textfield is empty. We want to display
-  // the default search provider favicon instead of the NTP security icon.
-  if (GetText().empty()) {
-    return false;
-  }
-
-  // If user input is not in progress, always show the current page's icon.
-  if (!user_input_in_progress()) {
-    return true;
-  }
-
-  // If user input is in progress, keep showing the current page's icon so long
-  // as the text matches the current page's URL, elided or unelided.
-  return GetText() == display_text_ || GetText() == url_for_editing_;
-}
-
-ui::ImageModel OmniboxEditModelIOS::GetSuperGIcon(int image_size,
-                                                  bool dark_mode) const {
-  return ui::ImageModel();
 }
 
 void OmniboxEditModelIOS::UpdateInput(bool has_selected_text,
@@ -1810,103 +1774,6 @@ bool OmniboxEditModelIOS::IsStarredMatch(const AutocompleteMatch& match) const {
   return bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
 }
 
-// Android and iOS have their own platform-specific icon logic.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-gfx::Image OmniboxEditModelIOS::GetMatchIcon(const AutocompleteMatch& match,
-                                             SkColor vector_icon_color) const {
-  if (!match.icon_url.is_empty()) {
-    const SkBitmap* bitmap = GetIconBitmap(match.icon_url);
-    if (bitmap) {
-      return controller_->client()->GetSizedIcon(bitmap);
-    }
-  }
-
-  gfx::Image extension_icon = GetMatchIconIfExtension(match);
-  if (!extension_icon.IsEmpty()) {
-    return extension_icon;
-  }
-
-  const TemplateURL* turl =
-      match.associated_keyword
-          ? controller_->client()
-                ->GetTemplateURLService()
-                ->GetTemplateURLForKeyword(match.associated_keyword->keyword)
-          : nullptr;
-
-  // Get the favicon for navigational suggestions.
-  //
-  // The starter pack suggestions are a unique case. These suggestions
-  // normally use a favicon image that cannot be styled further by client
-  // code. In order to apply custom styling to the icon (e.g. colors), we ignore
-  // this favicon in favor of using a vector icon which has better styling
-  // support.
-  if (!AutocompleteMatch::IsSearchType(match.type) &&
-      match.type != AutocompleteMatchType::DOCUMENT_SUGGESTION &&
-      match.type != AutocompleteMatchType::HISTORY_CLUSTER &&
-      match.type != AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER &&
-      !AutocompleteMatch::IsStarterPackType(match.type)) {
-    // Because the Views UI code calls GetMatchIcon in both the layout and
-    // painting code, we may generate multiple `OnFaviconFetched` callbacks,
-    // all run one after another. This seems to be harmless as the callback
-    // just flips a flag to schedule a repaint. However, if it turns out to be
-    // costly, we can optimize away the redundant extra callbacks.
-    gfx::Image favicon;
-    auto on_icon_fetched =
-        base::BindOnce(&OmniboxEditModelIOS::OnFaviconFetched,
-                       weak_factory_.GetWeakPtr(), match.destination_url);
-    favicon =
-        (turl && AutocompleteMatch::IsFeaturedEnterpriseSearchType(match.type))
-            ? controller_->client()->GetFaviconForKeywordSearchProvider(
-                  turl, std::move(on_icon_fetched))
-            : controller_->client()->GetFaviconForPageUrl(
-                  match.destination_url, std::move(on_icon_fetched));
-
-    // Extension icons are the correct size for non-touch UI but need to be
-    // adjusted to be the correct size for touch mode.
-    if (!favicon.IsEmpty()) {
-      return controller_->client()->GetSizedIcon(favicon);
-    }
-  }
-
-  bool is_starred_match = IsStarredMatch(match);
-  const auto& vector_icon_type = match.GetVectorIcon(is_starred_match, turl);
-
-  return controller_->client()->GetSizedIcon(vector_icon_type,
-                                             vector_icon_color);
-}
-
-gfx::Image OmniboxEditModelIOS::GetMatchIconIfExtension(
-    const AutocompleteMatch& match) const {
-  // Return an empty image if not an extension match.
-  TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  const TemplateURL* template_url = match.GetTemplateURL(service, false);
-  if (!template_url ||
-      template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) {
-    return gfx::Image();
-  }
-
-  // Return the image specified in the suggestion match if set by looking it up
-  // in the rich suggestions bitmaps. Fall back to the extension icon if empty
-  // or not found.
-  if (match.provider &&
-      match.provider->type() == AutocompleteProvider::TYPE_UNSCOPED_EXTENSION &&
-      !match.ImageUrl().is_empty()) {
-    const SkBitmap* bitmap = GetPopupRichSuggestionBitmap(match.image_url);
-    if (bitmap) {
-      return controller_->client()->GetSizedIcon(bitmap);
-    }
-  }
-
-  gfx::Image extension_icon =
-      controller_->client()->GetExtensionIcon(template_url);
-  // Extension icons are the correct size for non-touch UI but need to be
-  // adjusted to be the correct size for touch mode
-  return extension_icon.IsEmpty()
-             ? extension_icon
-             : controller_->client()->GetSizedIcon(extension_icon);
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 bool OmniboxEditModelIOS::PopupIsOpen() const {
   return popup_view_ && popup_view_->IsOpen();
 }
@@ -2270,7 +2137,6 @@ void OmniboxEditModelIOS::OnPopupResultChanged() {
   if (!popup_view_) {
     return;
   }
-  rich_suggestion_bitmaps_.clear();
   const AutocompleteResult& result = autocomplete_controller()->result();
   size_t old_selected_line = GetPopupSelection().line;
 
@@ -2293,71 +2159,6 @@ void OmniboxEditModelIOS::OnPopupResultChanged() {
     popup_selection_ = OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
                                              OmniboxPopupSelection::NORMAL);
   }
-  popup_view_->UpdatePopupAppearance();
-}
-
-const SkBitmap* OmniboxEditModelIOS::GetPopupRichSuggestionBitmap(
-    int result_index) const {
-  DCHECK(popup_view_);
-
-  const auto iter = rich_suggestion_bitmaps_.find(result_index);
-  if (iter == rich_suggestion_bitmaps_.end()) {
-    return nullptr;
-  }
-  return &iter->second;
-}
-
-const SkBitmap* OmniboxEditModelIOS::GetPopupRichSuggestionBitmap(
-    const std::u16string& keyword) const {
-  DCHECK(popup_view_);
-
-  auto it = std::ranges::find_if(autocomplete_controller()->result(),
-                                 [&keyword](const AutocompleteMatch& match) {
-                                   return match.associated_keyword &&
-                                          match.associated_keyword->keyword ==
-                                              keyword;
-                                 });
-  return it == autocomplete_controller()->result().end()
-             ? nullptr
-             : GetPopupRichSuggestionBitmap(std::distance(
-                   autocomplete_controller()->result().begin(), it));
-}
-
-const SkBitmap* OmniboxEditModelIOS::GetPopupRichSuggestionBitmap(
-    const GURL& image_url) const {
-  DCHECK(popup_view_);
-  auto iter =
-      std::ranges::find_if(autocomplete_controller()->result(),
-                           [&image_url](const AutocompleteMatch& result_match) {
-                             return (!result_match.ImageUrl().is_empty() &&
-                                     result_match.ImageUrl() == image_url);
-                           });
-  return iter == autocomplete_controller()->result().end()
-             ? nullptr
-             : GetPopupRichSuggestionBitmap(std::distance(
-                   autocomplete_controller()->result().begin(), iter));
-}
-
-const SkBitmap* OmniboxEditModelIOS::GetIconBitmap(const GURL& icon_url) const {
-  DCHECK(popup_view_);
-  auto iter = icon_bitmaps_.find(icon_url);
-  if (iter == icon_bitmaps_.end()) {
-    return nullptr;
-  }
-  return &iter->second;
-}
-
-void OmniboxEditModelIOS::SetPopupRichSuggestionBitmap(int result_index,
-                                                       const SkBitmap& bitmap) {
-  DCHECK(popup_view_);
-  rich_suggestion_bitmaps_[result_index] = bitmap;
-  popup_view_->UpdatePopupAppearance();
-}
-
-void OmniboxEditModelIOS::SetIconBitmap(const GURL& icon_url,
-                                        const SkBitmap& bitmap) {
-  DCHECK(popup_view_ && !icon_url.is_empty());
-  icon_bitmaps_[icon_url] = bitmap;
   popup_view_->UpdatePopupAppearance();
 }
 
@@ -3073,22 +2874,6 @@ void OmniboxEditModelIOS::SetFocusState(OmniboxFocusState state,
   }
 
   controller_->client()->OnFocusChanged(focus_state_, reason);
-}
-
-void OmniboxEditModelIOS::OnFaviconFetched(const GURL& page_url,
-                                           const gfx::Image& icon) const {
-  if (icon.IsEmpty() || !PopupIsOpen()) {
-    return;
-  }
-
-  // Notify all affected matches.
-  for (size_t i = 0; i < autocomplete_controller()->result().size(); ++i) {
-    auto& match = autocomplete_controller()->result().match_at(i);
-    if (!AutocompleteMatch::IsSearchType(match.type) &&
-        match.destination_url == page_url) {
-      popup_view_->OnMatchIconUpdated(i);
-    }
-  }
 }
 
 std::u16string OmniboxEditModelIOS::GetText() const {

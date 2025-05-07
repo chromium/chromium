@@ -42,7 +42,6 @@
 #import "testing/platform_test.h"
 #import "third_party/metrics_proto/omnibox_event.pb.h"
 #import "third_party/omnibox_proto/answer_type.pb.h"
-#import "third_party/skia/include/core/SkBitmap.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/window_open_disposition.h"
 
@@ -454,11 +453,6 @@ TEST_F(OmniboxEditModelIOSTest, DisplayText) {
 
   EXPECT_EQ(u"https://www.example.com/", view()->GetText());
   EXPECT_TRUE(model()->CurrentTextIsURL());
-
-  // We should still show the current page's icon until the URL is modified.
-  EXPECT_TRUE(model()->ShouldShowCurrentPageIcon());
-  view()->SetUserText(u"something else");
-  EXPECT_FALSE(model()->ShouldShowCurrentPageIcon());
 }
 
 TEST_F(OmniboxEditModelIOSTest, UnelideDoesNothingWhenFullURLAlreadyShown) {
@@ -477,7 +471,6 @@ TEST_F(OmniboxEditModelIOSTest, UnelideDoesNothingWhenFullURLAlreadyShown) {
   EXPECT_FALSE(model()->user_input_in_progress());
   EXPECT_FALSE(view()->IsSelectAll());
   EXPECT_TRUE(model()->CurrentTextIsURL());
-  EXPECT_TRUE(model()->ShouldShowCurrentPageIcon());
 }
 
 // The tab-switching system sometimes focuses the Omnibox even if it was not
@@ -1501,22 +1494,3 @@ TEST_F(OmniboxEditModelIOSTest, LogAnswerUsed) {
                                       8, 1);
 }
 
-// Tests `GetPopupRichSuggestionBitmap()` method, verifying that no bitmap is
-// fetched when there is no match with an `associated_keyword`.
-TEST_F(OmniboxEditModelIOSPopupTest,
-       GetPopupRichSuggestionBitmapForMatchWithoutAssociatedKeyword) {
-  // Setup match with no bitmap.
-  ACMatches matches;
-  AutocompleteMatch match_without_associated_keyword(
-      nullptr, 1000, false, AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-  match_without_associated_keyword.keyword =
-      u"match_without_associated_keyword";
-  matches.push_back(match_without_associated_keyword);
-  AutocompleteResult* result = published_result();
-  result->AppendMatches(matches);
-
-  const SkBitmap* actual_bitmap = model()->GetPopupRichSuggestionBitmap(
-      u"match_without_associated_keyword");
-
-  EXPECT_FALSE(actual_bitmap);
-}

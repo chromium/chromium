@@ -127,16 +127,6 @@ class OmniboxEditModelIOS {
 
   bool user_input_in_progress() const { return user_input_in_progress_; }
 
-  // Encapsulates all the varied conditions for whether to override the
-  // permanent page icon (associated with the currently displayed page),
-  // with a temporary icon (associated with the current match or user text).
-  bool ShouldShowCurrentPageIcon() const;
-
-  // Returns the SuperGIcon for chrome builds. Otherwise return an empty
-  // ImageModel. If `dark_mode` is enabled, return the monochrome version of the
-  // icon.
-  ui::ImageModel GetSuperGIcon(int image_size, bool dark_mode) const;
-
   // Sets the state of user_input_in_progress_, and notifies the observer if
   // that state has changed.
   void SetInputInProgress(bool in_progress);
@@ -387,15 +377,6 @@ class OmniboxEditModelIOS {
   // Returns true if the destination URL of the match is bookmarked.
   bool IsStarredMatch(const AutocompleteMatch& match) const;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Gets the icon for the given `match`.
-  gfx::Image GetMatchIcon(const AutocompleteMatch& match,
-                          SkColor vector_icon_color) const;
-  // Gets the icon for the given `match` if the match was provided by an omnibox
-  // API extension, otherwise returns empty image.
-  gfx::Image GetMatchIconIfExtension(const AutocompleteMatch& match) const;
-#endif
-
   // Returns true if the popup exists and is open. Virtual for testing.
   virtual bool PopupIsOpen() const;
 
@@ -451,32 +432,6 @@ class OmniboxEditModelIOS {
   // preserved here only to prevent possible behavior change while refactoring.
   void OnPopupResultChanged();
 
-  // Lookup the bitmap for `result_index`. Returns nullptr if not found.
-  const SkBitmap* GetPopupRichSuggestionBitmap(int result_index) const;
-
-  // Lookup the bitmap for the first `match` in
-  // `autocomplete_controller()->result()` that has `keyword` as its
-  // `associated_keyword`. Used to fetch bitmap where the `result_index` is
-  // unknown.  Returns nullptr if not found.
-  const SkBitmap* GetPopupRichSuggestionBitmap(
-      const std::u16string& keyword) const;
-
-  // Lookup the bitmap based on the image URL.  Similar to above,
-  // but used to fetch bitmap where the `result_index` is unknown and where
-  // there are possibly multiple suggestions with the same `keyword` but not the
-  // `image_url` being looked up. Returns nullptr if not found.
-  const SkBitmap* GetPopupRichSuggestionBitmap(const GURL& image_url) const;
-
-  // Lookup the icon bitmap based on the icon URL. Returns nullptr
-  // if not found.
-  const SkBitmap* GetIconBitmap(const GURL& icon_url) const;
-
-  // Stores the image in a local data member and schedules a repaint.
-  void SetPopupRichSuggestionBitmap(int result_index, const SkBitmap& bitmap);
-
-  // Stores the icon in a local data member and schedules a repaint.
-  void SetIconBitmap(const GURL& icon_url, const SkBitmap& bitmap);
-
   // Updates the popup view when the visibility of a group changes.
   void SetPopupSuggestionGroupVisibility(size_t match_index,
                                          bool suggestion_group_hidden);
@@ -513,12 +468,6 @@ class OmniboxEditModelIOS {
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelIOSTest,
                            ConsumeCtrlKeyOnRequestFocus);
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelIOSTest, ConsumeCtrlKeyOnCtrlAction);
-  FRIEND_TEST_ALL_PREFIXES(
-      OmniboxEditModelIOSPopupTest,
-      GetPopupRichSuggestionBitmapForMatchWithoutAssociatedKeyword);
-  FRIEND_TEST_ALL_PREFIXES(
-      OmniboxEditModelIOSPopupTest,
-      GetPopupRichSuggestionBitmapForMatchWithAssociatedKeyword);
 
   enum PasteState {
     NONE,     // Most recent edit was not a paste.
@@ -642,10 +591,6 @@ class OmniboxEditModelIOS {
   // change). If the caret visibility changes, we call ApplyCaretVisibility() on
   // the view.
   void SetFocusState(OmniboxFocusState state, OmniboxFocusChangeReason reason);
-
-  // This is an event handler that notifies the popup view of match icon
-  // changes.
-  void OnFaviconFetched(const GURL& page_url, const gfx::Image& icon) const;
 
   // Returns view text if there is a view. Until the model is made the
   // primary data source, this should not be called when there's no view.
@@ -814,18 +759,6 @@ class OmniboxEditModelIOS {
   // autocomplete query is started after a tab switch, it is possible for this
   // `input_` to differ from the one currently stored in AutocompleteController.
   AutocompleteInput input_;
-
-  // Rich suggestion bitmaps for popup keyed by `result_index`. These are
-  // cleared when `OmniboxPopupViewViews` is initialized and destroyed, and on
-  // `OnPopupResultChanged()`.
-  std::map<int, SkBitmap> rich_suggestion_bitmaps_;
-
-  // Icon bitmaps for popup keyed by `icon_url`. These are cleared when
-  // `OmniboxPopupViewViews` is initialized and destroyed. This differs from
-  // `rich_suggestion_bitmaps_` since they are not cleared on
-  // `OnPopupResultChanged()`, which allows for fetching the icon even when the
-  // popup is closed.
-  std::map<GURL, SkBitmap> icon_bitmaps_;
 
   // The popup view is nullptr when there's no popup, and is non-null when
   // a popup view exists (i.e. between calls to `set_popup_view`).
