@@ -2940,6 +2940,7 @@ if (!is_android) {
     data += metric_integration_jsdeps
 
     sources = [
+      "../../components/live_caption/views/caption_bubble_browsertest.cc",
       "../browser/accessibility/accessibility_labels_service_browsertest.cc",
       "../browser/accessibility/ax_main_node_annotator_controller_browsertest.cc",
       "../browser/accessibility/image_annotation_browsertest.cc",
