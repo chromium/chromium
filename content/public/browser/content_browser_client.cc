@@ -1763,7 +1763,8 @@ bool ContentBrowserClient::CanBackForwardCachedPageReceiveCookieChanges(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    const net::CookieSettingOverrides overrides) {
+    const net::CookieSettingOverrides overrides,
+    base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
   return true;
 }
 

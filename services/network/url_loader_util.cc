@@ -577,9 +577,12 @@ void ConfigureUrlRequest(const ResourceRequest& request,
       factory_params.isolation_info,
       factory_params.automatically_assign_isolation_info, request);
   if (isolation_info) {
-    url_request.set_is_shared_resource(shared_resource_checker.IsSharedResource(
-        request, isolation_info->top_frame_origin()));
+    // set_isolation_info sets the url_request's cookie_partition_key which can
+    // then be used when checking IsSharedResource().
     url_request.set_isolation_info(std::move(isolation_info).value());
+    url_request.set_is_shared_resource(shared_resource_checker.IsSharedResource(
+        request, url_request.isolation_info().top_frame_origin(),
+        url_request.cookie_partition_key()));
   }
 
   // When a service worker forwards a navigation request it uses the

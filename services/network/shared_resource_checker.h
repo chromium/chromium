@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "url/origin.h"
 
 namespace content_settings {
@@ -45,8 +46,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedResourceChecker {
   // fingerprinting.
   //
   // See https://chromestatus.com/feature/5202380930678784
-  bool IsSharedResource(const ResourceRequest& request,
-                        const std::optional<url::Origin>& top_frame_origin);
+  bool IsSharedResource(
+      const ResourceRequest& request,
+      const std::optional<url::Origin>& top_frame_origin,
+      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key);
 
  private:
   const raw_ref<const content_settings::CookieSettingsBase> cookie_settings_;

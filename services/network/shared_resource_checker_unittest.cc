@@ -164,10 +164,11 @@ TEST_P(SharedResourceCheckerTest, DestinationIsScript) {
     request.destination = destination;
     if (enabled() &&
         request.destination == mojom::RequestDestination::kScript) {
-      EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request, origin));
+      EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                              std::nullopt));
     } else {
-      EXPECT_FALSE(
-          shared_resource_checker()->IsSharedResource(request, origin));
+      EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                               std::nullopt));
     }
   }
 }
@@ -177,8 +178,8 @@ TEST_P(SharedResourceCheckerTest, SuccessfulPatterns) {
   for (const char* url : kPatternMatches) {
     ResourceRequest request = CreateResourceRequest(url);
     std::optional<url::Origin> origin = url::Origin::Create(request.url);
-    EXPECT_EQ(expect,
-              shared_resource_checker()->IsSharedResource(request, origin));
+    EXPECT_EQ(expect, shared_resource_checker()->IsSharedResource(
+                          request, origin, std::nullopt));
   }
 }
 
@@ -186,7 +187,8 @@ TEST_P(SharedResourceCheckerTest, FailPatterns) {
   for (const char* url : kPatternMatchFails) {
     ResourceRequest request = CreateResourceRequest(url);
     std::optional<url::Origin> origin = url::Origin::Create(request.url);
-    EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request, origin));
+    EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                             std::nullopt));
   }
 }
 
@@ -203,10 +205,12 @@ TEST_P(SharedResourceCheckerTest, LoadFlags) {
   ResourceRequest request = CreateResourceRequest(kPatternMatches[0]);
   std::optional<url::Origin> origin = url::Origin::Create(request.url);
   request.load_flags = net::LOAD_CAN_USE_SHARED_DICTIONARY;
-  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request, origin));
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                          std::nullopt));
   for (auto flag : kBlockedFlags) {
     request.load_flags = net::LOAD_CAN_USE_SHARED_DICTIONARY | flag;
-    EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request, origin));
+    EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                             std::nullopt));
   }
 }
 
@@ -216,9 +220,24 @@ TEST_P(SharedResourceCheckerTest, CookiesDisabled) {
   }
   ResourceRequest request = CreateResourceRequest(kPatternMatches[0]);
   std::optional<url::Origin> origin = url::Origin::Create(request.url);
-  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request, origin));
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                          std::nullopt));
+  auto cookie_partition_key = net::CookiePartitionKey::FromURLForTesting(
+      request.url, net::CookiePartitionKey::AncestorChainBit::kCrossSite);
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(
+      request, origin, cookie_partition_key));
+
+  // Should not be shared for a nonced partition key.
+  cookie_partition_key = net::CookiePartitionKey::FromURLForTesting(
+      request.url, net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+      base::UnguessableToken::Create());
+  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(
+      request, origin, cookie_partition_key));
+
+  // Should not be shared when cookies are blocked.
   BlockAllCookies();
-  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request, origin));
+  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                           std::nullopt));
 }
 
 TEST_P(SharedResourceCheckerTest, PatternLimits) {
@@ -233,23 +252,31 @@ TEST_P(SharedResourceCheckerTest, PatternLimits) {
   ResourceRequest request4 = CreateResourceRequest(kUrlVariants[3]);
   std::optional<url::Origin> origin = url::Origin::Create(request1.url);
 
-  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request1, origin));
-  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request2, origin));
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request1, origin,
+                                                          std::nullopt));
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request2, origin,
+                                                          std::nullopt));
 
   // Only 2 URLs per pattern should match (in a given hour window).
-  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request3, origin));
+  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request3, origin,
+                                                           std::nullopt));
 
   // Freshen the timestamp on the first request.
   task_environment.AdvanceClock(base::Hours(1));
-  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request1, origin));
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request1, origin,
+                                                          std::nullopt));
   task_environment.AdvanceClock(base::Hours(1));
 
   // request3 should now be able to take request 2's spot (but request 1 is
   // still just inside the 1-hour window).
-  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request3, origin));
-  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request2, origin));
-  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request4, origin));
-  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request1, origin));
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request3, origin,
+                                                          std::nullopt));
+  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request2, origin,
+                                                           std::nullopt));
+  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request4, origin,
+                                                           std::nullopt));
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request1, origin,
+                                                          std::nullopt));
 }
 
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,

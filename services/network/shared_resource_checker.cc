@@ -122,7 +122,8 @@ SharedResourceChecker::~SharedResourceChecker() = default;
 
 bool SharedResourceChecker::IsSharedResource(
     const ResourceRequest& request,
-    const std::optional<url::Origin>& top_frame_origin) {
+    const std::optional<url::Origin>& top_frame_origin,
+    base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
   if (!enabled_) {
     return false;
   }
@@ -148,7 +149,7 @@ bool SharedResourceChecker::IsSharedResource(
   // Disabled if third-party cookies are disabled.
   if (!cookie_settings_->IsFullCookieAccessAllowed(
           request.url, request.site_for_cookies, top_frame_origin,
-          net::CookieSettingOverrides())) {
+          net::CookieSettingOverrides(), cookie_partition_key)) {
     return false;
   }
 
