@@ -55,13 +55,13 @@
     ` : ''}
     ${this.modulesEnabled_ ? html`
       ${html`
-        <ntp-modules-v2 id="modules"
+        <ntp-modules id="modules"
             ?modules-shown-to-user="${this.modulesShownToUser}"
             @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
             @customize-module="${this.onCustomizeModule_}"
             @modules-loaded="${this.onModulesLoaded_}"
             ?hidden="${!this.promoAndModulesLoaded_}">
-        </ntp-modules-v2>
+        </ntp-modules>
       `}
     ` : ''}
     <a id="backgroundImageAttribution"

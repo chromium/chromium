@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
-import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {recordLoadDuration, recordOccurence, recordPerdecage} from '../metrics_utils.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import type {ModuleDescriptor} from './module_descriptor.js';
-import {getTemplate} from './module_wrapper.html.js';
+import {getCss} from './module_wrapper.css.js';
+import {getHtml} from './module_wrapper.html.js';
 
 /** @fileoverview Element that implements the common module UI. */
 
 export interface ModuleInstance {
   element: HTMLElement;
   descriptor: ModuleDescriptor;
+  initialized: boolean;
+  impressed: boolean;
 }
 
 export interface ModuleWrapperElement {
@@ -26,34 +28,65 @@ export interface ModuleWrapperElement {
   };
 }
 
-export class ModuleWrapperElement extends PolymerElement {
+export class ModuleWrapperElement extends CrLitElement {
   static get is() {
     return 'ntp-module-wrapper';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
       module: {
-        observer: 'onModuleChange_',
         type: Object,
       },
     };
   }
 
-  declare module: ModuleInstance;
+  accessor module: ModuleInstance;
 
-  private onModuleChange_(
-      _newValue: ModuleInstance, oldValue?: ModuleInstance) {
-    assert(!oldValue);
-    this.$.moduleElement.appendChild(this.module.element);
+  override render() {
+    // Update the light DOM element(s) and allow Lit to handle the shadow DOM
+    // with a slotted module's UI element.
+    if (this.module) {
+      render(this.module.element, this, {host: this});
+    }
+    return getHtml.bind(this)();
+  }
 
+  override firstUpdated() {
+    if (!this.module.initialized) {
+      this.module.initialized = true;
+      this.initModuleInstance_();
+    }
+
+    if (!this.module.impressed) {
+      // Install observer to log module header impression.
+      const headerObserver =
+          new IntersectionObserver(([{intersectionRatio}]) => {
+            if (intersectionRatio >= 1.0) {
+              headerObserver.disconnect();
+
+              const time = WindowProxy.getInstance().now();
+              recordLoadDuration('NewTabPage.Modules.Impression', time);
+              recordLoadDuration(
+                  `NewTabPage.Modules.Impression.${this.module.descriptor.id}`,
+                  time);
+              this.module.impressed = true;
+              this.dispatchEvent(new Event('detect-impression'));
+              this.module.element.dispatchEvent(new Event('detect-impression'));
+            }
+          }, {threshold: 1.0});
+      headerObserver.observe(this.$.impressionProbe);
+    }
+  }
+
+  private initModuleInstance_() {
     // Log at most one usage per module per NTP page load. This is possible,
     // if a user opens a link in a new tab.
-    this.$.moduleElement.addEventListener('usage', (e: Event) => {
+    this.module.element.addEventListener('usage', (e: Event) => {
       e.stopPropagation();
       NewTabPageProxy.getInstance().handler.onModuleUsed(
           this.module.descriptor.id);
@@ -64,7 +97,7 @@ export class ModuleWrapperElement extends PolymerElement {
 
     // Dispatch at most one interaction event for a module's `More Actions` menu
     // button clicks.
-    this.$.moduleElement.addEventListener('menu-button-click', (e: Event) => {
+    this.module.element.addEventListener('menu-button-click', (e: Event) => {
       e.stopPropagation();
       NewTabPageProxy.getInstance().handler.onModuleUsed(
           this.module.descriptor.id);
@@ -76,21 +109,17 @@ export class ModuleWrapperElement extends PolymerElement {
           'NewTabPage.Modules.InfoButtonClicked', this.module.descriptor.id);
     }, {once: true});
 
-    // Install observer to log module header impression.
-    const headerObserver = new IntersectionObserver(([{intersectionRatio}]) => {
-      if (intersectionRatio >= 1.0) {
-        headerObserver.disconnect();
-        const time = WindowProxy.getInstance().now();
-        recordLoadDuration('NewTabPage.Modules.Impression', time);
-        recordLoadDuration(
-            `NewTabPage.Modules.Impression.${this.module.descriptor.id}`, time);
-        this.dispatchEvent(new Event('detect-impression'));
-        this.module.element.dispatchEvent(new Event('detect-impression'));
-      }
-    }, {threshold: 1.0});
+    // Track whether the user hovered on the module.
+    this.module.element.addEventListener('mouseover', () => {
+      chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+          'NewTabPage.Modules.Hover', this.module.descriptor.id);
+    }, {
+      capture: true,  // So that modules cannot swallow event.
+      once: true,     // Only one log per NTP load.
+    });
 
-    // Install observer to track max perdecage (x/10th) of the module visible on
-    // the page.
+    // Install observer to track max perdecage (x/10th) of the module visible
+    // on the page.
     let intersectionPerdecage = 0;
     const moduleObserver = new IntersectionObserver(([{intersectionRatio}]) => {
       intersectionPerdecage =
@@ -106,24 +135,7 @@ export class ModuleWrapperElement extends PolymerElement {
           `NewTabPage.Modules.ImpressionRatio.${this.module.descriptor.id}`,
           intersectionPerdecage);
     });
-
-    // Calling observe will immediately invoke the callback. If the module is
-    // fully shown when the page loads, the first callback invocation will
-    // happen before the elements have dimensions. For this reason, we start
-    // observing after the elements have had a chance to be rendered.
-    microTask.run(() => {
-      headerObserver.observe(this.$.impressionProbe);
-      moduleObserver.observe(this);
-    });
-
-    // Track whether the user hovered on the module.
-    this.addEventListener('mouseover', () => {
-      chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-          'NewTabPage.Modules.Hover', this.module.descriptor.id);
-    }, {
-      capture: true,  // So that modules cannot swallow event.
-      once: true,     // Only one log per NTP load.
-    });
+    moduleObserver.observe(this);
   }
 }
 

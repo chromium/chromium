@@ -25,7 +25,7 @@ export {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connect
 export {InitializeModuleCallback, Module, ModuleDescriptor} from './modules/module_descriptor.js';
 export {counterfactualLoad} from './modules/module_descriptors.js';
 export {ModuleRegistry} from './modules/module_registry.js';
-export {ModuleWrapperElement} from './modules/module_wrapper.js';
+export {ModuleInstance, ModuleWrapperElement} from './modules/module_wrapper.js';
 export {microsoftAuthModuleDescriptor, MicrosoftAuthModuleElement} from './modules/v2/authentication/microsoft_auth_module.js';
 export {MicrosoftAuthProxyImpl} from './modules/v2/authentication/microsoft_auth_module_proxy.js';
 export {CalendarElement} from './modules/v2/calendar/calendar.js';
@@ -45,7 +45,7 @@ export {FileSuggestionElement} from './modules/v2/file_suggestion/file_suggestio
 export {microsoftFilesModuleDescriptor, MicrosoftFilesModuleElement} from './modules/v2/file_suggestion/microsoft_files_module.js';
 export {MicrosoftFilesProxyImpl} from './modules/v2/file_suggestion/microsoft_files_proxy.js';
 export {ModuleHeaderElement as ModuleHeaderElementV2} from './modules/v2/module_header.js';
-export {DisableModuleEvent, DismissModuleElementEvent, DismissModuleInstanceEvent, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
+export {DisableModuleEvent, DismissModuleElementEvent, DismissModuleInstanceEvent, ModulesElement, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {ModuleElement as MostRelevantTabResumptionModuleElement, mostRelevantTabResumptionDescriptor} from './modules/v2/most_relevant_tab_resumption/module.js';
 export {MostRelevantTabResumptionProxyImpl} from './modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_proxy.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

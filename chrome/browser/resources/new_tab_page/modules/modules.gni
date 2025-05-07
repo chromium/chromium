@@ -39,7 +39,9 @@ modules_web_component_files =
 modules_css_files =
     [
       "modules/info_dialog.css",
+      "modules/module_wrapper.css",
       "modules/v2/module_header.css",
+      "modules/v2/modules.css",
     ] + authentication_css_files + calendar_css_files +
     file_suggestion_v2_css_files + most_relevant_tab_resumption_v2_css_files
 

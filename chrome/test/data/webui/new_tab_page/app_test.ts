@@ -744,44 +744,21 @@ suite('NewTabPageAppTest', () => {
     });
 
     test('container is hidden', () => {
-      const modules = $$(app, 'ntp-modules-v2')!;
+      const modules = $$(app, 'ntp-modules')!;
       assertTrue(!!modules);
       assertStyle(modules, 'display', 'none');
     });
 
     test(`clicking records click`, () => {
       // Act.
-      $$<HTMLElement>(app, 'ntp-modules-v2')!.click();
+      $$<HTMLElement>(app, 'ntp-modules')!.click();
 
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Click'));
       assertEquals(1, metrics.count('NewTabPage.Click', NtpElement.MODULE));
     });
 
-    modulesCommonTests('ntp-modules-v2');
-  });
-
-  suite('v2 modules', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        modulesEnabled: true,
-      });
-    });
-
-    test('container is hidden', () => {
-      const modules = $$(app, 'ntp-modules-v2')!;
-      assertTrue(!!modules);
-      assertStyle(modules, 'display', 'none');
-    });
-
-    test(`clicking records click`, () => {
-      // Act.
-      $$<HTMLElement>(app, 'ntp-modules-v2')!.click();
-
-      // Assert.
-      assertEquals(1, metrics.count('NewTabPage.Click'));
-      assertEquals(1, metrics.count('NewTabPage.Click', NtpElement.MODULE));
-    });
+    modulesCommonTests('ntp-modules');
   });
 
   suite('CounterfactualModules', () => {
