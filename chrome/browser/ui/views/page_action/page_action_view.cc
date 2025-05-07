@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 
+#include <utility>
+
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/layout_constants.h"

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_page_metrics_recorder.h"
 
+#include <utility>
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/views/page_action/page_action_enums.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"

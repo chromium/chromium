@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
