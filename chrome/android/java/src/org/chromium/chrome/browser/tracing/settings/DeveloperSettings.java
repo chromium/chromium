@@ -64,4 +64,9 @@ public class DeveloperSettings extends PreferenceFragmentCompat implements Embed
     public ObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

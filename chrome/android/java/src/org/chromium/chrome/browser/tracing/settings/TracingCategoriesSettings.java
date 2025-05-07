@@ -125,4 +125,9 @@ public class TracingCategoriesSettings extends PreferenceFragmentCompat
             pref.callChangeListener(pref.isChecked());
         }
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }
