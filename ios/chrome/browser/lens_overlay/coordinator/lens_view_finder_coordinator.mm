@@ -160,6 +160,7 @@ LensViewFinderTransition TransitionFromPresentationStyle(
   [_lensOverlayCommands
       searchWithLensImageMetadata:imageMetadata
                        entrypoint:entrypoint
+          initialPresentationBase:_lensViewController
                        completion:^(BOOL success) {
                          [weakLensViewController tearDownCaptureInfrastructure];
                        }];

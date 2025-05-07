@@ -9,9 +9,13 @@
 
 @class LensOverlayContainerViewController;
 @class SceneState;
+@protocol LensOverlayContainerPresenterDelegate;
 
 // Presenter for the Lens overlay container.
 @interface LensOverlayContainerPresenter : NSObject
+
+// Delegate for overlay container presentation events.
+@property(nonatomic, weak) id<LensOverlayContainerPresenterDelegate> delegate;
 
 // Whether the overlay is presented or not;
 @property(nonatomic, readonly) BOOL isLensOverlayVisible;
@@ -32,6 +36,24 @@
 
 // Animates fading the selection UI of the container view controller.
 - (void)fadeSelectionUIWithCompletion:(void (^)())completion;
+
+@end
+
+// Presentation delegate for the Lens Overlay container.
+@protocol LensOverlayContainerPresenterDelegate
+
+// Notifies the delegate that the container presentation is about to start.
+- (void)lensOverlayContainerPresenterWillBeginPresentation:
+    (LensOverlayContainerPresenter*)containerPresenter;
+
+// Notifies the delegate that the container presentation is about to be
+// dismissed.
+- (void)lensOverlayContainerPresenterWillDismissPresentation:
+    (LensOverlayContainerPresenter*)containerPresenter;
+
+// Returns the required directional edge insets for the presentation.
+- (NSDirectionalEdgeInsets)lensOverlayContainerPresenterInsetsForPresentation:
+    (LensOverlayContainerPresenter*)containerPresenter;
 
 @end
 

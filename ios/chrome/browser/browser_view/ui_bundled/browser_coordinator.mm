@@ -1540,6 +1540,7 @@ enum class ToolbarKind {
     _lensOverlayCoordinator = [[LensOverlayCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
+    _lensOverlayCoordinator.presentationEnvironment = self.viewController;
     [_lensOverlayCoordinator start];
   }
 }
