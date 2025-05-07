@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
+
 #include <memory>
 
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value.h"
+#include "third_party/blink/renderer/core/animation/typed_interpolation_value.h"
 
 namespace blink {
 
@@ -42,8 +44,8 @@ TransitionInterpolation::CurrentNonInterpolableValue() const {
 
 void TransitionInterpolation::Apply(
     CSSInterpolationEnvironment& environment) const {
-  type_.Apply(CurrentInterpolableValue(), CurrentNonInterpolableValue(),
-              environment);
+  type_->Apply(CurrentInterpolableValue(), CurrentNonInterpolableValue(),
+               environment);
 }
 
 TypedInterpolationValue* TransitionInterpolation::GetInterpolatedValue() const {

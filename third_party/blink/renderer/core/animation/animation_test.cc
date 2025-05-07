@@ -113,7 +113,9 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
 
   KeyframeEffectModelBase* MakeSimpleEffectModel() {
     PropertyHandle PropertyHandleOpacity(GetCSSPropertyOpacity());
-    static CSSNumberInterpolationType opacity_type(PropertyHandleOpacity);
+    CSSNumberInterpolationType* opacity_type(
+        MakeGarbageCollected<CSSNumberInterpolationType>(
+            PropertyHandleOpacity));
     TransitionKeyframe* start_keyframe =
         MakeGarbageCollected<TransitionKeyframe>(PropertyHandleOpacity);
     start_keyframe->SetValue(MakeGarbageCollected<TypedInterpolationValue>(

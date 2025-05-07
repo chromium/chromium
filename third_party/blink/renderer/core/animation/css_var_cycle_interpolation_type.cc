@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/property_registration.h"
@@ -125,6 +126,14 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertUnderlyingValue(
          !style.GetVariableData(GetProperty().CustomPropertyName())
               ->NeedsVariableResolution());
   return nullptr;
+}
+
+void CSSVarCycleInterpolationType::Composite(
+    UnderlyingValueOwner& underlying_value_owner,
+    double underlying_fraction,
+    const InterpolationValue& value,
+    double interpolation_fraction) const {
+  underlying_value_owner.Set(this, value);
 }
 
 void CSSVarCycleInterpolationType::Apply(

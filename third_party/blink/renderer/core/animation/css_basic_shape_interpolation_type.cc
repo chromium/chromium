@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/basic_shape_interpolation_functions.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -207,7 +208,7 @@ void CSSBasicShapeInterpolationType::Composite(
   if (!basic_shape_interpolation_functions::ShapesAreCompatible(
           *underlying_value_owner.Value().non_interpolable_value,
           *value.non_interpolable_value)) {
-    underlying_value_owner.Set(*this, value);
+    underlying_value_owner.Set(this, value);
     return;
   }
 

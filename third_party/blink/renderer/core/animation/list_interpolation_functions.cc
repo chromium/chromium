@@ -340,7 +340,7 @@ bool ListInterpolationFunctions::VerifyNoNonInterpolableValues(
 void ListInterpolationFunctions::Composite(
     UnderlyingValueOwner& underlying_value_owner,
     double underlying_fraction,
-    const InterpolationType& type,
+    const InterpolationType* type,
     const InterpolationValue& value,
     LengthMatchingStrategy length_matching_strategy,
     InterpolableValuesAreCompatibleCallback interpolable_values_are_compatible,

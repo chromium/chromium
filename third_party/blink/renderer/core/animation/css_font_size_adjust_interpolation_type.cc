@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/css_font_size_adjust_interpolation_type.h"
 
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -197,7 +198,7 @@ void CSSFontSizeAdjustInterpolationType::Composite(
     underlying_value_owner.MutableValue().interpolable_value->ScaleAndAdd(
         underlying_fraction, *value.interpolable_value);
   } else {
-    underlying_value_owner.Set(*this, value);
+    underlying_value_owner.Set(this, value);
   }
 }
 

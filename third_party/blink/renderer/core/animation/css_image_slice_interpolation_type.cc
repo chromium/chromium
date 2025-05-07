@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/css_length_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/image_slice_property_functions.h"
 #include "third_party/blink/renderer/core/animation/side_index.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -284,7 +285,7 @@ void CSSImageSliceInterpolationType::Composite(
     underlying_value_owner.MutableValue().interpolable_value->ScaleAndAdd(
         underlying_fraction, *value.interpolable_value);
   else
-    underlying_value_owner.Set(*this, value);
+    underlying_value_owner.Set(this, value);
 }
 
 void CSSImageSliceInterpolationType::ApplyStandardPropertyValue(

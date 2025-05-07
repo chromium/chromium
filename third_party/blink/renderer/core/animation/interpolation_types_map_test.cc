@@ -38,13 +38,13 @@ TEST(InterpolationTypesMapTest, RegisteredCustomProperty) {
   InterpolationTypesMap map2(registry, *document2);
 
   PropertyHandle handle(property_name);
-  auto& types1 = map1.Get(handle);
-  auto& types2 = map2.Get(handle);
-  EXPECT_NE(&types1, &types2);
-  EXPECT_EQ(types1.size(), 1u);
+  const auto* types1 = map1.Get(handle);
+  const auto* types2 = map2.Get(handle);
+  EXPECT_NE(types1, types2);
+  EXPECT_EQ(types1->size(), 1u);
 
-  auto& types1_1 = map1.Get(handle);
-  EXPECT_EQ(&types1, &types1_1);
+  const auto* types1_1 = map1.Get(handle);
+  EXPECT_EQ(types1, types1_1);
 
   execution_context->NotifyContextDestroyed();
 }

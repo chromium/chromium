@@ -64,7 +64,7 @@ class CORE_EXPORT ListInterpolationFunctions {
                              const NonInterpolableValue*)>;
   static void Composite(UnderlyingValueOwner&,
                         double underlying_fraction,
-                        const InterpolationType&,
+                        const InterpolationType*,
                         const InterpolationValue&,
                         LengthMatchingStrategy,
                         InterpolableValuesAreCompatibleCallback,

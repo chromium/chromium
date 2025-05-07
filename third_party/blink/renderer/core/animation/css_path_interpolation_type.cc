@@ -86,7 +86,7 @@ void CSSPathInterpolationType::Composite(
     const InterpolationValue& value,
     double interpolation_fraction) const {
   PathInterpolationFunctions::Composite(underlying_value_owner,
-                                        underlying_fraction, *this, value);
+                                        underlying_fraction, this, value);
 }
 
 InterpolationValue CSSPathInterpolationType::MaybeConvertNeutral(

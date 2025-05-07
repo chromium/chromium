@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/animation/interpolable_transform_list.h"
 #include "third_party/blink/renderer/core/animation/length_units_checker.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -182,7 +183,7 @@ void CSSTransformInterpolationType::Composite(
     double interpolation_fraction) const {
   // We do our compositing behavior in |PreInterpolationCompositeIfNeeded|; see
   // the documentation on that method.
-  underlying_value_owner.Set(*this, value);
+  underlying_value_owner.Set(this, value);
 }
 
 void CSSTransformInterpolationType::ApplyStandardPropertyValue(

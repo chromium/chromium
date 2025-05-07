@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/side_index.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -375,7 +376,7 @@ void CSSBorderImageLengthBoxInterpolationType::Composite(
     const InterpolationValue& value,
     double interpolation_fraction) const {
   ListInterpolationFunctions::Composite(
-      underlying_value_owner, underlying_fraction, *this, value,
+      underlying_value_owner, underlying_fraction, this, value,
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
       ListInterpolationFunctions::InterpolableValuesKnownCompatible,
       NonInterpolableSidesAreCompatible, CompositeSide);
