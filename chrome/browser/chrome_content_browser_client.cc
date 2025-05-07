@@ -4779,9 +4779,6 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
     parts->OverrideWebPreferences(web_contents, main_frame_site, web_prefs);
   }
 
-  // TODO(crbug.com/395838064): Cleanup WebSQL WebPreference.
-  web_prefs->databases_enabled = false;
-
   web_prefs->prefers_default_scrollbar_styles =
       prefs->GetBoolean(prefs::kPrefersDefaultScrollbarStyles);
 #if BUILDFLAG(IS_ANDROID)

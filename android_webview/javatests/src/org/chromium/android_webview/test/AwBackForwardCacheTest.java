@@ -516,8 +516,6 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
                 () -> settings.setForceZeroLayoutHeight(!settings.getForceZeroLayoutHeight()));
         verifyPageEvictedWithSettingsChange(
                 () -> settings.setDomStorageEnabled(!settings.getDomStorageEnabled()));
-        verifyPageEvictedWithSettingsChange(
-                () -> settings.setDatabaseEnabled(!settings.getDatabaseEnabled()));
         verifyPageEvictedWithSettingsChange(() -> settings.setDefaultTextEncodingName("Latin-1"));
         verifyPageEvictedWithSettingsChange(
                 () -> {

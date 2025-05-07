@@ -195,9 +195,6 @@ void WebEngineContentBrowserClient::OverrideWebPreferences(
     content::WebContents* web_contents,
     content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
-  // Disable WebSQL support since it is being removed from the web platform
-  // and does not work. See crbug.com/1317431.
-  web_prefs->databases_enabled = false;
 
   // TODO(crbug.com/40245916): Remove once supported in WebEngine.
   web_prefs->disable_webauthn = true;

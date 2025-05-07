@@ -161,7 +161,6 @@ public class AwSettings {
     private boolean mJavaScriptCanOpenWindowsAutomatically;
     private boolean mSupportMultipleWindows;
     private boolean mDomStorageEnabled;
-    private boolean mDatabaseEnabled;
     private boolean mUseWideViewport;
     private boolean mZeroLayoutHeightDisablesViewportQuirk;
     private boolean mForceZeroLayoutHeight;
@@ -1589,30 +1588,6 @@ public class AwSettings {
     private boolean getDomStorageEnabledLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mDomStorageEnabled;
-    }
-
-    /** See {@link android.webkit.WebSettings#setDatabaseEnabled}. */
-    public void setDatabaseEnabled(boolean flag) {
-        if (TRACE) Log.i(TAG, "setDatabaseEnabled=" + flag);
-        synchronized (mAwSettingsLock) {
-            if (mDatabaseEnabled != flag) {
-                mDatabaseEnabled = flag;
-                mEventHandler.updateWebkitPreferencesLocked();
-            }
-        }
-    }
-
-    /** See {@link android.webkit.WebSettings#getDatabaseEnabled}. */
-    public boolean getDatabaseEnabled() {
-        synchronized (mAwSettingsLock) {
-            return mDatabaseEnabled;
-        }
-    }
-
-    @CalledByNative
-    private boolean getDatabaseEnabledLocked() {
-        assert Thread.holdsLock(mAwSettingsLock);
-        return mDatabaseEnabled;
     }
 
     /** See {@link android.webkit.WebSettings#setDefaultTextEncodingName}. */
