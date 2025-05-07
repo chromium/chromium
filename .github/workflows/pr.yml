@@ -1,7 +1,13 @@
 name: Code Reviews
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
 jobs:
   conditional_review:
     runs-on: ubuntu-latest
