@@ -698,7 +698,14 @@ try_.orchestrator_builder(
         "ci/Linux ASan LSan Builder",
         "ci/Linux ASan LSan Tests (1)",
     ],
-    gn_args = "ci/Linux ASan LSan Builder",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux ASan LSan Builder",
+            # TODO(crbug.com/416191043): Restore symbol_level=1 if/when CAS
+            # errors are fixed.
+            "no_symbols",
+        ],
+    ),
     compilator = "linux_chromium_asan_rel_ng-compilator",
     experiments = {
         # go/nplus1shardsproposal
@@ -935,7 +942,9 @@ try_.orchestrator_builder(
         configs = [
             "ci/Linux TSan Builder",
             "release_try_builder",
-            "minimal_symbols",
+            # TODO(crbug.com/416191043): Restore symbol_level=1 if/when CAS
+            # errors are fixed.
+            "no_symbols",
         ],
     ),
     compilator = "linux_chromium_tsan_rel_ng-compilator",
