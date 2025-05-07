@@ -6,8 +6,10 @@
 
 #import <memory>
 
+#import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/glic/coordinator/glic_consent_mediator_delegate.h"
+#import "ios/chrome/browser/intelligence/glic/metrics/glic_metrics.h"
 #import "ios/chrome/browser/intelligence/glic/ui/glic_consent_view_controller.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
@@ -27,12 +29,16 @@
 
 // Did consent to GLIC.
 - (void)didConsentGLIC {
+  base::UmaHistogramEnumeration(kGLICConsentTypeHistogram,
+                                GLICConsentType::kAccept);
   _prefService->SetBoolean(prefs::kIOSGLICConsent, YES);
   [_delegate dismissGLICConsentUI];
 }
 
 // Did dismisses the Consent UI.
 - (void)didRefuseGLICConsent {
+  base::UmaHistogramEnumeration(kGLICConsentTypeHistogram,
+                                GLICConsentType::kCancel);
   [_delegate dismissGLICConsentUI];
 }
 

@@ -2047,6 +2047,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.GLICConsent" enum="GLICConsentType"
+    expires_after="2026-05-04">
+  <owner>prasanaa@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>Records the consent response for GLIC.</summary>
+</histogram>
+
 <histogram name="IOS.GoogleOne.Outcome.{EntryPoint}" enum="GoogleOneOutcome"
     expires_after="2026-03-12">
   <owner>olivierrobin@chromium.org</owner>

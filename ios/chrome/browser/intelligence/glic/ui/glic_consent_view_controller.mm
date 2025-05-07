@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/glic/ui/glic_consent_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/intelligence/glic/metrics/glic_metrics.h"
 #import "ios/chrome/browser/intelligence/glic/ui/glic_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/glic/ui/glic_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

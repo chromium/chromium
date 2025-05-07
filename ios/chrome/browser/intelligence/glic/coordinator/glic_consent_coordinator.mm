@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/intelligence/glic/coordinator/glic_consent_coordinator.h"
 
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/intelligence/glic/coordinator/glic_consent_mediator.h"
 #import "ios/chrome/browser/intelligence/glic/coordinator/glic_consent_mediator_delegate.h"
+#import "ios/chrome/browser/intelligence/glic/metrics/glic_metrics.h"
 #import "ios/chrome/browser/intelligence/glic/ui/glic_consent_view_controller.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -59,6 +61,8 @@
 // Handles the dismissal of the UI.
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  base::UmaHistogramEnumeration(kGLICConsentTypeHistogram,
+                                GLICConsentType::kDismiss);
   [self stop];
 }
 

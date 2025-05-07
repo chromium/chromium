@@ -14,6 +14,7 @@ source_set("ui") {
     ":constants",
     "//base",
     "//components/feature_engagement/public:feature_constants",
+    "//ios/chrome/browser/intelligence/glic/metrics",
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/promos_manager/ui_bundled:promos",
     "//ios/chrome/browser/shared/ui/symbols",

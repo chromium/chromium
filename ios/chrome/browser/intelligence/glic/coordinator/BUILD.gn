@@ -15,6 +15,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/prefs:prefs",
+    "//ios/chrome/browser/intelligence/glic/metrics",
     "//ios/chrome/browser/intelligence/glic/ui",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
