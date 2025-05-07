@@ -165,7 +165,7 @@ class BrowserAutofillManager : public AutofillManager {
       FieldType field_type_used_to_build_suggestion,
       const std::string& profile_used_guid);
 
-  // Calls UndoAutofillImpl and logs metrics. Virtual for testing.
+  // Calls FormFiller::UndoAutofill and logs metrics. Virtual for testing.
   virtual void UndoAutofill(mojom::ActionPersistence action_persistence,
                             const FormData& form,
                             const FormFieldData& trigger_field);

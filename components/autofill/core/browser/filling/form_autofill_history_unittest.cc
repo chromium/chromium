@@ -54,8 +54,8 @@ class FormAutofillHistoryTest : public testing::Test {
     for (const AutofillField& autofill_field : filled_autofill_fields_) {
       autofill_fields.push_back(&autofill_field);
     }
-    form_autofill_history_.AddFormFillEntry(fields, autofill_fields,
-                                            FillingProduct::kNone, is_refill);
+    form_autofill_history_.AddFormFillingEntry(
+        fields, autofill_fields, FillingProduct::kNone, is_refill);
   }
 
   std::vector<FormFieldData> filled_fields_;
@@ -66,8 +66,9 @@ class FormAutofillHistoryTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-// Tests the function FormAutofillHistory::AddFormFillEntry upon a normal fill.
-TEST_F(FormAutofillHistoryTest, AddFormFillEntry_NormalFill) {
+// Tests the function FormAutofillHistory::AddFormFillingEntry upon a normal
+// fill.
+TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_NormalFill) {
   FieldGlobalId first_name_id =
       AddNewFieldFilling("first name", "first name", "some-value",
                          FormControlType::kInputText, NAME_FIRST);
@@ -75,8 +76,8 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_NormalFill) {
 
   ASSERT_TRUE(form_autofill_history_.HasHistory(first_name_id));
   EXPECT_EQ(
-      form_autofill_history_.GetLastFillingOperationForField(first_name_id)
-          .GetFieldFillingEntry(first_name_id),
+      form_autofill_history_.GetLastFormFillingEntryForField(first_name_id)
+          ->at(first_name_id),
       FormAutofillHistory::FieldFillingEntry(
           u"some-value", false, kGuid, /*field_autofilled_type=*/std::nullopt,
           FillingProduct::kNone, /*ignore_is_autofilled=*/false));
@@ -85,8 +86,8 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_NormalFill) {
   EXPECT_FALSE(form_autofill_history_.HasHistory(first_name_id));
 }
 
-// Tests the function FormAutofillHistory::AddFormFillEntry upon a refill.
-TEST_F(FormAutofillHistoryTest, AddFormFillEntry_Refill) {
+// Tests the function FormAutofillHistory::AddFormFillingEntry upon a refill.
+TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_Refill) {
   FieldGlobalId first_name_id =
       AddNewFieldFilling("first name", "first name", "some-first-name",
                          FormControlType::kInputText, NAME_FIRST);
@@ -103,34 +104,31 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_Refill) {
   EXPECT_TRUE(form_autofill_history_.HasHistory(last_name_id));
 
   EXPECT_EQ(
-      form_autofill_history_.GetLastFillingOperationForField(first_name_id),
-      form_autofill_history_.GetLastFillingOperationForField(last_name_id));
+      form_autofill_history_.GetLastFormFillingEntryForField(first_name_id),
+      form_autofill_history_.GetLastFormFillingEntryForField(last_name_id));
 
   ASSERT_TRUE(form_autofill_history_.HasHistory(first_name_id));
   EXPECT_EQ(
-      form_autofill_history_.GetLastFillingOperationForField(first_name_id)
-          .GetFieldFillingEntry(first_name_id),
+      form_autofill_history_.GetLastFormFillingEntryForField(first_name_id)
+          ->at(first_name_id),
       FormAutofillHistory::FieldFillingEntry(
           u"some-first-name", false, kGuid,
           /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
           /*ignore_is_autofilled=*/false));
 
   ASSERT_TRUE(form_autofill_history_.HasHistory(last_name_id));
-  EXPECT_EQ(form_autofill_history_.GetLastFillingOperationForField(last_name_id)
-                .GetFieldFillingEntry(last_name_id),
-            FormAutofillHistory::FieldFillingEntry(
-                u"some-other-last-name", true, kGuid,
-                /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
-                /*ignore_is_autofilled=*/false));
-
-  form_autofill_history_.EraseFormFillEntry(
-      form_autofill_history_.GetLastFillingOperationForField(first_name_id));
-  EXPECT_TRUE(form_autofill_history_.empty());
+  EXPECT_EQ(
+      form_autofill_history_.GetLastFormFillingEntryForField(last_name_id)
+          ->at(last_name_id),
+      FormAutofillHistory::FieldFillingEntry(
+          u"some-other-last-name", true, kGuid,
+          /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+          /*ignore_is_autofilled=*/false));
 }
 
-// Tests how the function FormAutofillHistory::AddFormFillEntry clears values to
-// remain within the size limit.
-TEST_F(FormAutofillHistoryTest, AddFormFillEntry_HistoryLimit) {
+// Tests how the function FormAutofillHistory::AddFormFillingEntry clears values
+// to remain within the size limit.
+TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_HistoryLimit) {
   std::vector<FieldGlobalId> fields_id(kMaxStorableFieldFillHistory);
   for (size_t i = 0; i < kMaxStorableFieldFillHistory; ++i) {
     fields_id[i] =
@@ -158,9 +156,9 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_HistoryLimit) {
   }
 }
 
-// Tests how the function FormAutofillHistory::AddFormFillEntry handles a form
-// entry bigger than the history size limit.
-TEST_F(FormAutofillHistoryTest, AddFormFillEntry_FormBiggerThanLimit) {
+// Tests how the function FormAutofillHistory::AddFormFillingEntry handles a
+// form entry bigger than the history size limit.
+TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_FormBiggerThanLimit) {
   // Adding a few form fill entries.
   for (int i = 0; i < 5; ++i) {
     AddNewFieldFilling(("field-label" + base::NumberToString(i)).c_str(),
@@ -185,9 +183,9 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_FormBiggerThanLimit) {
   EXPECT_TRUE(form_autofill_history_.empty());
 }
 
-// Tests how the function FormAutofillHistory::AddFormFillEntry reuses space
+// Tests how the function FormAutofillHistory::AddFormFillingEntry reuses space
 // after adding an empty form fill entry.
-TEST_F(FormAutofillHistoryTest, AddFormFillEntry_ReuseEmptyFillEntries) {
+TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_ReuseEmptyFillEntries) {
   // No fields were added to `filled_fields`, hence this form filling is empty.
   AddFormFilling(/*is_refill=*/false);
   EXPECT_EQ(form_autofill_history_.size(), 1u);
@@ -199,9 +197,9 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_ReuseEmptyFillEntries) {
   EXPECT_TRUE(form_autofill_history_.HasHistory(field_id));
 }
 
-// Tests how the function FormAutofillHistory::AddFormFillEntry reuses space
+// Tests how the function FormAutofillHistory::AddFormFillingEntry reuses space
 // after adding an empty form fill entry.
-TEST_F(FormAutofillHistoryTest, AddFormFillEntry_RefillOnEmptyHistory) {
+TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_RefillOnEmptyHistory) {
   // Adding a form fill entry bigger than current size limit.
   std::vector<FieldGlobalId> fields_id(kMaxStorableFieldFillHistory + 1);
   for (size_t i = 0; i < kMaxStorableFieldFillHistory + 1; ++i) {

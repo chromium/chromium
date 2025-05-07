@@ -1726,10 +1726,15 @@ void BrowserAutofillManager::UndoAutofill(
   if (!form_structure) {
     return;
   }
-  // This will apply the undo operation and return information about the
-  // operation being undone, for metric purposes.
-  FillingProduct filling_product = form_filler_->UndoAutofill(
-      action_persistence, form, *form_structure, trigger_field);
+  const AutofillField* autofill_trigger_field =
+      form_structure->GetFieldById(trigger_field.global_id());
+  if (!autofill_trigger_field) {
+    return;
+  }
+
+  FillingProduct filling_product = autofill_trigger_field->filling_product();
+  form_filler_->UndoAutofill(action_persistence, form, *form_structure,
+                             trigger_field, filling_product);
 
   // The remaining logic is only relevant for filling.
   if (action_persistence != mojom::ActionPersistence::kPreview) {
