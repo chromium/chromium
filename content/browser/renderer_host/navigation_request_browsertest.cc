@@ -272,32 +272,36 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
   TestNavigationThrottle* navigation_throttle() { return navigation_throttle_; }
 
   void WaitForThrottleWillStart() {
-    if (will_start_called_)
+    if (will_start_called_) {
       return;
+    }
     will_start_loop_runner_ = new MessageLoopRunner();
     will_start_loop_runner_->Run();
     will_start_loop_runner_ = nullptr;
   }
 
   void WaitForThrottleWillRedirect() {
-    if (will_redirect_called_)
+    if (will_redirect_called_) {
       return;
+    }
     will_redirect_loop_runner_ = new MessageLoopRunner();
     will_redirect_loop_runner_->Run();
     will_redirect_loop_runner_ = nullptr;
   }
 
   void WaitForThrottleWillFail() {
-    if (will_fail_called_)
+    if (will_fail_called_) {
       return;
+    }
     will_fail_loop_runner_ = new MessageLoopRunner();
     will_fail_loop_runner_->Run();
     will_fail_loop_runner_ = nullptr;
   }
 
   void WaitForThrottleWillProcess() {
-    if (will_process_called_)
+    if (will_process_called_) {
       return;
+    }
     will_process_loop_runner_ = new MessageLoopRunner();
     will_process_loop_runner_->Run();
     will_process_loop_runner_ = nullptr;
@@ -314,10 +318,11 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
 
   void Continue(NavigationThrottle::ThrottleCheckResult result) {
     ASSERT_NE(NavigationThrottle::DEFER, result.action());
-    if (result.action() == NavigationThrottle::PROCEED)
+    if (result.action() == NavigationThrottle::PROCEED) {
       navigation_throttle()->ResumeNavigation();
-    else
+    } else {
       navigation_throttle()->CancelNavigation(result);
+    }
   }
 
   int will_start_called() { return will_start_called_; }
@@ -333,26 +338,30 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
  protected:
   virtual void DidCallWillStartRequest() {
     will_start_called_++;
-    if (will_start_loop_runner_)
+    if (will_start_loop_runner_) {
       will_start_loop_runner_->Quit();
+    }
   }
 
   virtual void DidCallWillRedirectRequest() {
     will_redirect_called_++;
-    if (will_redirect_loop_runner_)
+    if (will_redirect_loop_runner_) {
       will_redirect_loop_runner_->Quit();
+    }
   }
 
   virtual void DidCallWillFailRequest() {
     will_fail_called_++;
-    if (will_fail_loop_runner_)
+    if (will_fail_loop_runner_) {
       will_fail_loop_runner_->Quit();
+    }
   }
 
   virtual void DidCallWillProcessResponse() {
     will_process_called_++;
-    if (will_process_loop_runner_)
+    if (will_process_loop_runner_) {
       will_process_loop_runner_->Quit();
+    }
   }
 
   virtual void DidCallWillCommitWithoutUrlLoader() {
@@ -365,8 +374,9 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
  private:
   void DidStartNavigation(NavigationHandle* handle) override {
     if (!expected_start_url_.is_empty() &&
-        handle->GetURL() != expected_start_url_)
+        handle->GetURL() != expected_start_url_) {
       return;
+    }
 
     std::unique_ptr<NavigationThrottle> throttle(new TestNavigationThrottle(
         handle, will_start_result_, will_redirect_result_, will_fail_result_,
@@ -391,11 +401,13 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
   }
 
   void DidFinishNavigation(NavigationHandle* handle) override {
-    if (!navigation_throttle_)
+    if (!navigation_throttle_) {
       return;
+    }
 
-    if (handle == navigation_throttle_->navigation_handle())
+    if (handle == navigation_throttle_->navigation_handle()) {
       navigation_throttle_ = nullptr;
+    }
   }
 
   NavigationThrottle::ThrottleCheckResult will_start_result_;
@@ -2663,19 +2675,17 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // |client_throttle| when its registered.
   content::ShellContentBrowserClient::Get()
       ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
-          [&client_throttle](content::NavigationHandle* handle)
-              -> std::vector<std::unique_ptr<content::NavigationThrottle>> {
-            std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+          [&client_throttle](
+              content::NavigationThrottleRegistry& registry) -> void {
             std::unique_ptr<TestNavigationThrottle> throttle(
                 new TestNavigationThrottle(
-                    handle, NavigationThrottle::DEFER,
+                    &registry.GetNavigationHandle(), NavigationThrottle::DEFER,
                     NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
                     NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
                     base::DoNothing(), base::DoNothing(), base::DoNothing(),
                     base::DoNothing(), base::DoNothing()));
             client_throttle = throttle.get();
-            throttles.push_back(std::move(throttle));
-            return throttles;
+            registry.AddThrottle(std::move(throttle));
           }));
 
   // Add another similar throttle using the installer which will use
@@ -2938,8 +2948,9 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest_IsolateAllSites,
     auto add_suffix = [&names](std::vector<std::string> suffixes) {
       size_t original_size = names.size();
       for (size_t i = 0; i < original_size; i++) {
-        for (const std::string& suffix : suffixes)
+        for (const std::string& suffix : suffixes) {
           names.push_back(names[i] + suffix);
+        }
       }
     };
     add_suffix({kProcessSuffixes.at(process_type)});
@@ -4493,9 +4504,9 @@ IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
           DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
                     GetParam() == TestMPArchType::kPrerender
                         ? FrameType::kPrerenderMainFrame
-                        : GetParam() == TestMPArchType::kFencedFrame
-                              ? FrameType::kFencedFrameRoot
-                              : FrameType::kPrimaryMainFrame);
+                    : GetParam() == TestMPArchType::kFencedFrame
+                        ? FrameType::kFencedFrameRoot
+                        : FrameType::kPrimaryMainFrame);
           EXPECT_FALSE(navigation_handle->ShouldUpdateHistory());
         }));
   };
@@ -4689,14 +4700,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestResponseBodyBrowserTest, Received) {
   // to this throttle in `client_throttle` on registration.
   content::ShellContentBrowserClient::Get()
       ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
-          [&client_throttle](content::NavigationHandle* handle)
-              -> std::vector<std::unique_ptr<content::NavigationThrottle>> {
-            std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-            auto throttle =
-                std::make_unique<ResponseBodyNavigationThrottle>(handle);
+          [&client_throttle](
+              content::NavigationThrottleRegistry& registry) -> void {
+            auto throttle = std::make_unique<ResponseBodyNavigationThrottle>(
+                &registry.GetNavigationHandle());
             client_throttle = throttle.get();
-            throttles.push_back(std::move(throttle));
-            return throttles;
+            registry.AddThrottle(std::move(throttle));
           }));
 
   // Start navigating.
@@ -4732,14 +4741,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestResponseBodyBrowserTest,
   // to this throttle in `client_throttle` on registration.
   content::ShellContentBrowserClient::Get()
       ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
-          [&client_throttle](content::NavigationHandle* handle)
-              -> std::vector<std::unique_ptr<content::NavigationThrottle>> {
-            std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-            auto throttle =
-                std::make_unique<ResponseBodyNavigationThrottle>(handle);
+          [&client_throttle](
+              content::NavigationThrottleRegistry& registry) -> void {
+            auto throttle = std::make_unique<ResponseBodyNavigationThrottle>(
+                &registry.GetNavigationHandle());
             client_throttle = throttle.get();
-            throttles.push_back(std::move(throttle));
-            return throttles;
+            registry.AddThrottle(std::move(throttle));
           }));
 
   // Start navigating.
@@ -4775,14 +4782,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestResponseBodyBrowserTest,
   // to this throttle in `client_throttle` on registration.
   content::ShellContentBrowserClient::Get()
       ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
-          [&client_throttle](content::NavigationHandle* handle)
-              -> std::vector<std::unique_ptr<content::NavigationThrottle>> {
-            std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-            auto throttle =
-                std::make_unique<ResponseBodyNavigationThrottle>(handle);
+          [&client_throttle](
+              content::NavigationThrottleRegistry& registry) -> void {
+            auto throttle = std::make_unique<ResponseBodyNavigationThrottle>(
+                &registry.GetNavigationHandle());
             client_throttle = throttle.get();
-            throttles.push_back(std::move(throttle));
-            return throttles;
+            registry.AddThrottle(std::move(throttle));
           }));
 
   // Start navigating to a page with a large body (>5 million characters).

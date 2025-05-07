@@ -1705,12 +1705,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // navigations; they are specifically not run for page activating navigations
   // such as prerender activation and back-forward cache restores or for
   // navigations that don't use a URLLoader like same-document navigations.
-  // TODO(https://crbug.com/412524375): New code should add a NavigationThrottle
-  // via the given `registry` instead of returning a NavigationThrottle from
-  // this method. Once all existing NavigationThrottles are migrated, the
-  // returned type will be changed to `void`.
-  virtual std::vector<std::unique_ptr<NavigationThrottle>>
-  CreateThrottlesForNavigation(NavigationThrottleRegistry& registry);
+  virtual void CreateThrottlesForNavigation(
+      NavigationThrottleRegistry& registry);
 
   // Allows the embedder to register one or more CommitDeferringConditions for
   // the navigation indicated by |navigation_handle|. A

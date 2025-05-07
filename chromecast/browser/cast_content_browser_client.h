@@ -241,8 +241,7 @@ class CastContentBrowserClient
   std::unique_ptr<content::NavigationUIData> GetNavigationUIData(
       content::NavigationHandle* navigation_handle) override;
   bool ShouldEnableStrictSiteIsolation() override;
-  std::vector<std::unique_ptr<content::NavigationThrottle>>
-  CreateThrottlesForNavigation(
+  void CreateThrottlesForNavigation(
       content::NavigationThrottleRegistry& registry) override;
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,

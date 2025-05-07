@@ -693,16 +693,11 @@ void ShellContentBrowserClient::OpenURL(
           ->web_contents());
 }
 
-std::vector<std::unique_ptr<NavigationThrottle>>
-ShellContentBrowserClient::CreateThrottlesForNavigation(
+void ShellContentBrowserClient::CreateThrottlesForNavigation(
     NavigationThrottleRegistry& registry) {
-  std::vector<std::unique_ptr<NavigationThrottle>> empty_throttles;
   if (create_throttles_for_navigation_callback_) {
-    // TODO(https://crbug.com/412524375): NavigationThrottleRegistry migration.
-    return create_throttles_for_navigation_callback_.Run(
-        &registry.GetNavigationHandle());
+    create_throttles_for_navigation_callback_.Run(registry);
   }
-  return empty_throttles;
 }
 
 std::unique_ptr<LoginDelegate> ShellContentBrowserClient::CreateLoginDelegate(

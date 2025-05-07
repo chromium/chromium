@@ -19,15 +19,13 @@ PageLoadMetricsTestContentBrowserClient::
 PageLoadMetricsTestContentBrowserClient::
     ~PageLoadMetricsTestContentBrowserClient() = default;
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-PageLoadMetricsTestContentBrowserClient::CreateThrottlesForNavigation(
+void PageLoadMetricsTestContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
   content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
   if (navigation_handle.IsInMainFrame()) {
     registry.AddThrottle(page_load_metrics::MetricsNavigationThrottle::Create(
         &navigation_handle));
   }
-  return {};
 }
 
 }  // namespace page_load_metrics

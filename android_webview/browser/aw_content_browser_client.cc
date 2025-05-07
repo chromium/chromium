@@ -662,8 +662,7 @@ void AwContentBrowserClient::OverrideWebPreferences(
       (delegate) ? delegate->isModalContextMenu() : false;
 }
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-AwContentBrowserClient::CreateThrottlesForNavigation(
+void AwContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
   // We allow intercepting only navigations within main frames. This
   // is used to post onPageStarted. We handle shouldOverrideUrlLoading
@@ -711,8 +710,6 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
           &navigation_handle, urlClassifier));
     }
   }
-
-  return {};
 }
 
 std::unique_ptr<content::PrefetchServiceDelegate>

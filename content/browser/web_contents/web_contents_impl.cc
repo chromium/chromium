@@ -9534,13 +9534,12 @@ bool WebContentsImpl::IsHidden() {
   return GetPageVisibilityState() == PageVisibilityState::kHidden;
 }
 
-std::vector<std::unique_ptr<NavigationThrottle>>
-WebContentsImpl::CreateThrottlesForNavigation(
+void WebContentsImpl::CreateThrottlesForNavigation(
     NavigationThrottleRegistry& registry) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::CreateThrottlesForNavigation",
                         "navigation", registry.GetNavigationHandle());
-  return GetContentClient()->browser()->CreateThrottlesForNavigation(registry);
+  GetContentClient()->browser()->CreateThrottlesForNavigation(registry);
 }
 
 std::vector<std::unique_ptr<CommitDeferringCondition>>

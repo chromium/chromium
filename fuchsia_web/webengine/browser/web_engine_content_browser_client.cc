@@ -310,8 +310,7 @@ base::OnceClosure WebEngineContentBrowserClient::SelectClientCertificate(
   return base::OnceClosure();
 }
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-WebEngineContentBrowserClient::CreateThrottlesForNavigation(
+void WebEngineContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
   auto& navigation_handle = registry.GetNavigationHandle();
   auto* frame_impl =
@@ -334,8 +333,6 @@ WebEngineContentBrowserClient::CreateThrottlesForNavigation(
         navigation_handle.GetWebContents()->GetBrowserContext(),
         *explicit_sites_filter_error_page));
   }
-
-  return {};
 }
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>

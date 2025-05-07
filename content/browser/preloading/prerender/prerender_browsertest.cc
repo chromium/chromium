@@ -4101,8 +4101,9 @@ class RedirectChainObserver : public WebContentsObserver {
 
  private:
   void DidFinishNavigation(NavigationHandle* handle) override {
-    if (handle->GetURL() != url_)
+    if (handle->GetURL() != url_) {
       return;
+    }
     redirect_chain_ = handle->GetRedirectChain();
   }
 
@@ -5409,8 +5410,9 @@ class IsActivationObserver : public WebContentsObserver {
 
  private:
   void DidStartNavigation(NavigationHandle* handle) override {
-    if (handle->GetURL() != url_)
+    if (handle->GetURL() != url_) {
       return;
+    }
     did_navigate_ = true;
     was_activation_ = handle->IsPrerenderedPageActivation();
   }
@@ -5470,20 +5472,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivationDoesntRunThrottles) {
   // WillStartRequest into all new navigations.
   ShellContentBrowserClient::Get()
       ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
-          [&throttle](NavigationHandle* handle)
-              -> std::vector<std::unique_ptr<NavigationThrottle>> {
-            std::vector<std::unique_ptr<NavigationThrottle>> throttles;
-
-            auto throttle_ptr =
-                std::make_unique<TestNavigationThrottle>(handle);
+          [&throttle](NavigationThrottleRegistry& registry) -> void {
+            auto throttle_ptr = std::make_unique<TestNavigationThrottle>(
+                &registry.GetNavigationHandle());
             CHECK(!throttle);
             throttle = throttle_ptr.get();
             throttle_ptr->SetResponse(
                 TestNavigationThrottle::WILL_START_REQUEST,
                 TestNavigationThrottle::SYNCHRONOUS, NavigationThrottle::DEFER);
 
-            throttles.push_back(std::move(throttle_ptr));
-            return throttles;
+            registry.AddThrottle(std::move(throttle_ptr));
           }));
 
   // Start a prerender and ensure that a NavigationThrottle can defer the
@@ -5768,13 +5766,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // before PrerenderSubframeNavigationThrottle.
   ShellContentBrowserClient::Get()
       ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
-          [](NavigationHandle* handle)
-              -> std::vector<std::unique_ptr<NavigationThrottle>> {
-            std::vector<std::unique_ptr<NavigationThrottle>> throttles;
-            throttles.push_back(
+          [](NavigationThrottleRegistry& registry) -> void {
+            registry.AddThrottle(
                 std::make_unique<
-                    TestPrerenderCancellerSubframeNavigationThrottle>(handle));
-            return throttles;
+                    TestPrerenderCancellerSubframeNavigationThrottle>(
+                    &registry.GetNavigationHandle()));
           }));
 
   // Use ExecuteScriptAsync instead of EvalJs as inserted cross-origin iframe
@@ -6654,8 +6650,9 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   // Skip the test when the block type is kCertError. With the type, this test
   // times out due to https://crbug.com/1311887.
   // TODO(crbug.com/40220378): Enable the test with kCertError.
-  if (GetParam() == SSLPrerenderTestErrorBlockType::kCertError)
+  if (GetParam() == SSLPrerenderTestErrorBlockType::kCertError) {
     return;
+  }
 
   // Load an initial page and register a service worker that intercepts
   // resources requests.
@@ -8061,8 +8058,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
   // Confirm that all the other prerender hosts are successfully cancelled.
   for (auto& url : prerender_urls) {
-    if (url == prerender_urls[0])
+    if (url == prerender_urls[0]) {
       continue;
+    }
     EXPECT_TRUE(GetHostForUrl(url).is_null());
   }
 
@@ -11999,10 +11997,11 @@ class FrameDisplayStateChangedObserver : public WebContentsObserver {
   void FrameDisplayStateChanged(RenderFrameHost* host,
                                 bool is_display_none) override {
     if (host == target_host_) {
-      if (callback_)
+      if (callback_) {
         std::move(callback_).Run();
-      else
+      } else {
         changed_count_++;
+      }
     }
   }
 
@@ -12509,8 +12508,9 @@ class PrerenderRequestHeadersBrowserTest : public PrerenderBrowserTest {
     // Note: Checking the origin of `request.GetURL()` doesn't work here because
     // the host part of the URL is translated (e.g., "a.test" to "127.0.0.1")
     // based on the host resolver rule before this point.
-    if (request.relative_url.find("cors") == std::string::npos)
+    if (request.relative_url.find("cors") == std::string::npos) {
       return nullptr;
+    }
 
     // Serves a fake response with the ACAO header.
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -13257,8 +13257,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderFencedFrameBrowserTest,
   // child frames.
   size_t child_frame_count = 0;
   prerendered_rfh->ForEachRenderFrameHostImpl([&](RenderFrameHostImpl* rfh) {
-    if (rfh != prerendered_rfh)
+    if (rfh != prerendered_rfh) {
       child_frame_count++;
+    }
   });
   EXPECT_EQ(0lu, child_frame_count);
 
@@ -13444,8 +13445,9 @@ class PrerenderClientHintsBrowserTest : public PrerenderBrowserTest {
 
   static std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url.find("acceptch") == std::string::npos)
+    if (request.relative_url.find("acceptch") == std::string::npos) {
       return nullptr;
+    }
 
     // Serve a response indicating clients to provide full version of UA.
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();

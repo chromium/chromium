@@ -218,16 +218,7 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // NavigationRequest.
   NavigationRequest* request = static_cast<NavigationRequest*>(delegate_);
 
-  std::vector<std::unique_ptr<NavigationThrottle>> throttles_under_migration =
-      request->GetDelegate()->CreateThrottlesForNavigation(*this);
-  // TODO(https://crbug.com/412524375): Remove `throttles_under_migration` and
-  // following code to move them to the member variable. When the call returns
-  // above, migrated throttles are already registered in `throttles_` via the
-  // new NavigationThrottleRegistry interface. So, we cannot assign the returned
-  // vector directly to `throttles_`.
-  throttles_.insert(throttles_.end(),
-                    std::make_move_iterator(throttles_under_migration.begin()),
-                    std::make_move_iterator(throttles_under_migration.end()));
+  request->GetDelegate()->CreateThrottlesForNavigation(*this);
 
   // Check for renderer-inititated main frame navigations to blocked URL schemes
   // (data, filesystem). This is done early as it may block the main frame

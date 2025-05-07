@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
@@ -43,8 +44,9 @@ class NetErrorUrlInterceptor {
         interceptor_(base::BindLambdaForTesting(
             [this,
              error](content::URLLoaderInterceptor::RequestParams* params) {
-              if (params->url_request.url != url_)
+              if (params->url_request.url != url_) {
                 return false;
+              }
               network::URLLoaderCompletionStatus status;
               status.error_code = error;
               params->client->OnComplete(status);
@@ -133,15 +135,17 @@ class DeferNextNavigationThrottleInserter
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override {
     DCHECK(throttle_);
-    if (handle == throttle_->navigation_handle())
+    if (handle == throttle_->navigation_handle()) {
       finish_wait_loop_.Quit();
+    }
   }
 
  private:
   std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottle(
       content::NavigationHandle* handle) {
-    if (throttle_)
+    if (throttle_) {
       return nullptr;
+    }
 
     auto throttle = std::make_unique<DeferringThrottle>(
         handle, defer_wait_loop_.QuitClosure());
@@ -170,15 +174,10 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
 
     content::ShellContentBrowserClient::Get()
         ->set_create_throttles_for_navigation_callback(base::BindRepeating(
-            [](content::NavigationHandle* handle)
-                -> std::vector<std::unique_ptr<content::NavigationThrottle>> {
-              std::vector<std::unique_ptr<content::NavigationThrottle>>
-                  throttles;
-              auto throttle =
-                  NetErrorAutoReloader::MaybeCreateThrottleFor(handle);
-              if (throttle)
-                throttles.push_back(std::move(throttle));
-              return throttles;
+            [](content::NavigationThrottleRegistry& registry) -> void {
+              registry.MaybeAddThrottle(
+                  NetErrorAutoReloader::MaybeCreateThrottleFor(
+                      &registry.GetNavigationHandle()));
             }));
   }
 
@@ -193,8 +192,9 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
   std::optional<base::TimeDelta> GetCurrentAutoReloadDelay() {
     const std::optional<base::OneShotTimer>& timer =
         GetAutoReloader()->next_reload_timer_for_testing();
-    if (!timer)
+    if (!timer) {
       return std::nullopt;
+    }
     return timer->GetCurrentDelay();
   }
 
@@ -239,8 +239,9 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
         error_page::NetErrorAutoReloader::FromWebContents(wc);
     std::optional<base::OneShotTimer>& timer =
         reloader->next_reload_timer_for_testing();
-    if (timer && timer->IsRunning())
+    if (timer && timer->IsRunning()) {
       timer->FireNow();
+    }
   }
 
   static void SimulateNetworkGoingOnline(content::WebContents* wc) {

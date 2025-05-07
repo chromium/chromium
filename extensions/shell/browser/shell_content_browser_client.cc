@@ -252,8 +252,7 @@ void ShellContentBrowserClient::
                           render_frame_host.GetGlobalId()));
 }
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-ShellContentBrowserClient::CreateThrottlesForNavigation(
+void ShellContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
   content::NavigationHandle& navigation_handle =
       registry.GetNavigationHandle();
@@ -265,7 +264,6 @@ ShellContentBrowserClient::CreateThrottlesForNavigation(
   }
   registry.MaybeAddThrottle(
       WebViewGuest::MaybeCreateNavigationThrottle(&navigation_handle));
-  return {};
 }
 
 std::unique_ptr<content::NavigationUIData>

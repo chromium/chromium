@@ -809,8 +809,7 @@ CastContentBrowserClient::CreateCrashHandlerHost(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-CastContentBrowserClient::CreateThrottlesForNavigation(
+void CastContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
   if (chromecast::IsFeatureEnabled(kEnableGeneralAudienceBrowsing)) {
     registry.AddThrottle(
@@ -818,8 +817,6 @@ CastContentBrowserClient::CreateThrottlesForNavigation(
             &registry.GetNavigationHandle(),
             general_audience_browsing_service_.get()));
   }
-
-  return {};
 }
 
 void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(

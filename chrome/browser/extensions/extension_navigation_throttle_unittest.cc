@@ -46,11 +46,10 @@ class MockBrowserClient : public content::ContentBrowserClient {
 
   // Only construct an ExtensionNavigationThrottle so that we can test it in
   // isolation.
-  std::vector<std::unique_ptr<NavigationThrottle>> CreateThrottlesForNavigation(
+  void CreateThrottlesForNavigation(
       content::NavigationThrottleRegistry& registry) override {
     registry.AddThrottle(std::make_unique<ExtensionNavigationThrottle>(
         &registry.GetNavigationHandle()));
-    return {};
   }
 };
 

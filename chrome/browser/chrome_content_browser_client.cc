@@ -5395,8 +5395,7 @@ void ChromeContentBrowserClient::RemovePresentationObserver(
   }
 }
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-ChromeContentBrowserClient::CreateThrottlesForNavigation(
+void ChromeContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
   // MetricsNavigationThrottle requires that it runs before NavigationThrottles
   // that may delay or cancel navigations, so only NavigationThrottles that
@@ -5767,8 +5766,6 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   registry.MaybeAddThrottle(
       web_app::IsolatedWebAppThrottle::MaybeCreateThrottleFor(&handle));
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-  return {};
 }
 
 std::vector<std::unique_ptr<content::CommitDeferringCondition>>

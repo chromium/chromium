@@ -997,11 +997,8 @@ void ContentBrowserClient::OpenURL(
   std::move(callback).Run(nullptr);
 }
 
-std::vector<std::unique_ptr<NavigationThrottle>>
-content::ContentBrowserClient::CreateThrottlesForNavigation(
-    NavigationThrottleRegistry& registry) {
-  return std::vector<std::unique_ptr<NavigationThrottle>>();
-}
+void ContentBrowserClient::CreateThrottlesForNavigation(
+    NavigationThrottleRegistry& registry) {}
 
 std::vector<std::unique_ptr<CommitDeferringCondition>>
 ContentBrowserClient::CreateCommitDeferringConditionsForNavigation(
