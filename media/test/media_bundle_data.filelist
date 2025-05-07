@@ -393,6 +393,7 @@ data/load_many_videos.html
 data/media_foundation_fallback.html
 data/media_source_player.html
 data/media_suspend_test.html
+data/mid-file-start-time.mp4
 data/midstream_config_change.mp3
 data/mono_cpe.adts
 data/mse_config_change.html
