@@ -356,7 +356,7 @@ class PdfInkModule {
                           int click_count,
                           base::TimeTicks timestamp);
   bool ContinueTextHighlight(const gfx::PointF& position);
-  bool FinishTextHighlight();
+  bool FinishTextHighlight(const gfx::PointF& position);
 
   // Returns a highlighter stroke that matches the position and size of
   // `selection_rect`. `selection_rect` must be in screen coordinates.
@@ -455,7 +455,13 @@ class PdfInkModule {
   void ApplyUndoRedoDiscards(
       const PdfInkUndoRedoModel::DiscardedDrawCommands& discards);
 
+  // Sets the cursor to a drawing/erasing brush cursor when necessary.
   void MaybeSetCursor();
+
+  // Handles setting the cursor only for mousemove events at `position`. This
+  // differs from `MaybeSetCursor()` in that it may also set the cursor to an
+  // I-beam for text highlighting.
+  void MaybeSetCursorOnMouseMove(const gfx::PointF& position);
 
   // Returns whether the drawing brush was set or not.
   bool MaybeSetDrawingBrush();

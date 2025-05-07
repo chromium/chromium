@@ -300,6 +300,8 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     plugin_->engine_->ExtendSelectionByPoint(point);
   }
 
+  ui::Cursor GetCursor() override { return plugin_->cursor_; }
+
   PageOrientation GetOrientation() const override {
     return plugin_->engine_->GetCurrentOrientation();
   }

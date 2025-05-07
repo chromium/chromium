@@ -199,6 +199,13 @@ std::map<int, std::vector<raw_ref<const ink::Stroke>>> CollectVisibleStrokes(
   return visible_stroke_shapes;
 }
 
+blink::WebMouseEvent CreateMouseMoveEventAtPoint(const gfx::PointF& point) {
+  return MouseEventBuilder()
+      .SetType(blink::WebInputEvent::Type::kMouseMove)
+      .SetPosition(point)
+      .Build();
+}
+
 blink::WebMouseEvent CreateMouseMoveWithLeftButtonEventAtPoint(
     const gfx::PointF& point) {
   return MouseEventBuilder()
@@ -260,6 +267,8 @@ class FakeClient : public PdfInkModuleClient {
               ExtendSelectionByPoint,
               (const gfx::PointF& point),
               (override));
+
+  MOCK_METHOD(ui::Cursor, GetCursor, (), (override));
 
   PageOrientation GetOrientation() const override { return orientation_; }
 
@@ -3098,6 +3107,8 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
         .WillRepeatedly(Return(selection_rects));
     EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
         .WillRepeatedly(Return(true));
+    EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kEndPointInsidePage0))
+        .WillRepeatedly(Return(true));
 
     EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                                 /*click_count=*/1));
@@ -3330,10 +3341,12 @@ TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
       .WillRepeatedly(Return(selection_rects));
   EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
       .WillRepeatedly(Return(true));
+  constexpr gfx::PointF kEndPoint2InsidePage0{25.0, 30.0};
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kEndPoint2InsidePage0))
+      .WillRepeatedly(Return(true));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/1));
-  constexpr gfx::PointF kEndPoint2InsidePage0{25.0, 30.0};
   EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPoint2InsidePage0));
 
   // Apply a text highlight stroke at the given points.
@@ -3663,7 +3676,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
   std::vector<gfx::Rect> selection_rects{gfx::Rect(9, 14, 5, 10)};
   EXPECT_CALL(client(), GetSelectionRects())
       .WillRepeatedly(Return(selection_rects));
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kMouseDownPoint))
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
       .WillRepeatedly(Return(true));
 
   // There should not be any text selection extension after the miss, as the
@@ -3671,6 +3684,173 @@ TEST_P(PdfInkModuleTextHighlightTest,
   EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
 
   RunStrokeMissedEndEventThenMouseMoveTest();
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Select the pen tool with a "Light Red" color. The cursor should be the
+  // custom pen cursor.
+  EXPECT_CALL(client(),
+              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(8, 8))));
+
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
+                                             /*color_b=*/0x82, /*size=*/6.0f};
+  SelectBrushTool(PdfInkBrush::Type::kPen, params);
+
+  // `kStartPointInsidePage0` will be the selectable text area position, while
+  // all other positions will be non-text areas.
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
+      .WillRepeatedly(Return(true));
+
+  // Move to a text position. The cursor should remain as the custom pen cursor.
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveEventAtPoint(kEndPointInsidePage0);
+  // The event will be considered not handled, but the cursor will still update.
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
+
+  VerifyAndClearExpectations();
+
+  // Select the highlighter tool. The cursor should be the custom highlighter
+  // cursor.
+  EXPECT_CALL(client(),
+              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
+  params.size = 8.0f;
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+
+  VerifyAndClearExpectations();
+
+  // Move to a text position. The cursor should be an I-beam.
+  EXPECT_CALL(client(),
+              UpdateInkCursor(ui::Cursor(ui::mojom::CursorType::kIBeam)));
+  mouse_move_event = CreateMouseMoveEventAtPoint(kStartPointInsidePage0);
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
+
+  VerifyAndClearExpectations();
+
+  // Move to a non-text position. The cursor should restore to the custom
+  // highlighter cursor.
+  {
+    InSequence seq;
+    EXPECT_CALL(client(), GetCursor())
+        .WillOnce(Return(ui::mojom::CursorType::kIBeam));
+    EXPECT_CALL(client(),
+                UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
+  }
+  mouse_move_event = CreateMouseMoveEventAtPoint(kEndPointInsidePage0);
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Select the highlighter tool. The cursor should be the custom highlighter
+  // cursor.
+  EXPECT_CALL(client(),
+              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
+                                             /*color_b=*/0x82, /*size=*/8.0f};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+
+  VerifyAndClearExpectations();
+
+  // `kStartPointInsidePage0` will be the selectable text area position, while
+  // all other positions will be non-text areas.
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
+      .WillRepeatedly(Return(true));
+
+  // Move to a text position. The cursor should be an I-beam.
+  EXPECT_CALL(client(),
+              UpdateInkCursor(ui::Cursor(ui::mojom::CursorType::kIBeam)));
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveEventAtPoint(kStartPointInsidePage0);
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
+
+  VerifyAndClearExpectations();
+
+  // Start text highlighting and move to a non-text position. The cursor should
+  // remain as an I-beam.
+  EXPECT_CALL(client(), UpdateInkCursor(_)).Times(0);
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kStartPointInsidePage0)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+  mouse_move_event =
+      CreateMouseMoveWithLeftButtonEventAtPoint(kEndPointInsidePage0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  VerifyAndClearExpectations();
+
+  // End text highlighting. The cursor should restore to the custom highlighter
+  // cursor.
+  EXPECT_CALL(client(),
+              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kEndPointInsidePage0)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Select the highlighter tool. The cursor should be the custom highlighter
+  // cursor.
+  EXPECT_CALL(client(),
+              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
+                                             /*color_b=*/0x82, /*size=*/8.0f};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+
+  VerifyAndClearExpectations();
+
+  // `kEndPointInsidePage0` will be the selectable text area position, while
+  // all other positions will be non-text areas.
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kEndPointInsidePage0))
+      .WillRepeatedly(Return(true));
+
+  // Move to a non-text position. The cursor should remain as the custom
+  // highlighter cursor.
+  EXPECT_CALL(client(), UpdateInkCursor(_)).Times(0);
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveEventAtPoint(kStartPointInsidePage0);
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
+
+  VerifyAndClearExpectations();
+
+  // Start drawing and move to a text position. The cursor should remain as the
+  // custom highlighter cursor.
+  EXPECT_CALL(client(), UpdateInkCursor(_)).Times(0);
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kStartPointInsidePage0)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+  mouse_move_event =
+      CreateMouseMoveWithLeftButtonEventAtPoint(kEndPointInsidePage0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  VerifyAndClearExpectations();
+
+  // End drawing. The cursor should be an I-beam.
+  EXPECT_CALL(client(),
+              UpdateInkCursor(ui::Cursor(ui::mojom::CursorType::kIBeam)));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kEndPointInsidePage0)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

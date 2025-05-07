@@ -12,6 +12,7 @@
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/ui/thumbnail.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -54,6 +55,9 @@ class PdfInkModuleClient {
   // Extends the current text selection to the nearest page and character to
   // `point`. `point` must be in device coordinates.
   virtual void ExtendSelectionByPoint(const gfx::PointF& point) {}
+
+  // Returns the current cursor.
+  virtual ui::Cursor GetCursor() = 0;
 
   // Gets the current page orientation.
   virtual PageOrientation GetOrientation() const = 0;

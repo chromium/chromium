@@ -3049,6 +3049,16 @@ TEST_P(PdfViewWebPluginInkTest, SendThumbnailWithNoStrokes) {
   SendThumbnail(/*message_id=*/"foo", /*page_size=*/{50, 25});
 }
 
+TEST_P(PdfViewWebPluginInkTest, GetCursor) {
+  plugin_->set_cursor_type_for_testing(ui::mojom::CursorType::kPointer);
+  EXPECT_EQ(ui::mojom::CursorType::kPointer,
+            plugin_->ink_module_client_for_testing()->GetCursor().type());
+
+  plugin_->set_cursor_type_for_testing(ui::mojom::CursorType::kIBeam);
+  EXPECT_EQ(ui::mojom::CursorType::kIBeam,
+            plugin_->ink_module_client_for_testing()->GetCursor().type());
+}
+
 TEST_P(PdfViewWebPluginInkTest, UpdateCursor) {
   UpdatePluginGeometryWithoutWaiting(2.0f, {0, 0, 20, 20});
 
