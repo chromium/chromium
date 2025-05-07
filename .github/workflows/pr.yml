@@ -17,8 +17,6 @@ jobs:
 
       - name: Check Commit Origin Against Upstream
         id: commit_origin_check
-        # This step should ideally only run if the PR opener was identified as an employee.
-        # For example, add: if: steps.pr_opener_check.outputs.is_employee_opener == 'true'
         run: |
           UPSTREAM_REPO_URL="${{ steps.upstream_config.outputs.upstream_repo_url }}"
           UPSTREAM_BRANCH_NAME="${{ steps.upstream_config.outputs.upstream_branch_name }}"
@@ -52,7 +50,7 @@ jobs:
             echo "Error: Could not determine merge base between $PR_BASE_REF and $PR_HEAD_SHA."
             echo "This could indicate unrelated histories or issues fetching. For safety, requiring review."
             echo "::set-output name=require_review::true"
-            exit 0 # Exit successfully for the script, but review is required
+            exit 0
           fi
           echo "Merge Base for PR commits (relative to fork's base): $MERGE_BASE"
 
@@ -101,7 +99,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             let labelToAdd = '';
-            let labelToRemove = ''; // Optional: if you want to remove the other label
+            let labelToRemove = '';
 
             console.log(`PR is Purely Upstream: ${isPurelyUpstream}`);
 
