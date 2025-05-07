@@ -286,8 +286,17 @@ bool StyleFetchedImage::GetImageAnimationPolicy(
   return true;
 }
 
-String StyleFetchedImage::FragmentIdentifier() const {
-  return KURL(url_data_->ResolvedUrl()).FragmentIdentifier().ToString();
+const String& StyleFetchedImage::FragmentIdentifier() const {
+  if (cached_fragment_identifier_.IsNull()) {
+    cached_fragment_identifier_ =
+        KURL(url_data_->ResolvedUrl()).FragmentIdentifier().ToString();
+    // If URL does not have a fragment identifier we'll get a null
+    // String. Normalize to the empty String to avoid repeated URL resolving.
+    if (!cached_fragment_identifier_) {
+      cached_fragment_identifier_ = g_empty_string;
+    }
+  }
+  return cached_fragment_identifier_;
 }
 
 bool StyleFetchedImage::CanBeSpeculativelyDecoded() const {

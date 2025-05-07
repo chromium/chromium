@@ -104,8 +104,9 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   bool GetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy&) override;
   bool CanBeSpeculativelyDecoded() const override;
 
-  String FragmentIdentifier() const;
+  const String& FragmentIdentifier() const;
 
+  mutable String cached_fragment_identifier_;
   Member<ImageResourceContent> image_;
   Member<const CSSUrlData> url_data_;
   Member<const Document> document_;
