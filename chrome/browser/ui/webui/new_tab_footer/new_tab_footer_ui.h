@@ -12,6 +12,11 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}  // namespace ui
 
 class NewTabFooterHandler;
 class NewTabFooterUI;
@@ -45,6 +50,12 @@ class NewTabFooterUI
       mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandlerFactory>
           pending_receiver);
 
+  // Instantiates the implementor of the mojom::PageHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          pending_receiver);
+
  private:
   // new_tab_footer::mojom::NewTabFooterHandlerFactory:
   void CreateNewTabFooterHandler(
@@ -56,6 +67,7 @@ class NewTabFooterUI
   std::unique_ptr<NewTabFooterHandler> handler_;
   mojo::Receiver<new_tab_footer::mojom::NewTabFooterHandlerFactory>
       document_factory_receiver_{this};
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   raw_ptr<Profile> profile_;
 
  private:

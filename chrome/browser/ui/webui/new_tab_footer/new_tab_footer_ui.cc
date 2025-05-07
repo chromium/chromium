@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 NewTabFooterUIConfig::NewTabFooterUIConfig()
@@ -65,6 +66,13 @@ void NewTabFooterUI::BindInterface(
   }
 
   document_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void NewTabFooterUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void NewTabFooterUI::CreateNewTabFooterHandler(

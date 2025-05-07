@@ -7,14 +7,6 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-:host {
-  background-color: var(--color-new-tab-footer-background);
-  display: block;
-  height: 56px;
-  overflow-y: hidden;
-  width: 100%;
-}
-
 #centerContainer {
   display: flex;
   justify-content: center;
