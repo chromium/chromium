@@ -1970,7 +1970,7 @@ static_library("ui") {
       allow_circular_includes_from += [ "//chrome/browser/ui/find_bar:impl" ]
     }
 
-    if (is_win) {
+    if (is_win && is_chrome_branded) {
       sources += [
         "startup/installer_downloader/installer_downloader_infobar_delegate.cc",
         "startup/installer_downloader/installer_downloader_infobar_delegate.h",
