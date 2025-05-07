@@ -245,6 +245,13 @@ const CGFloat kOpacityAnimationDuration = 0.4;
   [self monitorResultsBottomSheetPosition];
 
   __weak __typeof(self) weakSelf = self;
+
+  // If there is already a view controller presented (e.g. the overflow menu)
+  // dismiss it before presenting.
+  if (_baseViewController.presentedViewController) {
+    [_baseViewController dismissViewControllerAnimated:NO completion:nil];
+  }
+
   [_baseViewController
       presentViewController:_presentationNavigationController
                    animated:animated
@@ -256,6 +263,36 @@ const CGFloat kOpacityAnimationDuration = 0.4;
                      completion();
                    }
                  }];
+}
+
+- (void)readjustPresentationIfNeeded {
+  if (!self.isResultPageVisible) {
+    return;
+  }
+
+  BOOL isAlreadySidePanel = _baseViewController.sidePanelPresented;
+  BOOL presentInSidePanel =
+      lens::ResultPagePresentationFor(_baseViewController) ==
+      lens::ResultPagePresentationType::kSidePanel;
+  // Refrain from rebuilding the presentation there was no change in the
+  // presentation type.
+  BOOL shouldRebuildPresentation = isAlreadySidePanel ^ presentInSidePanel;
+  if (!shouldRebuildPresentation) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  BOOL maximizeSheet =
+      _detentsManager.sheetDimension == SheetDimensionState::kLarge;
+  BOOL startInTranslate = _detentsManager.presentationStrategy ==
+                          SheetDetentPresentationStategyTranslate;
+  [self dismissResultsPageAnimated:NO
+                        completion:^{
+                          [weakSelf presentResultsPageAnimated:NO
+                                                 maximizeSheet:maximizeSheet
+                                              startInTranslate:startInTranslate
+                                                    completion:nil];
+                        }];
 }
 
 - (void)revealBottomSheetIfHidden {

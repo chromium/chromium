@@ -43,6 +43,9 @@
                   startInTranslate:(BOOL)startInTranslate
                         completion:(void (^)(void))completion;
 
+// Readjusts the presentation if there was a change in window dimensions.
+- (void)readjustPresentationIfNeeded;
+
 // Dismisses the presented page from the base view controller.
 - (void)dismissResultsPageAnimated:(BOOL)animated
                         completion:(void (^)(void))completion;

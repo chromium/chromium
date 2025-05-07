@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_presentation_type.h"
+
 @class LensOverlayContainerViewController;
 @class SceneState;
 @protocol LensOverlayContainerPresenterDelegate;
@@ -49,6 +51,10 @@
 // Notifies the delegate that the container presentation is about to be
 // dismissed.
 - (void)lensOverlayContainerPresenterWillDismissPresentation:
+    (LensOverlayContainerPresenter*)containerPresenter;
+
+// Informs the delegate that the container presentation was readjusted.
+- (void)lensOverlayContainerPresenterDidReadjustPresentation:
     (LensOverlayContainerPresenter*)containerPresenter;
 
 // Returns the required directional edge insets for the presentation.

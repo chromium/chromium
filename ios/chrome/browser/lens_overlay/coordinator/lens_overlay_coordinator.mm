@@ -721,6 +721,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [self.presentationEnvironment lensOverlayWillDisappear];
 }
 
+- (void)lensOverlayContainerPresenterDidReadjustPresentation:
+    (LensOverlayContainerPresenter*)containerPresenter {
+  [_resultsPagePresenter readjustPresentationIfNeeded];
+}
+
 - (NSDirectionalEdgeInsets)lensOverlayContainerPresenterInsetsForPresentation:
     (LensOverlayContainerPresenter*)containerPresenter {
   return self.presentationEnvironment.presentationInsetsForLensOverlay;

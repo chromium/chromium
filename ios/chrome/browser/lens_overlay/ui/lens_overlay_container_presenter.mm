@@ -167,6 +167,7 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
   NSDirectionalEdgeInsets insets =
       [self.delegate lensOverlayContainerPresenterInsetsForPresentation:self];
   _topConstraint.constant = insets.top;
+  [self.delegate lensOverlayContainerPresenterDidReadjustPresentation:self];
 }
 
 @end
