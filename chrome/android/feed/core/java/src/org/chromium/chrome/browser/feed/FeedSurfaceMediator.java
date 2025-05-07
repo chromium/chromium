@@ -190,7 +190,7 @@ public class FeedSurfaceMediator
      */
     private class FeedSigninPromo {
         private final SigninPromoCoordinator mSigninPromoCoordinator;
-        private final View mPromoView;
+        @Nullable private View mPromoView;
         private boolean mCanShowPersonalizedSuggestions;
         private boolean mCanShowPromo;
 
@@ -208,14 +208,18 @@ public class FeedSurfaceMediator
             mCanShowPromo =
                     mSigninPromoCoordinator.canShowPromo() && mCanShowPersonalizedSuggestions;
 
-            mPromoView = mSigninPromoCoordinator.buildPromoView((ViewGroup) mCoordinator.getView());
-            mSigninPromoCoordinator.setView(mPromoView);
+            if (mCanShowPromo) {
+                // The view is created lazily to avoid increasing the browser memory footprint by
+                // keeping the view in memory even when it's never shown to the user.
+                initializePromoView();
+            }
         }
 
         boolean canShowPromo() {
             return mCanShowPromo;
         }
 
+        @Nullable
         View getPromoView() {
             return mPromoView;
         }
@@ -238,7 +242,15 @@ public class FeedSurfaceMediator
             }
 
             mCanShowPromo = canShowPromo;
+            if (mPromoView == null && mCanShowPromo) {
+                initializePromoView();
+            }
             mCoordinator.updateHeaderViews(mCanShowPromo ? mPromoView : null);
+        }
+
+        private void initializePromoView() {
+            mPromoView = mSigninPromoCoordinator.buildPromoView((ViewGroup) mCoordinator.getView());
+            mSigninPromoCoordinator.setView(mPromoView);
         }
     }
 
