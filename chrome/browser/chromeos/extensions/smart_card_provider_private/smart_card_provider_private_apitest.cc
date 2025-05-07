@@ -267,6 +267,7 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
       receivers_.Add(this, pending_remote.InitWithNewPipeAndPassReceiver());
       return pending_remote;
     }
+    void SeverPipes() { receivers_.Clear(); }
 
    private:
     void OnDisconnect() {
@@ -834,6 +835,19 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   connection.reset();
   connections_watcher_.WaitForDisconnect();
   EXPECT_EQ(disconnect_count + 1, connections_watcher_.GetTimesDisconnected());
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       WatcherDisconnectionSeversConnection) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs});
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_connected());
+
+  base::test::TestFuture<void> disconnect_future;
+  connection.set_disconnect_handler(disconnect_future.GetCallback());
+  connections_watcher_.SeverPipes();
+  ASSERT_TRUE(disconnect_future.Wait());
+  EXPECT_FALSE(connection.is_connected());
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, DisconnectNoProvider) {

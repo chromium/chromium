@@ -328,7 +328,7 @@ class SmartCardProviderPrivateAPI
 
   // The watcher connection closes - thus, the pipe fall is leveraged to kill
   // the connection.
-  void OnMojoWatcherPipeClosed(mojo::ReceiverId connection_id);
+  void OnMojoWatcherPipeClosed(mojo::RemoteSetElementId watcher_id);
 
   // This may only be called only when processing a received method call on
   // SmartCardConnection().
@@ -362,6 +362,9 @@ class SmartCardProviderPrivateAPI
 
   std::map<mojo::ReceiverId, mojo::RemoteSetElementId>
       connection_watchers_per_receiver_;
+
+  std::map<mojo::RemoteSetElementId, mojo::ReceiverId>
+      connection_receivers_per_watcher_;
 
   mojo::AssociatedReceiverSet<device::mojom::SmartCardTransaction,
                               std::tuple<ContextId, Handle>>

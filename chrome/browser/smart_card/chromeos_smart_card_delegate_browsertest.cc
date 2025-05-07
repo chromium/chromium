@@ -8,8 +8,10 @@
 
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 #include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
@@ -19,6 +21,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/smart_card_delegate.h"
@@ -72,6 +75,18 @@ class ChromeOsSmartCardDelegateBrowserTest
     SmartCardPermissionContextFactory::GetForProfile(*profile())
         .GrantPersistentReaderPermission(app_frame_->GetLastCommittedOrigin(),
                                          kDummyReader);
+  }
+
+  void GrantEphemeralReaderPermission() {
+    SmartCardPermissionContextFactory::GetForProfile(*profile())
+        .GrantEphemeralReaderPermission(app_frame_->GetLastCommittedOrigin(),
+                                        kDummyReader);
+  }
+
+  bool HasReaderPermission(const url::Origin& origin,
+                           const std::string& reader) {
+    return SmartCardPermissionContextFactory::GetForProfile(*profile())
+        .HasReaderPermission(origin, reader);
   }
 
  protected:
@@ -176,4 +191,36 @@ IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTest,
   // possibility as long as the window has focus.
   EXPECT_TRUE(
       GetSmartCardDelegate()->HasReaderPermission(*app_frame_, kDummyReader));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTest,
+                       PermissionRequestInTheBackgroundImpossible) {
+  GrantReaderPermission();
+
+  // Hiding takes focus from the window.
+  content::WebContents::FromRenderFrameHost(app_frame_)
+      ->GetTopLevelNativeWindow()
+      ->Hide();
+
+  base::test::TestFuture<bool> got_permission;
+  // This should immediately return false, not even trying to display any
+  // prompts.
+  GetSmartCardDelegate()->RequestReaderPermission(*app_frame_, kDummyReader,
+                                                  got_permission.GetCallback());
+  EXPECT_FALSE(got_permission.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTest,
+                       ClosingWindowClearsEphemeralPermissions) {
+  GrantEphemeralReaderPermission();
+  const auto origin = app_frame_->GetLastCommittedOrigin();
+  EXPECT_TRUE(HasReaderPermission(origin, kDummyReader));
+
+  auto* tab_interface = tabs::TabInterface::GetFromContents(
+      content::WebContents::FromRenderFrameHost(app_frame_));
+  // Not resetting this causes dangling raw pointer error when closing tab.
+  app_frame_ = nullptr;
+  tab_interface->Close();
+
+  EXPECT_FALSE(HasReaderPermission(origin, kDummyReader));
 }

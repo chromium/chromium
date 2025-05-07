@@ -7,6 +7,7 @@
 #include <queue>
 #include <variant>
 
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
@@ -380,6 +381,10 @@ SmartCardProviderPrivateAPI::SmartCardProviderPrivateAPI(
   transaction_receivers_.set_disconnect_handler(base::BindRepeating(
       &SmartCardProviderPrivateAPI::OnMojoTransactionDisconnected,
       weak_ptr_factory_.GetWeakPtr()));
+
+  connection_watchers_.set_disconnect_handler(
+      base::BindRepeating(&SmartCardProviderPrivateAPI::OnMojoWatcherPipeClosed,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 SmartCardProviderPrivateAPI::~SmartCardProviderPrivateAPI() = default;
@@ -446,6 +451,7 @@ void SmartCardProviderPrivateAPI::OnMojoConnectionDisconnected() {
       connection_receivers_.current_receiver());
   if (it != connection_watchers_per_receiver_.end()) {
     connection_watchers_.Remove(it->second);
+    connection_watchers_per_receiver_.erase(it);
   }
 
   auto callback =
@@ -886,14 +892,13 @@ SmartCardProviderPrivateAPI::CreateSmartCardConnection(
 
   if (mojo::Remote connection_watcher_remote(std::move(connection_watcher));
       connection_watcher_remote.is_bound()) {
-    connection_watcher_remote.set_disconnect_handler(
-        base::BindOnce(&SmartCardProviderPrivateAPI::OnMojoWatcherPipeClosed,
-                       weak_ptr_factory_.GetWeakPtr(), connection_receiver_id));
     // Creating a connection is also considered the first use of said
     // connection.
     connection_watcher_remote->NotifyConnectionUsed();
-    connection_watchers_per_receiver_[connection_receiver_id] =
-        connection_watchers_.Add(std::move(connection_watcher_remote));
+    mojo::RemoteSetElementId watcher_id =
+        connection_watchers_per_receiver_[connection_receiver_id] =
+            connection_watchers_.Add(std::move(connection_watcher_remote));
+    connection_receivers_per_watcher_[watcher_id] = connection_receiver_id;
   }
 
   return SmartCardConnectResult::NewSuccess(
@@ -1627,9 +1632,13 @@ REPORT_RESULT_FUNCTION_IMPL(
 #undef REPORT_RESULT_FUNCTION_IMPL
 
 void SmartCardProviderPrivateAPI::OnMojoWatcherPipeClosed(
-    mojo::ReceiverId connection_id) {
-  connection_watchers_per_receiver_.erase(connection_id);
-  connection_receivers_.Remove(connection_id);
+    mojo::RemoteSetElementId watcher_id) {
+  auto it = connection_receivers_per_watcher_.find(watcher_id);
+  if (it == connection_receivers_per_watcher_.end()) {
+    return;
+  }
+  connection_receivers_.Remove(it->second);
+  connection_receivers_per_watcher_.erase(it);
 }
 
 void SmartCardProviderPrivateAPI::NotifyConnectionUsed() {
