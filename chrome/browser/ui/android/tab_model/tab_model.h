@@ -142,6 +142,9 @@ class TabModel : public TabListInterface {
     // From history navigation (back / forward) when opening a new tab/window in
     // the foreground.
     FROM_HISTORY_NAVIGATION_FOREGROUND,
+    // Like FROM_LONGPRESS_FOREGROUND, but used when the parent tab is part of a
+    // group.
+    FROM_LONGPRESS_FOREGROUND_IN_GROUP,
     // Must be last.
     SIZE
   };

@@ -152,6 +152,8 @@ public class ChromeTabCreator extends TabCreator
                 return "HistoryNavigationBackground";
             case TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND:
                 return "HistoryNavigationBackground";
+            case TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP:
+                return "LongpressForegroundInGroup";
             default:
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 return "TypeUnknown";
@@ -701,6 +703,7 @@ public class ChromeTabCreator extends TabCreator
                 transition = PageTransition.AUTO_TOPLEVEL;
                 break;
             case TabLaunchType.FROM_LONGPRESS_FOREGROUND:
+            case TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP:
             case TabLaunchType.FROM_LONGPRESS_INCOGNITO:
             case TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND:
                 transition = PageTransition.LINK;

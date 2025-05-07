@@ -273,6 +273,9 @@ chromium-metrics-reviews@google.com.
                in group'"/>
   <variant name="LongpressForeground"
       summary="tabs opened from the long press context menu"/>
+  <variant name="LongpressForegroundInGroup"
+      summary="For tabs which must be opened in the foreground in the same
+               group as the parent"/>
   <variant name="LongpressIncognito"
       summary="tabs opened from the long press context menu item 'Open in
                Incognito Tab'"/>
