@@ -73,7 +73,7 @@ def _get_latest_androidx_version():
     logging.info('URL for the latest build info: %s', androidx_artifacts_url)
     # Strip '/repository' from pattern.
     resolved_snapshot_repository_url_pattern = (
-        _build_snapshot_repository_url('([0-9]*)').rsplit('/', 1)[0])
+        fetch_util.make_androidx_maven_url('([0-9]*)').rsplit('/', 1)[0])
     match = re.match(resolved_snapshot_repository_url_pattern,
                      androidx_artifacts_url)
     assert match is not None
