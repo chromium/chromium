@@ -561,13 +561,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitErasesMemory) {
   FreePages(buffer, size);
 }
 
-// TODO(crbug.com/416151077): Enabled the test on UBSan.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_DecommitAndZero DISABLED_DecommitAndZero
-#else
-#define MAYBE_DecommitAndZero DecommitAndZero
-#endif
-TEST(PartitionAllocPageAllocatorTest, MAYBE_DecommitAndZero) {
+TEST(PartitionAllocPageAllocatorTest, DecommitAndZero) {
   size_t size = PageAllocationGranularity();
   uintptr_t buffer = AllocPages(size, PageAllocationGranularity(),
                                 PageAccessibilityConfiguration(
