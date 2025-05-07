@@ -12,6 +12,7 @@ import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -55,13 +56,20 @@ public abstract class ContentUriUtils {
      * @return file descriptor upon success, or -1 otherwise.
      */
     @CalledByNative
-    public static int openContentUri(
+    public static @Nullable ParcelFileDescriptor openContentUri(
             @JniType("std::string") String uriString, @JniType("std::string") String mode) {
         AssetFileDescriptor afd = getAssetFileDescriptor(uriString, mode);
-        if (afd != null) {
-            return afd.getParcelFileDescriptor().detachFd();
-        }
-        return -1;
+        return afd != null ? afd.getParcelFileDescriptor() : null;
+    }
+
+    @CalledByNative
+    private static int getFd(ParcelFileDescriptor parcelFileDescriptor) {
+        return parcelFileDescriptor.getFd();
+    }
+
+    @CalledByNative
+    private static void close(ParcelFileDescriptor parcelFileDescriptor) {
+        StreamUtil.closeQuietly(parcelFileDescriptor);
     }
 
     /**

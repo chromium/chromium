@@ -20,6 +20,10 @@
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 struct stat;
 
 namespace base {
@@ -425,6 +429,13 @@ class BASE_EXPORT File {
   void SetPlatformFile(PlatformFile file);
 
   ScopedPlatformFile file_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Keeps the Java ParcelFileDescriptor alive when `this` wraps a file from an
+  // Android content provider (i.e. a content URI). Close() is called on the
+  // object when the file is closed.
+  base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor_;
+#endif
 
   // Platform path to `file_`. Set if `this` wraps a file from an Android
   // content provider (i.e. a content URI) or if tracing is enabled in

@@ -57,10 +57,15 @@ File::File(Error error_details) : error_details_(error_details) {}
 
 File::File(File&& other)
     : file_(other.TakePlatformFile()),
+#if BUILDFLAG(IS_ANDROID)
+      java_parcel_file_descriptor_(
+          std::move(other.java_parcel_file_descriptor_)),
+#endif
       path_(other.path_),
       error_details_(other.error_details()),
       created_(other.created()),
-      async_(other.async_) {}
+      async_(other.async_) {
+}
 
 File::~File() {
   // Go through the AssertIOAllowed logic.
@@ -70,6 +75,9 @@ File::~File() {
 File& File::operator=(File&& other) {
   Close();
   SetPlatformFile(other.TakePlatformFile());
+#if BUILDFLAG(IS_ANDROID)
+  java_parcel_file_descriptor_ = std::move(other.java_parcel_file_descriptor_);
+#endif
   path_ = other.path_;
   error_details_ = other.error_details();
   created_ = other.created();
