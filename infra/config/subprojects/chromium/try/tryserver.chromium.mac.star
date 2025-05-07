@@ -361,7 +361,6 @@ try_.orchestrator_builder(
             "arm64",
             "gpu_tests",
             "release_try_builder",
-            "reclient",
             "remoteexec",
             "no_symbols",
             "mac",
