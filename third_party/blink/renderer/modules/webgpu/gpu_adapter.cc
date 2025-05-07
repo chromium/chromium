@@ -28,7 +28,6 @@ namespace blink {
 
 namespace {
 
-// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE
 GPUSupportedFeatures* MakeFeatureNameSet(wgpu::Adapter adapter) {
   GPUSupportedFeatures* features = MakeGarbageCollected<GPUSupportedFeatures>();
   DCHECK(features->FeatureNameSet().empty());
@@ -51,7 +50,6 @@ GPUSupportedFeatures* MakeFeatureNameSet(wgpu::Adapter adapter) {
 
 }  // anonymous namespace
 
-// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE
 GPUAdapter::GPUAdapter(
     GPU* gpu,
     wgpu::Adapter handle,
@@ -63,9 +61,8 @@ GPUAdapter::GPUAdapter(
   wgpu::AdapterPropertiesSubgroups subgroupsProperties = {};
   *propertiesChain = &subgroupsProperties;
   propertiesChain = &(*propertiesChain)->nextInChain;
-  wgpu::AdapterPropertiesMemoryHeaps memoryHeapProperties = {};
   if (GetHandle().HasFeature(wgpu::FeatureName::AdapterPropertiesMemoryHeaps)) {
-    *propertiesChain = &memoryHeapProperties;
+    *propertiesChain = &memory_heaps_;
     propertiesChain = &(*propertiesChain)->nextInChain;
   }
   if (GetHandle().HasFeature(
@@ -108,10 +105,6 @@ GPUAdapter::GPUAdapter(
   }
   description_ = String::FromUTF8(info.device);
   driver_ = String::FromUTF8(info.description);
-  for (size_t i = 0; i < memoryHeapProperties.heapCount; ++i) {
-    memory_heaps_.push_back(MakeGarbageCollected<GPUMemoryHeapInfo>(
-        UNSAFE_TODO(memoryHeapProperties.heapInfo[i])));
-  }
   if (supportsPropertiesD3D) {
     d3d_shader_model_ = d3dProperties.shaderModel;
   }
@@ -141,8 +134,13 @@ GPUAdapterInfo* GPUAdapter::CreateAdapterInfoForAdapter() {
         is_fallback_adapter_, device_, description_, driver_,
         FromDawnEnum(backend_type_), FromDawnEnum(adapter_type_),
         d3d_shader_model_, vk_driver_version_, FromDawnEnum(power_preference_));
-    for (GPUMemoryHeapInfo* memory_heap : memory_heaps_) {
-      info->AppendMemoryHeapInfo(memory_heap);
+
+    // SAFETY: Required from caller
+    const auto memory_heaps_span =
+        UNSAFE_BUFFERS(base::span<const wgpu::MemoryHeapInfo>(
+            memory_heaps_.heapInfo, memory_heaps_.heapCount));
+    for (const auto& m : memory_heaps_span) {
+      info->AppendMemoryHeapInfo(MakeGarbageCollected<GPUMemoryHeapInfo>(m));
     }
   } else {
     info = MakeGarbageCollected<GPUAdapterInfo>(
@@ -354,7 +352,6 @@ void GPUAdapter::Trace(Visitor* visitor) const {
   visitor->Trace(features_);
   visitor->Trace(limits_);
   visitor->Trace(info_);
-  visitor->Trace(memory_heaps_);
   ScriptWrappable::Trace(visitor);
 }
 
