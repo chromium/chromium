@@ -450,6 +450,14 @@ public class ToolbarManager
         private final CallbackController mCallbackController = new CallbackController();
 
         @Override
+        public boolean invokeBackActionOnEscape() {
+            // Escape key presses should not navigate back in tab history. We do not also implement
+            // a custom {@link BackPressHandler#handleEscPress()} since we don't want anything to
+            // happen and for the manager to move to the next priority handler.
+            return false;
+        }
+
+        @Override
         public int handleBackPress() {
             mIsInProgress = false;
             if (mIsGestureMode && mBackGestureInProgress) {

@@ -105,7 +105,6 @@ public class BackPressManager implements Destroyable {
             }
         }
 
-        if (mFallbackOnBackPressed != null) mFallbackOnBackPressed.run();
         assert !failed : "Callback is enabled but didn't consume the esc.";
         return null;
     }

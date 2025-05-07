@@ -595,6 +595,37 @@ public class BackPressManagerUnitTest {
                 h4.getCallbackHelper().getCallCount());
     }
 
+    @Test
+    public void testEscapePressesDoNotUseFallback() {
+        BackPressManager manager = new BackPressManager();
+        EscapeBackPressHandlerFailure h1 = new EscapeBackPressHandlerFailure();
+        EscapeBackPressHandlerFailure h2 = new EscapeBackPressHandlerFailure();
+
+        // Fail if the BackPressManager calls the fallback method, which it shouldn't.
+        manager.setFallbackOnBackPressed(
+                () -> {
+                    assert false
+                            : "BackPressManager should not call fallback on escape key presses.";
+                });
+
+        manager.addHandler(h1, 3);
+        manager.addHandler(h2, 6);
+        h1.getHandleBackPressChangedSupplier().set(true);
+        h2.getHandleBackPressChangedSupplier().set(true);
+
+        Assert.assertNull(
+                "Manager should not have found any handlers to consume Esc.",
+                manager.processEscapeKeyEvent());
+        Assert.assertEquals(
+                "Handler did not execute custom esc key code even though it will fail.",
+                1,
+                h1.getCallbackHelper().getCallCount());
+        Assert.assertEquals(
+                "Handler did not execute back press code even though it will fall through.",
+                1,
+                h2.getCallbackHelper().getCallCount());
+    }
+
     private int getHandlerCount(BackPressManager manager) {
         int count = 0;
         for (BackPressHandler handler : manager.getHandlersForTesting()) {
