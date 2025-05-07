@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -312,6 +313,8 @@ void PinStorageCryptohome::OnAuthFactorsEdit(
     std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to edit pin, code " << error->get_cryptohome_error();
+    // TODO(b:374099765): Remove this once the bug is fixed.
+    base::debug::DumpWithoutCrashing();
     std::move(callback).Run(std::move(user_context), std::move(error));
     return;
   }
