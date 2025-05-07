@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_ANDROID_DOWNLOAD_PROTECTION_METRICS_DATA_H_
 
 #include "base/supports_user_data.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 
 namespace download {
 class DownloadItem;
@@ -56,6 +57,10 @@ class DownloadProtectionMetricsData : public base::SupportsUserData::Data {
     kMaxValue = kNotSampled,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SBClientDownloadAndroidDownloadProtectionOutcome)
+
+  // Converts corresponding enum values.
+  static AndroidDownloadProtectionOutcome ConvertDownloadCheckResultReason(
+      DownloadCheckResultReason reason);
 
   // The histogram is logged in the dtor if it has not yet been logged.
   ~DownloadProtectionMetricsData() override;

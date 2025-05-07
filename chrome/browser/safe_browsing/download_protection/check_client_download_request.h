@@ -50,8 +50,10 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
   void OnDownloadDestroyed(download::DownloadItem* download) override;
   void OnDownloadUpdated(download::DownloadItem* download) override;
 
+  // Returns whether `item` is eligible for CheckClientDownloadRequest.
+  // Note: Behavior is platform-specific.
   static bool IsSupportedDownload(const download::DownloadItem& item,
-                                  const base::FilePath& target_path,
+                                  const base::FilePath& file_name,
                                   DownloadCheckResultReason* reason);
 
   download::DownloadItem* item() const override;

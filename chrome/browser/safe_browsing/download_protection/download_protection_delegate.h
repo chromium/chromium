@@ -42,15 +42,19 @@ class DownloadProtectionDelegate {
   virtual bool ShouldCheckDownloadUrl(download::DownloadItem* item) const = 0;
 
   // Returns whether the download item should be checked by
-  // CheckClientDownload() based on user preferences.
+  // CheckClientDownload() based on user preferences, properties of the file,
+  // and potentially random sampling.
+  // TODO(chlily): Implementations of this method currently rely on the checks
+  // in IsSupportedDownload. This is redundant. Refactor this logic to eliminate
+  // IsSupportedDownload().
   virtual bool ShouldCheckClientDownload(
       download::DownloadItem* item) const = 0;
 
   // Returns whether the download item should be checked by
   // CheckClientDownload() based on whether the file supports the check.
-  // May modify the DownloadItem with a SupportsUserData::Data.
-  // TODO(chlily): Refactor and/or rename this, as it currently contains logic
-  // based on things other than the file itself (i.e. random sampling).
+  // TODO(chlily): Remove this method. The only place where it is called seems
+  // to be vestigial, and does not affect whether CheckClientDownload ultimately
+  // happens.
   virtual bool IsSupportedDownload(download::DownloadItem& item,
                                    const base::FilePath& target_path) const = 0;
 

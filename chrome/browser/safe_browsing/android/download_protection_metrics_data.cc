@@ -9,6 +9,28 @@
 
 namespace safe_browsing {
 
+// static
+DownloadProtectionMetricsData::AndroidDownloadProtectionOutcome
+DownloadProtectionMetricsData::ConvertDownloadCheckResultReason(
+    DownloadCheckResultReason reason) {
+  switch (reason) {
+    case DownloadCheckResultReason::REASON_EMPTY_URL_CHAIN:
+      return AndroidDownloadProtectionOutcome::kEmptyUrlChain;
+    case DownloadCheckResultReason::REASON_INVALID_URL:
+      return AndroidDownloadProtectionOutcome::kInvalidUrl;
+    case DownloadCheckResultReason::REASON_UNSUPPORTED_URL_SCHEME:
+      return AndroidDownloadProtectionOutcome::kUnsupportedUrlScheme;
+    case DownloadCheckResultReason::REASON_REMOTE_FILE:
+      return AndroidDownloadProtectionOutcome::kRemoteFile;
+    case DownloadCheckResultReason::REASON_LOCAL_FILE:
+      return AndroidDownloadProtectionOutcome::kLocalFile;
+    case DownloadCheckResultReason::REASON_NOT_BINARY_FILE:
+      return AndroidDownloadProtectionOutcome::kDownloadNotSupportedType;
+    default:
+      NOTREACHED();
+  }
+}
+
 DownloadProtectionMetricsData::DownloadProtectionMetricsData() = default;
 
 DownloadProtectionMetricsData::~DownloadProtectionMetricsData() {
