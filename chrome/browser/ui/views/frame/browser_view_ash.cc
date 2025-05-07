@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -134,4 +135,9 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
   if (contents_webview->GetBackgroundRadii() != contents_webview_radii) {
     contents_webview->SetBackgroundRadii(contents_webview_radii);
   }
+
+  // Ensure that browser scrims are rounded as well.
+  window_scrim_view()->SetRoundedCorners(window_radii);
+  contents_scrim_view()->SetRoundedCorners(contents_webview_radii);
+  devtools_scrim_view()->SetRoundedCorners(devtools_webview_radii);
 }
