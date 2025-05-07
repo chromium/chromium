@@ -20,8 +20,7 @@ template("fuzzable_proto_library") {
   # use LPM on (i.e. libFuzzer not on Chrome OS).
   if (use_fuzzing_engine_with_lpm &&
       current_toolchain != "//build/toolchain/cros:target") {
-    _proto_target_name = "${target_name}__proto"
-    proto_library(_proto_target_name) {
+    proto_library("proto_library_" + target_name) {
       forward_variables_from(invoker,
                              "*",
                              [
@@ -34,7 +33,7 @@ template("fuzzable_proto_library") {
         foreach(dep, invoker.deps) {
           dep_dir = get_label_info(dep, "dir")
           dep_name = get_label_info(dep, "name")
-          deps += [ "${dep_dir}:${dep_name}__proto" ]
+          deps += [ "${dep_dir}:proto_library_${dep_name}" ]
         }
       }
 
@@ -47,12 +46,9 @@ template("fuzzable_proto_library") {
       extra_configs = [ "//third_party/protobuf:protobuf_config" ]
     }
 
-    # These groups are required by proto_library template in proto_library.gni.
+    # This is to work with proto_library template in proto_library.gni.
     group("${target_name}_input_group") {
-      public_deps = [ ":${_proto_target_name}_input_group" ]
-    }
-    group("${target_name}_gen") {
-      public_deps = [ ":${_proto_target_name}_gen" ]
+      public_deps = [ ":proto_library_${target_name}" ]
     }
 
     # Inspired by proto_library.gni's handling of
@@ -72,7 +68,7 @@ template("fuzzable_proto_library") {
       }
       sources = [ "//third_party/libprotobuf-mutator/dummy.cc" ]
       public_deps = [
-        ":$_proto_target_name",
+        ":proto_library_" + target_name,
         "//third_party/libprotobuf-mutator:protobuf_full",
       ]
     }

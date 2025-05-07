@@ -40,7 +40,7 @@ action("device_policy_remover_generate") {
     rebase_path(chrome_device_policy_pb2_dir, root_build_dir),
   ]
 
-  deps = [
+  public_deps = [
     "//components/policy/proto:proto_internal_gen",
     "//third_party/protobuf:py_proto",
   ]
@@ -48,6 +48,6 @@ action("device_policy_remover_generate") {
 
 static_library("device_policy_remover_generated") {
   sources = [ device_policy_remover_path ]
-  deps = [ ":device_policy_remover_generate" ]
-  public_deps = [ "//components/policy/proto:proto_internal" ]
+
+  public_deps = [ ":device_policy_remover_generate" ]
 }

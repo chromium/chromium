@@ -13,6 +13,8 @@ fuzzable_proto_library("record_constants") {
   generate_javascript = true
 
   sources = [ "synced/record_constants.proto" ]
+
+  generator_visibility = [ "//chrome/browser/resources/chromeos/contact_center_insights:reporting_protos" ]
 }
 
 # Record definitions for reporting.
@@ -23,6 +25,8 @@ fuzzable_proto_library("record_proto") {
   generate_javascript = true
 
   sources = [ "synced/record.proto" ]
+
+  generator_visibility = [ "//chrome/browser/resources/chromeos/contact_center_insights:reporting_protos" ]
 
   deps = [
     ":health_proto",
@@ -53,6 +57,8 @@ fuzzable_proto_library("health_proto") {
 
   sources = [ "synced/health.proto" ]
 
+  generator_visibility = [ "//chrome/browser/resources/chromeos/contact_center_insights:reporting_protos" ]
+
   deps = [
     ":record_constants",
     ":status_proto",
@@ -66,6 +72,8 @@ proto_library("session_affiliated_user_proto") {
   generate_javascript = true
 
   sources = [ "synced/session_affiliated_user.proto" ]
+
+  generator_visibility = [ "//chrome/browser/resources/chromeos/contact_center_insights:reporting_protos" ]
 }
 
 proto_library("test_proto") {
@@ -82,6 +90,8 @@ proto_library("metric_data_proto") {
 
   sources = [ "synced/metric_data.proto" ]
 
+  generator_visibility = [ "//chrome/browser/resources/chromeos/contact_center_insights:reporting_protos" ]
+
   deps = [
     ":session_affiliated_user_proto",
     "//components/services/app_service/public/protos",
@@ -95,6 +105,8 @@ fuzzable_proto_library("status_proto") {
   generate_javascript = true
 
   sources = [ "synced/status.proto" ]
+
+  generator_visibility = [ "//chrome/browser/resources/chromeos/contact_center_insights:reporting_protos" ]
 }
 
 fuzzable_proto_library("upload_tracker_proto") {
