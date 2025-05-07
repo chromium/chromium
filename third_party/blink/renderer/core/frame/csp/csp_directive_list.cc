@@ -1034,4 +1034,40 @@ CSPOperativeDirective CSPDirectiveListOperativeDirective(
   return OperativeDirective(csp, type);
 }
 
+void FillInCSPHashValues(
+    const String& source,
+    const WTF::HashSet<IntegrityAlgorithm>& hash_algorithms_used,
+    Vector<network::mojom::blink::CSPHashSourcePtr>& csp_hash_values) {
+  // Any additions or subtractions from this struct should also modify the
+  // respective entries in the kSupportedPrefixes array in
+  // SourceListDirective::parseHash().
+  static const struct {
+    IntegrityAlgorithm csp_hash_algorithm;
+    HashAlgorithm algorithm;
+  } kAlgorithmMap[] = {{IntegrityAlgorithm::kSha256, kHashAlgorithmSha256},
+                       {IntegrityAlgorithm::kSha384, kHashAlgorithmSha384},
+                       {IntegrityAlgorithm::kSha512, kHashAlgorithmSha512}};
+
+  // Only bother normalizing the source/computing digests if there are any
+  // checks to be done.
+  if (hash_algorithms_used.empty()) {
+    return;
+  }
+
+  StringUTF8Adaptor utf8_source(source,
+                                Utf8ConversionMode::kStrictReplacingErrors);
+
+  for (const auto& algorithm_map : kAlgorithmMap) {
+    DigestValue digest;
+    if (hash_algorithms_used.Contains(algorithm_map.csp_hash_algorithm)) {
+      bool digest_success = ComputeDigest(
+          algorithm_map.algorithm, base::as_byte_span(utf8_source), digest);
+      if (digest_success) {
+        csp_hash_values.push_back(network::mojom::blink::CSPHashSource::New(
+            algorithm_map.csp_hash_algorithm, Vector<uint8_t>(digest)));
+      }
+    }
+  }
+}
+
 }  // namespace blink

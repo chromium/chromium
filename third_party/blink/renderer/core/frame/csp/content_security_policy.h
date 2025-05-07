@@ -458,11 +458,6 @@ class CORE_EXPORT ContentSecurityPolicy final
                        const IntegrityMetadataSet& = IntegrityMetadataSet(),
                        ParserDisposition = kParserInserted);
 
-  static void FillInCSPHashValues(
-      const String& source,
-      WTF::HashSet<IntegrityAlgorithm> hash_algorithms_used,
-      Vector<network::mojom::blink::CSPHashSourcePtr>& csp_hash_values);
-
   // checks a vector of csp hashes against policy, probably a good idea
   // to use in tandem with FillInCSPHashValues.
   static bool CheckHashAgainstPolicy(
