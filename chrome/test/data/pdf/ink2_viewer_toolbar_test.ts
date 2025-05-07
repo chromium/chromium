@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationMode, PluginController, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, PluginController, PluginControllerEventType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {InkTextBoxElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertCheckboxMenuButton, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement, openToolbarMenu, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
+import {assertCheckboxMenuButton, createTextBox, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement, openToolbarMenu, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
@@ -18,6 +20,22 @@ const mockMetricsPrivate = setupMockMetricsPrivate();
 
 function getUndoRedoModifier() {
   return isMac ? 'meta' : 'ctrl';
+}
+
+// Utils to add extra wait for Mac13 tests.
+async function createTextBoxAndWaitForStateChange(textBox: HTMLElement) {
+  const whenStateChanged = eventToPromise('state-changed', textBox);
+  createTextBox();
+  await whenStateChanged;
+  await microtasksFinished();
+}
+
+async function commitAnnotationAndWaitForStateChange(
+    textBox: InkTextBoxElement) {
+  const whenStateChanged = eventToPromise('state-changed', textBox);
+  textBox.commitTextAnnotation();
+  await whenStateChanged;
+  await microtasksFinished();
 }
 
 chrome.test.runTests([
@@ -365,6 +383,91 @@ chrome.test.runTests([
     viewerToolbar.resetStrokesForTesting();
     chrome.test.succeed();
   },
+  async function testUndoRedoTextAnnotation() {
+    // Set the feature param in loadTimeData and trigger Lit binding.
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': true});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
+
+    mockPlugin.clearMessages();
+    mockMetricsPrivate.reset();
+
+    // Enter draw mode to draw a stroke.
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
+
+    const undoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
+    const redoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#redo');
+
+    // The buttons should be disabled when there aren't any changes.
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Draw a stroke. The undo button should be enabled.
+    finishInkStroke(controller);
+    await microtasksFinished();
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Button still enabled after changing to text annotation mode.
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Create a textbox. The undo button should now be disabled.
+    const textBox = viewer.shadowRoot.querySelector('ink-text-box');
+    assert(textBox);
+    await createTextBoxAndWaitForStateChange(textBox);
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Simulate closing the textbox with no changes. Now the undo button is
+    // enabled again.
+    await commitAnnotationAndWaitForStateChange(textBox);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Undo the stroke. The redo button should be enabled.
+    undoButton.click();
+    await microtasksFinished();
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Add a textbox. The redo button is disabled.
+    mockPlugin.clearMessages();
+    await createTextBoxAndWaitForStateChange(textBox);
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Make a change to the textbox before closing. Now the undo button
+    // should be enabled, since there is a new text annotation change. Redo
+    // is disabled since the new text annotation overrides the stroke that
+    // could have been redone.
+    const whenStateChanged = eventToPromise('state-changed', textBox);
+    textBox.$.textbox.value = 'Hello';
+    textBox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    // Wait for textbox state edited.
+    await whenStateChanged;
+    await microtasksFinished();
+    await commitAnnotationAndWaitForStateChange(textBox);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Reset state for later tests.
+    viewerToolbar.resetStrokesForTesting();
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
+    await microtasksFinished();
+    chrome.test.succeed();
+  },
   // Test the behavior of the undo redo keyboard shortcuts.
   async function testUndoRedoKeyboardShortcuts() {
     mockPlugin.clearMessages();
@@ -474,6 +577,83 @@ chrome.test.runTests([
         mockPlugin.findMessage('annotationRedo') !== undefined);
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 3);
     mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 2);
+
+    viewerToolbar.resetStrokesForTesting();
+    chrome.test.succeed();
+  },
+  // Test the behavior of the undo redo keyboard shortcuts in text annotation
+  // mode.
+  async function testUndoRedoKeyboardShortcutsTextAnnotation() {
+    mockPlugin.clearMessages();
+    mockMetricsPrivate.reset();
+
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
+
+    // Enable text annotation mode.
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
+
+    // Simulate committing an edited text annotation.
+    PluginController.getInstance().getEventTarget().dispatchEvent(
+        new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
+
+    // Undo shortcut.
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+    mockPlugin.clearMessages();
+
+    // Redo shortcut.
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') !== undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
+    mockPlugin.clearMessages();
+
+    // Shortcuts don't work when there is an active text box (instead, they
+    // are handled by the native <textarea> element).
+    const textBox = viewer.shadowRoot.querySelector('ink-text-box');
+    assert(textBox);
+    await createTextBoxAndWaitForStateChange(textBox);
+    // Undo shortcut.
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
+    mockPlugin.clearMessages();
+
+    // Close textbox. Undo works again.
+    await commitAnnotationAndWaitForStateChange(textBox);
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
+    mockPlugin.clearMessages();
+
+    // Redo also doesn't work with a textbox open.
+    await createTextBoxAndWaitForStateChange(textBox);
+    // Undo shortcut.
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
+    mockPlugin.clearMessages();
+
+    // Close textbox. Redo works again.
+    await commitAnnotationAndWaitForStateChange(textBox);
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') !== undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 2);
+    mockPlugin.clearMessages();
 
     viewerToolbar.resetStrokesForTesting();
     chrome.test.succeed();

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AnnotationBrush, TextAnnotation, TextAttributes, TextBoxInit} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {AnnotationBrushType, DEFAULT_TEXTBOX_HEIGHT, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, TextAlignment} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, DEFAULT_TEXTBOX_HEIGHT, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, PluginController, PluginControllerEventType, TextAlignment} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -252,17 +252,38 @@ chrome.test.runTests([
   },
 
   function testCommitTextAnnotation() {
-    manager.commitTextAnnotation(getTestAnnotation());
-    const finishTextAnnotationMessage =
-        mockPlugin.findMessage('finishTextAnnotation');
-    chrome.test.assertTrue(finishTextAnnotationMessage !== undefined);
-    chrome.test.assertEq(
-        'finishTextAnnotation', finishTextAnnotationMessage.type);
+    // Listen for PluginControllerEventType.FINISH_INK_STROKE events. The
+    // manager dispatches these on PluginController's eventTarget.
+    let finishInkStrokeEvents = 0;
+    PluginController.getInstance().getEventTarget().addEventListener(
+        PluginControllerEventType.FINISH_INK_STROKE, () => {
+          finishInkStrokeEvents++;
+        });
+
     const annotationPageCoords = getTestAnnotation();
     // Adjust by the x and y offsets to get to page coordinates.
     annotationPageCoords.textBoxRect.locationX = 5;
     annotationPageCoords.textBoxRect.locationY = 22;
-    assertDeepEquals(annotationPageCoords, finishTextAnnotationMessage.data);
+    function verifyFinishTextAnnotationMessage() {
+      const finishTextAnnotationMessage =
+          mockPlugin.findMessage('finishTextAnnotation');
+      chrome.test.assertTrue(finishTextAnnotationMessage !== undefined);
+      chrome.test.assertEq(
+          'finishTextAnnotation', finishTextAnnotationMessage.type);
+      assertDeepEquals(annotationPageCoords, finishTextAnnotationMessage.data);
+    }
+
+    // Committing with edited = true should fire an event.
+    manager.commitTextAnnotation(getTestAnnotation(), true);
+    chrome.test.assertEq(1, finishInkStrokeEvents);
+    verifyFinishTextAnnotationMessage();
+    mockPlugin.clearMessages();
+
+    // Committing with edited = false should not fire an event.
+    manager.commitTextAnnotation(getTestAnnotation(), false);
+    chrome.test.assertEq(1, finishInkStrokeEvents);
+    verifyFinishTextAnnotationMessage();
+
     chrome.test.succeed();
   },
 
