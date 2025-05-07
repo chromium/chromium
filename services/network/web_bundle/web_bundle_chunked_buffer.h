@@ -73,7 +73,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleChunkedBuffer {
     uint64_t start_pos() const { return start_pos_; }
     uint64_t end_pos() const { return start_pos_ + bytes_->size(); }
     size_t size() const { return bytes_->size(); }
-    const uint8_t* data() const { return bytes_->data(); }
+    // Data can be accessed by constructing a span from this via
+    // base::span(chunk).
     auto begin() const { return bytes_->begin(); }
     auto end() const { return bytes_->end(); }
 
