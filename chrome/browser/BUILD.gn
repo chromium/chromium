@@ -2038,6 +2038,7 @@ static_library("browser") {
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tab_contents:impl",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/tabs/tab_group_home:constants",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui/bluetooth_internals",

@@ -64,6 +64,7 @@
 #include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_group_home/constants.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unexpire_flags.h"
@@ -12418,6 +12419,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidSmsOtpFillingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kAndroidSmsOtpFilling)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"tab-group-home", tabs::flag_descriptions::kTabGroupHomeName,
+     tabs::flag_descriptions::kTabGroupHomeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(tabs::kTabGroupHome)},
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROME_OS)
 
     // Add new entries above this line.
 

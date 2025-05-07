@@ -36,6 +36,8 @@ BASE_FEATURE(kScrollableTabStripOverflow,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kScrollableTabStripOverflowModeName[] = "tabScrollOverflow";
 
+BASE_FEATURE(kTabGroupHome, "TabGroupHome", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabSearchPositionSetting,
              "TabSearchPositionSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);

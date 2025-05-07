@@ -15553,6 +15553,7 @@ from previous Chrome versions.
   <int value="601417094" label="SupportF11AndF12KeyShortcuts:disabled"/>
   <int value="601510870" label="EcheLauncherIconsInMoreAppsButton:disabled"/>
   <int value="601688485" label="EnterpriseFileObfuscation:enabled"/>
+  <int value="601689207" label="TabGroupHome:disabled"/>
   <int value="601875786" label="PageVisibilityPageContentAnnotations:enabled"/>
   <int value="602117675" label="NTPBookmarkSuggestions:enabled"/>
   <int value="602452004" label="WebBluetoothBondOnDemand:disabled"/>
@@ -18705,6 +18706,7 @@ from previous Chrome versions.
   <int value="1785093465" label="enable-document-passive-event-listeners"/>
   <int value="1785274337"
       label="AutofillEnableOfferNotificationCrossTabTracking:disabled"/>
+  <int value="1785884719" label="TabGroupHome:enabled"/>
   <int value="1785914867"
       label="DeprecateOldKeyboardShortcutsAccelerator:disabled"/>
   <int value="1786182939" label="ExoPointerLock:enabled"/>

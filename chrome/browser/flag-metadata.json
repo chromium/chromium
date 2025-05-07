@@ -9046,6 +9046,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "tab-group-home",
+    "owners": [ "chrome-shopping-eng@google.com" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "tab-group-indicator",
     "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 140
