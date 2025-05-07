@@ -66,6 +66,7 @@
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -3794,6 +3795,86 @@ TEST_F(OnDeviceModelServiceControllerTest, TokenCounts) {
   EXPECT_EQ(response_.value(), "Context: execute:foo max:1024\n");
   EXPECT_EQ(response_.input_token_count(), strlen("execute:foo"));
   EXPECT_EQ(response_.output_token_count(), strlen("execute:foo max:1024"));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintOnExecute) {
+  Initialize(standard_assets_);
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+  session->ExecuteModelWithResponseConstraint(
+      PageUrlRequest("input"),
+      on_device_model::mojom::ResponseConstraint::NewRegex("[A-Z]*"),
+      response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(),
+            "Constraint: regex [A-Z]*\n"
+            "Context: execute:input max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintConfigJson) {
+  FakeAdaptationAsset test_asset({
+      .config =
+          []() {
+            auto config = SimpleComposeConfig();
+            config.mutable_output_config()
+                ->mutable_response_constraint()
+                ->set_json_schema("{ type: \"object\"}");
+            return config;
+          }(),
+  });
+
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&test_asset},
+  });
+
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  session->ExecuteModel(PageUrlRequest("input"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(),
+            "Constraint: json { type: \"object\"}\n"
+            "Context: execute:input max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintConfigRegex) {
+  FakeAdaptationAsset test_asset({
+      .config =
+          []() {
+            auto config = SimpleComposeConfig();
+            config.mutable_output_config()
+                ->mutable_response_constraint()
+                ->set_regex("[A-Z]*");
+            return config;
+          }(),
+  });
+
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&test_asset},
+  });
+
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  session->ExecuteModel(PageUrlRequest("input"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(),
+            "Constraint: regex [A-Z]*\n"
+            "Context: execute:input max:1024\n");
 }
 
 }  // namespace optimization_guide

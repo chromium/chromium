@@ -201,6 +201,19 @@ void FakeOnDeviceSession::GenerateImpl(
     remote->OnResponse(std::move(chunk));
   }
 
+  if (options->constraint) {
+    const auto& constraint = *options->constraint;
+    auto chunk = mojom::ResponseChunk::New();
+    if (constraint.is_json_schema()) {
+      chunk->text = "Constraint: json " + constraint.get_json_schema() + "\n";
+    } else if (constraint.is_regex()) {
+      chunk->text = "Constraint: regex " + constraint.get_regex() + "\n";
+    } else {
+      chunk->text = "Constraint: unknown\n";
+    }
+    remote->OnResponse(std::move(chunk));
+  }
+
   int output_token_count = 0;
   if (settings_->model_execute_result.empty()) {
     for (const auto& context : context_) {

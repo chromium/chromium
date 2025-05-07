@@ -188,7 +188,8 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context) {
 
   auto options = on_device_model::mojom::GenerateOptions::New();
   options->max_output_tokens = opts_.token_limits.max_output_tokens;
-  options->constraint = std::move(constraint_);
+  options->constraint = constraint_ ? std::move(constraint_)
+                                    : opts_.adapter->GetResponseConstraint();
 
   opts_.safety_checker->RunRequestChecks(
       last_message_,

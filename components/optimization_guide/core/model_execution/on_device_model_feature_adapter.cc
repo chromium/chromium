@@ -185,4 +185,20 @@ const TokenLimits& OnDeviceModelFeatureAdapter::GetTokenLimits() const {
   return token_limits_;
 }
 
+on_device_model::mojom::ResponseConstraintPtr
+OnDeviceModelFeatureAdapter::GetResponseConstraint() const {
+  const auto& constraint = config_.output_config().response_constraint();
+  switch (constraint.format_case()) {
+    case proto::ResponseConstraint::kJsonSchema:
+      return on_device_model::mojom::ResponseConstraint::NewJsonSchema(
+          constraint.json_schema());
+    case proto::ResponseConstraint::kRegex:
+      return on_device_model::mojom::ResponseConstraint::NewRegex(
+          constraint.regex());
+    default:
+      // Not configured, or not supported configuration.
+      return nullptr;
+  }
+}
+
 }  // namespace optimization_guide
