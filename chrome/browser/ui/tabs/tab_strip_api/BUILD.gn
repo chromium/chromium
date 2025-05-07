@@ -25,16 +25,28 @@ mojom("mojom") {
           mojom = "tabs_api.mojom.TabId.Type"
           cpp = "enum ::tabs_api::TabId::Type"
         },
+        {
+          mojom = "tabs_api.mojom.TabAlertState"
+          cpp = "::TabAlertState"
+        },
+        {
+          mojom = "tabs_api.mojom.TabNetworkState"
+          cpp = "::TabNetworkState"
+        },
       ]
       traits_headers = [
         "//chrome/browser/ui/tabs/tab_strip_api/tab_id.h",
         "//chrome/browser/ui/tabs/tab_strip_api/tab_id_traits.h",
+        "//chrome/browser/ui/tabs/tab_strip_api/tab_enum_traits.h",
       ]
-      traits_sources =
-          [ "//chrome/browser/ui/tabs/tab_strip_api/tab_id_traits.cc" ]
+      traits_sources = [
+        "//chrome/browser/ui/tabs/tab_strip_api/tab_enum_traits.cc",
+        "//chrome/browser/ui/tabs/tab_strip_api/tab_id_traits.cc",
+      ]
       traits_public_deps = [
         ":types",
         "//base",
+        "//chrome/browser/ui/tabs",
       ]
     },
   ]

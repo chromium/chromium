@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -37,6 +38,8 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
                    const std::optional<GURL>& url,
                    CreateTabAtCallback callback) override;
 
+  void GetTab(const tabs_api::TabId& id, GetTabCallback callback) override;
+
   // TabStripModelObserver
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -47,6 +50,8 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
   // Helper method used to add tab. This is primarily to mock for unit tests
   // until there is a better way to mock chrome::AddAndReturnTabAt.
   virtual content::WebContents* AddTabAt(const GURL& url, int index);
+  tabs_api::mojom::TabPtr ConvertTabToData(tabs::TabInterface* tab_interface,
+                                           int index);
 
  private:
   void OnTabStripModelChangeAdded(const TabStripModelChange::Insert& change);

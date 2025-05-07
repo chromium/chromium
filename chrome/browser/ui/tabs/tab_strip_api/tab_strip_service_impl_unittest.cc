@@ -86,4 +86,14 @@ TEST_F(TabStripServiceImplTest, CreateNewTab) {
   ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kFailedPrecondition);
 }
 
+TEST_F(TabStripServiceImplTest, GetTab) {
+  tabs_api::mojom::TabStripService::GetTabResult result;
+  tabs_api::TabId tab_id;
+  bool success = client_->GetTab(tab_id, &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
+}
+
 }  // namespace

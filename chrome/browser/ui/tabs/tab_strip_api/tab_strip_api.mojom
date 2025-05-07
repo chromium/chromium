@@ -7,6 +7,35 @@ module tabs_api.mojom;
 import "mojo/public/mojom/base/error.mojom";
 import "url/mojom/url.mojom";
 
+// In C++, this enum is typemapped to
+// "//chrome/browser/ui/tabs/tab_enums.h"
+enum TabAlertState {
+  kMediaRecording,
+  kTabCapturing,
+  kAudioPlaying,
+  kAudioMuting,
+  kBluetoothConnected,
+  kBluetoothScanActive,
+  kUsbConnected,
+  kHidConnected,
+  kSerialConnected,
+  kPipPlaying,
+  kDesktopCapturing,
+  kVrPresentingInHeadset,
+  kAudioRecording,
+  kVideoRecording,
+  kGlicAccessing,
+};
+
+// In C++, this enum is typemapped to
+// "//chrome/browser/ui/tabs/tab_network_state.h"
+enum TabNetworkState {
+  kNone,
+  kWaiting,
+  kLoading,
+  kError,
+};
+
 // References a tab object. The id can refer to different types of underlying
 // resource. The |type| field can be used to differentiate between the type
 // of underlying resources.
@@ -31,6 +60,19 @@ struct TabId {
   Type type;
 };
 
+struct Tab {
+  TabId id;
+  string title;
+  url.mojom.Url url;
+
+  // TODO(crbug.com/414630734). The favicon should be typemapped to ImageModel
+  // in c++. Leave this as a data uri for now.
+  url.mojom.Url favicon_url;
+
+  array<TabAlertState> alert_states;
+  TabNetworkState network_state;
+};
+
 // Position is an ephemeral object that should not be saved nor act as an
 // identifier. It is purely used in this API to determine the position within
 // the TabstripModel.
@@ -49,13 +91,14 @@ interface TabStripService {
   // empty, the new tab will be appended to the end of the Tabstrip.
   // Url specifies what is loaded in the Tab. If url is empty, then the new
   // tab-page is loaded instead.
-  //
-  // TODO (crbug.com/409821664). Returns a result type of bool for success or
-  // Error for errors. The success type is temporary and will be changed once
-  // it is defined.
   [Sync]
   CreateTabAt(Position? pos, url.mojom.Url? url)
       => result<bool, mojo_base.mojom.Error>;
+
+  // Get tab data based on the Tab id. Currently the TabId refers to the Tab
+  // handle value.
+  [Sync]
+  GetTab(TabId id) => result<Tab, mojo_base.mojom.Error>;
 };
 
 // TODO (crbug.com/412955607)

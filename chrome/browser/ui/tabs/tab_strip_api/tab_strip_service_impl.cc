@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "url/gurl.h"
 
@@ -62,6 +66,48 @@ content::WebContents* TabStripServiceImpl::AddTabAt(const GURL& url,
   // instead of Browser.
   return chrome::AddAndReturnTabAt(browser_->GetBrowserForMigrationOnly(), url,
                                    index, true);
+}
+
+tabs_api::mojom::TabPtr TabStripServiceImpl::ConvertTabToData(
+    tabs::TabInterface* tab_interface,
+    int index) {
+  auto result = tabs_api::mojom::Tab::New();
+
+  auto tab_renderer_data = TabRendererData::FromTabInModel(model_, index);
+  result->title = base::UTF16ToUTF8(tab_renderer_data.title);
+  // TODO(crbug.com/414630734). Integrate the favicon_url after it is
+  // typemapped.
+  result->url = tab_renderer_data.visible_url;
+  result->network_state = tab_renderer_data.network_state;
+  for (const auto alert_state :
+       GetTabAlertStatesForContents(tab_interface->GetContents())) {
+    result->alert_states.push_back(alert_state);
+  }
+
+  return result;
+}
+
+void TabStripServiceImpl::GetTab(const tabs_api::TabId& tab_mojom_id,
+                                 GetTabCallback callback) {
+  int32_t tab_id;
+  tabs_api::mojom::TabPtr tab_result;
+  if (base::StringToInt(tab_mojom_id.Id(), &tab_id)) {
+    // TODO (crbug.com/412709270) TabStripModel or TabCollections should have an
+    // api that can fetch id without of relying on indexes.
+    for (int index = 0; index < model_->count(); index++) {
+      tabs::TabInterface* tab = model_->GetTabAtIndex(index);
+      if (tab_id == tab->GetHandle().raw_value()) {
+        tab_result = ConvertTabToData(tab, index);
+      }
+    }
+  }
+
+  if (tab_result) {
+    std::move(callback).Run(std::move(tab_result));
+  } else {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kNotFound, "Tab not found")));
+  }
 }
 
 void TabStripServiceImpl::OnTabStripModelChanged(
