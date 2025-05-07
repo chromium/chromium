@@ -269,6 +269,9 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     bool operator()(const RequestImpl* r1, const RequestImpl* r2) const;
   };
 
+  using RequestSet =
+      std::set<raw_ptr<RequestImpl, SetExperimental>, CompareRequestImpl>;
+
   // Manages building and loading trusted signals URLs.
   class TrustedSignalsUrlBuilder;
   class TrustedBiddingSignalsUrlBuilder;
@@ -290,8 +293,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     std::unique_ptr<TrustedKVv2Signals> trusted_kvv2_signals;
 
     // The batched Requests this is for.
-    std::set<raw_ptr<RequestImpl, SetExperimental>, CompareRequestImpl>
-        requests;
+    RequestSet requests;
   };
 
   // Adds `request` to `queued_requests_`, and starts `timer_` if needed.
@@ -315,7 +317,20 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // request with it, cancelling the request if it's no longer needed.
   void OnRequestDestroyed(RequestImpl* request);
 
-  void IssueRequests(TrustedSignalsUrlBuilder& url_builder);
+  // Add `request` to `merged_requests` if the relevant
+  // TrustedBiddingSignalsUrlBuilder has room for it. Returns whether the
+  // request was successfully added.
+  bool TryToAddRequest(TrustedBiddingSignalsUrlBuilder& bidding_url_builder,
+                       RequestSet& merged_requests,
+                       RequestImpl* request);
+
+  bool TryToAddRequest(TrustedScoringSignalsUrlBuilder& scoring_url_builder,
+                       RequestSet& merged_requests,
+                       RequestImpl* request);
+
+  // Starts a batched request. Resets `url_builder`.
+  void IssueRequests(TrustedSignalsUrlBuilder& url_builder,
+                     RequestSet merged_requests);
 
   const Type type_;
   const raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
@@ -333,8 +348,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
 
   // All live requests that haven't yet been assigned to a
   // BatchedTrustedSignalsRequest.
-  std::set<raw_ptr<RequestImpl, SetExperimental>, CompareRequestImpl>
-      queued_requests_;
+  RequestSet queued_requests_;
 
   std::set<std::unique_ptr<BatchedTrustedSignalsRequest>,
            base::UniquePtrComparator>
