@@ -306,31 +306,6 @@ void LogFocusToOpenTime(base::TimeDelta elapsed,
 
 }  // namespace
 
-// OmniboxEditModelIOS::State
-// ----------------------------------------------------
-
-OmniboxEditModelIOS::State::State(
-    bool user_input_in_progress,
-    const std::u16string& user_text,
-    const std::u16string& keyword,
-    const std::u16string& keyword_placeholder,
-    bool is_keyword_hint,
-    OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method,
-    OmniboxFocusState focus_state,
-    const AutocompleteInput& autocomplete_input)
-    : user_input_in_progress(user_input_in_progress),
-      user_text(user_text),
-      keyword(keyword),
-      keyword_placeholder(keyword_placeholder),
-      is_keyword_hint(is_keyword_hint),
-      keyword_mode_entry_method(keyword_mode_entry_method),
-      focus_state(focus_state),
-      autocomplete_input(autocomplete_input) {}
-
-OmniboxEditModelIOS::State::State(const State& other) = default;
-
-OmniboxEditModelIOS::State::~State() = default;
-
 // OmniboxEditModelIOS
 // -----------------------------------------------------------
 
@@ -364,93 +339,6 @@ void OmniboxEditModelIOS::set_popup_view(OmniboxPopupViewBase* popup_view) {
 metrics::OmniboxEventProto::PageClassification
 OmniboxEditModelIOS::GetPageClassification() const {
   return controller_->client()->GetPageClassification(/*is_prefetch=*/false);
-}
-
-OmniboxEditModelIOS::State OmniboxEditModelIOS::GetStateForTabSwitch() const {
-  // NOTE: it's important this doesn't attempt to access any state that
-  // may come from the active WebContents. At the time this is called, the
-  // active WebContents has already changed.
-
-  // Like typing, switching tabs "accepts" the temporary text as the user
-  // text, because it makes little sense to have temporary text when the
-  // popup is closed.
-  std::u16string user_text;
-  if (user_input_in_progress_) {
-    const std::u16string display_text = GetText();
-    if (!MaybePrependKeyword(display_text).empty()) {
-      user_text = display_text;
-    }
-    // Else case is user deleted all the text. The expectation (which matches
-    // other browsers) is when the user restores the state a revert happens as
-    // well as a select all. The revert shouldn't be done here, as at the time
-    // this is called a revert would revert to the url of the newly activated
-    // tab (because at the time this is called, the WebContents has already
-    // changed). By leaving the `user_text` empty downstream code is able to
-    // detect this and select all.
-  } else {
-    user_text = user_text_;
-  }
-  return State(user_input_in_progress_, user_text, keyword_,
-               keyword_placeholder_, is_keyword_hint_,
-               keyword_mode_entry_method_, focus_state_, input_);
-}
-
-void OmniboxEditModelIOS::RestoreState(const State* state) {
-  // We need to update the permanent display texts correctly and revert the
-  // view regardless of whether there is saved state.
-  ResetDisplayTexts();
-
-  if (view_) {
-    view_->RevertAll();
-  }
-  // Restore the autocomplete controller's input, or clear it if this is a new
-  // tab.
-  input_ = state ? state->autocomplete_input : AutocompleteInput();
-  if (!state) {
-    return;
-  }
-
-  // The tab-management system saves the last-focused control for each tab and
-  // restores it. That operation also updates this edit model's focus_state_
-  // if necessary. This occurs before we reach this point in the code.
-  //
-  // The only reason we need to separately save and restore our focus state is
-  // to preserve our special "invisible focus" state used for the fakebox.
-  //
-  // However, in some circumstances (if the last-focused control was destroyed),
-  // the Omnibox will be focused by default, and the edit model's saved state
-  // may be invalid. We make a check to guard against that.
-  bool saved_focus_state_invalid = focus_state_ == OMNIBOX_FOCUS_VISIBLE &&
-                                   state->focus_state == OMNIBOX_FOCUS_NONE;
-  if (!saved_focus_state_invalid) {
-    SetFocusState(state->focus_state, OMNIBOX_FOCUS_CHANGE_TAB_SWITCH);
-  }
-
-  // Restore any user editing.
-  if (state->user_input_in_progress) {
-    // NOTE: Be sure to set keyword-related state AFTER invoking
-    // SetUserText(), as SetUserText() clears the keyword state.
-    if ((!state->user_text.empty() || !state->keyword.empty()) && view_) {
-      view_->SetUserText(state->user_text, false);
-    }
-    SetKeyword(state->keyword);
-    SetKeywordPlaceholder(state->keyword_placeholder);
-    is_keyword_hint_ = state->is_keyword_hint;
-    keyword_mode_entry_method_ = state->keyword_mode_entry_method;
-    if (view_) {
-      view_->OnKeywordPlaceholderTextChange();
-    }
-  } else if (!state->user_text.empty()) {
-    // If the `user_input_in_progress` is false but we have `user_text`,
-    // restore the `user_text` to the model and the view. It's likely unelided
-    // text that the user has not made any modifications to.
-    InternalSetUserText(state->user_text);
-
-    // We let the View manage restoring the cursor position afterwards.
-    if (view_) {
-      view_->SetWindowTextAndCaretPos(state->user_text, 0, false, false);
-    }
-  }
 }
 
 AutocompleteMatch OmniboxEditModelIOS::CurrentMatch(

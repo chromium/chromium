@@ -473,23 +473,6 @@ TEST_F(OmniboxEditModelIOSTest, UnelideDoesNothingWhenFullURLAlreadyShown) {
   EXPECT_TRUE(model()->CurrentTextIsURL());
 }
 
-// The tab-switching system sometimes focuses the Omnibox even if it was not
-// previously focused. In those cases, ignore the saved focus state.
-TEST_F(OmniboxEditModelIOSTest, IgnoreInvalidSavedFocusStates) {
-  // The Omnibox starts out unfocused. Save that state.
-  ASSERT_FALSE(model()->has_focus());
-  OmniboxEditModelIOS::State state = model()->GetStateForTabSwitch();
-  ASSERT_EQ(OMNIBOX_FOCUS_NONE, state.focus_state);
-
-  // Simulate the tab-switching system focusing the Omnibox.
-  model()->OnSetFocus(false);
-
-  // Restoring the old saved state should not clobber the model's focus state.
-  model()->RestoreState(&state);
-  EXPECT_TRUE(model()->has_focus());
-  EXPECT_TRUE(model()->is_caret_visible());
-}
-
 // Tests ConsumeCtrlKey() consumes ctrl key when down, but does not affect ctrl
 // state otherwise.
 TEST_F(OmniboxEditModelIOSTest, ConsumeCtrlKey) {
@@ -578,9 +561,8 @@ TEST_F(OmniboxEditModelIOSTest, CtrlEnterNavigatesToDesiredTLD) {
 
   model()->OnControlKeyChanged(true);
   model()->OpenSelection();
-  OmniboxEditModelIOS::State state = model()->GetStateForTabSwitch();
   EXPECT_EQ(GURL("http://www.foo.com/"),
-            state.autocomplete_input.canonicalized_url());
+            model()->GetInputForTesting().canonicalized_url());
 }
 
 TEST_F(OmniboxEditModelIOSTest, CtrlEnterNavigatesToDesiredTLDTemporaryText) {
@@ -594,9 +576,8 @@ TEST_F(OmniboxEditModelIOSTest, CtrlEnterNavigatesToDesiredTLDTemporaryText) {
 
   model()->OnControlKeyChanged(true);
   model()->OpenSelection();
-  OmniboxEditModelIOS::State state = model()->GetStateForTabSwitch();
   EXPECT_EQ(GURL("http://www.foobar.com/"),
-            state.autocomplete_input.canonicalized_url());
+            model()->GetInputForTesting().canonicalized_url());
 }
 
 TEST_F(OmniboxEditModelIOSTest,
@@ -609,9 +590,8 @@ TEST_F(OmniboxEditModelIOSTest,
 
   model()->OnControlKeyChanged(true);
   model()->OpenSelection();
-  OmniboxEditModelIOS::State state = model()->GetStateForTabSwitch();
   EXPECT_EQ(GURL("https://www.example.com/"),
-            state.autocomplete_input.canonicalized_url());
+            model()->GetInputForTesting().canonicalized_url());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -39,31 +39,6 @@ class Image;
 
 class OmniboxEditModelIOS {
  public:
-  struct State {
-    State(bool user_input_in_progress,
-          const std::u16string& user_text,
-          const std::u16string& keyword,
-          const std::u16string& keyword_placeholder,
-          bool is_keyword_hint,
-          metrics::OmniboxEventProto::KeywordModeEntryMethod
-              keyword_mode_entry_method,
-          OmniboxFocusState focus_state,
-          const AutocompleteInput& autocomplete_input);
-    State(const State& other);
-    ~State();
-    State& operator=(const State&) = delete;
-
-    bool user_input_in_progress;
-    const std::u16string user_text;
-    const std::u16string keyword;
-    const std::u16string keyword_placeholder;
-    const bool is_keyword_hint;
-    metrics::OmniboxEventProto::KeywordModeEntryMethod
-        keyword_mode_entry_method;
-    OmniboxFocusState focus_state;
-    const AutocompleteInput autocomplete_input;
-  };
-
   OmniboxEditModelIOS(OmniboxControllerIOS* controller, OmniboxViewBase* view);
   virtual ~OmniboxEditModelIOS();
   OmniboxEditModelIOS(const OmniboxEditModelIOS&) = delete;
@@ -74,14 +49,6 @@ class OmniboxEditModelIOS {
   const OmniboxPopupViewBase* get_popup_view() const { return popup_view_; }
 
   metrics::OmniboxEventProto::PageClassification GetPageClassification() const;
-
-  // Returns the current state.  This assumes we are switching tabs, and changes
-  // the internal state appropriately.
-  State GetStateForTabSwitch() const;
-
-  // Resets the tab state, then restores local state from `state`. `state` may
-  // be nullptr if there is no saved state.
-  void RestoreState(const State* state);
 
   // Returns the match for the current text. If the user has not edited the text
   // this is the match corresponding to the permanent text. Returns the
@@ -625,12 +592,11 @@ class OmniboxEditModelIOS {
   std::u16string url_for_editing_;
 
   // This flag is true when the user has modified the contents of the edit, but
-  // not yet accepted them.  We use this to determine when we need to save
-  // state (on switching tabs) and whether changes to the page URL should be
-  // immediately displayed.
-  // This flag *should* be true in a superset of the cases where the popup is
-  // open. Except (crbug.com/1340378) for zero suggestions when the popup was
-  // opened with ctrl+L or a mouse click (as opposed to the down arrow).
+  // not yet accepted them.  We use this to determine whether changes to the
+  // page URL should be immediately displayed. This flag *should* be true in a
+  // superset of the cases where the popup is open. Except (crbug.com/1340378)
+  // for zero suggestions when the popup was opened with ctrl+L or a mouse click
+  // (as opposed to the down arrow).
   bool user_input_in_progress_;
 
   // The text that the user has entered.  This does not include inline
