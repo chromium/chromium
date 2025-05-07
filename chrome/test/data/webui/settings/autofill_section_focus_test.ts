@@ -7,6 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {AutofillManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {TestAutofillManager} from './autofill_fake_data.js';
 import {createAddressEntry} from './autofill_fake_data.js';
@@ -23,6 +24,7 @@ suite('AutofillSectionFocusTest', function() {
         ],
         {profile_enabled: {value: true}});
     const manager = AutofillManagerImpl.getInstance() as TestAutofillManager;
+    flush();
 
     await deleteAddress(section, manager, 1);
     const addressesAfterRemovingInTheMiddle =

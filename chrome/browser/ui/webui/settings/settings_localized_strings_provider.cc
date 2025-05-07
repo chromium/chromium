@@ -1523,6 +1523,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL, chrome::kPayOverTimeLearnMoreUrl,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+
+  html_source->AddString("googleAccountHomeAddressUrl",
+                         chrome::kGoogleAccountHomeAddressURL);
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
