@@ -704,6 +704,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [5200],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/floating_workspace/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [5210],
+  },
   # END chrome/ WebUI resources section
 
   # START chrome/ miscellaneous section.
