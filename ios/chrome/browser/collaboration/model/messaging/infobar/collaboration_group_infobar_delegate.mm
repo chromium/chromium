@@ -94,21 +94,18 @@ Browser* GetBrowserFromInstantMessage(
       break;
   }
 
-  // Retrieve the `source_browser`.
-  Browser* source_browser;
   for (Browser* browser : browsers) {
     // TODO(crbug.com/375595834): Handle cases where the `local_tab_group_id` is
     // not set.
     if (!local_tab_group_id.has_value() || use_first_available_browser) {
       // If `local_tab_group_id` is empty, use the first available browser.
-      source_browser = browser;
-      break;
+      return browser;
     }
     if (ContainsLocalTabGroup(local_tab_group_id, browser)) {
-      source_browser = browser;
+      return browser;
     }
   }
-  return source_browser;
+  return nullptr;
 }
 
 }  // namespace
@@ -120,6 +117,9 @@ bool CollaborationGroupInfoBarDelegate::Create(
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   Browser* source_browser =
       GetBrowserFromInstantMessage(instant_message, browser_list);
+  if (!source_browser) {
+    return false;
+  }
 
   web::WebState* active_web_state =
       source_browser->GetWebStateList()->GetActiveWebState();
