@@ -803,6 +803,25 @@ void DetermineLocalPath(DownloadItem* download,
   std::move(callback).Run(virtual_path, base::FilePath());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Determine the file path for the save package file given the `suggested_path`.
+COMPONENTS_DOWNLOAD_EXPORT
+void DetermineSavePackagePath(const GURL& url,
+                              const base::FilePath& suggested_path,
+                              LocalPathCallback callback) {
+  base::FilePath mhtml_path = suggested_path.ReplaceExtension("mhtml");
+  if (DownloadCollectionBridge::ShouldPublishDownload(mhtml_path)) {
+    GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&CreateIntermediateUri, url, GURL(), mhtml_path,
+                       mhtml_path.BaseName(), "multipart/related"),
+        base::BindOnce(&OnInterMediateUriCreated, std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(mhtml_path, mhtml_path.BaseName());
+}
+#endif
+
 bool IsInterruptedDownloadAutoResumable(download::DownloadItem* download_item,
                                         int auto_resumption_size_limit) {
   DCHECK_EQ(download::DownloadItem::INTERRUPTED, download_item->GetState());

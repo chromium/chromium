@@ -365,6 +365,17 @@ bool ShouldOpenPdfInlineInternal(bool incognito) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_PdfUtils_shouldOpenPdfInline(env, incognito);
 }
+
+void OnDetermineSavePackagePathDone(
+    content::SavePackagePathPickedCallback callback,
+    const base::FilePath& file_path,
+    const base::FilePath& display_name) {
+  content::SavePackagePathPickedParams param;
+  param.file_path = file_path;
+  param.save_type = content::SavePageType::SAVE_PAGE_TYPE_AS_MHTML;
+  param.display_name = display_name;
+  std::move(callback).Run(param, base::DoNothing());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void OnCheckExistingDownloadPathDone(download::DownloadTargetInfo target_info,
@@ -1096,9 +1107,15 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
     content::SavePackagePathPickedCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   content::SavePackagePathPickedParams param;
-  param.file_path = suggested_path.ReplaceExtension("mhtml");
-  param.save_type = content::SavePageType::SAVE_PAGE_TYPE_AS_MHTML;
-  std::move(callback).Run(param, base::DoNothing());
+  if (!web_contents) {
+    std::move(callback).Run(param, base::DoNothing());
+    return;
+  }
+
+  download::DetermineSavePackagePath(
+      web_contents->GetURL(), suggested_path,
+      base::BindOnce(&OnDetermineSavePackagePathDone, std::move(callback)));
+
 #else
   // Deletes itself.
   new SavePackageFilePicker(web_contents, suggested_path, default_extension,

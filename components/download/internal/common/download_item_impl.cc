@@ -1469,6 +1469,15 @@ void DownloadItemImpl::MarkAsComplete() {
 
   DCHECK(AllDataSaved());
   destination_info_.end_time = base::Time::Now();
+#if BUILDFLAG(IS_ANDROID)
+  if (GetTargetFilePath().IsContentUri()) {
+    GetDownloadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            base::IgnoreResult(&DownloadCollectionBridge::PublishDownload),
+            GetTargetFilePath()));
+  }
+#endif
   TransitionTo(COMPLETE_INTERNAL);
   UpdateObservers();
 }
