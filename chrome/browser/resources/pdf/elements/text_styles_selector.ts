@@ -36,8 +36,6 @@ export class TextStylesSelectorElement extends TextStylesSelectorElementBase {
   protected accessor currentStyles_: TextStyles = {
     [TextStyle.BOLD]: false,
     [TextStyle.ITALIC]: false,
-    [TextStyle.UNDERLINE]: false,
-    [TextStyle.STRIKETHROUGH]: false,
   };
 
   protected getTextStyles_(): TextStyle[] {

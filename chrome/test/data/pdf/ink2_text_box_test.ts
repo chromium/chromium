@@ -28,8 +28,6 @@ function initializeBox(
           styles: {
             [TextStyle.BOLD]: false,
             [TextStyle.ITALIC]: false,
-            [TextStyle.UNDERLINE]: false,
-            [TextStyle.STRIKETHROUGH]: false,
           },
           alignment: TextAlignment.LEFT,
           color: hexToColor(TEXT_COLORS[0]!.color),
@@ -142,15 +140,11 @@ chrome.test.runTests([
     manager.setTextStyles({
       [TextStyle.BOLD]: true,
       [TextStyle.ITALIC]: true,
-      [TextStyle.UNDERLINE]: true,
-      [TextStyle.STRIKETHROUGH]: false,
     });
     await microtasksFinished();
     chrome.test.assertEq('700', textboxStyles.getPropertyValue('font-weight'));
     chrome.test.assertEq(
         'italic', textboxStyles.getPropertyValue('font-style'));
-    chrome.test.assertTrue(textboxStyles.getPropertyValue('text-decoration')
-                               .includes('underline'));
 
     // Color
     const newColor = hexToColor(TEXT_COLORS[1]!.color);
@@ -170,8 +164,6 @@ chrome.test.runTests([
     manager.setTextStyles({
       [TextStyle.BOLD]: false,
       [TextStyle.ITALIC]: false,
-      [TextStyle.UNDERLINE]: false,
-      [TextStyle.STRIKETHROUGH]: false,
     });
     manager.setTextColor(hexToColor(TEXT_COLORS[0]!.color));
     manager.setTextAlignment(TextAlignment.LEFT);
@@ -415,8 +407,6 @@ chrome.test.runTests([
         styles: {
           [TextStyle.BOLD]: false,
           [TextStyle.ITALIC]: false,
-          [TextStyle.UNDERLINE]: false,
-          [TextStyle.STRIKETHROUGH]: false,
         },
         alignment: TextAlignment.LEFT,
         color: hexToColor(TEXT_COLORS[0]!.color),

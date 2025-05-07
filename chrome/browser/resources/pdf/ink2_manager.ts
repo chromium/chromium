@@ -30,9 +30,7 @@ export function colorsEqual(color1: Color, color2: Color): boolean {
 }
 
 export function stylesEqual(style1: TextStyles, style2: TextStyles): boolean {
-  return style1.bold === style2.bold && style1.italic === style2.italic &&
-      style1.underline === style2.underline &&
-      style1.strikethrough === style2.strikethrough;
+  return style1.bold === style2.bold && style1.italic === style2.italic;
 }
 
 export class Ink2Manager extends EventTarget {
@@ -49,8 +47,6 @@ export class Ink2Manager extends EventTarget {
     styles: {
       [TextStyle.BOLD]: false,
       [TextStyle.ITALIC]: false,
-      [TextStyle.UNDERLINE]: false,
-      [TextStyle.STRIKETHROUGH]: false,
     },
   };
   private brushResolver_: PromiseResolver<void>|null = null;

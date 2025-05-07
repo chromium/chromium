@@ -22,8 +22,6 @@ function getTestAnnotation(): TextAnnotation {
       styles: {
         bold: false,
         italic: false,
-        underline: false,
-        strikethrough: true,
       },
     },
     text: 'Hello World',
@@ -175,8 +173,6 @@ chrome.test.runTests([
       styles: {
         bold: false,
         italic: false,
-        underline: false,
-        strikethrough: false,
       },
     };
     assertTextUpdate(0, expectedAttributes);
@@ -198,8 +194,7 @@ chrome.test.runTests([
     assertTextUpdate(3, expectedAttributes);
 
     // Set style to bold + italic.
-    const boldItalic =
-        {bold: true, italic: true, underline: false, strikethrough: false};
+    const boldItalic = {bold: true, italic: true};
     manager.setTextStyles(boldItalic);
     expectedAttributes.styles = boldItalic;
     assertTextUpdate(4, expectedAttributes);

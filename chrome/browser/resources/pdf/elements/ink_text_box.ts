@@ -353,14 +353,6 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         newAttributes.styles.italic ? 'italic' : 'normal';
     this.$.textbox.style.fontWeight =
         newAttributes.styles.bold ? 'bold' : 'normal';
-    let textDecoration = '';
-    if (newAttributes.styles.underline) {
-      textDecoration += 'underline ';
-    }
-    if (newAttributes.styles.strikethrough) {
-      textDecoration += 'line-through';
-    }
-    this.$.textbox.style.textDecoration = textDecoration || 'none';
     this.$.textbox.style.color = colorToHex(newAttributes.color);
   }
 

@@ -56,8 +56,6 @@ export enum TextAlignment {
 export enum TextStyle {
   BOLD = 'bold',
   ITALIC = 'italic',
-  UNDERLINE = 'underline',
-  STRIKETHROUGH = 'strikethrough',
 }
 
 export type TextStyles = {
