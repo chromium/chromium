@@ -428,6 +428,12 @@ void LayoutTableColumn::ForAllSynthesizedFragments(
     // block-size of the table column / table column group.
     LogicalRect sections_bounding_box;
     for (const PhysicalFragmentLink& child : fragment.Children()) {
+      if (child->IsLayoutObjectDestroyedOrMoved()) {
+        // This code may be run on a dirty layout tree. The scroll anchor code,
+        // for instance, essentially always works on a dirty tree, and may
+        // invoke LayoutTableColumn::PhysicalLocation(), so that we end up here.
+        continue;
+      }
       if (child->IsTableSection()) {
         LogicalRect section_rect = table_converter.ToLogical(
             PhysicalRect(child.offset, child->Size()));
