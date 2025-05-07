@@ -1568,6 +1568,7 @@ _CONFIG = [
             'gpu::Mailbox',
             'gpu::MailboxHolder',
             'gpu::raster::RasterInterface',
+            'gpu::RasterScopedAccess',
             'gpu::SHARED_IMAGE_USAGE_.+',
             'gpu::SharedImageInterface',
             'gpu::SharedImageTexture',
