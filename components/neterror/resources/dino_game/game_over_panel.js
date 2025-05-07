@@ -4,8 +4,8 @@
 
 import {IS_HIDPI, IS_RTL} from './constants.js';
 import {Dimensions} from './dimensions.js';
-import {spriteDefinitionByType} from './offline-sprite-definitions.js';
 import {Runner} from './offline.js';
+import {spriteDefinitionByType} from './offline_sprite_definitions.js';
 import {Trex} from './trex.js';
 import {getTimeStamp} from './utils.js';
 

@@ -6,8 +6,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {FPS, IS_HIDPI, IS_MOBILE} from './constants.js';
 import type {Dimensions} from './dimensions.js';
-import type {ObstacleType} from './offline-sprite-definitions.js';
-import {CollisionBox} from './offline-sprite-definitions.js';
+import type {ObstacleType} from './offline_sprite_definitions.js';
+import {CollisionBox} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
 import {getRandomNum, getRunnerAltCommonImageSprite, getRunnerAltGameImageSprite, getRunnerAudioCues, getRunnerImageSprite, getRunnerSlowdown} from './utils.js';
 
@@ -67,7 +67,7 @@ export class Obstacle {
     this.size = getRandomNum(1, maxObstacleLength);
     this.xPos = dimensions.width + xOffset;
     this.altGameModeActive = isAltGameMode;
-    const imageSprite = this.typeConfig.type === 'COLLECTABLE' ?
+    const imageSprite = this.typeConfig.type === 'collectable' ?
         getRunnerAltCommonImageSprite() :
         this.altGameModeActive ? getRunnerAltGameImageSprite() :
                                  getRunnerImageSprite();
@@ -173,6 +173,7 @@ export class Obstacle {
 
       // Update frame
       if (this.typeConfig.numFrames) {
+        assert(this.typeConfig.frameRate);
         this.timer += deltaTime;
         if (this.timer >= this.typeConfig.frameRate) {
           this.currentFrame =

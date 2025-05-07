@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {IS_HIDPI} from './constants.js';
-import {spriteDefinitionByType} from './offline-sprite-definitions.js';
+import {spriteDefinitionByType} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
 import {getRandomNum, getRunnerOrigImageSprite} from './utils.js';
 
@@ -113,7 +113,7 @@ export class NightMode {
     let moonSourceX = this.spritePos.x + currentPhaseSpritePosition;
     const moonOutputWidth = moonSourceWidth;
     let starSize = Config.STAR_SIZE;
-    let starSourceX = spriteDefinitionByType.original.LDPI.STAR.x;
+    let starSourceX = spriteDefinitionByType.original.ldpi.star.x;
     const runnerOrigImageSprite = getRunnerOrigImageSprite();
     assert(runnerOrigImageSprite);
 
@@ -122,7 +122,7 @@ export class NightMode {
       moonSourceHeight *= 2;
       moonSourceX = this.spritePos.x + (currentPhaseSpritePosition * 2);
       starSize *= 2;
-      starSourceX = spriteDefinitionByType.original.HDPI.STAR.x;
+      starSourceX = spriteDefinitionByType.original.hdpi.star.x;
     }
 
     this.canvasCtx.save();
@@ -160,11 +160,11 @@ export class NightMode {
       };
 
       if (IS_HIDPI) {
-        starPosition.sourceY = spriteDefinitionByType.original.HDPI.STAR.y +
+        starPosition.sourceY = spriteDefinitionByType.original.hdpi.star.y +
             Config.STAR_SIZE * 2 * i;
       } else {
         starPosition.sourceY =
-            spriteDefinitionByType.original.LDPI.STAR.y + Config.STAR_SIZE * i;
+            spriteDefinitionByType.original.ldpi.star.y + Config.STAR_SIZE * i;
       }
 
       this.stars[i] = starPosition;

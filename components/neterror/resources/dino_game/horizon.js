@@ -7,8 +7,8 @@ import {Cloud} from './cloud.js';
 import {HorizonLine} from './horizon_line.js';
 import {NightMode} from './night_mode.js';
 import {Obstacle, setMaxGapCoefficient as setMaxObstacleGapCoefficient, setMaxObstacleLength} from './obstacle.js';
-import {ObstacleType, spriteDefinitionByType} from './offline-sprite-definitions.js';
 import {Runner} from './offline.js';
+import {ObstacleType, spriteDefinitionByType} from './offline_sprite_definitions.js';
 import {getRandomNum} from './utils.js';
 
 /**
@@ -62,17 +62,17 @@ export class Horizon {
    * Initialise the horizon. Just add the line and a cloud. No obstacles.
    */
   init() {
-    obstacleTypes = spriteDefinitionByType.original.OBSTACLES;
+    obstacleTypes = spriteDefinitionByType.original.obstacles;
     this.addCloud();
 
     // Multiple Horizon lines
-    for (let i = 0; i < Runner.spriteDefinition.LINES.length; i++) {
+    for (let i = 0; i < Runner.spriteDefinition.lines.length; i++) {
       this.horizonLines.push(
-          new HorizonLine(this.canvas, Runner.spriteDefinition.LINES[i]));
+          new HorizonLine(this.canvas, Runner.spriteDefinition.lines[i]));
     }
 
     this.nightMode =
-        new NightMode(this.canvas, this.spritePos.MOON, this.dimensions.WIDTH);
+        new NightMode(this.canvas, this.spritePos.moon, this.dimensions.height);
   }
 
   /**
@@ -106,18 +106,18 @@ export class Horizon {
     this.altGameModeActive = true;
     this.spritePos = spritePos;
 
-    obstacleTypes = Runner.spriteDefinition.OBSTACLES;
+    obstacleTypes = Runner.spriteDefinition.obstacles;
     this.adjustObstacleSpeed();
 
-    setMaxObstacleGapCoefficient(Runner.spriteDefinition.MAX_GAP_COEFFICIENT);
-    setMaxObstacleLength(Runner.spriteDefinition.MAX_OBSTACLE_LENGTH);
+    setMaxObstacleGapCoefficient(Runner.spriteDefinition.maxGapCoefficient);
+    setMaxObstacleLength(Runner.spriteDefinition.maxObstacleLength);
 
-    setBackgroundElGlobalConfig(Runner.spriteDefinition.BACKGROUND_EL_CONFIG);
+    setBackgroundElGlobalConfig(Runner.spriteDefinition.backgroundElConfig);
 
     this.horizonLines = [];
-    for (let i = 0; i < Runner.spriteDefinition.LINES.length; i++) {
+    for (let i = 0; i < Runner.spriteDefinition.lines.length; i++) {
       this.horizonLines.push(
-          new HorizonLine(this.canvas, Runner.spriteDefinition.LINES[i]));
+          new HorizonLine(this.canvas, Runner.spriteDefinition.lines[i]));
     }
     this.reset();
   }
@@ -141,7 +141,7 @@ export class Horizon {
       this.horizonLines[i].update(deltaTime, currentSpeed);
     }
 
-    if (!this.altGameModeActive || Runner.spriteDefinition.HAS_CLOUDS) {
+    if (!this.altGameModeActive || Runner.spriteDefinition.hasClouds) {
       this.nightMode.update(showNightMode);
       this.updateClouds(deltaTime, currentSpeed);
     }
@@ -171,7 +171,7 @@ export class Horizon {
 
       // Check for adding a new element.
       if (numElements < maxBgEl &&
-          (this.dimensions.WIDTH - lastEl.xPos) > lastEl.gap &&
+          (this.dimensions.width - lastEl.xPos) > lastEl.gap &&
           frequency > Math.random()) {
         bgElAddFunction();
       }
@@ -234,7 +234,7 @@ export class Horizon {
       if (lastObstacle && !lastObstacle.followingObstacleCreated &&
           lastObstacle.isVisible() &&
           (lastObstacle.xPos + lastObstacle.width + lastObstacle.gap) <
-              this.dimensions.WIDTH) {
+              this.dimensions.width) {
         this.addNewObstacle(currentSpeed);
         lastObstacle.followingObstacleCreated = true;
       }
@@ -254,7 +254,7 @@ export class Horizon {
    */
   addNewObstacle(currentSpeed) {
     const obstacleCount =
-        obstacleTypes[obstacleTypes.length - 1].type !== 'COLLECTABLE' ||
+        obstacleTypes[obstacleTypes.length - 1].type !== 'collectable' ||
             (Runner.isAltGameModeEnabled() && !this.altGameModeActive ||
              this.altGameModeActive) ?
         obstacleTypes.length - 1 :
@@ -327,15 +327,14 @@ export class Horizon {
    */
   addCloud() {
     this.clouds.push(
-        new Cloud(this.canvas, this.spritePos.CLOUD, this.dimensions.WIDTH));
+        new Cloud(this.canvas, this.spritePos.cloud, this.dimensions.width));
   }
 
   /**
    * Add a random background element to the horizon.
    */
   addBackgroundEl() {
-    const backgroundElTypes =
-        Object.keys(Runner.spriteDefinition.BACKGROUND_EL);
+    const backgroundElTypes = Object.keys(Runner.spriteDefinition.backgroundEl);
 
     if (backgroundElTypes.length > 0) {
       let index = getRandomNum(0, backgroundElTypes.length - 1);
@@ -349,7 +348,7 @@ export class Horizon {
 
       this.lastEl = type;
       this.backgroundEls.push(new BackgroundEl(
-          this.canvas, this.spritePos.BACKGROUND_EL, this.dimensions.WIDTH,
+          this.canvas, this.spritePos.backgroundEl, this.dimensions.width,
           type));
     }
   }

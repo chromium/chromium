@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {FPS, IS_HIDPI} from './constants.js';
-import {CollisionBox} from './offline-sprite-definitions.js';
 import {Runner} from './offline.js';
+import {CollisionBox} from './offline_sprite_definitions.js';
 import {getTimeStamp} from './utils.js';
 
 
@@ -80,7 +80,7 @@ export class Trex {
   enableAltGameMode(spritePos) {
     this.altGameModeEnabled = true;
     this.spritePos = spritePos;
-    const spriteDefinition = Runner.spriteDefinition['TREX'];
+    const spriteDefinition = Runner.spriteDefinition['tRex'];
 
     // Update animation frames.
     Trex.animFrames.RUNNING.frames =
@@ -112,7 +112,7 @@ export class Trex {
 
     // Adjust bottom horizon placement.
     this.groundYPos = Runner.defaultDimensions.height - this.config.HEIGHT -
-        Runner.spriteDefinition['BOTTOM_PAD'];
+        Runner.spriteDefinition['bottomPad'];
     this.yPos = this.groundYPos;
     this.reset();
   }
@@ -218,7 +218,7 @@ export class Trex {
         this.config.WIDTH_CRASHED :
         this.config.WIDTH;
 
-    let jumpOffset = Runner.spriteDefinition.TREX.JUMPING.xOffset;
+    let jumpOffset = Runner.spriteDefinition.tRex.JUMPING.xOffset;
 
     // Width of sprite can change on jump or crashed.
     if (this.altGameModeEnabled) {
