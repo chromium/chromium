@@ -12,14 +12,6 @@ namespace page_info {
 // enabled.
 bool IsAboutThisSiteFeatureEnabled();
 
-// Returns true if kAboutThisSiteAsyncFetching and dependent features are
-// enabled.
-bool IsAboutThisSiteAsyncFetchingEnabled();
-
-// Enables usage of the async fetching method for cacao and caching fetched
-// metadata in a TabHelper.
-BASE_DECLARE_FEATURE(kAboutThisSiteAsyncFetching);
-
 // Enables the privacy policy insights Learning Experiment UI.
 BASE_DECLARE_FEATURE(kPrivacyPolicyInsights);
 
