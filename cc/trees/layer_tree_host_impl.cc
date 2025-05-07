@@ -2907,6 +2907,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   if (settings_.TreesInVizInClientProcess()) {
     UpdateDisplayTree(*frame);
 
+    layer_tree_frame_sink_->ExportFrameTiming();
+
     // For the display compositor we should have already submitted at display
     // Immediately queue a DidReceiveCompositorFrameAck.
     GetTaskRunner()->PostTask(
@@ -3239,7 +3241,11 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   // The swap-promises should not change the frame-token.
   DCHECK_EQ(metadata.frame_token, *next_frame_token_);
 
-  if (render_frame_metadata_observer_) {
+  // In TreesInViz mode in viz, we need to compute
+  // |last_draw_render_frame_metadata_| because it impacts HasDamage()
+  // computation.
+  if (render_frame_metadata_observer_ ||
+      settings_.trees_in_viz_in_viz_process) {
     last_draw_render_frame_metadata_ = MakeRenderFrameMetadata(frame);
     if (gfx::DelegatedInkMetadata* ink_metadata =
             metadata.delegated_ink_metadata.get()) {
@@ -3257,9 +3263,12 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
           last_draw_render_frame_metadata_->new_vertical_scroll_direction;
     }
 
-    render_frame_metadata_observer_->OnRenderFrameSubmission(
-        *last_draw_render_frame_metadata_, &metadata,
-        active_tree()->TakeForceSendMetadataRequest());
+    // TODO(zmo): Consider plumbing the observer to viz as well.
+    if (render_frame_metadata_observer_) {
+      render_frame_metadata_observer_->OnRenderFrameSubmission(
+          *last_draw_render_frame_metadata_, &metadata,
+          active_tree()->TakeForceSendMetadataRequest());
+    }
   }
 
   if (!CommitsToActiveTree() && !metadata.latency_info.empty()) {

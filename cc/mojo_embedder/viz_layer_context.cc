@@ -913,6 +913,8 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->begin_frame_args = tree.CurrentBeginFrameArgs();
   update->source_frame_number = tree.source_frame_number();
   update->trace_id = tree.trace_id().value();
+  update->primary_main_frame_item_sequence_number =
+      tree.primary_main_frame_item_sequence_number();
   update->page_scale_factor = tree.page_scale_factor()->Current(true);
   update->min_page_scale_factor = tree.min_page_scale_factor();
   update->max_page_scale_factor = tree.max_page_scale_factor();

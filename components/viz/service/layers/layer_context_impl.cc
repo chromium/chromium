@@ -1308,6 +1308,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   layers.set_source_frame_number(update->source_frame_number);
   layers.set_trace_id(
       cc::BeginMainFrameTraceId::FromUnsafeValue(update->trace_id));
+  layers.set_primary_main_frame_item_sequence_number(
+      update->primary_main_frame_item_sequence_number);
   layers.SetDeviceViewportRect(update->device_viewport);
 
   if (update->page_scale_factor <= 0 || update->min_page_scale_factor <= 0 ||

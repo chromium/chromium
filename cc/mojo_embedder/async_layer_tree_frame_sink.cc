@@ -285,13 +285,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
   compositor_frame_sink_ptr_->SubmitCompositorFrame(
       local_surface_id_, std::move(frame), std::move(hit_test_region_list), 0);
 
-  if (base::FeatureList::IsEnabled(
-          features::kExportFrameTimingAfterFrameDone)) {
-    for (const auto& pair : timing_details_) {
-      client_->DidPresentCompositorFrame(pair.first, pair.second);
-    }
-    timing_details_.clear();
-  }
+  ExportFrameTiming();
 
   num_did_not_produce_frame_since_last_submit_ = 0;
   if (use_internal_begin_frame_source_) {
@@ -320,13 +314,8 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
         data->set_surface_frame_trace_id(ack.trace_id);
       });
 
-  if (base::FeatureList::IsEnabled(
-          features::kExportFrameTimingAfterFrameDone)) {
-    for (const auto& pair : timing_details_) {
-      client_->DidPresentCompositorFrame(pair.first, pair.second);
-    }
-    timing_details_.clear();
-  }
+  ExportFrameTiming();
+
   if (use_internal_begin_frame_source_) {
     if (ack.preferred_frame_interval) {
       const viz::BeginFrameArgs last_args =
@@ -349,6 +338,16 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
         FROM_HERE,
         base::BindOnce(&AsyncLayerTreeFrameSink::UpdateInternalBeginFrameSource,
                        weak_factory_.GetWeakPtr(), true));
+  }
+}
+
+void AsyncLayerTreeFrameSink::ExportFrameTiming() {
+  if (base::FeatureList::IsEnabled(
+          features::kExportFrameTimingAfterFrameDone)) {
+    for (const auto& pair : timing_details_) {
+      client_->DidPresentCompositorFrame(pair.first, pair.second);
+    }
+    timing_details_.clear();
   }
 }
 
