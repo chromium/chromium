@@ -1676,19 +1676,14 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
       }
     }
 
-    const bool in_session_password_change_feature_enabled =
-        base::FeatureList::IsEnabled(::features::kInSessionPasswordChange);
-
-    if (in_session_password_change_feature_enabled &&
-        user_context_.GetSamlPasswordAttributes().has_value()) {
+    if (user_context_.GetSamlPasswordAttributes().has_value()) {
       // Update password expiry data if new data came in during SAML login,
       // and the in-session password change feature is enabled:
       user_context_.GetSamlPasswordAttributes()->SaveToPrefs(
           profile->GetPrefs());
 
-    } else if (!in_session_password_change_feature_enabled ||
-               user_context_.GetAuthFlow() ==
-                   UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML) {
+    } else if (user_context_.GetAuthFlow() ==
+               UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML) {
       // These attributes are no longer relevant and should be deleted if
       // either a) the in-session password change feature is no longer enabled
       // or b) this user is no longer using SAML to log in.

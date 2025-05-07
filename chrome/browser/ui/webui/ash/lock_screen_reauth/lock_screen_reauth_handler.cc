@@ -269,8 +269,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.Set("hl", app_locale);
   params.Set("email", context.email);
   params.Set("gaiaId", context.gaia_id.ToString());
-  params.Set("extractSamlPasswordAttributes",
-             login::ExtractSamlPasswordAttributesEnabled());
+  params.Set("extractSamlPasswordAttributes", true);
   params.Set("clientVersion", version_info::GetVersionNumber());
   params.Set("readOnlyEmail", true);
   PrefService* local_state = g_browser_process->local_state();
