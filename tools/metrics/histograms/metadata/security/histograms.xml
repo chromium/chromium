@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.GwpAsan.CrashAnalysisResult.{Allocator}"
-    enum="GwpAsanCrashAnalysisResult" expires_after="2025-05-04">
+    enum="GwpAsanCrashAnalysisResult" expires_after="2026-05-04">
   <owner>glazunov@google.com</owner>
   <owner>mpdenton@chromium.org</owner>
   <owner>chrome-memory-tok@google.com</owner>
