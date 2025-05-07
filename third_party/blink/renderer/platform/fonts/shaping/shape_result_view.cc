@@ -184,7 +184,6 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
   ShapeResult* new_result = MakeGarbageCollected<ShapeResult>(
       start_index_ + char_index_offset_, num_characters_, Direction());
   new_result->runs_.ReserveInitialCapacity(parts_.size());
-  unsigned num_glyphs = 0u;
   for (const auto& part : RunsOrParts()) {
     auto* new_run = MakeGarbageCollected<ShapeResultRun>(
         part.run_->font_data_.Get(), part.run_->direction_,
@@ -202,10 +201,8 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
     new_run->num_characters_ = part.num_characters_;
     new_run->CheckConsistency();
     new_result->runs_.push_back(new_run);
-    num_glyphs += part.NumGlyphs();
   }
 
-  new_result->num_glyphs_ = num_glyphs;
   new_result->has_vertical_offsets_ = has_vertical_offsets_;
   new_result->width_ = width_;
 

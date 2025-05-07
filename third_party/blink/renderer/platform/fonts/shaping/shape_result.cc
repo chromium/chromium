@@ -90,8 +90,7 @@ struct SameSizeAsShapeResult {
   UntracedMember<void*> deprecated_ink_bounds_;
   float width;
   unsigned start_index_;
-  unsigned num_characters_;
-  unsigned bitfields : 32;
+  unsigned bitfields;
 };
 
 ASSERT_SIZE(ShapeResult, SameSizeAsShapeResult);
@@ -420,7 +419,6 @@ ShapeResult::ShapeResult(const ShapeResult& other)
     : width_(other.width_),
       start_index_(other.start_index_),
       num_characters_(other.num_characters_),
-      num_glyphs_(other.num_glyphs_),
       direction_(other.direction_),
       has_vertical_offsets_(other.has_vertical_offsets_),
       is_applied_spacing_(other.is_applied_spacing_) {
@@ -724,6 +722,23 @@ float ShapeResult::CaretPositionForOffset(
     AdjustMidCluster adjust_mid_cluster) const {
   EnsureGraphemes(text);
   return PositionForOffset(offset, adjust_mid_cluster);
+}
+
+bool ShapeResult::HasLigatures() const {
+  for (const Member<ShapeResultRun>& run : runs_) {
+    if (run->HasLigatures()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+unsigned ShapeResult::NumGlyphs() const {
+  unsigned num_glyphs = 0u;
+  for (const Member<ShapeResultRun>& run : runs_) {
+    num_glyphs += run->NumGlyphs();
+  }
+  return num_glyphs;
 }
 
 bool ShapeResult::HasFallbackFonts(const SimpleFontData* primary_font) const {
@@ -1565,8 +1580,6 @@ void ShapeResult::InsertRun(ShapeResultRun* run,
     ComputeGlyphPositions<false>(run, start_glyph, num_glyphs, harfbuzz_buffer);
   }
   width_ += run->width_;
-  num_glyphs_ += run->NumGlyphs();
-  DCHECK_GE(num_glyphs_, run->NumGlyphs());
 
   InsertRun(run);
 }
@@ -1615,7 +1628,6 @@ ShapeResultRun* ShapeResult::InsertRunForTesting(
   // RTL runs have glyphs in the descending order of character_index.
   if (IsRtl())
     run->glyph_data_.Reverse();
-  num_glyphs_ += run->NumGlyphs();
   InsertRun(run);
   return run;
 }
@@ -1720,6 +1732,7 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
 
   unsigned target_run_size_before = target->runs_.size();
   bool should_merge = !target->runs_.empty();
+  bool has_glyphs = false;
   for (; run_index < runs_.size(); run_index++) {
     const auto& run = runs_[run_index];
     unsigned run_start = run->start_index_;
@@ -1733,7 +1746,7 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
       if (ShapeResultRun* sub_run = run->CreateSubRun(start, end)) {
         sub_run->start_index_ += index_diff;
         target->width_ += sub_run->width_;
-        target->num_glyphs_ += sub_run->glyph_data_.size();
+        has_glyphs |= sub_run->glyph_data_.size();
         if (auto* merged_run =
                 should_merge ? target->runs_.back()->MergeIfPossible(*sub_run)
                              : nullptr) {
@@ -1752,7 +1765,7 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
     }
   }
 
-  if (!target->num_glyphs_) {
+  if (!has_glyphs) {
     return run_index;
   }
 
@@ -1805,7 +1818,6 @@ const ShapeResult* ShapeResult::CopyAdjustedOffset(unsigned start_index) const {
 void ShapeResult::CheckConsistency() const {
   if (runs_.empty()) {
     DCHECK_EQ(0u, num_characters_);
-    DCHECK_EQ(0u, num_glyphs_);
     return;
   }
 
@@ -1814,13 +1826,11 @@ void ShapeResult::CheckConsistency() const {
 
   const unsigned start_index = StartIndex();
   unsigned index = start_index;
-  unsigned num_glyphs = 0;
   if (IsLtr()) {
     for (const auto& run : runs_) {
       // Characters maybe missing, but must be in increasing order.
       DCHECK_GE(run->start_index_, index);
       index = run->start_index_ + run->num_characters_;
-      num_glyphs += run->glyph_data_.size();
     }
   } else {
     // RTL on Mac may not have runs for the all characters. crbug.com/774034
@@ -1828,13 +1838,11 @@ void ShapeResult::CheckConsistency() const {
     for (const auto& run : base::Reversed(runs_)) {
       DCHECK_GE(run->start_index_, index);
       index = run->start_index_ + run->num_characters_;
-      num_glyphs += run->glyph_data_.size();
     }
   }
   const unsigned end_index = EndIndex();
   DCHECK_LE(index, end_index);
   DCHECK_EQ(end_index - start_index, num_characters_);
-  DCHECK_EQ(num_glyphs, num_glyphs_);
 }
 #endif
 
@@ -1850,8 +1858,6 @@ const ShapeResult* ShapeResult::CreateForTabulationCharacters(
   DCHECK(font_data);
   ShapeResult* result =
       MakeGarbageCollected<ShapeResult>(start_index, length, direction);
-  result->num_glyphs_ = length;
-  DCHECK_EQ(result->num_glyphs_, length);  // no overflow
   result->has_vertical_offsets_ =
       font_data->PlatformData().IsVerticalAnyUpright();
   // Tab characters are always LTR or RTL, not TTB, even when
@@ -1898,8 +1904,6 @@ const ShapeResult* ShapeResult::CreateForSpaces(const Font* font,
   DCHECK(font_data);
   ShapeResult* result =
       MakeGarbageCollected<ShapeResult>(start_index, length, direction);
-  result->num_glyphs_ = length;
-  DCHECK_EQ(result->num_glyphs_, length);  // no overflow
   result->has_vertical_offsets_ =
       font_data->PlatformData().IsVerticalAnyUpright();
   hb_direction_t hb_direction =
@@ -1941,7 +1945,6 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
   run->width_ = std::max(0.0f, stretch_size);
 
   result->width_ = run->width_;
-  result->num_glyphs_ = run->NumGlyphs();
   result->runs_.push_back(run);
 
   return result;
@@ -2006,7 +2009,6 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
   run->width_ = std::max(0.0f, assembly_parameters.stretch_size);
 
   result->width_ = run->width_;
-  result->num_glyphs_ = run->NumGlyphs();
   result->runs_.push_back(run);
   return result;
 }
@@ -2014,8 +2016,6 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
 void ShapeResult::ToString(StringBuilder* output) const {
   output->Append("#chars=");
   output->AppendNumber(num_characters_);
-  output->Append(", #glyphs=");
-  output->AppendNumber(num_glyphs_);
   output->Append(", dir=");
   output->AppendNumber(direction_);
   output->Append(", runs[");

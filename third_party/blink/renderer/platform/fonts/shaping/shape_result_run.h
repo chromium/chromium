@@ -89,6 +89,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
   }
 
   unsigned NumGlyphs() const { return glyph_data_.size(); }
+  bool HasLigatures() const { return NumGlyphs() < num_characters_; }
   bool IsLtr() const { return HB_DIRECTION_IS_FORWARD(direction_); }
   bool IsRtl() const { return HB_DIRECTION_IS_BACKWARD(direction_); }
   bool IsHorizontal() const { return HB_DIRECTION_IS_HORIZONTAL(direction_); }
