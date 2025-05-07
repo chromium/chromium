@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -42,6 +41,7 @@ import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.hub.NewTabAnimationUtils;
+import org.chromium.chrome.browser.hub.NewTabAnimationUtils.RectStart;
 import org.chromium.chrome.browser.hub.RoundedCornerAnimatorUtil;
 import org.chromium.chrome.browser.hub.ShrinkExpandAnimator;
 import org.chromium.chrome.browser.hub.ShrinkExpandImageView;
@@ -70,10 +70,6 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -84,21 +80,6 @@ import java.util.Collections;
  * uses modern UX designs.
  */
 public class NewTabAnimationLayout extends Layout {
-    @IntDef({
-        RectStart.TOP,
-        RectStart.TOP_TOOLBAR,
-        RectStart.BOTTOM,
-        RectStart.BOTTOM_TOOLBAR,
-    })
-    @Target(ElementType.TYPE_USE)
-    @Retention(RetentionPolicy.SOURCE)
-    /*package*/ @interface RectStart {
-        int TOP = 0;
-        int TOP_TOOLBAR = 1;
-        int BOTTOM = 2;
-        int BOTTOM_TOOLBAR = 3;
-    }
-
     private static final long FOREGROUND_ANIMATION_DURATION_MS = 300L;
     private static final long FOREGROUND_FADE_DURATION_MS = 150L;
     private static final long ANIMATION_TIMEOUT_MS = 800L;
@@ -111,6 +92,7 @@ public class NewTabAnimationLayout extends Layout {
     private final ToolbarManager mToolbarManager;
     private final BrowserControlsManager mBrowserControlsManager;
     private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
+    private final CustomTabCount mCustomTabCount;
 
     private @Nullable StaticTabSceneLayer mSceneLayer;
     private AnimatorSet mTabCreatedForegroundAnimation;
@@ -121,7 +103,6 @@ public class NewTabAnimationLayout extends Layout {
     private Runnable mAnimationRunnable;
     private Runnable mTimeoutRunnable;
     private Callback<Boolean> mVisibilityObserver;
-    private CustomTabCount mCustomTabCount;
     private @TabId int mNextTabId = Tab.INVALID_TAB_ID;
     private boolean mSkipForceAnimationToFinish;
 
@@ -430,7 +411,13 @@ public class NewTabAnimationLayout extends Layout {
      * @param newTab The new {@link Tab} to animate.
      */
     private @RectStart int getForegroundRectStart(Tab oldTab, Tab newTab) {
-        // TODO(crbug.com/40933120): Account for {@code oldTab} being null.
+        @TabLaunchType int tabLaunchType = newTab.getLaunchType();
+        if (oldTab == null
+                || tabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND
+                || tabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP) {
+            return RectStart.CENTER;
+        }
+
         boolean oldTabHasTopToolbar = ToolbarPositionController.shouldShowToolbarOnTop(oldTab);
         boolean newTabHasTopToolbar = ToolbarPositionController.shouldShowToolbarOnTop(newTab);
 
@@ -495,6 +482,7 @@ public class NewTabAnimationLayout extends Layout {
      * @param id The id of the new tab to animate.
      * @param sourceId The id of the tab that spawned this new tab.
      * @param newIsIncognito True if the new tab is an incognito tab.
+     * @param rectStart Origin point where the animation starts.
      */
     private void tabCreatedInForeground(
             @TabId int id, @TabId int sourceId, boolean newIsIncognito, @RectStart int rectStart) {
@@ -526,40 +514,50 @@ public class NewTabAnimationLayout extends Layout {
 
         Rect initialRect = new Rect();
         Rect finalRect = new Rect();
-        RectF compositorViewportRectf = new RectF();
         Rect hostViewRect = new Rect();
-        mCompositorViewHolder.getVisibleViewport(compositorViewportRectf);
-        compositorViewportRectf.round(finalRect);
         mAnimationHostView.getGlobalVisibleRect(hostViewRect);
 
-        boolean isTopAligned = rectStart == RectStart.TOP || rectStart == RectStart.TOP_TOOLBAR;
         int radius =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.new_tab_animation_rect_corner_radius);
-        int[] startRadii;
+        int[] startRadii = new int[4];
+        Arrays.fill(startRadii, radius);
 
-        // Without adding/subtracting 1px, the origin corner shows a bit of blinking when running
-        // the animation. Doing so ensures the {@link ShrinkExpandImageView} fully covers the origin
-        // corner.
-        if (isTopAligned) {
-            startRadii = new int[] {0, radius, radius, radius};
-            mCompositorViewHolder.getWindowViewport(compositorViewportRectf);
-            finalRect.bottom = Math.round(compositorViewportRectf.bottom);
-            finalRect.top = rectStart == RectStart.TOP ? hostViewRect.top : finalRect.top - 1;
+        if (rectStart != RectStart.CENTER) {
+            RectF compositorViewportRectf = new RectF();
+            mCompositorViewHolder.getVisibleViewport(compositorViewportRectf);
+            compositorViewportRectf.round(finalRect);
+
+            // Without adding/subtracting 1px, the origin corner shows a bit of blinking when
+            // running the animation. Doing so ensures the {@link ShrinkExpandImageView} fully
+            // covers the origin corner.
+            if (rectStart == RectStart.TOP || rectStart == RectStart.TOP_TOOLBAR) {
+                startRadii[0] = 0;
+                mCompositorViewHolder.getWindowViewport(compositorViewportRectf);
+                finalRect.bottom = Math.round(compositorViewportRectf.bottom);
+                finalRect.top =
+                        rectStart == RectStart.TOP ? hostViewRect.top - 1 : finalRect.top - 1;
+            } else {
+                startRadii[2] = 0;
+                finalRect.top = hostViewRect.top;
+                finalRect.bottom =
+                        rectStart == RectStart.BOTTOM
+                                ? hostViewRect.bottom + 1
+                                : finalRect.bottom + 1;
+            }
+            if (isRtl) {
+                finalRect.right += 1;
+            } else {
+                finalRect.left -= 1;
+            }
         } else {
-            startRadii = new int[] {radius, radius, 0, radius};
-            finalRect.top = hostViewRect.top;
-            finalRect.bottom =
-                    rectStart == RectStart.BOTTOM ? hostViewRect.bottom : finalRect.bottom + 1;
+            finalRect = hostViewRect;
+            Rect compositorViewRect = new Rect();
+            mCompositorViewHolder.getGlobalVisibleRect(compositorViewRect);
+            finalRect.bottom -= compositorViewRect.top;
         }
-        if (isRtl) {
-            finalRect.right += 1;
-        } else {
-            finalRect.left -= 1;
-        }
-        // TODO(crbug.com/40933120): Make the initial rect start from the center when opening a tab
-        // from the context menu.
-        NewTabAnimationUtils.updateRects(initialRect, finalRect, isRtl, isTopAligned);
+
+        NewTabAnimationUtils.updateRects(rectStart, isRtl, initialRect, finalRect);
 
         ShrinkExpandAnimator shrinkExpandAnimator =
                 new ShrinkExpandAnimator(
@@ -612,9 +610,13 @@ public class NewTabAnimationLayout extends Layout {
         mAnimationRunnable =
                 () -> {
                     mAnimationRunnable = null;
+                    // Make View visible once the animation is ready to start.
+                    mRectView.setVisibility(View.VISIBLE);
                     mTabCreatedForegroundAnimation.start();
                 };
 
+        // {@link View#INVISIBLE} is needed to generate the geometry information.
+        mRectView.setVisibility(View.INVISIBLE);
         mAnimationHostView.addView(mRectView);
         mRectView.reset(initialRect);
         mHandler.post(mAnimationRunnable);
