@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/pinned_tab_collection.h"
+#include "components/tabs/public/pinned_tab_collection.h"
 
 namespace tabs {
 

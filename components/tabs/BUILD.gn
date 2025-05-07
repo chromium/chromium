@@ -4,6 +4,7 @@
 
 source_set("public") {
   sources = [
+    "public/pinned_tab_collection.h",
     "public/split_tab_id.h",
     "public/supports_handles.h",
     "public/tab_collection.h",
@@ -23,6 +24,7 @@ source_set("public") {
 
 source_set("tabs") {
   sources = [
+    "pinned_tab_collection.cc",
     "tab_collection.cc",
     "tab_collection_storage.cc",
   ]

@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/pinned_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "chrome/browser/ui/tabs/split_tab_visual_data.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_collection_storage.h"
 #include "content/public/test/browser_task_environment.h"
