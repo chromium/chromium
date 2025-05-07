@@ -161,8 +161,8 @@ class ReportScheduler {
   // of another report.
   void RunPendingTriggers();
 
-  // Records that |trigger| was responsible for an upload attempt.
-  static void RecordUploadTrigger(ReportTrigger trigger);
+  // Records that `active_trigger_` was responsible for an upload attempt.
+  void RecordUploadTrigger();
 
   ReportType TriggerToReportType(ReportTrigger trigger);
 
@@ -184,7 +184,7 @@ class ReportScheduler {
   std::unique_ptr<RealTimeReportController> real_time_report_controller_;
 
   // The trigger responsible for initiating active report generation.
-  ReportTrigger active_trigger_ = kTriggerNone;
+  ReportTrigger active_trigger_ = ReportTrigger::kTriggerNone;
   // The configuration for  active report generation.
   ReportGenerationConfig active_report_generation_config_;
 

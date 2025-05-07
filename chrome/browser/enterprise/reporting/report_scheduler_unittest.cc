@@ -70,6 +70,8 @@ constexpr base::TimeDelta kNewUploadFrequency = base::Hours(10);
 
 constexpr char kUploadTriggerMetricName[] =
     "Enterprise.CloudReportingUploadTrigger";
+constexpr char kSignalsReportingModeMetricName[] =
+    "Enterprise.SecurityReport.User.Mode";
 
 }  // namespace
 
@@ -382,6 +384,8 @@ TEST_F(ReportSchedulerTest, UploadReportSucceededForProfileReporting) {
       profile->GetPrefs()->GetTime(kLastUploadTimestamp);
   EXPECT_EQ(base::Time::Now(), current_last_upload_timestamp);
 
+  histogram_tester_.ExpectTotalCount(kSignalsReportingModeMetricName, 0);
+
   ::testing::Mock::VerifyAndClearExpectations(client_);
   ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
 }
@@ -649,6 +653,7 @@ TEST_F(ReportSchedulerTest, ManualReport) {
 
   ExpectLastUploadTimestampUpdated(true);
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 6, 1);
+  histogram_tester_.ExpectTotalCount(kSignalsReportingModeMetricName, 0);
   ::testing::Mock::VerifyAndClearExpectations(generator_);
   ::testing::Mock::VerifyAndClearExpectations(uploader_);
 }
@@ -963,6 +968,8 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
 
   // Run pending task.
   task_environment_.FastForwardBy(base::TimeDelta());
+
+  histogram_tester_.ExpectTotalCount(kSignalsReportingModeMetricName, 0);
 }
 
 // Tests that cookies will be used as part of the upload when both the security
@@ -988,6 +995,8 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
 
   // Run pending task.
   task_environment_.FastForwardBy(base::TimeDelta());
+
+  histogram_tester_.ExpectUniqueSample(kSignalsReportingModeMetricName, 2, 1);
 }
 
 // Edge case where:
@@ -1068,6 +1077,8 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   base::RunLoop run_loop;
   scheduler_->UploadFullReport(run_loop.QuitClosure());
   run_loop.Run();
+
+  histogram_tester_.ExpectTotalCount(kSignalsReportingModeMetricName, 0);
 }
 
 // Tests the use-case where a report is being requested manually when both
@@ -1113,6 +1124,10 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   base::RunLoop run_loop;
   scheduler_->UploadFullReport(run_loop.QuitClosure());
   run_loop.Run();
+
+  // A status report with signals and a signals-only report
+  histogram_tester_.ExpectBucketCount(kSignalsReportingModeMetricName, 1, 1);
+  histogram_tester_.ExpectBucketCount(kSignalsReportingModeMetricName, 2, 1);
 }
 
 // Tests the use-case where a report is being requested manually when profile
@@ -1157,6 +1172,8 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   base::RunLoop run_loop;
   scheduler_->UploadFullReport(run_loop.QuitClosure());
   run_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(kSignalsReportingModeMetricName, 2, 2);
 }
 
 // Tests the use-case where a report is being requested manually when neither
@@ -1175,6 +1192,8 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   base::RunLoop run_loop;
   scheduler_->UploadFullReport(run_loop.QuitClosure());
   run_loop.Run();
+
+  histogram_tester_.ExpectTotalCount(kSignalsReportingModeMetricName, 0);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

@@ -3037,6 +3037,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.SecurityReport.User.Mode"
+    enum="SecuritySignalsMode" expires_after="2026-03-01">
+  <owner>xzonghan@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>The method of how security signals is uploaded</summary>
+</histogram>
+
+<histogram name="Enterprise.SecurityReport.User.Trigger"
+    enum="SecurityReportTrigger" expires_after="2026-03-01">
+  <owner>xzonghan@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>The source trigger of security signals-only reports</summary>
+</histogram>
+
 <histogram name="Enterprise.SkyVault.LocalStorage.Enabled"
     enum="BooleanEnabled" expires_after="2025-10-01">
   <owner>aidazolic@google.com</owner>

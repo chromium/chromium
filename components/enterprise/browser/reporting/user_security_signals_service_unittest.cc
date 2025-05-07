@@ -4,6 +4,7 @@
 
 #include "components/enterprise/browser/reporting/user_security_signals_service.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
@@ -25,6 +26,9 @@ using testing::Mock;
 using testing::Return;
 
 namespace {
+
+constexpr char kReportTriggerMetricName[] =
+    "Enterprise.SecurityReport.User.Trigger";
 
 class MockUserSecuritySignalsServiceDelegate
     : public UserSecuritySignalsService::Delegate {
@@ -120,6 +124,7 @@ class UserSecuritySignalsServiceTest : public testing::Test {
   std::unique_ptr<UserSecuritySignalsService> service_ = nullptr;
   testing::StrictMock<MockUserSecuritySignalsServiceDelegate> delegate_;
   network::TestCookieManager test_cookie_manager_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(UserSecuritySignalsServiceTest, NotStarted) {
@@ -137,6 +142,7 @@ TEST_F(UserSecuritySignalsServiceTest, NotStarted) {
 
   // No trigger should occur even if we fast forward.
   FastForwardTimeToTrigger();
+  histogram_tester_.ExpectTotalCount(kReportTriggerMetricName, 0);
 }
 
 TEST_F(UserSecuritySignalsServiceTest, PolicyDefault) {
@@ -149,6 +155,7 @@ TEST_F(UserSecuritySignalsServiceTest, PolicyDefault) {
 
   // No trigger should occur even if we fast forward.
   FastForwardTimeToTrigger();
+  histogram_tester_.ExpectTotalCount(kReportTriggerMetricName, 0);
 }
 
 TEST_F(UserSecuritySignalsServiceTest, PolicyEnabledWithoutCookies) {
@@ -163,6 +170,8 @@ TEST_F(UserSecuritySignalsServiceTest, PolicyEnabledWithoutCookies) {
 
   EXPECT_TRUE(service_->IsSecuritySignalsReportingEnabled());
   EXPECT_FALSE(service_->ShouldUseCookies());
+  histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
+                                       SecurityReportTrigger::kTimer, 1);
 }
 
 TEST_F(UserSecuritySignalsServiceTest, PolicyEnabledWithCookies_FastForwards) {
@@ -190,6 +199,9 @@ TEST_F(UserSecuritySignalsServiceTest, PolicyEnabledWithCookies_FastForwards) {
   EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
       .Times(1);
   FastForwardTimeToTrigger();
+
+  histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
+                                       SecurityReportTrigger::kTimer, 3);
 }
 
 // Test case to simulate when a security signals report is uploaded by a
@@ -217,6 +229,9 @@ TEST_F(UserSecuritySignalsServiceTest,
   FastForwardByHalfTimeToTrigger();
   service_->OnReportUploaded();
   FastForwardByHalfTimeToTrigger();
+
+  histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
+                                       SecurityReportTrigger::kTimer, 1);
 }
 
 TEST_F(UserSecuritySignalsServiceTest, PolicyBecomesEnabledWithoutCookies) {
@@ -234,6 +249,9 @@ TEST_F(UserSecuritySignalsServiceTest, PolicyBecomesEnabledWithoutCookies) {
       .Times(1);
   SetEnabledPolicy(true);
   task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
+                                       SecurityReportTrigger::kTimer, 1);
 }
 
 TEST_F(UserSecuritySignalsServiceTest,
@@ -252,6 +270,9 @@ TEST_F(UserSecuritySignalsServiceTest,
 
   EXPECT_TRUE(service_->IsSecuritySignalsReportingEnabled());
   EXPECT_TRUE(service_->ShouldUseCookies());
+
+  histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
+                                       SecurityReportTrigger::kTimer, 1);
 }
 
 TEST_F(UserSecuritySignalsServiceTest,
@@ -278,6 +299,11 @@ TEST_F(UserSecuritySignalsServiceTest,
   TriggerValidCookieInsert();
 
   FlushForTesting();
+
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kTimer, 1);
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kCookieChange, 1);
 }
 
 TEST_F(UserSecuritySignalsServiceTest,
@@ -310,6 +336,11 @@ TEST_F(UserSecuritySignalsServiceTest,
   TriggerValidCookieInsert();
 
   FlushForTesting();
+
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kTimer, 1);
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kCookieChange, 1);
 }
 
 TEST_F(UserSecuritySignalsServiceTest,
@@ -356,6 +387,11 @@ TEST_F(UserSecuritySignalsServiceTest,
       net::CookieAccessResult(), net::CookieChangeCause::INSERTED));
 
   FlushForTesting();
+
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kTimer, 1);
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kCookieChange, 2);
 }
 
 TEST_F(UserSecuritySignalsServiceTest,
@@ -386,6 +422,11 @@ TEST_F(UserSecuritySignalsServiceTest,
   SetUseAuthPolicy(false);
   TriggerValidCookieInsert();
   FlushForTesting();
+
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kTimer, 1);
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kCookieChange, 1);
 }
 
 }  // namespace enterprise_reporting
