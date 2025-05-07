@@ -7,6 +7,7 @@
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/devtools/devtools_window.h"
