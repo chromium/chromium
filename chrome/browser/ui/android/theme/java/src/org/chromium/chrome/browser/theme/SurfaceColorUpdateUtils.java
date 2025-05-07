@@ -18,6 +18,24 @@ import org.chromium.ui.util.ColorUtils;
 /** Utility class that provides color values based on feature flags enabled. */
 @NullMarked
 public class SurfaceColorUpdateUtils {
+
+    /** Whether enable the containment on the tab group list pane. */
+    public static boolean isTabGroupListContainmentEnabled() {
+        return ThemeModuleUtils.isForceEnableDependencies()
+                || (useNewGtsSurfaceColor()
+                        && ChromeFeatureList.sTabGroupListContainment.getValue());
+    }
+
+    private static boolean useNewGtsSurfaceColor() {
+        return ThemeModuleUtils.isForceEnableDependencies()
+                || ChromeFeatureList.sGridTabSwitcherSurfaceColorUpdate.isEnabled();
+    }
+
+    private static boolean useNewToolbarSurfaceColor() {
+        return ThemeModuleUtils.isForceEnableDependencies()
+                || ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled();
+    }
+
     /**
      * Returns the background color for the Omnibox based on the enabled flag.
      *
@@ -28,7 +46,7 @@ public class SurfaceColorUpdateUtils {
         if (isIncognito) {
             return ContextCompat.getColor(context, R.color.toolbar_text_box_background_incognito);
         }
-        return ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled()
+        return useNewToolbarSurfaceColor()
                 ? SemanticColorUtils.getColorSurface(context)
                 : ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color);
     }
@@ -40,7 +58,7 @@ public class SurfaceColorUpdateUtils {
      * @return The background color.
      */
     public static @ColorInt int getDefaultThemeColor(Context context, boolean isIncognito) {
-        if (ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled() && !isIncognito) {
+        if (useNewToolbarSurfaceColor() && !isIncognito) {
             return SemanticColorUtils.getColorSurfaceContainerHigh(context);
         }
         return ChromeColors.getDefaultThemeColor(context, isIncognito);
@@ -54,7 +72,7 @@ public class SurfaceColorUpdateUtils {
      * @return The background color.
      */
     public static @ColorInt int getTabStripBackgroundColorDefault(Context context) {
-        if (ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled()) {
+        if (useNewToolbarSurfaceColor()) {
             return SemanticColorUtils.getColorSurfaceDim(context);
         }
         @ColorInt int darkThemeColor = SemanticColorUtils.getColorSurfaceContainer(context);
@@ -71,7 +89,7 @@ public class SurfaceColorUpdateUtils {
      * @return The background color.
      */
     public static @ColorInt int getTabStripBackgroundColorUnfocused(Context context) {
-        if (ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled()) {
+        if (useNewToolbarSurfaceColor()) {
             @ColorInt int baseColor = SemanticColorUtils.getColorSurfaceDim(context);
             @ColorInt int overlayColor = SemanticColorUtils.getColorOnSurfaceInverse(context);
             float fraction =
@@ -95,7 +113,7 @@ public class SurfaceColorUpdateUtils {
     public static @ColorInt int getGridTabSwitcherBackgroundColor(
             Context context, boolean isIncognito) {
         // TODO(crbug.com/414404094): Add semantic color for incognito.
-        if (ChromeFeatureList.sGridTabSwitcherSurfaceColorUpdate.isEnabled()) {
+        if (useNewGtsSurfaceColor()) {
             return isIncognito
                     ? ContextCompat.getColor(
                             context, R.color.gm3_baseline_surface_container_high_dark)
@@ -114,7 +132,7 @@ public class SurfaceColorUpdateUtils {
      * @return The background color.
      */
     public static @ColorInt int getCardViewBackgroundColor(Context context, boolean isIncognito) {
-        if (ChromeFeatureList.sGridTabSwitcherSurfaceColorUpdate.isEnabled()) {
+        if (useNewGtsSurfaceColor()) {
             // TODO(crbug.com/414404094): Add semantic color for incognito tab card view.
             return isIncognito
                     ? ContextCompat.getColor(context, R.color.gm3_baseline_surface_dim_dark)

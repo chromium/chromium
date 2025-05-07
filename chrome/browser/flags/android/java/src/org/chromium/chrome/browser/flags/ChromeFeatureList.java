@@ -1048,6 +1048,9 @@ public abstract class ChromeFeatureList {
 
     // CachedFeatureParam instances.
     /* Alphabetical order by feature name, arbitrary order by param name: */
+    public static final BooleanCachedFeatureParam sAndroidThemeModuleForceDependencies =
+            newBooleanCachedFeatureParam(
+                    ANDROID_THEME_MODULE, "force_theme_module_dependencies", false);
     public static final BooleanCachedFeatureParam sCctAdaptiveButtonEnableOpenInBrowser =
             newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "open_in_browser", false);
     public static final BooleanCachedFeatureParam sCctAdaptiveButtonEnableVoice =
@@ -1393,6 +1396,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFaviconUseLargeFavicon,
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
                     sAndroidBottomToolbarDefaultToTop,
+                    sAndroidThemeModuleForceDependencies,
                     sCctAdaptiveButtonEnableOpenInBrowser,
                     sCctAdaptiveButtonEnableVoice,
                     sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs,
