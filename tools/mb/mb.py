@@ -1709,6 +1709,7 @@ class MetaBuildWrapper:
                or 'is_chromeos_device=true' in vals['gn_args'])
     is_cros_device = 'is_chromeos_device=true' in vals['gn_args']
     is_ios = 'target_os="ios"' in vals['gn_args']
+    is_linux = 'target_os="linux"' in vals['gn_args']
     # pylint: disable=consider-using-ternary
     is_mac = ((self.platform == 'darwin' and not is_ios)
               or 'target_os="mac"' in vals['gn_args'])
@@ -1721,8 +1722,10 @@ class MetaBuildWrapper:
     # that one Ozone build can be used to run different backends. Currently,
     # tests are executed for the headless and X11 backends and both can run
     # under Xvfb on Linux.
-    use_xvfb = (self.platform.startswith('linux') and not is_android
-                and not is_fuchsia and not is_cros_device)
+    if 'target_os' not in vals['gn_args']:
+      use_xvfb = self.platform.startswith('linux')
+    else:
+      use_xvfb = is_linux or (is_cros and not is_cros_device)
 
     asan = 'is_asan=true' in vals['gn_args']
     lsan = 'is_lsan=true' in vals['gn_args']
