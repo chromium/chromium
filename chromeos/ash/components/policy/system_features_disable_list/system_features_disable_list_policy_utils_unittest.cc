@@ -73,13 +73,7 @@ class SystemFeaturesDisableListPolicyUtilsTest : public testing::Test {
     cros_settings_->AddSettingsProvider(std::move(provider));
 
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
-    // TODO(414768321): Share pref registration with prod code in
-    // SystemFeaturesDisableListPolicyHandler.
-    local_state_.registry()->RegisterListPref(
-        policy_prefs::kSystemFeaturesDisableList);
-    local_state_.registry()->RegisterStringPref(
-        policy_prefs::kSystemFeaturesDisableMode,
-        kSystemFeaturesDisableModeBlocked);
+    RegisterDisabledSystemFeaturesPrefs(local_state_.registry());
 
     // Register users
     const auto user_account_id =

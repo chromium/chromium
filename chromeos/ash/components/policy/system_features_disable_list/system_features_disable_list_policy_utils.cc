@@ -13,6 +13,12 @@
 
 namespace policy {
 
+void RegisterDisabledSystemFeaturesPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(policy_prefs::kSystemFeaturesDisableList);
+  registry->RegisterStringPref(policy_prefs::kSystemFeaturesDisableMode,
+                               kSystemFeaturesDisableModeBlocked);
+}
+
 bool IsDisabledAppsModeHidden(const PrefService& local_state) {
   const bool is_disabled_apps_mode_hidden_pref =
       local_state.GetString(policy::policy_prefs::kSystemFeaturesDisableMode) ==

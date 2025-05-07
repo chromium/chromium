@@ -6,9 +6,15 @@
 #define CHROMEOS_ASH_COMPONENTS_POLICY_SYSTEM_FEATURES_DISABLE_LIST_SYSTEM_FEATURES_DISABLE_LIST_POLICY_UTILS_H_
 
 #include "base/component_export.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace policy {
+
+// Registers prefs corresponding to the SystemFeaturesDisableList and
+// SystemFeaturesDisableMode policies.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
+void RegisterDisabledSystemFeaturesPrefs(PrefRegistrySimple* registry);
 
 // Whether the icons of apps disabled by the SystemFeaturesDisableList policy
 // are hidden or blocked.
