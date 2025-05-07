@@ -14,6 +14,7 @@ suite('WordBoundariesUsedForSpeech', () => {
   let app: AppElement;
   let wordBoundaries: WordBoundaries;
   let speechController: SpeechController;
+  let voicePackController: VoicePackController;
 
   // root htmlTag='#document' id=1
   // ++link htmlTag='a' url='http://www.google.com' id=2
@@ -65,7 +66,8 @@ suite('WordBoundariesUsedForSpeech', () => {
     chrome.readingMode.onConnected = () => {};
     const speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
-    VoicePackController.setInstance(new VoicePackController());
+    voicePackController = new VoicePackController();
+    VoicePackController.setInstance(voicePackController);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
 
@@ -106,7 +108,7 @@ suite('WordBoundariesUsedForSpeech', () => {
 
       const state: WordBoundaryState = wordBoundaries.state;
       assertTrue(wordBoundaries.hasBoundaries());
-      assertTrue(!!app.getSpeechSynthesisVoice());
+      assertTrue(!!voicePackController.getCurrentVoice());
       assertEquals(10, state.speechUtteranceStartIndex);
       assertEquals(0, state.previouslySpokenIndex);
       assertEquals(5, state.speechUtteranceLength);

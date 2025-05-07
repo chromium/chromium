@@ -207,7 +207,7 @@ suite('Logger', () => {
     const expectedTime = 100;
 
     await new Promise(resolve => setTimeout(resolve, expectedTime));
-    logger.logSpeechPlaySession(startTime, undefined);
+    logger.logSpeechPlaySession(startTime, null);
 
     // The playback length should be at least the amount of time we waited above
     // and less than the starting time (i.e. we should be recording length of

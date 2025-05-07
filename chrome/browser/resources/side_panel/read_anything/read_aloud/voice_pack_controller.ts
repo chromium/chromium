@@ -11,7 +11,7 @@ import {isGoogle} from '../voice_language_util.js';
 import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
 import type {VoicePackStatus} from '../voice_language_util.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getVoicePackConvertedLangIfExists, isVoicePackStatusError, isVoicePackStatusSuccess, VoiceClientSideStatusCode, VoicePackServerStatusSuccessCode} from '../voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, VoiceClientSideStatusCode, VoicePackServerStatusSuccessCode} from '../voice_language_util.js';
 import {VoiceNotificationManager} from '../voice_notification_manager.js';
 
 import {VoicePackModel} from './voice_pack_model.js';
@@ -19,6 +19,7 @@ import {VoicePackModel} from './voice_pack_model.js';
 export interface VoiceLanguageListener {
   onEnabledLangsChange(): void;
   onAvailableVoicesChange(): void;
+  onCurrentVoiceChange(): void;
 }
 
 export class VoicePackController {
@@ -44,6 +45,17 @@ export class VoicePackController {
 
   setCurrentLanguage(language: string): void {
     this.model_.setCurrentLanguage(language);
+  }
+
+  getCurrentVoice(): SpeechSynthesisVoice|null {
+    return this.model_.getCurrentVoice();
+  }
+
+  setCurrentVoice(voice: SpeechSynthesisVoice|null): void {
+    if (!areVoicesEqual(voice, this.getCurrentVoice())) {
+      this.model_.setCurrentVoice(voice);
+      this.listeners_.forEach(l => l.onCurrentVoiceChange());
+    }
   }
 
   getEnabledLangs(): string[] {
@@ -72,6 +84,66 @@ export class VoicePackController {
         availableVoice => areVoicesEqual(availableVoice, voice));
   }
 
+  setUserPreferredVoice(selectedVoice: SpeechSynthesisVoice): void {
+    this.setCurrentVoice(selectedVoice);
+    chrome.readingMode.onVoiceChange(selectedVoice.name, selectedVoice.lang);
+  }
+
+  setUserPreferredVoiceFromPrefs(): void {
+    const storedVoiceName = chrome.readingMode.getStoredVoice();
+    if (!storedVoiceName) {
+      this.setCurrentVoice(this.getDefaultVoice_());
+      return;
+    }
+
+    this.refreshAvailableVoices();
+    const selectedVoice = this.getAvailableVoices().filter(
+        voice => voice.name === storedVoiceName);
+    const newVoice = (selectedVoice.length && selectedVoice[0]) ?
+        selectedVoice[0] :
+        this.getDefaultVoice_();
+    this.setCurrentVoice(newVoice);
+
+    // Enable the locale for the preferred voice for this language.
+    this.enableLang(this.getCurrentVoice()?.lang);
+  }
+
+  updateAutoSelectedVoiceToNaturalVoice(): void {
+    if (this.currentVoiceIsUserChosen_()) {
+      return;
+    }
+
+    const naturalVoicesForLang = this.getAvailableVoices().filter(
+        voice => isNatural(voice) &&
+            voice.lang.startsWith(this.getCurrentLanguage()));
+    if (!naturalVoicesForLang.length || !naturalVoicesForLang[0]) {
+      return;
+    }
+
+    this.setCurrentVoice(naturalVoicesForLang[0]);
+  }
+
+  // Checks the voice pack status of the current voice and updates to the
+  // default voice if it's no longer available.
+  updateUnavailableVoiceToDefaultVoice(): void {
+    for (const lang of this.model_.getServerLanguages()) {
+      this.requestInfo_(lang);
+    }
+    const currentVoice = this.getCurrentVoice();
+    if (currentVoice && !this.isVoiceAvailable(currentVoice)) {
+      this.setCurrentVoice(this.getDefaultVoice_());
+    }
+  }
+
+  getCurrentVoiceOrDefault(): SpeechSynthesisVoice|null {
+    const currentVoice = this.getCurrentVoice();
+    if (!currentVoice) {
+      this.setCurrentVoice(this.getDefaultVoice_());
+    }
+
+    return this.getCurrentVoice();
+  }
+
   onLanguageUnavailableError(): void {
     const possibleNewLanguage = convertLangToAnAvailableLangIfPresent(
         this.getCurrentLanguage(), this.getAvailableLangs(),
@@ -79,6 +151,53 @@ export class VoicePackController {
     if (possibleNewLanguage) {
       this.setCurrentLanguage(possibleNewLanguage);
     }
+  }
+
+  // Attempt to get a new voice using the current language. In theory, the
+  // previously unavailable voice should no longer be showing up in
+  // availableVoices, but we ensure that the alternative voice does not match
+  // the previously unavailable voice as an extra measure. This method should
+  // only be called when speech synthesis returns an error.
+  onVoiceUnavailableError(): void {
+    const currentVoice = this.getCurrentVoice();
+    const newVoice = this.getDefaultVoice_();
+
+    // If the default voice is not the same as the original, unavailable voice,
+    // use that, only if the new voice is also defined.
+    if (newVoice && !areVoicesEqual(newVoice, currentVoice)) {
+      this.setCurrentVoice(newVoice);
+      return;
+    }
+
+    // If the default voice won't work, try another voice in that language.
+    const baseLang = this.getCurrentLanguage();
+    this.refreshAvailableVoices();
+    const voicesForLanguage = this.getAvailableVoices().filter(
+        voice => voice.lang.startsWith(baseLang));
+
+    // TODO: crbug.com/40927698 - It's possible we can get stuck in an infinite
+    // loop of jumping back and forth between two or more invalid voices, if
+    // multiple voices are invalid. Investigate if we need to do more to handle
+    // this case.
+
+    // TODO: crbug.com/336596926 - If there still aren't voices for the
+    // language, attempt to fallback to the browser language, if we're using
+    // the page language.
+    let voiceIndex = 0;
+    while (voiceIndex < voicesForLanguage.length) {
+      if (!areVoicesEqual(voicesForLanguage[voiceIndex], currentVoice)) {
+        // Return another voice in the same language, ensuring we're not
+        // returning the previously unavailable voice for extra safety.
+        this.setCurrentVoice(voicesForLanguage[voiceIndex] || null);
+        return;
+      }
+      voiceIndex++;
+    }
+
+    // TODO: crbug.com/336596926 - Handle language updates if there aren't any
+    // available voices in the current language other than the unavailable
+    // voice.
+    this.setCurrentVoice(null);
   }
 
   disableLangIfNoVoices(lang: string): void {
@@ -151,12 +270,13 @@ export class VoicePackController {
   }
   // </if>
 
-  restoreEnabledLanguagesFromPref(langOfDefaultVoice?: string): void {
+  restoreEnabledLanguagesFromPref(): void {
     // We need to make sure the languages we choose correspond to voices, so
     // refresh the list of voices and available langs
     this.refreshAvailableVoices();
     this.setCurrentLanguage(chrome.readingMode.baseLanguageForSpeech);
     const storedLanguagesPref = chrome.readingMode.getLanguagesEnabledInPref();
+    const langOfDefaultVoice = this.getDefaultVoice_()?.lang;
     const langs = createInitialListOfEnabledLanguages(
         chrome.readingMode.baseLanguageForSpeech, storedLanguagesPref,
         this.getAvailableLangs(), langOfDefaultVoice);
@@ -217,12 +337,6 @@ export class VoicePackController {
     if (possibleVoicePackLanguage && (oldStatus !== status)) {
       this.notificationManager_.onVoiceStatusChange(
           voicePackLanguage, status, this.getAvailableVoices());
-    }
-  }
-
-  refreshVoicePackStatuses() {
-    for (const lang of this.model_.getServerLanguages()) {
-      this.requestInfo_(lang);
     }
   }
 
@@ -363,6 +477,55 @@ export class VoicePackController {
   private getAvailableVoicesForLang_(lang: string): SpeechSynthesisVoice[] {
     return this.model_.getAvailableVoices().filter(
         v => getVoicePackConvertedLangIfExists(v.lang) === lang);
+  }
+
+  private currentVoiceIsUserChosen_(): boolean {
+    const storedVoiceName = chrome.readingMode.getStoredVoice();
+
+    // getCurrentVoice() is not necessarily chosen by the user, it is just
+    // the voice that read aloud is using. It may be a default voice chosen by
+    // read aloud, so we check it against user preferences to see if it was
+    // user-chosen.
+    if (storedVoiceName) {
+      return this.getCurrentVoice()?.name === storedVoiceName;
+    }
+    return false;
+  }
+
+  private getDefaultVoice_(): SpeechSynthesisVoice|null {
+    this.refreshAvailableVoices();
+    const allPossibleVoices = this.getAvailableVoices();
+    const voicesForLanguage = allPossibleVoices.filter(
+        voice => voice.lang.startsWith(this.getCurrentLanguage()));
+
+    if (!voicesForLanguage.length) {
+      // Stay with the current voice if no voices are available for this
+      // language.
+      return this.getCurrentVoice() ?
+          this.getCurrentVoice() :
+          getNaturalVoiceOrDefault(allPossibleVoices);
+    }
+
+    // First try to choose a voice only from currently enabled locales for this
+    // language.
+    const voicesForCurrentEnabledLocale =
+        voicesForLanguage.filter(v => this.isLangEnabled(v.lang));
+    if (!voicesForCurrentEnabledLocale.length) {
+      // If there's no enabled locales for this language, check for any other
+      // voices for enabled locales.
+      const allVoicesForEnabledLocales =
+          allPossibleVoices.filter(v => this.isLangEnabled(v.lang));
+      if (!allVoicesForEnabledLocales.length) {
+        // If there are no voices for the enabled locales, or no enabled
+        // locales at all, we can't select a voice. So return null so we
+        // can disable the play button.
+        return null;
+      } else {
+        return getNaturalVoiceOrDefault(allVoicesForEnabledLocales);
+      }
+    }
+
+    return getNaturalVoiceOrDefault(voicesForCurrentEnabledLocale);
   }
 
   static getInstance(): VoicePackController {

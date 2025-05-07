@@ -371,7 +371,7 @@ suite('UpdateVoicePack', () => {
         setNaturalVoicesForLang(lang);
         app.updateVoicePackStatus(lang, 'kInstalled');
 
-        const selectedVoice = app.getSpeechSynthesisVoice();
+        const selectedVoice = voicePackController.getCurrentVoice();
         assertTrue(!!selectedVoice);
         assertEquals(lang, selectedVoice.lang);
         assertTrue(selectedVoice.name.includes('Natural'));
@@ -397,7 +397,7 @@ suite('UpdateVoicePack', () => {
         app.updateVoicePackStatus(installedLang, 'kInstalled');
 
         // The selected voice should stay the same as it was.
-        assertEquals(currentVoice, app.getSpeechSynthesisVoice());
+        assertEquals(currentVoice, voicePackController.getCurrentVoice());
       });
 
   test('with error code marks the status', () => {

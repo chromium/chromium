@@ -423,6 +423,11 @@ suite('Speech', () => {
     test('on text-too-long error smaller text segment plays', () => {
       createAndSetVoices(
           app, speech, [{lang: 'en', name: 'Google Bob', localService: true}]);
+      emitEvent(app, ToolbarEvent.VOICE, {
+        detail: {
+          selectedVoice: speech.getVoices()[0],
+        },
+      });
       const accessibleTextLength = app.getAccessibleTextLength(longSentences);
       app.playSpeech();
       assertEquals(longSentences, getSpokenText());
@@ -512,7 +517,7 @@ suite('Speech', () => {
       assertTrue(app.$.toolbar.isReadAloudPlayable);
     });
 
-    test('selects default voice on language-unavailable', async () => {
+    test('stops speech on language-unavailable', async () => {
       const pageLanguage = 'es';
       assertNotEquals(
           chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
@@ -532,87 +537,31 @@ suite('Speech', () => {
       assertEquals(0, speech.getCallCount('pause'));
       assertEquals(0, speech.getCallCount('speak'));
       assertEquals(
-          chrome.readingMode.defaultLanguageForSpeech,
-          voicePackController.getCurrentLanguage());
-      assertEquals(
           chrome.readingMode.engineErrorStopSource,
           await metrics.whenCalled('recordSpeechStopSource'));
     });
 
-    suite('voice change to unavailable voice', () => {
-      let utterance: SpeechSynthesisUtterance;
+    test('stops speech on voice-unavailable', async () => {
+      const pageLanguage = 'es';
+      assertNotEquals(
+          chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+      assertNotEquals(
+          chrome.readingMode.defaultLanguageForSpeech,
+          voicePackController.getCurrentLanguage());
+      chrome.readingMode.setLanguageForTesting(pageLanguage);
+      app.playSpeech();
+      assertEquals(1, speech.getCallCount('speak'), 'speak');
+      const utterance = speech.getArgs('speak')[0];
+      speech.reset();
 
-      setup(() => {
-        app.playSpeech();
-        assertEquals(1, speech.getCallCount('speak'));
-        utterance = speech.getArgs('speak')[0];
-      });
+      utterance.onerror(createSpeechErrorEvent(utterance, 'voice-unavailable'));
 
-      test('cancels and selects default voice', async () => {
-        chrome.readingMode.setLanguageForTesting('en');
-        emitEvent(app, ToolbarEvent.VOICE, {
-          detail: {
-            selectedVoice:
-                createSpeechSynthesisVoice({lang: 'en', name: 'Lisie'}),
-          },
-        });
-        speech.reset();
-
-        assertTrue(!!utterance.onerror);
-        utterance.onerror(
-            createSpeechErrorEvent(utterance, 'voice-unavailable'));
-
-        assertEquals(1, speech.getCallCount('cancel'));
-        assertEquals(0, speech.getCallCount('pause'));
-        assertEquals(0, speech.getCallCount('speak'));
-        assertEquals(speech.getVoices()[0], app.getSpeechSynthesisVoice());
-        assertEquals(
-            chrome.readingMode.engineErrorStopSource,
-            await metrics.whenCalled('recordSpeechStopSource'));
-      });
-
-      test('still in getVoices(), cancels and selects another voice', () => {
-        chrome.readingMode.setLanguageForTesting('en');
-        createAndSetVoices(app, speech, [
-          {lang: 'en', name: 'Google George'},
-          {lang: 'en', name: 'Google Connie'},
-        ]);
-        emitEvent(app, ToolbarEvent.VOICE, {
-          detail: {selectedVoice: speech.getVoices()[0]},
-        });
-        speech.reset();
-
-        assertTrue(!!utterance.onerror);
-        utterance.onerror(
-            createSpeechErrorEvent(utterance, 'voice-unavailable'));
-
-        assertEquals(1, speech.getCallCount('cancel'));
-        assertEquals(0, speech.getCallCount('pause'));
-        assertEquals(0, speech.getCallCount('speak'));
-        assertEquals(speech.getVoices()[1], app.getSpeechSynthesisVoice());
-      });
-
-      test(
-          'continues to select default voice if no voices available in language',
-          () => {
-            chrome.readingMode.setLanguageForTesting('elvish');
-            emitEvent(app, ToolbarEvent.VOICE, {
-              detail: {
-                selectedVoice: createSpeechSynthesisVoice(
-                    {lang: 'en', name: 'Google Lauren'}),
-              },
-            });
-            speech.reset();
-
-            assertTrue(!!utterance.onerror);
-            utterance.onerror(
-                createSpeechErrorEvent(utterance, 'voice-unavailable'));
-
-            assertEquals(1, speech.getCallCount('cancel'));
-            assertEquals(0, speech.getCallCount('pause'));
-            assertEquals(0, speech.getCallCount('speak'));
-            assertEquals(speech.getVoices()[0], app.getSpeechSynthesisVoice());
-          });
+      assertEquals(2, speech.getCallCount('cancel'));
+      assertEquals(0, speech.getCallCount('pause'));
+      assertEquals(0, speech.getCallCount('speak'));
+      assertEquals(
+          chrome.readingMode.engineErrorStopSource,
+          await metrics.whenCalled('recordSpeechStopSource'));
     });
 
     test('invalid argument cancels and uses default rate', () => {

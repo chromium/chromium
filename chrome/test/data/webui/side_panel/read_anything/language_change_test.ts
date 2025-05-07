@@ -109,7 +109,7 @@ suite('LanguageChanged', () => {
     app.languageChanged();
     await microtasksFinished();
 
-    assertEquals(otherVoice, app.getSpeechSynthesisVoice());
+    assertEquals(otherVoice, voicePackController.getCurrentVoice());
   });
 
   test('enables the stored voice language', async () => {
@@ -124,7 +124,7 @@ suite('LanguageChanged', () => {
     await microtasksFinished();
 
     assertTrue(voicePackController.isLangEnabled(voice.lang));
-    assertEquals(voice, app.getSpeechSynthesisVoice());
+    assertEquals(voice, voicePackController.getCurrentVoice());
   });
 
   suite('when there is no stored voice for this language', () => {
@@ -142,19 +142,20 @@ suite('LanguageChanged', () => {
             app, ToolbarEvent.VOICE, {detail: {selectedVoice: otherVoice}});
         app.languageChanged();
         await microtasksFinished();
-        assertEquals(otherVoice, app.getSpeechSynthesisVoice());
+        assertEquals(otherVoice, voicePackController.getCurrentVoice());
       });
 
       test('to a natural voice if there\'s no current voice', async () => {
         app.languageChanged();
         await microtasksFinished();
-        assertEquals(naturalVoiceWithLang3, app.getSpeechSynthesisVoice());
+        assertEquals(
+            naturalVoiceWithLang3, voicePackController.getCurrentVoice());
       });
 
       test('to the device default if there\'s no natural', () => {
         setVoices(app, speech, voices.filter(v => v !== naturalVoiceWithLang3));
         app.languageChanged();
-        assertEquals(defaultVoice, app.getSpeechSynthesisVoice());
+        assertEquals(defaultVoice, voicePackController.getCurrentVoice());
       });
     });
 
@@ -167,7 +168,7 @@ suite('LanguageChanged', () => {
 
       app.languageChanged();
 
-      assertEquals(voice, app.getSpeechSynthesisVoice());
+      assertEquals(voice, voicePackController.getCurrentVoice());
     });
 
     test('to a voice in the available locale for this base language', () => {
@@ -179,14 +180,15 @@ suite('LanguageChanged', () => {
 
       app.languageChanged();
 
-      assertEquals(voice, app.getSpeechSynthesisVoice());
+      assertEquals(voice, voicePackController.getCurrentVoice());
     });
 
     suite('and this locale is enabled', () => {
       test('to a natural voice for this language', () => {
         chrome.readingMode.baseLanguageForSpeech = lang3;
         app.languageChanged();
-        assertEquals(naturalVoiceWithLang3, app.getSpeechSynthesisVoice());
+        assertEquals(
+            naturalVoiceWithLang3, voicePackController.getCurrentVoice());
       });
 
       test(
@@ -194,7 +196,8 @@ suite('LanguageChanged', () => {
           () => {
             chrome.readingMode.baseLanguageForSpeech = lang1;
             app.languageChanged();
-            assertEquals(defaultVoiceWithLang1, app.getSpeechSynthesisVoice());
+            assertEquals(
+                defaultVoiceWithLang1, voicePackController.getCurrentVoice());
           });
 
       test(
@@ -202,7 +205,8 @@ suite('LanguageChanged', () => {
           () => {
             chrome.readingMode.baseLanguageForSpeech = lang2;
             app.languageChanged();
-            assertEquals(firstVoiceWithLang2, app.getSpeechSynthesisVoice());
+            assertEquals(
+                firstVoiceWithLang2, voicePackController.getCurrentVoice());
           });
     });
 
@@ -213,7 +217,8 @@ suite('LanguageChanged', () => {
         app.languageChanged();
 
         assertTrue(voicePackController.isLangEnabled(lang3));
-        assertEquals(naturalVoiceWithLang3, app.getSpeechSynthesisVoice());
+        assertEquals(
+            naturalVoiceWithLang3, voicePackController.getCurrentVoice());
       });
 
       test(
@@ -224,7 +229,8 @@ suite('LanguageChanged', () => {
             app.languageChanged();
 
             assertTrue(voicePackController.isLangEnabled(lang1));
-            assertEquals(defaultVoiceWithLang1, app.getSpeechSynthesisVoice());
+            assertEquals(
+                defaultVoiceWithLang1, voicePackController.getCurrentVoice());
           });
 
 
@@ -239,7 +245,7 @@ suite('LanguageChanged', () => {
 
         app.languageChanged();
 
-        assertEquals(voice, app.getSpeechSynthesisVoice());
+        assertEquals(voice, voicePackController.getCurrentVoice());
       });
 
       test('to natural enabled voice if no same locale', () => {
@@ -249,7 +255,8 @@ suite('LanguageChanged', () => {
 
         app.languageChanged();
 
-        assertEquals(naturalVoiceWithLang3, app.getSpeechSynthesisVoice());
+        assertEquals(
+            naturalVoiceWithLang3, voicePackController.getCurrentVoice());
       });
 
       test('to default enabled voice if no natural voice', () => {
@@ -259,10 +266,11 @@ suite('LanguageChanged', () => {
 
         app.languageChanged();
 
-        assertEquals(defaultVoiceWithLang1, app.getSpeechSynthesisVoice());
+        assertEquals(
+            defaultVoiceWithLang1, voicePackController.getCurrentVoice());
       });
 
-      test('to undefined if no enabled languages', () => {
+      test('to null if no enabled languages', () => {
         chrome.readingMode.baseLanguageForSpeech = lang2;
         for (const lang of voicePackController.getEnabledLangs()) {
           voicePackController.disableLang(lang);
@@ -270,9 +278,7 @@ suite('LanguageChanged', () => {
 
         app.languageChanged();
 
-        assertEquals(
-            undefined, app.getSpeechSynthesisVoice(),
-            app.getSpeechSynthesisVoice()?.name);
+        assertFalse(!!voicePackController.getCurrentVoice());
       });
     });
   });
@@ -316,7 +322,7 @@ suite('LanguageChanged', () => {
     test('but doesn\'t if the language is already installing', () => {
       const lang = 'bn-bd';
       const voicePackLang = convertLangOrLocaleForVoicePackManager(lang);
-      assertTrue(voicePackLang !== undefined);
+      assertTrue(!!voicePackLang);
 
       app.updateVoicePackStatus(lang, 'kInstalling');
       app.languageChanged();

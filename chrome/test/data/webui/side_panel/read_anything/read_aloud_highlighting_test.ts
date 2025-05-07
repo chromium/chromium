@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource, playFromSelectionTimeout, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {PauseActionSource, playFromSelectionTimeout, SpeechController, ToolbarEvent, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
@@ -67,6 +67,7 @@ suite('ReadAloudHighlight', () => {
     chrome.readingMode.onConnected = () => {};
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
+    VoicePackController.setInstance(new VoicePackController());
 
     app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, leafIds);

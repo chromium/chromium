@@ -589,7 +589,9 @@ ReadAloudAppModel::GetNextValidPositionFromCurrentPosition(
 }
 
 int ReadAloudAppModel::GetCurrentTextStartIndex(const ui::AXNodeID& node_id) {
-  if (processed_granularities_on_current_page_.size() < 1) {
+  if (processed_granularities_on_current_page_.size() < 1 ||
+      processed_granularity_index_ >=
+          processed_granularities_on_current_page_.size()) {
     return -1;
   }
 
@@ -604,7 +606,9 @@ int ReadAloudAppModel::GetCurrentTextStartIndex(const ui::AXNodeID& node_id) {
 }
 
 int ReadAloudAppModel::GetCurrentTextEndIndex(const ui::AXNodeID& node_id) {
-  if (processed_granularities_on_current_page_.size() < 1) {
+  if (processed_granularities_on_current_page_.size() < 1 ||
+      processed_granularity_index_ >=
+          processed_granularities_on_current_page_.size()) {
     return -1;
   }
 

@@ -85,7 +85,7 @@ export class ReadAnythingLogger {
     this.metrics.recordHighlightGranularity(highlight);
   }
 
-  private logVoiceTypeUsedForReading_(voice: SpeechSynthesisVoice|undefined) {
+  private logVoiceTypeUsedForReading_(voice: SpeechSynthesisVoice|null) {
     if (!voice) {
       return;
     }
@@ -136,8 +136,7 @@ export class ReadAnythingLogger {
     this.metrics.recordVoiceSpeed(index);
   }
 
-  logSpeechPlaySession(
-      startTime: number, voice: SpeechSynthesisVoice|undefined) {
+  logSpeechPlaySession(startTime: number, voice: SpeechSynthesisVoice|null) {
     this.logVoiceTypeUsedForReading_(voice);
     this.logLanguageUsedForReading_(voice?.lang);
     this.metrics.recordSpeechPlaybackLength(Date.now() - startTime);

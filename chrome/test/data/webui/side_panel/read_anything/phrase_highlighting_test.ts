@@ -4,7 +4,7 @@
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {AppElement, ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SpeechController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAloudHighlighter, SpeechController, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -66,9 +66,12 @@ suite('PhraseHighlighting', () => {
     chrome.readingMode.onConnected = () => {};
 
     SpeechController.setInstance(new SpeechController());
+    VoicePackController.setInstance(new VoicePackController());
+    wordBoundaries = new WordBoundaries();
+    WordBoundaries.setInstance(wordBoundaries);
+    ReadAloudHighlighter.setInstance(new ReadAloudHighlighter());
     metrics = mockMetrics();
     app = await createApp();
-    wordBoundaries = WordBoundaries.getInstance();
 
     // Use a tree with just one sentence. For the actual implementation of
     // phrase segmentation, a more realistic example would be to use

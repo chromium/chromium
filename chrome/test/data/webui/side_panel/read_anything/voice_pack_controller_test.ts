@@ -20,6 +20,7 @@ suite('VoicePackController', () => {
   let listener: VoiceLanguageListener;
   let onEnabledLangsChange: boolean;
   let onAvailableVoicesChange: boolean;
+  let onCurrentVoiceChange: boolean;
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -32,12 +33,16 @@ suite('VoicePackController', () => {
     voicePackController = new VoicePackController();
     onEnabledLangsChange = false;
     onAvailableVoicesChange = false;
+    onCurrentVoiceChange = false;
     listener = {
       onEnabledLangsChange() {
         onEnabledLangsChange = true;
       },
       onAvailableVoicesChange() {
         onAvailableVoicesChange = true;
+      },
+      onCurrentVoiceChange() {
+        onCurrentVoiceChange = true;
       },
     };
     voicePackController.addListener(listener);
@@ -140,6 +145,185 @@ suite('VoicePackController', () => {
     assertTrue(voicePackController.isLangEnabled('no'));
     assertTrue(voicePackController.isLangEnabled('NO'));
   });
+
+  test('setCurrentVoice', () => {
+    const voice = createSpeechSynthesisVoice({lang: 'tr', name: 'Zebra'});
+    voicePackController.setCurrentVoice(voice);
+    assertTrue(onCurrentVoiceChange);
+    assertEquals(voice, voicePackController.getCurrentVoice());
+
+    onCurrentVoiceChange = false;
+    voicePackController.setCurrentVoice(voice);
+    assertFalse(onCurrentVoiceChange);
+    assertEquals(voice, voicePackController.getCurrentVoice());
+  });
+
+  test('setUserPreferredVoice', () => {
+    let sentVoiceName = '';
+    let sentLang = '';
+    chrome.readingMode.onVoiceChange = (name, lang) => {
+      sentVoiceName = name;
+      sentLang = lang;
+    };
+    const voice = createSpeechSynthesisVoice({lang: 'tr', name: 'Lion'});
+
+    voicePackController.setUserPreferredVoice(voice);
+
+    assertTrue(onCurrentVoiceChange);
+    assertEquals(voice, voicePackController.getCurrentVoice());
+    assertEquals(voice.name, sentVoiceName);
+    assertEquals(voice.lang, sentLang);
+  });
+
+  suite('setUserPreferredVoiceFromPrefs', () => {
+    const langForDefaultVoice = 'en';
+    const lang1 = 'zh';
+    const lang2 = 'tr';
+    const langWithNoVoices = 'elvish';
+
+    const defaultVoice = createSpeechSynthesisVoice({
+      lang: langForDefaultVoice,
+      name: 'Google Kristi',
+      default: true,
+    });
+    const firstVoiceWithLang1 =
+        createSpeechSynthesisVoice({lang: lang1, name: 'Google Monkey'});
+    const defaultVoiceWithLang1 = createSpeechSynthesisVoice({
+      lang: lang1,
+      name: 'Google Llama',
+      default: true,
+    });
+    const firstVoiceWithLang2 =
+        createSpeechSynthesisVoice({lang: lang2, name: 'Google Parrot'});
+    const secondVoiceWithLang2 =
+        createSpeechSynthesisVoice({lang: lang2, name: 'Google Panda'});
+    const otherVoice =
+        createSpeechSynthesisVoice({lang: 'it', name: 'Google Elephant'});
+    const voices = [
+      defaultVoice,
+      firstVoiceWithLang1,
+      defaultVoiceWithLang1,
+      otherVoice,
+      firstVoiceWithLang2,
+      secondVoiceWithLang2,
+    ];
+
+    setup(() => {
+      speech.setVoices(voices);
+    });
+
+    test('enables the lang for the chosen voice', () => {
+      chrome.readingMode.getStoredVoice = () => otherVoice.name;
+      voicePackController.setUserPreferredVoiceFromPrefs();
+      assertTrue(voicePackController.isLangEnabled(otherVoice.lang));
+    });
+
+    test('uses the stored voice for this language if there is one', () => {
+      chrome.readingMode.getStoredVoice = () => otherVoice.name;
+
+      voicePackController.setUserPreferredVoiceFromPrefs();
+
+      assertTrue(onCurrentVoiceChange);
+      assertEquals(otherVoice, voicePackController.getCurrentVoice());
+    });
+
+    test('uses the default voice if the stored voice is invalid', () => {
+      chrome.readingMode.getStoredVoice = () => 'Matt';
+      voicePackController.enableLang(langForDefaultVoice);
+
+      voicePackController.setUserPreferredVoiceFromPrefs();
+
+      assertTrue(onCurrentVoiceChange);
+      assertEquals(defaultVoice, voicePackController.getCurrentVoice());
+    });
+
+    suite('when there is no stored voice for this language', () => {
+      setup(() => {
+        chrome.readingMode.getStoredVoice = () => '';
+      });
+
+      test('uses the default voice for this language', () => {
+        voicePackController.enableLang(lang1);
+        voicePackController.setCurrentLanguage(lang1);
+
+        voicePackController.setUserPreferredVoiceFromPrefs();
+
+        assertTrue(onCurrentVoiceChange);
+        assertEquals(
+            defaultVoiceWithLang1, voicePackController.getCurrentVoice());
+      });
+
+      test('uses current voice if there\'s none for this language', () => {
+        voicePackController.setCurrentLanguage(langWithNoVoices);
+        voicePackController.setCurrentVoice(otherVoice);
+        voicePackController.enableLang(otherVoice.lang);
+
+        voicePackController.setUserPreferredVoiceFromPrefs();
+
+        assertTrue(onCurrentVoiceChange);
+        assertEquals(otherVoice, voicePackController.getCurrentVoice());
+      });
+
+      test('uses the device default if there\'s no current voice', () => {
+        voicePackController.setCurrentLanguage(langWithNoVoices);
+        voicePackController.enableLang(langForDefaultVoice);
+        voicePackController.enableLang(otherVoice.lang);
+
+        voicePackController.setUserPreferredVoiceFromPrefs();
+
+        assertTrue(onCurrentVoiceChange);
+        assertEquals(defaultVoice, voicePackController.getCurrentVoice());
+      });
+
+      test(
+          'uses the first voice for this language if there\'s no default',
+          () => {
+            voicePackController.enableLang(lang2);
+            voicePackController.setCurrentLanguage(lang2);
+
+            voicePackController.setUserPreferredVoiceFromPrefs();
+
+            assertTrue(onCurrentVoiceChange);
+            assertEquals(
+                firstVoiceWithLang2, voicePackController.getCurrentVoice());
+          });
+    });
+  });
+
+  test(
+      'updateAutoSelectedVoiceToNaturalVoice with auto selected voice, ' +
+          'switches to a Natural voice',
+      () => {
+        chrome.readingMode.getStoredVoice = () => '';
+        const voice = createSpeechSynthesisVoice({lang: 'ja', name: 'Eagle'});
+        const naturalVoice =
+            createSpeechSynthesisVoice({lang: 'ja', name: 'Horse (Natural)'});
+        voicePackController.setCurrentVoice(voice);
+        voicePackController.setCurrentLanguage(voice.lang);
+        voicePackController.setAvailableVoices([voice, naturalVoice]);
+
+        voicePackController.updateAutoSelectedVoiceToNaturalVoice();
+
+        assertEquals(naturalVoice, voicePackController.getCurrentVoice());
+      });
+
+  test(
+      'updateAutoSelectedVoiceToNaturalVoice with a user selected voice, does' +
+          ' not switch to a Natural voice',
+      () => {
+        const name = 'Emu';
+        chrome.readingMode.getStoredVoice = () => name;
+        const voice = createSpeechSynthesisVoice({lang: 'ja', name: name});
+        const naturalVoice =
+            createSpeechSynthesisVoice({lang: 'ja', name: 'Ostrich (Natural)'});
+        voicePackController.setCurrentVoice(voice);
+        voicePackController.setCurrentLanguage(voice.lang);
+        voicePackController.setAvailableVoices([voice, naturalVoice]);
+
+        voicePackController.updateAutoSelectedVoiceToNaturalVoice();
+
+        assertEquals(voice, voicePackController.getCurrentVoice());
+      });
 
   test('restoreEnabledLanguagesFromPref', () => {
     const lang1 = 'en-gb';
@@ -336,13 +520,7 @@ suite('VoicePackController', () => {
       VoiceNotificationManager.getInstance().addListener(notificationListener);
     });
 
-    test('refreshVoicePackStatuses with no languages does nothing', () => {
-      voicePackController.refreshVoicePackStatuses();
-
-      assertArrayEquals([], requestInfoLangs);
-    });
-
-    test('refreshVoicePackStatuses with languages requests info', () => {
+    test('updateUnavailableVoiceToDefaultVoice requests info', () => {
       const lang1 = 'fi';
       const lang2 = 'id';
       const lang3 = 'da';
@@ -353,26 +531,59 @@ suite('VoicePackController', () => {
       voicePackController.setServerStatus(
           lang3, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
 
-      voicePackController.refreshVoicePackStatuses();
+      voicePackController.updateUnavailableVoiceToDefaultVoice();
 
       assertArrayEquals([lang1, lang2, lang3], requestInfoLangs);
     });
 
     test(
-        'refreshVoicePackStatuses with languages waits for engine timeout',
-        () => {
+        'updateUnavailableVoiceToDefaultVoice waits for engine timeout', () => {
           const lang = 'fi';
           voicePackController.setServerStatus(
               lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
           const mockTimer = new MockTimer();
           mockTimer.install();
 
-          voicePackController.refreshVoicePackStatuses();
+          voicePackController.updateUnavailableVoiceToDefaultVoice();
           mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
           mockTimer.uninstall();
 
           assertEquals(
               NotificationType.GOOGLE_VOICES_UNAVAILABLE, notificationType);
+        });
+
+    test(
+        'updateUnavailableVoiceToDefaultVoice does nothing when current voice' +
+            ' still available',
+        () => {
+          const voice = createSpeechSynthesisVoice({lang: 'id', name: 'Dog'});
+          voicePackController.enableLang(voice.lang);
+          voicePackController.setCurrentVoice(voice);
+          voicePackController.setAvailableVoices([voice]);
+          onCurrentVoiceChange = false;
+
+          voicePackController.updateUnavailableVoiceToDefaultVoice();
+
+          assertFalse(onCurrentVoiceChange);
+          assertEquals(voice, voicePackController.getCurrentVoice());
+        });
+
+    test(
+        'updateUnavailableVoiceToDefaultVoice gets default voice when current' +
+            ' voice unavailable',
+        () => {
+          const voice = createSpeechSynthesisVoice({lang: 'id', name: 'Cat'});
+          const defaultVoice =
+              createSpeechSynthesisVoice({lang: 'id', name: 'Komodo'});
+          voicePackController.enableLang(voice.lang);
+          voicePackController.setCurrentVoice(voice);
+          voicePackController.setAvailableVoices([defaultVoice]);
+          onCurrentVoiceChange = false;
+
+          voicePackController.updateUnavailableVoiceToDefaultVoice();
+
+          assertTrue(onCurrentVoiceChange);
+          assertEquals(defaultVoice, voicePackController.getCurrentVoice());
         });
 
     test(
@@ -392,7 +603,7 @@ suite('VoicePackController', () => {
           const mockTimer = new MockTimer();
           mockTimer.install();
 
-          voicePackController.refreshVoicePackStatuses();
+          voicePackController.updateUnavailableVoiceToDefaultVoice();
           voicePackController.stopWaitingForSpeechExtension();
           mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
           mockTimer.uninstall();
@@ -536,4 +747,42 @@ suite('VoicePackController', () => {
       assertArrayEquals([], installedLangs);
     });
   });
+
+  test('voiceUnavailable selects default voice', () => {
+    const voice =
+        createSpeechSynthesisVoice({lang: 'en', name: 'Google Giraffe'});
+    speech.setVoices([voice]);
+
+    voicePackController.onVoiceUnavailableError();
+
+    assertEquals(voice, voicePackController.getCurrentVoice());
+  });
+
+  test(
+      'voiceUnavailable default voice is current voice, selects another voice',
+      () => {
+        const voice1 =
+            createSpeechSynthesisVoice({lang: 'en', name: 'Google George'});
+        const voice2 =
+            createSpeechSynthesisVoice({lang: 'en', name: 'Google Connie'});
+        voicePackController.setCurrentVoice(voice1);
+        speech.setVoices([voice1, voice2]);
+
+        voicePackController.onVoiceUnavailableError();
+
+        assertEquals(voice2, voicePackController.getCurrentVoice());
+      });
+
+  test(
+      'voiceUnavailable continues to select default voice if no voices ' +
+          'available in language',
+      () => {
+        const voice =
+            createSpeechSynthesisVoice({lang: 'en', name: 'Google Penguin'});
+        speech.setVoices([voice]);
+
+        voicePackController.onVoiceUnavailableError();
+
+        assertEquals(voice, voicePackController.getCurrentVoice());
+      });
 });

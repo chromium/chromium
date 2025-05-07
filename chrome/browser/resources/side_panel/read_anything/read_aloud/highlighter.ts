@@ -8,6 +8,7 @@ import {getCurrentSpeechRate, isRectVisible} from '../common.js';
 import {NodeStore} from '../node_store.js';
 import {isEspeak} from '../voice_language_util.js';
 
+import {VoicePackController} from './voice_pack_controller.js';
 import {WordBoundaries} from './word_boundaries.js';
 
 // Characters that should be ignored for word highlighting when not accompanied
@@ -30,6 +31,7 @@ export class ReadAloudHighlighter {
   private wordBoundaries_: WordBoundaries;
   private nodeStore_: NodeStore;
   private allowAutoScroll_ = true;
+  private voicePackController_ = VoicePackController.getInstance();
 
   constructor() {
     this.wordBoundaries_ = WordBoundaries.getInstance();
@@ -65,10 +67,8 @@ export class ReadAloudHighlighter {
 
   highlightCurrentGranularity(
       axNodeIds: number[], scrollIntoView: boolean,
-      shouldUpdateSentenceHighlight: boolean,
-      selectedVoice?: SpeechSynthesisVoice): void {
-    const highlightGranularity =
-        this.getEffectiveHighlightingGranularity_(selectedVoice);
+      shouldUpdateSentenceHighlight: boolean): void {
+    const highlightGranularity = this.getEffectiveHighlightingGranularity_();
     switch (highlightGranularity) {
       case chrome.readingMode.noHighlighting:
       // Even without highlighting, we may still need to calculate the sentence
@@ -178,8 +178,7 @@ export class ReadAloudHighlighter {
     return ancestor;
   }
 
-  private getEffectiveHighlightingGranularity_(
-      selectedVoice?: SpeechSynthesisVoice): number {
+  private getEffectiveHighlightingGranularity_(): number {
     // Parse all of the conditions that control highlighting and return the
     // effective highlighting granularity.
     const highlight = chrome.readingMode.highlightGranularity;
@@ -189,7 +188,8 @@ export class ReadAloudHighlighter {
       return highlight;
     }
 
-    if (this.wordBoundaries_.notSupported() || isEspeak(selectedVoice)) {
+    if (this.wordBoundaries_.notSupported() ||
+        isEspeak(this.voicePackController_.getCurrentVoice())) {
       // Fall back where word highlighting is not possible. Since espeak
       // boundaries are different than Google TTS word boundaries, fall back
       // to sentence boundaries in that case too.
