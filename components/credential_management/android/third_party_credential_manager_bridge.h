@@ -25,7 +25,8 @@ class CredentialManagerBridge {
  public:
   virtual ~CredentialManagerBridge() = default;
 
-  virtual void Get(const std::string& origin,
+  virtual void Get(bool is_auto_select_allowed,
+                   const std::string& origin,
                    GetCallback completion_callback) = 0;
 
   virtual void Store(const std::u16string& username,
@@ -51,7 +52,8 @@ class ThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
     // Gets a credential from the Android Credential Manager.
     // The `completion_callback` should always be invoked on completion, passing
     // the PasswordCredentialResponse.
-    virtual void Get(const std::string& origin,
+    virtual void Get(bool is_auto_select_allowed,
+                     const std::string& origin,
                      base::OnceCallback<void(PasswordCredentialResponse)>
                          completion_callback) = 0;
 
@@ -78,7 +80,9 @@ class ThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
 
   void Create();
 
-  void Get(const std::string& origin, GetCallback completion_callback) override;
+  void Get(bool is_auto_select_allowed,
+           const std::string& origin,
+           GetCallback completion_callback) override;
 
   void Store(const std::u16string& username,
              const std::u16string& password,

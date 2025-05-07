@@ -27,6 +27,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.Collections;
+
 /** A bridge for interacting with Credential Manager. */
 @JNINamespace("credential_management")
 @NullMarked
@@ -42,13 +44,18 @@ class ThirdPartyCredentialManagerBridge {
     }
 
     @CalledByNative
-    void get(String origin, Callback<PasswordCredentialResponse> callback) {
+    void get(
+            boolean isAutoSelectAllowed,
+            String origin,
+            Callback<PasswordCredentialResponse> callback) {
         Context context = ContextUtils.getApplicationContext();
         CredentialManager credentialManager =
                 sCredentialManagerForTesting == null
                         ? CredentialManager.create(context)
                         : sCredentialManagerForTesting;
-        GetPasswordOption passwordOption = new GetPasswordOption();
+        GetPasswordOption passwordOption =
+                new GetPasswordOption(
+                        Collections.emptySet(), isAutoSelectAllowed, Collections.emptySet());
         GetCredentialRequest getPasswordRequest =
                 new GetCredentialRequest.Builder()
                         .addCredentialOption(passwordOption)

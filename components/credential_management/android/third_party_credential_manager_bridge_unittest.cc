@@ -42,7 +42,8 @@ class FakeJniDelegate : public JniDelegate {
 
   void CreateBridge() override {}
 
-  void Get(const std::string& origin,
+  void Get(bool is_auto_select_allowed,
+           const std::string& origin,
            base::OnceCallback<void(PasswordCredentialResponse)>
                completion_callback) override {
     if (simulate_errors_) {
@@ -113,7 +114,8 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestSuccessfulGetCall) {
       mock_callback,
       Run(password_manager::CredentialManagerError::SUCCESS, testing::_))
       .WillOnce(testing::Invoke([&]() { run_loop.Quit(); }));
-  bridge()->Get(kTestOrigin, mock_callback.Get());
+  bridge()->Get(/*is_auto_select_allowed=*/false, kTestOrigin,
+                mock_callback.Get());
   run_loop.Run();
 }
 
@@ -128,7 +130,8 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestUnuccessfulGetCall) {
       mock_callback,
       Run(password_manager::CredentialManagerError::UNKNOWN, testing::_))
       .WillOnce(testing::Invoke([&]() { run_loop.Quit(); }));
-  bridge()->Get(kTestOrigin, mock_callback.Get());
+  bridge()->Get(/*is_auto_select_allowed=*/true, kTestOrigin,
+                mock_callback.Get());
   run_loop.Run();
 }
 
@@ -183,7 +186,8 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestMultipleCalls) {
       Run(password_manager::CredentialManagerError::SUCCESS, testing::_))
       .WillOnce(testing::Invoke([&]() { run_loop_get.Quit(); }));
 
-  bridge()->Get(kTestOrigin, mock_get_callback.Get());
+  bridge()->Get(/*is_auto_select_allowed=*/true, kTestOrigin,
+                mock_get_callback.Get());
   run_loop_get.Run();
 }
 

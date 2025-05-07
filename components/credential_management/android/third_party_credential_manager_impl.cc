@@ -40,13 +40,59 @@ void ThirdPartyCredentialManagerImpl::PreventSilentAccess(
   NOTIMPLEMENTED();
 }
 
+// This method decides if credential picker should be shown.
+
+// Credential mediation can be silent, optional, conditional or
+// required.
+
+// Silent mediation should not show a credential picker even if there
+// are multiple credentials available and return null.
+// Silent mediation can't be implemented here, because the Android API
+// doesn't support it. We'd have to know the amount of available credentials
+// already before calling get.
+
+// By default, the GetCredentialRequest will have optional
+// mediation: if there's more than one matching credential, the system
+// will show the credential picker UI to the user.
+
+// Required mediation will show the credential picker, no matter the amount
+// of choices.
+
+// Conditional mediation allows the user to pick a credential from the
+// picker or avoid selecting a credential without any user-visible error
+// condition. That type of mediotion is also not supported in the Android
+// API.
+
+bool ShouldAllowAutoSelect(
+    password_manager::CredentialMediationRequirement mediation) {
+  switch (mediation) {
+    case password_manager::CredentialMediationRequirement::kOptional:
+      return true;
+    case password_manager::CredentialMediationRequirement::kRequired:
+      return false;
+    case password_manager::CredentialMediationRequirement::kSilent:
+    case password_manager::CredentialMediationRequirement::kConditional:
+      NOTIMPLEMENTED();
+  }
+  return false;
+}
+
 void ThirdPartyCredentialManagerImpl::Get(
     password_manager::CredentialMediationRequirement mediation,
     bool include_passwords,
     const std::vector<GURL>& federations,
     GetCallback callback) {
+  if (mediation == password_manager::CredentialMediationRequirement::kSilent ||
+      mediation ==
+          password_manager::CredentialMediationRequirement::kConditional) {
+    std::move(callback).Run(password_manager::CredentialManagerError::UNKNOWN,
+                            std::nullopt);
+    return;
+  }
+
   // TODO(crbug.com/404199116): Pass all the parameters to the bridge.
-  bridge_->Get(render_frame_host().GetLastCommittedOrigin().Serialize(),
+  bridge_->Get(ShouldAllowAutoSelect(mediation),
+               render_frame_host().GetLastCommittedOrigin().Serialize(),
                std::move(callback));
 }
 
