@@ -7456,7 +7456,7 @@
   {
     "name": "pdf-xfa-forms",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "permission-element",
