@@ -20,6 +20,7 @@ namespace autofill {
 class ContentAutofillClient;
 class CreditCard;
 class Iban;
+class LoyaltyCard;
 class TouchToFillDelegate;
 class TouchToFillPaymentMethodView;
 
@@ -69,6 +70,13 @@ class TouchToFillPaymentMethodController
   bool ShowIbans(std::unique_ptr<TouchToFillPaymentMethodView> view,
                  base::WeakPtr<TouchToFillDelegate> delegate,
                  base::span<const Iban> ibans_to_suggest);
+
+  // Shows the Touch To Fill `view`. `delegate` will provide the fillable
+  // loyalty cards and be notified of the user's decision. Returns whether the
+  // surface was successfully shown.
+  bool ShowLoyaltyCards(std::unique_ptr<TouchToFillPaymentMethodView> view,
+                        base::WeakPtr<TouchToFillDelegate> delegate,
+                        base::span<const LoyaltyCard> loyalty_cards_to_suggest);
 
   // Hides the surface if it is currently shown.
   void Hide();

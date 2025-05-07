@@ -199,6 +199,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   bool ShowTouchToFillIban(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::Iban> ibans_to_suggest) override;
+  bool ShowTouchToFillLoyaltyCard(base::WeakPtr<TouchToFillDelegate> delegate,
+                                  base::span<const autofill::LoyaltyCard>
+                                      loyalty_cards_to_suggest) override;
   void HideTouchToFillPaymentMethod() override;
   std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;

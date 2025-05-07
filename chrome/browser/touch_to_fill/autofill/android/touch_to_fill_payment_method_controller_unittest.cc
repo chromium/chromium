@@ -15,11 +15,14 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,6 +51,10 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
               ShowIbans,
               (TouchToFillPaymentMethodViewController * controller,
                base::span<const Iban> ibans_to_suggest));
+  MOCK_METHOD(bool,
+              ShowLoyaltyCards,
+              (TouchToFillPaymentMethodViewController * controller,
+               base::span<const LoyaltyCard> loyalty_cards_to_suggest));
   MOCK_METHOD(void, Hide, ());
 };
 
@@ -121,6 +128,12 @@ class TouchToFillPaymentMethodControllerTest
     some_field_ = test::MakeFieldGlobalId();
   }
 
+  void SetUpLoyaltyCardFormField() {
+    some_form_data_ = test::CreateTestLoyaltyCardFormData();
+    some_form_ = some_form_data_.global_id();
+    some_field_ = test::MakeFieldGlobalId();
+  }
+
   void TearDown() override {
     mock_view_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -148,6 +161,8 @@ class TouchToFillPaymentMethodControllerTest
                                                  test::GetCreditCard2()};
   const std::vector<Iban> ibans_ = {test::GetLocalIban(),
                                     test::GetServerIban()};
+  const std::vector<LoyaltyCard> loyalty_cards_ = {test::CreateLoyaltyCard(),
+                                                   test::CreateLoyaltyCard2()};
   const std::vector<Suggestion> suggestions_{
       test::CreateAutofillSuggestion(
           credit_cards_[0].CardNameForAutofillDisplay(),
@@ -222,6 +237,18 @@ TEST_F(TouchToFillPaymentMethodControllerTest, ShowIbansPassesIbansToTheView) {
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowIbans(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), ibans_);
+  OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       ShowLoyaltyCardsPassesLoyaltyCardsToTheView) {
+  SetUpLoyaltyCardFormField();
+  // Test that the loyalty cards have propagated to the view.
+  EXPECT_CALL(*mock_view_, ShowLoyaltyCards(&payment_method_controller(),
+                                            ElementsAreArray(loyalty_cards_)));
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowLoyaltyCards(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), loyalty_cards_);
   OnAfterAskForValuesToFill();
 }
 

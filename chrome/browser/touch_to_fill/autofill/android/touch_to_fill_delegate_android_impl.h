@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
@@ -73,13 +74,13 @@ inline constexpr const char kUmaTouchToFillCreditCardTriggerOutcome[] =
     "Autofill.TouchToFill.CreditCard.TriggerOutcome";
 inline constexpr const char kUmaTouchToFillIbanTriggerOutcome[] =
     "Autofill.TouchToFill.Iban.TriggerOutcome";
+inline constexpr const char kUmaTouchToFillLoyaltyCardTriggerOutcome[] =
+    "Autofill.TouchToFill.LoyaltyCard.TriggerOutcome";
 
 class BrowserAutofillManager;
 class FormStructure;
 
 // Delegate for in-browser Touch To Fill (TTF) surface display and selection.
-// Currently TTF surface is eligible for credit card and IBAN forms on click
-// on an empty focusable field.
 //
 // If the surface was shown once, it won't be triggered again on the same page.
 // But calling |Reset()| on navigation restores such showing eligibility.
@@ -150,14 +151,18 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
 
   struct DryRunResult {
     DryRunResult(TriggerOutcome outcome,
-                 std::variant<std::vector<CreditCard>, std::vector<Iban>>
-                     items_to_suggest);
+                 std::variant<std::vector<CreditCard>,
+                              std::vector<Iban>,
+                              std::vector<LoyaltyCard>> items_to_suggest);
     DryRunResult(DryRunResult&&);
     DryRunResult& operator=(DryRunResult&&);
     ~DryRunResult();
 
     TriggerOutcome outcome;
-    std::variant<std::vector<CreditCard>, std::vector<Iban>> items_to_suggest;
+    std::variant<std::vector<CreditCard>,
+                 std::vector<Iban>,
+                 std::vector<LoyaltyCard>>
+        items_to_suggest;
   };
 
   // Checks all preconditions for showing the TTF, that is, for calling
@@ -181,6 +186,10 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   DryRunResult DryRunForCreditCard(const AutofillField& field,
                                    const FormStructure& form,
                                    const FormData& received_form);
+
+  // Returns a DryRunResult with the user's fillable loyalty cards, or
+  // an error reason if TTF should not be triggered.
+  DryRunResult DryRunForLoyaltyCard();
 
   bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;
 

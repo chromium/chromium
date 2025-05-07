@@ -13,6 +13,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
@@ -125,6 +126,31 @@ bool TouchToFillPaymentMethodController::ShowIbans(
   }
 
   if (!view->ShowIbans(this, ibans_to_suggest)) {
+    ResetJavaObject();
+    return false;
+  }
+
+  view_ = std::move(view);
+  delegate_ = std::move(delegate);
+  return true;
+}
+
+bool TouchToFillPaymentMethodController::ShowLoyaltyCards(
+    std::unique_ptr<TouchToFillPaymentMethodView> view,
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const LoyaltyCard> loyalty_cards_to_suggest) {
+  // TODO(crbug.com/404437211): Unify `ShowX()` methods to avoid code
+  // duplication.
+  if (!keyboard_suppressor_.is_suppressing()) {
+    return false;
+  }
+
+  // Abort if TTF surface is already shown.
+  if (view_) {
+    return false;
+  }
+
+  if (!view->ShowLoyaltyCards(this, loyalty_cards_to_suggest)) {
     ResetJavaObject();
     return false;
   }
