@@ -368,6 +368,11 @@ process is determined by command-line arguments:
       * Installs the application(s) that are implicitly specified in the tagged
         metainstaller, or explicitly specified using the `--install` or
         `--handoff` parameters.
+*   `RUNFORCEINSTALL` (for MSI installers)
+    * Allows running an MSI metainstaller with the `--force-install` option.
+    * In addition, if the MSI is tagged, this also installs the application(s)
+      that are implicitly specified in the tag.
+    * For example, `msiexec /i GoogleChrome.msi RUNFORCEINSTALL=1`.
 *   --test
     *   Exit immediately with no error.
 *   --healthcheck
