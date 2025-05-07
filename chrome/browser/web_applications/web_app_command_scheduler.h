@@ -80,6 +80,8 @@ struct WebAppInstallInfo;
 #if BUILDFLAG(IS_CHROMEOS)
 class CleanupBundleCacheSuccess;
 class CleanupBundleCacheError;
+class CopyBundleToCacheSuccess;
+enum class CopyBundleToCacheError;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The command scheduler is the main API to access the web app system. The
@@ -298,6 +300,14 @@ class WebAppCommandScheduler {
       const base::Location& call_location = FROM_HERE);
 
 #if BUILDFLAG(IS_CHROMEOS)
+  //  Copies IWA bundle file to the cache for `session_type`.
+  void CopyIsolatedWebAppBundleToCache(
+      const IsolatedWebAppUrlInfo& url_info,
+      IwaCacheClient::SessionType session_type,
+      base::OnceCallback<void(base::expected<CopyBundleToCacheSuccess,
+                                             CopyBundleToCacheError>)> callback,
+      const base::Location& call_location = FROM_HERE);
+
   // Cleans all IWA cached bundles for `session_type` which are not in the
   // `iwas_to_keep_in_cache`.
   void CleanupIsolatedWebAppBundleCache(

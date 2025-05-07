@@ -17,7 +17,6 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/common/chrome_features.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -72,7 +71,7 @@ class CleanupBundleCacheCommandTest
     EXPECT_TRUE(base::CreateTemporaryFileInDir(CacheRootPath(), &temp_file));
 
     base::FilePath bundle_path =
-        bundle_directory_path.AppendASCII(kMainSwbnFileName);
+        IwaCacheClient::GetBundleFullName(bundle_directory_path);
     EXPECT_TRUE(base::CopyFile(temp_file, bundle_path));
     return bundle_path;
   }
@@ -92,8 +91,11 @@ class CleanupBundleCacheCommandTest
   base::FilePath GetBundleDirWithVersion(const SignedWebBundleId& bundle_id,
                                          const base::Version& version,
                                          SessionType session_type) {
-    return GetBundleDirForSession(bundle_id, session_type)
-        .AppendASCII(version.GetString());
+    auto session_cache_dir =
+        IwaCacheClient::GetCacheBaseDirectoryForSessionType(session_type,
+                                                            CacheRootPath());
+    return IwaCacheClient::GetCacheDirectoryForBundleWithVersion(
+        session_cache_dir, bundle_id, version);
   }
 
   void ScheduleCommand(
@@ -114,7 +116,6 @@ class CleanupBundleCacheCommandTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kIsolatedWebAppBundleCache};
-  user_manager::ScopedUserManager user_manager_;
   base::ScopedTempDir cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
 };

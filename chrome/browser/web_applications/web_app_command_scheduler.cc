@@ -89,6 +89,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/copy_bundle_to_cache_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #else  // !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/jobs/link_capturing.h"
@@ -374,6 +375,17 @@ void WebAppCommandScheduler::CheckIsolatedWebAppBundleInstallability(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+void WebAppCommandScheduler::CopyIsolatedWebAppBundleToCache(
+    const IsolatedWebAppUrlInfo& url_info,
+    IwaCacheClient::SessionType session_type,
+    base::OnceCallback<void(CopyBundleToCacheResult)> callback,
+    const base::Location& call_location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<CopyBundleToCacheCommand>(
+          url_info, session_type, *profile_, std::move(callback)),
+      call_location);
+}
+
 void WebAppCommandScheduler::CleanupIsolatedWebAppBundleCache(
     const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
     IwaCacheClient::SessionType session_type,

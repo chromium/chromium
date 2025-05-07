@@ -32,17 +32,7 @@ class IwaCacheClient {
     kManagedGuestSession,
   };
 
-  enum class CopyBundleToCacheError {
-    kFailedToCreateDir = 0,
-    kFailedToCopyFile = 1,
-  };
-
-  static std::string CopyErrorToString(
-      IwaCacheClient::CopyBundleToCacheError error);
-
-  struct CopyBundleToCacheSuccess {
-    base::FilePath cached_bundle_path;
-  };
+  static SessionType GetCurrentSessionType();
 
   struct CachedBundleData {
     base::FilePath path;
@@ -65,17 +55,6 @@ class IwaCacheClient {
       const std::optional<base::Version>& version,
       base::OnceCallback<void(std::optional<CachedBundleData>)> callback);
 
-  // Copies bundle file to the cache, so next time the installation can be done
-  // from the cache.
-  // TODO(crbug.com/411116232): use AppLock to prevent race conditions.
-  void CopyBundleToCache(
-      const base::FilePath& copy_from_bundle_path,
-      const web_package::SignedWebBundleId& web_bundle_id,
-      const base::Version& version,
-      base::OnceCallback<void(
-          base::expected<CopyBundleToCacheSuccess, CopyBundleToCacheError>)>
-          callback);
-
   // TODO(crbug.com/392069400): clean cache for old IWA versions.
 
   void SetCacheDirForTesting(const base::FilePath& cache_dir);
@@ -88,6 +67,14 @@ class IwaCacheClient {
   static base::FilePath GetCacheDirectoryForBundle(
       const base::FilePath& cache_base_dir,
       const web_package::SignedWebBundleId& web_bundle_id);
+
+  static base::FilePath GetCacheDirectoryForBundleWithVersion(
+      const base::FilePath& cache_dir,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const base::Version& version);
+
+  static base::FilePath GetBundleFullName(
+      const base::FilePath& bundle_dir_with_version);
 
   static std::string SessionTypeToString(SessionType session_type);
 

@@ -30,17 +30,6 @@ namespace {
 
 using SessionType = IwaCacheClient::SessionType;
 
-SessionType GetCurrentSessionType() {
-  if (chromeos::IsKioskSession()) {
-    return SessionType::kKiosk;
-  }
-  if (chromeos::IsManagedGuestSession()) {
-    return SessionType::kManagedGuestSession;
-  }
-  NOTREACHED() << "IwaCacheManager::Starts already checked the current session "
-               << "is kiosk or Managed Guest Session.";
-}
-
 std::vector<web_package::SignedWebBundleId> GetPolicyInstalledIwasForKiosk() {
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(ash::CrosSettings::Get());
@@ -104,7 +93,7 @@ void IwaBundleCacheManager::SetProvider(base::PassKey<WebAppProvider>,
 }
 
 void IwaBundleCacheManager::CleanCacheForIwasDeletedFromPolicy() {
-  SessionType session_type = GetCurrentSessionType();
+  SessionType session_type = IwaCacheClient::GetCurrentSessionType();
   std::vector<web_package::SignedWebBundleId> iwas_in_policy =
       GetIwasInPolicy(session_type, *profile_);
 

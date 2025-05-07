@@ -394,6 +394,8 @@ source_set("web_applications") {
       "commands/install_app_from_verified_manifest_command.h",
       "isolated_web_apps/commands/cleanup_bundle_cache_command.cc",
       "isolated_web_apps/commands/cleanup_bundle_cache_command.h",
+      "isolated_web_apps/commands/copy_bundle_to_cache_command.cc",
+      "isolated_web_apps/commands/copy_bundle_to_cache_command.h",
       "isolated_web_apps/policy/isolated_web_app_cache_client.cc",
       "isolated_web_apps/policy/isolated_web_app_cache_client.h",
       "isolated_web_apps/policy/isolated_web_app_cache_manager.cc",
@@ -982,6 +984,7 @@ source_set("web_applications_unit_tests") {
     sources += [
       "chromeos_web_app_experiments_unittest.cc",
       "isolated_web_apps/commands/cleanup_bundle_cache_command_unittest.cc",
+      "isolated_web_apps/commands/copy_bundle_to_cache_command_unittest.cc",
       "isolated_web_apps/policy/isolated_web_app_cache_client_unittest.cc",
       "os_integration/web_app_run_on_os_login_chromeos_unittest.cc",
       "web_app_run_on_os_login_manager_unittest.cc",

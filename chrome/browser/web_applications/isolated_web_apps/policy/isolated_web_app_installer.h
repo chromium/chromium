@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/commands/copy_bundle_to_cache_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -111,6 +112,7 @@ class IwaInstaller {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<IwaInstallCommandWrapper> install_command_wrapper,
       base::Value::List& log,
+      WebAppProvider* provider,
       ResultCallback callback);
   ~IwaInstaller();
 
@@ -134,9 +136,7 @@ class IwaInstaller {
 
   // Bundle should be copied to cache after the successful installation from the
   // Internet.
-  void OnBundleCopiedToCache(
-      base::expected<IwaCacheClient::CopyBundleToCacheSuccess,
-                     IwaCacheClient::CopyBundleToCacheError> result);
+  void OnBundleCopiedToCache(CopyBundleToCacheResult result);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   void CreateTempFile(base::OnceClosure next_step_callback);
@@ -177,6 +177,7 @@ class IwaInstaller {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<IwaInstallCommandWrapper> install_command_wrapper_;
   raw_ref<base::Value::List> log_;
+  const raw_ptr<web_app::WebAppProvider> provider_;
   ResultCallback callback_;
 
   ScopedTempWebBundleFile bundle_;
