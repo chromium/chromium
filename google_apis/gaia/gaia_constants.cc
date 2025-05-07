@@ -133,6 +133,10 @@ const char kDriveOAuth2Scope[] = "https://www.googleapis.com/auth/drive";
 const char kExperimentsAndConfigsOAuth2Scope[] =
     "https://www.googleapis.com/auth/experimentsandconfigs";
 
+// OAuth2 scope for access for DriveFS to use client-side notifications.
+const char kClientChannelOAuth2Scope[] =
+    "https://www.googleapis.com/auth/client_channel";
+
 // The scope required for an access token in order to query ItemSuggest.
 const char kDriveReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/drive.readonly";

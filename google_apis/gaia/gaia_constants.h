@@ -64,6 +64,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCryptAuthOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDriveOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kExperimentsAndConfigsOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClientChannelOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDriveReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAssistantOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
