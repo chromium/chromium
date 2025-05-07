@@ -204,6 +204,40 @@ TEST_F(BatchUploadServiceTest, NoLocalDataReturned) {
   EXPECT_FALSE(service.IsDialogOpened());
 }
 
+TEST_F(BatchUploadServiceTest, GetLocalDataDescriptionsForAvailableTypes) {
+  SigninWithFullInfo();
+  BatchUploadService& service = CreateService();
+
+  // Make sure all available data types have return descriptions so that the
+  // order is properly tested.
+  SetLocalDataDescriptionForAllAvailableTypes();
+
+  // Lists the requested types.
+  EXPECT_CALL(sync_service_mock(),
+              GetLocalDataDescriptions(
+                  syncer::DataTypeSet{
+                      syncer::DataType::PASSWORDS, syncer::DataType::BOOKMARKS,
+                      syncer::DataType::READING_LIST,
+                      syncer::DataType::CONTACT_INFO, syncer::DataType::THEMES},
+                  _))
+      .Times(1);
+
+  base::MockCallback<base::OnceCallback<void(
+      std::map<syncer::DataType, syncer::LocalDataDescription>)>>
+      result_callback;
+  // Order is not tested.
+  std::map<syncer::DataType, syncer::LocalDataDescription>
+      expected_description_map{
+          {syncer::PASSWORDS, GetReturnDescription(syncer::PASSWORDS)},
+          {syncer::BOOKMARKS, GetReturnDescription(syncer::BOOKMARKS)},
+          {syncer::READING_LIST, GetReturnDescription(syncer::READING_LIST)},
+          {syncer::CONTACT_INFO, GetReturnDescription(syncer::CONTACT_INFO)},
+          {syncer::THEMES, GetReturnDescription(syncer::THEMES)},
+      };
+  EXPECT_CALL(result_callback, Run(expected_description_map));
+  service.GetLocalDataDescriptionsForAvailableTypes(result_callback.Get());
+}
+
 // TODO(crbug.com/416219929): This test uses the password related entry point,
 // which is in line with the default primary data type. When adding a neutral
 // entry point (not tied to any specific data type), this entry point should be

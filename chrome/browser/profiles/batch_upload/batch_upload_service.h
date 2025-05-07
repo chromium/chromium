@@ -66,15 +66,19 @@ class BatchUploadService : public KeyedService {
   // Returns whether the dialog is currently showing on a browser.
   bool IsDialogOpened() const;
 
+  // Gets all the local data for the available types.
+  // Available types are the sync types that the batch upload supports.
+  // This function is asynchronous and the results are returned in
+  // `result_callback`.
+  void GetLocalDataDescriptionsForAvailableTypes(
+      base::OnceCallback<
+          void(std::map<syncer::DataType, syncer::LocalDataDescription>)>
+          result_callback);
+
   // Gets the ordered list of all available types in BatchUpload for testing.
   static std::vector<syncer::DataType> AvailableTypesOrderForTesting();
 
  private:
-  // Iterates over all available types that can be displayed in the dialog and
-  // request the `syncer::LocalDataDescription that contains the list of items.
-  // The result is returned asynchronously.
-  void RequestLocalDataDescriptions();
-
   // Callback that returns a map of `syncer::LocalDataDescription` for the data
   // types that can be shown in the Batch Upload dialog.
   void OnGetLocalDataDescriptionsReady(

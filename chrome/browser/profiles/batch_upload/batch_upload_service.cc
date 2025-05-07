@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/strings/to_string.h"
@@ -169,20 +170,23 @@ void BatchUploadService::OpenBatchUpload(
   state_.dialog_state_->entry_point_ = entry_point;
   state_.dialog_state_->dialog_shown_callback_ = std::move(success_callback);
 
-  RequestLocalDataDescriptions();
+  GetLocalDataDescriptionsForAvailableTypes(
+      base::BindOnce(&BatchUploadService::OnGetLocalDataDescriptionsReady,
+                     base::Unretained(this)));
 }
 
-void BatchUploadService::RequestLocalDataDescriptions() {
+void BatchUploadService::GetLocalDataDescriptionsForAvailableTypes(
+    base::OnceCallback<
+        void(std::map<syncer::DataType, syncer::LocalDataDescription>)>
+        result_callback) {
   syncer::DataTypeSet data_types;
   // Iterate over all available enums.
   for (syncer::DataType type : kBatchUploadAvailableTypesOrder) {
     data_types.Put(type);
   }
 
-  sync_service_->GetLocalDataDescriptions(
-      data_types,
-      base::BindOnce(&BatchUploadService::OnGetLocalDataDescriptionsReady,
-                     base::Unretained(this)));
+  sync_service_->GetLocalDataDescriptions(data_types,
+                                          std::move(result_callback));
 }
 
 void BatchUploadService::OnGetLocalDataDescriptionsReady(

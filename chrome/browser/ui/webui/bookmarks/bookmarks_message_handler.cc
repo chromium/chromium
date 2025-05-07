@@ -326,13 +326,14 @@ void BookmarksMessageHandler::HandleGetBatchUploadPromoData(
     return;
   }
 
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  sync_service->GetLocalDataDescriptions(
-      {syncer::BOOKMARKS},
-      base::BindOnce(
-          &BookmarksMessageHandler::OnGetLocalDataDescriptionReceived,
-          weak_ptr_factory_.GetWeakPtr(), callback_id.Clone()));
+#if !BUILDFLAG(IS_CHROMEOS)
+  BatchUploadService* batch_upload =
+      BatchUploadServiceFactory::GetForProfile(profile);
+  CHECK(batch_upload);
+  batch_upload->GetLocalDataDescriptionsForAvailableTypes(base::BindOnce(
+      &BookmarksMessageHandler::OnGetLocalDataDescriptionReceived,
+      weak_ptr_factory_.GetWeakPtr(), callback_id.Clone()));
+#endif
 }
 
 void BookmarksMessageHandler::OnGetLocalDataDescriptionReceived(
@@ -358,13 +359,14 @@ void BookmarksMessageHandler::RequestLocalDataDescriptionsUpdate() {
     return;
   }
 
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  sync_service->GetLocalDataDescriptions(
-      {syncer::BOOKMARKS},
-      base::BindOnce(
-          &BookmarksMessageHandler::FireOnGetLocalDataDescriptionReceived,
-          weak_ptr_factory_.GetWeakPtr()));
+#if !BUILDFLAG(IS_CHROMEOS)
+  BatchUploadService* batch_upload =
+      BatchUploadServiceFactory::GetForProfile(profile);
+  CHECK(batch_upload);
+  batch_upload->GetLocalDataDescriptionsForAvailableTypes(base::BindOnce(
+      &BookmarksMessageHandler::FireOnGetLocalDataDescriptionReceived,
+      weak_ptr_factory_.GetWeakPtr()));
+#endif
 }
 
 void BookmarksMessageHandler::HandleOnBatchUploadPromoClicked(
