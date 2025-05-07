@@ -3351,8 +3351,6 @@ public class AwContents implements SmartClipProvider {
         // instead attached to a FullScreenView.
         mAwViewMethods.onAttachedToWindow();
 
-        if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
-
         mAwFrameMetricsListener =
                 AwFrameMetricsListener.maybeCreate(
                         mContainerView, mWindowAndroid.getWindowAndroid());
@@ -4649,6 +4647,8 @@ public class AwContents implements SmartClipProvider {
                     StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS)) {
                 StylusWritingSettingsState.getInstance().registerObserver(mStylusWritingController);
             }
+
+            if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
 
             mAwWindowCoverageTracker =
                     AwWindowCoverageTracker.getOrCreateForRootView(
