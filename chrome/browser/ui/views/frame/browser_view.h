@@ -309,6 +309,10 @@ class BrowserView : public BrowserWindow,
 
   ScrimView* window_scrim_view() { return window_scrim_view_; }
 
+  new_tab_footer::NewTabFooterWebView* new_tab_footer_web_view() const {
+    return new_tab_footer_web_view_;
+  }
+
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

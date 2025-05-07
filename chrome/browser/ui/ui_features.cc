@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/search/ntp_features.h"
 #include "components/webui/flags/feature_entry.h"
 #include "ui/base/ui_base_features.h"
 
@@ -132,6 +133,10 @@ BASE_FEATURE(KScrimForTabModal,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSideBySide, "SideBySide", base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsNtpFooterEnabledWithoutSideBySide() {
+  return (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
+          !base::FeatureList::IsEnabled(features::kSideBySide));
+}
 
 BASE_FEATURE(kSidePanelResizing,
              "SidePanelResizing",

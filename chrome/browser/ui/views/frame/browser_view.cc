@@ -1021,14 +1021,11 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   devtools_web_view->SetVisible(false);
 
   std::unique_ptr<new_tab_footer::NewTabFooterWebView> new_tab_footer_web_view;
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
-      !base::FeatureList::IsEnabled(features::kSideBySide)) {
+  if (features::IsNtpFooterEnabledWithoutSideBySide()) {
     new_tab_footer_web_view =
         std::make_unique<new_tab_footer::NewTabFooterWebView>(
             browser_->profile());
-    // TODO(crbug.com/409056427): Set this elsewhere so the footer is only
-    // visible when the new tab page is shown.
-    new_tab_footer_web_view->SetVisible(true);
+    new_tab_footer_web_view->SetVisible(false);
   }
 
   auto contents_container = std::make_unique<views::View>();

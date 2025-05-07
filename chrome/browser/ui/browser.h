@@ -130,6 +130,10 @@ namespace views {
 class View;
 }
 
+namespace new_tab_footer {
+class NewTabFooterWebView;
+}  // namespace new_tab_footer
+
 // This enum is not a member of `Browser` so that it can be forward
 // declared in `unload_controller.h` to avoid circular includes.
 enum class BrowserClosingStatus {
@@ -876,6 +880,7 @@ class Browser : public TabStripModelObserver,
   bool IsVisible() const override;
   base::WeakPtr<BrowserWindowInterface> GetWeakPtr() override;
   views::View* LensOverlayView() override;
+  new_tab_footer::NewTabFooterWebView* NewTabFooterWebView() override;
   base::CallbackListSubscription RegisterActiveTabDidChange(
       ActiveTabChangeCallback callback) override;
   tabs::TabInterface* GetActiveTabInterface() override;

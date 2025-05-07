@@ -5841,6 +5841,7 @@ source_set("ui_features") {
     "//extensions/buildflags",
   ]
   deps = [
+    "//components/search",
     "//components/webui/flags",
     "//ui/base:features",
   ]

@@ -102,6 +102,7 @@ BASE_DECLARE_FEATURE(kScrimForBrowserWindowModal);
 BASE_DECLARE_FEATURE(KScrimForTabModal);
 
 BASE_DECLARE_FEATURE(kSideBySide);
+bool IsNtpFooterEnabledWithoutSideBySide();
 
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 

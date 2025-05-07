@@ -1276,6 +1276,10 @@ views::View* Browser::LensOverlayView() {
   return window_->GetLensOverlayView();
 }
 
+new_tab_footer::NewTabFooterWebView* Browser::NewTabFooterWebView() {
+  return GetBrowserView().new_tab_footer_web_view();
+}
+
 base::CallbackListSubscription Browser::RegisterActiveTabDidChange(
     ActiveTabChangeCallback callback) {
   return did_active_tab_change_callback_list_.Add(std::move(callback));
