@@ -4,6 +4,8 @@
 
 #include "components/signin/core/browser/cookie_settings_util.h"
 
+#include <optional>
+
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/cookie_constants.h"
@@ -29,10 +31,12 @@ bool SettingsAllowSigninCookies(
   return cookie_settings &&
          cookie_settings->IsFullCookieAccessAllowed(
              gaia_url, net::SiteForCookies::FromUrl(gaia_url),
-             url::Origin::Create(gaia_url), net::CookieSettingOverrides()) &&
+             url::Origin::Create(gaia_url), net::CookieSettingOverrides(),
+             /*cookie_partition_key=*/std::nullopt) &&
          cookie_settings->IsFullCookieAccessAllowed(
              google_url, net::SiteForCookies::FromUrl(google_url),
-             url::Origin::Create(google_url), net::CookieSettingOverrides());
+             url::Origin::Create(google_url), net::CookieSettingOverrides(),
+             /*cookie_partition_key=*/std::nullopt);
 #endif
 }
 
