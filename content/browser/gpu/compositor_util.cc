@@ -19,6 +19,7 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "content/browser/compositor/image_transport_factory.h"
@@ -217,6 +218,10 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
   features.emplace_back(
       "webnn",
       SafeGetFeatureStatus(gpu_feature_info, gpu::GPU_FEATURE_TYPE_WEBNN));
+  features.emplace_back("trees_in_viz",
+                        base::FeatureList::IsEnabled(::features::kTreesInViz)
+                            ? gpu::kGpuFeatureStatusEnabled
+                            : gpu::kGpuFeatureStatusDisabled);
   return features;
 }
 
@@ -289,7 +294,8 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
           gpu_feature_data.name == "vulkan" ||
           gpu_feature_data.name == "skia_graphite" ||
           gpu_feature_data.name == "surface_control" ||
-          gpu_feature_data.name == "webnn") {
+          gpu_feature_data.name == "webnn" ||
+          gpu_feature_data.name == "trees_in_viz") {
         status += "_on";
       }
     }
