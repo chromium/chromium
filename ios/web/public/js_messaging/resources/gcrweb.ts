@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {generateRandomId} from '//ios/web/public/js_messaging/resources/utils.js';
+import {generateRandomId, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * @fileoverview This file exports `gCrWeb` API to be used by other
@@ -42,6 +42,14 @@ class CrWeb {
       this.frameId = generateRandomId();
     }
     return this.frameId;
+  }
+
+  /**
+   * Registers and frame by sending its frameId to the native application.
+   */
+  registerFrame() {
+    sendWebKitMessage(
+      'FrameBecameAvailable', {'crwFrameId': this.getFrameId()});
   }
 }
 

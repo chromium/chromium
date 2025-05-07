@@ -628,10 +628,7 @@ optimize_ts("message_js") {
 
   sources = [ "js_messaging/resources/message.ts" ]
 
-  deps = [
-    "//ios/web/public/js_messaging:frame_id",
-    "//ios/web/public/js_messaging:gcrweb",
-  ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 bundle_data("navigation_resources") {
