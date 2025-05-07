@@ -465,7 +465,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     const gfx::PointF kUVBottomRight(1.0f, 1.0f);
     quad->SetNew(shared_state, output_rect, output_rect,
                  false /*needs_blending*/, ResourceId(1),
-                 false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
+                 true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
                  SkColors::kTransparent, false /*nearest_neighbor*/,
                  false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
 
@@ -5839,7 +5839,7 @@ CompositorFrame BuildCompositorFrameWithResources(
     const gfx::Rect rect;
     const gfx::Rect visible_rect;
     bool needs_blending = false;
-    bool premultiplied_alpha = false;
+    bool premultiplied_alpha = true;
     const gfx::PointF uv_top_left;
     const gfx::PointF uv_bottom_right;
     SkColor4f background_color = SkColors::kGreen;
@@ -7815,8 +7815,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, PerQuadDamageSameSharedQuadState) {
     const gfx::PointF kUVBottomRight(1.0f, 1.0f);
     texure_quad->SetNew(
         sqs, quad_rects[i], quad_rects[i], false /*needs_blending*/,
-        ResourceId(1), false /*premultiplied_alpha*/, kUVTopLeft,
-        kUVBottomRight, SkColors::kTransparent, false /*nearest_neighbor*/,
+        ResourceId(1), true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
+        SkColors::kTransparent, false /*nearest_neighbor*/,
         false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
 
     texure_quad->damage_rect = damage_rects[i];
