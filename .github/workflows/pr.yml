@@ -1,0 +1,199 @@
+name: Code Reviews
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  conditional_review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Define Upstream Repository and Branch
+        id: upstream_config
+        run: |
+          echo "::set-output name=upstream_repo_url::https://github.com/chromium/chromium.git"
+          echo "::set-output name=upstream_branch_name::main"
+
+      - name: Check Commit Origin Against Upstream
+        id: commit_origin_check
+        # This step should ideally only run if the PR opener was identified as an employee.
+        # For example, add: if: steps.pr_opener_check.outputs.is_employee_opener == 'true'
+        run: |
+          UPSTREAM_REPO_URL="${{ steps.upstream_config.outputs.upstream_repo_url }}"
+          UPSTREAM_BRANCH_NAME="${{ steps.upstream_config.outputs.upstream_branch_name }}"
+          PR_BASE_REF="origin/${{ github.event.pull_request.base.ref }}"
+          PR_HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          echo "Upstream Repository URL: $UPSTREAM_REPO_URL"
+          echo "Target Upstream Branch for Comparison: $UPSTREAM_BRANCH_NAME" # Clarified purpose
+          echo "PR Base Ref: $PR_BASE_REF"
+          echo "PR Head SHA: $PR_HEAD_SHA"
+
+          # Add upstream remote if it doesn't exist
+          if ! git remote | grep -q '^upstream$'; then
+            echo "Adding remote 'upstream' for $UPSTREAM_REPO_URL"
+            git remote add upstream "$UPSTREAM_REPO_URL"
+          else
+            echo "Remote 'upstream' already exists. Setting URL."
+            git remote set-url upstream "$UPSTREAM_REPO_URL"
+          fi
+
+          echo "Fetching from upstream remote (target branch: $UPSTREAM_BRANCH_NAME)..."
+          # Fetch only the specific target branch from upstream
+          git fetch upstream "$UPSTREAM_BRANCH_NAME" --no-tags --depth=1000 # Adjust depth as needed
+          UPSTREAM_BRANCH_HEAD_REF="upstream/$UPSTREAM_BRANCH_NAME" # Reference to the fetched upstream branch head
+          echo "Successfully fetched $UPSTREAM_BRANCH_HEAD_REF"
+
+          # Determine the merge base between the PR's base in your fork and the PR's head
+          # This defines the starting point for commits introduced by this PR in your fork.
+          MERGE_BASE=$(git merge-base "$PR_BASE_REF" "$PR_HEAD_SHA")
+          if [ -z "$MERGE_BASE" ]; then
+            echo "Error: Could not determine merge base between $PR_BASE_REF and $PR_HEAD_SHA."
+            echo "This could indicate unrelated histories or issues fetching. For safety, requiring review."
+            echo "::set-output name=require_review::true"
+            exit 0 # Exit successfully for the script, but review is required
+          fi
+          echo "Merge Base for PR commits (relative to fork's base): $MERGE_BASE"
+
+          # Get the list of commit SHAs introduced by this PR in your fork
+          PR_COMMIT_SHAS=$(git log "$MERGE_BASE".."$PR_HEAD_SHA" --pretty=format:"%H" --no-merges)
+
+          if [ -z "$PR_COMMIT_SHAS" ]; then
+            echo "No new authored commits found in PR range."
+            echo "PR is an empty sync or just a merge from upstream chromium repo. No review required."
+            echo "::set-output name=require_review::false"
+            exit 0
+          fi
+          echo "Commit SHAs in PR to verify against upstream ($UPSTREAM_BRANCH_HEAD_REF):"
+          echo "$PR_COMMIT_SHAS"
+
+          ALL_COMMITS_ARE_UPSTREAM=true
+          for commit_sha in $PR_COMMIT_SHAS; do
+            echo "Verifying commit $commit_sha against $UPSTREAM_BRANCH_HEAD_REF..."
+            # Check if the commit_sha is an ancestor of the fetched upstream branch's head
+            if git merge-base --is-ancestor "$commit_sha" "$UPSTREAM_BRANCH_HEAD_REF"; then
+              echo "Commit $commit_sha FOUND in $UPSTREAM_BRANCH_HEAD_REF."
+            else
+              echo "Commit $commit_sha NOT FOUND in $UPSTREAM_BRANCH_HEAD_REF. This PR contains local/modified changes."
+              ALL_COMMITS_ARE_UPSTREAM=false
+              break # No need to check further, one local commit is enough
+            fi
+          done
+
+          if [[ "$ALL_COMMITS_ARE_UPSTREAM" == "true" ]]; then
+            echo "All commits in this PR originate from the upstream branch ($UPSTREAM_BRANCH_NAME)."
+            echo "::set-output name=require_review::false"
+          else
+            echo "This PR contains commits not found on the upstream branch ($UPSTREAM_BRANCH_NAME). Internal review required."
+            echo "::set-output name=require_review::true"
+          fi
+        shell: bash
+
+      - name: Determine Review Requirement and Add Labels
+        id: review_decision_and_labeling
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const requireReview = ${{ steps.commit_origin_check.outputs.require_review || 'false' }};
+            const prNumber = context.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            let labelToAdd = '';
+            let labelToRemove = ''; // Optional: if you want to remove the other label
+
+            console.log(`PR is Purely Upstream: ${isPurelyUpstream}`);
+
+            if (requireReview) {
+              console.log("Decision: PR contains purely upstream changes. Bypass review.");
+              labelToAdd = 'upstream-sync';
+              labelToRemove = 'review-required';
+            } else {
+              console.log("Decision: PR contains local/modified changes. Enforce review.");
+              labelToAdd = 'review-required';
+              labelToRemove = 'upstream-sync';
+            }
+
+            core.setOutput('require_review', requireReview.toString());
+
+            // Add labels
+            if (labelToAdd) {
+              try {
+                await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [labelToAdd] });
+                console.log(`Successfully added label: ${labelToAdd}`);
+              } catch (error) {
+                console.error(`Error adding label ${labelToAdd}: ${error.message}`);
+                exit 1
+              }
+            }
+
+            // Remove the other labels
+            if (labelToRemove) {
+              try {
+                const { data: existingLabels } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+                const labelExists = existingLabels.some(label => label.name === labelToRemove);
+
+                if (labelExists) {
+                  await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: labelToRemove });
+                  console.log(`Successfully removed label: ${labelToRemove}`);
+                } else {
+                  console.log(`Label ${labelToRemove} not found on PR, no need to remove.`);
+                }
+              } catch (error) {
+                // Ignore errors if the label doesn't exist or other minor issues
+                console.warn(`Warning removing label ${labelToRemove}: ${error.message}`);
+              }
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enforce Review
+        id: enforce_review
+        if: always() # Always run this step to make the final decision based on all factors
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const reviewCompletedLabel = 'review-completed';
+            const upstreamSyncLabel = 'upstream-sync';
+
+            // Get the decision from the previous step
+            const requiresReview = ${{ steps.review_decision_and_labeling.outputs.require_review }};
+
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner,
+              repo,
+              issue_number: prNumber,
+            });
+
+            const hasReviewCompletedLabel = labels.some(label => label.name === reviewCompletedLabel);
+            const hasUpstreamSyncLabel = labels.some(label => label.name === upstreamSyncLabel);
+
+            if (hasReviewCompletedLabel) {
+              console.log(`Review confirmed: PR has the '${reviewCompletedLabel}' label. Workflow check passed.`);
+              if (labels.some(label => label.name === 'review-required')) {
+                  try {
+                      await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'review-required' });
+                      console.log("Cleaned up 'review-required' label after completion.");
+                  } catch (error) {
+                      console.warn("Could not remove 'review-required' label during cleanup: " + error.message);
+                  }
+              }
+              return;
+            }
+
+            if (hasUpstreamSyncLabel && requiresReview === 'false') {
+              console.log(`PR is an upstream sync and does not require further review by this action. Workflow check passed.`);
+              return;
+            }
+
+            if (requiresReview === 'true') {
+              console.log(`Internal review is required (PR contains local/modified commits) AND '${reviewCompletedLabel}' label is NOT present. Failing check.`);
+              core.setFailed(`Review required: PR contains local/modified commits and lacks '${reviewCompletedLabel}' label.`);
+            } else {
+              console.log("PR does not require review based on origin and is not marked as completed. Passing by default for this path.");
+            }
