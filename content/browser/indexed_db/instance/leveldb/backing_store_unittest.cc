@@ -713,7 +713,7 @@ class BackingStoreTestWithBlobs : public BackingStoreTestWithExternalObjects {
 TEST_F(BackingStoreTest, PutGetConsistency) {
   base::RunLoop loop;
   const IndexedDBKey key = key1_;
-  IndexedDBValue value = value1_;
+  IndexedDBValue& value = value1_;
   BackingStore::Database db(*backing_store(),
                             BackingStore::DatabaseMetadata{u"name"});
   db.metadata().id = 1;
@@ -843,7 +843,7 @@ TEST_P(BackingStoreTestWithExternalObjects, BlobWriteCleanup) {
     external_objects().push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
   }
 
-  std::vector<IndexedDBValue> values = {
+  std::array<IndexedDBValue, 4> values{
       IndexedDBValue("value0", {external_objects()[0]}),
       IndexedDBValue("value1", {external_objects()[1]}),
       IndexedDBValue("value2", {external_objects()[2]}),
@@ -910,7 +910,7 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
     blob_context_->ClearWrites();
     file_system_access_context_->ClearWrites();
 
-    std::vector<IndexedDBValue> values = {
+    std::array<IndexedDBValue, 4> values{
         IndexedDBValue("value0", {external_objects[0]}),
         IndexedDBValue("value1", {external_objects[1]}),
         IndexedDBValue("value2", {external_objects[2]}),
@@ -993,7 +993,7 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     blob_context_->ClearWrites();
     file_system_access_context_->ClearWrites();
 
-    std::vector<IndexedDBValue> values = {
+    std::array<IndexedDBValue, 4> values{
         IndexedDBValue("value0", {external_objects[0]}),
         IndexedDBValue("value1", {external_objects[1]}),
         IndexedDBValue("value2", {external_objects[2]}),
@@ -1248,7 +1248,7 @@ TEST_F(BackingStoreTest, CreateAndDeleteIndex) {
 TEST_F(BackingStoreTest, HighIds) {
   IndexedDBKey key1 = key1_;
   IndexedDBKey key2 = key2_;
-  IndexedDBValue value1 = value1_;
+  IndexedDBValue& value1 = value1_;
 
   const int64_t high_database_id = 1ULL << 35;
   const int64_t high_object_store_id = 1ULL << 39;
@@ -1324,7 +1324,7 @@ TEST_F(BackingStoreTest, HighIds) {
 // Make sure that other invalid ids do not crash.
 TEST_F(BackingStoreTest, InvalidIds) {
   const IndexedDBKey key = key1_;
-  IndexedDBValue value = value1_;
+  IndexedDBValue& value = value1_;
 
   // valid ids for use when testing invalid ids
   const int64_t database_id = 1;
@@ -2113,7 +2113,7 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
       external_objects.push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
     }
 
-    std::vector<IndexedDBValue> values = {
+    std::array<IndexedDBValue, 4> values{
         IndexedDBValue("value0", {external_objects[0]}),
         IndexedDBValue("value1", {external_objects[1]}),
         IndexedDBValue("value2", {external_objects[2]}),

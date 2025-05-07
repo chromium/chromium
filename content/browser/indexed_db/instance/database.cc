@@ -80,8 +80,7 @@ blink::mojom::IDBReturnValuePtr ExtractReturnValueFromCursorValue(
     BucketContext& bucket_context,
     const IndexedDBObjectStoreMetadata& object_store_metadata,
     BackingStore::Cursor& cursor) {
-  IndexedDBReturnValue idb_return_value;
-  idb_return_value.swap(cursor.GetValue());
+  IndexedDBReturnValue idb_return_value(std::move(cursor.GetValue()));
 
   const bool is_generated_key =
       (!idb_return_value.empty() && object_store_metadata.auto_increment &&

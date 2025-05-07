@@ -28,4 +28,8 @@ blink::mojom::IDBReturnValuePtr IndexedDBReturnValue::ConvertReturnValue(
   return mojo_value;
 }
 
+IndexedDBReturnValue::IndexedDBReturnValue() = default;
+IndexedDBReturnValue::IndexedDBReturnValue(IndexedDBValue value)
+    : IndexedDBValue(std::move(value)) {}
+
 }  // namespace content::indexed_db

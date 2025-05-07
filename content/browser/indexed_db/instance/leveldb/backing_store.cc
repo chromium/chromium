@@ -3845,7 +3845,7 @@ class IndexCursorImpl : public BackingStore::Cursor {
       std::unique_ptr<TransactionalLevelDBIterator> iterator)
       : BackingStore::Cursor(other, std::move(iterator)),
         primary_key_(std::make_unique<IndexedDBKey>(*other->primary_key_)),
-        current_value_(other->current_value_),
+        current_value_(other->current_value_.Clone()),
         primary_leveldb_key_(other->primary_leveldb_key_) {}
 
   std::unique_ptr<IndexedDBKey> primary_key_;

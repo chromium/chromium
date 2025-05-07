@@ -479,7 +479,7 @@ void Transaction::Put(int64_t object_store_id,
 
   IndexedDBValue value;
   value.bits = std::move(input_value->bits);
-  swap(value.external_objects, external_objects);
+  value.external_objects = std::move(external_objects);
 
   blink::mojom::IDBTransaction::PutCallback wrapped_callback =
       CreateCallbackAbortOnDestruct<blink::mojom::IDBTransaction::PutCallback,
