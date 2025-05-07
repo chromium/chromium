@@ -7212,18 +7212,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.RegisterResourcePathsAvailable" enum="Boolean"
-    expires_after="2025-10-22">
-  <owner>alexmitra@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    On Android V and above, this histogram logs whether the
-    registerResourcePaths method is available once per startup after startup
-    completes. It will be unavailable if the OEM has disabled the flag that
-    gates the API.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.RelatedSitesVisitedWeekly" units="sites"
     expires_after="2025-06-25">
   <owner>bewise@chromium.org</owner>

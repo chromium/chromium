@@ -7,7 +7,6 @@ package com.android.webview.chromium;
 import android.Manifest;
 import android.app.compat.CompatChanges;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
@@ -90,9 +89,6 @@ public class WebViewChromiumAwInit {
 
     private static final String ASSET_PATH_WORKAROUND_HISTOGRAM_NAME =
             "Android.WebView.AssetPathWorkaroundUsed.StartChromiumLocked";
-
-    private static final String REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME =
-            "Android.WebView.RegisterResourcePathsAvailable";
 
     public static class WebViewStartUpDiagnostics {
         private final Object mLock = new Object();
@@ -474,24 +470,6 @@ public class WebViewChromiumAwInit {
                                 TaskTraits.BEST_EFFORT,
                                 () -> {
                                     LibraryPrefetcher.prefetchNativeLibraryForWebView();
-                                });
-                    }
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                        PostTask.postTask(
-                                TaskTraits.BEST_EFFORT,
-                                () -> {
-                                    try {
-                                        Resources.class.getDeclaredMethod(
-                                                "registerResourcePaths",
-                                                String.class,
-                                                ApplicationInfo.class);
-                                        RecordHistogram.recordBooleanHistogram(
-                                                REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME, true);
-                                    } catch (NoSuchMethodException e) {
-                                        RecordHistogram.recordBooleanHistogram(
-                                                REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME, false);
-                                    }
                                 });
                     }
 
