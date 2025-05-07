@@ -12,7 +12,8 @@
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
-FaviconBrowserAgent::FaviconBrowserAgent(Browser* browser) : browser_(browser) {
+FaviconBrowserAgent::FaviconBrowserAgent(Browser* browser)
+    : BrowserUserData(browser), browser_(browser) {
   // All the BrowserAgent are attached to the Browser during the creation,
   // the WebStateList must be empty at this point.
   DCHECK(browser_->GetWebStateList()->empty())
