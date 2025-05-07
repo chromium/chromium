@@ -537,6 +537,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kInteractivity, WebDXFeature::kInteractivity},
           {CSSSampleId::kReadingFlow, WebDXFeature::kReadingFlow},
           {CSSSampleId::kPrintColorAdjust, WebDXFeature::kPrintColorAdjust},
+          {CSSSampleId::kLineBreak, WebDXFeature::kLineBreak},
           // Add new features above this line.
       }};
 

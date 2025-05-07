@@ -390,6 +390,7 @@ enum WebDXFeature {
   kWindowManagement = 332,
   kRequestclose = 333,
   kDRAFT_Uint8ArrayToFromBase64AndHex = 334,
+  kLineBreak = 335,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

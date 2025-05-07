@@ -8197,6 +8197,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="332" label="WindowManagement"/>
   <int value="333" label="Requestclose"/>
   <int value="334" label="DRAFT_Uint8ArrayToFromBase64AndHex"/>
+  <int value="335" label="LineBreak"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
