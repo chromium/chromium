@@ -26,6 +26,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -78,8 +79,9 @@ void DrawNumberText(gfx::Canvas& canvas,
                     int number,
                     SkColor text_color,
                     int font_size) {
-  gfx::FontList font_list({"Google Sans", "Roboto"}, gfx::Font::NORMAL,
-                          font_size, gfx::Font::Weight::NORMAL);
+  const auto& font_list = views::TypographyProvider::Get().GetFont(
+      views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::TextStyle::STYLE_CAPTION_MEDIUM);
   gfx::Rect text_bounds(0, 0, diameter, diameter);
   canvas.DrawStringRectWithFlags(
       base::UTF8ToUTF16("+" + base::NumberToString(number)), font_list,
