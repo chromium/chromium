@@ -151,7 +151,8 @@ source_set("impl") {
     "widget/glic_widget.h",
     "widget/glic_window_animator.cc",
     "widget/glic_window_animator.h",
-    "widget/glic_window_controller.cc",
+    "widget/glic_window_controller_impl.cc",
+    "widget/glic_window_controller_impl.h",
     "widget/glic_window_hotkey_delegate.cc",
     "widget/glic_window_resize_animation.cc",
     "widget/glic_window_resize_animation.h",
@@ -236,6 +237,8 @@ source_set("test_support") {
     "test_support/interactive_glic_test.h",
     "test_support/interactive_test_util.cc",
     "test_support/interactive_test_util.h",
+    "test_support/mock_glic_window_controller.cc",
+    "test_support/mock_glic_window_controller.h",
   ]
   deps = [
     ":glic",

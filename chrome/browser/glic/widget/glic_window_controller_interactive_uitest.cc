@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
   };
 
   for (auto& t : test_points) {
-    window_controller().previous_position_ = t.test;
+    window_controller().SetPreviousPositionForTesting(t.test);
     initial_bounds = window_controller().GetInitialBounds(nullptr);
     EXPECT_EQ(initial_bounds.origin(), t.expected) << t.msg;
   }

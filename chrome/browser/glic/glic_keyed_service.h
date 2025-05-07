@@ -41,7 +41,7 @@ class GlicEnabling;
 class GlicMetrics;
 class GlicProfileManager;
 class GlicScreenshotCapturer;
-class GlicWindowController;
+class GlicWindowControllerImpl;
 
 // The GlicKeyedService is created for each eligible (i.e. non-incognito,
 // non-system, etc.) browser profile if Glic flags are enabled, regardless
@@ -93,7 +93,7 @@ class GlicKeyedService : public KeyedService {
   GlicEnabling& enabling() { return *enabling_.get(); }
 
   GlicMetrics* metrics() { return metrics_.get(); }
-  GlicWindowController& window_controller() { return *window_controller_; }
+  GlicWindowController& window_controller();
 
   // Called when a webview guest is created within a chrome://glic WebUI.
   void GuestAdded(content::WebContents* guest_contents);
@@ -257,7 +257,7 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<Host> host_;
-  std::unique_ptr<GlicWindowController> window_controller_;
+  std::unique_ptr<GlicWindowControllerImpl> window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;

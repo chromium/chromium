@@ -1078,13 +1078,13 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetMinimumWidgetSize) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testManualResizeChanged) {
-  window_controller().OnWidgetUserResizeStarted();
+  window_controller().GetGlicWidget()->OnNativeWidgetUserResizeStarted();
 
   // Check that the web client is notified of the beginning of the user
   // initiated resizing event.
   ExecuteJsTest();
 
-  window_controller().OnWidgetUserResizeEnded();
+  window_controller().GetGlicWidget()->OnNativeWidgetUserResizeEnded();
 
   // Check that the web client is notified of the ending of the user
   // initiated resizing event.
