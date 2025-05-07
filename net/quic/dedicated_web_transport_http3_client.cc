@@ -28,6 +28,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/web_transport/web_transport_headers.h"
 #include "net/url_request/url_request_context.h"
 #include "url/scheme_host_port.h"
 
@@ -365,6 +366,7 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
     : url_(url),
       origin_(origin),
       anonymization_key_(anonymization_key),
+      application_protocols_(parameters.application_protocols),
       context_(context),
       visitor_(visitor),
       quic_context_(context->quic_context()),
@@ -748,6 +750,14 @@ int DedicatedWebTransportHttp3Client::DoSendRequest() {
   headers[":protocol"] = "webtransport";
   headers["sec-webtransport-http3-draft02"] = "1";
   headers["origin"] = origin_.Serialize();
+  if (!application_protocols_.empty()) {
+    absl::StatusOr<std::string> protocols_header =
+        webtransport::SerializeSubprotocolRequestHeader(application_protocols_);
+    if (protocols_header.ok()) {
+      headers[webtransport::kSubprotocolRequestHeader] =
+          *std::move(protocols_header);
+    }
+  }
   stream->WriteHeaders(std::move(headers), /*fin=*/false, nullptr);
 
   web_transport_session_ = stream->web_transport();
