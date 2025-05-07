@@ -38,6 +38,8 @@ class BatchUploadService : public KeyedService {
   ~BatchUploadService() override;
 
   // Lists the different entry points to the Batch Upload Dialog.
+  // TODO(crbug.com/416219929): Currently all existing entry points are tied to
+  // a data type. In the future, neutral entry points may be added.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
