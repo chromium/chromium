@@ -524,8 +524,10 @@ TEST_F(AutofillCrowdsourcingEncoding,
       field_options.generated_password_changed = true;
     }
     if (form_structure->field(i)->name() == u"username") {
-      form_structure->field(i)->set_vote_type(
-          AutofillUploadContents::Field::CREDENTIALS_REUSED);
+      auto& field_options =
+          options.fields[form_structure->field(i)->global_id()];
+      field_options.vote_type =
+          AutofillUploadContents::Field::CREDENTIALS_REUSED;
     }
   }
 

@@ -134,26 +134,30 @@ void SetFieldLabelsOnSave(const FieldType password_type,
 void LabelFields(const FieldTypeMap& field_types,
                  const bool field_name_collision,
                  const VoteTypeMap& vote_types,
-                 FormStructure* form_structure,
-                 FieldTypeSet* available_field_types) {
+                 FormStructure& form_structure,
+                 autofill::EncodeUploadRequestOptions& options) {
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.FieldNameCollisionInVotes",
                         field_name_collision);
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    AutofillField* field = form_structure->field(i);
+  for (size_t i = 0; i < form_structure.field_count(); ++i) {
+    AutofillField* field = form_structure.field(i);
 
     FieldType type = autofill::UNKNOWN_TYPE;
     if (auto iter = field_types.find(field->renderer_id());
         iter != field_types.end()) {
       type = iter->second;
-      available_field_types->insert(type);
+      options.available_field_types.insert(type);
     }
 
     if (auto vote_type_iter = vote_types.find(field->renderer_id());
         vote_type_iter != vote_types.end()) {
-      field->set_vote_type(vote_type_iter->second);
+      AutofillUploadContents::Field::VoteType vote_type =
+          vote_type_iter->second;
+      options.fields[field->global_id()].vote_type = vote_type;
+      CHECK(type != autofill::USERNAME ||
+            vote_type != AutofillUploadContents::Field::NO_INFORMATION);
+    } else {
+      CHECK(type != autofill::USERNAME);
     }
-    CHECK(type != autofill::USERNAME ||
-          field->vote_type() != AutofillUploadContents::Field::NO_INFORMATION);
     FieldTypeSet types;
     types.insert(type);
     field->set_possible_types(types);
@@ -535,7 +539,7 @@ bool VotesUploader::UploadPasswordVote(
   LabelFields(
       field_types, field_name_collision,
       {{form_to_upload.username_element_renderer_id, username_vote_type}},
-      &form_structure, &options.available_field_types);
+      form_structure, options);
 
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
@@ -583,8 +587,8 @@ void VotesUploader::UploadFirstLoginVotes(
         AutofillUploadContents::Field::FIRST_USE;
   }
 
-  LabelFields(field_types, field_name_collision, vote_types, &form_structure,
-              &options.available_field_types);
+  LabelFields(field_types, field_name_collision, vote_types, form_structure,
+              options);
   SetKnownValueFlag(pending_credentials, best_matches, &form_structure);
 
   // Annotate the form with the source language of the page.

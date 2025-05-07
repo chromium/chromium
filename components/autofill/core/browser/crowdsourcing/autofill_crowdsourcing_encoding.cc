@@ -386,8 +386,8 @@ void EncodeFormFieldsForUpload(
       added_field->add_autofill_type(field_type);
     }
 
-    if (field->vote_type()) {
-      added_field->set_vote_type(field->vote_type());
+    if (field_options && field_options->vote_type) {
+      added_field->set_vote_type(field_options->vote_type);
     }
 
     if (field_options && field_options->initial_value_hash) {
