@@ -304,6 +304,10 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
 
   std::deque<BlindSignedAuthToken>& cache = cache_by_geo_[geo_id_from_token];
 
+  // Log the number of tokens successfully fetched.
+  Telemetry().RecordTokenCountEvent(
+      proxy_layer_, IpProtectionTokenCountEvent::kIssued, tokens->size());
+
   cache.insert(cache.end(), std::make_move_iterator(tokens->begin()),
                std::make_move_iterator(tokens->end()));
   std::sort(cache.begin(), cache.end(),
@@ -366,6 +370,8 @@ std::optional<BlindSignedAuthToken> IpProtectionTokenManagerImpl::GetAuthToken(
     result.emplace(std::move(it->second.front()));
     it->second.pop_front();
     tokens_spent_++;
+    Telemetry().RecordTokenCountEvent(proxy_layer_,
+                                      IpProtectionTokenCountEvent::kSpent, 1);
   }
 
   Telemetry().GetAuthTokenResultForGeo(
@@ -384,9 +390,18 @@ void IpProtectionTokenManagerImpl::RemoveExpiredTokens() {
     std::deque<BlindSignedAuthToken>& tokens = it->second;
     // Remove expired tokens from each geo. Tokens are sorted and sooner
     // expirations are toward the front of the deque.
+    int64_t intial_tokens_expired = tokens_expired_;
     while (!tokens.empty() && tokens.front().expiration <= fresh_after) {
       tokens.pop_front();
       tokens_expired_++;
+    }
+
+    // Only emit expired token metric if tokens actually expired.
+    int64_t tokens_expired_delta = tokens_expired_ - intial_tokens_expired;
+    if (tokens_expired_delta > 0) {
+      Telemetry().RecordTokenCountEvent(proxy_layer_,
+                                        IpProtectionTokenCountEvent::kExpired,
+                                        tokens_expired_delta);
     }
 
     // A map entry should be removed if the entry contains no tokens and the

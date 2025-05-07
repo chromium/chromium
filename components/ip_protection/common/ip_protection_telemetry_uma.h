@@ -59,6 +59,9 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
   void ProbabilisticRevealTokenRandomizationTime(
       base::TimeDelta duration) override;
   void QuicProxiesFailed(int after_requests) override;
+  void RecordTokenCountEvent(ProxyLayer layer,
+                             IpProtectionTokenCountEvent event,
+                             int count) override;
 };
 
 }  // namespace ip_protection
