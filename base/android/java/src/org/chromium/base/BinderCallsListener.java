@@ -36,6 +36,10 @@ public class BinderCallsListener {
     private static final String TAG = "BinderCallsListener";
     private static final String PROXY_TRANSACT_LISTENER_CLASS_NAME =
             "android.os.Binder$ProxyTransactListener";
+    private static final String NON_ANDROID_INTERFACE = "NON_ANDROID_INTERFACE";
+    private static final String EMPTY_INTERFACE = "EMPTY_INTERFACE";
+    private static final String NULL_INTERFACE = "NULL_INTERFACE";
+    private static final String UNKNOWN_INTERFACE = "UNKNOWN_INTERFACE";
 
     private static @Nullable BinderCallsListener sInstance;
 
@@ -277,12 +281,30 @@ public class BinderCallsListener {
     }
 
     private static class InterfaceInvocationHandler implements InvocationHandler {
-        private @Nullable String mCurrentInterfaceDescriptor;
+        private String mCurrentInterfaceDescriptor = EMPTY_INTERFACE;
         private @Nullable BiConsumer<String, String> mObserver;
         private int mCurrentTransactionId;
         private int mNumUploads;
         private long mTotalTimeSpentInBinderCallsMillis;
         private long mCurrentTransactionStartTimeMillis;
+
+        private static boolean isAndroidBinderInterface(String interfaceDescriptor) {
+            return (interfaceDescriptor.startsWith("com.android.")
+                            && !interfaceDescriptor.startsWith("com.android.vending"))
+                    || interfaceDescriptor.startsWith("android.");
+        }
+
+        private String getInterfaceDescriptor(IBinder binder) {
+            try {
+                String interfaceDescriptor = binder.getInterfaceDescriptor();
+                return interfaceDescriptor == null
+                        ? NULL_INTERFACE
+                        : (interfaceDescriptor.isEmpty() ? EMPTY_INTERFACE : interfaceDescriptor);
+            } catch (RemoteException e) {
+                Log.w(TAG, "Unable to read interface descriptor.");
+            }
+            return UNKNOWN_INTERFACE;
+        }
 
         public long getTimeSpentInBinderCalls() {
             return mTotalTimeSpentInBinderCallsMillis;
@@ -296,28 +318,25 @@ public class BinderCallsListener {
                     IBinder binder = (IBinder) args[0];
                     mCurrentTransactionId++;
                     mCurrentTransactionStartTimeMillis = SystemClock.uptimeMillis();
-                    try {
-                        mCurrentInterfaceDescriptor = binder.getInterfaceDescriptor();
-                    } catch (RemoteException e) {
+
+                    mCurrentInterfaceDescriptor = getInterfaceDescriptor(binder);
+                    // If we failed to read the interface descriptor, ignore it.
+                    if (mCurrentInterfaceDescriptor.equals(UNKNOWN_INTERFACE)) {
                         return null;
                     }
-                    if (mCurrentInterfaceDescriptor == null) return null;
+                    boolean shouldTrackBinderIpc =
+                            !sSlowBinderCallAllowList.contains(mCurrentInterfaceDescriptor);
+                    if (!isAndroidBinderInterface(mCurrentInterfaceDescriptor)) {
+                        mCurrentInterfaceDescriptor = NON_ANDROID_INTERFACE;
+                        shouldTrackBinderIpc = false;
+                    }
 
                     TraceEvent.begin("BinderCallsListener.invoke", mCurrentInterfaceDescriptor);
                     if (mObserver != null) {
                         mObserver.accept("onTransactStarted", mCurrentInterfaceDescriptor);
                     }
-                    // There are some Binder calls that don't have an interface descriptor (e.g.
-                    // https://crbug.com/407792383). Ignore these for now, but the empty string
-                    // check here could be the source of discrepancies in the future.
-                    boolean shouldTrackBinderIpc =
-                            !(mCurrentInterfaceDescriptor.equals("")
-                                    || sSlowBinderCallAllowList.contains(
-                                            mCurrentInterfaceDescriptor));
-                    if (shouldTrackBinderIpc) {
-                        return mCurrentTransactionId;
-                    }
-                    return null;
+
+                    return shouldTrackBinderIpc ? mCurrentTransactionId : null;
                 case "onTransactEnded":
                     TraceEvent.end("BinderCallsListener.invoke", mCurrentInterfaceDescriptor);
 
