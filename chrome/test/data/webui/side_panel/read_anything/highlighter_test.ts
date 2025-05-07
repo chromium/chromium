@@ -52,6 +52,8 @@ suite('Highlighter', () => {
   test('isInvalidHighlightForWordHighlighting', () => {
     assertTrue(highlighter.isInvalidHighlightForWordHighlighting());
     assertTrue(highlighter.isInvalidHighlightForWordHighlighting(''));
+    assertTrue(highlighter.isInvalidHighlightForWordHighlighting(' '));
+    assertTrue(highlighter.isInvalidHighlightForWordHighlighting('  '));
     assertTrue(highlighter.isInvalidHighlightForWordHighlighting('!'));
     assertTrue(highlighter.isInvalidHighlightForWordHighlighting('()?!?'));
     assertFalse(highlighter.isInvalidHighlightForWordHighlighting('hello !!!'));
@@ -131,6 +133,42 @@ suite('Highlighter', () => {
             '<span class="current-read-highlight">your </span>' +
             'your eyes still smile from your cheeks?',
         id);
+  });
+
+  test('word highlight across multiple nodes with engine length', () => {
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.wordHighlighting);
+    // speechUtteranceLength should extend across multiple nodes.
+    wordBoundaries.updateBoundary(0, 4);
+
+    const bold = document.createElement('b');
+    const text1 = 'I\'m';
+    bold.appendChild(document.createTextNode(text1));
+    const sentence = document.createElement('p');
+    // A space is intentionally inserted into the beginning of this segment.
+    const text2 = ' slipping into the lava.';
+    sentence.appendChild(document.createTextNode(text2));
+    const id1 = 10;
+    const id2 = 12;
+    chrome.readingMode.getHighlightForCurrentSegmentIndex = () =>
+        [{nodeId: id1, start: 0, length: 3},
+         {nodeId: id2, start: 0, length: 1}];
+    nodeStore.setDomNode(bold, id1);
+    nodeStore.setDomNode(sentence, id2);
+    chrome.readingMode.getCurrentTextStartIndex = () => 0;
+    chrome.readingMode.getCurrentTextEndIndex = () =>
+        text1.length + text2.length;
+
+    highlighter.highlightCurrentGranularity(
+        [id1, id2], /*scrollIntoView=*/ false,
+        /*shouldUpdateSentenceHighlight=*/ true);
+
+    assertTrue(highlighter.hasCurrentHighlights());
+
+    // Only "I'm" is highlighted. The rest of the sentence, including the space
+    // after "I'm" remains unhighlighted.
+    assertHtml('<span class="current-read-highlight">I\'m</span>', id1);
+    assertHtml(' slipping into the lava.', id2);
   });
 
   test('phrase highlight', () => {

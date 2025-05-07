@@ -135,8 +135,9 @@ export class ReadAloudHighlighter {
   isInvalidHighlightForWordHighlighting(textToHighlight?: string): boolean {
     // If a highlight is just white space or punctuation, we can skip
     // highlighting.
-    return !textToHighlight || textToHighlight === '' ||
-        IGNORED_HIGHLIGHT_CHARACTERS_REGEX.test(textToHighlight);
+    const text = textToHighlight?.trim();
+    return !text || text === '' ||
+        IGNORED_HIGHLIGHT_CHARACTERS_REGEX.test(text);
   }
 
   private getCurrentHighlightBounds_(): DOMRect {
@@ -231,7 +232,8 @@ export class ReadAloudHighlighter {
     const wordBoundaryState = this.wordBoundaries_.state;
     const index = wordBoundaryState.speechUtteranceStartIndex +
         wordBoundaryState.previouslySpokenIndex;
-    const length = wordBoundaryState.speechUtteranceLength;
+    const speechUtteranceLength = wordBoundaryState.speechUtteranceLength;
+    let alreadyHighlightedSpeechUtteranceLength = 0;
 
     const highlightNodes =
         chrome.readingMode.getHighlightForCurrentSegmentIndex(
@@ -239,7 +241,11 @@ export class ReadAloudHighlighter {
     let hasHighlights = false;
     for (const highlightNode of highlightNodes) {
       const nodeId = highlightNode.nodeId;
-      const highlightLength: number = length ? length : highlightNode.length;
+      const remainingSpeechUtteranceLength = Math.max(
+          speechUtteranceLength - alreadyHighlightedSpeechUtteranceLength, 0);
+      const highlightLength: number = speechUtteranceLength ?
+          (remainingSpeechUtteranceLength) :
+          highlightNode.length;
       const highlightStartIndex = highlightNode.start;
       const endIndex = highlightStartIndex + highlightLength;
       const node = this.nodeStore_.getDomNode(nodeId);
@@ -252,6 +258,10 @@ export class ReadAloudHighlighter {
       if (this.isInvalidHighlightForWordHighlighting(currentText)) {
         continue;
       }
+
+      // Keep track of the highlight length that's been spoken so that
+      // speechUtteranceLength can be used across multiple nodes.
+      alreadyHighlightedSpeechUtteranceLength += highlightLength;
 
       hasHighlights = true;
       const element = node as HTMLElement;
