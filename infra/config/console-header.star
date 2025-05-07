@@ -167,6 +167,16 @@ HEADER = headers.header(
                     alt = "Checks console",
                 ),
                 headers.link(
+                    text = "chromium",
+                    branch_selector = [
+                        branches.selector.ANDROID_BRANCHES,
+                        branches.selector.DESKTOP_BRANCHES,
+                        branches.selector.FUCHSIA_BRANCHES,
+                    ],
+                    url = "/p/{}/g/chromium".format(settings.project),
+                    alt = "Main Chromium archive console",
+                ),
+                headers.link(
                     text = "chromiumos",
                     branch_selector = branches.selector.CROS_LTS_BRANCHES,
                     url = "/p/{}/g/chromium.chromiumos".format(settings.project),
