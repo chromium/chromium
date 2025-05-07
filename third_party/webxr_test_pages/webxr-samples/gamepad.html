@@ -153,7 +153,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       class GamepadBoxSet {
         constructor(button_count, y) {
           this.button_y = y;
-          ensure_gamepad_boxes(button_count);
+          this.ensure_gamepad_boxes(button_count);
         }
 
         ensure_gamepad_boxes(button_count) {
@@ -170,7 +170,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         }
 
         update_state(gamepad) {
-          ensure_gamepad_boxes(gamepad.buttons.length);
+          this.ensure_gamepad_boxes(gamepad.buttons.length);
 
           // A button press (pressing and then releasing a button) will change
           // the associated box's color from red to green (or from green to red
