@@ -216,13 +216,15 @@ std::u16string ExtractSearchTermsFromURL(
     content::BrowserContext* browser_context,
     const GURL& url);
 
-// Returns true if a canonical URL representation of a |preloading_url| can be
-// generated. |canonical_url| is set to the canonical URL representation when
-// this method returns |true|.
+// Returns true if a canonical URL representation of a `preloading_url` can be
+// generated. `canonical_url` is set to the canonical URL representation when
+// this method returns `true`. The search query is returned in `search_terms` if
+// the passing `search_terms` is not nullptr.
 bool HasCanonicalPreloadingOmniboxSearchURL(
     const GURL& preloading_url,
     content::BrowserContext* browser_context,
-    GURL* canonical_url);
+    GURL* canonical_url,
+    std::u16string* search_terms = nullptr);
 
 // Returns true when |navigation_url| is considered as navigating to the same
 // omnibox search results page as |canonical_preloading_search_url|.

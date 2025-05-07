@@ -1327,6 +1327,35 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       DuplicateSearchTermMetricsAreRecorded) {
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
+      SearchPrefetchEligibilityReason::kPrefetchStarted, 1);
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kComplete);
+
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", 0);
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", 1);
+}
+
 // Tests used for integrating to No-Vary-Search Disk Cache.
 class SearchPrefetchServiceEnabledWithNVSBrowserTest
     : public testing::WithParamInterface<bool>,
@@ -1456,6 +1485,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete",
       expected_count);
+  histogram_tester.ExpectTotalCount(
+        "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
