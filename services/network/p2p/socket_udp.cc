@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/p2p/socket_udp.h"
 
 #include <tuple>
@@ -115,12 +110,10 @@ P2PPendingPacket::P2PPendingPacket(
     const webrtc::AsyncSocketPacketOptions& options,
     uint64_t id)
     : to(to),
-      data(base::MakeRefCounted<net::IOBufferWithSize>(content.size())),
+      data(base::MakeRefCounted<net::VectorIOBuffer>(content)),
       size(content.size()),
       packet_options(options),
-      id(id) {
-  memcpy(data->data(), content.data(), content.size());
-}
+      id(id) {}
 
 P2PPendingPacket::P2PPendingPacket(const P2PPendingPacket& other) = default;
 P2PPendingPacket::~P2PPendingPacket() = default;
@@ -298,9 +291,7 @@ void P2PSocketUdp::MaybeDrainReceivedPackets(bool force) {
 
 bool P2PSocketUdp::HandleReadResult(int result) {
   if (result > 0) {
-    auto data =
-        base::span(reinterpret_cast<const uint8_t*>(recv_buffer_->data()),
-                   static_cast<size_t>(result));
+    auto data = recv_buffer_->first(static_cast<size_t>(result));
 
     if (!base::Contains(connected_peers_, recv_address_)) {
       P2PSocket::StunMessageType type;
@@ -364,10 +355,7 @@ bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
   // messages are sent in correct order.
   if (!base::Contains(connected_peers_, packet.to)) {
     P2PSocket::StunMessageType type = P2PSocket::StunMessageType();
-    bool stun = GetStunPacketType(
-        base::span(reinterpret_cast<const uint8_t*>(packet.data->data()),
-                   packet.size),
-        &type);
+    bool stun = GetStunPacketType(packet.data->first(packet.size), &type);
     if (!stun || type == STUN_DATA_INDICATION) {
       LOG(ERROR) << "Page tried to send a data packet to "
                  << packet.to.ToString() << " before STUN binding is finished.";
@@ -437,10 +425,7 @@ bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
     }
   }
 
-  delegate_->DumpPacket(
-      base::span(reinterpret_cast<const uint8_t*>(packet.data->data()),
-                 packet.size),
-      false);
+  delegate_->DumpPacket(packet.data->first(packet.size), false);
 
   return true;
 }

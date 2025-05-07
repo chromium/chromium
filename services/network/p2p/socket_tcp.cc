@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/p2p/socket_tcp.h"
 
 #include <stddef.h>
 
 #include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
@@ -466,10 +462,11 @@ void P2PSocketTcp::DoSend(const net::IPEndPoint& to,
     CHECK_EQ(writer.remaining(), 0u);
   }
 
-  webrtc::ApplyPacketOptions(
-      send_buffer.buffer->bytes() + kPacketHeaderSize,
-      send_buffer.buffer->BytesRemaining() - kPacketHeaderSize,
-      options.packet_time_params, webrtc::TimeMicros());
+  base::span<uint8_t> send_buffer_without_header =
+      send_buffer.buffer->span().subspan(kPacketHeaderSize);
+  webrtc::ApplyPacketOptions(send_buffer_without_header.data(),
+                             send_buffer_without_header.size(),
+                             options.packet_time_params, webrtc::TimeMicros());
 
   WriteOrQueue(send_buffer);
 }
@@ -527,28 +524,25 @@ void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
 
   // Add any pad bytes to the total size.
   int buffer_size = data.size() + pad_bytes;
+  std::vector<uint8_t> buffer;
+  buffer.reserve(buffer_size);
+  buffer.assign(data.begin(), data.end());
+  if (pad_bytes) {
+    DCHECK_LE(pad_bytes, 4);
+    buffer.insert(buffer.end(), pad_bytes, 0);
+  }
 
   SendBuffer send_buffer(
       options.packet_id,
       base::MakeRefCounted<net::DrainableIOBuffer>(
-          base::MakeRefCounted<net::IOBufferWithSize>(buffer_size),
+          base::MakeRefCounted<net::VectorIOBuffer>(std::move(buffer)),
           buffer_size));
-  memcpy(send_buffer.buffer->data(), data.data(), data.size());
 
   webrtc::ApplyPacketOptions(send_buffer.buffer->bytes(), data.size(),
                              options.packet_time_params, webrtc::TimeMicros());
 
-  if (pad_bytes) {
-    char padding[4] = {};
-    DCHECK_LE(pad_bytes, 4);
-    memcpy(send_buffer.buffer->data() + data.size(), padding, pad_bytes);
-  }
-
   // WriteOrQueue may free the memory, so dump it first.
-  delegate_->DumpPacket(
-      base::span(reinterpret_cast<const uint8_t*>(send_buffer.buffer->data()),
-                 data.size()),
-      false);
+  delegate_->DumpPacket(send_buffer.buffer->span(), false);
 
   WriteOrQueue(send_buffer);
 }
