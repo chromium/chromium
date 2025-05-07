@@ -495,6 +495,10 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   is_suspended_ = window_states.is_suspended;
 
   // The tiled state affects the window geometry, so apply it here.
+  // TODO(crbug.com/414831391): Remove this and notify in
+  // WindowTreeHostPlatform::OnStateUpdate instead like all other state changes.
+  // The only issue there is when doing that a regression was seen in kwin. See
+  // the bug description for additional details.
   if (window_states.tiled_edges != applied_state().tiled_edges) {
     // This configure changes the decoration insets.  We should adjust the
     // bounds appropriately.
