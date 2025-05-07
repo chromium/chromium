@@ -168,6 +168,11 @@ class GraphBuilderOrt {
                       OperandDataType input_data_type,
                       const std::vector<uint32_t>& bias_dims);
 
+  [[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
+  CreateScaleOrBiasForNormalization(OperandDataType data_type,
+                                   base::span<const uint32_t> scale_shape,
+                                   float value);
+
   // A helper function used to transpose the weight or bias layout for the RNN
   // operators (GRU, LSTM, etc.).
   //
