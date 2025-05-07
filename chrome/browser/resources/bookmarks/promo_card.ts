@@ -26,7 +26,6 @@ export interface PromoCardElement {
   };
 }
 
-// TODO(crbug.com/411439295): Add `I18nMixinLit` when using real strings.
 const PromoCardElementBase = WebUiListenerMixinLit(CrLitElement);
 
 export class PromoCardElement extends PromoCardElementBase {
@@ -50,8 +49,7 @@ export class PromoCardElement extends PromoCardElementBase {
 
   protected accessor batchUploadPromoData_: BatchUploadPromoData = {
     canShow: false,
-    localBookmarksCount: 0,
-    email: '',
+    promoSubtitle: '',
   };
 
   override connectedCallback() {

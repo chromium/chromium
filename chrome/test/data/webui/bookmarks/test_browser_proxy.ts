@@ -57,8 +57,7 @@ export class TestBookmarksBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('getBatchUploadPromoInfo');
     return Promise.resolve({
       canShow: false,
-      localBookmarksCount: 0,
-      email: '',
+      promoSubtitle: '',
     });
   }
 

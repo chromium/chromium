@@ -9,10 +9,12 @@ import type {BookmarksListElement} from './list.js';
 export function getHtml(this: BookmarksListElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<promo-card id="promoCard" class="card"
-    ?hidden="${!this.shouldShowPromoCard_}"
-    @on-should-show-promo-card="${this.updateShouldShowPromoCard_}">
-</promo-card>
+<if expr="not is_chromeos">
+  <promo-card id="promoCard" class="card"
+      ?hidden="${!this.shouldShowPromoCard_}"
+      @on-should-show-promo-card="${this.updateShouldShowPromoCard_}">
+  </promo-card>
+</if>
 <cr-lazy-list id="list" class="card"
     .items="${this.displayedIds_}"
     .scrollTarget="${this}"

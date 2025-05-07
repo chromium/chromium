@@ -9,8 +9,7 @@ import type {IncognitoAvailability} from './constants.js';
 // This is the data structure that is received from the browser.
 export interface BatchUploadPromoData {
   canShow: boolean;
-  localBookmarksCount: number;
-  email: string;
+  promoSubtitle: string;
 }
 
 export interface BrowserProxy {

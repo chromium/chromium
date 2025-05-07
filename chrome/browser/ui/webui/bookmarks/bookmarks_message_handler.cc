@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_message_handler.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -31,6 +34,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -71,17 +75,26 @@ bool CanShowBatchUploadPromo(Profile* profile) {
 }
 
 base::Value::Dict GetBatchUploadPromoData(bool can_show,
-                                          int local_bookmark_count) {
+                                          int local_bookmark_count,
+                                          bool has_non_bookmark_local_data) {
   base::Value::Dict promo_data;
   promo_data.Set("canShow", can_show);
-  promo_data.Set("localBookmarksCount", local_bookmark_count);
+#if !BUILDFLAG(IS_CHROMEOS)
+  promo_data.Set("promoSubtitle",
+                 l10n_util::GetPluralStringFUTF16(
+                     has_non_bookmark_local_data
+                         ? IDS_BATCH_UPLOAD_PROMO_SUBTITLE_BOOKMARKS_COMBO
+                         : IDS_BATCH_UPLOAD_PROMO_SUBTITLE_BOOKMARKS,
+                     local_bookmark_count));
+#endif
   return promo_data;
 }
 
 // Return an empty result; should not show the promo.
 base::Value::Dict GetEmptyBatchUploadPromoData() {
   return GetBatchUploadPromoData(/*can_show=*/false,
-                                 /*local_bookmark_count=*/0);
+                                 /*local_bookmark_count=*/0,
+                                 /*has_non_bookmark_local_data=*/false);
 }
 
 base::Value::Dict GetBatchUploadDataFromProfileAndLocalData(
@@ -92,8 +105,17 @@ base::Value::Dict GetBatchUploadDataFromProfileAndLocalData(
       local_data.contains(syncer::BOOKMARKS)
           ? local_data.at(syncer::BOOKMARKS).local_data_models.size()
           : 0;
+
+  bool has_non_bookmark_local_data = std::ranges::any_of(
+      local_data, [](const std::pair<syncer::DataType,
+                                     syncer::LocalDataDescription>& data) {
+        return data.first != syncer::BOOKMARKS &&
+               !data.second.local_data_models.empty();
+      });
+
   bool can_show = local_bookmark_count != 0 && CanShowBatchUploadPromo(profile);
-  return GetBatchUploadPromoData(can_show, local_bookmark_count);
+  return GetBatchUploadPromoData(can_show, local_bookmark_count,
+                                 has_non_bookmark_local_data);
 }
 
 }  // namespace
@@ -456,6 +478,18 @@ void BookmarksMessageHandler::BookmarkNodeRemoved(
       BookmarkModelFactory::GetForBrowserContext(Profile::FromWebUI(web_ui()));
   // Only attempt to request an update if a local node is removed.
   if (model->IsLocalOnlyNode(*node)) {
+    RequestUpdateOrWaitForBatchUpdateEnd();
+  }
+}
+
+void BookmarksMessageHandler::BookmarkNodeAdded(
+    const bookmarks::BookmarkNode* parent,
+    size_t index,
+    bool added_by_user) {
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(Profile::FromWebUI(web_ui()));
+  // Only attempt to request an update if the added node is local.
+  if (model->IsLocalOnlyNode(*parent->children()[index].get())) {
     RequestUpdateOrWaitForBatchUpdateEnd();
   }
 }

@@ -69,6 +69,9 @@ class BookmarksMessageHandler : public content::WebUIMessageHandler,
   void BookmarkModelLoaded(bool ids_reassigned) override;
   void ExtensiveBookmarkChangesBeginning() override;
   void ExtensiveBookmarkChangesEnded() override;
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
+                         size_t index,
+                         bool added_by_user) override;
   void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                          size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
@@ -78,9 +81,7 @@ class BookmarksMessageHandler : public content::WebUIMessageHandler,
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& no_longer_bookmarked,
                            const base::Location& location) override;
-  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
-                         size_t index,
-                         bool added_by_user) override {}
+
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override {}
   void BookmarkNodeFaviconChanged(
       const bookmarks::BookmarkNode* node) override {}
