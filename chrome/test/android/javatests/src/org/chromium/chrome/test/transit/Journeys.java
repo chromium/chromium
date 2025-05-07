@@ -214,12 +214,17 @@ public class Journeys {
             PageStation previousPage = currentPage;
             Tab previousTab = previousPage.loadedTabElement.get();
             if (i == 0 && startingPage.isIncognito() && !isIncognito) {
-                currentPage = currentPage.openNewTabFast().loadWebPageProgrammatically(url);
+                currentPage =
+                        currentPage
+                                .openNewTabFast()
+                                .loadPageProgrammatically(url, pageStationFactory.get());
             } else if (i == 0 && !startingPage.isIncognito() && isIncognito) {
                 currentPage =
-                        currentPage.openNewIncognitoTabFast().loadWebPageProgrammatically(url);
+                        currentPage
+                                .openNewIncognitoTabFast()
+                                .loadPageProgrammatically(url, pageStationFactory.get());
             } else {
-                currentPage = currentPage.openFakeLinkToWebPage(url);
+                currentPage = currentPage.openFakeLink(url, pageStationFactory.get());
             }
 
             if (!captureThumbnails) {
