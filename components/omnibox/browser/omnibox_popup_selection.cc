@@ -14,25 +14,7 @@
 
 constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
-const size_t OmniboxPopupSelection::kNoMatch = static_cast<size_t>(-1);
-
-bool OmniboxPopupSelection::operator==(const OmniboxPopupSelection& b) const {
-  return line == b.line && state == b.state && action_index == b.action_index;
-}
-
-bool OmniboxPopupSelection::operator!=(const OmniboxPopupSelection& b) const {
-  return !operator==(b);
-}
-
-bool OmniboxPopupSelection::operator<(const OmniboxPopupSelection& b) const {
-  if (line == b.line) {
-    if (state == b.state) {
-      return action_index < b.action_index;
-    }
-    return state < b.state;
-  }
-  return line < b.line;
-}
+constexpr size_t OmniboxPopupSelection::kNoMatch = static_cast<size_t>(-1);
 
 bool OmniboxPopupSelection::IsChangeToKeyword(
     OmniboxPopupSelection from) const {

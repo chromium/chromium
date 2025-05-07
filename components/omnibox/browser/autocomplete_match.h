@@ -151,13 +151,8 @@ struct AutocompleteMatch {
     ACMatchClassification(size_t offset, int style)
         : offset(offset), style(style) {}
 
-    bool operator==(const ACMatchClassification& other) const {
-      return offset == other.offset && style == other.style;
-    }
-
-    bool operator!=(const ACMatchClassification& other) const {
-      return offset != other.offset || style != other.style;
-    }
+    friend bool operator==(const ACMatchClassification&,
+                           const ACMatchClassification&) = default;
 
     // Offset within the string that this classification starts
     size_t offset;
