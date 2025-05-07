@@ -6403,10 +6403,6 @@ test("unit_tests") {
     ]
   }
 
-  if (is_android) {
-    sources += [ "../browser/privacy_sandbox/privacy_sandbox_activity_types_service_unittest.cc" ]
-  }
-
   if (is_mac) {
     sources +=
         [ "../browser/metrics/google_update_metrics_provider_mac_unittest.cc" ]

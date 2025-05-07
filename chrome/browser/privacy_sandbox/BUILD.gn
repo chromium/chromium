@@ -313,9 +313,28 @@ source_set("survey_desktop_controller_unittest") {
   }
 }
 
+source_set("activity_types_service_unittest") {
+  testonly = true
+  if (is_android) {
+    sources = [ "privacy_sandbox_activity_types_service_unittest.cc" ]
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser/preferences:java_pref_names_srcjar",
+      "//chrome/browser/privacy_sandbox/android:privacy_sandbox_enums",
+      "//chrome/test:test_support",
+      "//components/metrics:metrics_pref_names",
+      "//components/prefs:test_support",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//content/test:test_support",
+    ]
+  }
+}
+
 group("unit_tests") {
   testonly = true
   deps = [
+    ":activity_types_service_unittest",
     ":policy_handler_unittest",
     ":profile_bucket_metrics_unittest",
     ":service_impl_unittest",
