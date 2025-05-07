@@ -23,11 +23,6 @@ declare global {
         elements: BookmarkNodeDataElement[];
       }
 
-      interface OpenInNewTabParams {
-        active?: boolean;
-        split?: boolean;
-      }
-
       export function copy(idList: string[]): Promise<void>;
       export function cut(idList: string[]): Promise<void>;
       export function paste(parentId: string, selectedIdList?: string[]):
@@ -43,8 +38,7 @@ declare global {
       export function removeTrees(idList: string[]): Promise<void>;
       export function undo(): void;
       export function redo(): void;
-      export function openInNewTab(
-          id: string, params?: OpenInNewTabParams): void;
+      export function openInNewTab(id: string, active: boolean): void;
       export function openInNewWindow(idList: string[], incognito: boolean):
           void;
       export function openInNewTabGroup(idList: string[]): void;
