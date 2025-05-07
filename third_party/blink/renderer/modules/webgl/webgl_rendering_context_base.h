@@ -585,8 +585,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   void MarkLayerComposited() override;
 
-  sk_sp<SkData> PaintRenderingResultsToRGBADataArray(
-      SourceDrawingBuffer) override;
+  scoped_refptr<StaticBitmapImage> GetRGBAUnacceleratedStaticBitmapImage(
+      SourceDrawingBuffer source_buffer) override;
 
   unsigned MaxVertexAttribs() const { return max_vertex_attribs_; }
 

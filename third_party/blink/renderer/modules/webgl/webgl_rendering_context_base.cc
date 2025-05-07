@@ -2031,7 +2031,8 @@ gfx::Size WebGLRenderingContextBase::DrawingBufferSize() const {
   return GetDrawingBuffer()->Size();
 }
 
-sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToRGBADataArray(
+scoped_refptr<StaticBitmapImage>
+WebGLRenderingContextBase::GetRGBAUnacceleratedStaticBitmapImage(
     SourceDrawingBuffer source_buffer) {
   if (isContextLost())
     return nullptr;
@@ -2043,8 +2044,28 @@ sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToRGBADataArray(
   if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
     return nullptr;
   ScopedFramebufferRestorer restorer(this);
-  return GetDrawingBuffer()->PaintRenderingResultsToRGBADataArray(
-      source_buffer);
+  sk_sp<SkData> pixel_data =
+      GetDrawingBuffer()->PaintRenderingResultsToRGBADataArray(source_buffer);
+
+  if (!pixel_data) {
+    return nullptr;
+  }
+  // If the accelerated canvas is too big, there is a logic in WebGL code
+  // path that scales down the drawing buffer to the maximum supported
+  // size. Hence, we need to query the adjusted size of DrawingBuffer.
+  gfx::Size adjusted_size = DrawingBufferSize();
+  if (!adjusted_size.IsEmpty()) {
+    return StaticBitmapImage::Create(
+        std::move(pixel_data),
+        SkImageInfo::Make(
+            SkISize::Make(adjusted_size.width(), adjusted_size.height()),
+            (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16)
+                ? kRGBA_F16_SkColorType
+                : kRGBA_8888_SkColorType,
+            kUnpremul_SkAlphaType, GetColorSpace().ToSkColorSpace()));
+  }
+
+  return nullptr;
 }
 
 void WebGLRenderingContextBase::Reshape(int width, int height) {
