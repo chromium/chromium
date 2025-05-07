@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/values.h"
 
 namespace extensions {
 
@@ -89,9 +88,6 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
   void ManifestUnzipped(const base::FilePath& unzip_dir, bool success);
   void ManifestRead(const base::FilePath& unzip_dir,
                     std::optional<std::string> manifest_content);
-  void ManifestParsed(const base::FilePath& unzip_dir,
-                      std::optional<base::Value> result,
-                      const std::optional<std::string>& error);
   void UnzipDone(const base::FilePath& unzip_dir, bool success);
 
   // On failure, report the `error` reason.
