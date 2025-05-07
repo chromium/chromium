@@ -10867,6 +10867,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSyncingOfPixBankAccounts)},
 
+    {"enable-pix-account-linking",
+     flag_descriptions::kEnablePixAccountLinkingName,
+     flag_descriptions::kEnablePixAccountLinkingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixAccountLinking)},
+
     {"enable-pix-payments", flag_descriptions::kEnablePixPaymentsName,
      flag_descriptions::kEnablePixPaymentsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixPayments)},

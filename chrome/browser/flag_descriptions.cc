@@ -1373,6 +1373,11 @@ const char kEnableDelegatedCompositingDescription[] =
     "system compositor.";
 
 #if BUILDFLAG(IS_ANDROID)
+const char kEnablePixAccountLinkingName[] = "Enable Pix account linking";
+const char kEnablePixAccountLinkingDescription[] =
+    "When enabled, users without linked Pix accounts will be prompted to link "
+    "their Pix accounts to Google Wallet.";
+
 const char kEnablePixPaymentsName[] = "Enable Pix payments";
 const char kEnablePixPaymentsDescription[] =
     "When enabled, users will be offered to pay for Pix transactions using "
