@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -79,9 +80,11 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
   bubble_border->set_insets(
       GetBubbleInsets(anchor_widget()->GetNativeWindow()->GetRootWindow()));
-  bubble_border->SetCornerRadius(
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kHigh));
+
+  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
+  bubble_border->set_rounded_corners(gfx::RoundedCornersF(corner_radius));
+
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
   GetBubbleFrameView()->SetBackgroundColor(background_color());
 

@@ -22,6 +22,7 @@
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -395,10 +396,10 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // there's no way to unset it for this MenuItemView!
   void SetForcedVisualSelection(bool selected);
 
-  // For items of type HIGHLIGHTED only: sets the radius of the item's
+  // For items of type HIGHLIGHTED only: sets the corner radius of the item's
   // background. This makes the menu item's background fit its container's
-  // border radius, if they are both the same value.
-  void SetCornerRadius(int radius);
+  // border radii, if they are both the same value.
+  void SetBottomCornersRadius(int lower_left_radius, int lower_right_radius);
 
   // Sets or removes the expanded/collapsed state of the menu item if it's a
   // submenu.
@@ -677,8 +678,8 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   std::optional<int> vertical_margin_;
 
-  // Corner radius in pixels, for HIGHLIGHTED items placed at the end of a menu.
-  int corner_radius_ = 0;
+  // Corners radii in pixels, for HIGHLIGHTED items placed at the end of a menu.
+  gfx::RoundedCornersF bottom_rounded_corners_;
 
   // |menu_position_| is the requested position with respect to the bounds.
   // |actual_menu_position_| is used by the controller to cache the

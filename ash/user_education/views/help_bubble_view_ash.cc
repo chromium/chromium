@@ -901,7 +901,7 @@ void HelpBubbleViewAsh::UpdateRoundedCorners() {
   const float lower_left = dx < 0 && dy > 0 ? kSmall : kDefault;
 
   // Update rounded corners.
-  GetBubbleFrameView()->bubble_border()->set_rounded_corners(
+  GetBubbleFrameView()->SetRoundedCorners(
       gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left));
 }
 

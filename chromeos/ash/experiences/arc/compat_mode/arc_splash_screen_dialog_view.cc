@@ -288,7 +288,7 @@ void ArcSplashScreenDialogView::AddedToWidget() {
   const int kCornerRadius = 20;
   auto* const frame = GetBubbleFrameView();
   if (frame) {
-    frame->SetCornerRadius(kCornerRadius);
+    frame->SetRoundedCorners(gfx::RoundedCornersF(kCornerRadius));
   }
 }
 

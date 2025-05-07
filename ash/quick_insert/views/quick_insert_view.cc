@@ -94,7 +94,8 @@ constexpr gfx::Insets kPaddingFromScreenEdge(16);
 std::unique_ptr<views::BubbleBorder> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW);
-  border->SetCornerRadius(kQuickInsertContainerBorderRadius);
+  border->set_rounded_corners(
+      gfx::RoundedCornersF(kQuickInsertContainerBorderRadius));
   border->SetColor(SK_ColorTRANSPARENT);
   return border;
 }

@@ -46,6 +46,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -555,7 +556,8 @@ std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
   std::unique_ptr<BubbleBorder> bubble_border =
       std::make_unique<BubbleBorder>(arrow(), BubbleBorder::NO_SHADOW);
   if (params_.corner_radius) {
-    bubble_border->SetCornerRadius(params_.corner_radius);
+    bubble_border->set_rounded_corners(
+        gfx::RoundedCornersF(params_.corner_radius));
   }
   bubble_border->set_avoid_shadow_overlap(true);
   if (params_.insets.has_value()) {

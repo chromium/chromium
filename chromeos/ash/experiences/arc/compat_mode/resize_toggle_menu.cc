@@ -66,7 +66,7 @@ class RoundedCornerBubbleDialogDelegateView
   void AddedToWidget() override {
     auto* const frame = GetBubbleFrameView();
     if (frame) {
-      frame->SetCornerRadius(corner_radius_);
+      frame->SetRoundedCorners(gfx::RoundedCornersF(corner_radius_));
     }
   }
 

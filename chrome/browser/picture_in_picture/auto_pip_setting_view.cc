@@ -250,7 +250,8 @@ AutoPipSettingView::CreateNonClientFrameView(views::Widget* widget) {
   std::unique_ptr<views::BubbleBorder> bubble_border =
       std::make_unique<views::BubbleBorder>(
           arrow(), views::BubbleBorder::STANDARD_SHADOW);
-  bubble_border->SetCornerRadius(kBubbleBorderCornerRadius);
+  bubble_border->set_rounded_corners(
+      gfx::RoundedCornersF(kBubbleBorderCornerRadius));
   bubble_border->set_md_shadow_elevation(kBubbleBorderMdShadowElevation);
   bubble_border->set_draw_border_stroke(true);
 

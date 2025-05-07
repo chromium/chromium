@@ -51,6 +51,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -531,7 +532,7 @@ SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
   bubble_border->SetColor(background_color());
-  bubble_border->SetCornerRadius(kCornerRadius);
+  bubble_border->set_rounded_corners(gfx::RoundedCornersF(kCornerRadius));
   auto frame =
       views::BubbleDialogDelegateView::CreateNonClientFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())

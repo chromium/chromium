@@ -294,7 +294,7 @@ FindBarView::FindBarView(FindBarHost* host) {
     border->SetColor(kColorFindBarBackground);
     border->set_md_shadow_elevation(
         layout_provider->GetCornerRadiusMetric(views::Emphasis::kHigh));
-    border->SetCornerRadius(corner_radius);
+    border->set_rounded_corners(gfx::RoundedCornersF(corner_radius));
 
     SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
     SetBorder(std::move(border));
