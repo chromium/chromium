@@ -2541,7 +2541,7 @@
     },
     {
       name: "IgnoreLetterSpacingInCursiveScripts",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ImageDataPixelFormat",
