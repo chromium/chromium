@@ -78,8 +78,6 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
 
   bool operator==(const AppRestoreData& other) const;
 
-  bool operator!=(const AppRestoreData& other) const;
-
   // App launch parameters.
   // TODO: Replace this with a `AppLaunchInfo` object.
   std::optional<int32_t> event_flag;
