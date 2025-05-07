@@ -57,6 +57,23 @@ void ReadingListLocalDataBatchUploader::TriggerLocalDataMigration() {
   dual_reading_list_model_->MarkAllForUploadToSyncServerIfNeeded();
 }
 
+void ReadingListLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
+    std::vector<syncer::LocalDataItemModel::DataId> items) {
+  CHECK(base::FeatureList::IsEnabled(
+      syncer::kSyncReadingListBatchUploadSelectedItems));
+
+  if (!CanUpload()) {
+    return;
+  }
+
+  dual_reading_list_model_->MarkEntriesForUploadToSyncServerIfNeeded(
+      base::MakeFlatSet<GURL>(
+          items, /*comp=*/{},
+          /*proj=*/[](const syncer::LocalDataItemModel::DataId& id) {
+            return std::get<GURL>(id);
+          }));
+}
+
 bool ReadingListLocalDataBatchUploader::CanUpload() const {
   // TODO(crbug.com/354146311): Check GetAccountModelIfSyncing() isn't null
   return dual_reading_list_model_ && dual_reading_list_model_->loaded();

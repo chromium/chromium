@@ -156,6 +156,8 @@ TEST_F(ReadingListLocalDataBatchUploaderTest, MigrationNoOpsIfModelNull) {
   ReadingListLocalDataBatchUploader uploader(nullptr);
 
   uploader.TriggerLocalDataMigration();
+  uploader.TriggerLocalDataMigrationForItems(
+      {syncer::LocalDataItemModel::DataId(GURL("https://local.com"))});
 
   // Should not crash;
 }
@@ -164,6 +166,8 @@ TEST_F(ReadingListLocalDataBatchUploaderTest, MigrationNoOpsIfModelNotLoaded) {
   ReadingListLocalDataBatchUploader uploader(dual_reading_list_model());
 
   uploader.TriggerLocalDataMigration();
+  uploader.TriggerLocalDataMigrationForItems(
+      {syncer::LocalDataItemModel::DataId(GURL("https://local.com"))});
 
   // Should not crash;
 }
@@ -184,6 +188,51 @@ TEST_F(ReadingListLocalDataBatchUploaderTest, MigrationUploadsLocalData) {
   EXPECT_EQ(
       dual_reading_list_model()->GetStorageStateForURLForTesting(
           GURL("https://local.com")),
+      DualReadingListModel::StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(
+      dual_reading_list_model()->GetStorageStateForURLForTesting(
+          GURL("https://account.com")),
+      DualReadingListModel::StorageStateForTesting::kExistsInAccountModelOnly);
+}
+
+TEST_F(ReadingListLocalDataBatchUploaderTest, OnlySelectedItemsGetUploaded) {
+  LoadModel();
+  dual_reading_list_model()->GetLocalOrSyncableModel()->AddOrReplaceEntry(
+      GURL("https://local1.com"), "local1", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+  dual_reading_list_model()->GetLocalOrSyncableModel()->AddOrReplaceEntry(
+      GURL("https://local2.com"), "local2", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+  dual_reading_list_model()->GetAccountModelIfSyncing()->AddOrReplaceEntry(
+      GURL("https://account.com"), "account",
+      reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+  ReadingListLocalDataBatchUploader uploader(dual_reading_list_model());
+
+  ASSERT_EQ(dual_reading_list_model()->GetStorageStateForURLForTesting(
+                GURL("https://local1.com")),
+            DualReadingListModel::StorageStateForTesting::
+                kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_reading_list_model()->GetStorageStateForURLForTesting(
+                GURL("https://local2.com")),
+            DualReadingListModel::StorageStateForTesting::
+                kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(
+      dual_reading_list_model()->GetStorageStateForURLForTesting(
+          GURL("https://account.com")),
+      DualReadingListModel::StorageStateForTesting::kExistsInAccountModelOnly);
+
+  uploader.TriggerLocalDataMigrationForItems(
+      {syncer::LocalDataItemModel::DataId(GURL("https://local2.com"))});
+
+  EXPECT_EQ(dual_reading_list_model()->GetStorageStateForURLForTesting(
+                GURL("https://local1.com")),
+            DualReadingListModel::StorageStateForTesting::
+                kExistsInLocalOrSyncableModelOnly);
+
+  EXPECT_EQ(
+      dual_reading_list_model()->GetStorageStateForURLForTesting(
+          GURL("https://local2.com")),
       DualReadingListModel::StorageStateForTesting::kExistsInAccountModelOnly);
   EXPECT_EQ(
       dual_reading_list_model()->GetStorageStateForURLForTesting(
