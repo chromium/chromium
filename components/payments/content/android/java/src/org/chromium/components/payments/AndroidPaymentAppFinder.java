@@ -36,8 +36,11 @@ import java.util.Set;
  * Finds installed native Android payment apps and verifies their signatures according to the
  * payment method manifests. The manifests are located based on the payment method name, which is a
  * URL that starts with "https://" (localhosts can be "http://", however). The W3C-published non-URL
- * payment method names are exceptions: these are common payment method names that do not have a
+ * payment method names[1] are exceptions: these are common payment method names that do not have a
  * manifest and can be used by any payment app.
+ *
+ * <p>[1] <a href="https://w3c.github.io/payment-method-id/#registry">Registry of standardized
+ * payment methods</a>.
  */
 @NullMarked
 public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
@@ -358,9 +361,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         // ("https://bobpay.com/personal", "https://alicepay.com/webpay")
         //
         // Manifests from all of these URLs will be downloaded for verification of app package
-        // names, versions, and signatures.
-        Set<GURL> urlMethodsForManifestDownload =
-                new HashSet<>(mMerchantRequestedUrlPaymentMethods);
+        // names, versions, signatures, and "supported_origins".
+        Set<GURL> urlMethodsForManifestDownload = new HashSet<>();
 
         // A mapping from all known payment method names to the corresponding payment apps that
         // claim to support these payment methods. Example contents:
@@ -433,8 +435,6 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 methodToAppsMapping.get(defaultMethod).add(app);
 
                 if (UrlUtil.isURLValid(defaultUrlMethod)) {
-                    urlMethodsForManifestDownload.add(defaultUrlMethod);
-
                     if (!urlMethodToDefaultAppsMapping.containsKey(defaultUrlMethod)) {
                         urlMethodToDefaultAppsMapping.put(
                                 defaultUrlMethod, new HashSet<ResolveInfo>());
@@ -468,6 +468,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                         String.join(", ", supportedMethods));
             }
 
+            Set<GURL> supportedUrlMethods = new HashSet<>();
             for (String supportedMethod : supportedMethods) {
                 GURL supportedUrlMethod = new GURL(supportedMethod);
                 if (!UrlUtil.isURLValid(supportedUrlMethod)) supportedUrlMethod = null;
@@ -494,6 +495,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                     continue;
                 }
 
+                supportedUrlMethods.add(supportedUrlMethod);
+
                 if (!mMethodToSupportedAppsMapping.containsKey(supportedUrlMethod)) {
                     mMethodToSupportedAppsMapping.put(
                             supportedUrlMethod, new HashSet<ResolveInfo>());
@@ -507,6 +510,12 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 }
                 urlMethodToSupportedOriginsMapping.get(supportedUrlMethod).add(appOrigin);
             }
+
+            urlMethodsForManifestDownload.addAll(
+                    PaymentManifestResolver.getManifestsToDownload(
+                            defaultUrlMethod,
+                            supportedUrlMethods,
+                            mMerchantRequestedUrlPaymentMethods));
 
             // Record the total number of payment methods that this activity `ResolveInfo app`
             // declares to support in its metadata.
