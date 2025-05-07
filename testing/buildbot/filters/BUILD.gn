@@ -385,6 +385,7 @@ source_set("gl_unittests_filters") {
     "//testing/buildbot/filters/android.emulator_12.gl_unittests.filter",
     "//testing/buildbot/filters/win.win_arm64.gl_unittests.filter",
     "//testing/buildbot/filters/win.amd.5500xt.gl_unittests.filter",
+    "//testing/buildbot/filters/win.nvidia.gtx.1660.gl_unittests.filter",
   ]
 }
 

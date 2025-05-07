@@ -461,7 +461,9 @@ OVERLAY_CONFIGS = {
                 .WithHardwareNV12Support(driver_conditionals=[
                     DriverConditional('ge', '31.0.15.4601')])\
                 .WithHardwareYUY2Support(driver_conditionals=[
-                    DriverConditional('ge', '31.0.15.4601')])
+                    DriverConditional('ge', '31.0.15.4601')])\
+                .WithHardwareBGRA8Support(driver_conditionals=[
+                    DriverConditional('ge', '32.0.15.7602')])\
                 .WithForceComposedBGRA8(driver_conditionals=[
                     DriverConditional('lt', '31.0.15.4601')])\
                 .WithZeroCopyConfig(ZeroCopyConfig(
