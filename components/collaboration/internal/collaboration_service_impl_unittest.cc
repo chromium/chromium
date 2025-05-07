@@ -297,6 +297,18 @@ TEST_F(CollaborationServiceImplTest, SyncStatusChanges) {
   }
 }
 
+TEST_F(CollaborationServiceImplTest, SyncStatusChanges_SettingInProgress) {
+  // By default the test sync service is signed in with sync and every DataType
+  // enabled.
+  EXPECT_EQ(service_->GetServiceStatus().sync_status, SyncStatus::kSyncEnabled);
+
+  // Setup in progress does not change sync status.
+  test_sync_service_->SetSetupInProgress();
+  test_sync_service_->SetSignedOut();
+  test_sync_service_->FireStateChanged();
+  EXPECT_EQ(service_->GetServiceStatus().sync_status, SyncStatus::kSyncEnabled);
+}
+
 TEST_F(CollaborationServiceImplTest, ConsumerSigninChanges) {
   EXPECT_EQ(service_->GetServiceStatus().signin_status,
             SigninStatus::kNotSignedIn);

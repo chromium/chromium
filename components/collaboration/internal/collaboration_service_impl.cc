@@ -296,6 +296,11 @@ SyncStatus CollaborationServiceImpl::GetSyncStatus() {
     return SyncStatus::kNotSyncing;
   }
 
+  if (sync_service_->IsSetupInProgress()) {
+    // Do not update sync status when setup is in progress.
+    return current_status_.sync_status;
+  }
+
   syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
   // The mapping between the selected type and what is actually sync'ed is done
   // in `GetUserSelectableTypeInfo()`.
