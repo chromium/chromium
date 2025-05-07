@@ -22,7 +22,7 @@
     {
         "name": "annotation-experimental",
         "group": "androidx.annotation",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "annotation-jvm",
@@ -432,7 +432,7 @@
     {
         "name": "documentfile",
         "group": "androidx.documentfile",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "drawerlayout",
@@ -765,6 +765,16 @@
         "version": "2.10.0-SNAPSHOT"
     },
     {
+        "name": "navigationevent",
+        "group": "androidx.navigationevent",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
+        "name": "navigationevent-android",
+        "group": "androidx.navigationevent",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
         "name": "paging-common",
         "group": "androidx.paging",
         "version": "3.4.0-SNAPSHOT"
@@ -1032,7 +1042,7 @@
     {
         "name": "tvprovider",
         "group": "androidx.tvprovider",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "vectordrawable",
