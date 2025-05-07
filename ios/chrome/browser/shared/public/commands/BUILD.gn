@@ -32,6 +32,7 @@ source_set("commands") {
     "generate_qr_code_command.h",
     "generate_qr_code_command.mm",
     "google_one_commands.h",
+    "guided_tour_commands.h",
     "help_commands.h",
     "lens_commands.h",
     "lens_overlay_commands.h",
