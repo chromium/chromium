@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_EXECUTION_CHROME_ON_DEVICE_MODEL_SERVICE_CONTROLLER_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_EXECUTION_CHROME_ON_DEVICE_MODEL_SERVICE_CONTROLLER_H_
 
-#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
-
 #include "base/memory/scoped_refptr.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 
 namespace optimization_guide {
 class OnDeviceModelComponentStateManager;
@@ -30,6 +30,10 @@ class ChromeOnDeviceModelServiceController
   // created yet.
   static ChromeOnDeviceModelServiceController* GetSingleInstanceMayBeNull();
 
+  void RegisterPerformanceClassSyntheticTrial(
+      OnDeviceModelPerformanceClass perf_class) override;
+
+ protected:
  private:
   ~ChromeOnDeviceModelServiceController() override;
 };

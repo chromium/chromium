@@ -202,17 +202,6 @@ OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
 }
 
 // static
-void OptimizationGuideKeyedService::RegisterPerformanceClassSyntheticTrial(
-    OnDeviceModelPerformanceClass perf_class) {
-  if (perf_class != OnDeviceModelPerformanceClass::kUnknown) {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        "SyntheticOnDeviceModelPerformanceClass",
-        SyntheticTrialGroupForPerformanceClass(perf_class),
-        variations::SyntheticTrialAnnotationMode::kCurrentLog);
-  }
-}
-
-// static
 void OptimizationGuideKeyedService::SetIsOfficialBuildForTesting(
     bool is_official_build) {
   g_is_official_build_for_testing = is_official_build;
@@ -409,9 +398,11 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
           optimization_guide::features::GetOnDeviceStartupMetricDelay());
     }
     // If the perf class was previously determined, register that.
-    RegisterPerformanceClassSyntheticTrial(
-        optimization_guide::PerformanceClassFromPref(
-            *g_browser_process->local_state()));
+    GetOnDeviceModelServiceController(
+        on_device_component_manager_->GetWeakPtr())
+        ->RegisterPerformanceClassSyntheticTrial(
+            optimization_guide::PerformanceClassFromPref(
+                *g_browser_process->local_state()));
 
     auto* variations_service = g_browser_process->variations_service();
     auto dogfood_status =
@@ -853,47 +844,8 @@ OptimizationGuideKeyedService::GetFeatureMetadata(
 
 void OptimizationGuideKeyedService::EnsurePerformanceClassAvailable(
     base::OnceClosure complete) {
-  if (!on_device_component_manager_ ||
-      !on_device_component_manager_->NeedsPerformanceClassUpdate()) {
-    std::move(complete).Run();
-    return;
-  }
-
-  if (performance_class_state_ == PerformanceClassState::kComplete) {
-    std::move(complete).Run();
-    return;
-  }
-
-  // Use unsafe because cancellation isn't needed.
-  performance_class_callbacks_.AddUnsafe(std::move(complete));
-
-  if (performance_class_state_ == PerformanceClassState::kComputing) {
-    return;
-  }
-
-  performance_class_state_ = PerformanceClassState::kComputing;
-  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-      GetOnDeviceModelServiceController(
-          on_device_component_manager_->GetWeakPtr()),
-      base::BindOnce([](OnDeviceModelPerformanceClass perf_class) {
-        base::UmaHistogramEnumeration(
-            "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
-            perf_class);
-        RegisterPerformanceClassSyntheticTrial(perf_class);
-        return perf_class;
-      })
-          .Then(base::BindOnce(
-              &OnDeviceModelComponentStateManager::
-                  DevicePerformanceClassChanged,
-              on_device_component_manager_->GetWeakPtr(),
-              base::BindOnce(
-                  &OptimizationGuideKeyedService::PerformanceClassUpdated,
-                  weak_factory_.GetWeakPtr()))));
-}
-
-void OptimizationGuideKeyedService::PerformanceClassUpdated() {
-  performance_class_state_ = PerformanceClassState::kComplete;
-  performance_class_callbacks_.Notify();
+  GetOnDeviceModelServiceController(on_device_component_manager_->GetWeakPtr())
+      ->EnsurePerformanceClassAvailable(std::move(complete));
 }
 
 void OptimizationGuideKeyedService::FinishGetOnDeviceModelEligibility(

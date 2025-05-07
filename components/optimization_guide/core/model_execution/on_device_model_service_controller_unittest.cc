@@ -276,7 +276,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 TEST_F(OnDeviceModelServiceControllerTest, ScoreBeforeContext) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   ASSERT_TRUE(session);
   base::test::TestFuture<std::optional<float>> score_future;
@@ -287,7 +286,6 @@ TEST_F(OnDeviceModelServiceControllerTest, ScoreBeforeContext) {
 TEST_F(OnDeviceModelServiceControllerTest, ScorePresentAfterContext) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   ASSERT_TRUE(session);
 
@@ -301,7 +299,6 @@ TEST_F(OnDeviceModelServiceControllerTest, ScorePresentAfterContext) {
 TEST_F(OnDeviceModelServiceControllerTest, ScoreAfterExecute) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   ASSERT_TRUE(session);
 
@@ -628,7 +625,6 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelAvailableAfterInit) {
   });
 
   // Model not yet available.
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   EXPECT_FALSE(session);
 
@@ -679,7 +675,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
   EXPECT_EQ(0ull, fake_launcher_.on_device_model_receiver_count());
 
   // Create a new session and verify it uses the new model.
-  base::HistogramTester histogram_tester;
   auto session2 = CreateSession();
   ASSERT_TRUE(session2);
   ResponseHolder response2;
@@ -2004,25 +1999,15 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
 TEST_F(OnDeviceModelServiceControllerTest,
        ShutsDownServiceAfterPerformanceCheck) {
   Initialize(standard_assets_);
-  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
-  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-      test_controller_, result_future.GetCallback());
-  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  test_controller_->EnsurePerformanceClassAvailable(run_loop.QuitClosure());
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+      OnDeviceModelPerformanceClass::kVeryHigh, 1);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(fake_launcher_.is_service_running());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       PerformanceCheckKeepsControllerAlive) {
-  Initialize(standard_assets_);
-  auto weak_controller = test_controller_->GetWeakPtr();
-  access_controller_ = nullptr;  // Avoid dangling pointer
-  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
-  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-      std::move(test_controller_), result_future.GetCallback());
-  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
-  // Verify there wasn't something else keeping the controller alive.
-  EXPECT_FALSE(weak_controller);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
@@ -3155,10 +3140,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
-  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
-  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-      test_controller_, result_future.GetCallback());
-  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
+  base::RunLoop run_loop;
+  test_controller_->EnsurePerformanceClassAvailable(run_loop.QuitClosure());
+  run_loop.Run();
   task_environment_.RunUntilIdle();
 
   // Performance check sh;ould not shut down service.
@@ -3187,9 +3171,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
-  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
-  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-      test_controller_, result_future.GetCallback());
+  base::RunLoop run_loop;
+  test_controller_->EnsurePerformanceClassAvailable(run_loop.QuitClosure());
 
   task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
   task_environment_.RunUntilIdle();
@@ -3200,8 +3183,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
       OnDeviceModelValidationResult::kSuccess, 1);
 
-  EXPECT_FALSE(result_future.IsReady());
-  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  run_loop.Run();
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(fake_launcher_.is_service_running());
 }
@@ -3670,6 +3653,29 @@ TEST_F(OnDeviceModelServiceControllerTest, Broker) {
   session->ExecuteModel(PageUrlRequest("bar"), response.GetStreamingCallback());
   ASSERT_TRUE(response.GetFinalStatus());
   EXPECT_EQ(*response.value(), "Context: execute:bar max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       BrokerCreateSessionRunsPerformanceClassCheck) {
+  base::HistogramTester histogram_tester;
+  mojo::PendingReceiver<mojom::ModelBroker> pending_broker;
+
+  ModelBrokerClient broker_client(
+      pending_broker.InitWithNewPipeAndPassRemote(),
+      CreateSessionArgs(logger_.GetWeakPtr(), FailOnRemoteFallback()));
+  base::test::TestFuture<
+      std::unique_ptr<OptimizationGuideModelExecutor::Session>>
+      session_future;
+  broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kCompose,
+                              std::nullopt, session_future.GetCallback());
+
+  Initialize(standard_assets_);
+  test_controller_->BindBroker(std::move(pending_broker));
+
+  ASSERT_TRUE(session_future.Take());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+      OnDeviceModelPerformanceClass::kVeryHigh, 1);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, Priority) {

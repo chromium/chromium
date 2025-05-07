@@ -9,8 +9,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/callback_list.h"
-#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
@@ -282,9 +280,6 @@ class OptimizationGuideKeyedService
   friend class optimization_guide::android::OptimizationGuideBridge;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  static void RegisterPerformanceClassSyntheticTrial(
-      optimization_guide::OnDeviceModelPerformanceClass perf_class);
-
   // Allows tests to override the value of `version_info::IsOfficialBuild()`.
   static void SetIsOfficialBuildForTesting(bool is_official_build);
 
@@ -361,9 +356,6 @@ class OptimizationGuideKeyedService
   // `complete` runs.
   void EnsurePerformanceClassAvailable(base::OnceClosure complete);
 
-  // Called when performance class has finished updating.
-  void PerformanceClassUpdated();
-
   void FinishGetOnDeviceModelEligibility(
       optimization_guide::ModelBasedCapabilityKey feature,
       base::OnceCallback<
@@ -422,17 +414,6 @@ class OptimizationGuideKeyedService
 
   // Used to observe profile initialization event.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
-
-  enum class PerformanceClassState {
-    kNotSet,
-    kComputing,
-    kComplete,
-  };
-  PerformanceClassState performance_class_state_ =
-      PerformanceClassState::kNotSet;
-
-  // Callbacks waiting for performance class to finish computing.
-  base::OnceClosureList performance_class_callbacks_;
 
   base::WeakPtrFactory<OptimizationGuideKeyedService> weak_factory_{this};
 };

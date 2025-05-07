@@ -207,20 +207,6 @@ OnDeviceModelServiceController::CreateSession(
       feature, std::move(opts), std::move(execute_remote_fn), config_params);
 }
 
-// static
-void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-    scoped_refptr<OnDeviceModelServiceController> controller,
-    base::OnceCallback<void(OnDeviceModelPerformanceClass)> callback) {
-  auto* raw_controller = controller.get();
-  raw_controller->service_client_.Get()->GetEstimatedPerformanceClass(
-      base::BindOnce(&ConvertToOnDeviceModelPerformanceClass)
-          .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-              std::move(callback),
-              OnDeviceModelPerformanceClass::kServiceCrash))
-          .Then(base::OnceClosure(
-              base::DoNothingWithBoundArgs(std::move(controller)))));
-}
-
 void OnDeviceModelServiceController::SetLanguageDetectionModel(
     base::optional_ref<const ModelInfo> model_info) {
   safety_client_.SetLanguageDetectionModel(model_info);
@@ -418,6 +404,14 @@ void OnDeviceModelServiceController::UpdateSolutionProvider(
 }
 
 void OnDeviceModelServiceController::Subscribe(
+    mojom::ModelSubscriptionOptionsPtr opts,
+    mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
+  EnsurePerformanceClassAvailable(base::BindOnce(
+      &OnDeviceModelServiceController::SubscribeInternal,
+      weak_ptr_factory_.GetWeakPtr(), std::move(opts), std::move(subscriber)));
+}
+
+void OnDeviceModelServiceController::SubscribeInternal(
     mojom::ModelSubscriptionOptionsPtr opts,
     mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
   auto feature = ToModelBasedCapabilityKey(opts->id);
@@ -708,6 +702,57 @@ void OnDeviceModelServiceController::Solution::CreateTextSafetySession(
 
 void OnDeviceModelServiceController::Solution::ReportHealthyCompletion() {
   controller_->access_controller_->OnResponseCompleted();
+}
+
+void OnDeviceModelServiceController::EnsurePerformanceClassAvailable(
+    base::OnceClosure complete) {
+  if (!on_device_component_state_manager_ ||
+      !on_device_component_state_manager_->NeedsPerformanceClassUpdate()) {
+    std::move(complete).Run();
+    return;
+  }
+
+  if (performance_class_state_ == PerformanceClassState::kComplete) {
+    std::move(complete).Run();
+    return;
+  }
+
+  // Use unsafe because cancellation isn't needed.
+  performance_class_callbacks_.AddUnsafe(std::move(complete));
+
+  if (performance_class_state_ == PerformanceClassState::kComputing) {
+    return;
+  }
+
+  performance_class_state_ = PerformanceClassState::kComputing;
+  service_client_.Get()->GetEstimatedPerformanceClass(
+      base::BindOnce(&ConvertToOnDeviceModelPerformanceClass)
+          .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              base::BindOnce(
+                  &OnDeviceModelServiceController::PerformanceClassUpdated,
+                  base::RetainedRef(this)),
+              OnDeviceModelPerformanceClass::kServiceCrash)));
+}
+
+void OnDeviceModelServiceController::PerformanceClassUpdated(
+    OnDeviceModelPerformanceClass perf_class) {
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+      perf_class);
+  RegisterPerformanceClassSyntheticTrial(perf_class);
+
+  auto complete = base::BindOnce(
+      [](scoped_refptr<OnDeviceModelServiceController> controller) {
+        controller->performance_class_state_ = PerformanceClassState::kComplete;
+        controller->performance_class_callbacks_.Notify();
+      },
+      base::RetainedRef(this));
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->DevicePerformanceClassChanged(
+        std::move(complete), perf_class);
+  } else {
+    std::move(complete).Run();
+  }
 }
 
 }  // namespace optimization_guide
