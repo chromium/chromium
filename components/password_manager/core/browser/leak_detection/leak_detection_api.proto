@@ -75,6 +75,10 @@ message LookupSingleLeakRequest {
     CHROME_IOS_SIGNED_IN_ON_DEVICE_PROACTIVE_PASSWORD_CHECKUP = 18;
     // Leak checks done by ios/web_view during sign in to a website.
     IOS_WEB_VIEW_SIGN_IN_CHECK = 19;
+
+    // Edit server proto first and then update this file:
+    // http://google3/google/internal/identity/passwords/leak/check/v1/service.proto
+    reserved 22 to max;
   }
   ClientUseCase client_use_case = 4;
 }
