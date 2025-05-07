@@ -9,7 +9,8 @@
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_observer.h"
 
 BrowserViewVisibilityNotifierBrowserAgent::
-    BrowserViewVisibilityNotifierBrowserAgent(Browser* browser) {
+    BrowserViewVisibilityNotifierBrowserAgent(Browser* browser)
+    : BrowserUserData(browser) {
   BrowserViewVisibilityStateChangeCallback callback =
       base::BindRepeating(&BrowserViewVisibilityNotifierBrowserAgent::
                               BrowserViewVisibilityStateDidChange,
