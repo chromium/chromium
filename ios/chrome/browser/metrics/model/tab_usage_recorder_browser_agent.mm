@@ -25,7 +25,8 @@
 #import "ui/base/page_transition_types.h"
 
 TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)
-    : restore_start_time_(base::TimeTicks::Now()),
+    : BrowserUserData(browser),
+      restore_start_time_(base::TimeTicks::Now()),
       web_state_list_(browser->GetWebStateList()),
       prerender_service_(
           PrerenderServiceFactory::GetForProfile(browser->GetProfile())) {
