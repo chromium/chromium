@@ -85,7 +85,7 @@ bool UserActionRequiredToFixPasswordSyncError(ProfileIOS* profile) {
 }  // namespace
 
 SyncErrorBrowserAgent::SyncErrorBrowserAgent(Browser* browser)
-    : browser_(browser) {
+    : BrowserUserData(browser), browser_(browser) {
   DCHECK(browser_);
   browser->AddObserver(this);
   browser->GetWebStateList()->AddObserver(this);
