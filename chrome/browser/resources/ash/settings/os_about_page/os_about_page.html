@@ -253,6 +253,7 @@
             external
             deep-link-focus-id$="[[Setting.kDiagnostics]]">
         </cr-link-row>
+        <template is="dom-if" if="[[canChangeFirmware_]]">
         <cr-link-row class="hr" id="firmwareUpdates"
             start-icon="os-settings:about-firmware-updates"
             on-click="onFirmwareUpdatesClick_"
@@ -272,6 +273,32 @@
                 firmwareUpdateCount_)]]">
           </div>
         </cr-link-row>
+        </template>
+        <template is="dom-if" if="[[!canChangeFirmware_]]">
+        <cr-link-row class="hr" id="firmwareUpdates"
+            start-icon="os-settings:about-firmware-updates"
+            label="$i18n{aboutFirmwareUpdates}"
+            sub-label="[[getFirmwareSublabel_(firmwareUpdateCount_)]]"
+            external
+            using-slotted-label
+            disabled=true
+            deep-link-focus-id$="[[Setting.kFirmwareUpdates]]">
+          <iron-icon id="firmwareUpdateBadge"
+              icon$="[[getFirmwareUpdatesIcon_(firmwareUpdateCount_)]]"
+              hidden$="[[!shouldShowFirmwareUpdatesBadge_(
+                firmwareUpdateCount_)]]">
+          </iron-icon>
+          <div id="firmwareUpdateBadgeSeparator"
+              class="separator separator-firmware-updates-badge"
+              hidden$="[[!shouldShowFirmwareUpdatesBadge_(
+                firmwareUpdateCount_)]]">
+          </div>
+          <cr-policy-indicator
+            id="changeChannelPolicyIndicator"
+            indicator-type="[[getFirmwareDisabledIndicatorType_()]]">
+           </cr-policy-indicator>
+        </cr-link-row>
+        </template>
         <cr-link-row class="hr" id="detailedBuildInfoTrigger"
             start-icon="os-settings:about-additional-details"
             on-click="onDetailedBuildInfoClick_"
