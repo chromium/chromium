@@ -177,6 +177,7 @@ android_library("content_full_java") {
     "//content/public/common:common_java",
     "//device/bluetooth:java",
     "//device/gamepad:java",
+    "//device/vr/public:java",
     "//media/base/android:media_java",
     "//media/capture/video/android:capture_java",
     "//media/midi:midi_java",
