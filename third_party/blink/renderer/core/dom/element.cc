@@ -1283,7 +1283,8 @@ FrozenArray<Element>* Element::GetElementArrayAttribute(
   // be in non-ancestor shadow trees. We don't want to leak references into
   // those scopes, so retarget the elements.
   if (RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
-          GetExecutionContext()) && elements) {
+          GetExecutionContext()) &&
+      elements) {
     std::transform(elements->begin(), elements->end(), elements->begin(),
                    [this](Element* element) {
                      return &this->GetTreeScope().Retarget(*element);
@@ -3283,6 +3284,9 @@ void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
     GetElementData()->SetClass(new_class_string);
   }
   const SpaceSplitString& new_classes = GetElementData()->ClassNames();
+  for (const AtomicString& class_name : new_classes) {
+    attribute_or_class_bloom_ |= FilterForString(class_name);
+  }
   GetDocument().GetStyleEngine().ClassChangedForElement(old_classes,
                                                         new_classes, *this);
 }
@@ -3354,9 +3358,11 @@ void Element::ParserSetAttributes(
           ShareableElementData::CreateWithAttributes(attribute_vector);
     }
 
-    attribute_bloom_ = 0;
+    // NOTE: AttributeChanged() will add back the class names (if any),
+    // so it is safe to reset the filter here.
+    attribute_or_class_bloom_ = 0;
     for (const Attribute& attribute : attribute_vector) {
-      attribute_bloom_ |= FilterForAttribute(attribute.GetName());
+      attribute_or_class_bloom_ |= FilterForAttribute(attribute.GetName());
     }
   }
 
@@ -6681,7 +6687,7 @@ void Element::RemoveAttributeInternal(wtf_size_t index,
     DidRemoveAttribute(name, value_being_removed);
   }
 
-  // TODO(sesse): Consider recalculating attribute_bloom_ filter here,
+  // TODO(sesse): Consider recalculating attribute_or_class_bloom_ filter here,
   // so that it reflects the removal (but beware of pathological cases
   // where removing all attributes send us into O(n²)).
 }
@@ -6689,7 +6695,7 @@ void Element::RemoveAttributeInternal(wtf_size_t index,
 void Element::AppendAttributeInternal(const QualifiedName& name,
                                       const AtomicString& value,
                                       AttributeModificationReason reason) {
-  attribute_bloom_ |= FilterForAttribute(name);
+  attribute_or_class_bloom_ |= FilterForAttribute(name);
 
   if (reason !=
       AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
@@ -10198,7 +10204,7 @@ void Element::CloneAttributesFrom(const Element& other) {
     setNonce(other.nonce());
   }
 
-  attribute_bloom_ = other.attribute_bloom_;
+  attribute_or_class_bloom_ = other.attribute_or_class_bloom_;
 }
 
 void Element::CreateUniqueElementData() {
