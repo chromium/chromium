@@ -10,12 +10,12 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/android_buildflags.h"
-#include "media/media_buildflags.h"
 #include "media/audio/android/aaudio_input.h"
 #include "media/audio/android/aaudio_output.h"
 #include "media/audio/android/audio_track_output_stream.h"
@@ -25,6 +25,7 @@
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
+#include "media/media_buildflags.h"
 
 #if BUILDFLAG(USE_OPENSLES)
 #include "media/audio/android/opensles_input.h"
@@ -41,6 +42,7 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
+using media::android::AudioDeviceId;
 
 namespace media {
 namespace {
@@ -63,10 +65,18 @@ bool IsAudioSinkConnected() {
 }
 
 bool UseAAudioOutput() {
+  if (!__builtin_available(android AAUDIO_MIN_API, *)) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(features::kUseAAudioDriver);
 }
 
 bool UseAAudioInput() {
+  if (!__builtin_available(android AAUDIO_MIN_API, *)) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(features::kUseAAudioInput)) {
     return false;
   }
@@ -82,6 +92,12 @@ bool UseAAudioInput() {
   }
 
   return true;
+}
+
+bool UseAAudioPerStreamDeviceSelection() {
+  return UseAAudioInput() && UseAAudioOutput() &&
+         base::FeatureList::IsEnabled(
+             features::kAAudioPerStreamDeviceSelection);
 }
 
 }  // namespace
@@ -137,34 +153,83 @@ void AudioManagerAndroid::GetAudioInputDeviceNames(
     AudioDeviceNames* device_names) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
+  if (UseAAudioPerStreamDeviceSelection()) {
+    GetDeviceNames(device_names, AudioDeviceDirection::kInput);
+    return;
+  }
+
+  // Android devices in general do not have robust support for specifying
+  // devices individually per input or output stream, and as such
+  // `AAudioPerStreamDeviceSelection` is usually disabled. Instead, if a
+  // specific device is requested, we set a single input/output pair (a.k.a. a
+  // "communication device") to be used for streams. Note that it is possible
+  // for a communication device to be an output-only device. In these cases,
+  // the framework seems to choose some other available input device for
+  // communication streams. It's not clear whether this is a real issue,
+  // considering how long this code has been around for...
+  //
+  // For compatibility with Android R-, which predates the concept of
+  // Android communication devices, the externally exposed devices are
+  // "synthetic" devices which abstract away the internal device IDs and
+  // manufacturer-given names provided by the Android framework (e.g.
+  // "Bluetooth headset" instead of "FooBuds Pro 2.0"):
+  // * On Android S+, these devices correspond to actual communication
+  // devices.
+  // * On Android R-, these devices don't correspond to devices from a list,
+  // but each one can be controlled via appropriate Android API calls, e.g.
+  // AudioManager#startBluetoothSco() for Bluetooth.
+  GetDeviceNames(device_names, AudioDeviceDirection::kCommunication);
+}
+
+void AudioManagerAndroid::GetAudioOutputDeviceNames(
+    AudioDeviceNames* device_names) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
+  if (UseAAudioPerStreamDeviceSelection()) {
+    GetDeviceNames(device_names, AudioDeviceDirection::kOutput);
+    return;
+  }
+
+  // Android devices in general do not have robust support for specifying
+  // devices individually per input or output stream, and as such
+  // `AAudioPerStreamDeviceSelection` is usually disabled. In these
+  // situations, if a specific device is requested, we set a single
+  // input/output pair (a.k.a. a "communication device") to be used for
+  // streams system-wide.
+  //
+  // We've only returned "default" here for quite some time, relying on output
+  // device selection being controlled by input device selection (see
+  // `GetAudioInputDeviceNames`). Populating this list with other devices has
+  // prevented confusion for users; it would've given them the option to set a
+  // different input and output device, which wouldn't actually work. However,
+  // since communication devices on Android are technically output devices for
+  // which an input device is automatically chosen, it could be more
+  // appropriate to invert the input and output device lists.
+  AddDefaultDevice(device_names);
+}
+
+void AudioManagerAndroid::GetDeviceNames(AudioDeviceNames* device_names,
+                                         AudioDeviceDirection direction) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
   // Always add default device parameters as first element.
   DCHECK(device_names->empty());
   AddDefaultDevice(device_names);
 
-  // Android devices in general do not have robust support for specifying
-  // devices individually per input or output stream. Instead, if a specific
-  // device is requested, we set a single input/output pair (a.k.a. a
-  // "communication device") to be used for streams. Note that it is possible
-  // for a communication device to be an output-only device. In these cases, the
-  // framework seems to choose some other available input device for
-  // communication streams. It's not clear whether this is a real issue,
-  // considering how long this code has been around for...
-  //
-  // For compatibility with Android R-, which predates the concept of Android
-  // communication devices, the externally exposed devices are "synthetic"
-  // devices which abstract away the internal device IDs and manufacturer-given
-  // names provided by the Android framework (e.g. "Bluetooth headset" instead
-  // of "FooBuds Pro 2.0"):
-  // * On Android S+, these devices correspond to actual communication devices.
-  // * On Android R-, these devices don't correspond to devices from a list, but
-  // each one can be controlled via appropriate Android API calls, e.g.
-  // AudioManager#startBluetoothSco() for Bluetooth.
-  // TODO(b/373305023): Expose specific model names here, and allow for
-  // per-stream device selection.
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobjectArray> j_device_array =
-      Java_AudioManagerAndroid_getCommunicationDevices(env,
-                                                       GetJavaAudioManager());
+  ScopedJavaLocalRef<jobjectArray> j_device_array;
+  switch (direction) {
+    case AudioDeviceDirection::kInput:
+    case AudioDeviceDirection::kOutput:
+      j_device_array = Java_AudioManagerAndroid_getDevices(
+          env, GetJavaAudioManager(),
+          /*inputs=*/direction == AudioDeviceDirection::kInput);
+      break;
+    case AudioDeviceDirection::kCommunication:
+      j_device_array = Java_AudioManagerAndroid_getCommunicationDevices(
+          env, GetJavaAudioManager());
+      break;
+  }
   if (j_device_array.is_null()) {
     // Most probable reason for a NULL result here is that the process lacks
     // MODIFY_AUDIO_SETTINGS or RECORD_AUDIO permissions.
@@ -174,10 +239,19 @@ void AudioManagerAndroid::GetAudioInputDeviceNames(
   for (auto j_device : j_device_array.ReadElements<jobject>()) {
     ScopedJavaLocalRef<jstring> j_device_name =
         Java_AudioDevice_name(env, j_device);
-    ConvertJavaStringToUTF8(env, j_device_name.obj(), &device.device_name);
+    if (!j_device_name.is_null()) {
+      ConvertJavaStringToUTF8(env, j_device_name.obj(), &device.device_name);
+    } else {
+      device.device_name =
+          "Audio device";  // TODO(crbug.com/409028970): Also return the device
+                           // type and provide a localized, type-specific
+                           // fallback string.
+    }
+
     ScopedJavaLocalRef<jstring> j_device_id =
         Java_AudioDevice_id(env, j_device);
     ConvertJavaStringToUTF8(env, j_device_id.obj(), &device.unique_id);
+
     device_names->push_back(device);
   }
 
@@ -185,26 +259,6 @@ void AudioManagerAndroid::GetAudioInputDeviceNames(
     DVLOG(1) << "device_name: " << d.device_name;
     DVLOG(1) << "unique_id: " << d.unique_id;
   }
-}
-
-void AudioManagerAndroid::GetAudioOutputDeviceNames(
-    AudioDeviceNames* device_names) {
-  // Android devices in general do not have robust support for specifying
-  // devices individually per input or output stream. Instead, if a specific
-  // device is requested, we set a single input/output pair (a.k.a. a
-  // "communication device") to be used for streams.
-  //
-  // We've only returned "default" here for quite some time, relying on output
-  // device selection being controlled by input device selection (see
-  // `GetAudioInputDeviceNames`). Populating this list with other devices has
-  // prevented confusion for users; it would've given them the option to set a
-  // different input and output device, which wouldn't actually work. However,
-  // since communication devices on Android are technically output devices for
-  // which an input device is automatically chosen, it could be more appropriate
-  // to invert the input and output device lists.
-  // TODO(b/373305023): Populate `device_names` with the real list of output
-  // devices and allow for per-stream device selection.
-  AddDefaultDevice(device_names);
 }
 
 AudioParameters AudioManagerAndroid::GetInputStreamParameters(
@@ -226,8 +280,9 @@ AudioParameters AudioManagerAndroid::GetInputStreamParameters(
                  : AudioParameters::NO_EFFECTS;
 
   int user_buffer_size = GetUserBufferSize();
-  if (user_buffer_size)
+  if (user_buffer_size) {
     buffer_size = user_buffer_size;
+  }
 
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          ChannelLayoutConfig::FromLayout<channel_layout>(),
@@ -248,8 +303,9 @@ AudioOutputStream* AudioManagerAndroid::MakeAudioOutputStream(
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   AudioOutputStream* stream = AudioManagerBase::MakeAudioOutputStream(
       params, device_id, AudioManager::LogCallback());
-  if (stream)
+  if (stream) {
     streams_.insert(static_cast<MuteableAudioOutputStream*>(stream));
+  }
   return stream;
 }
 
@@ -259,11 +315,10 @@ AudioInputStream* AudioManagerAndroid::MakeAudioInputStream(
     const LogCallback& log_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   bool has_input_streams = !HasNoAudioInputStreams();
-  bool force_communication_mode = false;
   AudioInputStream* stream = AudioManagerBase::MakeAudioInputStream(
       params, device_id, AudioManager::LogCallback());
   // Avoid changing the communication mode if there are existing input streams.
-  if (!stream || has_input_streams) {
+  if (!stream || has_input_streams || UseAAudioPerStreamDeviceSelection()) {
     return stream;
   }
 
@@ -279,6 +334,7 @@ AudioInputStream* AudioManagerAndroid::MakeAudioInputStream(
   // MODE_IN_COMMUNICATION. Failing to activate communication mode can result
   // in audio being routed incorrectly, leading to no sound output from the
   // Bluetooth headset.
+  bool force_communication_mode = false;
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
   force_communication_mode = IsBluetoothMicrophoneOn();
 #endif
@@ -316,7 +372,8 @@ AudioOutputStream* AudioManagerAndroid::MakeLinearOutputStream(
 
   if (__builtin_available(android AAUDIO_MIN_API, *)) {
     if (UseAAudioOutput()) {
-      return new AAudioOutputStream(this, params, AAUDIO_USAGE_MEDIA);
+      return new AAudioOutputStream(this, params, AudioDeviceId::Default(),
+                                    AAUDIO_USAGE_MEDIA);
     }
   }
 #if BUILDFLAG(USE_OPENSLES)
@@ -334,10 +391,18 @@ AudioOutputStream* AudioManagerAndroid::MakeLowLatencyOutputStream(
 
   if (__builtin_available(android AAUDIO_MIN_API, *)) {
     if (UseAAudioOutput()) {
+      AudioDeviceId parsed_device_id =
+          AudioDeviceId::Parse(device_id).value_or(AudioDeviceId::Default());
+      DCHECK(UseAAudioPerStreamDeviceSelection() ||
+             parsed_device_id.IsDefault())
+          << "Non-default output device chosen for output communication "
+             "stream.";
+
       const aaudio_usage_t usage = communication_mode_is_on_
                                        ? AAUDIO_USAGE_VOICE_COMMUNICATION
                                        : AAUDIO_USAGE_MEDIA;
-      return new AAudioOutputStream(this, params, usage);
+      return new AAudioOutputStream(this, params, std::move(parsed_device_id),
+                                    usage);
     }
   }
 
@@ -366,14 +431,16 @@ AudioInputStream* AudioManagerAndroid::MakeLinearInputStream(
     const AudioParameters& params,
     const std::string& device_id,
     const LogCallback& log_callback) {
-  // TODO(henrika): add support for device selection if/when any client
-  // needs it.
-  DLOG_IF(ERROR, !device_id.empty()) << "Not implemented!";
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
 
   if (__builtin_available(android AAUDIO_MIN_API, *)) {
     if (UseAAudioInput()) {
-      return new AAudioInputStream(this, params);
+      AudioDeviceId parsed_device_id =
+          UseAAudioPerStreamDeviceSelection()
+              ? AudioDeviceId::Parse(device_id).value_or(
+                    AudioDeviceId::Default())
+              : AudioDeviceId::Default();
+      return new AAudioInputStream(this, params, std::move(parsed_device_id));
     }
   }
 
@@ -393,20 +460,27 @@ AudioInputStream* AudioManagerAndroid::MakeLowLatencyInputStream(
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
   DLOG_IF(ERROR, device_id.empty()) << "Invalid device ID!";
 
-  // Use the device ID to select the correct communication device. If the
-  // default device is requested, a communication device will be chosen based on
-  // an internal selection scheme. Note that a communication device is an output
-  // device that the system associates with an input device, and this
-  // selection switches the device used for all input and output streams with
-  // communication usage set.
-  if (!SetCommunicationDevice(device_id)) {
-    LOG(ERROR) << "Unable to select communication device!";
-    return nullptr;
+  if (!UseAAudioPerStreamDeviceSelection()) {
+    // Use the device ID to select the correct communication device. If the
+    // default device is requested, a communication device will be chosen based
+    // on an internal selection scheme. Note that a communication device is an
+    // output device that the system associates with an input device, and this
+    // selection switches the device used for all input and output streams with
+    // communication usage set.
+    if (!SetCommunicationDevice(device_id)) {
+      LOG(ERROR) << "Unable to select communication device!";
+      return nullptr;
+    }
   }
 
   if (__builtin_available(android AAUDIO_MIN_API, *)) {
     if (UseAAudioInput()) {
-      return new AAudioInputStream(this, params);
+      AudioDeviceId parsed_device_id =
+          UseAAudioPerStreamDeviceSelection()
+              ? AudioDeviceId::Parse(device_id).value_or(
+                    AudioDeviceId::Default())
+              : AudioDeviceId::Default();
+      return new AAudioInputStream(this, params, std::move(parsed_device_id));
     }
   }
 
@@ -463,8 +537,9 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
 
     // AudioManager APIs for GetOptimalOutputFrameSize() don't support channel
     // layouts greater than stereo unless low latency audio is supported.
-    if (input_params.channels() <= 2 || IsAudioLowLatencySupported())
+    if (input_params.channels() <= 2 || IsAudioLowLatencySupported()) {
       channel_layout_config = input_params.channel_layout_config();
+    }
 
     // For high latency playback on supported platforms, pass through the
     // requested buffer size; this provides significant power savings (~25%) and
@@ -478,8 +553,9 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
   }
 
   int user_buffer_size = GetUserBufferSize();
-  if (user_buffer_size)
+  if (user_buffer_size) {
     buffer_size = user_buffer_size;
+  }
 
   // Check if device supports additional audio encodings.
   if (IsAudioSinkConnected()) {
@@ -555,13 +631,14 @@ int AudioManagerAndroid::GetAudioLowLatencyOutputFrameSize() {
 
 int AudioManagerAndroid::GetOptimalOutputFrameSize(int sample_rate,
                                                    int channels) {
-  if (IsAudioLowLatencySupported())
+  if (IsAudioLowLatencySupported()) {
     return GetAudioLowLatencyOutputFrameSize();
+  }
 
-  return std::max(kDefaultOutputBufferSize,
-                  Java_AudioManagerAndroid_getMinOutputFrameSize(
-                      base::android::AttachCurrentThread(),
-                      sample_rate, channels));
+  return std::max(
+      kDefaultOutputBufferSize,
+      Java_AudioManagerAndroid_getMinOutputFrameSize(
+          base::android::AttachCurrentThread(), sample_rate, channels));
 }
 
 // Returns a bit mask of AudioParameters::Format enum values sink device
@@ -591,9 +668,8 @@ AudioParameters AudioManagerAndroid::GetAudioFormatsSupportedBySinkDevice(
 
 void AudioManagerAndroid::DoSetMuteOnAudioThread(bool muted) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  for (OutputStreams::iterator it = streams_.begin();
-       it != streams_.end(); ++it) {
-    (*it)->SetMute(muted);
+  for (auto stream : streams_) {
+    stream->SetMute(muted);
   }
 }
 
@@ -602,9 +678,8 @@ void AudioManagerAndroid::DoSetVolumeOnAudioThread(double volume) {
   output_volume_override_ = volume;
 
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  for (OutputStreams::iterator it = streams_.begin(); it != streams_.end();
-       ++it) {
-    (*it)->SetVolume(volume);
+  for (auto stream : streams_) {
+    stream->SetVolume(volume);
   }
 }
 

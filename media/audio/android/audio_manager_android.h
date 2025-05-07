@@ -96,8 +96,16 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       const AudioParameters& input_params) override;
 
  private:
+  enum class AudioDeviceDirection {
+    kInput,         // Audio source
+    kOutput,        // Audio sink
+    kCommunication  // Communication device, i.e. an input/output pair.
+  };
+
   const base::android::JavaRef<jobject>& GetJavaAudioManager();
   bool HasNoAudioInputStreams();
+  void GetDeviceNames(AudioDeviceNames* device_names,
+                      AudioDeviceDirection direction);
   void SetCommunicationAudioModeOn(bool on);
   bool SetCommunicationDevice(const std::string& device_id);
   int GetNativeOutputSampleRate();

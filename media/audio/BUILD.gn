@@ -253,6 +253,8 @@ source_set("audio") {
       "android/aaudio_output.h",
       "android/aaudio_stream_wrapper.cc",
       "android/aaudio_stream_wrapper.h",
+      "android/audio_device_id.cc",
+      "android/audio_device_id.h",
       "android/audio_manager_android.cc",
       "android/audio_manager_android.h",
       "android/audio_track_output_stream.cc",
@@ -454,7 +456,10 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
-    sources += [ "android/audio_android_unittest.cc" ]
+    sources += [
+      "android/audio_android_unittest.cc",
+      "android/audio_device_id_unittest.cc",
+    ]
     deps += [
       "//media/gpu:gpu",
       "//ui/gl",

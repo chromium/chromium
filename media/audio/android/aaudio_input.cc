@@ -5,6 +5,7 @@
 #include "media/audio/android/aaudio_input.h"
 
 #include "base/task/bind_post_task.h"
+#include "media/audio/android/audio_device_id.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_bus.h"
@@ -12,9 +13,11 @@
 namespace media {
 
 AAudioInputStream::AAudioInputStream(AudioManagerAndroid* manager,
-                                     const AudioParameters& params)
+                                     const AudioParameters& params,
+                                     android::AudioDeviceId device_id)
     : audio_manager_(manager),
       params_(params),
+      device_id_(std::move(device_id)),
       peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
                                          base::Unretained(audio_manager_),
                                          /*trace_start=*/true)) {
@@ -30,7 +33,7 @@ AAudioInputStream::~AAudioInputStream() = default;
 void AAudioInputStream::CreateStreamWrapper() {
   CHECK(!stream_wrapper_);
   stream_wrapper_ = std::make_unique<AAudioStreamWrapper>(
-      this, AAudioStreamWrapper::StreamType::kInput, params_,
+      this, AAudioStreamWrapper::StreamType::kInput, params_, device_id_,
       AAUDIO_USAGE_VOICE_COMMUNICATION);
 }
 
