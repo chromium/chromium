@@ -8,6 +8,8 @@
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "ui/gfx/color_utils.h"
 
 namespace content {
 
@@ -197,6 +199,25 @@ void FederatedProviderFetcher::OnConfigFetched(
       case IdpNetworkRequestManager::ParseStatus::kSuccess: {
         NOTREACHED();
       }
+    }
+  }
+
+  if (!idp_metadata.brand_background_color && idp_metadata.brand_text_color) {
+    idp_metadata.brand_text_color = std::nullopt;
+    render_frame_host_->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "The FedCM text color is ignored because background color was not "
+        "provided");
+  }
+  if (idp_metadata.brand_background_color && idp_metadata.brand_text_color) {
+    float text_contrast_ratio = color_utils::GetContrastRatio(
+        *idp_metadata.brand_background_color, *idp_metadata.brand_text_color);
+    if (text_contrast_ratio < color_utils::kMinimumReadableContrastRatio) {
+      idp_metadata.brand_text_color = std::nullopt;
+      render_frame_host_->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          "The FedCM text color is ignored because it does not contrast enough "
+          "with the provided background color");
     }
   }
 
