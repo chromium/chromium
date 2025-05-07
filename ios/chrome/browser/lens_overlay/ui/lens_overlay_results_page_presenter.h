@@ -12,6 +12,7 @@
 
 @protocol LensOverlayResultsPagePresenterDelegate;
 @class LensResultPageViewController;
+@class LensOverlayContainerViewController;
 @class SceneState;
 
 // Presenter for the Lens results bottom sheet.
@@ -31,7 +32,8 @@
 @property(nonatomic, readonly) CGFloat presentedResultsPageHeight;
 
 // Creates a new instance of the presenter.
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+- (instancetype)initWithBaseViewController:
+                    (LensOverlayContainerViewController*)baseViewController
                   resultPageViewController:
                       (LensResultPageViewController*)resultViewController;
 

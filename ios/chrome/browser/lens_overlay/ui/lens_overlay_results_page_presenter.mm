@@ -9,8 +9,10 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_presentation_type.h"
 #import "ios/chrome/browser/lens_overlay/ui/info_message/lens_translate_error_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/info_message/lens_translate_indication_view_controller.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_results_page_presenter_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -55,7 +57,7 @@ const CGFloat kOpacityAnimationDuration = 0.4;
 
 @implementation LensOverlayResultsPagePresenter {
   /// The base on top of which the results view controller is presented.
-  __weak UIViewController* _baseViewController;
+  __weak LensOverlayContainerViewController* _baseViewController;
 
   /// The results view controller to present.
   __weak LensResultPageViewController* _resultViewController;
@@ -89,7 +91,8 @@ const CGFloat kOpacityAnimationDuration = 0.4;
   UINavigationController* _presentationNavigationController;
 }
 
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+- (instancetype)initWithBaseViewController:
+                    (LensOverlayContainerViewController*)baseViewController
                   resultPageViewController:
                       (LensResultPageViewController*)resultViewController {
   self = [super init];
@@ -109,6 +112,10 @@ const CGFloat kOpacityAnimationDuration = 0.4;
 }
 
 - (BOOL)isResultPageVisible {
+  if (_baseViewController.sidePanelPresented) {
+    return YES;
+  }
+
   return _baseViewController.presentedViewController != nil &&
          _baseViewController.presentedViewController ==
              _presentationNavigationController;
@@ -170,35 +177,54 @@ const CGFloat kOpacityAnimationDuration = 0.4;
     return;
   }
 
-  _resultViewController.delegate = self;
+  [self resultsPagePresentationWillAppear];
+
+  __weak __typeof(self) weakSelf = self;
+  auto presentationComplete = ^{
+    [weakSelf resultsPagePresentationDidAppear];
+    if (completion) {
+      completion();
+    }
+  };
+
+  BOOL presentInSidePanel =
+      lens::ResultPagePresentationFor(_baseViewController) ==
+      lens::ResultPagePresentationType::kSidePanel;
+  if (presentInSidePanel) {
+    [self presentSidePanelAnimated:animated completion:presentationComplete];
+  } else {
+    [self presentBottomSheetAnimated:animated
+                       maximizeSheet:maximizeSheet
+                    startInTranslate:startInTranslate
+                          completion:presentationComplete];
+  }
+}
+
+- (void)presentSidePanelAnimated:(BOOL)animated
+                      completion:(void (^)(void))completion {
+  [_baseViewController
+      presentViewControllerInSidePanel:_presentationNavigationController
+                              animated:animated
+                            completion:completion];
+}
+
+- (void)presentBottomSheetAnimated:(BOOL)animated
+                     maximizeSheet:(BOOL)maximizeSheet
+                  startInTranslate:(BOOL)startInTranslate
+                        completion:(void (^)(void))completion {
   UISheetPresentationController* sheet =
       _presentationNavigationController.sheetPresentationController;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
   sheet.preferredCornerRadius = kPreferredCornerRadius;
 
-  _windowPanTracker =
-      [[LensOverlayPanTracker alloc] initWithView:self.presentationWindow];
-  _windowPanTracker.delegate = self;
-  [_windowPanTracker startTracking];
-
-  _basePanTracker =
-      [[LensOverlayPanTracker alloc] initWithView:_baseViewController.view];
-  [_basePanTracker startTracking];
+  [self setupGestureTrackers];
 
   SheetDetentPresentationStategy strategy =
       startInTranslate ? SheetDetentPresentationStategyTranslate
                        : SheetDetentPresentationStategySelection;
-  _detentsManager = [[LensOverlayDetentsManager alloc]
-       initWithBottomSheet:sheet
-                    window:self.presentationWindow
-      presentationStrategy:strategy];
-  _detentsManager.delegate = self;
-  [_detentsManager adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
-
-  if (maximizeSheet) {
-    [_detentsManager requestMaximizeBottomSheet];
-  }
-
+  [self setupDetentsManagerForBottomSheet:sheet
+                                 strategy:strategy
+                            maximizeSheet:maximizeSheet];
   // Adjust the occlusion insets so that selections in the bottom half of the
   // screen are repositioned, to avoid being hidden by the bottom sheet.
   //
@@ -216,29 +242,20 @@ const CGFloat kOpacityAnimationDuration = 0.4;
       [self panGestureRecognizersOnWindow];
 
   [self setUpVisibleAreaLayoutGuideIfNeeded];
-
-  _presentingAnimationInProgress = YES;
   [self monitorResultsBottomSheetPosition];
-
-  _presentationNavigationController.view.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
 
   __weak __typeof(self) weakSelf = self;
   [_baseViewController
       presentViewController:_presentationNavigationController
                    animated:animated
                  completion:^{
-                   [weakSelf didFinishPresentingResultsPage];
+                   [weakSelf resultsPagePresentationDidAppear];
                    [weakSelf handlePanRecognizersAddedAfter:
                                  panRecognizersBeforePresenting];
                    if (completion) {
                      completion();
                    }
                  }];
-}
-
-- (void)didFinishPresentingResultsPage {
-  _presentingAnimationInProgress = NO;
 }
 
 - (void)revealBottomSheetIfHidden {
@@ -279,23 +296,20 @@ const CGFloat kOpacityAnimationDuration = 0.4;
 }
 
 - (void)hideBottomSheetWithCompletion:(void (^)(void))completion {
-  [_displayLink invalidate];
-  [self sheetPresentationHeightChanged:0];
-  [_windowPanTracker stopTracking];
-  [_basePanTracker stopTracking];
-  _detentsManager = nil;
-
+  [self resultsPagePresentationWillDismiss];
   UIViewController* presentedVC = _baseViewController.presentedViewController;
   [presentedVC dismissViewControllerAnimated:YES completion:completion];
 }
 
 - (void)dismissResultsPageAnimated:(BOOL)animated
                         completion:(void (^)(void))completion {
-  [_displayLink invalidate];
-  [_windowPanTracker stopTracking];
-  [_basePanTracker stopTracking];
-  _detentsManager = nil;
-  _resultViewController = nil;
+  [self resultsPagePresentationWillDismiss];
+
+  if (_baseViewController.sidePanelPresented) {
+    [_baseViewController dismissSidePanelAnimated:animated
+                                       completion:completion];
+    return;
+  }
 
   UIViewController* presentedVC = _baseViewController.presentedViewController;
   if (!presentedVC) {
@@ -306,7 +320,6 @@ const CGFloat kOpacityAnimationDuration = 0.4;
   }
 
   [presentedVC dismissViewControllerAnimated:animated completion:completion];
-  _resultViewController = nil;
 }
 
 - (void)monitorResultsBottomSheetPosition {
@@ -396,6 +409,59 @@ const CGFloat kOpacityAnimationDuration = 0.4;
   CGFloat offsetNeeded = estimatedMediumDetentHeight + kSelectionOffsetPadding;
   [_delegate lensOverlayResultsPagePresenter:self
                updateVerticalOcclusionOffset:offsetNeeded];
+}
+
+#pragma mark - Presentation lifecycle
+
+// Called before the results page is presented.
+- (void)resultsPagePresentationWillAppear {
+  _presentingAnimationInProgress = YES;
+  _resultViewController.delegate = self;
+  _presentationNavigationController.view.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
+}
+
+// Called after the results page has appeared.
+- (void)resultsPagePresentationDidAppear {
+  _presentingAnimationInProgress = NO;
+}
+
+// Called before the results page is dismissed.
+- (void)resultsPagePresentationWillDismiss {
+  [_displayLink invalidate];
+  [self sheetPresentationHeightChanged:0];
+  [_windowPanTracker stopTracking];
+  [_basePanTracker stopTracking];
+  _detentsManager = nil;
+}
+
+// Sets up the required gesture trackers for the bottom sheet presentation.
+- (void)setupGestureTrackers {
+  _windowPanTracker =
+      [[LensOverlayPanTracker alloc] initWithView:self.presentationWindow];
+  _windowPanTracker.delegate = self;
+  [_windowPanTracker startTracking];
+
+  _basePanTracker =
+      [[LensOverlayPanTracker alloc] initWithView:_baseViewController.view];
+  [_basePanTracker startTracking];
+}
+
+// Sets up the detents manager for the bottom sheet presentation.
+- (void)setupDetentsManagerForBottomSheet:(UISheetPresentationController*)sheet
+                                 strategy:
+                                     (SheetDetentPresentationStategy)strategy
+                            maximizeSheet:(BOOL)maximizeSheet {
+  _detentsManager = [[LensOverlayDetentsManager alloc]
+       initWithBottomSheet:sheet
+                    window:self.presentationWindow
+      presentationStrategy:strategy];
+  _detentsManager.delegate = self;
+  [_detentsManager adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
+
+  if (maximizeSheet) {
+    [_detentsManager requestMaximizeBottomSheet];
+  }
 }
 
 #pragma mark - UIPanGestureRecognizer handlers

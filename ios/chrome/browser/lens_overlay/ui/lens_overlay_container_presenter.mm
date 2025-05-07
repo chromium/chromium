@@ -89,6 +89,7 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
   [NSLayoutConstraint activateConstraints:@[ _topConstraint ]];
 
   [_containerViewController didMoveToParentViewController:_baseViewController];
+  _containerViewController.selectionViewController.view.alpha = 1;
 
   if (!animated) {
     if (completion) {
@@ -140,10 +141,11 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
 }
 
 - (void)fadeSelectionUIWithCompletion:(void (^)())completion {
-  __weak UIViewController* weakContainer = _containerViewController;
+  __weak UIViewController* weakSelectionUI =
+      _containerViewController.selectionViewController;
   [UIView animateWithDuration:kSelectionViewAnimationDuration
       animations:^{
-        weakContainer.view.alpha = 0;
+        weakSelectionUI.view.alpha = 0;
       }
       completion:^(BOOL success) {
         if (completion) {

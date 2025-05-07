@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 
 @protocol LensOverlayCommands;
@@ -31,6 +32,19 @@
 
 /// Disables the interaction with the presented overlay.
 @property(nonatomic, assign) BOOL selectionInteractionDisabled;
+
+/// Whether the side panel is being presented.
+@property(nonatomic, readonly, getter=isSidePanelPresented)
+    BOOL sidePanelPresented;
+
+/// Presents the given view controller in a side panel, optionally animated.
+- (void)presentViewControllerInSidePanel:(UIViewController*)viewController
+                                animated:(BOOL)animated
+                              completion:(ProceduralBlock)completion;
+
+/// Dismisses the side panel presentation, optionally animated.
+- (void)dismissSidePanelAnimated:(BOOL)animated
+                      completion:(ProceduralBlock)completion;
 
 @end
 
