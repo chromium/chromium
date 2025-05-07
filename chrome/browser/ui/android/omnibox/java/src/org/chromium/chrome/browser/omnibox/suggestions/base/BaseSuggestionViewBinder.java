@@ -215,6 +215,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         final List<ImageView> actionViews = view.getActionButtons();
         for (int index = 0; index < actionViews.size(); index++) {
             ImageView actionView = actionViews.get(index);
+
             applySelectableBackground(model, actionView);
             updateIcon(
                     actionView,
@@ -348,6 +349,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         }
 
         view.setImageDrawable(sds.drawable);
+        view.setForegroundTintList(tint);
         ImageViewCompat.setImageTintList(view, tint);
     }
 

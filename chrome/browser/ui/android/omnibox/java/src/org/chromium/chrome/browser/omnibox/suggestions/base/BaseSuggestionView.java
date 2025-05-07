@@ -13,17 +13,21 @@ import android.widget.ImageView;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 /**
  * Base layout for common suggestion types. Includes support for a configurable suggestion content
@@ -39,6 +43,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     public final RoundedCornerOutlineProvider decorationIconOutline;
     private final List<ImageView> mActionButtons;
     private Optional<Runnable> mOnFocusViaSelectionListener = Optional.empty();
+    private @Nullable SelectionController mActionButtonsHighlighter;
 
     /**
      * Constructs a new suggestion view and inflates supplied layout as the contents view.
@@ -95,6 +100,15 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         } else if (currentViewCount > desiredViewCount) {
             decreaseActionButtonsCount(desiredViewCount);
         }
+
+        mActionButtonsHighlighter = null;
+        if (desiredViewCount > 0) {
+            mActionButtonsHighlighter =
+                    new SelectionController(
+                            this::highlightActionButton,
+                            desiredViewCount - 1,
+                            SelectionController.Mode.SATURATING_WITH_SENTINEL);
+        }
     }
 
     /**
@@ -102,6 +116,24 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
      */
     public List<ImageView> getActionButtons() {
         return mActionButtons;
+    }
+
+    /**
+     * Applies / removes selection hairline from action button.
+     *
+     * @param buttonIndex the index of an action button
+     * @param isSelected whether to apply hairline
+     * @return the highlight state of the specified action button.
+     */
+    private boolean highlightActionButton(int buttonIndex, boolean isHighlighted) {
+        mActionButtons
+                .get(buttonIndex)
+                .setForeground(
+                        isHighlighted
+                                ? AppCompatResources.getDrawable(
+                                        getContext(), R.drawable.hairline_circle)
+                                : null);
+        return isHighlighted;
     }
 
     /**
@@ -141,8 +173,31 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         // navigation.
         if (actionChipsView.onKeyDown(keyCode, event)) return true;
         if (KeyNavigationUtil.isEnter(event)) {
+            if (mActionButtonsHighlighter != null
+                    && !mActionButtonsHighlighter.isParkedAtSentinel()) {
+                OptionalInt selection = mActionButtonsHighlighter.getPosition();
+                return mActionButtons.get(selection.getAsInt()).performClick();
+            }
             return performClick();
         }
+
+        // Allow browsing through right hand side buttons.
+        if (keyCode == KeyEvent.KEYCODE_TAB) {
+            if (!event.isShiftPressed()) {
+                // Pass the TAB key to Action Buttons, then to Action Chips.
+                if (mActionButtonsHighlighter != null
+                        && mActionButtonsHighlighter.advanceForward()) {
+                    return true;
+                }
+                return super_onKeyDown(keyCode, event);
+            } else {
+                // Pass the TAB key to Action Chips, then to Action Buttons.
+                if (super_onKeyDown(keyCode, event)) return true;
+                return (mActionButtonsHighlighter != null
+                        && mActionButtonsHighlighter.advanceBack());
+            }
+        }
+
         return super_onKeyDown(keyCode, event);
     }
 
@@ -155,6 +210,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     @Override
     public void setSelected(boolean selected) {
         super.setSelected(selected);
+        if (mActionButtonsHighlighter != null) mActionButtonsHighlighter.reset();
         if (selected) mOnFocusViaSelectionListener.ifPresent(Runnable::run);
     }
 
