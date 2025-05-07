@@ -4,6 +4,8 @@ source_set("cpp") {
     "auction_downloader.h",
     "auction_network_events_delegate.cc",
     "auction_network_events_delegate.h",
+    "creative_info.cc",
+    "creative_info.h",
     "private_aggregation_reporting.cc",
     "private_aggregation_reporting.h",
     "private_model_training_reporting.h",

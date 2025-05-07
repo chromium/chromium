@@ -41,6 +41,7 @@
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
+#include "content/services/auction_worklet/public/cpp/creative_info.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -2211,11 +2212,11 @@ void SellerWorklet::StartFetchingSignalsForTask(
       send_creative_scanning_metadata_.value_or(false) &&
       !trusted_signals_request_manager_->HasPublicKey();
 
-  TrustedSignals::CreativeInfo main_ad(
+  CreativeInfo main_ad(
       send_creative_scanning_metadata, *score_ad_task->ad,
       score_ad_task->browser_signal_interest_group_owner,
       score_ad_task->browser_signal_buyer_and_seller_reporting_id);
-  std::set<TrustedSignals::CreativeInfo> component_ads;
+  std::set<CreativeInfo> component_ads;
   for (const auto& component : score_ad_task->ad_components) {
     component_ads.emplace(
         send_creative_scanning_metadata, *component,

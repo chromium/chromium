@@ -31,6 +31,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
+#include "content/services/auction_worklet/public/cpp/creative_info.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/trusted_kvv2_signals.h"
@@ -79,13 +80,13 @@ class TrustedSignalsRequestManager::TrustedSignalsUrlBuilder {
   }
 
   // Extract the attributes needed to build and create trusted scoring signals.
-  std::set<TrustedSignals::CreativeInfo> TakeAds() {
+  std::set<CreativeInfo> TakeAds() {
     // We should never try to build a scoring signals URL without any ads.
     DCHECK(ads_.size());
     return std::move(ads_);
   }
 
-  std::set<TrustedSignals::CreativeInfo> TakeAdComponents() {
+  std::set<CreativeInfo> TakeAdComponents() {
     return std::move(ad_components_);
   }
 
@@ -195,8 +196,8 @@ class TrustedSignalsRequestManager::TrustedSignalsUrlBuilder {
   std::set<std::string> bidding_signals_keys_;
 
   // Parameters for building a scoring signals URL.
-  std::set<TrustedSignals::CreativeInfo> ads_;
-  std::set<TrustedSignals::CreativeInfo> ad_components_;
+  std::set<CreativeInfo> ads_;
+  std::set<CreativeInfo> ad_components_;
 
   // Portions of incrementally composed URL, and how long the current
   // portion is.
@@ -282,12 +283,11 @@ class TrustedSignalsRequestManager::TrustedScoringSignalsUrlBuilder
 
   ~TrustedScoringSignalsUrlBuilder() override = default;
 
-  bool TryToAddRequest(
-      const TrustedSignals::CreativeInfo& ad,
-      const std::set<TrustedSignals::CreativeInfo>& ad_components,
-      size_t max_trusted_signals_url_length) {
-    std::set<TrustedSignals::CreativeInfo> new_ads = AddAndReturnNew(ad, ads_);
-    std::set<TrustedSignals::CreativeInfo> new_ad_components =
+  bool TryToAddRequest(const CreativeInfo& ad,
+                       const std::set<CreativeInfo>& ad_components,
+                       size_t max_trusted_signals_url_length) {
+    std::set<CreativeInfo> new_ads = AddAndReturnNew(ad, ads_);
+    std::set<CreativeInfo> new_ad_components =
         AddAndReturnNew(ad_components, ad_components_);
 
     size_t initial_num_main_fragments = main_fragments_.size();
@@ -373,8 +373,8 @@ TrustedSignalsRequestManager::RequestBiddingSignals(
 
 std::unique_ptr<TrustedSignalsRequestManager::Request>
 TrustedSignalsRequestManager::RequestScoringSignals(
-    TrustedSignals::CreativeInfo ad,
-    std::set<TrustedSignals::CreativeInfo> ad_components,
+    CreativeInfo ad,
+    std::set<CreativeInfo> ad_components,
     int32_t max_trusted_scoring_signals_url_length,
     LoadSignalsCallback load_signals_callback) {
   DCHECK_EQ(Type::kScoringSignals, type_);
@@ -407,8 +407,8 @@ TrustedSignalsRequestManager::RequestKVv2BiddingSignals(
 
 std::unique_ptr<TrustedSignalsRequestManager::Request>
 TrustedSignalsRequestManager::RequestKVv2ScoringSignals(
-    TrustedSignals::CreativeInfo ad,
-    std::set<TrustedSignals::CreativeInfo> ad_components,
+    CreativeInfo ad,
+    std::set<CreativeInfo> ad_components,
     const url::Origin& bidder_owner_origin,
     const url::Origin& bidder_joining_origin,
     LoadSignalsCallback load_signals_callback) {
@@ -674,8 +674,8 @@ TrustedSignalsRequestManager::RequestImpl::RequestImpl(
 
 TrustedSignalsRequestManager::RequestImpl::RequestImpl(
     TrustedSignalsRequestManager* trusted_signals_request_manager,
-    TrustedSignals::CreativeInfo ad,
-    std::set<TrustedSignals::CreativeInfo> ad_components,
+    CreativeInfo ad,
+    std::set<CreativeInfo> ad_components,
     int32_t max_trusted_scoring_signals_url_length,
     LoadSignalsCallback load_signals_callback)
     : ad_(std::move(ad)),
@@ -707,8 +707,8 @@ TrustedSignalsRequestManager::RequestImpl::RequestImpl(
 
 TrustedSignalsRequestManager::RequestImpl::RequestImpl(
     TrustedSignalsRequestManager* trusted_signals_request_manager,
-    TrustedSignals::CreativeInfo ad,
-    std::set<TrustedSignals::CreativeInfo> ad_components,
+    CreativeInfo ad,
+    std::set<CreativeInfo> ad_components,
     const url::Origin& bidder_owner_origin,
     const url::Origin& bidder_joining_origin,
     LoadSignalsCallback load_signals_callback)

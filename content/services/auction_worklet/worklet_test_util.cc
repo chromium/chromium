@@ -16,6 +16,7 @@
 #include "content/public/test/shared_storage_test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/creative_info.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -273,11 +274,11 @@ TestAuctionNetworkEventsHandler::GetObservedRequests() {
   return observed_requests_;
 }
 
-std::set<TrustedSignals::CreativeInfo> CreateCreativeInfoSet(
+std::set<CreativeInfo> CreateCreativeInfoSet(
     const std::vector<std::string>& urls) {
-  std::set<TrustedSignals::CreativeInfo> result;
+  std::set<CreativeInfo> result;
   for (const auto& url : urls) {
-    TrustedSignals::CreativeInfo entry;
+    CreativeInfo entry;
     entry.ad_descriptor.url = GURL(url);
     result.insert(std::move(entry));
   }
