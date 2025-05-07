@@ -25,6 +25,7 @@ proto_to_value("connectors_proto_to_value") {
   sources = [ "connectors.proto" ]
 
   deps = [
+    ":connectors_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:csd_proto_to_value",
   ]

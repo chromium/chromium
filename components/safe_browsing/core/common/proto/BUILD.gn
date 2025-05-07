@@ -24,6 +24,7 @@ fuzzable_proto_library("csd_proto") {
 
 proto_to_value("csd_proto_to_value") {
   sources = [ "csd.proto" ]
+  deps = [ ":csd_proto" ]
 }
 
 proto_library("webui_proto") {
@@ -44,6 +45,7 @@ proto_to_value("realtimeapi_proto_to_value") {
   deps = [
     ":csd_proto",
     ":csd_proto_to_value",
+    ":realtimeapi_proto",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:connectors_proto_to_value",
   ]
@@ -61,4 +63,5 @@ proto_library("safebrowsingv5_proto") {
 
 proto_to_value("safebrowsingv5_proto_to_value") {
   sources = [ "safebrowsingv5.proto" ]
+  deps = [ ":safebrowsingv5_proto" ]
 }

@@ -3,12 +3,17 @@
 # found in the LICENSE file.
 
 # Generate serializers that turn a protobuf into a base::Value. This
-# does not directly generate the protobuf bindings for any language.
+# does not directly generate the protobuf bindings for any language, so
+# callers must include the build target for C++ bindings in the deps.
 #
 # Example:
 #   proto_to_value("mylib_to_value") {
 #     sources = [
 #       "mylib.proto",
+#     ]
+#
+#     deps = [
+#       "mylib_proto_target"
 #     ]
 #   }
 

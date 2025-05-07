@@ -19,4 +19,6 @@ proto_to_value("test_proto_to_value") {
     "test_proto.proto",
     "test_proto_dependency.proto",
   ]
+
+  deps = [ ":test_proto" ]
 }
