@@ -21,7 +21,6 @@ import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -42,30 +41,30 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        ViewSpec<View> menuList = viewSpec(withId(R.id.app_menu_list));
-        appMenuListElement = elements.declareView(menuList);
+        appMenuListElement = declareView(viewSpec(withId(R.id.app_menu_list)));
         closeTabMenuItemElement =
-                elements.declareView(menuList.descendant(withText(R.string.close_tab)));
+                declareView(appMenuListElement.descendant(withText(R.string.close_tab)));
         newTabMenuItemElement =
-                elements.declareView(menuList.descendant(withText(R.string.menu_new_tab)));
+                declareView(appMenuListElement.descendant(withText(R.string.menu_new_tab)));
         newIncognitoTabMenuItemElement =
-                elements.declareView(
-                        menuList.descendant(withText(R.string.menu_new_incognito_tab)));
+                declareView(
+                        appMenuListElement.descendant(withText(R.string.menu_new_incognito_tab)));
 
         if (ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) {
             if (mHostStation.isIncognito()
                     && mHostStation.getActivity().getTabModelSelector().getModel(false).getCount()
                             > 0) {
                 switchOutOfIncognitoMenuItemElement =
-                        elements.declareView(
-                                menuList.descendant(
+                        declareView(
+                                appMenuListElement.descendant(
                                         withText(R.string.menu_switch_out_of_incognito)));
             } else if (!mHostStation.isIncognito()
                     && mHostStation.getActivity().getTabModelSelector().getModel(true).getCount()
                             > 0) {
                 switchToIncognitoMenuItemElement =
-                        elements.declareView(
-                                menuList.descendant(withText(R.string.menu_switch_to_incognito)));
+                        declareView(
+                                appMenuListElement.descendant(
+                                        withText(R.string.menu_switch_to_incognito)));
             }
         }
     }

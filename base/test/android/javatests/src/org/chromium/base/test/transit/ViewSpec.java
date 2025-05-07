@@ -72,6 +72,15 @@ public class ViewSpec<ViewT extends View> {
         return viewSpec(allViewMatchers);
     }
 
+    /** Create a ViewSpec for a descendant of this ViewSpec that matches multiple Matchers<View>. */
+    @SafeVarargs
+    public final <ChildViewT extends View> ViewSpec<ChildViewT> descendant(
+            Class<ChildViewT> viewClass, Matcher<View>... viewMatchers) {
+        Matcher<View>[] allViewMatchers = Arrays.copyOf(viewMatchers, viewMatchers.length + 1);
+        allViewMatchers[viewMatchers.length] = isDescendantOfA(mViewMatcher);
+        return viewSpec(viewClass, allViewMatchers);
+    }
+
     /** Creates a ViewSpec that matches this ViewSpec _and_ another Matcher<View>. */
     public final ViewSpec<View> and(Matcher<View> viewMatcher) {
         return viewSpec(viewMatcher, mViewMatcher);

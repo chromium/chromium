@@ -63,7 +63,6 @@ public abstract class TabSwitcherCardFacility extends Facility<TabSwitcherStatio
     }
 
     protected ViewElement<View> declareActionButton(Elements.Builder elements) {
-        return elements.declareView(
-                cardViewElement.getViewSpec().descendant(withId(R.id.action_button)));
+        return elements.declareView(cardViewElement.descendant(withId(R.id.action_button)));
     }
 }

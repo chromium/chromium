@@ -32,6 +32,7 @@ import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.hub.HubToolbarView;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.R;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -42,15 +43,14 @@ import org.chromium.chrome.test.transit.tabmodel.TabModelSelectorCondition;
 
 /** The base station for Hub, with several panes and a toolbar. */
 public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
-    public static final ViewSpec<View> HUB_TOOLBAR = viewSpec(withId(R.id.hub_toolbar));
+    public static final ViewSpec<HubToolbarView> HUB_TOOLBAR =
+            viewSpec(HubToolbarView.class, withId(R.id.hub_toolbar));
     public static final ViewSpec<View> HUB_PANE_HOST = viewSpec(withId(R.id.hub_pane_host));
-    public static final ViewSpec<View> HUB_MENU_BUTTON =
-            HUB_TOOLBAR.descendant(withId(org.chromium.chrome.R.id.menu_button));
     public static final ViewSpec<TabLayout> HUB_PANE_SWITCHER =
             HUB_TOOLBAR.descendant(TabLayout.class, withId(R.id.pane_switcher));
 
     public final Element<TabModelSelector> tabModelSelectorElement;
-    public final ViewElement<View> toolbarElement;
+    public final ViewElement<HubToolbarView> toolbarElement;
     public final ViewElement<View> paneHostElement;
     public final ViewElement<View> menuButtonElement;
     public final ViewElement<TabLayout> paneSwitcherElement;
@@ -70,7 +70,10 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
 
         toolbarElement = declareView(HUB_TOOLBAR);
         paneHostElement = declareView(HUB_PANE_HOST);
-        menuButtonElement = hasMenuButton ? declareView(HUB_MENU_BUTTON) : null;
+        menuButtonElement =
+                hasMenuButton
+                        ? declareView(toolbarElement.descendant(withId(R.id.menu_button)))
+                        : null;
 
         paneSwitcherElement = declareView(HUB_PANE_SWITCHER);
 

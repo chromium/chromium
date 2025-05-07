@@ -24,13 +24,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Condition;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.hub.HubToolbarMediator;
-import org.chromium.chrome.browser.hub.HubToolbarView;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -47,8 +45,6 @@ import java.util.List;
 public abstract class TabSwitcherStation extends HubBaseStation {
     public static final ViewSpec<RecyclerView> TAB_LIST_RECYCLER_VIEW =
             HUB_PANE_HOST.descendant(RecyclerView.class, withId(R.id.tab_list_recycler_view));
-
-    public static final ViewSpec<View> TOOLBAR = viewSpec(instanceOf(HubToolbarView.class));
     public static final ViewSpec<View> TAB_GROUP_COLOR_ICON_VIEW =
             viewSpec(
                     allOf(
@@ -81,20 +77,16 @@ public abstract class TabSwitcherStation extends HubBaseStation {
             boolean isIncognito, boolean regularTabsExist, boolean incognitoTabsExist) {
         super(regularTabsExist, incognitoTabsExist, /* hasMenuButton= */ true);
         mIsIncognito = isIncognito;
-    }
-
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
 
         newTabButtonElement =
-                elements.declareView(TOOLBAR.descendant(withId(R.id.toolbar_action_button)));
+                declareView(toolbarElement.descendant(withId(R.id.toolbar_action_button)));
         if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-            elements.declareElementFactory(
+            declareElementFactory(
                     mActivityElement,
                     delayedElements -> {
                         ViewSpec<View> searchBox = viewSpec(withId(R.id.search_box));
-                        ViewSpec<View> searchLoupe = TOOLBAR.descendant(withId(R.id.search_loupe));
+                        ViewSpec<View> searchLoupe =
+                                toolbarElement.descendant(withId(R.id.search_loupe));
                         if (shouldHubSearchBoxBeVisible()) {
                             searchElement = delayedElements.declareView(searchLoupe);
                             delayedElements.declareNoView(searchBox);
@@ -104,7 +96,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                         }
                     });
         }
-        recyclerViewElement = elements.declareView(TAB_LIST_RECYCLER_VIEW);
+        recyclerViewElement = declareView(TAB_LIST_RECYCLER_VIEW);
     }
 
     public boolean isIncognito() {
