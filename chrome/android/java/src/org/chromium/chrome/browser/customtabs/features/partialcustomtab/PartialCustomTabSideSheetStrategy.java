@@ -173,7 +173,11 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
                 toolbar.initSideSheetMaximizeButton(mIsMaximized, () -> toggleMaximize(true));
             }
         }
-        toolbar.setMinimizeButtonEnabled(false);
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            mToolbarButtonsCoordinator.setMinimizeButtonVisible(false);
+        } else {
+            toolbar.setMinimizeButtonEnabled(false);
+        }
         updateDragBarVisibility(/* dragHandlebarVisibility= */ View.GONE);
     }
 

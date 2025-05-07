@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CUSTOM_ACTION_BUTTONS;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.DESCRIPTION;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.ICON;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MINIMIZE_BUTTON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SIDE_SHEET_MAXIMIZE_BUTTON;
 
 import android.support.annotation.DrawableRes;
@@ -39,6 +40,13 @@ public class CustomTabToolbarButtonsViewBinder
         } else if (propertyKey == SIDE_SHEET_MAXIMIZE_BUTTON) {
             prepareSideSheetMaximizeButton(view, model.get(SIDE_SHEET_MAXIMIZE_BUTTON));
             view.reinflateAndRepositionToolbarElements();
+        } else if (propertyKey == MINIMIZE_BUTTON) {
+            view.setMinimizeButtonEnabled(model.get(MINIMIZE_BUTTON).visible);
+            view.reinflateAndRepositionToolbarElements();
+            View minimizeButton = view.findViewById(R.id.custom_tabs_minimize_button);
+            if (minimizeButton != null) {
+                minimizeButton.setOnClickListener(model.get(MINIMIZE_BUTTON).clickListener);
+            }
         }
     }
 

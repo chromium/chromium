@@ -24,6 +24,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 
 /**
@@ -71,7 +72,11 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
             CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         super.onToolbarInitialized(
                 coordinatorView, toolbar, toolbarCornerRadius, toolbarButtonsCoordinator);
-        toolbar.setMinimizeButtonEnabled(true);
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            toolbarButtonsCoordinator.setMinimizeButtonVisible(true);
+        } else {
+            toolbar.setMinimizeButtonEnabled(true);
+        }
         updateDragBarVisibility(/* dragHandlebarVisibility= */ View.GONE);
     }
 

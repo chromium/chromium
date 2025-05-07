@@ -8,15 +8,21 @@ import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabT
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.DESCRIPTION;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.ICON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.INDIVIDUAL_BUTTON_KEYS;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MINIMIZE_BUTTON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SIDE_SHEET_MAXIMIZE_BUTTON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.VISIBLE;
 
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MinimizeButtonData;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -32,16 +38,31 @@ public class CustomTabToolbarButtonsCoordinator {
                     PropertyListModel<PropertyModel, PropertyKey>, CustomTabToolbar, PropertyKey>
             mCustomActionButtonsMcp;
     private final PropertyModel mModel;
+    private final CustomTabMinimizeDelegate mMinimizeDelegate;
+
+    /** Whether the minimize button is available for the device and the current configuration. */
+    private final boolean mMinimizeButtonAvailable;
 
     public CustomTabToolbarButtonsCoordinator(
             CustomTabToolbar view,
             BrowserServicesIntentDataProvider intentDataProvider,
-            Callback<CustomButtonParams> customButtonClickCallback) {
+            Callback<CustomButtonParams> customButtonClickCallback,
+            CustomTabMinimizeDelegate minimizeDelegate,
+            @Nullable CustomTabFeatureOverridesManager featureOverridesManager) {
         CustomTabToolbarButtonsViewBinder viewBinder = new CustomTabToolbarButtonsViewBinder();
         var customActionButtons =
                 getCustomActionButtonsModel(
                         view.getContext(), intentDataProvider, customButtonClickCallback);
-        mModel = CustomTabToolbarButtonsProperties.create(customActionButtons);
+        mMinimizeButtonAvailable =
+                MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
+                                view.getContext(), featureOverridesManager)
+                        && MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(
+                                intentDataProvider);
+        mMinimizeDelegate = minimizeDelegate;
+        var minimizeButton =
+                getMinimizeButtonData(
+                        mMinimizeButtonAvailable && minimizeDelegate != null, minimizeDelegate);
+        mModel = CustomTabToolbarButtonsProperties.create(customActionButtons, minimizeButton);
         PropertyModelChangeProcessor.create(mModel, view, viewBinder);
         mCustomActionButtonsMcp =
                 new ListModelChangeProcessor<>(
@@ -72,6 +93,13 @@ public class CustomTabToolbarButtonsCoordinator {
         mModel.set(SIDE_SHEET_MAXIMIZE_BUTTON, buttonData);
     }
 
+    public void setMinimizeButtonVisible(boolean visible) {
+        assert ChromeFeatureList.sCctToolbarRefactor.isEnabled();
+        mModel.set(
+                MINIMIZE_BUTTON,
+                getMinimizeButtonData(mMinimizeButtonAvailable && visible, mMinimizeDelegate));
+    }
+
     static PropertyListModel<PropertyModel, PropertyKey> getCustomActionButtonsModel(
             Context context,
             BrowserServicesIntentDataProvider intentDataProvider,
@@ -91,5 +119,14 @@ public class CustomTabToolbarButtonsCoordinator {
             listModel.add(model);
         }
         return listModel;
+    }
+
+    private static MinimizeButtonData getMinimizeButtonData(
+            boolean visible, CustomTabMinimizeDelegate minimizeDelegate) {
+        return new MinimizeButtonData(
+                visible,
+                v -> {
+                    if (minimizeDelegate != null) minimizeDelegate.minimize();
+                });
     }
 }

@@ -197,7 +197,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private int mToolbarWidth;
     private BrowserServicesIntentDataProvider mIntentDataProvider;
     private CustomTabMinimizeDelegate mMinimizeDelegate;
-    private Boolean mEnableMinimizeButton;
     private FrameLayout mCustomButtonsParent;
     private PropertyListModel<PropertyModel, PropertyKey> mCustomActionButtonsListModel;
     private boolean mIsInMultiWindowMode;
@@ -405,8 +404,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             prepareMinimizeButton();
 
             if (mMinimizeButton != null && mMinimizeButton.getVisibility() == VISIBLE) {
-                boolean isEndPosition = mCloseButtonPosition == CLOSE_BUTTON_POSITION_END;
-                positionButton(mMinimizeButton, posParams, mDefaultIconWidth, isEndPosition);
+                // The minimize button is always start aligned.
+                positionButton(mMinimizeButton, posParams, mDefaultIconWidth, false);
             }
         }
 
@@ -791,10 +790,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     /**
      * Inflates and prepares the minimize button if it should be enabled.
      *
-     * This is only used when CCTToolbarRefactor is enabled.
+     * <p>This is only used when CCTToolbarRefactor is enabled.
      */
     private void prepareMinimizeButton() {
-        if (!isMinimizeButtonEnabled()) return;
+        if (!mMinimizeButtonEnabled) return;
 
         if (isInMultiWindowMode()) {
             if (mMinimizeButton != null) {
@@ -818,24 +817,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mMinimizeButton.setImageDrawable(d);
         updateButtonTint(mMinimizeButton);
         mMinimizeButton.setOnLongClickListener(this);
-    }
-
-    /**
-     * Whether the minimize button should be enabled. A true return value doesn't mean the minimize
-     * button will be visible on the toolbar. The minimize button will be hidden if there isn't
-     * enough space on the toolbar or if the CCT is in multi-window mode.
-     *
-     * This is only used when CCTToolbarRefactor is enabled.
-     */
-    private boolean isMinimizeButtonEnabled() {
-        if (mEnableMinimizeButton != null) return mEnableMinimizeButton;
-
-        mEnableMinimizeButton =
-                MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
-                        getContext(), mFeatureOverridesManager)
-                        && MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(
-                        mIntentDataProvider);
-        return mEnableMinimizeButton;
     }
 
     /**

@@ -211,8 +211,12 @@ public class CustomTabToolbarUnitTest {
                     CustomTabToolbarButtonsCoordinator.getCustomActionButtonsModel(
                             mActivity, mIntentDataProvider, params -> {});
             mToolbar.setCustomActionButtonsListModel(model);
+            // Minimize button is enabled by default.
+            mToolbar.setMinimizeButtonEnabled(true);
+            mToolbar.reinflateAndRepositionToolbarElements();
+        } else {
+            mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
         }
-        mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
 
         mLocationBar =
                 (CustomTabLocationBar)

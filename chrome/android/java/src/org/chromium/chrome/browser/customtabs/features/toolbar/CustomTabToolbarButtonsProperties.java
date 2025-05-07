@@ -65,11 +65,31 @@ public class CustomTabToolbarButtonsProperties {
     public static final WritableObjectPropertyKey<SideSheetMaximizeButtonData>
             SIDE_SHEET_MAXIMIZE_BUTTON = new WritableObjectPropertyKey<>();
 
+    public static class MinimizeButtonData {
+        /** Whether the minimize button is visible. */
+        public final boolean visible;
+
+        /** The {@link OnClickListener} to notify of the click events. */
+        public final OnClickListener clickListener;
+
+        MinimizeButtonData(boolean visible, OnClickListener clickListener) {
+            this.visible = visible;
+            this.clickListener = clickListener;
+        }
+    }
+
+    /** Property key for the minimize button. */
+    public static final WritableObjectPropertyKey<MinimizeButtonData> MINIMIZE_BUTTON =
+            new WritableObjectPropertyKey<>();
+
     public static PropertyModel create(
-            PropertyListModel<PropertyModel, PropertyKey> customActionButtons) {
-        return new PropertyModel.Builder(CUSTOM_ACTION_BUTTONS, SIDE_SHEET_MAXIMIZE_BUTTON)
+            PropertyListModel<PropertyModel, PropertyKey> customActionButtons,
+            MinimizeButtonData minimizeButtonData) {
+        return new PropertyModel.Builder(
+                        CUSTOM_ACTION_BUTTONS, SIDE_SHEET_MAXIMIZE_BUTTON, MINIMIZE_BUTTON)
                 .with(CUSTOM_ACTION_BUTTONS, customActionButtons)
                 .with(SIDE_SHEET_MAXIMIZE_BUTTON, new SideSheetMaximizeButtonData())
+                .with(MINIMIZE_BUTTON, minimizeButtonData)
                 .build();
     }
 }
