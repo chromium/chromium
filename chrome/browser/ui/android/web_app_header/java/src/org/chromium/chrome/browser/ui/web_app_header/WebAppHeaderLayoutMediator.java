@@ -44,7 +44,6 @@ class WebAppHeaderLayoutMediator
     private final ScrimManager mScrimManager;
     private final Supplier<List<Rect>> mNonDraggableAreasSupplier;
     private final ObservableSupplierImpl<Integer> mWidthSupplier;
-    private final Callback<Integer> mOnWidthChangedCallback;
     private final ThemeColorProvider mThemeColorProvider;
     private final int mWebAppMinHeaderHeight;
     private @Nullable AppHeaderState mCurrentHeaderState;
@@ -96,12 +95,10 @@ class WebAppHeaderLayoutMediator
 
         mWidthSupplier = new ObservableSupplierImpl<>();
         mAppHeaderUnoccludedWidthSupplier = new ObservableSupplierImpl<>();
-        mOnWidthChangedCallback = (width) -> updateNonDraggableAreas();
-        mWidthSupplier.addObserver(mOnWidthChangedCallback);
 
         mModel = model;
         // View should notify us about initial width.
-        mModel.set(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK, mWidthSupplier::set);
+        mModel.set(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK, this::onLayoutWidthUpdated);
 
         final var appHeaderState = desktopWindowStateManager.getAppHeaderState();
         if (appHeaderState != null) {
@@ -111,6 +108,13 @@ class WebAppHeaderLayoutMediator
 
         onThemeColorChanged(mThemeColorProvider.getThemeColor(), false);
         mThemeColorProvider.addThemeColorObserver(this);
+    }
+
+    private void onLayoutWidthUpdated(int width) {
+        mWidthSupplier.set(width);
+
+        // Update draggable area even if width hasn't changed, because children might've changed.
+        updateNonDraggableAreas();
     }
 
     @Override
@@ -166,7 +170,9 @@ class WebAppHeaderLayoutMediator
         }
 
         final var areas = mNonDraggableAreasSupplier.get();
-        mModel.set(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS, areas);
+        mModel.set(
+                WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS,
+                areas == null || areas.isEmpty() ? List.of(EMPTY_NON_DRAGGABLE_AREA) : areas);
     }
 
     /** Navigates back in the navigation history of the current {@link Tab}. */
@@ -190,7 +196,6 @@ class WebAppHeaderLayoutMediator
     /** Destroys the mediator, existing instance is not usable after this method is called */
     public void destroy() {
         mDesktopWindowStateManager.removeObserver(this);
-        mWidthSupplier.removeObserver(mOnWidthChangedCallback);
         mThemeColorProvider.removeThemeColorObserver(this);
         mScrimManager.getScrimVisibilitySupplier().removeObserver(mScrimVisibilityObserver);
     }

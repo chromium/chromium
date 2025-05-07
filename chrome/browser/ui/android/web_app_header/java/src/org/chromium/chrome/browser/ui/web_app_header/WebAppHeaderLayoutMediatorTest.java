@@ -282,7 +282,10 @@ public class WebAppHeaderLayoutMediatorTest {
     public void testInDWButNotInWindow_AllAreaIsDraggable() {
         setupDesktopWindowing(/* isInDesktopWindow= */ false, WIDEST_UNOCCLUDED_RECT);
 
+        final var nonDraggableAreas = List.of(new Rect(0, 0, 10, 10), new Rect(10, 0, 10, 10));
+        mNonDraggableAreasSupplier.set(nonDraggableAreas);
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
+
         mModel.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK).onResult(SCREEN_WIDTH);
 
         final var areas = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
@@ -305,6 +308,38 @@ public class WebAppHeaderLayoutMediatorTest {
         mShadowLooper.idle();
 
         final var areas = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
+        assertEquals("There should be only 2 non draggable areas", 2, areas.size());
+        assertArrayEquals(
+                "Non draggable areas from supplier should match model areas",
+                areas.toArray(),
+                mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS).toArray());
+    }
+
+    @Test
+    public void testInDwLayoutStructureChanges_SetNonDraggableAreaOnEachUpdate() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+
+        // Setup layout without children.
+        final List<Rect> initialNonDraggableArea = List.of();
+        mNonDraggableAreasSupplier.set(initialNonDraggableArea);
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
+        mModel.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK).onResult(SCREEN_WIDTH);
+
+        // Verify area is empty.
+        var areas = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
+        assertEquals("There should be only one area in the list", 1, areas.size());
+        assertEquals(
+                "The area should be an empty area that allows to drag everywhere",
+                new Rect(0, 0, 0, 0),
+                areas.get(0));
+
+        // Children has laid out and layout update is sent with the same width.
+        final var nonDraggableAreas = List.of(new Rect(0, 0, 10, 10), new Rect(10, 0, 10, 10));
+        mNonDraggableAreasSupplier.set(nonDraggableAreas);
+        mModel.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK).onResult(SCREEN_WIDTH);
+
+        // Verify non-draggable area is updated.
+        areas = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
         assertEquals("There should be only 2 non draggable areas", 2, areas.size());
         assertArrayEquals(
                 "Non draggable areas from supplier should match model areas",
