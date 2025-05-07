@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/install_index_helper.h"
 #include "extensions/browser/content_verifier/content_verifier_key.h"
@@ -27,7 +28,6 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/data_decoder/public/mojom/json_parser.mojom.h"
 
 class SkBitmap;
 
@@ -200,8 +200,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
 
   // Unpacks the extension in directory and returns the manifest.
   void Unpack(const base::FilePath& directory);
-  void ReadManifestDone(std::optional<base::Value> manifest,
-                        const std::optional<std::string>& error);
+  void ReadManifestDone(base::expected<base::Value, std::string> result);
   void UnpackExtensionSucceeded(base::Value::Dict manifest);
 
   // Helper which calls ReportFailure.
@@ -218,8 +217,8 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   void SanitizeMessageCatalogs(
       const std::set<base::FilePath>& message_catalog_paths);
 
-  void MessageCatalogsSanitized(JsonFileSanitizer::Status status,
-                                const std::string& error_msg);
+  void MessageCatalogsSanitized(
+      base::expected<void, JsonFileSanitizer::Error> result);
 
   // Reports unpack success or failure, or unzip failure.
   void ReportSuccess();
@@ -252,14 +251,10 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
 
   void MaybeComputeHashes(bool should_compute_hashes);
 
-  // Returns a JsonParser that can be used on the `unpacker_io_task_runner`.
-  data_decoder::mojom::JsonParser* GetJsonParserPtr();
-
-  // Parses the JSON file at `path` and invokes `callback` when done. `callback`
-  // is called with a null parameter if parsing failed.
+  // Parses the JSON file at `path` and invokes `ReadManifestDone()` with the
+  // result.
   // This must be called from the `unpacker_io_task_runner_`.
-  void ParseJsonFile(const base::FilePath& path,
-                     data_decoder::mojom::JsonParser::ParseCallback callback);
+  void ParseJsonFile(const base::FilePath& path);
 
   // If we unpacked a CRX file, we hold on to the path name for use
   // in various histograms.
