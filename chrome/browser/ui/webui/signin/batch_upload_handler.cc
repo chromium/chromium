@@ -296,6 +296,8 @@ int BatchUploadHandler::GetTypeSectionTitleId(syncer::DataType type) {
       return IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS;
     case syncer::DataType::BOOKMARKS:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_BOOKMARKS;
+    case syncer::DataType::READING_LIST:
+      return IDS_BATCH_UPLOAD_SECTION_TITLE_READING_LIST;
     case syncer::DataType::CONTACT_INFO:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES;
     case syncer::DataType::THEMES:

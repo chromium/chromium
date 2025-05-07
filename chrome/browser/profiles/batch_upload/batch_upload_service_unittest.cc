@@ -216,6 +216,7 @@ TEST_F(BatchUploadServiceTest, LocalDataForAllAvailableTypesMainOrder) {
               GetLocalDataDescriptions(
                   syncer::DataTypeSet{
                       syncer::DataType::PASSWORDS, syncer::DataType::BOOKMARKS,
+                      syncer::DataType::READING_LIST,
                       syncer::DataType::CONTACT_INFO, syncer::DataType::THEMES},
                   _))
       .Times(1);
@@ -223,6 +224,7 @@ TEST_F(BatchUploadServiceTest, LocalDataForAllAvailableTypesMainOrder) {
   std::vector<syncer::LocalDataDescription> expected_descriptions{
       GetReturnDescription(syncer::PASSWORDS),
       GetReturnDescription(syncer::BOOKMARKS),
+      GetReturnDescription(syncer::READING_LIST),
       GetReturnDescription(syncer::CONTACT_INFO),
       GetReturnDescription(syncer::THEMES),
   };
