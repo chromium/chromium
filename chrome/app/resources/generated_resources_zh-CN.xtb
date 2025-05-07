@@ -1137,7 +1137,7 @@
 <translation id="1779468444204342338">最小值</translation>
 <translation id="1779766957982586368">关闭窗口</translation>
 <translation id="177989070088644880">应用 (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
-<translation id="1780152987505130652">关闭组</translation>
+<translation id="1780152987505130652">关闭分组</translation>
 <translation id="1780273119488802839">正在导入书签...</translation>
 <translation id="1780572199786401845">举报令人反感/不安全的内容。</translation>
 <translation id="178092663238929451">设置“附近分享”功能即可与附近的人互发文件</translation>
@@ -5548,7 +5548,7 @@
 <translation id="4871322859485617074">PIN 码包含无效字符</translation>
 <translation id="4871370605780490696">添加书签</translation>
 <translation id="4871568871368204250">关闭同步功能</translation>
-<translation id="4871719318659334896">关闭组</translation>
+<translation id="4871719318659334896">关闭分组</translation>
 <translation id="4872192066608821120">若要导入密码，请选择一个 CSV 文件</translation>
 <translation id="4872212987539553601">设置设备端加密</translation>
 <translation id="4873312501243535625">媒体文件检查工具</translation>

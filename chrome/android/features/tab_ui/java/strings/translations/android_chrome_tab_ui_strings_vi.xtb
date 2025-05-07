@@ -76,7 +76,7 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Hình thu nhỏ để xem trước trang tính chia sẻ.</translation>
 <translation id="3810973564298564668">Quản lý</translation>
-<translation id="381219490185664296">Bạn muốn huỷ nhóm thẻ?</translation>
+<translation id="381219490185664296">Bạn muốn tách nhóm thẻ?</translation>
 <translation id="3940195383040445971">Theo dõi giá trên thẻ</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> thẻ mới, đã đóng <ph name="ANY_CLOSED" /> thẻ}other{<ph name="MANY_ADDED" /> thẻ mới, đã đóng <ph name="ANY_CLOSED" /> thẻ}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Nhóm thẻ}other{Nhóm các thẻ}}</translation>

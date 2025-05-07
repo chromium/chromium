@@ -579,7 +579,7 @@
 <translation id="1392047138650695757">فرهنگ‌های لغت کاربر</translation>
 <translation id="139300021892314943">محدود کردن افرادی که می‌توانند به سیستم وارد شوند</translation>
 <translation id="1393283411312835250">آفتاب و ابر</translation>
-<translation id="1395832189806039783">برجسته کردن صفحه‌کلید با کانونی کردن صفحه‌کلید</translation>
+<translation id="1395832189806039783">برجسته کردن صفحه‌کلید با ناحیه تمرکز صفحه‌کلید</translation>
 <translation id="1396120028054416908">بازگشت به <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">خطا هنگام راه‌اندازی چاپگر</translation>
 <translation id="1397594434718759194">‏در این دستگاه‌ها به سیستم Chrome وارد شده‌اید، بنابراین می‌توانید از آن‌ها به‌عنوان کلید ایمنی استفاده کنید.</translation>
@@ -4605,7 +4605,7 @@
 <translation id="4187424053537113647">درحال راه‌اندازی<ph name="APP_NAME" />...</translation>
 <translation id="4190446002599583608">جستجوی سابقه، با بهره‌گیری از هوش مصنوعی</translation>
 <translation id="4190492351494485814">‏برای راه‌اندازی اولیه، باید به اینترنت متصل شوید تا فایل‌ها با Chromebook همگام‌سازی شوند.</translation>
-<translation id="4190828427319282529">برجسته کردن کانون صفحه‌کلید</translation>
+<translation id="4190828427319282529">برجسته کردن ناحیه تمرکز صفحه‌کلید</translation>
 <translation id="4191892134568599822">دریافت با <ph name="FEATURE_NAME" />؟</translation>
 <translation id="4192024474038595073">{NUM_SITES,plural, =1{اجازه‌های ۱ سایت استفاده‌نشده برداشته شد}one{اجازه‌های {NUM_SITES} سایت استفاده‌نشده برداشته شد}other{اجازه‌های {NUM_SITES} سایت استفاده‌نشده برداشته شد}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />اختصاصی برای <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
@@ -9685,7 +9685,7 @@
 <translation id="7842062217214609161">بدون میان‌بر</translation>
 <translation id="7842692330619197998">‏اگر نیاز به ساختن حساب جدیدی دارید، به g.co/ChromeEnterpriseAccount بروید.</translation>
 <translation id="784273751836026224">‏حذف نصب Linux</translation>
-<translation id="784475655832336580">‏هنگام روشن بودن ChromeVox، برجسته کردن مورد با کانونی کردن صفحه‌کلید دردسترس نیست</translation>
+<translation id="784475655832336580">‏هنگام روشن بودن ChromeVox، برجسته کردن مورد با ناحیه تمرکز صفحه‌کلید دردسترس نیست</translation>
 <translation id="7844992432319478437">به‌روزرسانی تفاوت</translation>
 <translation id="7846161022626028328">خطایی وجود داشت. دوباره امتحان کنید.</translation>
 <translation id="7846634333498149051">صفحه‌کلید</translation>
@@ -10321,7 +10321,7 @@
 <translation id="8272786333453048167">دوباره اجازه دادن</translation>
 <translation id="8273905181216423293">اکنون بارگیری شود</translation>
 <translation id="827488840488530039">‏صفحه‌ای که می‌خواهید بازدید کنید تیکت‌های Kerberos را تأیید نکرد</translation>
-<translation id="8274921654076766238">کانونی کردن صفحه‌کلید پس‌از ذره‌بین</translation>
+<translation id="8274921654076766238">ناحیه تمرکز صفحه‌کلید پس‌از ذره‌بین</translation>
 <translation id="8274924778568117936">تا وقتی به‌روزرسانی به پایان نرسیده است، <ph name="DEVICE_TYPE" /> را خاموش نکنید یا نبندید. بعد از کامل شدن نصب، <ph name="DEVICE_TYPE" /> راه‌اندازی مجدد می‌شود.</translation>
 <translation id="8275038454117074363">وارد کردن</translation>
 <translation id="8275080796245127762">تماس از دستگاه</translation>

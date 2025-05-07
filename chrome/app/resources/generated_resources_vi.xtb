@@ -6064,7 +6064,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5227679487546032910">Hình đại diện màu xanh két mặc định</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> thiết bị đã kết nối</translation>
 <translation id="5228579091201413441">Bật đồng bộ hóa</translation>
-<translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Bạn muốn huỷ nhóm thẻ?}other{Bạn muốn huỷ các nhóm thẻ?}}</translation>
+<translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Bạn muốn tách nhóm thẻ?}other{Bạn muốn tách các nhóm thẻ?}}</translation>
 <translation id="5230190638672215545">Nhập "uow" để gõ "ươ"</translation>
 <translation id="5230516054153933099">Cửa sổ</translation>
 <translation id="5232714764496316200">Nhận trợ giúp làm bài tập về nhà bằng Google Ống kính</translation>
@@ -7314,7 +7314,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6148576794665275391">Mở ngay</translation>
 <translation id="614890671148262506">Luôn cho phép trang web này gửi thông báo</translation>
 <translation id="6149015141270619212">Không thể kết nối Internet</translation>
-<translation id="6149061208933997199">Sử dụng mật khẩu</translation>
+<translation id="6149061208933997199">Dùng mật khẩu</translation>
 <translation id="6149791593592044995">Dùng cách đặt dấu thanh kiểu mới</translation>
 <translation id="6150116777338468525">Chất lượng âm thanh</translation>
 <translation id="6150278227694566734">Một số người liên hệ</translation>
@@ -9229,7 +9229,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7525067979554623046">Tạo</translation>
 <translation id="7526989658317409655">Trình giữ chỗ</translation>
 <translation id="7528224636098571080">Không mở</translation>
-<translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Bạn muốn huỷ nhóm thẻ?}other{Bạn muốn huỷ các nhóm thẻ?}}</translation>
+<translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Bạn muốn tách nhóm thẻ?}other{Bạn muốn tách các nhóm thẻ?}}</translation>
 <translation id="7529411698175791732">Kiểm tra kết nối Internet. Nếu sự cố vẫn tiếp diễn, hãy thử đăng xuất và đăng nhập lại.</translation>
 <translation id="7529865045818406536">Mạng ưu tiên sẽ được sử dụng nếu có nhiều mạng trước đó</translation>
 <translation id="7529876053219658589">{0,plural, =1{Đóng cửa sổ khách}other{Đóng cửa sổ khách}}</translation>

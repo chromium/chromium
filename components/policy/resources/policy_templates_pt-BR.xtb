@@ -3367,7 +3367,7 @@ Se esta política for definida como desativada, o recurso de escrita preditiva n
 <translation id="3397883909301547525">Não mostrar recomendações de apps no acesso rápido do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportamento padrão do sistema (depende do tamanho da tela)</translation>
 <translation id="33993310248354034">Permitir a detecção de entidades de texto simples em páginas da Web.</translation>
-<translation id="3399859571630358395">Forçar a desativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
+<translation id="3399859571630358395">Forçar a desativação do pareamento rápido (pareamento rápido por Bluetooth).</translation>
 <translation id="3404681701763345449">Ativar a integração com o <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
 <translation id="3405361833556012520">Esta política se aplica apenas ao tráfego do navegador. A Play Store, a navegação na Web em apps Android e outros tipos de tráfego de usuários, como o de VMs do Linux ou o de trabalhos de impressão, ainda respeitam as restrições impostas pela VPN sempre ativa. Esta política só é aplicada quando a VPN não está conectada e somente para o tráfego do navegador do usuário. Enquanto estiver aplicada, o tráfego do sistema também poderá ignorar a VPN sempre ativada para realizar tarefas como buscas de políticas e sincronização do relógio do sistema.
 
@@ -5668,7 +5668,7 @@ Esta política só é eficaz quando a máquina está registrada na <ph name="CLO
 <translation id="5017369989680827157">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar o preenchimento automático de endereços na interface.
 
       Se ela for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de endereço nem salvará outros dados desse tipo que os usuários enviarem ao navegar na Web.</translation>
-<translation id="5017691827598069017">Ativar o Pareamento rápido (pareamento rápido por Bluetooth)</translation>
+<translation id="5017691827598069017">Ativar o pareamento rápido (pareamento rápido por Bluetooth)</translation>
 <translation id="5021550478471824215">A definição da política especifica uma lista de compartilhamentos de arquivos de rede predefinidos. Cada item é um objeto com duas propriedades: <ph name="SHARE_URL_FIELD_NAME" /> e <ph name="MODE_FIELD_NAME" />.
 
       O URL de compartilhamento precisa ser <ph name="SHARE_URL_FIELD_NAME" />.
@@ -6009,7 +6009,7 @@ Ela é uma medida temporária e será removida em versões futuras do <ph name="
       Se a política for desativada ou deixada sem definição, o estado da atividade do dispositivo não vai ser informado.
       Se a política for ativada e o usuário for afiliado, o estado será informado ao servidor, permitindo que ele detecte se o dispositivo está off-line.</translation>
 <translation id="5238275681097851753">Permitir que determinados conteúdos do <ph name="FLASH_PLUGIN_NAME" /> sejam bloqueados</translation>
-<translation id="5238976843489093540">Forçar a ativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
+<translation id="5238976843489093540">Forçar a ativação do pareamento rápido (pareamento rápido por Bluetooth).</translation>
 <translation id="5239277956452384929">Permitir acesso a uma lista de URLs durante a autenticação</translation>
 <translation id="5242361766432467515">Se a política for ativada ou deixada sem definição, os usuários conectados a um host de acesso remoto poderão abrir URLs do lado do host no navegador cliente local.
 
@@ -7853,8 +7853,8 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 
       Se a política for definida como falsa, as informações não serão enviadas.
       Se for definida como verdadeira ou deixada sem definição, as informações serão enviadas.</translation>
-<translation id="6398489342702562818">A definição desta política vai forçar a ativação ou desativação do Pareamento rápido.
-      O Pareamento rápido é um novo fluxo de pareamento por Bluetooth que vincula periféricos pareados com uma conta do GAIA.
+<translation id="6398489342702562818">A definição desta política vai forçar a ativação ou desativação do pareamento rápido.
+      O pareamento rápido é um novo fluxo de pareamento por Bluetooth que vincula periféricos pareados com uma conta do GAIA.
       Isso permite que outros dispositivos do ChromeOS (e Android) conectados à mesma conta do GAIA sejam pareados automaticamente.
       Se a política for deixada sem definição, o valor padrão será desativado para usuários corporativos e ativado para
       contas não gerenciadas.</translation>

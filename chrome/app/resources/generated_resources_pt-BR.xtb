@@ -2585,7 +2585,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2751883373055093745"><ph name="WEBSITE" /> quer saber o número ID da sua chave de segurança. O site saberá exatamente qual chave de segurança você está usando.</translation>
 <translation id="275213133112113418">Seu cartão foi salvo</translation>
 <translation id="2752805177271551234">Utilizar o histórico de entrada</translation>
-<translation id="2754226775788136540">Procurando dispositivos com Pareamento rápido salvos em <ph name="PRIMARY_EMAIL" /></translation>
+<translation id="2754226775788136540">Procurando dispositivos com pareamento rápido salvos em <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Encontre os apps de que você precisa, de produtividade a entretenimento, na Google Play Store. É possível instalar apps a qualquer momento.</translation>
 <translation id="2755349111255270002">Redefinir este <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Gerenciar recursos de acessibilidade</translation>
@@ -4899,7 +4899,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="439266289085815679">A configuração do Bluetooth é controlada por <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Editar o arquivo de configuração</translation>
 <translation id="4393102500004843976">Pesquisa + Shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="4393713825278446281">Dispositivos com Pareamento rápido salvos em <ph name="PRIMARY_EMAIL" /></translation>
+<translation id="4393713825278446281">Dispositivos com pareamento rápido salvos em <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Desativar</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Abrir tudo}=1{&amp;Abrir favorito}one{&amp;Abrir tudo ({COUNT})}other{&amp;Abrir tudo ({COUNT})}}</translation>
 <translation id="4397372003838952832">Você não precisa se lembrar dessa senha. Ela vai ficar salva na conta <ph name="EMAIL" /> do <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -5903,7 +5903,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5111794652433847656">Não há nenhuma chave de acesso para <ph name="APP_NAME" /> neste dispositivo</translation>
 <translation id="5112577000029535889">Ferramentas do &amp;desenvolvedor</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 arquivo transferido}one{{NUM_OF_FILES} arquivo transferido}other{{NUM_OF_FILES} arquivos transferidos}}</translation>
-<translation id="511313294362309725">Ativar o "Pareamento rápido"</translation>
+<translation id="511313294362309725">Ativar pareamento rápido</translation>
 <translation id="51143538739122961">Insira sua chave de segurança e toque nela</translation>
 <translation id="5115309401544567011">Conecte seu <ph name="DEVICE_TYPE" /> a uma fonte de energia.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -6957,7 +6957,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5885470467814103868">Iniciar busca</translation>
 <translation id="5885631909150054232">Copiar token</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
-<translation id="5886112770923972514">Conectar e configurar rapidamente os dispositivos próximos com Pareamento rápido</translation>
+<translation id="5886112770923972514">Conectar e configurar rapidamente os dispositivos próximos com pareamento rápido</translation>
 <translation id="5886384907280980632">Desativar agora</translation>
 <translation id="5888889603768021126">Login feito com</translation>
 <translation id="5889282057229379085">Número máximo de autoridades de certificação intermediárias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
@@ -7990,7 +7990,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6644513150317163574">Formato de URL inválido. O servidor precisa ser especificado como um nome de host quando a autenticação SSO é usada.</translation>
 <translation id="6644846457769259194">Atualizando seu dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="6646476869708241165">Desligar "Pareamento rápido"</translation>
+<translation id="6646476869708241165">Desligar pareamento rápido</translation>
 <translation id="6646579314269804020">Compartilhar as configurações de Wi-Fi entre seus dispositivos.</translation>
 <translation id="6646696210740573446">Envia apenas uma parte ofuscada do URL ao Google por um servidor de privacidade que oculta seu endereço IP. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar o URL, incluindo partes do conteúdo da página, ao Google.</translation>
 <translation id="6647228709620733774">URL da revogação da Autoridade de certificação do Netscape</translation>
@@ -8169,7 +8169,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6775992990195573904">Organize suas guias</translation>
 <translation id="677646486571529447">Adicionar uma observação</translation>
 <translation id="6776589734354015877">Acesse mais recursos</translation>
-<translation id="6776729248872343918">Ativar "Pareamento rápido"</translation>
+<translation id="6776729248872343918">Ativar pareamento rápido</translation>
 <translation id="6777817260680419853">Redirecionamento bloqueado</translation>
 <translation id="6777845730143344223">Saiba mais sobre as assinaturas do Passpoint</translation>
 <translation id="6779092717724412415">Para criar um destaque como esse, selecione qualquer trecho do texto e clique nele com o botão direito do mouse.</translation>
@@ -11420,7 +11420,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9031549947500880805">Fazer backup no Google Drive Restaure seus dados ou troque de dispositivo a qualquer momento com facilidade. Seu backup inclui dados do app.</translation>
 <translation id="9031811691986152304">tentar novamente</translation>
 <translation id="9032004780329249150">Usar suas senhas nos dispositivos iOS</translation>
-<translation id="9032097289595078011">Desativar "Pareamento rápido"</translation>
+<translation id="9032097289595078011">Desativar pareamento rápido</translation>
 <translation id="9032513103438497286">Bloqueie apps instalados neste <ph name="DEVICE_TYPE" />. Para restringir o download de apps ou conteúdo, acesse as configurações do Google Play.</translation>
 <translation id="9033765790910064284">Continuar mesmo assim</translation>
 <translation id="9033857511263905942">&amp;Colar</translation>

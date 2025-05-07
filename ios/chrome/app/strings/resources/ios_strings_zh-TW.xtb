@@ -634,7 +634,7 @@
 <translation id="372115889256123713">快取檔案</translation>
 <translation id="3725081662140949903">如果不希望他人使用你的密碼，請開啟「<ph name="APP" />」應用程式變更密碼</translation>
 <translation id="372676576864368480">自動填入卡號 (末四碼為 <ph name="LAST_DIGITS" />)</translation>
-<translation id="3738428049780661523">建立日期：<ph name="DATE" /></translation>
+<translation id="3738428049780661523">建立時間：<ph name="DATE" /></translation>
 <translation id="3750225824417196283">新的無痕分頁頁面</translation>
 <translation id="3753408171347588045">正在追蹤價格</translation>
 <translation id="3762232513783804601">專為 iPad 量身打造</translation>
@@ -806,7 +806,7 @@
 <translation id="4445840280797509738">更多「<ph name="CELL_ACCESSIBILITY_LABEL" />」的選項</translation>
 <translation id="4455710003856931944">滑動邊緣即可前往上一個或下一個畫面。</translation>
 <translation id="4460014764210899310">取消分組</translation>
-<translation id="446314443268698477">透過相機或相片購物、翻譯及辨識所見內容。</translation>
+<translation id="446314443268698477">透過相機或相片，購買、翻譯或辨識所見內容。</translation>
 <translation id="4469324811108161144">附註最多可以儲存 <ph name="CHARACTER_LIMIT" /> 個半形字元。</translation>
 <translation id="4471472356135655769">無法匯出密碼</translation>
 <translation id="4473608001744970767">隱藏「追蹤價格」</translation>
@@ -1205,7 +1205,7 @@
 <translation id="6096965253650248286">找到 <ph name="COUNT" /> 個</translation>
 <translation id="6100617279104942061">目前登入的帳戶是 <ph name="USER_EMAIL" />。開啟設定。</translation>
 <translation id="6103540626693881831">裝置端加密</translation>
-<translation id="611361228753138223">最近曾在這部裝置上造訪的網站</translation>
+<translation id="611361228753138223">最近在這部裝置上造訪的網站</translation>
 <translation id="6122191549521593678">線上</translation>
 <translation id="6122831415929794347">要停用安全瀏覽功能嗎？</translation>
 <translation id="6123514585040403489">你的分頁即將關閉</translation>
@@ -1319,7 +1319,7 @@
 <translation id="6507973708545996744">只要登入帳戶，即可在所有裝置上取用自己的閱讀清單。</translation>
 <translation id="6518133107902771759">驗證</translation>
 <translation id="6518861084553706202">系統將關閉分頁並刪除資料 (可能包括密碼、瀏覽記錄和 Cookie 等等)。</translation>
-<translation id="6523575793810663688">顯示操作說明</translation>
+<translation id="6523575793810663688">操作說明</translation>
 <translation id="6524082013156754186">儲存到帳戶</translation>
 <translation id="6524918542306337007">無法使用無痕模式</translation>
 <translation id="6527303717912515753">分享</translation>
@@ -1332,7 +1332,7 @@
 <translation id="656065428026159829">顯示更多</translation>
 <translation id="6571070086367343653">編輯信用卡</translation>
 <translation id="6574092468346088891">開啟安全檢查通知</translation>
-<translation id="6574225511994820656">顯示設定提示</translation>
+<translation id="6574225511994820656">設定提示</translation>
 <translation id="6579867704846662339">你可以選擇以無痕模式開啟其他應用程式傳入的網址。</translation>
 <translation id="6583087784430677195">如要關閉，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「自動填入密碼」部分。</translation>
 <translation id="6585048665672348661">刪除瀏覽資料…</translation>

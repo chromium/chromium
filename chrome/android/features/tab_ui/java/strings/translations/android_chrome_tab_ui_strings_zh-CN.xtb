@@ -104,7 +104,7 @@
 <translation id="4861611890274104875">关闭卡片。</translation>
 <translation id="4861953997778766866">所有人都可以更改您分享的标签页分组</translation>
 <translation id="4870911314065352661">要关闭所有标签页吗？</translation>
-<translation id="4871719318659334896">关闭组</translation>
+<translation id="4871719318659334896">关闭分组</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{关闭标签页}other{关闭标签页}}</translation>
 <translation id="4908147833782857886">已保存 <ph name="USER_EMAIL" /> 个分组（将关闭标签页并删除分组）</translation>
@@ -222,6 +222,6 @@
 <translation id="9216898458513705996">相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="USER_EMAIL" /> 的设备中删除该分组</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="945522503751344254">发送反馈</translation>
-<translation id="94870150074703282">删除分组？</translation>
+<translation id="94870150074703282">要删除分组吗？</translation>
 <translation id="992256792861109788">粉色</translation>
 </translationbundle>

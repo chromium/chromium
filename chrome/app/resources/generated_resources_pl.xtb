@@ -4406,7 +4406,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4047726037116394521">Wróć do ekranu głównego</translation>
 <translation id="4048295959689903187">Wybierz wyjście audio</translation>
 <translation id="4048384495227695211">Pokaż plik <ph name="FILE_NAME" /> w folderze</translation>
-<translation id="404894744863342743">Gdy skończysz korzystać z pobranego pliku, usuń go, aby Twoje hasła nie były widoczne dla innych osób używających tego urządzenia.</translation>
+<translation id="404894744863342743">Gdy skończysz korzystać z pobranego pliku, usuń go, aby Twoje hasła nie były widoczne dla innych osób używających tego urządzenia</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt jest niedostępny. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adres e-mail powiązany z kontem Google tej osoby.}few{# kontakty są niedostępne. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}many{# kontaktów jest niedostępnych. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}other{# kontaktu jest niedostępne. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}}</translation>
 <translation id="4050225813016893843">Metoda uwierzytelniania</translation>
 <translation id="4050379682069019014">Gest „<ph name="MAIN_GESTURE" />” może nakładać się na gest „<ph name="CONFLICTING_GESTURE" />”. Jeśli to możliwe, wybierz inny gest.</translation>
@@ -10779,7 +10779,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8635399646025169806">Zachować grupę kart?</translation>
 <translation id="8635628933471165173">Ładuję ponownie…</translation>
 <translation id="8636284842992792762">Inicjuję rozszerzenia…</translation>
-<translation id="8636323803535540285">Aby szybciej otwierać tę stronę, dodaj skrót do: <ph name="BRAND" /></translation>
+<translation id="8636323803535540285">Aby szybciej otwierać tę stronę, dodaj skrót do usługi <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Nie zezwalaj witrynom na otwieranie wyskakujących okienek ani używanie przekierowań</translation>
 <translation id="8636514272606969031">Panel boczny został przypięty</translation>
 <translation id="8637688295594795546">Jest dostępna aktualizacja systemu. Trwa przygotowanie do pobrania…</translation>

@@ -2716,7 +2716,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2855243985454069333">Borra el historial de todos los dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Acceder con <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Crea un contenedor nuevo</translation>
-<translation id="2859741939921354763">Importa contraseñas a <ph name="BRAND" /></translation>
+<translation id="2859741939921354763">Importa contraseñas al <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Mover la mandíbula a la derecha</translation>
 <translation id="2861301611394761800">Se completó la actualización del sistema. Reinicie el sistema.</translation>
 <translation id="2861402191395139055">Suscripciones de Passpoint</translation>
@@ -3132,7 +3132,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3165734944977250074">No se puede mover el archivo porque ya no existe</translation>
 <translation id="3166443275568926403">Rendimiento y estado de la batería</translation>
 <translation id="3167446923957429259">Mueve la boca hacia la izquierda</translation>
-<translation id="3167562202484086668">Borrar todos los datos de <ph name="BRAND" /></translation>
+<translation id="3167562202484086668">Borrar todos los datos del <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Elige el tema que se adapte a tus necesidades. Para cambiar el tema, el fondo de pantalla, el protector de pantalla y más, mantén presionado en el escritorio.</translation>
 <translation id="3170072451822350649">También puedes omitir el acceso y <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Cuerpo</translation>
@@ -4932,7 +4932,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4423525817792153232">Muestra todos los dientes</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Cuando permites que los dispositivos ChromeOS envíen informes automáticos, nos ayudas a priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en que falló ChromeOS, qué funciones se estaban usando y la cantidad de memoria que se usaba en general.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo Chrome. Si eres el administrador de dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="442528696198546304">Se borrarán de forma permanente las contraseñas, llaves de acceso y otros datos de <ph name="BRAND" /></translation>
+<translation id="442528696198546304">Se borrarán de forma permanente las contraseñas, llaves de acceso y otros datos del <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Borrar <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Para comenzar, asegúrate de que tu interruptor USB o Bluetooth esté conectado a tu Chromebook. También puedes usar las teclas del teclado.</translation>
 <translation id="4426490308207168518">Comparte comentarios o informa un problema</translation>
@@ -10796,7 +10796,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8635399646025169806">¿Quieres conservar el grupo de pestañas?</translation>
 <translation id="8635628933471165173">Cargando de nuevo…</translation>
 <translation id="8636284842992792762">Inicializando extensiones…</translation>
-<translation id="8636323803535540285">Para acceder aquí más rápido, agrega un acceso directo a <ph name="BRAND" /></translation>
+<translation id="8636323803535540285">Para acceder aquí más rápido, agrega un acceso directo al <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">No permitir que los sitios envíen ventanas emergentes ni utilicen redireccionamientos</translation>
 <translation id="8636514272606969031">Se fijó el panel lateral</translation>
 <translation id="8637688295594795546">Actualización del sistema disponible. Preparando para descargar...</translation>

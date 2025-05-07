@@ -10560,7 +10560,7 @@
 <translation id="8461973047386722744">パスワードは見つかりませんでした</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{リストボックスに 1 個のアイテム}other{リストボックスに {NUM_TABS} 個のアイテム}}</translation>
 <translation id="8463001014623882202">認証に失敗しました</translation>
-<translation id="8463348458784127076">Chrome プロフィールでパスキーを管理する</translation>
+<translation id="8463348458784127076">Chrome プロファイルでパスキーを管理する</translation>
 <translation id="846374874681391779">ダウンロード バー</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> が無効になっています。</translation>
 <translation id="846399539692727039">ChromeOS Flex 診断テストを実行する</translation>
