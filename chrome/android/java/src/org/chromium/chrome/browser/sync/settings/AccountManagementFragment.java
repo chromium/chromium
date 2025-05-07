@@ -144,11 +144,16 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        update();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         IdentityServicesProvider.get().getSigninManager(getProfile()).addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
-        update();
     }
 
     @Override

@@ -555,6 +555,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         super.onStart();
         mSyncService.addSyncStateChangedListener(this);
         IdentityServicesProvider.get().getIdentityManager(getProfile()).addObserver(this);
+
+        // This is necessary to refresh the batch upload card if the user leaves Chrome open on the
+        // settings screen, changes their screen lock settings, and then returns to Chrome.
+        if (mShouldReplaceSyncSettingsWithAccountSettings) {
+            mBatchUploadCardPreference.hideBatchUploadCardAndUpdate();
+        }
+        updateSyncPreferences();
     }
 
     @Override
@@ -562,17 +569,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         super.onStop();
         mSyncService.removeSyncStateChangedListener(this);
         IdentityServicesProvider.get().getIdentityManager(getProfile()).removeObserver(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // This is necessary to refresh the batch upload card if the user leaves Chrome open on the
-        // settings screen, changes their screen lock settings, and then returns to Chrome.
-        if (mShouldReplaceSyncSettingsWithAccountSettings) {
-            mBatchUploadCardPreference.hideBatchUploadCardAndUpdate();
-        }
-        updateSyncPreferences();
     }
 
     @Override
@@ -1202,5 +1198,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
      */
     private void finishCurrentSettings() {
         SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

@@ -56,11 +56,6 @@ public class PersonalizeGoogleServicesSettings extends ChromeBaseSettingsFragmen
     public void onStart() {
         super.onStart();
         mSyncService.addSyncStateChangedListener(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         updatePreferences();
     }
 
@@ -105,5 +100,10 @@ public class PersonalizeGoogleServicesSettings extends ChromeBaseSettingsFragmen
         GoogleActivityController.create()
                 .openLinkedGoogleServicesSettings(getActivity(), signedInAccountName);
         RecordUserAction.record("Signin_AccountSettings_LinkedGoogleServicesClicked");
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }
