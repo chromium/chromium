@@ -11,6 +11,7 @@
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 
 @protocol LensOverlayCommands;
+@protocol LensOverlayContainerDelegate;
 
 /// The top level view controller for lens overlay.
 /// Contains or presents the other view controllers.
@@ -24,6 +25,9 @@
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
+
+/// The delegate for Lens Overlay Container events.
+@property(nonatomic, weak) id<LensOverlayContainerDelegate> delegate;
 
 /// The selection view controller contained by this view controller.
 /// Currently should be set by `viewDidLoad` and only set once.
@@ -45,6 +49,15 @@
 /// Dismisses the side panel presentation, optionally animated.
 - (void)dismissSidePanelAnimated:(BOOL)animated
                       completion:(ProceduralBlock)completion;
+
+@end
+
+/// The delegate of the lens overlay container.
+@protocol LensOverlayContainerDelegate <NSObject>
+
+/// Called when the container changes the current horizontal size class
+- (void)lensOverlayContainerDidChangeSizeClass:
+    (LensOverlayContainerViewController*)lensOverlayContainerViewController;
 
 @end
 

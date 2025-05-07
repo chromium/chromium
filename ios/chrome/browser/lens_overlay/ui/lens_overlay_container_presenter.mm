@@ -22,6 +22,10 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
 
 }  // namespace
 
+@interface LensOverlayContainerPresenter () <LensOverlayContainerDelegate>
+
+@end
+
 @implementation LensOverlayContainerPresenter {
   // The controller on which to present the container.
   __weak UIViewController* _baseViewController;
@@ -63,6 +67,7 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
     return;
   }
 
+  _containerViewController.delegate = self;
   AppState* appState = sceneState.profileState.appState;
   ProfileIOS* profile = sceneState.profileState.profile;
   CHECK(profile, kLensOverlayNotFatalUntil);
@@ -114,6 +119,7 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
 - (void)dismissContainerAnimated:(BOOL)animated
                       completion:(void (^)())completion {
   _scopedForceOrientation.reset();
+  _containerViewController.delegate = nil;
   [self.delegate lensOverlayContainerPresenterWillDismissPresentation:self];
   // If the container is not attached, directly call completion.
   if (!_containerViewController.view.superview) {
@@ -152,6 +158,15 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
           completion();
         }
       }];
+}
+
+#pragma mark - LensOverlayContainerDelegate
+
+- (void)lensOverlayContainerDidChangeSizeClass:
+    (LensOverlayContainerViewController*)lensOverlayContainerViewController {
+  NSDirectionalEdgeInsets insets =
+      [self.delegate lensOverlayContainerPresenterInsetsForPresentation:self];
+  _topConstraint.constant = insets.top;
 }
 
 @end

@@ -187,7 +187,26 @@ const CGFloat kSelectionUICornerRadius = 16.0;
     [self.selectionViewController.view.rightAnchor
         constraintEqualToAnchor:_splitViewLayoutGuide.leftAnchor],
   ]];
+
+  if (@available(iOS 17, *)) {
+    [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
+                       withAction:@selector(sizeClassDidChange)];
+  }
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (self.traitCollection.horizontalSizeClass !=
+      previousTraitCollection.horizontalSizeClass) {
+    [self sizeClassDidChange];
+  }
+}
+#endif
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
   return UIInterfaceOrientationMaskPortrait;
@@ -333,6 +352,10 @@ const CGFloat kSelectionUICornerRadius = 16.0;
   [_sidePanel removeFromParentViewController];
   [_sidePanel.view removeFromSuperview];
   _sidePanel = nil;
+}
+
+- (void)sizeClassDidChange {
+  [self.delegate lensOverlayContainerDidChangeSizeClass:self];
 }
 
 #pragma mark - Accessibility
