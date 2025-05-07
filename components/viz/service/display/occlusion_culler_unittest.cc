@@ -91,7 +91,7 @@ class OcclusionCullerTest : public testing::Test {
                                        bool is_overlay_candidate) {
     bool nearest_neighbor = false;
     bool needs_blending = false;
-    bool premultiplied_alpha = false;
+    bool premultiplied_alpha = true;
     gfx::Size resource_size_in_pixels = rect.size();
 
     TestResourceFactory::TestResourceContext resource_context;
