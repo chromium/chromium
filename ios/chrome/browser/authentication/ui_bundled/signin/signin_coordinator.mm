@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 
@@ -53,6 +54,109 @@ using signin_metrics::PromoAction;
   // ConsistencyPromoSigninCoordinator.
   registry->RegisterIntegerPref(prefs::kSigninWebSignDismissalCount, 0);
   registry->RegisterDictionaryPref(prefs::kSigninHasAcceptedManagementDialog);
+}
+// Returns a coordinator according to the command
++ (SigninCoordinator*)signinCoordinatorWithCommand:(ShowSigninCommand*)command
+                                           browser:(Browser*)browser
+                                baseViewController:
+                                    (UIViewController*)baseViewController {
+  switch (command.operation) {
+    case AuthenticationOperation::kPrimaryAccountReauth:
+      return [SigninCoordinator
+          primaryAccountReauthCoordinatorWithBaseViewController:
+              baseViewController
+                                                        browser:browser
+                                                   contextStyle:
+                                                       command.contextStyle
+
+                                                    accessPoint:command
+                                                                    .accessPoint
+                                                    promoAction:command
+                                                                    .promoAction
+                                           continuationProvider:
+                                               command
+                                                   .changeProfileContinuationProvider];
+    case AuthenticationOperation::kResignin:
+      return [SigninCoordinator
+          signinAndSyncReauthCoordinatorWithBaseViewController:
+              baseViewController
+                                                       browser:browser
+                                                  contextStyle:command
+                                                                   .contextStyle
+                                                   accessPoint:command
+                                                                   .accessPoint
+                                                   promoAction:command
+                                                                   .promoAction
+                                          continuationProvider:
+                                              command
+                                                  .changeProfileContinuationProvider];
+    case AuthenticationOperation::kSigninOnly: {
+      auto& provider = command.changeProfileContinuationProvider;
+      return [SigninCoordinator
+          consistencyPromoSigninCoordinatorWithBaseViewController:
+              baseViewController
+                                                          browser:browser
+                                                     contextStyle:
+                                                         command.contextStyle
+                                                      accessPoint:
+                                                          command.accessPoint
+                                             prepareChangeProfile:
+                                                 command.prepareChangeProfile
+                                             continuationProvider:provider];
+    }
+    case AuthenticationOperation::kAddAccount:
+      return [SigninCoordinator
+          addAccountCoordinatorWithBaseViewController:baseViewController
+                                              browser:browser
+                                         contextStyle:command.contextStyle
+                                          accessPoint:command.accessPoint
+                                 continuationProvider:
+                                     command.changeProfileContinuationProvider];
+    case AuthenticationOperation::kForcedSigninAndSync:
+      return [SigninCoordinator
+          fullscreenSigninCoordinatorWithBaseViewController:baseViewController
+                                                    browser:browser
+                                               contextStyle:command.contextStyle
+                                                accessPoint:command.accessPoint
+                          changeProfileContinuationProvider:
+                              command.changeProfileContinuationProvider];
+    case AuthenticationOperation::kInstantSignin:
+      return [SigninCoordinator
+          instantSigninCoordinatorWithBaseViewController:baseViewController
+                                                 browser:browser
+                                                identity:command.identity
+                                            contextStyle:command.contextStyle
+                                             accessPoint:command.accessPoint
+                                             promoAction:command.promoAction
+                                    continuationProvider:
+                                        command
+                                            .changeProfileContinuationProvider];
+    case AuthenticationOperation::kSheetSigninAndHistorySync: {
+      auto& provider = command.changeProfileContinuationProvider;
+      return [SigninCoordinator
+          signinAndHistorySyncCoordinatorWithBaseViewController:
+              baseViewController
+                                                        browser:browser
+                                                   contextStyle:
+                                                       command.contextStyle
+                                                    accessPoint:command
+                                                                    .accessPoint
+                                                    promoAction:command
+                                                                    .promoAction
+                                            optionalHistorySync:
+                                                command.optionalHistorySync
+                                                fullscreenPromo:
+                                                    command.fullScreenPromo
+                                           continuationProvider:provider];
+    }
+    case AuthenticationOperation::kHistorySync:
+      return [SigninCoordinator
+          historySyncCoordinatorWithBaseViewController:baseViewController
+                                               browser:browser
+                                          contextStyle:command.contextStyle
+                                           accessPoint:command.accessPoint
+                                           promoAction:command.promoAction];
+  }
 }
 
 + (SigninCoordinator*)

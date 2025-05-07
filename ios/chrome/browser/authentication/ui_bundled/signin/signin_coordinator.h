@@ -27,6 +27,7 @@ enum class SecurityDomainId;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
+@class ShowSigninCommand;
 
 // Main class for sign-in coordinator. This class should not be instantiated
 // directly, this should be done using the class methods.
@@ -60,6 +61,12 @@ class PrefRegistrySyncable;
 
 // Registers preferences related to sign-in coordinator.
 + (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry;
+
+// Returns a coordinator according to the command
++ (SigninCoordinator*)signinCoordinatorWithCommand:(ShowSigninCommand*)command
+                                           browser:(Browser*)browser
+                                baseViewController:
+                                    (UIViewController*)baseViewController;
 
 // Returns a coordinator to sign-in the user without taps if the identity has
 // been selected with `identity`. Otherwise, it will ask the user to select
