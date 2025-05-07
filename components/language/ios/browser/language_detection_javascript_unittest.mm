@@ -210,6 +210,43 @@ TEST_F(LanguageDetectionJavascriptTest, DetectLanguageWithNoTranslateMeta) {
 }
 
 // Tests if `__gCrWeb.languageDetection.detectLanguage` correctly informs the
+// native side when the notranslate html attribute is specified
+TEST_F(LanguageDetectionJavascriptTest, DetectLanguageWithHTMLNoTranslate) {
+  // A simple page using the notranslate meta tag.
+  NSString* html = @"<html translate='no'><head>"
+                   @"<meta http-equiv='content-language' content='foo'>"
+                   @"</head></html>";
+  LoadHtml(html);
+  ASSERT_TRUE(TriggerLanguageDetection());
+
+  ASSERT_TRUE(handler().lastReceivedMessage.body[@"httpContentLanguage"]);
+  EXPECT_NSEQ(@"foo",
+              handler().lastReceivedMessage.body[@"httpContentLanguage"]);
+  ASSERT_TRUE(handler().lastReceivedMessage.body[@"hasNoTranslate"]);
+  EXPECT_TRUE(
+      [handler().lastReceivedMessage.body[@"hasNoTranslate"] boolValue]);
+}
+
+// Tests if `__gCrWeb.languageDetection.detectLanguage` does not confuse a body
+// or div language='no' for a page wide translate disabling.
+TEST_F(LanguageDetectionJavascriptTest, DetectLanguageWithDIVNoTranslate) {
+  // A simple page using the notranslate meta tag.
+  NSString* html = @"<html><head>"
+                   @"<meta http-equiv='content-language' content='foo'>"
+                   @"</head><body translate='no'>"
+                   @"<div translate='no'>test</div></html>";
+  LoadHtml(html);
+  ASSERT_TRUE(TriggerLanguageDetection());
+
+  ASSERT_TRUE(handler().lastReceivedMessage.body[@"httpContentLanguage"]);
+  EXPECT_NSEQ(@"foo",
+              handler().lastReceivedMessage.body[@"httpContentLanguage"]);
+  ASSERT_TRUE(handler().lastReceivedMessage.body[@"hasNoTranslate"]);
+  EXPECT_FALSE(
+      [handler().lastReceivedMessage.body[@"hasNoTranslate"] boolValue]);
+}
+
+// Tests if `__gCrWeb.languageDetection.detectLanguage` correctly informs the
 // native side when no notranslate meta tag is specified.
 TEST_F(LanguageDetectionJavascriptTest, DetectLanguageWithoutNoTranslateMeta) {
   // A simple page using the notranslate meta tag.

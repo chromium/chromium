@@ -22,9 +22,16 @@ let activeRequests = 0;
 
 /**
  * Searches page elements for "notranslate" meta tag.
- * @return  true if "notranslate" meta tag is defined.
+ * @return  true if "notranslate" meta tag is defined or the translate attribute
+ * equal to no on html document.
  */
 function hasNoTranslate(): boolean {
+  if (document.documentElement.hasAttribute('translate')) {
+    if (document.documentElement.getAttribute('translate')!.toLowerCase() ===
+        'no') {
+      return true;
+    }
+  }
   for (const metaTag of document.getElementsByTagName('meta')) {
     if (metaTag.name === 'google') {
       if (metaTag.content === 'notranslate' ||
