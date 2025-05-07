@@ -301,7 +301,14 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 - (void)searchWithLensImageMetadata:(id<LensImageMetadata>)metadata
                          entrypoint:(LensOverlayEntrypoint)entrypoint
                          completion:(void (^)(BOOL))completion {
-  [self prepareOverlayWithEntrypoint:entrypoint];
+  BOOL success = [self prepareOverlayWithEntrypoint:entrypoint];
+  if (!success) {
+    if (completion) {
+      completion(NO);
+    }
+
+    return;
+  }
   // Even if the image is already prepared at this point, the snapshotting
   // infrastructure still needs to be built to allow the restoration window to
   // be displayed when exiting and re-entering the experience.
@@ -316,7 +323,13 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 - (void)searchImageWithLens:(UIImage*)image
                  entrypoint:(LensOverlayEntrypoint)entrypoint
                  completion:(void (^)(BOOL))completion {
-  [self prepareOverlayWithEntrypoint:entrypoint];
+  BOOL success = [self prepareOverlayWithEntrypoint:entrypoint];
+  if (!success) {
+    if (completion) {
+      completion(NO);
+    }
+    return;
+  }
   // Even if the image is already prepared at this point, the snapshotting
   // infrastructure still needs to be built to allow the restoration window to
   // be displayed when exiting and re-entering the experience.
@@ -331,7 +344,13 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 - (void)createAndShowLensUI:(BOOL)animated
                  entrypoint:(LensOverlayEntrypoint)entrypoint
                  completion:(void (^)(BOOL))completion {
-  [self prepareOverlayWithEntrypoint:entrypoint];
+  BOOL success = [self prepareOverlayWithEntrypoint:entrypoint];
+  if (!success) {
+    if (completion) {
+      completion(NO);
+    }
+    return;
+  }
   __weak __typeof(self) weakSelf = self;
   [self captureSnapshotWithCompletion:^(UIImage* snapshot) {
     LensImageSource* imageSource =
@@ -945,7 +964,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 #pragma mark - private
 
 // Prepares the lens overlay for display from the given entrypoint.
-- (void)prepareOverlayWithEntrypoint:(LensOverlayEntrypoint)entrypoint {
+- (BOOL)prepareOverlayWithEntrypoint:(LensOverlayEntrypoint)entrypoint {
   if (self.isUICreated) {
     // The UI is probably associated with the non-active tab. Destroy it with no
     // animation.
@@ -960,7 +979,12 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
            object:nil];
 
   _entrypoint = entrypoint;
-  _associatedTabHelper = self.activeTabHelper->GetWeakPtr();
+
+  LensOverlayTabHelper* tabHelper = self.activeTabHelper;
+  if (!tabHelper) {
+    return NO;
+  }
+  _associatedTabHelper = tabHelper->GetWeakPtr();
 
   _metricsRecorder = [[LensOverlayMetricsRecorder alloc]
       initWithEntrypoint:entrypoint
@@ -970,6 +994,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   // handler for the associated tab.
   _associatedTabHelper->SetLensOverlayCommandsHandler(self);
   _associatedTabHelper->SetLensOverlayUIAttachedAndAlive(true);
+
+  return YES;
 }
 
 // Opens a given URL in a new tab.
