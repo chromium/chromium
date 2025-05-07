@@ -52,7 +52,6 @@ def __step_config(ctx, step_config):
             "action_outs": [
                 # keep-sorted start
                 "./obj/content/test/content_unittests/auction_runner_unittest.o",
-                "./obj/v8/v8_compiler/csa-optimize-phase.o",
                 # keep-sorted end
             ],
             "timeout": "4m",
