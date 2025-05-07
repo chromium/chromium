@@ -8867,6 +8867,9 @@ crbug.com/827209 [ Release Win ] fast/events/middleClickAutoscroll-latching.html
 crbug.com/827209 [ Linux ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
 crbug.com/827209 [ Mac ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
 
+# Temporarily disabled to unblock https://crrev.com/c/6519316
+crbug.com/391381439 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass Timeout ]
+
 # Gardener 2024-10-11
 crbug.com/372293920 [ Mac11 ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Crash Failure Pass Timeout ]
 crbug.com/372293920 [ Mac11-arm64 ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Crash Failure Pass Timeout ]
