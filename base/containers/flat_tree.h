@@ -249,6 +249,9 @@ class flat_tree {
   template <class InputIterator>
     requires(std::input_iterator<InputIterator>)
   void insert(InputIterator first, InputIterator last);
+
+  // PRECONDITIONS: `first` and  `last` must be iterators into the
+  // same object, with `first` less than or equal to `last`.
   template <class InputIteratorPtr>
   UNSAFE_BUFFER_USAGE void insert(InputIteratorPtr* first,
                                   InputIteratorPtr* last);
@@ -755,6 +758,8 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::insert(
       .first;
 }
 
+// PRECONDITIONS: `first` and  `last` must be iterators into the
+// same object, with `first` less than or equal to `last`.
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <class InputIteratorPtr>
 UNSAFE_BUFFER_USAGE void

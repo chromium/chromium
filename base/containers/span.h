@@ -462,9 +462,8 @@ class GSL_POINTER span {
   // Iterator + count.
   template <typename It>
     requires(internal::CompatibleIter<element_type, It>)
-  // SAFETY: `first` must point to the first of at least `count` contiguous
-  // valid elements, or the span will allow access to invalid elements,
-  // resulting in UB.
+  // PRECONDITIONS: `first` must point to the first of at least `count`
+  // contiguous valid elements.
   UNSAFE_BUFFER_USAGE constexpr explicit span(It first,
                                               StrictNumeric<size_type> count)
       : data_(to_address(first)) {
@@ -480,9 +479,8 @@ class GSL_POINTER span {
     requires(internal::CompatibleIter<element_type, It> &&
              std::sized_sentinel_for<End, It> &&
              !std::is_convertible_v<End, size_t>)
-  // SAFETY: `first` and `last` must be for the same allocation and all elements
-  // in the range [first, last) must be valid, or the span will allow access to
-  // invalid elements, resulting in UB.
+  // PRECONDITIONS: `first` and `last` must be for the same allocation and all
+  // elements in the range [first, last) must be valid.
   UNSAFE_BUFFER_USAGE constexpr explicit span(It first, End last)
       // SAFETY: The caller must guarantee that `first` and `last` point into
       // the same allocation. In this case, the extent will be the number of
@@ -959,9 +957,8 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // Iterator + count.
   template <typename It>
     requires(internal::CompatibleIter<element_type, It>)
-  // SAFETY: `first` must point to the first of at least `count` contiguous
-  // valid elements, or the span will allow access to invalid elements,
-  // resulting in UB.
+  // PRECONDITIONS: `first` must point to the first of at least `count`
+  // contiguous valid elements.
   UNSAFE_BUFFER_USAGE constexpr span(It first, StrictNumeric<size_type> count)
       : data_(to_address(first)), size_(count) {
     // Non-zero `count` implies non-null `data_`. Use `SpanOrSize<T>` to
@@ -974,9 +971,8 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     requires(internal::CompatibleIter<element_type, It> &&
              std::sized_sentinel_for<End, It> &&
              !std::is_convertible_v<End, size_t>)
-  // SAFETY: `first` and `last` must be for the same allocation and all elements
-  // in the range [first, last) must be valid, or the span will allow access to
-  // invalid elements, resulting in UB.
+  // PRECONDITIONS: `first` and `last` must be for the same allocation and all
+  // elements in the range [first, last) must be valid.
   UNSAFE_BUFFER_USAGE constexpr span(It first, End last)
       // SAFETY: The caller must guarantee that `first` and `last` point into
       // the same allocation. In this case, `size_` will be the number of
