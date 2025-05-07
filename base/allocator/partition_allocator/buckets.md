@@ -77,6 +77,12 @@ bytes, then approximately 1.125x128 bytes, 1.25x128 bytes, and continue in this
 manner up to nearly 256 bytes. This pattern then repeats for sizes above 256
 bytes, then 512 bytes, and so forth.
 
+||Order-Index 0|Order-Index 1|Order-Index 2|Order-Index 3|Order-Index 4|Order-Index 5|Order-Index 6|Order-Index 7|
+|-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|Order  8 (2⁷)|121-128|129-144|145-160|161-176|177-192|193-208|209-224|225-240|
+|Order  9 (2⁸)|241-256|257-288|289-320|321-352|353-384|385-416|417-448|449-480|
+|Order 10 (2⁹)|481-512|513-576|577-640|641-704|705-768|769-832|833-896|897-960|
+
 ## Neutral Bucket Distribution
 
 The Neutral Bucket Distribution offers a sparser alternative, derived from the
@@ -97,7 +103,7 @@ distribution, in the same range, might only have buckets for ..., 384, then skip
 
 ### 8 Bytes Alignment (Typically 32-bit Systems)
 
-| Index | Size | Bucket Distribution | Note |
+| Index | Size | Bucket Distribution | Originating Formula |
 | -: | -: | :- | :- |
 |   0 |      8 | `kNeutral` and `kDenser` | linear [8 x 1] |
 |   1 |     16 | `kNeutral` and `kDenser` | linear [8 x 2] |
@@ -217,11 +223,11 @@ distribution, in the same range, might only have buckets for ..., 384, then skip
 | 115 | 786432 | `kNeutral` and `kDenser` | exponential [2¹⁹ x (1 + ½)] |
 | 116 | 851968 | `kDenser` only           | exponential [2¹⁹ x (1 + ⅝)] |
 | 117 | 917504 | `kNeutral` and `kDenser` | exponential [2¹⁹ x (1 + ¾)] |
-| 118 | 983040 | `kDenser` only           | exponential [2¹⁹ x (1 + ⅞)] |
+| 118 | 983040 | `kNeutral` and `kDenser` | exponential [2¹⁹ x (1 + ⅞)] |
 
-### 8 Bytes Alignment (Typically 64-bit Systems)
+### 16 Bytes Alignment (Typically 64-bit Systems)
 
-| Index | Size | Bucket Distribution | Note |
+| Index | Size | Bucket Distribution | Originating Formula |
 | -: | -: | :- | :- |
 |   0 |     16 | `kNeutral` and `kDenser` | linear [16 x 1] |
 |   1 |     32 | `kNeutral` and `kDenser` | linear [16 x 2] |
