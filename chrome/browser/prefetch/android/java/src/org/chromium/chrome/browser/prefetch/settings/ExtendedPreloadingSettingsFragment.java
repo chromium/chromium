@@ -13,4 +13,9 @@ public class ExtendedPreloadingSettingsFragment extends PreloadPagesSettingsFrag
     protected int getPreferenceResource() {
         return R.xml.extended_preloading_preferences;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }
