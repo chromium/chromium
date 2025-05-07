@@ -8,11 +8,6 @@ import("//tools/grit/grit_rule.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
-  android_strings_java_resources =
-      [ "java/res/values/plus_addresses_strings.xml" ] +
-      process_file_template(
-          android_bundle_locales_as_resources,
-          [ "java/res/values-{{source_name_part}}/plus_addresses_strings.xml" ])
 }
 
 grit("strings") {
@@ -27,16 +22,12 @@ grit("strings") {
                 all_chrome_locales,
                 [ "plus_addresses_strings_{{source_name_part}}.pak" ])
   if (is_android) {
-    outputs += android_strings_java_resources
+    create_android_resources = true
   }
 }
 
 if (is_android) {
   java_strings_grd_prebuilt("strings_grd") {
-    grit_output_dir =
-        "$root_gen_dir/components/plus_addresses/resources/strings/java/res"
-    generated_files =
-        rebase_path(android_strings_java_resources, "java/res", ".")
-    deps = [ ":strings" ]
+    generating_target = ":strings"
   }
 }

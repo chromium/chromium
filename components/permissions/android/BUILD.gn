@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -120,11 +119,6 @@ android_resources("java_resources") {
 
 java_strings_grd("permissions_strings_grd") {
   grd_file = "permissions_android_strings.grd"
-  outputs =
-      [ "values/permissions_android_strings.xml" ] +
-      process_file_template(
-          android_bundle_locales_as_resources,
-          [ "values-{{source_name_part}}/permissions_android_strings.xml" ])
 }
 
 android_library("content_settings_enums_java") {

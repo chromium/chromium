@@ -82,20 +82,6 @@ if (is_win) {
   }
 }
 
-if (is_android) {
-  android_generated_java_resources =
-      [ "java/res/values/generated_resources.xml" ] +
-      process_file_template(
-          android_bundle_locales_as_resources,
-          [ "java/res/values-{{source_name_part}}/generated_resources.xml" ])
-
-  strings_java_resources =
-      [ "java/res/values/branded_strings.xml" ] +
-      process_file_template(
-          android_bundle_locales_as_resources,
-          [ "java/res/values-{{source_name_part}}/branded_strings.xml" ])
-}
-
 grit("generated_resources") {
   source = "generated_resources.grd"
   defines = chrome_grit_defines + [ "is_cfm=${is_cfm}" ]
@@ -105,19 +91,21 @@ grit("generated_resources") {
       process_file_template(all_chrome_locales,
                             [ "generated_resources_{{source_name_part}}.pak" ])
   if (is_android) {
-    outputs += android_generated_java_resources
+    create_android_resources = true
   }
 }
 
 if (is_android) {
-  java_strings_grd_prebuilt("java_strings_grd") {
-    grit_output_dir = "$root_gen_dir/chrome/java/res"
-    generated_files =
-        rebase_path(android_generated_java_resources, "java/res", ".") +
-        rebase_path(strings_java_resources, "java/res", ".")
-    deps = [
-      ":branded_strings",
-      ":generated_resources",
+  java_strings_grd_prebuilt("branded_resources_grd") {
+    generating_target = ":branded_strings"
+  }
+  java_strings_grd_prebuilt("generated_resources_grd") {
+    generating_target = ":generated_resources"
+  }
+  java_group("java_strings_grd") {
+    public_deps = [
+      ":branded_resources_grd",
+      ":generated_resources_grd",
     ]
   }
 }
@@ -132,7 +120,7 @@ grit("branded_strings") {
                             [ "branded_strings_{{source_name_part}}.pak" ])
 
   if (is_android) {
-    outputs += strings_java_resources
+    create_android_resources = true
   }
 }
 

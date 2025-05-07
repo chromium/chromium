@@ -1109,10 +1109,6 @@ if (_is_default_toolchain) {
 
   java_strings_grd("strings_grd") {
     grd_file = "java/strings/android_webview_strings.grd"
-    outputs = [ "values/android_webview_strings.xml" ] +
-              process_file_template(
-                  android_bundle_locales_as_resources,
-                  [ "values-{{source_name_part}}/android_webview_strings.xml" ])
   }
 }
 

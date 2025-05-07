@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
@@ -190,10 +189,6 @@ java_cpp_enum("java_enums_srcjar") {
 
 java_strings_grd("ui_strings_grd") {
   grd_file = "java/strings/android_ui_strings.grd"
-  outputs = [ "values/android_ui_strings.xml" ] +
-            process_file_template(
-                android_bundle_locales_as_resources,
-                [ "values-{{source_name_part}}/android_ui_strings.xml" ])
 }
 
 android_resources("ui_java_resources") {

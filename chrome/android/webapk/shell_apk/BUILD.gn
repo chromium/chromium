@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 import("current_version/current_version.gni")
 import("generate_manifest_for_upload_outputs.gni")
@@ -284,11 +283,6 @@ template("webapk_tmpl") {
 
 java_strings_grd("webapk_strings_grd") {
   grd_file = "//chrome/android/webapk/strings/android_webapk_strings.grd"
-
-  outputs = [ "values/android_webapk_strings.xml" ] +
-            process_file_template(
-                android_bundle_locales_as_resources,
-                [ "values-{{source_name_part}}/android_webapk_strings.xml" ])
 }
 
 # Template for WebAPK. When a WebAPK is generated:
