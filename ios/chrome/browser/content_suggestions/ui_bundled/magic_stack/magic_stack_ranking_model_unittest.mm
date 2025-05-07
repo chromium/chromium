@@ -291,8 +291,6 @@ class MagicStackRankingModelTest : public PlatformTest {
                  authenticationService:authenticationService
                             sceneState:scene_state_
                  isDefaultSearchEngine:NO
-                   segmentationService:nullptr
-        deviceSwitcherResultDispatcher:nullptr
                   priceTrackingEnabled:NO];
     _setUpListMediator.shouldShowSetUpList = YES;
     _tabResumptionMediator = [[FakeTabResumptionMediator alloc]

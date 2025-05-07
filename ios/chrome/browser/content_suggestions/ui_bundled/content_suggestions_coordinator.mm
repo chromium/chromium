@@ -259,8 +259,6 @@ using segmentation_platform::TipIdentifier;
 
   raw_ptr<segmentation_platform::SegmentationPlatformService>
       _segmentationService;
-  raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
-      _deviceSwitcherResultDispatcher;
 }
 
 - (void)start {
@@ -278,8 +276,6 @@ using segmentation_platform::TipIdentifier;
   _segmentationService =
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           profile);
-  _deviceSwitcherResultDispatcher = segmentation_platform::
-      SegmentationPlatformServiceFactory::GetDispatcherForProfile(profile);
 
   self.authService = AuthenticationServiceFactory::GetForProfile(profile);
 
@@ -505,12 +501,7 @@ using segmentation_platform::TipIdentifier;
                  authenticationService:authenticationService
                             sceneState:self.browser->GetSceneState()
                  isDefaultSearchEngine:isDefaultSearchEngine
-                   segmentationService:_segmentationService
-        deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher
                   priceTrackingEnabled:IsPriceTrackingEnabled(self.profile)];
-    if (IsSegmentedDefaultBrowserPromoEnabled()) {
-      [_setUpListMediator retrieveUserSegment];
-    }
     _setUpListMediator.commandHandler = self;
     _setUpListMediator.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;
@@ -552,7 +543,6 @@ using segmentation_platform::TipIdentifier;
 
 - (void)stop {
   _segmentationService = nullptr;
-  _deviceSwitcherResultDispatcher = nullptr;
   [_shortcutsMediator disconnect];
   _shortcutsMediator = nil;
   [_safetyCheckMediator disconnect];
@@ -1186,11 +1176,9 @@ using segmentation_platform::TipIdentifier;
 
   _defaultBrowserPromoCoordinator =
       [[SetUpListDefaultBrowserPromoCoordinator alloc]
-              initWithBaseViewController:self.magicStackCollectionView
-                                 browser:self.browser
-                             application:[UIApplication sharedApplication]
-                     segmentationService:_segmentationService
-          deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher];
+          initWithBaseViewController:self.magicStackCollectionView
+                             browser:self.browser
+                         application:[UIApplication sharedApplication]];
   _defaultBrowserPromoCoordinator.delegate = self;
   [_defaultBrowserPromoCoordinator start];
 }

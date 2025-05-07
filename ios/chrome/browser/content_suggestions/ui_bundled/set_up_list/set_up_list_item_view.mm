@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -89,9 +88,7 @@ struct ViewConfig {
       int syncString =
           IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION_NO_SYNC;
       int defaultBrowserString =
-          IsSegmentedDefaultBrowserPromoEnabled()
-              ? GetSetUpListDefaultBrowserDescriptionStringID(data.userSegment)
-              : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION;
+          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION;
       _config = {
           YES,
           NO,
@@ -106,9 +103,7 @@ struct ViewConfig {
     } else if (data.heroCellMagicStackLayout) {
       int syncString = IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL;
       int defaultBrowserString =
-          IsSegmentedDefaultBrowserPromoEnabled()
-              ? GetSetUpListDefaultBrowserDescriptionStringID(data.userSegment)
-              : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_MAGIC_STACK_DESCRIPTION;
+          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_MAGIC_STACK_DESCRIPTION;
       _config = {
           NO,
           YES,
@@ -124,9 +119,7 @@ struct ViewConfig {
       // Normal ViewConfig.
       int syncString = IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL;
       int defaultBrowserString =
-          IsSegmentedDefaultBrowserPromoEnabled()
-              ? GetSetUpListDefaultBrowserDescriptionStringID(data.userSegment)
-              : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION;
+          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION;
       _config = {
           NO,
           NO,
