@@ -18,6 +18,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -227,4 +229,29 @@ public class SharedWebViewChromium {
     }
 
     public void configureBaseline(int baseline) {}
+
+    public List<String> addJavascriptInterfaces(
+            List<Object> objects, List<String> names, List<List<String>> sitePatterns) {
+        // This is called specifically from the WebViewBuilder API which always builds
+        // and configures on the UI thread specifically. If we are not on the UI thread,
+        // this is an issue and should be reported back.
+        // Executing on the UI thread means we can return our validation results
+        // synchronously.
+        if (checkNeedsPost()) {
+            throw new IllegalStateException("WebView must not be configured outside of UI Thread");
+        }
+        assert objects.size() == names.size() && names.size() == sitePatterns.size();
+
+        // TODO: Add support to JS injection code in content to handle bulk push of
+        // patterns. JNIZero currently doesn't support multi dimensional arrays so
+        // List<List<String>> is a problem.
+        List<String> badPatterns = new ArrayList<>();
+
+        for (int i = 0; i < objects.size(); i++) {
+            badPatterns.addAll(
+                    mAwContents.addJavascriptInterface(
+                            objects.get(i), names.get(i), sitePatterns.get(i)));
+        }
+        return badPatterns;
+    }
 }

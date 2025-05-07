@@ -15,6 +15,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -35,20 +37,38 @@ public interface WebViewBuilderBoundaryInterface {
     @Target(ElementType.TYPE_USE)
     @IntDef({
         ConfigField.BASELINE,
+        ConfigField.JAVASCRIPT_INTERFACE,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ConfigField {
         int BASELINE = 0;
+        int JAVASCRIPT_INTERFACE = 1;
     }
 
     class Config implements Consumer<BiConsumer<@ConfigField Integer, Object>> {
         public int baseline = Baseline.DEFAULT;
+        List<Object> mJavascriptInterfaceObjects = new ArrayList<>();
+        List<String> mJavascriptInterfaceNames = new ArrayList<>();
+        List<List<String>> mJavascriptInterfaceSitePatterns = new ArrayList<>();
+
+        public void addJavascriptInterface(Object object, String name, List<String> sitePatterns) {
+            mJavascriptInterfaceObjects.add(object);
+            mJavascriptInterfaceNames.add(name);
+            mJavascriptInterfaceSitePatterns.add(sitePatterns);
+        }
 
         // This method handles reading all config in AndroidX to transfer over to Chromium.
         // It's job is to essentially "serialize" the fields into known keys.
         @Override
         public void accept(BiConsumer<@ConfigField Integer, Object> chromiumConfig) {
             chromiumConfig.accept(ConfigField.BASELINE, baseline);
+            chromiumConfig.accept(
+                    ConfigField.JAVASCRIPT_INTERFACE,
+                    new Object[] {
+                        mJavascriptInterfaceObjects,
+                        mJavascriptInterfaceNames,
+                        mJavascriptInterfaceSitePatterns
+                    });
         }
     }
 

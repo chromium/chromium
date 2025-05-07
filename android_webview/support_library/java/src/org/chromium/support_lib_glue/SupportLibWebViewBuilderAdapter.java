@@ -7,12 +7,15 @@ package org.chromium.support_lib_glue;
 import android.content.Context;
 import android.webkit.WebView;
 
+import androidx.annotation.Nullable;
+
 import com.android.webview.chromium.SharedWebViewChromium;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
 import org.chromium.support_lib_boundary.WebViewBuilderBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewBuilderBoundaryInterface.ConfigField;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -36,6 +39,9 @@ class SupportLibWebViewBuilderAdapter implements WebViewBuilderBoundaryInterface
 
     static class Builder implements BiConsumer<@ConfigField Integer, Object> {
         private Integer mBaseline;
+        private @Nullable List<Object> mJavascriptInterfaceObjects;
+        private @Nullable List<String> mJavascriptInterfaceNames;
+        private @Nullable List<List<String>> mJavascriptInterfaceSitePatterns;
 
         @Override
         public void accept(@ConfigField Integer key, Object value) {
@@ -44,6 +50,15 @@ class SupportLibWebViewBuilderAdapter implements WebViewBuilderBoundaryInterface
                     case ConfigField.BASELINE:
                         {
                             mBaseline = (Integer) value;
+                            break;
+                        }
+                    case ConfigField.JAVASCRIPT_INTERFACE:
+                        {
+                            Object[] interfaceParams = (Object[]) value;
+                            mJavascriptInterfaceObjects = (List<Object>) interfaceParams[0];
+                            mJavascriptInterfaceNames = (List<String>) interfaceParams[1];
+                            mJavascriptInterfaceSitePatterns =
+                                    (List<List<String>>) interfaceParams[2];
                             break;
                         }
                 }
@@ -62,6 +77,15 @@ class SupportLibWebViewBuilderAdapter implements WebViewBuilderBoundaryInterface
 
             if (mBaseline != null) {
                 sharedWebViewChromium.configureBaseline(mBaseline);
+            }
+
+            if (mJavascriptInterfaceObjects != null
+                    && mJavascriptInterfaceNames != null
+                    && mJavascriptInterfaceSitePatterns != null) {
+                sharedWebViewChromium.addJavascriptInterfaces(
+                        mJavascriptInterfaceObjects,
+                        mJavascriptInterfaceNames,
+                        mJavascriptInterfaceSitePatterns);
             }
 
             return webview;
