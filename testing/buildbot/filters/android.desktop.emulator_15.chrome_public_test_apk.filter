@@ -81,7 +81,9 @@
 -org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testShowOnSecureWebsiteDark
 
 # crbug.com/415101606
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testPrintPage
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSavePage
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSharePage
 
 # crbug.com/415118264
 -org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomMenuItemHasNoEffect
