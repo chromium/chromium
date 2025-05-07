@@ -15,6 +15,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gtk/gtk_stubs.h"
 #include "ui/gtk/ime_compat_check.h"
@@ -25,8 +26,6 @@ namespace gtk {
 // functions should be annotated with DISABLE_CFI_DLSYM.
 
 namespace {
-
-const char kGtkVersionFlag[] = "gtk-version";
 
 struct Gdk3Rgba {
   gdouble r;
@@ -136,7 +135,7 @@ bool LoadGtkImpl() {
 
   auto* cmd = base::CommandLine::ForCurrentProcess();
   unsigned int gtk_version;
-  if (!base::StringToUint(cmd->GetSwitchValueASCII(kGtkVersionFlag),
+  if (!base::StringToUint(cmd->GetSwitchValueASCII(switches::kGtkVersionFlag),
                           &gtk_version)) {
     gtk_version = 0;
   }

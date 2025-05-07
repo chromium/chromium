@@ -38,6 +38,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "content/public/common/content_switches.h"
+#include "ui/linux/linux_ui.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -878,14 +879,19 @@ PrintBackendServiceManager::GetServiceFromBundle(
             << (sandboxed ? "sandboxed" : "unsandboxed") << " for `"
             << remote_id << "`";
 
+    std::vector<std::string> extra_switches;
+#if BUILDFLAG(IS_LINUX)
+    if (auto* linux_ui = ui::LinuxUi::instance()) {
+      extra_switches = linux_ui->GetCmdLineFlagsForCopy();
+    }
+    extra_switches.push_back(switches::kMessageLoopTypeUi);
+#endif
     mojo::Remote<T>& host = bundle->host;
     content::ServiceProcessHost::Launch(
         host.BindNewPipeAndPassReceiver(),
         content::ServiceProcessHost::Options()
             .WithDisplayName(IDS_UTILITY_PROCESS_PRINT_BACKEND_SERVICE_NAME)
-#if BUILDFLAG(IS_LINUX)
-            .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
-#endif
+            .WithExtraCommandLineSwitches(std::move(extra_switches))
             .Pass());
     host->BindBackend(service.BindNewPipeAndPassReceiver());
 

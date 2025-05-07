@@ -33,6 +33,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/text_edit_commands.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
@@ -61,16 +62,15 @@ namespace qt {
 
 namespace {
 
-const char kQtVersionFlag[] = "qt-version";
-
 void* LoadLibrary(const base::FilePath& path) {
   return dlopen(path.value().c_str(), RTLD_NOW | RTLD_GLOBAL);
 }
 
 bool PreferQt6() {
   auto* cmd = base::CommandLine::ForCurrentProcess();
-  if (cmd->HasSwitch(kQtVersionFlag)) {
-    std::string qt_version_string = cmd->GetSwitchValueASCII(kQtVersionFlag);
+  if (cmd->HasSwitch(switches::kQtVersionFlag)) {
+    std::string qt_version_string =
+        cmd->GetSwitchValueASCII(switches::kQtVersionFlag);
     unsigned int qt_version = 0;
     if (base::StringToUint(qt_version_string, &qt_version)) {
       switch (qt_version) {
@@ -393,6 +393,12 @@ QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
     case WindowFrameActionSource::kRightClick:
       return WindowFrameAction::kMenu;
   }
+}
+
+std::vector<std::string> QtUi::GetCmdLineFlagsForCopy() const {
+  return {std::string(switches::kUiToolkitFlag) + "=qt",
+          std::string(switches::kQtVersionFlag) + "=" +
+              base::NumberToString(qt_version_)};
 }
 
 DISABLE_CFI_VCALL

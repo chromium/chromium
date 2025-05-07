@@ -33,6 +33,10 @@ const char kSystemFontFamily[] = "system-font-family";
 #if BUILDFLAG(IS_LINUX)
 // Specify the toolkit used to construct the Linux GUI.
 const char kUiToolkitFlag[] = "ui-toolkit";
+// Specify the GTK version to be loaded.
+const char kGtkVersionFlag[] = "gtk-version";
+// Specify the QT version to be loaded.
+const char kQtVersionFlag[] = "qt-version";
 // Disables GTK IME integration.
 const char kDisableGtkIme[] = "disable-gtk-ime";
 #endif

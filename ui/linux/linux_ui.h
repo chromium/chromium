@@ -205,6 +205,10 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   virtual WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) = 0;
 
+  // Returns the command line flags that should be copied to subprocesses
+  // to have the same toolkit and version as this process.
+  virtual std::vector<std::string> GetCmdLineFlagsForCopy() const = 0;
+
  protected:
   struct CmdLineArgs {
     CmdLineArgs();
