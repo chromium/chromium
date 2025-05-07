@@ -30,28 +30,10 @@ enum class SiteType {
 // First-Party Set.
 class NET_EXPORT FirstPartySetEntry {
  public:
-  class NET_EXPORT SiteIndex {
-   public:
-    SiteIndex();
-    explicit SiteIndex(uint32_t value);
-
-    bool operator==(const SiteIndex& other) const;
-
-    uint32_t value() const { return value_; }
-
-   private:
-    uint32_t value_;
-  };
-
   FirstPartySetEntry();
   // `primary` is the primary site in the First-Party Set associated with this
   // entry.
-  FirstPartySetEntry(SchemefulSite primary,
-                     SiteType site_type,
-                     std::optional<SiteIndex> site_index);
-  FirstPartySetEntry(SchemefulSite primary,
-                     SiteType site_type,
-                     uint32_t site_index);
+  FirstPartySetEntry(SchemefulSite primary, SiteType site_type);
 
   FirstPartySetEntry(const FirstPartySetEntry&);
   FirstPartySetEntry& operator=(const FirstPartySetEntry&);
@@ -78,9 +60,6 @@ class NET_EXPORT FirstPartySetEntry {
   SiteType site_type_;
 };
 
-NET_EXPORT std::ostream& operator<<(
-    std::ostream& os,
-    const FirstPartySetEntry::SiteIndex& site_index);
 NET_EXPORT std::ostream& operator<<(std::ostream& os,
                                     const FirstPartySetEntry& fpse);
 

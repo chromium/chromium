@@ -797,10 +797,10 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
         /*entries=*/
         {{net::SchemefulSite(GetTopLevelURL()),
           {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
-                                   net::SiteType::kPrimary, std::nullopt)}},
+                                   net::SiteType::kPrimary)}},
          {net::SchemefulSite(GetRequesterURL()),
           {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
-                                   net::SiteType::kAssociated, 0)}}},
+                                   net::SiteType::kAssociated)}}},
         /*aliases=*/{}));
   }
 

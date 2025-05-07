@@ -69,16 +69,14 @@ class FirstPartySetsHandlerImplBrowserTest
 IN_PROC_BROWSER_TEST_F(FirstPartySetsHandlerImplBrowserTest, LocalSwitch) {
   // The First-Party Sets should be:
   // {primary: A, associatedSites: [B, C]}
-  EXPECT_EQ(
-      GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteB)),
-                                net::FirstPartySetsContextConfig()),
-      std::make_optional(net::FirstPartySetEntry(
-          net::SchemefulSite(GURL(kSiteA)), net::SiteType::kAssociated, 0)));
-  EXPECT_EQ(
-      GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteC)),
-                                net::FirstPartySetsContextConfig()),
-      std::make_optional(net::FirstPartySetEntry(
-          net::SchemefulSite(GURL(kSiteA)), net::SiteType::kAssociated, 1)));
+  EXPECT_EQ(GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteB)),
+                                      net::FirstPartySetsContextConfig()),
+            std::make_optional(net::FirstPartySetEntry(
+                net::SchemefulSite(GURL(kSiteA)), net::SiteType::kAssociated)));
+  EXPECT_EQ(GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteC)),
+                                      net::FirstPartySetsContextConfig()),
+            std::make_optional(net::FirstPartySetEntry(
+                net::SchemefulSite(GURL(kSiteA)), net::SiteType::kAssociated)));
 }
 
 // Verify that when both `kUseFirstPartySet` and `kUseRelatedWebsiteSet`
@@ -104,16 +102,14 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsHandlerImplWithNewSwitchBrowserTest,
   //
   // After the new switch is applied, the expected First-Party Sets are:
   // {primary: D, associatedSites: [B, C]}
-  EXPECT_EQ(
-      GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteB)),
-                                net::FirstPartySetsContextConfig()),
-      std::make_optional(net::FirstPartySetEntry(
-          net::SchemefulSite(GURL(kSiteD)), net::SiteType::kAssociated, 0)));
-  EXPECT_EQ(
-      GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteC)),
-                                net::FirstPartySetsContextConfig()),
-      std::make_optional(net::FirstPartySetEntry(
-          net::SchemefulSite(GURL(kSiteD)), net::SiteType::kAssociated, 1)));
+  EXPECT_EQ(GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteB)),
+                                      net::FirstPartySetsContextConfig()),
+            std::make_optional(net::FirstPartySetEntry(
+                net::SchemefulSite(GURL(kSiteD)), net::SiteType::kAssociated)));
+  EXPECT_EQ(GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteC)),
+                                      net::FirstPartySetsContextConfig()),
+            std::make_optional(net::FirstPartySetEntry(
+                net::SchemefulSite(GURL(kSiteD)), net::SiteType::kAssociated)));
 
   EXPECT_EQ(GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteA)),
                                       net::FirstPartySetsContextConfig()),

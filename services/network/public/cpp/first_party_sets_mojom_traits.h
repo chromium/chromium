@@ -22,18 +22,6 @@ namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
-    StructTraits<network::mojom::SiteIndexDataView,
-                 net::FirstPartySetEntry::SiteIndex> {
-  static uint32_t value(const net::FirstPartySetEntry::SiteIndex& i) {
-    return i.value();
-  }
-
-  static bool Read(network::mojom::SiteIndexDataView index,
-                   net::FirstPartySetEntry::SiteIndex* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     EnumTraits<network::mojom::SiteType, net::SiteType> {
   static network::mojom::SiteType ToMojom(net::SiteType site_type);
 

@@ -216,9 +216,9 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
         /*entries=*/
         {
             {net::SchemefulSite(GetRequesterURL()),
-             net::FirstPartySetEntry(top_level, net::SiteType::kAssociated, 0)},
-            {top_level, net::FirstPartySetEntry(
-                            top_level, net::SiteType::kPrimary, std::nullopt)},
+             net::FirstPartySetEntry(top_level, net::SiteType::kAssociated)},
+            {top_level,
+             net::FirstPartySetEntry(top_level, net::SiteType::kPrimary)},
         },
         /*aliases=*/{}));
   }

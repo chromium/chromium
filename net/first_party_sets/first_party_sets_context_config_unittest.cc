@@ -34,7 +34,7 @@ TEST(FirstPartySetsContextConfigTest, FindOverride_empty) {
 
 TEST(FirstPartySetsContextConfigTest, FindOverride_irrelevant) {
   SchemefulSite example(GURL("https://example.test"));
-  FirstPartySetEntry entry(example, SiteType::kPrimary, std::nullopt);
+  FirstPartySetEntry entry(example, SiteType::kPrimary);
   SchemefulSite foo(GURL("https://foo.test"));
 
   EXPECT_EQ(FirstPartySetsContextConfig::Create(
@@ -56,7 +56,7 @@ TEST(FirstPartySetsContextConfigTest, FindOverride_deletion) {
 
 TEST(FirstPartySetsContextConfigTest, FindOverride_modification) {
   SchemefulSite example(GURL("https://example.test"));
-  FirstPartySetEntry entry(example, SiteType::kPrimary, std::nullopt);
+  FirstPartySetEntry entry(example, SiteType::kPrimary);
 
   EXPECT_THAT(FirstPartySetsContextConfig::Create(
                   {{example, FirstPartySetEntryOverride(entry)}})
@@ -126,9 +126,8 @@ TEST(FirstPartySetsContextConfigTest, Clone) {
   const SchemefulSite foo(GURL("https://foo.test"));
   const SchemefulSite foo_alias(GURL("https://foo.test2"));
 
-  const FirstPartySetEntry primary_entry(example, SiteType::kPrimary,
-                                         std::nullopt);
-  const FirstPartySetEntry associated_entry(example, SiteType::kAssociated, 0);
+  const FirstPartySetEntry primary_entry(example, SiteType::kPrimary);
+  const FirstPartySetEntry associated_entry(example, SiteType::kAssociated);
 
   const FirstPartySetsContextConfig config =
       FirstPartySetsContextConfig::Create(
@@ -153,11 +152,9 @@ TEST(FirstPartySetsContextConfigTest, ForEachAlias) {
   const SchemefulSite bar(GURL("https://bar.test"));
   const SchemefulSite bar_alias(GURL("https://bar.test2"));
 
-  const FirstPartySetEntry primary_entry(example, SiteType::kPrimary,
-                                         std::nullopt);
-  const FirstPartySetEntry associated_entry(example, SiteType::kAssociated, 0);
-  const FirstPartySetEntry service_entry(example, SiteType::kService,
-                                         std::nullopt);
+  const FirstPartySetEntry primary_entry(example, SiteType::kPrimary);
+  const FirstPartySetEntry associated_entry(example, SiteType::kAssociated);
+  const FirstPartySetEntry service_entry(example, SiteType::kService);
 
   const FirstPartySetsContextConfig config =
       FirstPartySetsContextConfig::Create(

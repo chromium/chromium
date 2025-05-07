@@ -1791,11 +1791,9 @@ TEST_F(PrivacySandboxServiceTest,
       kRelatedWebsiteSetsVersion,
       {
           {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
           {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    0)}},
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated)}},
       },
       {});
 
@@ -1831,11 +1829,9 @@ TEST_F(
       kRelatedWebsiteSetsVersion,
       {
           {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
           {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    0)}},
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated)}},
       },
       {});
 
@@ -1872,11 +1868,9 @@ TEST_F(PrivacySandboxServiceTest,
       kRelatedWebsiteSetsVersion,
       {
           {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
           {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    0)}},
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated)}},
       },
       {});
 
@@ -1955,14 +1949,11 @@ TEST_F(PrivacySandboxServiceTest,
       kRelatedWebsiteSetsVersion,
       {
           {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
           {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    0)}},
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated)}},
           {associate2_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    1)}},
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated)}},
       },
       {}));
 
@@ -2069,10 +2060,10 @@ TEST_F(PrivacySandboxServiceTest, UsesConfiguredRelatedWebsiteSets) {
       {
           {youtube_primary_site,
            {net::FirstPartySetEntry(youtube_primary_site,
-                                    net::SiteType::kPrimary, std::nullopt)}},
+                                    net::SiteType::kPrimary)}},
           {youtube_site,
            {net::FirstPartySetEntry(youtube_primary_site,
-                                    net::SiteType::kAssociated, 0)}},
+                                    net::SiteType::kAssociated)}},
       },
       {}));
 
@@ -2082,7 +2073,7 @@ TEST_F(PrivacySandboxServiceTest, UsesConfiguredRelatedWebsiteSets) {
           {{net::SchemefulSite(GURL("https://google.de")),
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                 net::SchemefulSite(GURL("https://new-primary.test")),
-                net::SiteType::kAssociated, 0))}})
+                net::SiteType::kAssociated))}})
           .value());
 
   first_party_sets_policy_service()->InitForTesting();

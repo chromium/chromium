@@ -328,8 +328,7 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
                 member, FirstPartySetEntry(entry->second.primary(),
                                            member == entry->second.primary()
                                                ? SiteType::kPrimary
-                                               : SiteType::kAssociated,
-                                           std::nullopt));
+                                               : SiteType::kAssociated));
           }
           if (member == set_entry.primary())
             return true;
@@ -436,8 +435,7 @@ GlobalFirstPartySets::NormalizeAdditionSets(
         bool inserted =
             normalized
                 .emplace(child_site_and_entry.first,
-                         FirstPartySetEntry(rep_primary, SiteType::kAssociated,
-                                            std::nullopt))
+                         FirstPartySetEntry(rep_primary, SiteType::kAssociated))
                 .second;
         CHECK(inserted);
       }

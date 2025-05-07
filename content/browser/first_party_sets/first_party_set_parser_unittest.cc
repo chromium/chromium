@@ -105,18 +105,17 @@ TEST(FirstPartySetParser, AcceptsMinimal_Associated) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite aaaa(GURL("https://aaaa.test"));
 
-  EXPECT_EQ(
-      ParseSets(R"({"primary": "https://example.test",)"
-                R"("associatedSites": ["https://aaaa.test"]})"),
-      net::GlobalFirstPartySets(
-          kVersion,
-          {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
-              {aaaa,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
-          },
-          {}));
+  EXPECT_EQ(ParseSets(R"({"primary": "https://example.test",)"
+                      R"("associatedSites": ["https://aaaa.test"]})"),
+            net::GlobalFirstPartySets(
+                kVersion,
+                {
+                    {example,
+                     net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
+                    {aaaa, net::FirstPartySetEntry(example,
+                                                   net::SiteType::kAssociated)},
+                },
+                {}));
 }
 
 TEST(FirstPartySetParser, AcceptsMinimal_Service) {
@@ -129,10 +128,9 @@ TEST(FirstPartySetParser, AcceptsMinimal_Service) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
-              {aaaa, net::FirstPartySetEntry(example, net::SiteType::kService,
-                                             std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
+              {aaaa, net::FirstPartySetEntry(example, net::SiteType::kService)},
           },
           {}));
 }
@@ -159,12 +157,10 @@ TEST(FirstPartySetParser, AcceptsMinimal_AllSubsets_WithCcTLDs) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
-              {a,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
-              {b, net::FirstPartySetEntry(example, net::SiteType::kService,
-                                          std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
+              {a, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {b, net::FirstPartySetEntry(example, net::SiteType::kService)},
           },
           {{example_cctld, example}, {a_cctld, a}, {b_cctld, b}}));
   histogram_tester.ExpectUniqueSample(
@@ -220,10 +216,10 @@ TEST(FirstPartySetParser, PrimaryIsTLD) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example2, net::FirstPartySetEntry(
-                             example2, net::SiteType::kPrimary, std::nullopt)},
-              {associated2, net::FirstPartySetEntry(
-                                example2, net::SiteType::kAssociated, 0)},
+              {example2,
+               net::FirstPartySetEntry(example2, net::SiteType::kPrimary)},
+              {associated2,
+               net::FirstPartySetEntry(example2, net::SiteType::kAssociated)},
           },
           {}));
 }
@@ -247,14 +243,14 @@ TEST(FirstPartySetParser, PrimaryIsIPAddress) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example2, net::FirstPartySetEntry(
-                             example2, net::SiteType::kPrimary, std::nullopt)},
-              {associated2, net::FirstPartySetEntry(
-                                example2, net::SiteType::kAssociated, 0)},
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example2,
+               net::FirstPartySetEntry(example2, net::SiteType::kPrimary)},
+              {associated2,
+               net::FirstPartySetEntry(example2, net::SiteType::kAssociated)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {aaaa,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
           },
           {}));
   histogram_tester.ExpectUniqueSample(
@@ -280,10 +276,10 @@ TEST(FirstPartySetParser, PrimaryHasNoTLD) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example2, net::FirstPartySetEntry(
-                             example2, net::SiteType::kPrimary, std::nullopt)},
-              {associated2, net::FirstPartySetEntry(
-                                example2, net::SiteType::kAssociated, 0)},
+              {example2,
+               net::FirstPartySetEntry(example2, net::SiteType::kPrimary)},
+              {associated2,
+               net::FirstPartySetEntry(example2, net::SiteType::kAssociated)},
           },
           {}));
   histogram_tester.ExpectUniqueSample(
@@ -333,14 +329,14 @@ TEST(FirstPartySetParser, AssociatedSiteIsTLD) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {associated1,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
-              {example2, net::FirstPartySetEntry(
-                             example2, net::SiteType::kPrimary, std::nullopt)},
-              {associated2, net::FirstPartySetEntry(
-                                example2, net::SiteType::kAssociated, 0)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {example2,
+               net::FirstPartySetEntry(example2, net::SiteType::kPrimary)},
+              {associated2,
+               net::FirstPartySetEntry(example2, net::SiteType::kAssociated)},
           },
           {}));
 }
@@ -360,14 +356,14 @@ TEST(FirstPartySetParser, AssociatedSiteIsIPAddress) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {associated1,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
-              {example2, net::FirstPartySetEntry(
-                             example2, net::SiteType::kPrimary, std::nullopt)},
-              {associated2, net::FirstPartySetEntry(
-                                example2, net::SiteType::kAssociated, 0)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {example2,
+               net::FirstPartySetEntry(example2, net::SiteType::kPrimary)},
+              {associated2,
+               net::FirstPartySetEntry(example2, net::SiteType::kAssociated)},
           },
           {}));
 }
@@ -392,18 +388,18 @@ TEST(FirstPartySetParser, AssociatedSiteHasNoTLD) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {associated1,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
-              {example2, net::FirstPartySetEntry(
-                             example2, net::SiteType::kPrimary, std::nullopt)},
-              {associated2, net::FirstPartySetEntry(
-                                example2, net::SiteType::kAssociated, 0)},
-              {example3, net::FirstPartySetEntry(
-                             example3, net::SiteType::kPrimary, std::nullopt)},
-              {associated3, net::FirstPartySetEntry(
-                                example3, net::SiteType::kAssociated, 0)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {example2,
+               net::FirstPartySetEntry(example2, net::SiteType::kPrimary)},
+              {associated2,
+               net::FirstPartySetEntry(example2, net::SiteType::kAssociated)},
+              {example3,
+               net::FirstPartySetEntry(example3, net::SiteType::kPrimary)},
+              {associated3,
+               net::FirstPartySetEntry(example3, net::SiteType::kAssociated)},
           },
           {}));
 }
@@ -412,18 +408,17 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Primary) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite aaaa(GURL("https://aaaa.test"));
 
-  EXPECT_EQ(
-      ParseSets(R"({"primary": "https://subdomain.example.test", )"
-                R"("associatedSites": ["https://aaaa.test"]})"),
-      net::GlobalFirstPartySets(
-          kVersion,
-          {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
-              {aaaa,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
-          },
-          {}));
+  EXPECT_EQ(ParseSets(R"({"primary": "https://subdomain.example.test", )"
+                      R"("associatedSites": ["https://aaaa.test"]})"),
+            net::GlobalFirstPartySets(
+                kVersion,
+                {
+                    {example,
+                     net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
+                    {aaaa, net::FirstPartySetEntry(example,
+                                                   net::SiteType::kAssociated)},
+                },
+                {}));
 }
 
 TEST(FirstPartySetParser, TruncatesPrimaryInvalidWithAlias) {
@@ -444,18 +439,17 @@ TEST(FirstPartySetParser, TruncatesSubdomain_AssociatedSite) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite aaaa(GURL("https://aaaa.test"));
 
-  EXPECT_EQ(
-      ParseSets(R"({"primary": "https://example.test", )"
-                R"("associatedSites": ["https://subdomain.aaaa.test"]})"),
-      net::GlobalFirstPartySets(
-          kVersion,
-          {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
-              {aaaa,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
-          },
-          {}));
+  EXPECT_EQ(ParseSets(R"({"primary": "https://example.test", )"
+                      R"("associatedSites": ["https://subdomain.aaaa.test"]})"),
+            net::GlobalFirstPartySets(
+                kVersion,
+                {
+                    {example,
+                     net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
+                    {aaaa, net::FirstPartySetEntry(example,
+                                                   net::SiteType::kAssociated)},
+                },
+                {}));
 }
 
 TEST(FirstPartySetParser, TruncatesSubdomain_RepeatedDomain) {
@@ -482,14 +476,14 @@ TEST(FirstPartySetParser, TruncatesSubdomain_RepeatedDomain) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {bbbb,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 2)},
-              {example2, net::FirstPartySetEntry(
-                             example2, net::SiteType::kPrimary, std::nullopt)},
-              {cccc, net::FirstPartySetEntry(example2,
-                                             net::SiteType::kAssociated, 0)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {example2,
+               net::FirstPartySetEntry(example2, net::SiteType::kPrimary)},
+              {cccc,
+               net::FirstPartySetEntry(example2, net::SiteType::kAssociated)},
           },
           {}));
 }
@@ -530,14 +524,14 @@ TEST(FirstPartySetParser, TruncatesSubdomain_NondisjointSets) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {bbbb,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
-              {example2, net::FirstPartySetEntry(
-                             example2, net::SiteType::kPrimary, std::nullopt)},
-              {cccc, net::FirstPartySetEntry(example2,
-                                             net::SiteType::kAssociated, 1)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {example2,
+               net::FirstPartySetEntry(example2, net::SiteType::kPrimary)},
+              {cccc,
+               net::FirstPartySetEntry(example2, net::SiteType::kAssociated)},
           },
           {}));
 
@@ -560,12 +554,12 @@ TEST(FirstPartySetParser, TruncatesSubdomain_NondisjointSets) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {bbbb,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
-              {example3, net::FirstPartySetEntry(
-                             example3, net::SiteType::kPrimary, std::nullopt)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {example3,
+               net::FirstPartySetEntry(example3, net::SiteType::kPrimary)},
           },
           {{example3_cctld, example3}}));
 
@@ -586,10 +580,10 @@ TEST(FirstPartySetParser, TruncatesSubdomain_NondisjointSets) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {bbbb,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
           },
           {}));
 }
@@ -609,14 +603,13 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {associated1,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
-              {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
-                                            std::nullopt)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary)},
               {associated2,
-               net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)},
+               net::FirstPartySetEntry(foo, net::SiteType::kAssociated)},
           },
           {}));
   histogram_tester.ExpectUniqueSample(
@@ -645,14 +638,13 @@ TEST(FirstPartySetParser, AcceptsMultipleSetsWithWhitespace) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {associated1,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
-              {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
-                                            std::nullopt)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary)},
               {associated2,
-               net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)},
+               net::FirstPartySetEntry(foo, net::SiteType::kAssociated)},
           },
           {}));
   histogram_tester.ExpectUniqueSample(
@@ -689,10 +681,10 @@ TEST(FirstPartySetParser, AllowsTrailingCommas) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {associated1,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
           },
           {}));
 }
@@ -770,14 +762,13 @@ TEST(FirstPartySetParser, Accepts_ccTLDAliases) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
               {associated1,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
-              {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
-                                            std::nullopt)},
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary)},
               {associated2,
-               net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)},
+               net::FirstPartySetEntry(foo, net::SiteType::kAssociated)},
           },
           {
               {associated1_cctld1, associated1},
@@ -1042,21 +1033,17 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
           {
               {
                   {primary2,
-                   net::FirstPartySetEntry(primary2, net::SiteType::kPrimary,
-                                           std::nullopt)},
-                  {associated2,
-                   net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
-                                           std::nullopt)},
+                   net::FirstPartySetEntry(primary2, net::SiteType::kPrimary)},
+                  {associated2, net::FirstPartySetEntry(
+                                    primary2, net::SiteType::kAssociated)},
               },
           },
           {
               {
                   {primary3,
-                   net::FirstPartySetEntry(primary3, net::SiteType::kPrimary,
-                                           std::nullopt)},
-                  {associated3,
-                   net::FirstPartySetEntry(primary3, net::SiteType::kAssociated,
-                                           std::nullopt)},
+                   net::FirstPartySetEntry(primary3, net::SiteType::kPrimary)},
+                  {associated3, net::FirstPartySetEntry(
+                                    primary3, net::SiteType::kAssociated)},
               },
           },
           {}))));
@@ -1099,11 +1086,9 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
           {
               {
                   {primary1,
-                   net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
-                                           std::nullopt)},
-                  {associated2,
-                   net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                           std::nullopt)},
+                   net::FirstPartySetEntry(primary1, net::SiteType::kPrimary)},
+                  {associated2, net::FirstPartySetEntry(
+                                    primary1, net::SiteType::kAssociated)},
               },
           },
           {}, {}))));
@@ -1135,11 +1120,9 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
           {
               {
                   {primary2,
-                   net::FirstPartySetEntry(primary2, net::SiteType::kPrimary,
-                                           std::nullopt)},
-                  {associated2,
-                   net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
-                                           std::nullopt)},
+                   net::FirstPartySetEntry(primary2, net::SiteType::kPrimary)},
+                  {associated2, net::FirstPartySetEntry(
+                                    primary2, net::SiteType::kAssociated)},
               },
           },
           {}, {}))));
@@ -1300,18 +1283,16 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
             )");
   const FirstPartySetsOverridesPolicy want_policy(net::SetsMutation(
       {{
-           {primary1, net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
-                                              std::nullopt)},
+           {primary1,
+            net::FirstPartySetEntry(primary1, net::SiteType::kPrimary)},
            {associated_site1,
-            net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                    std::nullopt)},
+            net::FirstPartySetEntry(primary1, net::SiteType::kAssociated)},
        },
        {
-           {primary2, net::FirstPartySetEntry(primary2, net::SiteType::kPrimary,
-                                              std::nullopt)},
+           {primary2,
+            net::FirstPartySetEntry(primary2, net::SiteType::kPrimary)},
            {associated_site2,
-            net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
-                                    std::nullopt)},
+            net::FirstPartySetEntry(primary2, net::SiteType::kAssociated)},
        }},
       {}, {}));
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value),
@@ -1349,25 +1330,22 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
             )");
   const FirstPartySetsOverridesPolicy want_policy(net::SetsMutation(
       {{
-           {primary1, net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
-                                              std::nullopt)},
+           {primary1,
+            net::FirstPartySetEntry(primary1, net::SiteType::kPrimary)},
            {associated_site1,
-            net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                    std::nullopt)},
+            net::FirstPartySetEntry(primary1, net::SiteType::kAssociated)},
        },
        {
-           {primary2, net::FirstPartySetEntry(primary2, net::SiteType::kPrimary,
-                                              std::nullopt)},
+           {primary2,
+            net::FirstPartySetEntry(primary2, net::SiteType::kPrimary)},
            {associated_site2,
-            net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
-                                    std::nullopt)},
+            net::FirstPartySetEntry(primary2, net::SiteType::kAssociated)},
        }},
       {{
-          {primary3, net::FirstPartySetEntry(primary3, net::SiteType::kPrimary,
-                                             std::nullopt)},
+          {primary3,
+           net::FirstPartySetEntry(primary3, net::SiteType::kPrimary)},
           {associatedSite3,
-           net::FirstPartySetEntry(primary3, net::SiteType::kAssociated,
-                                   std::nullopt)},
+           net::FirstPartySetEntry(primary3, net::SiteType::kAssociated)},
       }},
       {}));
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value),
@@ -1415,11 +1393,10 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
             )");
   const FirstPartySetsOverridesPolicy want_policy(net::SetsMutation(
       {{
-          {primary1, net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
-                                             std::nullopt)},
+          {primary1,
+           net::FirstPartySetEntry(primary1, net::SiteType::kPrimary)},
           {associated1,
-           net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                   std::nullopt)},
+           net::FirstPartySetEntry(primary1, net::SiteType::kAssociated)},
       }},
       {}, {}));
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value),
@@ -1472,34 +1449,29 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   const FirstPartySetsOverridesPolicy want_policy(net::SetsMutation(
       /*replacement_sets=*/
       {{
-           {primary1, net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
-                                              std::nullopt)},
+           {primary1,
+            net::FirstPartySetEntry(primary1, net::SiteType::kPrimary)},
            {associated_site1,
-            net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                    std::nullopt)},
+            net::FirstPartySetEntry(primary1, net::SiteType::kAssociated)},
            {associated_site1_cctld,
-            net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                    std::nullopt)},
+            net::FirstPartySetEntry(primary1, net::SiteType::kAssociated)},
        },
        {
-           {primary2, net::FirstPartySetEntry(primary2, net::SiteType::kPrimary,
-                                              std::nullopt)},
+           {primary2,
+            net::FirstPartySetEntry(primary2, net::SiteType::kPrimary)},
            {primary2_cctld,
-            net::FirstPartySetEntry(primary2, net::SiteType::kPrimary,
-                                    std::nullopt)},
+            net::FirstPartySetEntry(primary2, net::SiteType::kPrimary)},
            {associated_site2,
-            net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
-                                    std::nullopt)},
+            net::FirstPartySetEntry(primary2, net::SiteType::kAssociated)},
        }},
       /*addition_sets=*/
       {{
-          {primary3, net::FirstPartySetEntry(primary3, net::SiteType::kPrimary,
-                                             std::nullopt)},
-          {service3, net::FirstPartySetEntry(primary3, net::SiteType::kService,
-                                             std::nullopt)},
+          {primary3,
+           net::FirstPartySetEntry(primary3, net::SiteType::kPrimary)},
+          {service3,
+           net::FirstPartySetEntry(primary3, net::SiteType::kService)},
           {service3_cctld,
-           net::FirstPartySetEntry(primary3, net::SiteType::kService,
-                                   std::nullopt)},
+           net::FirstPartySetEntry(primary3, net::SiteType::kService)},
       }},
       /*aliases=*/
       {
@@ -1533,18 +1505,13 @@ TEST(FirstPartySetParser, RespectsAssociatedSiteLimit) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
-              {a,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
-              {b,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
-              {c,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 2)},
-              {d,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 3)},
-              {e,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 4)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
+              {a, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {b, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {c, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {d, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {e, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
           },
           {}));
 }
@@ -1577,22 +1544,15 @@ TEST(FirstPartySetParser, ServiceSitesAreNotCountedAgainstAssociatedSiteLimit) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
-              {a,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
-              {d,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
-              {e,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 2)},
-              {f,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 3)},
-              {g,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 4)},
-              {b, net::FirstPartySetEntry(example, net::SiteType::kService,
-                                          std::nullopt)},
-              {c, net::FirstPartySetEntry(example, net::SiteType::kService,
-                                          std::nullopt)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
+              {a, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {d, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {e, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {f, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {g, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {b, net::FirstPartySetEntry(example, net::SiteType::kService)},
+              {c, net::FirstPartySetEntry(example, net::SiteType::kService)},
           },
           {}));
 }
@@ -1620,18 +1580,13 @@ TEST(FirstPartySetParser, AliasesAreNotCountedAgainstAssociatedSiteLimit) {
       net::GlobalFirstPartySets(
           kVersion,
           {
-              {example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)},
-              {a,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
-              {b,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
-              {c,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 2)},
-              {d,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 3)},
-              {e,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 4)},
+              {example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)},
+              {a, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {b, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {c, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {d, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
+              {e, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
           },
           {{a_cctld1, a}, {a_cctld2, a}}));
 }
@@ -1666,26 +1621,20 @@ TEST(FirstPartySetParser, EnterprisePolicies_ExemptFromAssociatedSiteLimit) {
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value).first,
       base::ok(FirstPartySetsOverridesPolicy(net::SetsMutation(
           {{
-              {primary1, net::FirstPartySetEntry(
-                             primary1, net::SiteType::kPrimary, std::nullopt)},
+              {primary1,
+               net::FirstPartySetEntry(primary1, net::SiteType::kPrimary)},
               {associated1,
-               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                       std::nullopt)},
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated)},
               {associated2,
-               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                       std::nullopt)},
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated)},
               {associated3,
-               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                       std::nullopt)},
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated)},
               {associated4,
-               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                       std::nullopt)},
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated)},
               {associated5,
-               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                       std::nullopt)},
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated)},
               {associated6,
-               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
-                                       std::nullopt)},
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated)},
           }},
           {}, {}))));
 }
@@ -1720,10 +1669,10 @@ TEST(FirstPartySetParser,
       base::ok(FirstPartySetsOverridesPolicy(net::SetsMutation(
           {},
           {{
-              {primary, net::FirstPartySetEntry(
-                            primary, net::SiteType::kPrimary, std::nullopt)},
-              {alias, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                              std::nullopt)},
+              {primary,
+               net::FirstPartySetEntry(primary, net::SiteType::kPrimary)},
+              {alias,
+               net::FirstPartySetEntry(primary, net::SiteType::kPrimary)},
           }},
           {{alias, primary}}))));
 }
@@ -1757,10 +1706,10 @@ TEST(FirstPartySetParser,
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_dict).first,
       base::ok(FirstPartySetsOverridesPolicy(net::SetsMutation(
           {{
-              {primary, net::FirstPartySetEntry(
-                            primary, net::SiteType::kPrimary, std::nullopt)},
-              {alias, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                              std::nullopt)},
+              {primary,
+               net::FirstPartySetEntry(primary, net::SiteType::kPrimary)},
+              {alias,
+               net::FirstPartySetEntry(primary, net::SiteType::kPrimary)},
           }},
           {}, {{alias, primary}}))));
 }
@@ -1807,18 +1756,15 @@ TEST(FirstPartySetParser,
           {
               {
                   {primary,
-                   net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                           std::nullopt)},
+                   net::FirstPartySetEntry(primary, net::SiteType::kPrimary)},
                   {associated1, net::FirstPartySetEntry(
-                                    primary, net::SiteType::kAssociated, 0)},
+                                    primary, net::SiteType::kAssociated)},
                   {associated2, net::FirstPartySetEntry(
-                                    primary, net::SiteType::kAssociated, 1)},
-                  {associated2_cctld,
-                   net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
-                                           1)},
+                                    primary, net::SiteType::kAssociated)},
+                  {associated2_cctld, net::FirstPartySetEntry(
+                                          primary, net::SiteType::kAssociated)},
                   {service,
-                   net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                           std::nullopt)},
+                   net::FirstPartySetEntry(primary, net::SiteType::kService)},
               },
           },
           /*addition_sets=*/{},
