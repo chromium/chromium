@@ -12413,6 +12413,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kFwupdDeveloperMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-sms-otp-filling", flag_descriptions::kAndroidSmsOtpFillingName,
+     flag_descriptions::kAndroidSmsOtpFillingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(password_manager::features::kAndroidSmsOtpFilling)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

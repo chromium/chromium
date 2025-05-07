@@ -14662,6 +14662,7 @@ from previous Chrome versions.
   <int value="110888614" label="ReduceDisplayNotifications:enabled"/>
   <int value="112126033"
       label="ClearInstanceInfoWhenClosedIntentionally:disabled"/>
+  <int value="112131756" label="AndroidSmsOtpFilling:disabled"/>
   <int value="112140177" label="DesktopPWAsUnifiedInstall:disabled"/>
   <int value="113142558" label="TrackingProtectionOnboardingRollback:enabled"/>
   <int value="114318184" label="AccessibilityFlashScreenFeature:disabled"/>
@@ -14922,6 +14923,7 @@ from previous Chrome versions.
   <int value="212194994" label="PerAppLanguage:enabled"/>
   <int value="212245695" label="PowerBookmarksSidePanel:disabled"/>
   <int value="212361556" label="ComposeProactiveNudge:disabled"/>
+  <int value="212459881" label="AndroidSmsOtpFilling:enabled"/>
   <int value="212489101" label="AutofillAssistantChromeEntry:enabled"/>
   <int value="212959824" label="SafetyHubWeakAndReusedPasswords:disabled"/>
   <int value="212977039" label="MediaFoundationD3D11VideoCapture:disabled"/>

@@ -212,6 +212,12 @@ const char kAndroidProgressBarVisualUpdateDescription[] =
     "Enable the new updated progress bar";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAndroidSmsOtpFillingName[] = "Enable SMS OTP filling";
+const char kAndroidSmsOtpFillingDescription[] =
+    "Enables filling of OTPs received via SMS on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kIgnoreDeviceFlexArcEnabledPolicyName[] =
     "Ignore VPN Apps Enabling on ChromeOS Flex";
