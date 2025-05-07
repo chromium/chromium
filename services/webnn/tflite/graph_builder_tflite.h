@@ -721,6 +721,7 @@ class GraphBuilderTflite final {
       const mojom::Concat& concat);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::ElementWiseBinary& binary);
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(const mojom::Elu& elu);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Transpose& transpose);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(

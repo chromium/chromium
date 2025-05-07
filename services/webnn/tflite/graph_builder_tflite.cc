@@ -1642,6 +1642,43 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
 }
 
 std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Elu& elu) {
+  if (!IsDequantizeOutput(elu.input_operand_id)) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/413083273): Consider the restriction in GPU delegate.
+  // For XNNPack delegate, the input must be dequantized from int8, the input
+  // and output scale must be scaler.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=4136;drc=f667feb8a5c6f227b49328ce78a062acc4f81187
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(elu.input_operand_id);
+  if (GetOperand(input_dequantize.input_operand_id).descriptor.data_type() !=
+      OperandDataType::kInt8) {
+    return std::nullopt;
+  }
+
+  if (GetOperand(input_dequantize.scale_operand_id)
+          .descriptor.NumberOfElements() != 1) {
+    return std::nullopt;
+  }
+
+  std::optional<size_t> next_op =
+      IsNextOpQuantize(elu.output_operand_id, {OperandDataType::kInt8});
+  if (!next_op) {
+    return std::nullopt;
+  }
+
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(*next_op);
+  if (GetOperand(output_quantize.scale_operand_id)
+          .descriptor.NumberOfElements() != 1) {
+    return std::nullopt;
+  }
+
+  return TrySerializeQuantizedOutput(*next_op);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
 GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
     const mojom::Transpose& transpose) {
   if (!IsDequantizeOutput(transpose.input_operand_id)) {
@@ -3456,13 +3493,24 @@ auto GraphBuilderTflite::SerializeElu(const mojom::Elu& elu)
         "Setting a custom alpha is not supported in tflite schema.");
   }
 
+  std::optional<TensorInfo> quantized_output = CanFuseQuantizeAndGetOutput(elu);
+  const bool fuse_dequantize = quantized_output.has_value();
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(elu.input_operand_id));
-  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                   SerializeOutputTensorInfo(elu.output_operand_id));
+                   SerializeInputTensorInfo(
+                       elu.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
+
+  TensorIndex output_tensor_index;
+  if (fuse_dequantize) {
+    output_tensor_index = quantized_output->index;
+  } else {
+    ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                     SerializeOutputTensorInfo(elu.output_operand_id));
+    output_tensor_index = output_tensor_info.index;
+  }
+
   return SerializeUnaryOperation(::tflite::BuiltinOperator_ELU,
-                                 input_tensor_info.index,
-                                 output_tensor_info.index);
+                                 input_tensor_info.index, output_tensor_index);
 }
 
 auto GraphBuilderTflite::SerializeErf(const TensorInfo& input_tensor_info,

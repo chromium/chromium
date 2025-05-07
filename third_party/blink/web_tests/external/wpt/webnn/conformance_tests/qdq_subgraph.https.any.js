@@ -924,6 +924,89 @@ const subgraphTests = [
       }
     }
   },
+  {
+    'name': 'quantized elu',
+    'graph': {
+      'inputs': {
+        'input': {
+          'data': [
+            1.6811466217041016, 0.0479511022567749, 0.33355462551116943,
+            -0.1988269537687301, -0.0041167140007019, -0.0634240251779556,
+          ],
+          'descriptor': {shape: [2, 3], dataType: 'float32'},
+          'constant': false
+        },
+        'inputScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputZeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'input'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'quantizedInput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInput'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'dequantizedInput'
+        },
+        {
+          'name': 'elu',
+          'arguments': [{'input': 'dequantizedInput'}],
+          'outputs': 'eluOutput'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'eluOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedeluOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedeluOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0.49803924560546875, 0.0470588281750679, 0.3333333432674408,
+            -0.18039216101169586, -0.003921568859368563, -0.062745101749897,
+          ],
+          'descriptor': {shape: [2, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
 ];
 
 if (navigator.ml) {
