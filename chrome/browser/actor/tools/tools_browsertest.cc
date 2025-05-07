@@ -433,6 +433,64 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_PageHandlesKeyEvents) {
   EXPECT_TRUE(result.Get());
 }
 
+// Ensure that the default mode is for the type tool to replace any existing
+// text in the targeted element.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_ReplacesText) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.getElementById('input').value = 'foo bar'"));
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+
+  std::string typed_string = "abc";
+  BrowserAction action =
+      MakeType(input_id.value(), typed_string, /*follow_by_enter=*/false);
+
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_TRUE(result.Get());
+  EXPECT_EQ(typed_string,
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
+// Ensure that if the page moves focus immediately to a different input box, the
+// type tool correctly operates on the new input box.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FocusMovesFocus) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Setup the first input box to immediately move focus to the second input
+  // box. Ensure the existing text in the second box is replaced.
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     R"JS(
+                        let input = document.getElementById('input');
+                        let input2 = document.getElementById('input2');
+                        input2.value = 'foo bar';
+                        input.addEventListener('focus', () => {
+                          input2.focus();
+                        });
+                      )JS"));
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+
+  std::string typed_string = "abc";
+  BrowserAction action =
+      MakeType(input_id.value(), typed_string, /*follow_by_enter=*/false);
+
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_TRUE(result.Get());
+
+  // Since focusing the first input causes the second input to become focused,
+  // the tool should operate on the second input.
+  EXPECT_EQ("",
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+  EXPECT_EQ(typed_string,
+            EvalJs(web_contents(), "document.getElementById('input2').value"));
+}
+
 // ===============================================
 // Mouse Move Tool
 // ===============================================

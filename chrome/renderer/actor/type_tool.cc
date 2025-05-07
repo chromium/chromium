@@ -90,6 +90,14 @@ const std::unordered_map<char, KeyInfo>& GetKeyInfoMap() {
   return *key_info_map;
 }
 
+bool PrepareTargetForMode(blink::WebLocalFrame& frame,
+                          mojom::TypeAction::Mode mode) {
+  // TODO(crbug.com/409570203): Use DELETE_EXISTING regardless of `mode` but
+  // we'll have to implement the different insertion modes.
+  frame.ExecuteCommand(blink::WebString::FromUTF8("SelectAll"));
+  return true;
+}
+
 }  // namespace
 
 TypeTool::TypeTool(mojom::TypeActionPtr action, content::RenderFrame& frame)
@@ -220,12 +228,6 @@ bool TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
   return true;
 }
 
-bool TypeTool::PrepareTargetForMode(const blink::WebNode& node,
-                                    mojom::TypeAction::Mode mode) {
-  // TODO(crbug.com/409570203): Implement.
-  return true;
-}
-
 void TypeTool::Execute(ToolFinishedCallback callback) {
   if (!frame_->GetWebFrame() || !frame_->GetWebFrame()->FrameWidget()) {
     ACTOR_LOG() << "RenderFrame or FrameWidget is invalid.";
@@ -251,6 +253,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   }
 
   // Validate Node is an editable element
+  // TODO(crbug.com/414398425): This seems too restrictive for non-input cases.
   if (!node.IsElementNode()) {
     ACTOR_LOG() << "Target node " << node << " is not an element.";
     std::move(callback).Run(false);
@@ -275,12 +278,18 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
     }
   }
 
-  if (!PrepareTargetForMode(node, action_->mode)) {
+  if (!PrepareTargetForMode(*frame_->GetWebFrame(), action_->mode)) {
     ACTOR_LOG() << "Failed to prepare target element based on mode: "
                 << action_->mode;
     std::move(callback).Run(false);
     return;
   }
+
+  // Note: Focus and preparing the target performs actions which lead to script
+  // execution so `node` may no longer be focused (it or its frame could be
+  // disconnected). However, sites sometimes do unexpected things to work around
+  // issues so to keep those working we proceed to key dispatch without checking
+  // this.
 
   if (!base::IsStringASCII(action_->text)) {
     // TODO(crbug.com/409032824): Add support beyond ASCII.

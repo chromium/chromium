@@ -65,7 +65,9 @@ BrowserAction MakeType(int content_node_id,
   TypeAction* type_action = action.add_action_information()->mutable_type();
   type_action->mutable_target()->set_content_node_id(content_node_id);
   type_action->set_text(text);
-  type_action->set_mode(TypeAction_TypeMode::TypeAction_TypeMode_APPEND);
+  // TODO(crbug.com/409570203): Tests should set a mode.
+  type_action->set_mode(
+      TypeAction_TypeMode::TypeAction_TypeMode_UNKNOWN_TYPE_MODE);
   type_action->set_follow_by_enter(follow_by_enter);
   return action;
 }

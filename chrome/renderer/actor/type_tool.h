@@ -14,10 +14,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 
-namespace blink {
-class WebNode;
-}  // namespace blink
-
 namespace content {
 class RenderFrame;
 }  // namespace content
@@ -60,11 +56,6 @@ class TypeTool : public ToolBase {
       blink::WebInputEvent::Type type,
       KeyParams key_params);
   bool SimulateKeyPress(TypeTool::KeyParams params);
-
-  // Attempts to prepare the target element based on the TypeMode.
-  // Returns true on success, false on failure.
-  bool PrepareTargetForMode(const blink::WebNode& node,
-                            mojom::TypeAction::Mode mode);
 
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
   // RenderFrame.
