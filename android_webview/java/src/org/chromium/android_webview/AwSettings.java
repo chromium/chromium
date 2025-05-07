@@ -220,6 +220,7 @@ public class AwSettings {
     private boolean mPaymentRequestEnabled;
     private boolean mHasEnrolledInstrumentEnabled = true;
     private final AwMediaIntegrityApiStatusConfig mIntegrityApiStatusConfig;
+    private boolean mIncludeCookiesOnIntercept;
 
     private @WebauthnMode int mWebauthnMode = WebauthnMode.NONE;
 
@@ -2261,6 +2262,22 @@ public class AwSettings {
     public int getWebauthnSupport() {
         synchronized (mAwSettingsLock) {
             return getWebauthnSupportLocked();
+        }
+    }
+
+    /**
+     * Set whether the shouldInterceptRequest API should include request cookies and accept response
+     * cookies.
+     */
+    public void setIncludeCookiesOnIntercept(boolean includeCookiesOnIntercept) {
+        synchronized (mAwSettingsLock) {
+            this.mIncludeCookiesOnIntercept = includeCookiesOnIntercept;
+        }
+    }
+
+    public boolean getIncludeCookiesOnIntercept() {
+        synchronized (mAwSettingsLock) {
+            return mIncludeCookiesOnIntercept;
         }
     }
 

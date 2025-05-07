@@ -45,6 +45,7 @@ public class AwServiceWorkerSettings {
 
     // Computed on construction.AwServiceWorkerSettingsTest
     private final boolean mHasInternetPermission;
+    private boolean mIncludeCookiesOnIntercept;
 
     public AwServiceWorkerSettings(Context context, AwBrowserContext browserContext) {
         mBrowserContext = browserContext;
@@ -182,6 +183,22 @@ public class AwServiceWorkerSettings {
     public Set<String> getRequestedWithHeaderOriginAllowList() {
         synchronized (mAwServiceWorkerSettingsLock) {
             return mRequestedWithHeaderAllowedOriginRules;
+        }
+    }
+
+    /**
+     * Set whether the shouldInterceptRequest API should include request cookies and accept response
+     * cookies.
+     */
+    public void setIncludeCookiesOnIntercept(boolean includeCookiesOnIntercept) {
+        synchronized (mAwServiceWorkerSettingsLock) {
+            this.mIncludeCookiesOnIntercept = includeCookiesOnIntercept;
+        }
+    }
+
+    public boolean getIncludeCookiesOnIntercept() {
+        synchronized (mAwServiceWorkerSettingsLock) {
+            return mIncludeCookiesOnIntercept;
         }
     }
 }

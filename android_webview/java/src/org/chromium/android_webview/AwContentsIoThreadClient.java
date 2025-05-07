@@ -53,4 +53,7 @@ public abstract class AwContentsIoThreadClient {
 
     @CalledByNative
     public void onLoadResource(@JniType("std::string") String url) {}
+
+    @CalledByNative
+    public abstract boolean shouldIncludeCookiesInIntercept();
 }

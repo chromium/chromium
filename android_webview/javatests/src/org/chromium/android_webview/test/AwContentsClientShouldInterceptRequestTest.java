@@ -10,9 +10,9 @@ import android.util.Pair;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebViewClient;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.common.util.concurrent.SettableFuture;
 
@@ -31,6 +31,7 @@ import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -109,8 +110,12 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     }
 
     @After
-    public void tearDown() {
-        mWebServer.shutdown();
+    public void tearDown() throws Throwable {
+        CookieUtils.clearCookies(
+                InstrumentationRegistry.getInstrumentation(), new AwCookieManager());
+        if (mWebServer != null) {
+            mWebServer.shutdown();
+        }
     }
 
     @Test
@@ -1402,10 +1407,8 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
-    @CommandLineFlags.Add({
-        "enable-features=WebViewInterceptedCookieHeader,WebViewInterceptedCookieHeaderReadWrite"
-    })
     public void testInterceptedCookieHeaders_readWriteEnabled() throws Throwable {
+        mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setIncludeCookiesOnIntercept(true);
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord(
@@ -1441,14 +1444,14 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
-    @CommandLineFlags.Add({"enable-features=WebViewInterceptedCookieHeader"})
     public void testInterceptedCookieHeaders_readWriteDisabled() throws Throwable {
+        mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setIncludeCookiesOnIntercept(false);
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
-                        .expectAnyRecord(
+                        .expectNoRecords(
                                 "Android.WebView.ShouldInterceptRequest."
                                         + "SetCookieHeader.TimeToRun")
-                        .expectAnyRecord(
+                        .expectNoRecords(
                                 "Android.WebView.ShouldInterceptRequest."
                                         + "GetCookieHeader.PostMojo.TimeToRun")
                         .build();
@@ -1458,23 +1461,18 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         cookieManager.setCookie(destinationUrl, "blah=yo");
 
         // Forcing a cookie to be set in the response
+        Map<String, String> responseHeaders = Map.of("set-cookie", "foo=bar");
         mShouldInterceptRequestHelper.enqueueHtmlResponseForUrl(
-                destinationUrl, "hello", Map.of("set-cookie", "foo=bar"));
+                destinationUrl, "hello", responseHeaders);
 
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), destinationUrl);
 
-        // These are the cookies that were sent before we set a new one.
+        // Intercept should not contain the Cookie header.
         var resourceRequest = mShouldInterceptRequestHelper.getRequestsForUrl(destinationUrl);
-        Assert.assertFalse(
-                "Cookie jar should be empty",
-                resourceRequest.getRequestHeaders().containsKey("Cookie"));
-        Assert.assertNotEquals(
-                "Cookie jar should be empty",
-                "blah=yo",
-                resourceRequest.getRequestHeaders().get("Cookie"));
+        Assert.assertFalse(resourceRequest.getRequestHeaders().containsKey("Cookie"));
 
-        // And then we should see our new value in the cookie manager.
+        // The set-cookie header in the response should not affect stored cookies.
         Assert.assertEquals("blah=yo", cookieManager.getCookie(destinationUrl));
         histogramExpectation.assertExpected();
     }

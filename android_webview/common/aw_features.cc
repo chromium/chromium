@@ -224,29 +224,6 @@ BASE_FEATURE(kWebViewRenderDocument,
              "WebViewRenderDocument",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, WebView performs normal processing work for cookie request
-// headers and response headers for the shouldInterceptRequest API. However,
-// whether the app is provided the cookie jar contents is controlled by
-// WebViewInterceptedCookieHeaderReadWrite. Whether Set-Cookie headers
-// affect the cookie jar is also controlled by
-// WebViewInterceptedCookieHeaderReadWrite. When that flag is disabled,
-// set-cookie headers are ignored and the response headers passed to the
-// app remain unchanged.
-BASE_FEATURE(kWebViewInterceptedCookieHeader,
-             "WebViewInterceptedCookieHeader",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled in conjunction with WebViewInterceptedCookieHeader flag, the
-// cookie header in the request headers will be included for
-// shouldInterceptRequest. Also, the set-cookie header in the response headers
-// will be processed and stored in the cookie jar for shouldInterceptRequest.
-// When disabled while WebViewInterceptedCookieHeader is enabled, the response
-// headers passed to the app remain unchanged. Also, the set-cookie
-// header has no effect on the cookie jar.
-BASE_FEATURE(kWebViewInterceptedCookieHeaderReadWrite,
-             "WebViewInterceptedCookieHeaderReadWrite",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, if the developer hasn't overridden shouldInterceptRequest
 // (or provided the async version), we short circuit (return no response)
 // on the IO thread instead of calling the (empty) method on a background

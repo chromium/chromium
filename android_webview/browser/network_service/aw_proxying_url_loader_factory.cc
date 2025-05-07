@@ -1173,6 +1173,13 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
   bool third_party_cookie_policy =
       global_cookie_policy && io_thread_client->ShouldAcceptThirdPartyCookies();
 
+  // If we are handling an external protocol, we skip providing the cookie
+  // manager. In this case, it will not be bound so we move on.
+  // We should also only provide cookies if cookies are enabled.
+  bool include_cookies_on_intercept =
+      cookie_manager_.is_bound() && global_cookie_policy &&
+      io_thread_client->ShouldIncludeCookiesOnIntercept();
+
   // WebView treats cookie access on a per request basis and so we have to
   // essentially let the rest of the network stack know if we want to allow
   // unpartitioned cookie access or not.
@@ -1205,12 +1212,9 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
     }
   }
 
-  // If we are handling an external protocol, we skip providing the cookie
-  // manager. In this case, it will not be bound so we move on.
-  OptionalGetCookie get_cookie_header = std::nullopt;
-  OptionalSetCookie set_cookie_header = std::nullopt;
-  if (base::FeatureList::IsEnabled(features::kWebViewInterceptedCookieHeader) &&
-      cookie_manager_.is_bound()) {
+  OptionalGetCookie get_cookie_header;
+  OptionalSetCookie set_cookie_header;
+  if (include_cookies_on_intercept) {
     get_cookie_header = base::BindRepeating(
         &AwProxyingURLLoaderFactory::GetCookieHeader, base::Unretained(this));
     set_cookie_header = base::BindRepeating(
@@ -1299,12 +1303,8 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
               }
             }
 
-            // TODO(crbug.com/384986095): Provide real cookie values
-            std::string cookie_line = "";
-            if (base::FeatureList::IsEnabled(
-                    features::kWebViewInterceptedCookieHeaderReadWrite)) {
-              cookie_line = net::CanonicalCookie::BuildCookieLine(cookies);
-            }
+            std::string cookie_line =
+                net::CanonicalCookie::BuildCookieLine(cookies);
             std::move(callback).Run(cookie_line);
             UMA_HISTOGRAM_TIMES(
                 "Android.WebView.ShouldInterceptRequest.GetCookieHeader."
@@ -1329,13 +1329,9 @@ void AwProxyingURLLoaderFactory::SetCookieHeader(
       GetPartitionKey(isolation_info, request), net::CookieSourceType::kHTTP,
       &returned_status);
 
-  // TODO(crbug.com/384986095): Provide real cookie values
-  if (cookie && base::FeatureList::IsEnabled(
-                    features::kWebViewInterceptedCookieHeaderReadWrite)) {
     cookie_manager_->SetCanonicalCookie(*cookie, request.url,
                                         net::CookieOptions::MakeAllInclusive(),
                                         base::DoNothing());
-  }
 
   UMA_HISTOGRAM_TIMES(
       "Android.WebView.ShouldInterceptRequest.SetCookieHeader.TimeToRun",

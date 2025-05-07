@@ -892,25 +892,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(ContentFeatures.PWA_NAVIGATION_CAPTURING),
         Flag.baseFeature("TransportSecurityFileWriterSchedule"),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER,
-                "When enabled, WebView performs normal processing work for cookie request headers"
-                    + " and response headers for the shouldInterceptRequest API. However, whether"
-                    + " the app is provided the cookie jar contents is controlled by "
-                        + AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER_READ_WRITE
-                        + ". Whether Set-Cookie headers affect the cookie jar is also controlled by"
-                        + " "
-                        + AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER_READ_WRITE
-                        + ". When this flag is disabled, set-cookie headers are ignored and the"
-                        + " cookie jar is never read."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER_READ_WRITE,
-                "When enabled in conjunction with WebViewInterceptedCookieHeader flag, the cookie"
-                    + " header in the request headers will be included for shouldInterceptRequest."
-                    + " Also, the set-cookie header in the response headers will be processed for"
-                    + " shouldInterceptRequest. When disabled while WebViewInterceptedCookieHeader"
-                    + " is enabled, the response headers passed to the app remain unchanged. Also,"
-                    + " the set-cookie header has no effect on the cookie jar."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU,
                 "Enables hyperlink context menu in WebView"),
         Flag.baseFeature("MojoUseBinder"),

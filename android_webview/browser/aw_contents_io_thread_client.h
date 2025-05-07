@@ -148,6 +148,9 @@ class AwContentsIoThreadClient {
   // Retrieve the SafeBrowsingEnabled setting value of this AwContents.
   bool GetSafeBrowsingEnabled() const;
 
+  // Enables getting and setting cookies as part of shouldInterceptRequest.
+  bool ShouldIncludeCookiesOnIntercept() const;
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };

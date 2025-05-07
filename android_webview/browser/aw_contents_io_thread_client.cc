@@ -614,4 +614,12 @@ bool AwContentsIoThreadClient::ShouldBlockNetworkLoads() const {
                                                                java_object_);
 }
 
+bool AwContentsIoThreadClient::ShouldIncludeCookiesOnIntercept() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  JNIEnv* env = AttachCurrentThread();
+  return Java_AwContentsIoThreadClient_shouldIncludeCookiesInIntercept(
+      env, java_object_);
+}
+
 }  // namespace android_webview
