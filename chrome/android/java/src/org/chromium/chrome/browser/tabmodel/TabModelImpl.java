@@ -953,10 +953,17 @@ public class TabModelImpl extends TabModelJniBridge {
         switch (disposition) {
             case WindowOpenDisposition.NEW_WINDOW: // fall through
             case WindowOpenDisposition.NEW_FOREGROUND_TAB:
+                tabLaunchType =
+                        parent.getTabGroupId() == null
+                                ? TabLaunchType.FROM_LONGPRESS_FOREGROUND
+                                : TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP;
                 break;
             case WindowOpenDisposition.NEW_POPUP: // fall through
             case WindowOpenDisposition.NEW_BACKGROUND_TAB:
-                tabLaunchType = TabLaunchType.FROM_LONGPRESS_BACKGROUND;
+                tabLaunchType =
+                        parent.getTabGroupId() == null
+                                ? TabLaunchType.FROM_LONGPRESS_BACKGROUND
+                                : TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP;
                 break;
             case WindowOpenDisposition.OFF_THE_RECORD:
                 incognito = true;

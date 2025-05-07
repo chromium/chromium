@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
@@ -407,6 +408,126 @@ public class ChromeTabCreatorTest {
                         .getNavigationHistory()
                         .getEntryAtIndex(2)
                         .getUrl());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTabSameGroupAsParent_FromLongpressForegroundInGroup() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
+                    Tab tabForGroup =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LINK,
+                                            currentTab);
+                    ChromeTabUtils.mergeTabsToGroup(currentTab, tabForGroup);
+                    Tab newTab =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,
+                                            currentTab);
+                    assertNotNull("Expected tab to have a tab group ID", newTab.getTabGroupId());
+                    assertEquals(
+                            "Expected tab to have the same tab group ID as its parent",
+                            currentTab.getTabGroupId(),
+                            newTab.getTabGroupId());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTabSameGroupAsParent_FromLongpressBackgroundInGroup() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
+                    Tab tabForGroup =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LINK,
+                                            currentTab);
+                    ChromeTabUtils.mergeTabsToGroup(currentTab, tabForGroup);
+                    Tab newTab =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                                            currentTab);
+                    assertNotNull("Expected tab to have a tab group ID", newTab.getTabGroupId());
+                    assertEquals(
+                            "Expected tab to have the same tab group ID as its parent",
+                            currentTab.getTabGroupId(),
+                            newTab.getTabGroupId());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTab_ParentInGroup_FromLongpressBackground_OutsideGroup() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
+                    Tab tabForGroup =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LINK,
+                                            currentTab);
+                    ChromeTabUtils.mergeTabsToGroup(currentTab, tabForGroup);
+                    Tab newTab =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                                            currentTab);
+                    assertNull("Expected tab to not be in a group", newTab.getTabGroupId());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTab_FromLongpressForeground_OutsideGroup() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
+                    Tab tabForGroup =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LINK,
+                                            currentTab);
+                    ChromeTabUtils.mergeTabsToGroup(currentTab, tabForGroup);
+                    Tab newTab =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                                            currentTab);
+                    assertNull("Expected tab to not be in a group", newTab.getTabGroupId());
+                });
     }
 
     private Intent createIntent(int tabIndex) {
