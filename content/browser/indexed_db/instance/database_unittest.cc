@@ -737,16 +737,12 @@ class DatabaseOperationTest : public DatabaseTest {
 
       // Set in-flight memory to a reasonably large number to prevent underflow
       // in `PutOperation`
-      transaction_->in_flight_memory() += 1000;
+      transaction_->in_flight_memory_ += 1000;
 
-      auto put_params = std::make_unique<Database::PutOperationParams>();
-      put_params->object_store_id = store_id;
-      put_params->value = record.value;
-      put_params->key = std::make_unique<IndexedDBKey>(record.primary_key);
-      put_params->put_mode = blink::mojom::IDBPutMode::AddOnly;
-      put_params->callback = callback.Get();
-      put_params->index_keys = std::move(index_keys);
-      status = db_->PutOperation(std::move(put_params), transaction_);
+      status = transaction_->DoPut(store_id, record.value, record.primary_key,
+                                   blink::mojom::IDBPutMode::AddOnly,
+                                   std::move(index_keys), callback.Get(),
+                                   transaction_);
       EXPECT_TRUE(status.ok()) << status.ToString();
     }
 
@@ -913,23 +909,16 @@ TEST_F(DatabaseOperationTest, CreatePutDelete) {
   EXPECT_TRUE(s.ok());
   EXPECT_EQ(1ULL, db_->metadata().object_stores.size());
 
-  IndexedDBValue value("value1", {});
-  std::unique_ptr<IndexedDBKey> key(std::make_unique<IndexedDBKey>("key"));
-  std::vector<IndexedDBIndexKeys> index_keys;
   base::MockCallback<blink::mojom::IDBTransaction::PutCallback> callback;
 
   // Set in-flight memory to a reasonably large number to prevent underflow in
   // `PutOperation`
-  transaction_->in_flight_memory() += 1000;
+  transaction_->in_flight_memory_ += 1000;
 
-  auto put_params = std::make_unique<Database::PutOperationParams>();
-  put_params->object_store_id = store_id;
-  put_params->value = value;
-  put_params->key = std::move(key);
-  put_params->put_mode = blink::mojom::IDBPutMode::AddOnly;
-  put_params->callback = callback.Get();
-  put_params->index_keys = index_keys;
-  s = db_->PutOperation(std::move(put_params), transaction_);
+  s = transaction_->DoPut(
+      store_id, IndexedDBValue("value1", {}), IndexedDBKey("key"),
+      blink::mojom::IDBPutMode::AddOnly, std::vector<IndexedDBIndexKeys>(),
+      callback.Get(), transaction_);
   EXPECT_TRUE(s.ok());
 
   s = transaction_->BackingStoreTransaction()->DeleteObjectStore(store_id);

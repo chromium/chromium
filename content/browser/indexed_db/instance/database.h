@@ -44,7 +44,6 @@ class BucketContext;
 class Connection;
 class DatabaseCallbacks;
 class Transaction;
-struct IndexedDBValue;
 enum class CursorType;
 
 // This class maps to a single IDB database:
@@ -114,23 +113,6 @@ class CONTENT_EXPORT Database {
                       std::unique_ptr<blink::IndexedDBKeyRange> key_range,
                       indexed_db::CursorType cursor_type,
                       blink::mojom::IDBDatabase::GetCallback callback,
-                      Transaction* transaction);
-
-  struct CONTENT_EXPORT PutOperationParams {
-    PutOperationParams();
-
-    PutOperationParams(const PutOperationParams&) = delete;
-    PutOperationParams& operator=(const PutOperationParams&) = delete;
-
-    ~PutOperationParams();
-    int64_t object_store_id;
-    IndexedDBValue value;
-    std::unique_ptr<blink::IndexedDBKey> key;
-    blink::mojom::IDBPutMode put_mode;
-    blink::mojom::IDBTransaction::PutCallback callback;
-    std::vector<blink::IndexedDBIndexKeys> index_keys;
-  };
-  Status PutOperation(std::unique_ptr<PutOperationParams> params,
                       Transaction* transaction);
 
   Status SetIndexKeysOperation(
