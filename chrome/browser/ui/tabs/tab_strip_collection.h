@@ -9,8 +9,8 @@
 #include <optional>
 #include <unordered_map>
 
-#include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_collection.h"
 

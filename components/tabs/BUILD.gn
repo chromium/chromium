@@ -5,7 +5,10 @@
 source_set("public") {
   sources = [
     "public/pinned_tab_collection.h",
+    "public/split_tab_collection.h",
+    "public/split_tab_data.h",
     "public/split_tab_id.h",
+    "public/split_tab_visual_data.h",
     "public/supports_handles.h",
     "public/tab_collection.h",
     "public/tab_collection_node_interface.h",
@@ -25,6 +28,9 @@ source_set("public") {
 source_set("tabs") {
   sources = [
     "pinned_tab_collection.cc",
+    "split_tab_collection.cc",
+    "split_tab_data.cc",
+    "split_tab_visual_data.cc",
     "tab_collection.cc",
     "tab_collection_storage.cc",
   ]

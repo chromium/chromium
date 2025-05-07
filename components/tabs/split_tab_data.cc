@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/split_tab_data.h"
+#include "components/tabs/public/split_tab_data.h"
 
 #include <memory>
 
-#include "chrome/browser/ui/tabs/split_tab_collection.h"
-#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
+#include "components/tabs/public/split_tab_collection.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace split_tabs {

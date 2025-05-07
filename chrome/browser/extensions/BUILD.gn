@@ -468,6 +468,7 @@ source_set("extensions") {
     "//components/services/unzip/content",
     "//components/spellcheck/browser",
     "//components/supervised_user/core/browser",
+    "//components/tabs:public",
     "//components/update_client",
     "//components/update_client:common_impl",
     "//components/user_prefs",
