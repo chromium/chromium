@@ -1084,9 +1084,7 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
 
   GURL canonical_search_url;
   if (!HasCanonicalPreloadingOmniboxSearchURL(navigation_url, profile_,
-                                              &canonical_search_url) ||
-      !IsSearchDestinationMatch(canonical_search_url, profile_,
-                                navigation_url)) {
+                                              &canonical_search_url)) {
     recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
     return prefetches_.end();
   }
