@@ -360,7 +360,7 @@ class OverlayCandidateFactoryArbitraryTransformTest
     sqs->quad_to_target_transform = quad_to_target_transform;
     TextureDrawQuad quad;
     quad.SetNew(sqs, quad_rect, quad_rect, false,
-                CreateResource(/*is_overlay_candidate=*/true, origin), false,
+                CreateResource(/*is_overlay_candidate=*/true, origin), true,
                 gfx::PointF(), gfx::PointF(1, 1), SkColors::kTransparent, false,
                 false, gfx::ProtectedVideoType::kClear);
     return quad;
@@ -771,7 +771,7 @@ class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
     quad.SetNew(
         sqs, quad_rect, quad_rect, false,
         CreateResource(/*is_overlay_candidate=*/true, kTopLeft_GrSurfaceOrigin),
-        false, quad_uv_rect.origin(), quad_uv_rect.bottom_right(),
+        true, quad_uv_rect.origin(), quad_uv_rect.bottom_right(),
         SkColors::kTransparent, false, false, gfx::ProtectedVideoType::kClear);
 
     return quad;

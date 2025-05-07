@@ -772,7 +772,7 @@ class OverlayTest : public testing::Test {
       const gfx::Size& resource_size_in_pixels,
       SurfaceId test_surface_id = SurfaceId()) {
     bool needs_blending = false;
-    bool premultiplied_alpha = false;
+    bool premultiplied_alpha = true;
     bool low_latency_rendering = false;
     return CreateCandidateQuadAt(
         shared_quad_state, render_pass, rect, needs_blending,
@@ -788,7 +788,7 @@ class OverlayTest : public testing::Test {
       SharedImageFormat format,
       SurfaceId test_surface_id = SurfaceId()) {
     bool needs_blending = false;
-    bool premultiplied_alpha = false;
+    bool premultiplied_alpha = true;
     bool low_latency_rendering = false;
     gfx::Size resource_size_in_pixels = rect.size();
     return CreateCandidateQuadAt(
@@ -813,7 +813,7 @@ class OverlayTest : public testing::Test {
       const gfx::Rect& rect,
       SurfaceId test_surface_id = SurfaceId()) {
     bool needs_blending = false;
-    bool premultiplied_alpha = false;
+    bool premultiplied_alpha = true;
     bool low_latency_rendering = true;
     gfx::Size resource_size_in_pixels = rect.size();
     gfx::ProtectedVideoType protected_video_type =
@@ -831,7 +831,7 @@ class OverlayTest : public testing::Test {
       AggregatedRenderPass* render_pass,
       const gfx::Rect& rect) {
     bool needs_blending = true;
-    bool premultiplied_alpha = false;
+    bool premultiplied_alpha = true;
     bool low_latency_rendering = false;
     gfx::Size resource_size_in_pixels = rect.size();
 
@@ -1839,9 +1839,9 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
         pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     quad_small->SetNew(shared_quad_state_a, kCandidateRectA, kCandidateRectA,
                        false /*needs_blending*/, resource_id_a,
-                       false /*premultiplied_alpha*/, kUVTopLeft,
-                       kUVBottomRight, SkColors::kTransparent,
-                       false /*nearest_neighbor*/, false /*secure_output_only*/,
+                       true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
+                       SkColors::kTransparent, false /*nearest_neighbor*/,
+                       false /*secure_output_only*/,
                        gfx::ProtectedVideoType::kClear);
     AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRectA));
 
@@ -1853,7 +1853,7 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
 
     quad_big->SetNew(shared_quad_state_b, kCandidateRectB, kCandidateRectB,
                      false /*needs_blending*/, resource_id_b,
-                     false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
+                     true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
                      SkColors::kTransparent, false /*nearest_neighbor*/,
                      false /*secure_output_only*/,
                      gfx::ProtectedVideoType::kClear);
@@ -3116,7 +3116,7 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
     original_quad->SetNew(
         pass->shared_quad_state_list.back(), pass->output_rect,
         pass->output_rect, false /*needs_blending*/, resource_id,
-        false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
+        true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
         SkColors::kTransparent, false /*nearest_neighbor*/,
         false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
 
@@ -3316,7 +3316,7 @@ TEST_F(OverlayHysteresisTest, HysteresisResumeWhenCandidateComeBackActive) {
       quad_candidate_no_occlusion->SetNew(
           sqs, kOverlayTopLeftRect, kOverlayTopLeftRect,
           /*needs_blending=*/false, no_occlusion_quad_resource_id,
-          /*premultiplied=*/false, kUVTopLeft, kUVBottomRight,
+          /*premultiplied=*/true, kUVTopLeft, kUVBottomRight,
           SkColors::kTransparent, /*nearest=*/false,
           /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
       TrackingIdData track_data_top_left{
