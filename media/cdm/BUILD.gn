@@ -257,6 +257,7 @@ source_set("unit_tests") {
       "win/media_foundation_cdm_factory_unittest.cc",
       "win/media_foundation_cdm_session_unittest.cc",
       "win/media_foundation_cdm_unittest.cc",
+      "win/media_foundation_cdm_util_unittest.cc",
     ]
   }
 }

@@ -15,6 +15,7 @@
 #include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/propvarutil.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/scoped_propvariant.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/cdm_paths.h"
@@ -249,6 +250,50 @@ HRESULT CreateMediaFoundationCdm(
 
   mf_cdm.Swap(cdm);
   return S_OK;
+}
+
+bool IsMediaFoundationContentTypeSupported(
+    Microsoft::WRL::ComPtr<IMFExtendedDRMTypeSupport> mf_type_support,
+    const std::string& key_system,
+    const std::string& content_type) {
+  DCHECK(!key_system.empty());
+  DCHECK(!content_type.empty());
+
+  if (key_system.empty() || content_type.empty()) {
+    DLOG(ERROR) << __func__ << ": key_system or content_type is empty";
+    return false;
+  }
+
+  // `IMFContentDecryptionModuleFactory::IsTypeSupported()` returns
+  // 'supported' for OS PlayReady backed implementation regardless of the
+  // value passed in for the `contentType` parameter. Use
+  // IMFExtendedDRMTypeSupport::IsTypeSupportedEx() instead.
+  MF_MEDIA_ENGINE_CANPLAY answer = MF_MEDIA_ENGINE_CANPLAY_NOT_SUPPORTED;
+  base::win::ScopedBstr key_system_bstr(base::UTF8ToWide(key_system).c_str());
+  base::win::ScopedBstr query(base::UTF8ToWide(content_type).c_str());
+
+  const int kMaxRetryCount = 5;
+  for (int retry = 0; retry < kMaxRetryCount; ++retry) {
+    // IsTypeSupportedEx returns "MAYBE" for HDCP queries while
+    // HDCP is being established. If the answer is "Maybe" then
+    // try again once per second for a total of 5 seconds.
+    HRESULT hr = mf_type_support->IsTypeSupportedEx(
+        query.Get(), key_system_bstr.Get(), &answer);
+
+    if (FAILED(hr)) {
+      DLOG(ERROR) << __func__ << ": type_query support failed. hr=" << hr;
+      return false;
+    } else if (answer != MF_MEDIA_ENGINE_CANPLAY_MAYBE) {
+      break;
+    }
+
+    DVLOG(2) << "IsTypeSupportedEx() returned MAYBE; wait for negotiation...";
+    base::PlatformThread::Sleep(base::Seconds(1));
+  }
+
+  DVLOG(2) << __func__ << ": answer=" << answer << ", " << key_system << ", "
+           << content_type;
+  return (answer == MF_MEDIA_ENGINE_CANPLAY_PROBABLY);
 }
 
 }  // namespace media
