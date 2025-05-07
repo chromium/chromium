@@ -235,15 +235,9 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowUi("geolocation");
 
-  ChipController* chip_controller = GetChipController();
-
-  // If chip UI is used, two notifications will be announced: one that
-  // permission was requested and second when bubble is opened.
-  if (chip_controller->IsPermissionPromptChipVisible()) {
-    EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kAlert));
-  } else {
-    EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
-  }
+  // Even though chip UI is used, only the event "permission prompt bubble is
+  // opened" will be announced.
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
 // Test switching between PermissionChip and PermissionPromptBubbleBaseView and
