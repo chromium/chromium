@@ -8834,6 +8834,24 @@
             ]
         }
     ],
+    "EnterpriseFileSystemAccessDeepScan": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseFileSystemAccessDeepScan"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseUpdatedProfileCreationScreen": [
         {
             "platforms": [
