@@ -2246,10 +2246,6 @@ if (!is_android) {
       "//chrome/browser/preloading/search_preload:browser_tests",
       "//chrome/browser/privacy_budget:browser_tests",
       "//chrome/browser/privacy_sandbox:browser_tests",
-
-      # TODO(413315837): Remove this dep when privacy_sandbox_countries_browsertest.cc
-      # gets build off of c/b/privacy_sandbox/BUILD.gn.
-      "//chrome/browser/privacy_sandbox:headers",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/profiling_host:profiling_browsertests",
       "//chrome/browser/promos:utils",
