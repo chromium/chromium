@@ -3270,15 +3270,6 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.OCR.ImageSize10M" units="count"
-    expires_after="2025-08-24">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the number of pixels in the passed image to OCR request.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.ScreenAI.OCR.Latency.{DownsampleStatus}"
     units="ms" expires_after="2026-04-01">
   <owner>rhalavati@chromium.org</owner>

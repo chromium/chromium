@@ -371,12 +371,6 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
   histograms.ExpectBucketCount("Accessibility.ScreenAI.OCR.LinesCount",
                                expected_lines_count, expected_calls);
 
-  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.ImageSize10M",
-                              expected_calls);
-  histograms.ExpectBucketCount("Accessibility.ScreenAI.OCR.ImageSize10M",
-                               bitmap.width() * bitmap.height(),
-                               expected_calls);
-
   // Expect measured latency, but we don't know how long it taskes to process.
   // So we just check the total count of the expected bucket determined by the
   // image dimensions, with threshold 2048 for each dimension.
@@ -386,6 +380,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
       "Accessibility.ScreenAI.OCR.Latency.NotDownsampled", expected_calls);
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Downsampled",
                               0);
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.OCR.Downsampled.ClientType", 0);
 
   // PDF Specific metrics should not be recorded as the client type is test.
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.LinesCount.PDF", 0);
@@ -663,6 +659,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif
 IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
                        MAYBE_PerformOCRLargeImage) {
+  base::HistogramTester histograms;
+
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   ASSERT_TRUE(CreateAndInitOCR());
@@ -679,6 +677,10 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
   // Since OCR downsamples large images, the content of this image becomes quite
   // small and unreadable, hence nothing is recognized.
   EXPECT_FALSE(results->lines.size());
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.OCR.Downsampled.ClientType", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,

@@ -445,8 +445,6 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
                             result.has_value());
   base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount",
                               lines_count);
-  base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize10M",
-                              image.width() * image.height());
   if (image.width() < max_dimension && image.height() < max_dimension) {
     base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.NotDownsampled",
                             elapsed_time);
