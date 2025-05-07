@@ -55,6 +55,7 @@
 #include "components/blocked_content/popup_tracker.h"
 #include "components/browser_ui/sms/android/sms_infobar.h"
 #include "components/browser_ui/util/android/url_constants.h"
+#include "components/external_intents/android/external_intents_features.h"
 #include "components/find_in_page/find_notification_details.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -297,7 +298,7 @@ WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
   }
 
   if (base::FeatureList::IsEnabled(
-          chrome::android::kNavigationCaptureRefactorAndroid)) {
+          external_intents::kNavigationCaptureRefactorAndroid)) {
     if (IsCustomTab() &&
         disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
       if (OpenInAppOrChromeFromCct(params.url)) {

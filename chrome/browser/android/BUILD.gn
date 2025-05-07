@@ -17,6 +17,7 @@ source_set("tabs_impl") {
   deps = [
     ":tabs_public",
     "//chrome/browser/sync",
+    "//components/external_intents/android",
     "//components/favicon/content",
     "//components/metrics:content",
     "//content/public/browser",

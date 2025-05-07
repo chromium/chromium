@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chrome/common/chrome_features.h"
 
 namespace chrome {
 namespace android {
@@ -155,7 +154,6 @@ BASE_DECLARE_FEATURE(kMultiInstanceApplicationStatusCleanup);
 BASE_DECLARE_FEATURE(kNativePageTransitionHardwareCapture);
 BASE_DECLARE_FEATURE(kNavBarColorAnimation);
 BASE_DECLARE_FEATURE(kNavBarColorMatchesTabBackground);
-BASE_DECLARE_FEATURE(kNavigationCaptureRefactorAndroid);
 BASE_DECLARE_FEATURE(kNewTabSearchEngineUrlAndroid);
 BASE_DECLARE_FEATURE(kNewTabPageAndroidTriggerForPrerender2);
 BASE_DECLARE_FEATURE(kNotificationPermissionVariant);

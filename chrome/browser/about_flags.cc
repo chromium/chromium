@@ -7511,7 +7511,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNavigationCaptureRefactorAndroidName,
      flag_descriptions::kNavigationCaptureRefactorAndroidDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kNavigationCaptureRefactorAndroid)},
+     FEATURE_VALUE_TYPE(external_intents::kNavigationCaptureRefactorAndroid)},
 
     {"enable-magic-stack-android", flag_descriptions::kMagicStackAndroidName,
      flag_descriptions::kMagicStackAndroidDescription, kOsAndroid,

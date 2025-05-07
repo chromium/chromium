@@ -1546,6 +1546,11 @@ public class ExternalNavigationHandler {
             Intent targetIntent,
             GURL browserFallbackUrl,
             MutableBoolean canLaunchExternalFallbackResult) {
+
+        if (debug() && ExternalIntentsFeatures.NAVIGATION_CAPTURE_REFACTOR_ANDROID.isEnabled()) {
+            Log.i(TAG, "Navigation Capture refactor feature enabled");
+        }
+
         sanitizeQueryIntentActivitiesIntent(targetIntent);
 
         // Any subsequent navigations should cancel the existing dialog.

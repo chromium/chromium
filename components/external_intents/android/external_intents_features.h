@@ -12,6 +12,7 @@ namespace external_intents {
 BASE_DECLARE_FEATURE(kExternalNavigationDebugLogs);
 BASE_DECLARE_FEATURE(kBlockFrameRenavigations);
 BASE_DECLARE_FEATURE(kBlockIntentsToSelf);
+BASE_DECLARE_FEATURE(kNavigationCaptureRefactorAndroid);
 
 }  // namespace external_intents
 
