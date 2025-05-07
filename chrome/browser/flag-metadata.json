@@ -3088,17 +3088,17 @@
   {
     "name": "enable-desktop-pwas-tab-strip",
     "owners": [ "pwa-team@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-desktop-pwas-tab-strip-customizations",
     "owners": [ "cros-web-apps-core@google.com", "pwa-team@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-desktop-pwas-tab-strip-settings",
     "owners": [ "pwa-team@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 150
   },
   {
     "name": "enable-disco-feed-endpoint",
