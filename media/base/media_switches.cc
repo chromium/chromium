@@ -1721,10 +1721,11 @@ bool IsSystemLoopbackAsAecReferenceEnabled() {
 std::optional<base::TimeDelta> GetAecAddedDelay() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
-  return base::Milliseconds(kAddedProcessingDelay.Get());
-#else
-  return std::nullopt;
+  if (IsSystemLoopbackAsAecReferenceEnabled()) {
+    return base::Milliseconds(kAddedProcessingDelay.Get());
+  }
 #endif
+  return std::nullopt;
 }
 
 bool IsSystemEchoCancellationEnforced() {
