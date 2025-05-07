@@ -2959,18 +2959,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
 }
 
 class StorageAccessAPIAutograntsWithFedCMBrowserTest
-    : public StorageAccessAPIBaseBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public StorageAccessAPIBaseBrowserTest {
  public:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    if (override_feature_state()) {
-      return {{blink::features::kFedCmWithStorageAccessAPI, {}}};
-    }
-    return {};
-  }
-
-  bool override_feature_state() const { return GetParam(); }
-
   void GrantFedCMPermission() {
     const url::Origin rp_embedder =
         url::Origin::Create(GetURL(kHostASubdomain));
@@ -3012,7 +3002,7 @@ class StorageAccessAPIAutograntsWithFedCMBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
                        FedCMGrants_RequiresPermissionPolicy) {
   SetBlockThirdPartyCookies(true);
   GrantFedCMPermission();
@@ -3030,7 +3020,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
-IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
                        FedCMGrants_PreventSilentAccess) {
   SetBlockThirdPartyCookies(true);
   GrantFedCMPermission();
@@ -3051,7 +3041,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 }
 
-IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
                        FedCMGrants_PreventSilentAccess_AfterAutogrant) {
   SetBlockThirdPartyCookies(true);
   GrantFedCMPermission();
@@ -3072,7 +3062,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 }
 
-IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
                        FedCMGrants_PermissionPolicyHeaderIgnored) {
   SetBlockThirdPartyCookies(true);
   GrantFedCMPermission();
@@ -3110,7 +3100,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
-IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
                        FedCMGrantsAllowCookieAccessViaSAA) {
   SetBlockThirdPartyCookies(true);
   GrantFedCMPermission();
@@ -3132,7 +3122,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
-IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
                        FedCMGrantsAllowCookieAccess_NestedFrame) {
   SetBlockThirdPartyCookies(true);
   GrantFedCMPermission();
@@ -3158,10 +3148,6 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
             kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         StorageAccessAPIAutograntsWithFedCMBrowserTest,
-                         testing::Bool());
 
 class StorageAccessHeadersBrowserTest : public StorageAccessAPIBrowserTest {
  public:
@@ -3659,7 +3645,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersWithThirdPartyCookiesBrowserTest,
   EXPECT_EQ(retry_path_fetch_count_, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(StorageAccessAPIAutograntsWithFedCMBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
                        RetryHeader) {
   SetBlockThirdPartyCookies(true);
   SetRetryAllowedOriginFromHost(kHostA);

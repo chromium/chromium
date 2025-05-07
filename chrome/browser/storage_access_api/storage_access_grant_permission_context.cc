@@ -197,31 +197,6 @@ bool ShouldPersistSetting(bool permission_allowed, RequestOutcome outcome) {
   return permission_allowed;
 }
 
-// Returns true if the user/field trials have enabled FedCM/SAA autogrants
-// globally via the flag/Feature, or "locally" via the origin trial.
-//
-// Feature state overrides take precedence over origin trial state.
-bool AreFedCmAutograntsEnabled(content::RenderFrameHost* rfh) {
-  if (std::optional<bool> state = base::FeatureList::GetStateIfOverridden(
-          blink::features::kFedCmWithStorageAccessAPI);
-      state.has_value()) {
-    return state.value();
-  }
-
-  // RuntimeFeatureStateDocumentData doesn't know what the default state of a
-  // feature is, so we check the underlying feature explicitly.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFedCmWithStorageAccessAPI)) {
-    return true;
-  }
-  content::RuntimeFeatureStateDocumentData* document_data =
-      content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(rfh);
-  CHECK(document_data);
-
-  return document_data->runtime_feature_state_read_context()
-      .IsFedCmWithStorageAccessAPIEnabled();
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class AutograntViaFedCmOutcome {
@@ -244,8 +219,6 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
     const net::SchemefulSite& embedding_site,
     const net::SchemefulSite& requesting_site) {
   CHECK(browser_context);
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kFedCmWithStorageAccessAPI));
   if (!rfh->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     RecordAutograntViaFedCmOutcomeSample(
@@ -419,17 +392,15 @@ void StorageAccessGrantPermissionContext::DecidePermission(
 
   // FedCM grants (and the appropriate permissions policy) may allow the call to
   // auto-resolve (without granting a new permission).
-  if (AreFedCmAutograntsEnabled(rfh)) {
-    if (FederatedIdentityPermissionContext* fedcm_context =
-            IsAutograntViaFedCmAllowed(browser_context(), rfh, embedding_origin,
-                                       embedding_site, requesting_site);
-        fedcm_context) {
-      fedcm_context->MarkStorageAccessEligible(
-          /*relying_party_embedder=*/embedding_site,
-          /*identity_provider=*/requesting_site,
-          base::BindOnce(std::move(callback), CONTENT_SETTING_ALLOW));
-      return;
-    }
+  if (FederatedIdentityPermissionContext* fedcm_context =
+          IsAutograntViaFedCmAllowed(browser_context(), rfh, embedding_origin,
+                                     embedding_site, requesting_site);
+      fedcm_context) {
+    fedcm_context->MarkStorageAccessEligible(
+        /*relying_party_embedder=*/embedding_site,
+        /*identity_provider=*/requesting_site,
+        base::BindOnce(std::move(callback), CONTENT_SETTING_ALLOW));
+    return;
   }
 
   if (!request_data->user_gesture) {
