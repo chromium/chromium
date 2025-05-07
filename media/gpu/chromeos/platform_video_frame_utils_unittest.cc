@@ -133,7 +133,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
 
 // TODO(b/230370976): remove this #if/#endif guard. To do so, we need to be able
 // to mock/fake the allocator used by CreatePlatformVideoFrame() and
-// CreateGmbOrMappableSIVideoFrame() so that those functions return a
+// CreateMappableVideoFrame() so that those functions return a
 // non-nullptr frame on platforms where allocating NV12 buffers is not
 // supported.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -160,9 +160,9 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
                                      kNaturalSize, kTimeStamp, kBufferUsage);
         break;
       case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
-        frame = CreateGmbOrMappableSIVideoFrame(
-            kPixelFormat, kCodedSize, kVisibleRect, kNaturalSize, kTimeStamp,
-            kBufferUsage, test_sii.get());
+        frame = CreateMappableVideoFrame(kPixelFormat, kCodedSize, kVisibleRect,
+                                         kNaturalSize, kTimeStamp, kBufferUsage,
+                                         test_sii.get());
         break;
       default:
         NOTREACHED();

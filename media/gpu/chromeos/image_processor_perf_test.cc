@@ -126,7 +126,7 @@ scoped_refptr<VideoFrame> CreateNV12Frame(
   constexpr base::TimeDelta kNullTimestamp;
   if (type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     CHECK(test_sii);
-    return CreateGmbOrMappableSIVideoFrame(
+    return CreateMappableVideoFrame(
         VideoPixelFormat::PIXEL_FORMAT_NV12, size, visible_rect, size,
         kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii);
   } else if (type == VideoFrame::STORAGE_DMABUFS) {

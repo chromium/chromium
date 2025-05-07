@@ -74,14 +74,14 @@ gfx::GpuMemoryBufferHandle AllocateGpuMemoryBufferHandle(
 // GpuMemoryBuffer or Mappable SharedImage allocated with |buffer_usage|.
 // See //media/base/video_frame.h for the other parameters. This function is
 // thread-safe.
-MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreateGmbOrMappableSIVideoFrame(
+MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreateMappableVideoFrame(
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     gfx::BufferUsage buffer_usage,
-    gpu::SharedImageInterface* sii = nullptr);
+    gpu::SharedImageInterface* sii);
 
 // Creates a STORAGE_GPU_MEMORY_BUFFER VideoFrame from a GpuMemoryBufferHandle.
 // See //media/base/video_frame.h for the other parameters. This function is
@@ -94,7 +94,7 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     gfx::BufferUsage buffer_usage,
-    gpu::SharedImageInterface* sii = nullptr);
+    gpu::SharedImageInterface* sii);
 
 // Creates a STORAGE_DMABUFS VideoFrame whose buffer is allocated with
 // |buffer_usage|. See //media/base/video_frame.h for the other parameters. This
