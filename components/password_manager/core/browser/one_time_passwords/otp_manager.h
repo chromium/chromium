@@ -16,6 +16,7 @@ class FormData;
 
 namespace password_manager {
 
+class OtpFormManager;
 class PasswordManagerClient;
 
 // A class in charge of handling one time passwords, one per tab.
@@ -23,15 +24,27 @@ class OtpManager {
  public:
   explicit OtpManager(PasswordManagerClient* client);
 
+  ~OtpManager();
+
   // Processes the classification model predictions received via Autofill.
   void ProcessClassificationModelPredictions(
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
           field_predictions);
 
+#if defined(UNIT_TEST)
+  const base::flat_map<autofill::FormGlobalId, OtpFormManager>& form_managers()
+      const {
+    return form_managers_;
+  }
+#endif  // defined(UNIT_TEST)
+
  private:
   // The client that owns this class and is guaranteed to outlive it.
   const raw_ptr<PasswordManagerClient> client_;
+
+  // Managers managing individual forms.
+  base::flat_map<autofill::FormGlobalId, OtpFormManager> form_managers_;
 };
 
 }  // namespace password_manager
