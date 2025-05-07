@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(
   const BookmarkNode* const folder = bookmark_model->AddFolder(
       bookmark_model->bookmark_bar_node(), 0, u"Folder");
   const BookmarkNode* const page1 = bookmark_model->AddURL(
-      folder, 0, u"BookmarkManager", GURL(chrome::kChromeUIBookmarksURL));
+      folder, 0, u"Extensions", GURL(chrome::kChromeUIExtensionsURL));
   const BookmarkNode* const page2 = bookmark_model->AddURL(
       folder, 1, u"Settings", GURL(chrome::kChromeUISettingsURL));
 

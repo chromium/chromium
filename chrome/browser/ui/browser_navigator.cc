@@ -577,7 +577,6 @@ bool IsHostAllowedInIncognito(const GURL& url) {
          host != chrome::kChromeUIHelpHost &&
          host != chrome::kChromeUIHistoryHost &&
          host != chrome::kChromeUIExtensionsHost &&
-         host != chrome::kChromeUIBookmarksHost &&
          host != password_manager::kChromeUIPasswordManagerHost;
 }
 
