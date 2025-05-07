@@ -96,10 +96,11 @@ liburlpattern::EncodeCallback GetEncodeCallback(
 }
 
 // Utility method to get the correct liburlpattern parse options for a given
-// type.
+// type.  `should_treat_as_standard_url` is used if and only if `type` equals
+// `kPathname`.
 const liburlpattern::Options GetOptions(
     Component::Type type,
-    Component* protocol_component,
+    std::optional<bool> should_treat_as_standard_url,
     const URLPatternOptions& external_options) {
   using liburlpattern::Options;
 
@@ -120,10 +121,10 @@ const liburlpattern::Options GetOptions(
     // Just like how we select a different encoding callback based on
     // whether we are treating the pattern string as a standard or
     // cannot-be-a-base URL, we must also choose the right liburlppatern
-    // options as well.  We should only use use the options that treat
-    // `/` specially if we are treating this a standard URL.
-    DCHECK(protocol_component);
-    if (protocol_component->ShouldTreatAsStandardURL()) {
+    // options as well.  We should only use the options that treat "/" specially
+    // if we are treating this a standard URL.
+    CHECK(should_treat_as_standard_url.has_value());
+    if (*should_treat_as_standard_url) {
       // Pathname patterns for "standard" URLs use a "/" delimiter controlling
       // how far a named group like ":bar" will match.  They also use "/" as an
       // automatic prefix before groups.
@@ -182,18 +183,19 @@ Component* Component::Compile(v8::Isolate* isolate,
                               Component* protocol_component,
                               const URLPatternOptions& external_options,
                               ExceptionState& exception_state) {
-  StringView final_pattern = pattern.IsNull() ? "*" : pattern;
-  const liburlpattern::Options& options =
-      GetOptions(type, protocol_component, external_options);
-
-  // Parse the pattern.
-  // Lossy UTF8 conversion is fine given the input has come through a
-  // USVString webidl argument.
-  StringUTF8Adaptor utf8(final_pattern);
   std::optional<bool> should_treat_as_standard_url =
       protocol_component
           ? std::optional(protocol_component->ShouldTreatAsStandardURL())
           : std::nullopt;
+  const liburlpattern::Options& options =
+      GetOptions(type, should_treat_as_standard_url, external_options);
+
+  StringView final_pattern = pattern.IsNull() ? "*" : pattern;
+  // Parse the pattern.
+  // Lossy UTF8 conversion is fine given the input has come through a
+  // USVString webidl argument.
+  StringUTF8Adaptor utf8(final_pattern);
+
   auto parse_result =
       liburlpattern::Parse(utf8.AsStringView(),
                            GetEncodeCallback(utf8.AsStringView(), type,
