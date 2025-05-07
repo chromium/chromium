@@ -1,6 +1,5 @@
 # TODO(crbug.com/395595608) Failing due to per-surface scaling.
 -All/GetDisplayMediaHiDpiBrowserTest.Capture/1
--DesktopBrowserFrameAuraLinuxTest.NewWindowSize
 
 # Very flaky/failing on mutter (less flaky/passing on weston)
 -All/OmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse/404
