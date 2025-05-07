@@ -6156,6 +6156,21 @@
             ]
         }
     ],
+    "CpssUseTfliteSignatureRunnerKillSwitch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_CpssUseTfliteSignatureRunner",
+                    "disable_features": [
+                        "CpssUseTfliteSignatureRunner"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSAudioSidetoneAndMicIndicator": [
         {
             "platforms": [
@@ -19589,8 +19604,7 @@
                 {
                     "name": "RestrictAbusePorts",
                     "params": {
-                        "monitor_ports": "30986",
-                        "restrict_ports": "30987,30988,30989"
+                        "PortsToRestrictForAbuse": "30987,30988,30989"
                     },
                     "enable_features": [
                         "RestrictAbusePorts"
