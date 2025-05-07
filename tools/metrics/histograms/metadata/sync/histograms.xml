@@ -1617,10 +1617,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PassphraseType5" enum="PassphraseTypeForMetrics"
-    expires_after="2025-06-17">
-<!-- Note: This histogram should (once it's verified to work correctly) replace
-     Sync.PassphraseType4 for the purpose of UMA filtering, and then become
-     expires-never. -->
+    expires_after="never">
+<!-- expires-never: important for UMA filtering. -->
 
   <owner>treib@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
