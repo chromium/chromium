@@ -7487,4 +7487,41 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
+// Regression test for crbug.com/415488524. A QUIC destination may be marked
+// broken after a successful QUIC session attempt. Ensure that a request
+// doesn't use QUIC in a such situation.
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicBrokenWhenSessionCreated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  MockConnectCompleter quic_completer;
+  AddQuicData(/*host=*/kDefaultDestination, &quic_completer);
+
+  SequencedSocketData tcp_data;
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "www.example.org", 443);
+  http_server_properties()->MarkAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey());
+
+  quic_completer.Complete(OK);
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_NE(requester.negotiated_protocol(), NextProto::kProtoQUIC);
+}
+
 }  // namespace net

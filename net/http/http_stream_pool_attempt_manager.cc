@@ -1666,19 +1666,8 @@ void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
     StreamSocketCloseReason refresh_group_reason) {
   CHECK(!is_failing_);
   CHECK(!quic_attempt_);
-  // TODO(crbug.com/415127271): Remove debug alias and change CHECK to DCHECK
-  // once we identify why this doesn't always hold.
-  bool is_ip_based_pooling_enabled = IsIpBasedPoolingEnabled();
-  bool is_alternative_service_enabled = IsAlternativeServiceEnabled();
-  bool requires_h1 = RequiresHTTP11();
-  QuicChromiumClientSession* quic_session =
-      quic_session_pool()->FindExistingSession(
-          quic_session_alias_key().session_key(),
-          quic_session_alias_key().destination());
-  base::debug::Alias(&is_ip_based_pooling_enabled);
-  base::debug::Alias(&is_alternative_service_enabled);
-  base::debug::Alias(&requires_h1);
-  base::debug::Alias(quic_session);
+  // TODO(crbug.com/415488524): Change to DCHECK once we confirm the bug is
+  // fixed.
   CHECK(CanUseExistingQuicSession());
 
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::QuicSessionReady", track_);

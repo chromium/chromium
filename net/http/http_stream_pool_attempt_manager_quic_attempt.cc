@@ -148,11 +148,8 @@ const HttpStreamKey& HttpStreamPool::AttemptManager::QuicAttempt::stream_key()
 void HttpStreamPool::AttemptManager::QuicAttempt::OnSessionAttemptComplete(
     int rv) {
   if (rv == OK) {
-    QuicChromiumClientSession* session =
-        GetQuicSessionPool()->FindExistingSession(GetKey().session_key(),
-                                                  GetKey().destination());
-    if (!session) {
-      // QUIC session is closed before stream can be created.
+    if (!manager_->CanUseExistingQuicSession()) {
+      // QUIC session is closed or marked broken before stream can be created.
       rv = ERR_CONNECTION_CLOSED;
     }
   }
