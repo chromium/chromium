@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.accounts.Account;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
@@ -182,8 +184,8 @@ public final class FullscreenSigninAndHistorySyncCoordinator
 
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
     @Override
-    public void onAccountAdded(String accountName) {
-        assumeNonNull(mSigninCoordinator);
+    public void onAccountAdded(@NonNull String accountName) {
+        assertNonNull(mSigninCoordinator);
         mSigninCoordinator.onAccountAdded(accountName);
     }
 

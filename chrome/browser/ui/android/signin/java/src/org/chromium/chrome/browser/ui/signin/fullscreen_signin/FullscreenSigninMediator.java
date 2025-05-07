@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.accounts.Account;
@@ -12,6 +13,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
@@ -57,6 +59,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @NullMarked
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -103,12 +106,12 @@ public class FullscreenSigninMediator
     private boolean mInitialLoadCompleted;
 
     private @Nullable AccountPickerDialogCoordinator mDialogCoordinator;
-    // TODO(crbug.com/40921927): Replace with CoreAccountInfo.
-    private @Nullable String mAddedAccountEmail;
-    // TODO(crbug.com/40921927): Replace with CoreAccountInfo.
-    private @Nullable String mSelectedAccountEmail;
-    // TODO(crbug.com/40921927): Replace with CoreAccountInfo.
-    private @Nullable String mDefaultAccountEmail;
+    private @Nullable CoreAccountInfo mSelectedAccount;
+    private @Nullable CoreAccountInfo mDefaultAccount;
+    private @Nullable CoreAccountInfo mAddedAccount;
+    // This field is used to save the added account email while the account info becomes available
+    // in AccountManagerFacade for sign-in.
+    private @Nullable String mPendingAddedAccountEmail;
     private boolean mAllowMetricsAndCrashUploading;
 
     FullscreenSigninMediator(
@@ -174,7 +177,7 @@ public class FullscreenSigninMediator
     }
 
     private Account getSelectedAccount() {
-        return AccountUtils.createAccountFromName(assumeNonNull(mSelectedAccountEmail));
+        return AccountUtils.createAccountFromName(assertNonNull(mSelectedAccount).getEmail());
     }
 
     private void onNativeLoaded() {
@@ -278,9 +281,16 @@ public class FullscreenSigninMediator
                 getFooterString(isMetricsReportingDisabledByPolicy));
     }
 
-    void onAccountAdded(String accountEmail) {
-        mAddedAccountEmail = accountEmail;
-        setSelectedAccountEmail(accountEmail);
+    void onAccountAdded(@NonNull String accountEmail) {
+        var accounts =
+                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts());
+        mAddedAccount = AccountUtils.findAccountByEmail(accounts, accountEmail);
+        if (mAddedAccount == null) {
+            mPendingAddedAccountEmail = accountEmail;
+            return;
+        }
+
+        setSelectedAccount(mAddedAccount);
         if (mDialogCoordinator != null) mDialogCoordinator.dismissDialog();
     }
 
@@ -298,8 +308,14 @@ public class FullscreenSigninMediator
     }
 
     @Override
-    public void onAccountSelected(CoreAccountInfo coreAccountInfo) {
-        setSelectedAccountEmail(coreAccountInfo.getEmail());
+    public void onAccountSelected(CoreAccountInfo account) {
+        if (mPendingAddedAccountEmail != null) {
+            // If another account is selected before the added account is available in account
+            // manager facade then clear the pending added account email so that it doesn't get
+            // selected automatically in #updateAccounts().
+            mPendingAddedAccountEmail = null;
+        }
+        setSelectedAccount(account);
         if (mDialogCoordinator != null) mDialogCoordinator.dismissDialog();
     }
 
@@ -340,7 +356,7 @@ public class FullscreenSigninMediator
             mDelegate.advanceToNextPage();
             return;
         }
-        if (mSelectedAccountEmail == null) {
+        if (mSelectedAccount == null) {
             mDelegate.addAccount();
             return;
         }
@@ -368,7 +384,7 @@ public class FullscreenSigninMediator
                                                         .get()
                                                         .getOriginalProfile()))
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        if (signedInAccount != null && signedInAccount.getEmail().equals(mSelectedAccountEmail)) {
+        if (signedInAccount != null && Objects.equals(signedInAccount, mSelectedAccount)) {
             mDelegate.advanceToNextPage();
             return;
         }
@@ -400,11 +416,8 @@ public class FullscreenSigninMediator
                         mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
                     }
                 };
-        CoreAccountInfo selectedAccount =
-                AccountUtils.findCoreAccountInfoByEmail(
-                        mAccountManagerFacade.getCoreAccountInfos().getResult(),
-                        assumeNonNull(mSelectedAccountEmail));
-        if (selectedAccount != null) {
+
+        if (mSelectedAccount != null) {
             mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
             final @SigninAccessPoint int accessPoint =
                     mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
@@ -414,10 +427,10 @@ public class FullscreenSigninMediator
                 // If there already exists another signed-in account, first sign-out and then
                 // sign-in with the selected account.
                 signOutThenSignInWithSelectedAccount(
-                        selectedAccount, signinManager, accessPoint, signInCallback);
+                        mSelectedAccount, signinManager, accessPoint, signInCallback);
             } else {
                 FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
-                        selectedAccount,
+                        mSelectedAccount,
                         signinManager,
                         accessPoint,
                         signInCallback,
@@ -446,11 +459,10 @@ public class FullscreenSigninMediator
     }
 
     private @AccountConsistencyPromoAction int getSigninPromoAction() {
-        assert mSelectedAccountEmail != null;
-        if (TextUtils.equals(mSelectedAccountEmail, mDefaultAccountEmail)) {
+        assert mSelectedAccount != null;
+        if (Objects.equals(mSelectedAccount, mDefaultAccount)) {
             return AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT;
-        } else if (mAddedAccountEmail != null
-                && TextUtils.equals(mSelectedAccountEmail, mAddedAccountEmail)) {
+        } else if (Objects.equals(mSelectedAccount, mAddedAccount)) {
             return AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT;
         }
         return AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT;
@@ -507,13 +519,14 @@ public class FullscreenSigninMediator
                 || mModel.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
     }
 
-    private void setSelectedAccountEmail(String accountEmail) {
-        mSelectedAccountEmail = accountEmail;
-        updateSelectedAccountData(mSelectedAccountEmail);
+    private void setSelectedAccount(CoreAccountInfo account) {
+        mSelectedAccount = account;
+        updateSelectedAccountData(account.getEmail());
     }
 
     private void updateSelectedAccountData(String accountEmail) {
-        if (TextUtils.equals(mSelectedAccountEmail, accountEmail)) {
+        if (mSelectedAccount != null
+                && TextUtils.equals(mSelectedAccount.getEmail(), accountEmail)) {
             mModel.set(
                     FullscreenSigninProperties.SELECTED_ACCOUNT_DATA,
                     mProfileDataCache.getProfileDataOrDefault(accountEmail));
@@ -521,18 +534,33 @@ public class FullscreenSigninMediator
     }
 
     private void updateAccounts(List<AccountInfo> accounts) {
+        @Nullable AccountInfo pendingAddedAccount =
+                mPendingAddedAccountEmail == null
+                        ? null
+                        : AccountUtils.findAccountByEmail(accounts, mPendingAddedAccountEmail);
+        if (pendingAddedAccount != null) {
+            mPendingAddedAccountEmail = null;
+            mAddedAccount = pendingAddedAccount;
+            onAccountSelected(mAddedAccount);
+            return;
+        }
+
         if (accounts.isEmpty()) {
-            mDefaultAccountEmail = null;
-            mSelectedAccountEmail = null;
+            mDefaultAccount = null;
+            mSelectedAccount = null;
             mModel.set(FullscreenSigninProperties.SELECTED_ACCOUNT_DATA, null);
             if (mDialogCoordinator != null) {
                 mDialogCoordinator.dismissDialog();
             }
         } else {
-            mDefaultAccountEmail = accounts.get(0).getEmail();
-            if (mSelectedAccountEmail == null
-                    || AccountUtils.findAccountByEmail(accounts, mSelectedAccountEmail) == null) {
-                setSelectedAccountEmail(mDefaultAccountEmail);
+            mDefaultAccount = accounts.get(0);
+            mSelectedAccount =
+                    mSelectedAccount == null
+                            ? null
+                            : AccountUtils.findAccountByEmail(
+                                    accounts, mSelectedAccount.getEmail());
+            if (mSelectedAccount == null) {
+                setSelectedAccount(mDefaultAccount);
             }
         }
 

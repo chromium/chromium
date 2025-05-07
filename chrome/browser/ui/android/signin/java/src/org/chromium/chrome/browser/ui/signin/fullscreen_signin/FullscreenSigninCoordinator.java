@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Promise;
@@ -168,7 +169,7 @@ public class FullscreenSigninCoordinator {
         }
     }
 
-    public void onAccountAdded(String accountName) {
+    public void onAccountAdded(@NonNull String accountName) {
         mMediator.onAccountAdded(accountName);
     }
 
