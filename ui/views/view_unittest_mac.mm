@@ -15,7 +15,7 @@
 @interface FakeSwipeEvent : NSEvent
 @property CGFloat deltaX;
 @property CGFloat deltaY;
-@property(assign) NSWindow* window;
+@property(strong) NSWindow* window;
 @property NSPoint locationInWindow;
 @property NSEventModifierFlags modifierFlags;
 @property NSTimeInterval timestamp;
