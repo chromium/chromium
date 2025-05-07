@@ -9,7 +9,7 @@ import pathlib
 import re
 import subprocess
 
-_SRC_ROOT = (pathlib.Path(__file__).parents[3])
+_SRC_ROOT = pathlib.Path(__file__).parents[3]
 
 _GOOGLE_JAVA_FORMAT = (_SRC_ROOT / 'third_party' / 'google-java-format' /
                        'google-java-format')
