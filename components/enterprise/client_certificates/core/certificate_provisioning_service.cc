@@ -110,6 +110,10 @@ class CertificateProvisioningServiceImpl
     return context_delegate_->GetPolicyPref();
   }
 
+  const std::string logging_context() const {
+    return context_delegate_->GetLoggingContext();
+  }
+
   PrefChangeRegistrar pref_observer_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<CertificateStore> certificate_store_;
@@ -348,7 +352,7 @@ void CertificateProvisioningServiceImpl::OnPrivateKeyCreated(
   scoped_refptr<PrivateKey> private_key =
       std::move(expected_private_key.value());
   if (private_key) {
-    LogPrivateKeyCreationSource(private_key->GetSource());
+    LogPrivateKeyCreationSource(logging_context(), private_key->GetSource());
   }
 
   LOG_POLICY(INFO, DEVICE_TRUST) << "Fetching a certificate from the server...";
@@ -366,7 +370,7 @@ void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
     HttpCodeOrClientError upload_code,
     scoped_refptr<net::X509Certificate> certificate) {
   last_upload_code_ = upload_code;
-  LogCertificateCreationResponse(upload_code, !!certificate);
+  LogCertificateCreationResponse(logging_context(), upload_code, !!certificate);
 
   if (!certificate) {
     if (last_upload_code_->has_value()) {
@@ -445,12 +449,14 @@ void CertificateProvisioningServiceImpl::OnCertificateCommitted(
 void CertificateProvisioningServiceImpl::OnProvisioningError(
     ProvisioningError provisioning_error,
     std::optional<StoreError> store_error) {
-  LogProvisioningError(provisioning_error, std::move(store_error));
+  LogProvisioningError(logging_context(), provisioning_error,
+                       std::move(store_error));
   OnFinishedProvisioning(/*success=*/false);
 }
 
 void CertificateProvisioningServiceImpl::OnFinishedProvisioning(bool success) {
-  LogProvisioningContext(provisioning_context_.value(), success);
+  LogProvisioningContext(logging_context(), provisioning_context_.value(),
+                         success);
   provisioning_context_.reset();
 
   std::optional<ClientIdentity> identity =

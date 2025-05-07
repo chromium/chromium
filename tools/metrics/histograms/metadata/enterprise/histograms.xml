@@ -62,6 +62,11 @@ chromium-metrics-reviews@google.com.
   <variant name="CreateCertificate" summary="certificate creation"/>
 </variants>
 
+<variants name="ClientCertLevel">
+  <variant name="Browser" summary="browser"/>
+  <variant name="Profile" summary="profile"/>
+</variants>
+
 <variants name="ContentAnalysisProtocol">
   <variant name="Multipart"
       summary="Content analysis of user action is done with the Multipart
@@ -425,93 +430,101 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Enterprise.ClientCertificate.Profile.CreateCertificate.Success.HasCert"
+    name="Enterprise.ClientCertificate.{Level}.CreateCertificate.Success.HasCert"
     enum="BooleanSuccess" expires_after="2026-02-10">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
-    Captures whether the HTTP response body for the Profile certificate creation
+    Captures whether the HTTP response body for the {Level} certificate creation
     request had a certificate or not.
   </summary>
+  <token key="Level" variants="ClientCertLevel"/>
 </histogram>
 
-<histogram name="Enterprise.ClientCertificate.Profile.CreatePrivateKey.Source"
+<histogram name="Enterprise.ClientCertificate.{Level}.CreatePrivateKey.Source"
     enum="CertificatePrivateKeySource" expires_after="2026-02-10">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Captures the source of a private key creation after it was created (e.g.
     TPM-backed or not) as part of the client certificate provisioning flow for a
-    Profile.
+    {Level}.
   </summary>
+  <token key="Level" variants="ClientCertLevel"/>
 </histogram>
 
-<histogram name="Enterprise.ClientCertificate.Profile.Provisioning.Error"
+<histogram name="Enterprise.ClientCertificate.{Level}.Provisioning.Error"
     enum="CertificateProvisioningError" expires_after="2026-02-10">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Captures a terminal error that occured when trying to provision a client
-    certificate for a Profile.
+    certificate for a {Level}.
   </summary>
+  <token key="Level" variants="ClientCertLevel"/>
 </histogram>
 
-<histogram name="Enterprise.ClientCertificate.Profile.Provisioning.Store.Error"
+<histogram name="Enterprise.ClientCertificate.{Level}.Provisioning.Store.Error"
     enum="CertificateStoreError" expires_after="2026-02-10">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Captures a terminal store error that occured when trying to provision a
-    client certificate for a Profile.
+    client certificate for a {Level}.
   </summary>
+  <token key="Level" variants="ClientCertLevel"/>
 </histogram>
 
 <histogram
-    name="Enterprise.ClientCertificate.Profile.Provisioning.{ProvisioningScenario}.Outcome"
+    name="Enterprise.ClientCertificate.{Level}.Provisioning.{ProvisioningScenario}.Outcome"
     enum="BooleanSuccess" expires_after="2026-02-10">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Captures whether the {ProvisioningScenario} provisioning scenario was
-    successful or not.
+    successful or not for {Level} level client certificates.
   </summary>
+  <token key="Level" variants="ClientCertLevel"/>
   <token key="ProvisioningScenario" variants="CertificateProvisioningScenario"/>
 </histogram>
 
 <histogram
-    name="Enterprise.ClientCertificate.Profile.Provisioning.{ProvisioningScenario}.{ProvisioningOutcome}.Latency"
+    name="Enterprise.ClientCertificate.{Level}.Provisioning.{ProvisioningScenario}.{ProvisioningOutcome}.Latency"
     units="ms" expires_after="2026-02-10">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Captures how long a {ProvisioningOutcome} {ProvisioningScenario}
-    provisioning scenario took.
+    provisioning scenario took for {Level} level client certificates.
   </summary>
+  <token key="Level" variants="ClientCertLevel"/>
   <token key="ProvisioningScenario" variants="CertificateProvisioningScenario"/>
   <token key="ProvisioningOutcome" variants="CertificateProvisioningOutcome"/>
 </histogram>
 
 <histogram
-    name="Enterprise.ClientCertificate.Profile.{UploadScenario}.ClientError"
+    name="Enterprise.ClientCertificate.{Level}.{UploadScenario}.ClientError"
     enum="CertificateUploadClientError" expires_after="2026-02-10">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
-    Captures a client error that occured when trying to upload a Profile's
+    Captures a client error that occured when trying to upload a {Level}'s
     public key for {UploadScenario}.
   </summary>
+  <token key="Level" variants="ClientCertLevel"/>
   <token key="UploadScenario" variants="ClientCertificateUploadScenario"/>
 </histogram>
 
 <histogram
-    name="Enterprise.ClientCertificate.Profile.{UploadScenario}.UploadCode"
+    name="Enterprise.ClientCertificate.{Level}.{UploadScenario}.UploadCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-08-10">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
-    Captures the HTTP response code for the upload of a Profile's public key for
+    Captures the HTTP response code for the upload of a {Level}'s public key for
     {UploadScenario}.
   </summary>
+  <token key="Level" variants="ClientCertLevel"/>
   <token key="UploadScenario" variants="ClientCertificateUploadScenario"/>
 </histogram>
 
