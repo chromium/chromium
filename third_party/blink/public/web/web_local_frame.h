@@ -524,7 +524,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
                                           gfx::Rect&) const = 0;
 
   // Supports commands like Undo, Redo, Cut, Copy, Paste, SelectAll,
-  // Unselect, etc. See EditorCommand.cpp for the full list of supported
+  // Unselect, etc. See editor_command_names.h for the full list of supported
   // commands.
   virtual bool ExecuteCommand(const WebString&) = 0;
   virtual bool ExecuteCommand(const WebString&, const WebString& value) = 0;
