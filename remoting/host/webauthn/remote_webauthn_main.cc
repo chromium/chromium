@@ -18,7 +18,6 @@
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/crash/crash_reporting.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/chromoting_host_services_client.h"
@@ -28,8 +27,14 @@
 #include "remoting/host/webauthn/remote_webauthn_caller_security_utils.h"
 #include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "remoting/base/crash/crash_reporting_crashpad.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include "remoting/base/crash/crash_reporting_breakpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
@@ -45,7 +50,11 @@ int RemoteWebAuthnMain(int argc, char** argv) {
 
 #if defined(REMOTING_ENABLE_CRASH_REPORTING)
   if (IsUsageStatsAllowed()) {
-    InitializeCrashReporting();
+#if BUILDFLAG(IS_LINUX)
+    InitializeCrashpadReporting();
+#elif BUILDFLAG(IS_WIN)
+    InitializeBreakpadReporting();
+#endif  // BUILDFLAG(IS_LINUX)
   }
 #endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 

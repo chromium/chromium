@@ -29,7 +29,7 @@
 #include "net/ssl/client_cert_store.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/certificate_helpers.h"
-#include "remoting/base/crash/crash_reporting.h"
+#include "remoting/base/crash/crash_reporting_breakpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/setup/cloud_host_starter.h"
@@ -444,7 +444,7 @@ int StartHostMain(int argc, char** argv) {
   // We don't have a config file yet so we can't use IsUsageStatsAllowed(),
   // instead we can just check the command line parameter.
   if (params.enable_crash_reporting) {
-    InitializeCrashReporting();
+    InitializeBreakpadReporting();
   }
 #endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 

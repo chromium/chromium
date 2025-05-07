@@ -2,34 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/base/crash/crash_reporting.h"
+#include "remoting/base/crash/crash_reporting_breakpad.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "remoting/base/crash/breakpad_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_LINUX)
-#include "remoting/base/crash/crashpad_linux.h"
-#endif  // BUILDFLAG(IS_LINUX)
-
 namespace remoting {
 
-void LogAndCleanupCrashDatabase() {
-#if BUILDFLAG(IS_LINUX)
-  CrashpadLinux::GetInstance().LogAndCleanupCrashpadDatabase();
-#endif  // BUILDFLAG(IS_LINUX)
-}
-
 // Not implemented for Mac, see https://crbug.com/714714
-void InitializeCrashReporting() {
+void InitializeBreakpadReporting() {
   // Touch the object to make sure it is initialized.
 #if BUILDFLAG(IS_WIN)
   BreakpadWin::GetInstance().Initialize();
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_LINUX)
-  CrashpadLinux::GetInstance().Initialize();
-#endif  // BUILDFLAG(IS_LINUX)
 }
 
 #if BUILDFLAG(IS_WIN)

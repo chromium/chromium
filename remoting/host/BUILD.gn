@@ -1206,13 +1206,13 @@ if (enable_me2me_host) {
         "//remoting/host/mac:host_service_main",
       ]
     } else {
-      deps += [
-        "//remoting/host/crash:crash_uploader_main",
-        "//remoting/host/remote_open_url:main",
-      ]
+      deps += [ "//remoting/host/remote_open_url:main" ]
     }
     if (is_win) {
-      deps += [ "//remoting/host/security_key:main" ]
+      deps += [
+        "//remoting/host/crash:crash_uploader_main",
+        "//remoting/host/security_key:main",
+      ]
     }
   }
 

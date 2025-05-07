@@ -15,48 +15,6 @@ source_set("crash_tools") {
   }
 }
 
-source_set("crash_uploader") {
-  sources = [
-    "crash_directory_watcher.cc",
-    "crash_directory_watcher.h",
-    "crash_file_uploader.cc",
-    "crash_file_uploader.h",
-    "minidump_handler.cc",
-    "minidump_handler.h",
-  ]
-  deps = [
-    "//base",
-    "//remoting/base",
-    "//remoting/base/crash",
-    "//remoting/base/crash:breakpad_utils",
-    "//remoting/host:common_headers",
-    "//remoting/host/base",
-    "//services/network:network_service",
-    "//services/network/public/cpp",
-  ]
-}
-
-source_set("crash_uploader_main_headers") {
-  sources = [ "crash_uploader_main.h" ]
-  public_deps = [ "//remoting/host:host_main_headers" ]
-}
-
-source_set("crash_uploader_main") {
-  configs += [ "//remoting/build/config:host_implementation" ]
-
-  sources = [ "crash_uploader_main.cc" ]
-  deps = [
-    ":crash_uploader",
-    ":crash_uploader_main_headers",
-    "//base",
-    "//mojo/core/embedder:embedder",
-    "//remoting/base",
-    "//remoting/base/crash",
-    "//remoting/host:common_headers",
-    "//remoting/host/base",
-  ]
-}
-
 if (is_linux || is_win) {
   executable("remoting_crashpad_handler") {
     sources = [ "crashpad_handler.cc" ]
@@ -91,6 +49,48 @@ if (is_linux) {
 }
 
 if (is_win) {
+  source_set("crash_uploader") {
+    sources = [
+      "crash_directory_watcher.cc",
+      "crash_directory_watcher.h",
+      "crash_file_uploader.cc",
+      "crash_file_uploader.h",
+      "minidump_handler.cc",
+      "minidump_handler.h",
+    ]
+    deps = [
+      "//base",
+      "//remoting/base",
+      "//remoting/base/crash",
+      "//remoting/base/crash:breakpad_utils",
+      "//remoting/host:common_headers",
+      "//remoting/host/base",
+      "//services/network:network_service",
+      "//services/network/public/cpp",
+    ]
+  }
+
+  source_set("crash_uploader_main_headers") {
+    sources = [ "crash_uploader_main.h" ]
+    public_deps = [ "//remoting/host:host_main_headers" ]
+  }
+
+  source_set("crash_uploader_main") {
+    configs += [ "//remoting/build/config:host_implementation" ]
+
+    sources = [ "crash_uploader_main.cc" ]
+    deps = [
+      ":crash_uploader",
+      ":crash_uploader_main_headers",
+      "//base",
+      "//mojo/core/embedder:embedder",
+      "//remoting/base",
+      "//remoting/base/crash",
+      "//remoting/host:common_headers",
+      "//remoting/host/base",
+    ]
+  }
+
   executable("remoting_crash_uploader") {
     sources = [ "crash_uploader_entry_point.cc" ]
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_BASE_CRASH_CRASH_REPORTING_H_
-#define REMOTING_BASE_CRASH_CRASH_REPORTING_H_
+#ifndef REMOTING_BASE_CRASH_CRASH_REPORTING_BREAKPAD_H_
+#define REMOTING_BASE_CRASH_CRASH_REPORTING_BREAKPAD_H_
 
 #include <string>
 
@@ -12,11 +12,7 @@
 
 namespace remoting {
 
-// Query and log the entries in the crash database.
-// This will also verify that crash entries were uploaded and will clean up
-// old entries to help reduce disk space usage.
-void LogAndCleanupCrashDatabase();
-
+#if BUILDFLAG(IS_WIN)
 // Initializes collection and upload of crash reports. The caller has to ensure
 // that the user has agreed to crash dump reporting.
 //
@@ -26,9 +22,8 @@ void LogAndCleanupCrashDatabase();
 // be caught and reported. This should not be a problem as static non-POD
 // objects are not allowed by the style guide and exceptions to this rule are
 // rare.
-void InitializeCrashReporting();
+void InitializeBreakpadReporting();
 
-#if BUILDFLAG(IS_WIN)
 // Initializes a client for out-of-process (OOP) crash reporting using the
 // server process which owns the pipe referenced by |crash_server_pipe_handle|.
 // This is used for processes which do not have permission to write to the
@@ -44,4 +39,4 @@ void InitializeOopCrashServer();
 
 }  // namespace remoting
 
-#endif  // REMOTING_BASE_CRASH_CRASH_REPORTING_H_
+#endif  // REMOTING_BASE_CRASH_CRASH_REPORTING_BREAKPAD_H_
