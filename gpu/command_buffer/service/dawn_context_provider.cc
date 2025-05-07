@@ -932,11 +932,16 @@ bool DawnSharedContext::OnMemoryDump(
         ->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes,
                     mem_usage.depthStencilTexturesUsage);
-    pmd->GetOrCreateAllocatorDump(
-           base::JoinString({kDawnMemoryDumpPrefix, "textures/msaa"}, "/"))
-        ->AddScalar(MemoryAllocatorDump::kNameSize,
-                    MemoryAllocatorDump::kUnitsBytes,
-                    mem_usage.msaaTexturesUsage);
+    auto* msaa_dump = pmd->GetOrCreateAllocatorDump(
+        base::JoinString({kDawnMemoryDumpPrefix, "textures/msaa"}, "/"));
+    msaa_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                         MemoryAllocatorDump::kUnitsBytes,
+                         mem_usage.msaaTexturesUsage);
+    msaa_dump->AddScalar(MemoryAllocatorDump::kNameObjectCount,
+                         MemoryAllocatorDump::kUnitsObjects,
+                         mem_usage.msaaTexturesCount);
+    msaa_dump->AddScalar("biggest_size", MemoryAllocatorDump::kUnitsBytes,
+                         mem_usage.largestMsaaTextureUsage);
     pmd->GetOrCreateAllocatorDump(
            base::JoinString({kDawnMemoryDumpPrefix, "buffers"}, "/"))
         ->AddScalar(MemoryAllocatorDump::kNameSize,

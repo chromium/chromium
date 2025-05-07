@@ -82,6 +82,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".DawnSharedContext.MSAA"
       summary="Only counting MSAA memory used by the Graphite Dawn shared
                context."/>
+  <variant name=".DawnSharedContext.MSAA.Count"
+      summary="Only counting number of MSAA textures used by the Graphite
+               Dawn shared context."/>
+  <variant name=".DawnSharedContext.MSAA.Largest"
+      summary="Only record the biggest MSAA texture's memory used by the
+               Graphite Dawn shared context."/>
   <variant name=".DawnSharedContext.Textures"
       summary="Only counting textures' memory used by the Graphite Dawn
                shared context."/>
