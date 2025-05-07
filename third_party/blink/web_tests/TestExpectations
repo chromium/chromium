@@ -2641,6 +2641,7 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac15-arm64 ] external/wpt/css/css-flexbox/overflow-auto-005.html [ Failure ]
 crbug.com/415669416 [ Mac15 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/415738357 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/error.py [ Failure ]
 crbug.com/415738357 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/invalid.py [ Failure ]
@@ -6299,7 +6300,7 @@ crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/se
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-interactive-element-focus.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-parsing.tentative.html [ Failure ]
 
-crbug.com/415205686 editing/input/selectall-in-input-with-text-security.html [ Failure Crash ]
+crbug.com/415205686 editing/input/selectall-in-input-with-text-security.html [ Crash Failure ]
 
 # Flaky on headless_shell_wpt_tests
 crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.tentative.html [ Failure Pass ]

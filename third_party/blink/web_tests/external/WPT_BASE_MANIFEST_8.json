@@ -134527,6 +134527,71 @@
         ],
         {}
        ]
+      ],
+      "grid-gap-decorations-029.html": [
+       "6da75548d94b5e17e1ad7ba1011662c42b818d83",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-029-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-030.html": [
+       "ef4507ef92638eeff660e67e2024bbce323c1aa8",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-030-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-031.html": [
+       "530b661bfe32c5af7687954f3f4b2cbdfa61380a",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-031-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-032.html": [
+       "ac2d38fdda0ec6a1f4a3b7b091d03c896e3e5e47",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-032-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-033.html": [
+       "47ef35cc3688b2fcd2329558b1d0a27880983b38",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-033-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "multicol": {
@@ -224578,6 +224643,35 @@
         ]
        ],
        {}
+      ]
+     ],
+     "css-scale-of-clip-path.html": [
+      "dda72c0d139979213741174da8c9572f1237bcc3",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/css-scale-of-clip-path-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            40
+           ],
+           [
+            0,
+            3000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "css-skew-001.html": [
@@ -319860,7 +319954,13 @@
      "OWNERS": [
       "ada9e7044f494a9db911e640fd69b83bdb5e854a",
       []
-     ]
+     ],
+     "resources": {
+      "util.js": [
+       "ad06086a123bccbe2c852dffd1a36ffde0613ada",
+       []
+      ]
+     }
     }
    },
    "ambient-light": {
@@ -349965,6 +350065,26 @@
       "grid-gap-decorations-027-ref.html": [
        "7e0d9cbcd6ff64b17bc8fe57616a37ba29a9fd8e",
        []
+      ],
+      "grid-gap-decorations-029-ref.html": [
+       "35450e07ae5579707c94b4a0a58f29eb83d7f7fa",
+       []
+      ],
+      "grid-gap-decorations-030-ref.html": [
+       "d4953ae2ddda701324d350ccf25a113b8e67fc37",
+       []
+      ],
+      "grid-gap-decorations-031-ref.html": [
+       "0615305bc9f8de791f1c2061ad6d90039932b157",
+       []
+      ],
+      "grid-gap-decorations-032-ref.html": [
+       "f90e3dd68132078e2557f33b7e32605d278cd0eb",
+       []
+      ],
+      "grid-gap-decorations-033-ref.html": [
+       "e26143a6b93e9fdd53d4055234d89e40d98dc2af",
+       []
       ]
      },
      "multicol": {
@@ -368855,6 +368975,10 @@
       "54940566cd107ba443d3183dccecb505a811d14e",
       []
      ],
+     "css-scale-of-clip-path-ref.html": [
+      "d6fa480b0408ffc9c3687515e25a30ddc68f199f",
+      []
+     ],
      "css-skew-001-ref.html": [
       "70c256ebec653128a2d91555e817b54880666a35",
       []
@@ -380774,7 +380898,7 @@
       []
      ],
      "testdriver.md": [
-      "67757af63f2ed6af4026577dd35000c183509d44",
+      "e0fae529875ee89d5e8a2457cdab35e1866f663b",
       []
      ],
      "testharness-api.md": [
@@ -419636,7 +419760,7 @@
       []
      ],
      "report-helper.js": [
-      "5b5438903de11c346ac3901a9de81a96e4446386",
+      "216da22eae8c0ccde223c70a110a7a892676c14f",
       []
      ],
      "report.py": [
@@ -466887,10 +467011,10 @@
      ]
     },
     "translator": {
-     "translator-bad-input.tentative.https.window.js": [
-      "53a184bfd196f6006e7df9c908518ba47deacda6",
+     "translator-bad-input.https.window.js": [
+      "db8905a61f660f8dc0aa7666c044794d22683799",
       [
-       "ai/translator/translator-bad-input.tentative.https.window.html",
+       "ai/translator/translator-bad-input.https.window.html",
        {
         "script_metadata": [
          [
@@ -466910,15 +467034,15 @@
        }
       ]
      ],
-     "translator-translate.tentative.https.window.js": [
-      "a8aad5e03e1f46db43a47966d66f7aecc526b255",
+     "translator.optional.https.window.js": [
+      "96eca09d28bd61ccc4d31b746216f1f252d0bf3b",
       [
-       "ai/translator/translator-translate.tentative.https.window.html",
+       "ai/translator/translator.optional.https.window.html",
        {
         "script_metadata": [
          [
           "title",
-          "Translate from English to Japanese"
+          "Translator Translate"
          ],
          [
           "global",
@@ -466939,6 +467063,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "resources/util.js"
          ]
         ],
         "timeout": "long"
@@ -532335,7 +532463,7 @@
       ]
      ],
      "getBoundingClientRect-newline.html": [
-      "40e29181d6fed001b641b0b0050cf21d6f3c589c",
+      "ce82b7237d003d79fe4333e5a67aa74b004bb11c",
       [
        null,
        {}
@@ -648568,6 +648696,15 @@
           }
          ]
         ],
+        "select-input-keyboard-behavior.tentative.html": [
+         "bf3fbab9d18a4747f903d082a8c11d6ebad737aa",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ],
         "select-inside-top-layer.tentative.html": [
          "6d70f3aaf8d3dc23b2f5fb784c399991913dc938",
          [
@@ -711307,7 +711444,7 @@
      ]
     ],
     "innertext.tentative.html": [
-     "d40b6047924834ef09137fa975cbd2d142999bcb",
+     "7716488f25a08ea62635fceec679d97650d1f383",
      [
       null,
       {
@@ -711603,7 +711740,7 @@
      ]
     ],
     "text-lcp-followed-by-anim-image-softnav-lcp.tentative.html": [
-     "0615b513e61319d61bcbed3540aa1a5d47289cb6",
+     "b34a6e81a58333c61ccedb4e25551feba4893736",
      [
       null,
       {
@@ -711630,7 +711767,7 @@
      ]
     ],
     "visited-link.tentative.html": [
-     "0bb149f00e91fc2f0033a6f763543967ef542ab2",
+     "0bb31aaac1540b3d2b9f6a3157bb43d96e430a58",
      [
       null,
       {
@@ -727993,19 +728130,27 @@
     "tentative": {
      "integrity-policy": {
       "parsing.https.html": [
-       "99cf822d30d110f2adb96307ceff3c30a63aa901",
+       "205854419a7d58871e39a5cfb3a86ccd38cd5492",
        [
-        null,
+        "subresource-integrity/tentative/integrity-policy/parsing.https.html?type=enforce",
+        {
+         "timeout": "long"
+        }
+       ],
+       [
+        "subresource-integrity/tentative/integrity-policy/parsing.https.html?type=report",
         {
          "timeout": "long"
         }
        ]
       ],
       "script.https.html": [
-       "53cf35dd8d044cd1b781d00bc251103b1b8350d6",
+       "783374db920a24ae32a3492d8cfe2edc5d8eb5d3",
        [
         null,
-        {}
+        {
+         "timeout": "long"
+        }
        ]
       ]
      }
