@@ -69,12 +69,16 @@ bool IntegrityPolicy::AllowRequest(
     network::mojom::RequestMode request_mode,
     const IntegrityMetadataSet& integrity_metadata,
     const KURL& url) {
-  if ((!integrity_metadata.empty() &&
+  if (!context ||
+      (!integrity_metadata.empty() &&
        request_mode != network::mojom::RequestMode::kNoCors) ||
       url.ProtocolIsData() || url.ProtocolIs("blob")) {
     return true;
   }
   PolicyContainer* policy_container = context->GetPolicyContainer();
+  if (!policy_container) {
+    return true;
+  }
   const network::IntegrityPolicy& integrity_policy =
       policy_container->GetPolicies().integrity_policy;
   const network::IntegrityPolicy& integrity_policy_report_only =
