@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "components/signin/core/browser/signin_header_helper.h"
 #include "components/update_client/update_client.h"
 #include "components/value_store/value_store_factory.h"
 #include "components/version_info/version_info.h"
@@ -42,6 +43,7 @@
 #include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/features/feature_channel.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 using content::BrowserContext;
@@ -101,6 +103,20 @@ class DesktopAndroidExtensionsAPIClient : public ExtensionsAPIClient {
     // Add support for chrome.storage.managed.
     (*caches)[settings_namespace::MANAGED] = new ManagedValueStoreCache(
         *Profile::FromBrowserContext(context), factory, observer);
+  }
+
+  // The following code is used to support chrome.webRequest api for
+  // CalculateOnHeadersReceivedDelta(), until ChromeExtensionAPIClient is ported
+  // for desktop android.
+  bool ShouldHideResponseHeader(const GURL& url,
+                                const std::string& header_name) const override {
+    // Gaia may send a OAUth2 authorization code in the Dice response header,
+    // which could allow an extension to generate a refresh token for the
+    // account.
+    return url.host_piece() ==
+               GaiaUrls::GetInstance()->gaia_url().host_piece() &&
+           base::CompareCaseInsensitiveASCII(header_name,
+                                             signin::kDiceResponseHeader) == 0;
   }
 
  private:
