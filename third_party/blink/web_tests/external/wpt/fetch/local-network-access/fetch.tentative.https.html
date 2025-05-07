@@ -16,11 +16,7 @@
         resolveUrl("resources/fetch-private.html", sourceResolveOptions(source));
 
     function checkResult(evt) {
-      const { error, ok, type, body } = evt.data;
-
-      assert_equals(ok, true, "response ok mismatch");
-      assert_equals(body, "success", "response body mismatch");
-
+      checkTestResult(evt.data, FetchTestResult.SUCCESS);
       t.done();
     }
 
@@ -39,10 +35,7 @@
         sourceResolveOptions(source));
 
     function checkResult(evt) {
-      const { error, ok, type, body } = evt.data;
-
-      assert_equals(error, "TypeError: Failed to fetch", "error mismatch");
-
+      checkTestResult(evt.data, FetchTestResult.FAILURE);
       t.done();
     }
 

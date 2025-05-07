@@ -173,3 +173,15 @@ const FetchTestResult = {
     error: "TypeError: Failed to fetch",
   },
 };
+
+
+// Helper function for checking results from fetch tests.
+function checkTestResult(actual, expected) {
+  assert_equals(actual.error, expected.error, "error mismatch");
+  assert_equals(actual.ok, expected.ok, "response ok mismatch");
+  assert_equals(actual.body, expected.body, "response body mismatch");
+
+  if (expected.type !== undefined) {
+    assert_equals(type, expected.type, "response type mismatch");
+  }
+}
