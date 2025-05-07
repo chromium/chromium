@@ -22,8 +22,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -130,11 +132,25 @@ public class NotificationChannelPreserverTest {
     }
 
     private void setChannelStatus(boolean enabled) {
-        when(mSiteChannelsManager.getChannelStatus(eq(CHANNEL_ID)))
-                .thenReturn(
-                        enabled
-                                ? NotificationChannelStatus.ENABLED
-                                : NotificationChannelStatus.BLOCKED);
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) throws Throwable {
+                                String channelIdArg = invocation.getArgument(0);
+                                Callback<Integer> callbackArg = invocation.getArgument(1);
+
+                                if (channelIdArg.equals(CHANNEL_ID)) {
+                                    if (enabled) {
+                                        callbackArg.onResult(NotificationChannelStatus.ENABLED);
+                                    } else {
+                                        callbackArg.onResult(NotificationChannelStatus.BLOCKED);
+                                    }
+                                }
+                                return null; // Method is void
+                            }
+                        })
+                .when(mSiteChannelsManager)
+                .getChannelStatusAsync(eq(CHANNEL_ID), any(Callback.class));
     }
 
     private void setPreInstallNotificationPermission(

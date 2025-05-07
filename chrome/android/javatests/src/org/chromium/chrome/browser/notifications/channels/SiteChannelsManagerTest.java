@@ -28,6 +28,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge.SiteChannel;
@@ -171,7 +172,7 @@ public class SiteChannelsManagerTest {
         NotificationSettingsBridge.SiteChannel channel =
                 mSiteChannelsManager.createSiteChannel("https://example-enabled.org", 0L, true);
         assertThat(
-                mSiteChannelsManager.getChannelStatus(channel.getId()),
+                getChannelStatus(channel.getId()),
                 matchesChannelStatus(NotificationChannelStatus.ENABLED));
     }
 
@@ -179,12 +180,12 @@ public class SiteChannelsManagerTest {
     @SmallTest
     public void testGetChannelStatus_channelCreatedAsBlocked() {
         assertThat(
-                mSiteChannelsManager.getChannelStatus("https://example-blocked.com"),
+                getChannelStatus("https://example-blocked.com"),
                 matchesChannelStatus(NotificationChannelStatus.UNAVAILABLE));
         NotificationSettingsBridge.SiteChannel channel =
                 mSiteChannelsManager.createSiteChannel("https://example-blocked.com", 0L, false);
         assertThat(
-                mSiteChannelsManager.getChannelStatus(channel.getId()),
+                getChannelStatus(channel.getId()),
                 matchesChannelStatus(NotificationChannelStatus.BLOCKED));
     }
 
@@ -192,7 +193,7 @@ public class SiteChannelsManagerTest {
     @SmallTest
     public void testGetChannelStatus_channelNotCreated() {
         assertThat(
-                mSiteChannelsManager.getChannelStatus("invalid-channel-id"),
+                getChannelStatus("invalid-channel-id"),
                 matchesChannelStatus(NotificationChannelStatus.UNAVAILABLE));
     }
 
@@ -203,7 +204,7 @@ public class SiteChannelsManagerTest {
                 mSiteChannelsManager.createSiteChannel("https://chromium.org", 0L, true);
         mSiteChannelsManager.deleteSiteChannel(channel.getId());
         assertThat(
-                mSiteChannelsManager.getChannelStatus(channel.getId()),
+                getChannelStatus(channel.getId()),
                 matchesChannelStatus(NotificationChannelStatus.UNAVAILABLE));
     }
 
@@ -307,5 +308,11 @@ public class SiteChannelsManagerTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Notifications.Android.SitesChannel"),
                 is(1));
+    }
+
+    private static @NotificationChannelStatus int getChannelStatus(String channelId) {
+        PayloadCallbackHelper<Integer> helper = new PayloadCallbackHelper();
+        SiteChannelsManager.getInstance().getChannelStatusAsync(channelId, helper::notifyCalled);
+        return helper.getOnlyPayloadBlocking();
     }
 }

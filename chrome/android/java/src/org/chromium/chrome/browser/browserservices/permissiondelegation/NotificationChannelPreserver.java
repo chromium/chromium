@@ -40,25 +40,29 @@ public class NotificationChannelPreserver {
         }
 
         SiteChannelsManager siteChannelsManager = SiteChannelsManager.getInstance();
-        @NotificationChannelStatus int status = siteChannelsManager.getChannelStatus(channelId);
-        if (status == NotificationChannelStatus.UNAVAILABLE) {
-            // This shouldn't happen if we passed the above conditional return - but it just means
-            // that the channel doesn't exist, so again, we don't need to do anything.
-            return;
-        }
+        siteChannelsManager.getChannelStatusAsync(
+                channelId,
+                (status) -> {
+                    if (status == NotificationChannelStatus.UNAVAILABLE) {
+                        // This shouldn't happen if we passed the above conditional return - but it
+                        // just means
+                        // that the channel doesn't exist, so again, we don't need to do anything.
+                        return;
+                    }
 
-        assert status == NotificationChannelStatus.ENABLED
-                || status == NotificationChannelStatus.BLOCKED;
+                    assert status == NotificationChannelStatus.ENABLED
+                            || status == NotificationChannelStatus.BLOCKED;
 
-        @ContentSettingValues
-        int settingValue =
-                status == NotificationChannelStatus.ENABLED
-                        ? ContentSettingValues.ALLOW
-                        : ContentSettingValues.BLOCK;
-        WebappRegistry.getInstance()
-                .getPermissionStore()
-                .setPreInstallNotificationPermission(origin, settingValue);
-        siteChannelsManager.deleteSiteChannel(channelId);
+                    @ContentSettingValues
+                    int settingValue =
+                            status == NotificationChannelStatus.ENABLED
+                                    ? ContentSettingValues.ALLOW
+                                    : ContentSettingValues.BLOCK;
+                    WebappRegistry.getInstance()
+                            .getPermissionStore()
+                            .setPreInstallNotificationPermission(origin, settingValue);
+                    siteChannelsManager.deleteSiteChannel(channelId);
+                });
     }
 
     /** Restores the SiteChannel if called on a version of Android that requires it. */
