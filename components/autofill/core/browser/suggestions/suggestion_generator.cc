@@ -7,14 +7,14 @@
 namespace autofill {
 
 std::vector<SuggestionGenerator::SuggestionData>
-SuggestionGenerator::GetSuggestionDataForFillingProduct(
+SuggestionGenerator::ExtractSuggestionDataForFillingProduct(
     const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
-        suggestion_data,
+        all_suggestion_data,
     FillingProduct filling_product) {
   auto it = std::ranges::find(
-      suggestion_data, filling_product,
+      all_suggestion_data, filling_product,
       &std::pair<FillingProduct, std::vector<SuggestionData>>::first);
-  if (it != suggestion_data.end()) {
+  if (it != all_suggestion_data.end()) {
     return it->second;
   }
   return std::vector<SuggestionData>();

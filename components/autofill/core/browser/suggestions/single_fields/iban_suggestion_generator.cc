@@ -13,33 +13,37 @@ namespace autofill {
 
 void IbanSuggestionGenerator::FetchSuggestionData(
     const FormStructure& form,
-    const AutofillField& trigger_field,
-    AutofillClient& client,
+    const AutofillField& field,
+    const AutofillClient& client,
     base::OnceCallback<
         void(std::pair<FillingProduct,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
-  std::move(callback).Run(
-      {FillingProduct::kIban,
-       base::ToVector(
-           client.GetPaymentsAutofillClient()
-               ->GetPaymentsDataManager()
-               .GetOrderedIbansToSuggest(),
-           [](Iban& iban) { return SuggestionData(std::move(iban)); })});
+  std::vector<Iban> ibans = client.GetPaymentsAutofillClient()
+                                ->GetPaymentsDataManager()
+                                .GetOrderedIbansToSuggest();
+  std::vector<SuggestionData> suggestion_data = base::ToVector(
+      std::move(ibans),
+      [](Iban& iban) { return SuggestionData(std::move(iban)); });
+
+  // TODO(crbug.com/409962888): Once the Iban suggestion generation logic is
+  // removed from `IbanManager`, this function should check for the required
+  // conditions to show IBAN suggestions.
+  std::move(callback).Run({FillingProduct::kIban, std::move(suggestion_data)});
 }
 
 void IbanSuggestionGenerator::GenerateSuggestions(
     const FormStructure& form,
-    const AutofillField& trigger_field,
+    const AutofillField& field,
     AutofillClient& client,
     const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
-        suggestion_data,
+        all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   IbanManager* iban_manager =
       client.GetPaymentsAutofillClient()->GetIbanManager();
-  if (!iban_manager ||
-      GetSuggestionDataForFillingProduct(suggestion_data, FillingProduct::kIban)
-          .empty()) {
+  if (!iban_manager || ExtractSuggestionDataForFillingProduct(
+                           all_suggestion_data, FillingProduct::kIban)
+                           .empty()) {
     // There are no IBAN suggestions to return.
     std::move(callback).Run({FillingProduct::kIban, {}});
     return;
@@ -62,10 +66,11 @@ void IbanSuggestionGenerator::GenerateSuggestions(
 
   // TODO(crbug.com/409962888): Move the suggestion generation logic from the
   // `IbanManager` to this class.
-  // TODO(crbug.com/409962888): `OnGetSingleFieldSuggestions` should use the
-  // suggestion data instead of calling the `PaymentsDataManager` again.
+  // TODO(crbug.com/409962888): Once the iban suggestion generation logic is
+  // removed from `SingleFieldFillRouter`, `OnGetSingleFieldSuggestions` should
+  // use the suggestion data instead of calling the `PaymentsDataManager` again.
   if (!iban_manager->OnGetSingleFieldSuggestions(
-          trigger_field, trigger_field, client, on_suggestions_returned)) {
+          field, field, client, on_suggestions_returned)) {
     wrapped_callback.Run({});
   }
 }

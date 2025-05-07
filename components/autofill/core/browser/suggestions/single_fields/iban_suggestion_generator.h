@@ -13,8 +13,8 @@ class IbanSuggestionGenerator : public SuggestionGenerator {
  public:
   void FetchSuggestionData(
       const FormStructure& form,
-      const AutofillField& trigger_field,
-      AutofillClient& client,
+      const AutofillField& field,
+      const AutofillClient& client,
       base::OnceCallback<
           void(std::pair<FillingProduct,
                          std::vector<SuggestionGenerator::SuggestionData>>)>
@@ -22,10 +22,10 @@ class IbanSuggestionGenerator : public SuggestionGenerator {
 
   void GenerateSuggestions(
       const FormStructure& form,
-      const AutofillField& trigger_field,
+      const AutofillField& field,
       AutofillClient& client,
       const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
-          suggestion_data,
+          all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 };
 
