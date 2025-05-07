@@ -116,6 +116,7 @@ void XdgSessionManager::RemoveWindow(const std::string& session_id,
                                      const int32_t window_id) {
   if (auto* session = GetSession(session_id)) {
     session->RemoveToplevel(window_id);
+    return;
   }
   DLOG(WARNING) << "No session found for id=" << session_id;
 }
