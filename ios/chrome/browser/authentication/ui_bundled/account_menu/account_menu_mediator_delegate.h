@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_DELEGATE_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_DELEGATE_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_DELEGATE_H_
 
 #import <Foundation/Foundation.h>
 
 #import <string_view>
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 
@@ -18,7 +17,7 @@
 @class AuthenticationFlow;
 @protocol SystemIdentity;
 
-@protocol AccountMenuMediatorDelegate <SyncErrorSettingsCommandHandler>
+@protocol AccountMenuMediatorDelegate <NSObject>
 
 // Requests to dismiss the account menu.
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator
@@ -53,4 +52,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_DELEGATE_H_

@@ -18,7 +18,9 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
@@ -72,6 +74,7 @@ using signin_metrics::PromoAction;
 using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 @interface ManageSyncSettingsCoordinator () <
+    AccountMenuCoordinatorDelegate,
     BulkUploadCoordinatorDelegate,
     ManageAccountsCoordinatorDelegate,
     ManageSyncSettingsCommandHandler,
@@ -94,7 +97,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
   // Account menu coordinator.
-  SigninCoordinator* _accountMenuCoordinator;
+  AccountMenuCoordinator* _accountMenuCoordinator;
   TrustedVaultReauthenticationCoordinator*
       _trustedVaultReauthenticationCoordinator;
 }
@@ -197,7 +200,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [self.mediator disconnect];
   [self stopBulkUpload];
   [self stopManageAccountsCoordinator];
-  [self stopAccountMenuCoordinatorAnimated:YES];
+  [self stopAccountMenuCoordinator];
   [self stopTrustedVaultReauthenticationCoordinator];
   self.mediator = nil;
   self.viewController = nil;
@@ -260,8 +263,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _personalizeGoogleServicesCoordinator = nil;
 }
 
-- (void)stopAccountMenuCoordinatorAnimated:(BOOL)animated {
-  [_accountMenuCoordinator stopAnimated:animated];
+- (void)stopAccountMenuCoordinator {
+  [_accountMenuCoordinator stop];
+  _accountMenuCoordinator.delegate = nil;
   _accountMenuCoordinator = nil;
 }
 
@@ -498,21 +502,13 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)openAccountMenu {
-  _accountMenuCoordinator = [SigninCoordinator
-      accountMenuCoordinatorWithBaseViewController:self.viewController
-                                           browser:self.browser
-                                      contextStyle:SigninContextStyle::kDefault
-                                        anchorView:nil
-                                       accessPoint:AccountMenuAccessPoint::
-                                                       kSettings
-                                               URL:GURL()];
-
-  __weak __typeof(self) weakself = self;
-  _accountMenuCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakself stopAccountMenuCoordinatorAnimated:YES];
-      };
-
+  _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                      anchorView:_viewController.view
+                     accessPoint:AccountMenuAccessPoint::kNewTabPage
+                             URL:GURL()];
+  _accountMenuCoordinator.delegate = self;
   [_accountMenuCoordinator start];
 }
 
@@ -671,6 +667,14 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     (TrustedVaultReauthenticationCoordinator*)coordinator {
   CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
   [self stopTrustedVaultReauthenticationCoordinator];
+}
+
+#pragma mark - AccountMenuCoordinatorDelegate
+
+- (void)accountMenuCoordinatorWantsToBeStopped:
+    (AccountMenuCoordinator*)coordinator {
+  CHECK_EQ(_accountMenuCoordinator, coordinator, base::NotFatalUntil::M140);
+  [self stopAccountMenuCoordinator];
 }
 
 @end
