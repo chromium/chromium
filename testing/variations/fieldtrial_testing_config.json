@@ -25049,6 +25049,19 @@
             ]
         }
     ],
+    "WebRTC-NoSdpMangleUfragRestrictedAddresses": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "127.0.0.1:12345|127.0.0.1:23456|127.0.0.1:34567|127.0.0.1:45678|127.0.0.1:56789"
+                }
+            ]
+        }
+    ],
     "WebRTC-SendBufferSizeBytes": [
         {
             "platforms": [
