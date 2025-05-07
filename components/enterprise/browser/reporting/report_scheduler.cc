@@ -20,6 +20,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
 
 namespace em = enterprise_management;
@@ -272,6 +273,10 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
 
   active_report_generation_config_ = ReportGenerationConfig(
       report_type, signals_mode, delegate_->UseCookiesInUploads());
+
+  VLOG_POLICY(1, REPORTING)
+      << "Starting report generation with the following configuration: "
+      << active_report_generation_config_.ToString();
 
   if (report_type == ReportType::kProfileReport) {
     DCHECK(profile_request_generator_);
