@@ -222,6 +222,10 @@ InterpolationValue CSSRotateInterpolationType::MaybeConvertValue(
   // TODO(crbug.com/328182246): we should not use the resolved angle
   // here, but doing it for now, since proper fix would require
   // rewriting Quaternion and Rotation to have unresolved versions.
+  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
+  // and sibling-count() if necessary.
+  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
+  // if necessary.
   return ConvertRotation(
       OptionalRotation(StyleBuilderConverter::ConvertRotation(
           CSSToLengthConversionData(&state.GetElement()), value)));

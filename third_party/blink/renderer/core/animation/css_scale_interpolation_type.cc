@@ -25,6 +25,10 @@ InterpolableNumber* CSSValueToInterpolableNumber(
     const CSSValue& value,
     const CSSLengthResolver& length_resolver) {
   const auto& primitive_value = To<CSSPrimitiveValue>(value);
+  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
+  // and sibling-count() if necessary.
+  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
+  // if necessary.
   // TODO(crbug.com/41494232): Don't resolve it here, once we can divide units.
   // The problem now is when we end up with kNumber for neutral keyframe
   // and kPercentage for non-neutral keyframe, we have to sum number and

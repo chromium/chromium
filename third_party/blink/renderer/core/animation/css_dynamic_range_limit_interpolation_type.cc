@@ -63,6 +63,10 @@ InterpolationValue CSSDynamicRangeLimitInterpolationType::MaybeConvertValue(
     ConversionCheckers& conversion_checkers) const {
   // TODO(crbug.com/40946458): Relative units should not be resolved here, but
   // that requires InterpolableDynamicRangeLimit to store calc-expressions.
+  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
+  // and sibling-count() if necessary.
+  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
+  // if necessary.
   return ConvertDynamicRangeLimit(
       StyleBuilderConverter::ConvertDynamicRangeLimit(state, value));
 }

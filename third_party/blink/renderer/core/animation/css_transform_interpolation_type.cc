@@ -118,6 +118,8 @@ InterpolationValue CSSTransformInterpolationType::MaybeConvertValue(
             LengthUnitsChecker::MaybeCreate(types, state)) {
       conversion_checkers.push_back(length_units_checker);
     }
+    // TODO(crbug.com/415626999): Create a TreeCountingChecker for
+    // sibling-index() and sibling-count() if necessary.
   }
 
   return InterpolationValue(InterpolableTransformList::ConvertCSSValue(
