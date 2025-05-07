@@ -402,7 +402,7 @@ void IdentityDialogController::OnRequestUiVolumeRecommendationResultReceived(
 }
 
 void IdentityDialogController::CollectTrainingData(UserAction user_action) {
-  if (!training_request_id_ || !segmentation_platform_service_) {
+  if (!training_request_id_.has_value() || !segmentation_platform_service_) {
     return;
   }
 
