@@ -982,7 +982,7 @@ void CaptionBubble::OnThemeChanged() {
   }
 
   // Call this after SetCaptionButtonStyle(), not before, since
-  // SetCaptionButtonStyle() calls set_background_color(), which
+  // SetCaptionButtonStyle() calls SetBackgroundColor(), which
   // OnThemeChanged() will trigger a read of.
   views::BubbleDialogDelegateView::OnThemeChanged();
 }
@@ -1491,7 +1491,7 @@ void CaptionBubble::SetBackgroundColor() {
                                           &background_color, color_provider);
   }
 
-  set_background_color(background_color);
+  views::BubbleDialogDelegateView::SetBackgroundColor(background_color);
   GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
 }
 

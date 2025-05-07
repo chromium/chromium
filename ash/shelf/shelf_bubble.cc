@@ -67,7 +67,7 @@ ShelfBubble::ShelfBubble(
           anchor,
           arrow_position.value_or(GetArrow(alignment))),
       for_tooltip_(for_tooltip) {
-  set_background_color(SK_ColorTRANSPARENT);
+  SetBackgroundColor(SK_ColorTRANSPARENT);
 
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.

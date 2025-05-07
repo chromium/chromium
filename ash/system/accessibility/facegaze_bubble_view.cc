@@ -80,7 +80,7 @@ FaceGazeBubbleView::FaceGazeBubbleView(
     const base::RepeatingCallback<void()>& on_mouse_entered,
     const base::RepeatingCallback<void(const ui::Event& event)>&
         on_close_button_clicked) {
-  set_background_color(kBackgroundColorId);
+  SetBackgroundColor(kBackgroundColorId);
   set_parent_window(
       Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                           kShellWindowId_AccessibilityBubbleContainer));
@@ -120,19 +120,7 @@ void FaceGazeBubbleView::Update(const std::u16string& text, bool is_warning) {
 }
 
 void FaceGazeBubbleView::UpdateColor(bool is_warning) {
-  ui::ColorId background_color_id =
-      is_warning ? kWarningBackgroundColor : kBackgroundColorId;
-  SkColor background_color = GetColorProvider()->GetColor(background_color_id);
-
-  set_background_color(background_color_id);
-  View* const contents_view = GetContentsView();
-  DCHECK(contents_view);
-  contents_view->SetBackground(
-      (views::CreateSolidBackground(background_color)));
-  views::BubbleFrameView* frame_view = GetBubbleFrameView();
-  if (frame_view) {
-    frame_view->SetBackgroundColor(background_color);
-  }
+  SetBackgroundColor(is_warning ? kWarningBackgroundColor : kBackgroundColorId);
 }
 
 std::u16string_view FaceGazeBubbleView::GetTextForTesting() const {
@@ -178,7 +166,7 @@ void FaceGazeBubbleMainContentView::UpdateColor(bool is_warning) {
       is_warning ? kWarningForegroundColor : kColorAshTextColorPrimary;
   image_->SetImage(ui::ImageModel::FromVectorIcon(
       kFacegazeIcon, foreground_color, kIconSizeDip));
-  label_->SetEnabledColor(GetColorProvider()->GetColor(foreground_color));
+  label_->SetEnabledColor(foreground_color);
 }
 
 BEGIN_METADATA(FaceGazeBubbleMainContentView)

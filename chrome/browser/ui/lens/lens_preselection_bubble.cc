@@ -65,7 +65,7 @@ LensPreselectionBubble::LensPreselectionBubble(
   set_close_on_deactivate(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(48);
-  set_background_color(kColorLensOverlayToastBackground);
+  SetBackgroundColor(kColorLensOverlayToastBackground);
   SetProperty(views::kElementIdentifierKey, kLensPreselectionBubbleElementId);
   SetAccessibleWindowRole(ax::mojom::Role::kAlertDialog);
   SetCancelCallback(std::move(on_cancel_callback));

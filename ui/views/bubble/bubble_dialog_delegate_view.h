@@ -448,7 +448,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // be a good fit for the UI you are building.
 
   ui::ColorVariant background_color() const { return color_; }
-  void set_background_color(ui::ColorVariant color) { color_ = color; }
+  void SetBackgroundColor(ui::ColorVariant color);
 
   void set_force_create_contents_background(
       bool force_create_contents_background) {
@@ -578,7 +578,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   class AnchorViewObserver;
   class AnchorWidgetObserver;
   class BubbleWidgetObserver;
-  class ThemeObserver;
 
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
                            VisibleWidgetShowsInkDropOnAttaching);
@@ -593,7 +592,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   friend class AnchorWidgetObserver;
   friend class BubbleWidgetObserver;
   friend class TestBubbleUmaLogger;
-  friend class ThemeObserver;
 
   friend class BubbleBorderDelegate;
   friend class BubbleWindowTargeter;
@@ -611,9 +609,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void OnBubbleWidgetPaintAsActiveChanged();
 
   void OnDeactivate();
-
-  // Update the bubble color from the NativeTheme unless it was explicitly set.
-  void UpdateColorsFromTheme();
+  void UpdateFrameColor();
 
   // Notify this bubble that it is now the primary anchored bubble. When a new
   // bubble becomes the primary anchor, the previous primary silently loses its
@@ -636,7 +632,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   std::unique_ptr<AnchorViewObserver> anchor_view_observer_;
   std::unique_ptr<AnchorWidgetObserver> anchor_widget_observer_;
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;
-  std::unique_ptr<ThemeObserver> theme_observer_;
   bool adjust_if_offscreen_ = true;
   bool focus_traversable_from_anchor_view_ = true;
   ViewTracker highlighted_button_tracker_;
@@ -679,7 +674,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   bool paint_client_to_layer_ = false;
 
   // If true, contents view will be forced to create a solid color background in
-  // UpdateColorsFromTheme().
+  // `UpdateFrameColor()`.
   bool force_create_contents_background_ = false;
 
 #if BUILDFLAG(IS_MAC)

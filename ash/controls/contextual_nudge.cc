@@ -50,7 +50,7 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
-  set_background_color(SK_ColorTRANSPARENT);
+  SetBackgroundColor(SK_ColorTRANSPARENT);
   set_close_on_deactivate(false);
   set_margins(gfx::Insets());
   set_accept_events(!tap_callback.is_null());

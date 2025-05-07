@@ -115,7 +115,7 @@ ToastView::ToastView(
       image_override_(image_override),
       render_toast_over_web_contents_(render_toast_over_web_contents),
       toast_close_callback_(std::move(toast_close_callback)) {
-  set_background_color(ui::kColorToastBackgroundProminent);
+  SetBackgroundColor(ui::kColorToastBackgroundProminent);
   SetPaintClientToLayer(true);
   SetShowCloseButton(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));

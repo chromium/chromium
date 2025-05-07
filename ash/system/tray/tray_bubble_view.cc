@@ -356,7 +356,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
         gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
     layer()->SetIsFastRoundedCorner(true);
 
-    set_background_color(cros_tokens::kCrosSysSystemBaseElevatedOpaque);
+    SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque);
     SetBorder(std::make_unique<views::HighlightBorder>(
         params_.corner_radius,
         views::HighlightBorder::Type::kHighlightBorderOnShadow));
@@ -364,7 +364,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
 
   if (init_params.translucent && chromeos::features::IsSystemBlurEnabled()) {
     CHECK(!init_params.transparent);
-    set_background_color(cros_tokens::kCrosSysSystemBaseElevated);
+    SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevated);
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);

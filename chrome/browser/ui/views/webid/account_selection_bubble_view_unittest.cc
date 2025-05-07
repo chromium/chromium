@@ -697,7 +697,7 @@ TEST_F(AccountSelectionBubbleViewTest,
   CreateAccountSelectionBubble();
 
   // Set the dialog background color to white.
-  dialog()->set_background_color(SK_ColorWHITE);
+  dialog()->SetBackgroundColor(SK_ColorWHITE);
 
   const std::string kDarkBlue = "#1a73e8";
   SkColor bg_color;
@@ -730,7 +730,7 @@ TEST_F(AccountSelectionBubbleViewTest,
   CreateAccountSelectionBubble();
 
   // Set the dialog background color to white.
-  dialog()->set_background_color(SK_ColorWHITE);
+  dialog()->SetBackgroundColor(SK_ColorWHITE);
 
   const std::string kWhite = "#fff";
   SkColor bg_color;

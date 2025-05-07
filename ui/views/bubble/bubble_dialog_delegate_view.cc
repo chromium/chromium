@@ -397,21 +397,6 @@ class BubbleDialogDelegate::BubbleWidgetObserver : public WidgetObserver {
       this};
 };
 
-class BubbleDialogDelegate::ThemeObserver : public ViewObserver {
- public:
-  explicit ThemeObserver(BubbleDialogDelegate* delegate) : delegate_(delegate) {
-    observation_.Observe(delegate->GetContentsView());
-  }
-
-  void OnViewThemeChanged(views::View* view) override {
-    delegate_->UpdateColorsFromTheme();
-  }
-
- private:
-  const raw_ptr<BubbleDialogDelegate> delegate_;
-  base::ScopedObservation<View, ViewObserver> observation_{this};
-};
-
 class BubbleDialogDelegateView::CloseOnDeactivatePin::Pins {
  public:
   Pins() = default;
@@ -475,11 +460,9 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
 
   RegisterWidgetInitializedCallback(base::BindOnce(
       [](BubbleDialogDelegate* bubble_delegate) {
-        bubble_delegate->theme_observer_ =
-            std::make_unique<ThemeObserver>(bubble_delegate);
         // Call the theme callback to make sure the initial theme is picked up
         // by the BubbleDialogDelegate.
-        bubble_delegate->UpdateColorsFromTheme();
+        bubble_delegate->UpdateFrameColor();
       },
       this));
 
@@ -724,6 +707,17 @@ void BubbleDialogDelegate::SetHighlightedButton(Button* highlighted_button) {
   highlighted_button_tracker_.SetView(highlighted_button);
   if (visible) {
     UpdateHighlightedButton(true);
+  }
+}
+
+void BubbleDialogDelegate::SetBackgroundColor(ui::ColorVariant color) {
+  if (color_ == color) {
+    return;
+  }
+
+  color_ = color;
+  if (GetWidget()) {
+    UpdateFrameColor();
   }
 }
 
@@ -1133,7 +1127,7 @@ void BubbleDialogDelegate::SetSubtitleAllowCharacterBreak(bool allow) {
   }
 }
 
-void BubbleDialogDelegate::UpdateColorsFromTheme() {
+void BubbleDialogDelegate::UpdateFrameColor() {
   View* const contents_view = GetContentsView();
   DCHECK(contents_view);
 

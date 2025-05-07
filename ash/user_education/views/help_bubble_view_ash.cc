@@ -282,7 +282,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
                                TranslateArrow(params.arrow),
                                views::BubbleBorder::STANDARD_SHADOW),
       id_(id) {
-  set_background_color(cros_tokens::kCrosSysDialogContainer);
+  SetBackgroundColor(cros_tokens::kCrosSysDialogContainer);
   SetCanActivate(true);
 
   // When hosted within a `views::ScrollView`, the anchor view may be
