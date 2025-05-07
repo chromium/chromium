@@ -1727,7 +1727,6 @@ config("clang_warning_suppression") {
         rebase_path(clang_warning_suppression_file, root_build_dir)
     inputs = [ clang_warning_suppression_file ]
     cflags = [
-      "-Xclang",
       "--warning-suppression-mappings=" + from_build_root,
     ]
   }
