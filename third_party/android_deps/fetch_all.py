@@ -322,7 +322,7 @@ _RE_CIPD_PACKAGE = re.compile(r'package: (\S*)')
 def _ParseSubprojects(subproject_path):
     """Parses listing of subproject build.gradle files. Returns list of paths."""
     if not os.path.exists(subproject_path):
-        return None
+        return {}
 
     subprojects = {}
     for subproject in open(subproject_path):
