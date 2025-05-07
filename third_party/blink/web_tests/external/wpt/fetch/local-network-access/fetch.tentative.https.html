@@ -25,12 +25,34 @@
     }
 
     const promise = new Promise((resolve) => {
-                      window.addEventListener('message', resolve);
+                      window.addEventListener('message', resolve, {once: true});
                     }).then(checkResult);
     const popup = window.open(sourceUrl);
     t.add_cleanup(() => popup.close());
 
     return promise;
-}, 'LNA Public to private with permission');
+  }, 'LNA Public to private with permission');
+
+  promise_test(t => {
+    const source = { server: Server.HTTPS_PUBLIC };
+    const sourceUrl = resolveUrl("resources/fetch-private-permission-denied.html",
+        sourceResolveOptions(source));
+
+    function checkResult(evt) {
+      const { error, ok, type, body } = evt.data;
+
+      assert_equals(error, "TypeError: Failed to fetch", "error mismatch");
+
+      t.done();
+    }
+
+    const promise = new Promise((resolve) => {
+                      window.addEventListener('message', resolve, {once: true});
+                    }).then(checkResult);
+    const popup = window.open(sourceUrl);
+    t.add_cleanup(() => popup.close());
+
+    return promise;
+  }, 'LNA Public to private with permission denied');
 </script>
 </body>
