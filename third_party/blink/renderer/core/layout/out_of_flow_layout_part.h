@@ -406,11 +406,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
   // This saves the static-position for an OOF-positioned object into its
   // paint-layer.
-  void SaveStaticPositionOnPaintLayer(
-      LayoutBox* layout_box,
-      const LogicalStaticPosition& position) const;
-  LogicalStaticPosition ToStaticPositionForLegacy(
-      LogicalStaticPosition position) const;
+  void SaveStaticPositionOnPaintLayer(LayoutBox* layout_box,
+                                      LogicalStaticPosition position) const;
 
   const FragmentBuilder::ChildrenVector& FragmentationContextChildren() const {
     DCHECK(container_builder_->IsBlockFragmentationContextRoot());

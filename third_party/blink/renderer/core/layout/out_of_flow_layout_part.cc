@@ -3112,25 +3112,19 @@ void OutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
 
 void OutOfFlowLayoutPart::SaveStaticPositionOnPaintLayer(
     LayoutBox* layout_box,
-    const LogicalStaticPosition& position) const {
+    LogicalStaticPosition position) const {
   const LayoutObject* parent =
       GetLayoutObjectForParentNode<const LayoutObject*>(layout_box);
   const LayoutObject* container = container_builder_->GetLayoutObject();
   if (parent == container ||
       (parent->IsLayoutInline() && parent->ContainingBlock() == container)) {
     DCHECK(layout_box->Layer());
-    layout_box->Layer()->SetStaticPositionFromNG(
-        ToStaticPositionForLegacy(position));
+    if (const auto* break_token = container_builder_->PreviousBreakToken()) {
+      // Include the block contribution from previous columns.
+      position.offset.block_offset += break_token->ConsumedBlockSize();
+    }
+    layout_box->Layer()->SetStaticPositionFromNG(position);
   }
-}
-
-LogicalStaticPosition OutOfFlowLayoutPart::ToStaticPositionForLegacy(
-    LogicalStaticPosition position) const {
-  // Legacy expects the static position to include the block contribution from
-  // previous columns.
-  if (const auto* break_token = container_builder_->PreviousBreakToken())
-    position.offset.block_offset += break_token->ConsumedBlockSizeForLegacy();
-  return position;
 }
 
 const PhysicalBoxFragment& OutOfFlowLayoutPart::GetChildFragment(
