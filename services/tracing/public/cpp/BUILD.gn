@@ -136,6 +136,7 @@ target(tracing_lib_type, "cpp") {
       "//build:chromecast_buildflags",
       "//components/system_cpu:system_cpu",
       "//third_party/perfetto/protos/perfetto/trace/chrome:minimal_complete_lite",
+      "//third_party/snappy:snappy",
     ]
 
     if (!(is_chromeos && target_cpu == "arm64" && current_cpu == "arm")) {

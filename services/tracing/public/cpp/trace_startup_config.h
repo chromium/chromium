@@ -6,6 +6,7 @@
 #define SERVICES_TRACING_PUBLIC_CPP_TRACE_STARTUP_CONFIG_H_
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
@@ -154,11 +155,17 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceStartupConfig {
   TraceStartupConfig();
 
   bool EnableFromCommandLine();
-  bool EnableFromConfigFile();
+  bool EnableFromJsonConfigFile();
+  bool EnableFromPerfettoConfigFile();
   bool EnableFromConfigHandle();
   bool EnableFromBackgroundTracing();
 
-  bool ParseTraceConfigFileContent(const std::string& content);
+  std::optional<perfetto::TraceConfig> ParseTraceJsonConfigFileContent(
+      const std::string& content);
+  std::optional<perfetto::TraceConfig> ParseSerializedPerfettoConfig(
+      const base::span<const uint8_t>& config_bytes);
+  std::optional<perfetto::TraceConfig> ParseEncodedPerfettoConfig(
+      const std::string& config_string);
 
   bool is_enabled_ = false;
   perfetto::TraceConfig perfetto_config_;

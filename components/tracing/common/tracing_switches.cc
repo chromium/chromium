@@ -18,9 +18,17 @@ namespace switches {
 //  < {input txt config}.pbtxt > {output proto config}.pb
 const char kEnableBackgroundTracing[] = "enable-background-tracing";
 
-// Causes TRACE_EVENT flags to be recorded from startup.
-// This flag will be ignored if --trace-startup or --trace-shutdown is provided.
+// Enables startup tracing by passing a file path containing the chrome Json
+// tracing config as an argument. This flag will be ignored if --trace-startup
+// or --trace-shutdown is provided.
 const char kTraceConfigFile[]               = "trace-config-file";
+
+// Enables startup tracing by passing a file path containing the perfetto config
+// as an argument. The config is a serialized or base64 encoded proto
+// `perfetto.protos.TraceConfig` defined in
+// third_party/perfetto/protos/perfetto/config/trace_config.proto. This flag
+// will be ignored if --trace-startup or --trace-shutdown is provided.
+const char kTracePerfettoConfigFile[] = "trace-perfetto-config-file";
 
 // Causes TRACE_EVENT flags to be recorded from startup. Optionally, can
 // specify the specific trace categories to include (e.g.
