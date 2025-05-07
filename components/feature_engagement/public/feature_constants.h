@@ -49,6 +49,23 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHHistorySearchFeature);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHExtensionsMenuFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHExtensionsRequestAccessButtonFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHExtensionsZeroStatePromoFeature);
+// The variant of In-Product-Help (IPH) shown to users with zero extensions
+// installed.
+enum IPHExtensionsZeroStatePromoVariant {
+  // A custom action IPH. Triggering the action opens a new tab to the Chrome
+  // Web Store home page.
+  kCustomActionIph,
+  // A custom UI IPH, presenting the user with different collections of
+  // extension collections in cr-chip buttons.
+  kCustomUiChipIph,
+  // A custom UI IPH, presenting the user with different collections of
+  // extension collections in plain text links.
+  kCustomUIPlainLinkIph,
+};
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+BASE_DECLARE_FEATURE_PARAM(IPHExtensionsZeroStatePromoVariant,
+                           kIPHExtensionsZeroStatePromoVariantParam);
 #endif
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHFocusHelpBubbleScreenReaderPromoFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGlicPromoFeature);

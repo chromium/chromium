@@ -97,6 +97,23 @@ extern const char kAllowFutureManifestVersion[];
 // actually use it in browser tests.
 extern const char kExtensionTestApiOnWebPages[];
 
+// The feature parameter name that controls the variant of IPH shown when the
+// user has no extensions installed.
+extern const char kZeroStatePromoIphVariantParamName[];
+
+// When the user has no extensions installed, display a custom action IPH
+// that upon triggering, opens a new tab to the Chrome Web Store.
+extern const char kZeroStatePromoCustomActionIph[];
+
+// When the user has no extensions installed, display a custom UI IPH that
+// presents the user with different collections of extensions to explore,
+// each in a cr-chip button.
+extern const char kZeroStatePromoCustomUiChipIph[];
+
+// When the user has no extensions installed, display a custom UI IPH that
+// presents the user with different collections of extensions to explore,
+// each in a plain text link.
+extern const char kZeroStatePromoCustomUiPlainLinkIph[];
 }  // namespace extensions::switches
 
 #endif  // EXTENSIONS_COMMON_SWITCHES_H_

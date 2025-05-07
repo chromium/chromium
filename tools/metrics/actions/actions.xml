@@ -48605,6 +48605,8 @@ should be able to be added at any place in this file.
   <suffix name="ExtensionsMenu" label="For Extensions menu opening."/>
   <suffix name="ExtensionsRequestAccessButton"
       label="For Extensions request access button feature."/>
+  <suffix name="ExtensionsZeroStatePromo"
+      label="For promoting extensions to users with no extensions."/>
   <suffix name="FeatureNotificationGuideDefaultBrowserNotificationShown"
       label="For feature notification guide default browser notification
              feature. (obsolete)"/>

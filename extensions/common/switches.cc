@@ -43,4 +43,10 @@ const char kEnableCrxHashCheck[] = "enable-crx-hash-check";
 const char kAllowFutureManifestVersion[] = "allow-future-manifest-version";
 const char kExtensionTestApiOnWebPages[] = "extension-test-api-on-web-pages";
 
+const char kZeroStatePromoIphVariantParamName[] =
+    "extension-zero-state-iph-variant";
+const char kZeroStatePromoCustomActionIph[] = "custom-action-iph";
+const char kZeroStatePromoCustomUiChipIph[] = "custom-ui-chip-iph";
+const char kZeroStatePromoCustomUiPlainLinkIph[] = "custom-ui-plain-link-iph";
+
 }  // namespace extensions::switches

@@ -210,6 +210,7 @@ const base::Feature* const kAllFeatures[] = {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     &kIPHExtensionsMenuFeature,
     &kIPHExtensionsRequestAccessButtonFeature,
+    &kIPHExtensionsZeroStatePromoFeature,
 #endif
     &kIPHFocusHelpBubbleScreenReaderPromoFeature,
     &kIPHGMCCastStartStopFeature,

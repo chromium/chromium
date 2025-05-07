@@ -202,6 +202,10 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_ExtensionsMenu" summary="extensions menu opened"/>
   <variant name="IPH_ExtensionsRequestAccessButton"
       summary="extensions request access button shown"/>
+  <variant name="IPH_ExtensionsZeroStatePromo"
+      summary="message shown anchored to the three dots app menu suggesting
+               users with no extensions installed to explore the IPH_Chrome
+               Web Store."/>
   <variant name="IPH_FeatureNotificationGuideDefaultBrowserNotificationShown"
       summary="(obsolete) feature notification guide default browser
                notification"/>
