@@ -456,6 +456,10 @@ const CGFloat kOpacityAnimationDuration = 0.4;
   _resultViewController.delegate = self;
   _presentationNavigationController.view.backgroundColor =
       [UIColor colorNamed:kPrimaryBackgroundColor];
+  BOOL presentedInBottomSheet =
+      lens::ResultPagePresentationFor(_baseViewController) ==
+      lens::ResultPagePresentationType::kEdgeAttachedBottomSheet;
+  [_resultViewController setBottomSheetGrabberVisible:presentedInBottomSheet];
 }
 
 // Called after the results page has appeared.

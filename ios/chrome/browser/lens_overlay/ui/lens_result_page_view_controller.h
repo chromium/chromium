@@ -31,6 +31,9 @@
 /// Mutator of the lens result page.
 @property(nonatomic, weak) id<LensResultPageMutator> mutator;
 
+/// Sets the bottom sheet grabber visible.
+- (void)setBottomSheetGrabberVisible:(BOOL)bottomSheetGrabberVisible;
+
 /// Sets the omnibox edit view.
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView;
 
