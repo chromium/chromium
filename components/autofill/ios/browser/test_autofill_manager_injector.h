@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_TEST_AUTOFILL_MANAGER_INJECTOR_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_TEST_AUTOFILL_MANAGER_INJECTOR_H_
 
-#include <ranges>
+#import <ranges>
 
-#include "base/check_deref.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
-#include "base/scoped_observation.h"
-#include "components/autofill/core/browser/foundations/autofill_client.h"
+#import "base/check_deref.h"
+#import "base/memory/raw_ptr.h"
+#import "base/memory/raw_ref.h"
+#import "base/scoped_observation.h"
+#import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
 #import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"

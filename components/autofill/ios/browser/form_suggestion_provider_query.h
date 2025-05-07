@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/core/common/unique_ids.h"
 
 namespace {
 // The "password" field type does not explicitly mean that the field contains a

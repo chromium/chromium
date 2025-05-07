@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_UTIL_JAVA_SCRIPT_FEATURE_H_
 #define COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_UTIL_JAVA_SCRIPT_FEATURE_H_
 
-#include "base/no_destructor.h"
+#import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace autofill {

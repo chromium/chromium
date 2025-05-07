@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/ios/form_util/form_activity_tab_helper.h"
+#import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 
-#include "base/logging.h"
+#import "base/logging.h"
 #import "base/memory/raw_ptr.h"
-#include "base/rand_util.h"
+#import "base/rand_util.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/web/public/js_messaging/fuzzer_support/fuzzer_util.h"
-#include "ios/web/public/js_messaging/fuzzer_support/js_message.pb.h"
-#include "ios/web/public/js_messaging/script_message.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/fuzzer_support/fuzzer_util.h"
+#import "ios/web/public/js_messaging/fuzzer_support/js_message.pb.h"
+#import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#include "ios/web/public/test/fuzzer_env_with_web_state.h"
-#include "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/fuzzer_env_with_web_state.h"
+#import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/web_state.h"
-#include "testing/libfuzzer/proto/lpm_interface.h"
+#import "testing/libfuzzer/proto/lpm_interface.h"
 
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import <string>
-#include <variant>
+#import <variant>
 #import <vector>
 
 #import "base/containers/contains.h"

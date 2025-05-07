@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_CLIENT_IOS_BRIDGE_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_CLIENT_IOS_BRIDGE_H_
 
-#include <vector>
+#import <vector>
 
 #import "base/functional/callback_forward.h"
 #import "base/memory/weak_ptr.h"
