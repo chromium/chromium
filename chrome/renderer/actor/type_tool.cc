@@ -32,6 +32,15 @@
 
 namespace actor {
 
+using ::blink::WebCoalescedInputEvent;
+using ::blink::WebElement;
+using ::blink::WebInputEvent;
+using ::blink::WebInputEventResult;
+using ::blink::WebKeyboardEvent;
+using ::blink::WebLocalFrame;
+using ::blink::WebNode;
+using ::blink::WebString;
+
 namespace {
 
 // Structure to hold the mapping
@@ -90,11 +99,10 @@ const std::unordered_map<char, KeyInfo>& GetKeyInfoMap() {
   return *key_info_map;
 }
 
-bool PrepareTargetForMode(blink::WebLocalFrame& frame,
-                          mojom::TypeAction::Mode mode) {
+bool PrepareTargetForMode(WebLocalFrame& frame, mojom::TypeAction::Mode mode) {
   // TODO(crbug.com/409570203): Use DELETE_EXISTING regardless of `mode` but
   // we'll have to implement the different insertion modes.
-  frame.ExecuteCommand(blink::WebString::FromUTF8("SelectAll"));
+  frame.ExecuteCommand(WebString::FromUTF8("SelectAll"));
   return true;
 }
 
@@ -140,7 +148,7 @@ std::optional<TypeTool::KeyParams> TypeTool::GetKeyParamsForChar(char c) {
     // dom_key is already set correctly (it's the uppercase char)
     // Unmodified is lowercase
     params.unmodified_text = base::ToLowerASCII(c);
-    params.modifiers = blink::WebInputEvent::kShiftKey;
+    params.modifiers = WebInputEvent::kShiftKey;
   } else if (c >= '0' && c <= '9') {
     // ASCII Digits
     params.windows_key_code = ui::VKEY_0 + (c - '0');
@@ -161,7 +169,7 @@ std::optional<TypeTool::KeyParams> TypeTool::GetKeyParamsForChar(char c) {
 
     // Check if this character requires shift
     if (info.unmodified_char != 0) {
-      params.modifiers = blink::WebInputEvent::kShiftKey;
+      params.modifiers = WebInputEvent::kShiftKey;
       params.unmodified_text = info.unmodified_char;
     }
   }
@@ -173,11 +181,10 @@ std::optional<TypeTool::KeyParams> TypeTool::GetKeyParamsForChar(char c) {
   return params;
 }
 
-blink::WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
-    blink::WebInputEvent::Type type,
+WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
+    WebInputEvent::Type type,
     KeyParams key_params) {
-  blink::WebKeyboardEvent key_event(type, key_params.modifiers,
-                                    ui::EventTimeForNow());
+  WebKeyboardEvent key_event(type, key_params.modifiers, ui::EventTimeForNow());
   key_event.windows_key_code = key_params.windows_key_code;
   key_event.native_key_code = key_params.native_key_code;
   key_event.dom_code = static_cast<int>(
@@ -187,17 +194,17 @@ blink::WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
   key_event.text[0] = key_params.text;
   key_event.unmodified_text[0] = key_params.unmodified_text;
 
-  blink::WebInputEventResult result =
+  WebInputEventResult result =
       frame_->GetWebFrame()->FrameWidget()->HandleInputEvent(
-          blink::WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
+          WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
 
   return result;
 }
 
 bool TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
   // TODO(crbug.com/402082693): Maybe add slight delay between events?
-  blink::WebInputEventResult down_result = CreateAndDispatchKeyEvent(
-      blink::WebInputEvent::Type::kRawKeyDown, params);
+  WebInputEventResult down_result =
+      CreateAndDispatchKeyEvent(WebInputEvent::Type::kRawKeyDown, params);
 
   // Only the KeyDown event will check for and report failure. The reason the
   // other events don't is that if the KeyDown event was dispatched to the page,
@@ -207,21 +214,21 @@ bool TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
   // successful in terms that the tool has acted on the page. In particular, a
   // preventDefault()'ed KeyDown event will force suppressing the following Char
   // event but this is expected and common.
-  if (down_result == blink::WebInputEventResult::kHandledSuppressed) {
+  if (down_result == WebInputEventResult::kHandledSuppressed) {
     ACTOR_LOG() << "KeyDown event for key " << params.dom_key << " suppressed.";
     return false;
   }
 
-  blink::WebInputEventResult char_result =
-      CreateAndDispatchKeyEvent(blink::WebInputEvent::Type::kChar, params);
-  if (char_result == blink::WebInputEventResult::kHandledSuppressed) {
+  WebInputEventResult char_result =
+      CreateAndDispatchKeyEvent(WebInputEvent::Type::kChar, params);
+  if (char_result == WebInputEventResult::kHandledSuppressed) {
     ACTOR_LOG() << "Warning: Char event for key " << params.dom_key
                 << " suppressed.";
   }
 
-  blink::WebInputEventResult up_result =
-      CreateAndDispatchKeyEvent(blink::WebInputEvent::Type::kKeyUp, params);
-  if (up_result == blink::WebInputEventResult::kHandledSuppressed) {
+  WebInputEventResult up_result =
+      CreateAndDispatchKeyEvent(WebInputEvent::Type::kKeyUp, params);
+  if (up_result == WebInputEventResult::kHandledSuppressed) {
     ACTOR_LOG() << "Warning: KeyUp event for key " << params.dom_key
                 << " suppressed.";
   }
@@ -245,7 +252,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   }
   int32_t dom_node_id = target->get_dom_node_id();
 
-  blink::WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
+  WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
   if (node.IsNull()) {
     ACTOR_LOG() << "Cannot find dom node with id " << dom_node_id;
     std::move(callback).Run(false);
@@ -259,7 +266,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
     std::move(callback).Run(false);
     return;
   }
-  blink::WebElement element = node.To<blink::WebElement>();
+  WebElement element = node.To<WebElement>();
   if (!element.IsEditable()) {
     ACTOR_LOG() << "Target element " << element << " is not editable.";
     std::move(callback).Run(false);
