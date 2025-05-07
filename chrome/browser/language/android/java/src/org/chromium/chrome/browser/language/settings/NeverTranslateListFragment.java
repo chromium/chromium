@@ -70,6 +70,11 @@ public class NeverTranslateListFragment extends LanguageItemListFragment {
         TranslateBridge.setLanguageBlockedState(getProfile(), code, false);
     }
 
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
+
     /**
      * Helper class to populate the LanguageItem list and used by {@link LanguageItemListPreference}
      * to make the summary text and launch an Intent to this Fragment.
