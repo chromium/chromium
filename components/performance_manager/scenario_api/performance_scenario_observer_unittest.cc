@@ -5,17 +5,16 @@
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 
 #include <atomic>
-#include <optional>
+#include <memory>
 
 #include "base/barrier_closure.h"
 #include "base/containers/enum_set.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/structured_shared_memory.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory.h"
+#include "components/performance_manager/scenario_api/performance_scenario_test_support.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,18 +58,12 @@ using StrictMockMatchingScenarioObserver =
 class PerformanceScenarioObserverTest : public ::testing::Test {
  public:
   void SetUp() override {
-    ASSERT_TRUE(process_shared_memory_.has_value());
-    ASSERT_TRUE(global_shared_memory_.has_value());
+    test_helper_ = PerformanceScenarioTestHelper::CreateWithoutMapping();
+    ASSERT_TRUE(test_helper_);
   }
 
  protected:
-  // Writable shared memory regions for the scenario state.
-  std::optional<base::StructuredSharedMemory<ScenarioState>>
-      process_shared_memory_ =
-          base::StructuredSharedMemory<ScenarioState>::Create();
-  std::optional<base::StructuredSharedMemory<ScenarioState>>
-      global_shared_memory_ =
-          base::StructuredSharedMemory<ScenarioState>::Create();
+  std::unique_ptr<PerformanceScenarioTestHelper> test_helper_;
 
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -84,8 +77,8 @@ TEST_F(PerformanceScenarioObserverTest, GetForScope) {
 
   {
     ScopedReadOnlyScenarioMemory scoped_process_memory(
-        ScenarioScope::kCurrentProcess,
-        process_shared_memory_->DuplicateReadOnlyRegion());
+        ScenarioScope::kCurrentProcess, test_helper_->GetReadOnlyScenarioRegion(
+                                            ScenarioScope::kCurrentProcess));
     EXPECT_TRUE(PerformanceScenarioObserverList::GetForScope(
         ScenarioScope::kCurrentProcess));
     EXPECT_FALSE(
@@ -94,7 +87,7 @@ TEST_F(PerformanceScenarioObserverTest, GetForScope) {
     {
       ScopedReadOnlyScenarioMemory scoped_global_memory(
           ScenarioScope::kGlobal,
-          global_shared_memory_->DuplicateReadOnlyRegion());
+          test_helper_->GetReadOnlyScenarioRegion(ScenarioScope::kGlobal));
       EXPECT_TRUE(PerformanceScenarioObserverList::GetForScope(
           ScenarioScope::kCurrentProcess));
       EXPECT_TRUE(
@@ -117,15 +110,16 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
   // Update the process scenario state before creating the ObserverList, to
   // make sure the state tracking doesn't depend on the state starting at
   // kNoPageLoading.
-  process_shared_memory_->WritableRef().loading.store(
-      LoadingScenario::kFocusedPageLoading, std::memory_order_relaxed);
+  test_helper_->SetLoadingScenario(ScenarioScope::kCurrentProcess,
+                                   LoadingScenario::kFocusedPageLoading);
 
   // Map in scenario memory.
   ScopedReadOnlyScenarioMemory scoped_process_memory(
       ScenarioScope::kCurrentProcess,
-      process_shared_memory_->DuplicateReadOnlyRegion());
+      test_helper_->GetReadOnlyScenarioRegion(ScenarioScope::kCurrentProcess));
   ScopedReadOnlyScenarioMemory scoped_global_memory(
-      ScenarioScope::kGlobal, global_shared_memory_->DuplicateReadOnlyRegion());
+      ScenarioScope::kGlobal,
+      test_helper_->GetReadOnlyScenarioRegion(ScenarioScope::kGlobal));
 
   EXPECT_FALSE(CurrentScenariosMatch(ScenarioScope::kCurrentProcess,
                                      kDefaultIdleScenarios));
@@ -159,12 +153,11 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
     input_only_observation.AddObservation(observer_list.get());
   }
 
-  // Utility function that notifies observers of a change and waits for all mock
-  // expectations to be filled. The test should invoke `task_env_.QuitClosure()`
-  // when all expected observer methods are called.
-  auto notify_and_wait_for_expectations = [&] {
+  // Utility function that waits for all mock expectations to be filled. The
+  // test should invoke `task_env_.QuitClosure()` when all expected observer
+  // methods are called.
+  auto wait_for_expectations = [&] {
     using ::testing::Mock;
-    PerformanceScenarioObserverList::NotifyAllScopes();
     task_env_.RunUntilQuit();
     EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_observer));
     EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_idle_observer));
@@ -197,11 +190,11 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
               OnScenarioMatchChanged(ScenarioScope::kGlobal, false))
       .WillOnce(base::test::RunClosure(quit_closure));
 
-  process_shared_memory_->WritableRef().loading.store(
-      LoadingScenario::kBackgroundPageLoading, std::memory_order_relaxed);
-  global_shared_memory_->WritableRef().loading.store(
-      LoadingScenario::kVisiblePageLoading, std::memory_order_relaxed);
-  notify_and_wait_for_expectations();
+  test_helper_->SetLoadingScenario(ScenarioScope::kCurrentProcess,
+                                   LoadingScenario::kBackgroundPageLoading);
+  test_helper_->SetLoadingScenario(ScenarioScope::kGlobal,
+                                   LoadingScenario::kVisiblePageLoading);
+  wait_for_expectations();
 
   // Toggle process scenario again without changing global scenario.
   // kBackgroundPageLoading (idle) -> kFocusedPageLoading (non-idle).
@@ -215,9 +208,9 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
               OnScenarioMatchChanged(ScenarioScope::kCurrentProcess, false))
       .WillOnce(base::test::RunClosure(quit_closure));
 
-  process_shared_memory_->WritableRef().loading.store(
-      LoadingScenario::kFocusedPageLoading, std::memory_order_relaxed);
-  notify_and_wait_for_expectations();
+  test_helper_->SetLoadingScenario(ScenarioScope::kCurrentProcess,
+                                   LoadingScenario::kFocusedPageLoading);
+  wait_for_expectations();
 
   // Stop observing the process scenario, then toggle both scenarios again.
   //
@@ -249,11 +242,11 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
           ScenarioScope::kCurrentProcess)
           .get());
 
-  process_shared_memory_->WritableRef().loading.store(
-      LoadingScenario::kBackgroundPageLoading, std::memory_order_relaxed);
-  global_shared_memory_->WritableRef().loading.store(
-      LoadingScenario::kNoPageLoading, std::memory_order_relaxed);
-  notify_and_wait_for_expectations();
+  test_helper_->SetLoadingScenario(ScenarioScope::kCurrentProcess,
+                                   LoadingScenario::kBackgroundPageLoading);
+  test_helper_->SetLoadingScenario(ScenarioScope::kGlobal,
+                                   LoadingScenario::kNoPageLoading);
+  wait_for_expectations();
 
   // Update global scenario from kNoPageLoading to kBackgroundPageLoading. The
   // idle observer shouldn't be notified because the new scenario is still idle.
@@ -263,9 +256,9 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
                                        LoadingScenario::kBackgroundPageLoading))
       .WillOnce(base::test::RunClosure(task_env_.QuitClosure()));
 
-  global_shared_memory_->WritableRef().loading.store(
-      LoadingScenario::kBackgroundPageLoading, std::memory_order_relaxed);
-  notify_and_wait_for_expectations();
+  test_helper_->SetLoadingScenario(ScenarioScope::kGlobal,
+                                   LoadingScenario::kBackgroundPageLoading);
+  wait_for_expectations();
 
   // Update the global input scenario. All 3 observers will now be notified.
   quit_closure = base::BarrierClosure(3, task_env_.QuitClosure());
@@ -280,9 +273,9 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
               OnScenarioMatchChanged(ScenarioScope::kGlobal, false))
       .WillOnce(base::test::RunClosure(quit_closure));
 
-  global_shared_memory_->WritableRef().input.store(InputScenario::kTyping,
-                                                   std::memory_order_relaxed);
-  notify_and_wait_for_expectations();
+  test_helper_->SetInputScenario(ScenarioScope::kGlobal,
+                                 InputScenario::kTyping);
+  wait_for_expectations();
 }
 
 }  // namespace

@@ -3144,6 +3144,7 @@ test("content_unittests") {
     "//components/payments/mojom",
     "//components/performance_manager/public/mojom",
     "//components/performance_manager/scenario_api",
+    "//components/performance_manager/scenario_api:test_support",
     "//components/permissions:permissions_common",
     "//components/permissions:test_support",
     "//components/services/quarantine/public/mojom",
