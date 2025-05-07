@@ -934,6 +934,10 @@ void ContextImplDml::HandleContextLostOrCrash(std::string_view message_for_log,
   CHECK(hr == E_OUTOFMEMORY || hr == DXGI_ERROR_DEVICE_RESET);
 }
 
+CommandQueue* ContextImplDml::GetCommandQueue() const {
+  return adapter_->command_queue();
+}
+
 void ContextImplDml::RemoveDeviceForTesting() {
   CHECK_IS_TEST();
 

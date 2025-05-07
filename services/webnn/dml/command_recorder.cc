@@ -126,6 +126,15 @@ HRESULT CommandRecorder::Execute() {
         command_queue_->submission_fence(), last_submitted_fence_value_));
   }
 
+  // Before command submission, ensure interop tensors are not accessed by
+  // the command queue until existing GPU work using them has been completed.
+  for (auto& [command_buffer, webnn_tensor_impl] : command_tensor_impls_) {
+    if (webnn_tensor_impl) {
+      RETURN_IF_FAILED(webnn_tensor_impl->WaitForExternalFenceAndReset(
+          command_queue_.get()));
+    }
+  }
+
   RETURN_IF_FAILED(command_queue_->ExecuteCommandList(command_list_.Get()));
   last_submitted_fence_value_ = command_queue_->GetLastFenceValue();
 
