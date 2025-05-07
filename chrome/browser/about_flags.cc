@@ -3277,9 +3277,6 @@ const FeatureEntry::Choice kPrintingPpdChannelChoices[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Feature variations for kIsolateSandboxedIframes.
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(wjmaclean): Add FeatureParams for a per-frame grouping when support
-// for it is added.
 const FeatureEntry::FeatureParam kIsolateSandboxedIframesGroupingPerSite{
     "grouping", "per-site"};
 const FeatureEntry::FeatureParam kIsolateSandboxedIframesGroupingPerOrigin{
@@ -3295,7 +3292,6 @@ const FeatureEntry::FeatureVariation
         {"with each sandboxed frame document in its own process",
          &kIsolateSandboxedIframesGroupingPerDocument, 1, nullptr},
 };
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Feature variation for kPdfInk2.
 #if BUILDFLAG(ENABLE_PDF_INK2)
@@ -9695,15 +9691,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFakeMouseHeuristicDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnableFakeMouseHeuristic)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if !BUILDFLAG(IS_ANDROID)
     {"enable-isolated-sandboxed-iframes",
      flag_descriptions::kIsolatedSandboxedIframesName,
-     flag_descriptions::kIsolatedSandboxedIframesDescription, kOsDesktop,
+     flag_descriptions::kIsolatedSandboxedIframesDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          blink::features::kIsolateSandboxedIframes,
          kIsolateSandboxedIframesGroupingVariations,
          "IsolateSandboxedIframes" /* trial name */)},
-#endif
 
     {"reduce-accept-language", flag_descriptions::kReduceAcceptLanguageName,
      flag_descriptions::kReduceAcceptLanguageDescription, kOsAll,
