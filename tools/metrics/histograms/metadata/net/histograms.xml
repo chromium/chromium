@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Crypto.SecureEnclaveOperation.Mac.{Operation}.Error"
-    enum="ErrSecOSStatus" expires_after="2025-10-05">
+    enum="MacSecurityFrameworkOSStatus" expires_after="2025-10-05">
   <owner>seblalancette@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>src/crypto/OWNERS</owner>
