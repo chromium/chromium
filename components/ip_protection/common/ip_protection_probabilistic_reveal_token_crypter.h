@@ -12,9 +12,9 @@
 
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
-#include "third_party/abseil-cpp/absl/status/statusor.h"
 #include "third_party/private-join-and-compute/src/crypto/context.h"
 #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
 #include "third_party/private-join-and-compute/src/crypto/elgamal.h"
@@ -31,8 +31,9 @@ namespace ip_protection {
 class IpProtectionProbabilisticRevealTokenCrypter {
  public:
   // Returns a unique pointer to crypter if successful.
-  static absl::StatusOr<
-      std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>>
+  static base::expected<
+      std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+      absl::Status>
   Create(const std::string& serialized_public_key,
          const std::vector<ProbabilisticRevealToken>& tokens);
   ~IpProtectionProbabilisticRevealTokenCrypter();
@@ -51,7 +52,8 @@ class IpProtectionProbabilisticRevealTokenCrypter {
   // ProbabilisticRevealToken by serializing it, if successful. This method
   // fails if there is no ciphertext for index `i` or `encrypter_.ReRandomize()`
   // fails.
-  absl::StatusOr<ProbabilisticRevealToken> Randomize(size_t i) const;
+  base::expected<ProbabilisticRevealToken, absl::Status> Randomize(
+      size_t i) const;
 
  private:
   // Private since it assumes all arguments are valid. Static `Create()`

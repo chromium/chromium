@@ -12,6 +12,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
@@ -33,55 +34,80 @@ namespace {
 
 // `group` should outlive returned encrypter. Used by static creator.
 // In anonymous namespace to prevent misuse.
-absl::StatusOr<std::unique_ptr<ElGamalEncrypter>> CreateEncrypter(
+base::expected<std::unique_ptr<ElGamalEncrypter>, absl::Status> CreateEncrypter(
     ECGroup const* group,
     const std::string& serialized_public_key) {
-  PJC_ASSIGN_OR_RETURN(ECPoint g, group->GetFixedGenerator());
-  PJC_ASSIGN_OR_RETURN(ECPoint y, group->CreateECPoint(serialized_public_key));
+  absl::StatusOr<ECPoint> maybe_g = group->GetFixedGenerator();
+  if (!maybe_g.ok()) {
+    return base::unexpected(maybe_g.status());
+  }
+
+  absl::StatusOr<ECPoint> maybe_y = group->CreateECPoint(serialized_public_key);
+  if (!maybe_y.ok()) {
+    return base::unexpected(maybe_y.status());
+  }
   return std::make_unique<ElGamalEncrypter>(
-      group,
-      std::make_unique<PublicKey>(PublicKey{std::move(g), std::move(y)}));
+      group, std::make_unique<PublicKey>(PublicKey{
+                 std::move(maybe_g).value(), std::move(maybe_y).value()}));
 }
 
 // `group` should outlive returned ciphertexts. Used by static creator.
 // In anonymous namespace to prevent misuse.
-absl::StatusOr<std::vector<Ciphertext>> CreateCiphertext(
+base::expected<std::vector<Ciphertext>, absl::Status> CreateCiphertext(
     ECGroup const* group,
     const std::vector<ProbabilisticRevealToken>& tokens) {
   std::vector<Ciphertext> ciphertext;
   ciphertext.reserve(tokens.size());
   for (const auto& t : tokens) {
-    PJC_ASSIGN_OR_RETURN(ECPoint u, group->CreateECPoint(t.u));
-    PJC_ASSIGN_OR_RETURN(ECPoint e, group->CreateECPoint(t.e));
-    ciphertext.emplace_back(std::move(u), std::move(e));
+    absl::StatusOr<ECPoint> maybe_u = group->CreateECPoint(t.u);
+    if (!maybe_u.ok()) {
+      return base::unexpected(maybe_u.status());
+    }
+    absl::StatusOr<ECPoint> maybe_e = group->CreateECPoint(t.e);
+    if (!maybe_e.ok()) {
+      return base::unexpected(maybe_e.status());
+    }
+    ciphertext.emplace_back(std::move(maybe_u).value(),
+                            std::move(maybe_e).value());
   }
   return ciphertext;
 }
 
 }  // namespace
 
-absl::StatusOr<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>>
+base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+               absl::Status>
 IpProtectionProbabilisticRevealTokenCrypter::Create(
     const std::string& serialized_public_key,
     const std::vector<ProbabilisticRevealToken>& tokens) {
   auto context = std::make_unique<Context>();
-  std::unique_ptr<ECGroup> group;
-  {
-    PJC_ASSIGN_OR_RETURN(ECGroup local_group,
-                         ECGroup::Create(NID_X9_62_prime256v1, context.get()));
-    group = std::make_unique<ECGroup>(std::move(local_group));
+  absl::StatusOr<ECGroup> local_group =
+      ECGroup::Create(NID_X9_62_prime256v1, context.get());
+  if (!local_group.ok()) {
+    return base::unexpected(local_group.status());
   }
-  PJC_ASSIGN_OR_RETURN(std::unique_ptr<ElGamalEncrypter> encrypter,
-                       CreateEncrypter(group.get(), serialized_public_key));
-  PJC_ASSIGN_OR_RETURN(std::vector<Ciphertext> ciphertext,
-                       CreateCiphertext(group.get(), tokens));
+  std::unique_ptr<ECGroup> group =
+      std::make_unique<ECGroup>(std::move(local_group).value());
+  base::expected<std::unique_ptr<ElGamalEncrypter>, absl::Status>
+      maybe_encrypter = CreateEncrypter(group.get(), serialized_public_key);
+  if (!maybe_encrypter.has_value()) {
+    return base::unexpected(maybe_encrypter.error());
+  }
+
+  base::expected<std::vector<Ciphertext>, absl::Status> maybe_ciphertext =
+      CreateCiphertext(group.get(), tokens);
+  if (!maybe_ciphertext.has_value()) {
+    return base::unexpected(maybe_ciphertext.error());
+  }
+
   // Can not use `make_unique` since constructor is private.
   // Can not use `return std::unique_ptr`, git cl upload
   // returns pre-submit error and recommends using base::WrapUnique.
   return base::WrapUnique<IpProtectionProbabilisticRevealTokenCrypter>(
       new IpProtectionProbabilisticRevealTokenCrypter(
-          std::move(context), std::move(group), std::move(encrypter),
-          std::move(ciphertext)));
+          std::move(context), std::move(group),
+          std::move(maybe_encrypter).value(),
+          std::move(maybe_ciphertext).value()));
 }
 
 IpProtectionProbabilisticRevealTokenCrypter::
@@ -105,13 +131,22 @@ IpProtectionProbabilisticRevealTokenCrypter::SetNewPublicKeyAndTokens(
     const std::string& serialized_public_key,
     const std::vector<ProbabilisticRevealToken>& tokens) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PJC_ASSIGN_OR_RETURN(std::unique_ptr<ElGamalEncrypter> encrypter,
-                       CreateEncrypter(group_.get(), serialized_public_key));
-  PJC_ASSIGN_OR_RETURN(std::vector<Ciphertext> ciphertext,
-                       CreateCiphertext(group_.get(), tokens));
+  base::expected<std::unique_ptr<ElGamalEncrypter>, absl::Status>
+      maybe_encrypter = CreateEncrypter(group_.get(), serialized_public_key);
+  if (!maybe_encrypter.has_value()) {
+    return maybe_encrypter.error();
+  }
+
+  base::expected<std::vector<Ciphertext>, absl::Status> maybe_ciphertext =
+      CreateCiphertext(group_.get(), tokens);
+  if (!maybe_ciphertext.has_value()) {
+    return maybe_ciphertext.error();
+  }
+
   // Creating encrypter and ciphertext succeeded, set members.
-  encrypter_.reset(encrypter.release());
-  ciphertext_ = std::move(ciphertext);
+  encrypter_ = std::move(maybe_encrypter).value();
+
+  ciphertext_ = std::move(maybe_ciphertext).value();
   return absl::OkStatus();
 }
 
@@ -123,21 +158,36 @@ void IpProtectionProbabilisticRevealTokenCrypter::ClearTokens() {
   ciphertext_.clear();
 }
 
-absl::StatusOr<ProbabilisticRevealToken>
+base::expected<ProbabilisticRevealToken, absl::Status>
 IpProtectionProbabilisticRevealTokenCrypter::Randomize(size_t i) const {
   base::TimeTicks randomization_start_time = base::TimeTicks::Now();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (i >= ciphertext_.size()) {
-    return absl::InvalidArgumentError("invalid index");
+    return base::unexpected(absl::InvalidArgumentError("invalid index"));
   }
-  PJC_ASSIGN_OR_RETURN(Ciphertext randomized_ciphertext,
-                       encrypter_->ReRandomize(ciphertext_[i]));
+  absl::StatusOr<Ciphertext> maybe_randomized_ciphertext =
+      encrypter_->ReRandomize(ciphertext_[i]);
+  if (!maybe_randomized_ciphertext.ok()) {
+    return base::unexpected(maybe_randomized_ciphertext.status());
+  }
+  const auto& randomized_ciphertext = maybe_randomized_ciphertext.value();
+
   ProbabilisticRevealToken randomized_token;
   randomized_token.version = 1;
-  PJC_ASSIGN_OR_RETURN(randomized_token.u,
-                       randomized_ciphertext.u.ToBytesCompressed());
-  PJC_ASSIGN_OR_RETURN(randomized_token.e,
-                       randomized_ciphertext.e.ToBytesCompressed());
+  absl::StatusOr<std::string> maybe_serialized_u =
+      randomized_ciphertext.u.ToBytesCompressed();
+  if (!maybe_serialized_u.ok()) {
+    return base::unexpected(maybe_serialized_u.status());
+  }
+  randomized_token.u = std::move(maybe_serialized_u).value();
+
+  absl::StatusOr<std::string> maybe_serialized_e =
+      randomized_ciphertext.e.ToBytesCompressed();
+  if (!maybe_serialized_e.ok()) {
+    return base::unexpected(maybe_serialized_e.status());
+  }
+  randomized_token.e = std::move(maybe_serialized_e).value();
+
   Telemetry().ProbabilisticRevealTokenRandomizationTime(
       base::TimeTicks::Now() - randomization_start_time);
   return randomized_token;

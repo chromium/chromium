@@ -64,9 +64,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, CreateSuccess) {
   };
   CreateTokens(/*private_key=*/12345, plaintexts);
 
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      GetPublicKey(), GetTokens());
-  EXPECT_TRUE(maybe_crypter.ok());
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          GetPublicKey(), GetTokens());
+  EXPECT_TRUE(maybe_crypter.has_value());
   const auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
@@ -80,9 +82,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, CreateEmptyTokens) {
   };
   CreateTokens(/*private_key=*/12345, plaintexts);
 
-  auto maybe_crypter =
-      IpProtectionProbabilisticRevealTokenCrypter::Create(GetPublicKey(), {});
-  EXPECT_TRUE(maybe_crypter.ok());
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          GetPublicKey(), {});
+  EXPECT_TRUE(maybe_crypter.has_value());
   const auto& crypter = maybe_crypter.value();
   EXPECT_FALSE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), std::size_t(0));
@@ -91,9 +95,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, CreateEmptyTokens) {
 TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
        CreateInvalidPublicKey) {
   const auto& serialized_public_key = "invalid-public-key";
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      serialized_public_key, {});
-  EXPECT_EQ(maybe_crypter.status().code(), absl::StatusCode::kInvalidArgument);
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          serialized_public_key, {});
+  EXPECT_EQ(maybe_crypter.error().code(), absl::StatusCode::kInvalidArgument);
 }
 
 TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, CreateInvalidTokenU) {
@@ -106,9 +112,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, CreateInvalidTokenU) {
   std::vector<ProbabilisticRevealToken> tokens = GetTokens();
   tokens.back().u = "invalid-u";
 
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      GetPublicKey(), tokens);
-  EXPECT_EQ(maybe_crypter.status().code(), absl::StatusCode::kInvalidArgument);
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          GetPublicKey(), tokens);
+  EXPECT_EQ(maybe_crypter.error().code(), absl::StatusCode::kInvalidArgument);
 }
 
 TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, CreateInvalidTokenE) {
@@ -121,9 +129,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, CreateInvalidTokenE) {
   std::vector<ProbabilisticRevealToken> tokens = GetTokens();
   tokens.back().e = "invalid-e";
 
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      GetPublicKey(), tokens);
-  EXPECT_EQ(maybe_crypter.status().code(), absl::StatusCode::kInvalidArgument);
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          GetPublicKey(), tokens);
+  EXPECT_EQ(maybe_crypter.error().code(), absl::StatusCode::kInvalidArgument);
 }
 
 TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
@@ -136,9 +146,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
   CreateTokens(/*private_key=*/11111, plaintexts);
 
   // Create a crypter with no tokens.
-  auto maybe_crypter =
-      IpProtectionProbabilisticRevealTokenCrypter::Create(GetPublicKey(), {});
-  EXPECT_TRUE(maybe_crypter.ok());
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          GetPublicKey(), {});
+  EXPECT_TRUE(maybe_crypter.has_value());
   auto& crypter = maybe_crypter.value();
   EXPECT_FALSE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), std::size_t(0));
@@ -161,9 +173,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
       "------------Code never lies, ", "comments sometimes do.-------",
   };
   CreateTokens(/*private_key=*/11111, plaintexts);
-  auto maybe_crypter =
-      IpProtectionProbabilisticRevealTokenCrypter::Create(GetPublicKey(), {});
-  EXPECT_TRUE(maybe_crypter.ok());
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          GetPublicKey(), {});
+  EXPECT_TRUE(maybe_crypter.has_value());
   auto& crypter = maybe_crypter.value();
   EXPECT_FALSE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), std::size_t(0));
@@ -185,9 +199,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
   };
   CreateTokens(/*private_key=*/42, plaintexts);
 
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      GetPublicKey(), GetTokens());
-  EXPECT_TRUE(maybe_crypter.ok());
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          GetPublicKey(), GetTokens());
+  EXPECT_TRUE(maybe_crypter.has_value());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
@@ -208,9 +224,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
   };
   CreateTokens(/*private_key=*/42, plaintexts);
 
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      GetPublicKey(), GetTokens());
-  EXPECT_TRUE(maybe_crypter.ok());
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          GetPublicKey(), GetTokens());
+  EXPECT_TRUE(maybe_crypter.has_value());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
@@ -239,9 +257,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
   };
   CreateTokens(/*private_key=*/42, plaintexts);
 
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      GetPublicKey(), GetTokens());
-  EXPECT_TRUE(maybe_crypter.ok());
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          GetPublicKey(), GetTokens());
+  EXPECT_TRUE(maybe_crypter.has_value());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
@@ -268,9 +288,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, ClearTokens) {
       "------------Code never lies, ", "comments sometimes do.-------",
   };
   CreateTokens(/*private_key=*/7654, plaintexts);
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      GetPublicKey(), GetTokens());
-  EXPECT_TRUE(maybe_crypter.ok());
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          GetPublicKey(), GetTokens());
+  EXPECT_TRUE(maybe_crypter.has_value());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
@@ -290,18 +312,20 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, Randomize) {
   };
   CreateTokens(/*private_key=*/2025, plaintexts);
 
-  const auto maybe_crypter =
-      IpProtectionProbabilisticRevealTokenCrypter::Create(GetPublicKey(),
-                                                          GetTokens());
-  EXPECT_TRUE(maybe_crypter.ok());
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          GetPublicKey(), GetTokens());
+  EXPECT_TRUE(maybe_crypter.has_value());
   const auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
 
   // Decrypting randomized tokens should yield starting plaintexts.
   for (std::size_t i = 0; i < plaintexts.size(); ++i) {
-    const auto maybe_randomized_token = crypter->Randomize(i);
-    ASSERT_TRUE(maybe_randomized_token.ok());
+    const base::expected<ProbabilisticRevealToken, absl::Status>
+        maybe_randomized_token = crypter->Randomize(i);
+    ASSERT_TRUE(maybe_randomized_token.has_value());
     const auto& randomized_token = maybe_randomized_token.value();
 
     EXPECT_EQ(randomized_token.version, 1);
@@ -314,9 +338,10 @@ TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, Randomize) {
   }
 
   // Try to randomize a token that does not exist.
-  const auto maybe_token = crypter->Randomize(plaintexts.size());
-  ASSERT_FALSE(maybe_token.ok());
-  EXPECT_EQ(maybe_token.status().code(), absl::StatusCode::kInvalidArgument);
+  const base::expected<ProbabilisticRevealToken, absl::Status> maybe_token =
+      crypter->Randomize(plaintexts.size());
+  ASSERT_FALSE(maybe_token.has_value());
+  EXPECT_EQ(maybe_token.error().code(), absl::StatusCode::kInvalidArgument);
 }
 
 }  // namespace ip_protection

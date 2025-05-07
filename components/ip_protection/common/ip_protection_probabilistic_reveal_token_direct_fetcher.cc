@@ -328,9 +328,12 @@ IpProtectionProbabilisticRevealTokenDirectFetcher::
       response.num_tokens_with_signal() > response.tokens_size()) {
     return TryGetProbabilisticRevealTokensStatus::kInvalidNumTokensWithSignal;
   }
-  if (auto crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-          response.public_key().y(), {});
-      !crypter.ok()) {
+  if (base::expected<
+          std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+          absl::Status> crypter =
+          IpProtectionProbabilisticRevealTokenCrypter::Create(
+              response.public_key().y(), {});
+      !crypter.has_value()) {
     return TryGetProbabilisticRevealTokensStatus::kInvalidPublicKey;
   }
   if (response.epoch_id().size() != kEpochIdSize) {

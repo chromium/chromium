@@ -61,12 +61,14 @@ void RandomizeDoesNotCrash(const std::string& plaintext) {
   ASSERT_THAT(issuer->Tokens(), testing::SizeIs(1));
   const ip_protection::ProbabilisticRevealToken& token = issuer->Tokens()[0];
 
-  absl::StatusOr<std::unique_ptr<
-      ip_protection::IpProtectionProbabilisticRevealTokenCrypter>>
+  base::expected<
+      std::unique_ptr<
+          ip_protection::IpProtectionProbabilisticRevealTokenCrypter>,
+      absl::Status>
       maybe_crypter =
           ip_protection::IpProtectionProbabilisticRevealTokenCrypter::Create(
               issuer->GetSerializedPublicKey(), {token});
-  ASSERT_TRUE(maybe_crypter.ok());
+  ASSERT_TRUE(maybe_crypter.has_value());
   auto& crypter = maybe_crypter.value();
   ASSERT_TRUE(crypter->IsTokenAvailable());
   ASSERT_EQ(crypter->NumTokens(), std::size_t(1));

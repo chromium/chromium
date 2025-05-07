@@ -140,9 +140,11 @@ void IpProtectionProbabilisticRevealTokenManager::OnTryGetTokens(
     return;
   }
   DCHECK(outcome.has_value());
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      outcome.value().public_key, outcome.value().tokens);
-  if (!maybe_crypter.ok()) {
+  base::expected<std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+                 absl::Status>
+      maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
+          outcome.value().public_key, outcome.value().tokens);
+  if (!maybe_crypter.has_value()) {
     // Might happen if PRT issuer is misconfigured and public_key or tokens do
     // not belong to the group. Return without clearing existing tokens, which
     // might be still valid for current epoch. Retry in an hour.
@@ -223,9 +225,9 @@ IpProtectionProbabilisticRevealTokenManager::GetToken(
 
     // Seeing this third party for the first time in this top level.
     // Randomize top level's token and return.
-    absl::StatusOr<ProbabilisticRevealToken> maybe_randomized_token =
-        crypter_->Randomize(token_index);
-    if (!maybe_randomized_token.ok()) {
+    base::expected<ProbabilisticRevealToken, absl::Status>
+        maybe_randomized_token = crypter_->Randomize(token_index);
+    if (!maybe_randomized_token.has_value()) {
       // Should not happen in theory, might happen with corrupted crypter.
       return std::nullopt;
     }
@@ -234,9 +236,9 @@ IpProtectionProbabilisticRevealTokenManager::GetToken(
   }
   // Seeing first party for the first time.
   std::size_t token_selected = base::RandGenerator(crypter_->NumTokens());
-  absl::StatusOr<ProbabilisticRevealToken> maybe_randomized_token =
-      crypter_->Randomize(token_selected);
-  if (!maybe_randomized_token.ok()) {
+  base::expected<ProbabilisticRevealToken, absl::Status>
+      maybe_randomized_token = crypter_->Randomize(token_selected);
+  if (!maybe_randomized_token.has_value()) {
     // Should not happen in theory, might happen with corrupted crypter.
     return std::nullopt;
   }
