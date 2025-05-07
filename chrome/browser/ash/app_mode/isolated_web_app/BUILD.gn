@@ -20,6 +20,7 @@ static_library("isolated_web_app") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/web_applications",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/prefs",
     "//components/web_package",
@@ -38,6 +39,7 @@ static_library("policy_util") {
   deps = [
     "//ash/constants",
     "//chrome/browser/ash/policy/core",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/account_id",
     "//components/prefs",
@@ -58,6 +60,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/web_applications",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/policy/core/common",
     "//testing/gtest",

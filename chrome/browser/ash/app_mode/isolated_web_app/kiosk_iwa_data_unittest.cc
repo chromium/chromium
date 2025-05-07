@@ -13,7 +13,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
-#include "components/policy/core/common/device_local_account_type.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

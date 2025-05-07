@@ -26,6 +26,7 @@ static_library("test_support") {
     "//ash/constants",
     "//base",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/settings:test_support",
     "//components/account_id",

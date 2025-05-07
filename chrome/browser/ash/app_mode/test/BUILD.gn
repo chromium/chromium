@@ -51,6 +51,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/system",
     "//components/services/app_service/public/cpp:app_types",
     "//components/web_package",
@@ -91,6 +92,7 @@ static_library("test_support") {
     "//chrome/browser/chromeos/app_mode",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/policy/device_local_account",
     "//components/web_package",
   ]
 }

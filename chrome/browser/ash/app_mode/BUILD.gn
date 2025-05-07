@@ -81,6 +81,7 @@ static_library("app_mode") {
     "//chromeos/ash/components/kiosk/vision",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//chromeos/crosapi/mojom",
     "//chromeos/crosapi/mojom:mojom_shared_cpp_sources",
@@ -191,6 +192,7 @@ static_library("test_support") {
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support_ui",
     "//chrome/test/data/chromeos/app_mode/webstore/itemsnippet",
+    "//chromeos/ash/components/policy/device_local_account",
   ]
   data_deps = [ "//chrome/test/data/chromeos/app_mode/webstore/itemsnippet:generated_protobufs" ]
 }
@@ -228,6 +230,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/sync_wifi:test_support",
     "//components/prefs:test_support",
     "//components/webapps/browser",
@@ -291,6 +294,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/update_engine:update_engine",
+    "//chromeos/ash/components/policy/device_local_account",
     "//components/crx_file",
     "//components/ownership",
     "//content/test:test_support",

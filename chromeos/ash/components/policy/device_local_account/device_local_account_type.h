@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POLICY_CORE_COMMON_DEVICE_LOCAL_ACCOUNT_TYPE_H_
-#define COMPONENTS_POLICY_CORE_COMMON_DEVICE_LOCAL_ACCOUNT_TYPE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_POLICY_DEVICE_LOCAL_ACCOUNT_DEVICE_LOCAL_ACCOUNT_TYPE_H_
+#define CHROMEOS_ASH_COMPONENTS_POLICY_DEVICE_LOCAL_ACCOUNT_DEVICE_LOCAL_ACCOUNT_TYPE_H_
 
 #include <string>
 #include <string_view>
 
+#include "base/component_export.h"
 #include "base/types/expected.h"
-#include "components/policy/policy_export.h"
 
 namespace policy {
 
@@ -42,11 +42,12 @@ enum class DeviceLocalAccountType {
 };
 
 // Returns whether the given value is valid DeviceLocalAccountType.
-POLICY_EXPORT bool IsValidDeviceLocalAccountType(int value);
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY_DEVICE_LOCAL_ACCOUNT)
+bool IsValidDeviceLocalAccountType(int value);
 
-POLICY_EXPORT std::string GenerateDeviceLocalAccountUserId(
-    std::string_view account_id,
-    DeviceLocalAccountType type);
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY_DEVICE_LOCAL_ACCOUNT)
+std::string GenerateDeviceLocalAccountUserId(std::string_view account_id,
+                                             DeviceLocalAccountType type);
 
 enum class GetDeviceLocalAccountTypeError {
   kNoDeviceLocalAccountUser,
@@ -54,15 +55,16 @@ enum class GetDeviceLocalAccountTypeError {
 };
 
 // Returns the type of device-local account.
-POLICY_EXPORT
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY_DEVICE_LOCAL_ACCOUNT)
 base::expected<DeviceLocalAccountType, GetDeviceLocalAccountTypeError>
 GetDeviceLocalAccountType(std::string_view user_id);
 
 // Returns whether |user_id| belongs to a device-local account.
 // This is equivalent to that GetDeviceLocalAccountType does not return
 // kNoDeviceLocalAccountUser error.
-POLICY_EXPORT bool IsDeviceLocalAccountUser(std::string_view user_id);
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY_DEVICE_LOCAL_ACCOUNT)
+bool IsDeviceLocalAccountUser(std::string_view user_id);
 
 }  // namespace policy
 
-#endif  // COMPONENTS_POLICY_CORE_COMMON_DEVICE_LOCAL_ACCOUNT_TYPE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_POLICY_DEVICE_LOCAL_ACCOUNT_DEVICE_LOCAL_ACCOUNT_TYPE_H_

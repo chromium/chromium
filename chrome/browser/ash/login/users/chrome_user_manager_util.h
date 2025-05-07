@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "components/policy/core/common/device_local_account_type.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"

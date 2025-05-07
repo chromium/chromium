@@ -23,10 +23,6 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(
 // Enables the addition of new security fields for SecOps.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kEnhancedSecurityEventFields);
 
-// Enables Kiosk session for the Helium android app.
-POLICY_EXPORT BASE_DECLARE_FEATURE(kHeliumArcvmKiosk);
-POLICY_EXPORT bool IsHeliumArcvmKioskEnabled();
-
 }  // namespace policy::features
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_

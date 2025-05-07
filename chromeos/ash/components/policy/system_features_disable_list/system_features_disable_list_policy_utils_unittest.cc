@@ -8,11 +8,11 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/fake_cros_settings_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/system_features_disable_list_constants.h"
 #include "components/prefs/pref_registry_simple.h"

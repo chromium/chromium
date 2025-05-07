@@ -18,12 +18,4 @@ BASE_FEATURE(kEnhancedSecurityEventFields,
              "EnhancedSecurityEventFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Kiosk session for the Helium android app.
-BASE_FEATURE(kHeliumArcvmKiosk,
-             "HeliumArcvmKiosk",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsHeliumArcvmKioskEnabled() {
-  return base::FeatureList::IsEnabled(kHeliumArcvmKiosk);
-}
-
 }  // namespace policy::features

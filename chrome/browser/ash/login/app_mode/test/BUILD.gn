@@ -58,6 +58,7 @@ static_library("test_support") {
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/login",
+    "//chromeos/ash/components/policy/device_local_account",
     "//components/policy:generated",
     "//components/policy:policy_code_generate",
     "//components/policy/core/common",

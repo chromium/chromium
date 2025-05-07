@@ -14,9 +14,9 @@
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
-#include "components/policy/core/common/device_local_account_type.h"
 
 namespace ash::kiosk::test {
 

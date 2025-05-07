@@ -22,7 +22,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "components/policy/core/common/device_local_account_type.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/common/content_switches.h"

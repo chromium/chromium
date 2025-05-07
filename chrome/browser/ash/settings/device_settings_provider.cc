@@ -433,7 +433,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
                        entry.kiosk_app().update_url());
       }
-      if (policy::features::IsHeliumArcvmKioskEnabled()) {
+      if (ash::features::IsHeliumArcvmKioskEnabled()) {
         if (entry.arcvm_kiosk_app().has_package_name()) {
           entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcvmKioskPackage,
                          entry.arcvm_kiosk_app().package_name());

@@ -512,6 +512,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/quick_start",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",

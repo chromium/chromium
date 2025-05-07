@@ -252,6 +252,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/system",
     "//chromeos/constants",
     "//components/component_updater/ash:test_support",

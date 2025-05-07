@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "components/policy/core/common/device_local_account_type.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 
 namespace ash {
 class CrosSettings;

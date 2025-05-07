@@ -149,8 +149,6 @@ source_set("internal") {
     "config_dir_policy_loader.h",
     "configuration_policy_provider.cc",
     "configuration_policy_provider.h",
-    "device_local_account_type.cc",
-    "device_local_account_type.h",
     "external_data_fetcher.cc",
     "external_data_fetcher.h",
     "external_data_manager.h",
@@ -338,7 +336,10 @@ source_set("internal") {
     deps += [ "//components/policy/android:jni_headers" ]
   }
   if (is_chromeos) {
-    deps += [ "//chromeos/ash/components/system" ]
+    deps += [
+      "//chromeos/ash/components/policy/device_local_account",
+      "//chromeos/ash/components/system",
+    ]
     sources += [
       "default_chrome_apps_migrator.cc",
       "default_chrome_apps_migrator.h",

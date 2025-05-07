@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/common/device_local_account_type.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "components/policy/core/common/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace policy {
@@ -25,7 +25,6 @@ constexpr auto kDomainPrefixMap =
         {DeviceLocalAccountType::kSamlPublicSession, "saml-public-accounts"},
         {DeviceLocalAccountType::kWebKioskApp, "web-kiosk-apps"},
         {DeviceLocalAccountType::kKioskIsolatedWebApp, "isolated-kiosk-apps"},
-
     });
 
 constexpr char kDeviceLocalAccountDomainSuffix[] = ".device-local.localhost";
@@ -41,7 +40,7 @@ bool IsValidDeviceLocalAccountType(int value) {
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
       return true;
     case DeviceLocalAccountType::kArcvmKioskApp:
-      return policy::features::IsHeliumArcvmKioskEnabled();
+      return ash::features::IsHeliumArcvmKioskEnabled();
   }
   return false;
 }

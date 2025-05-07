@@ -31,11 +31,11 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/metrics/metrics_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
 
