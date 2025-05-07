@@ -2951,6 +2951,53 @@ chromium-metrics-reviews@google.com.
   <token key="TracedMethod" variants="TracedMethod"/>
 </histogram>
 
+<histogram
+    name="NavigationPredictor.SearchEnginePreconnector.ConsecutiveFailures"
+    units="Consecutive failures" expires_after="2025-09-30">
+  <owner>suzukikeita@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The number of preconnect failures that happened before a successful
+    connection. This is recorded when the `SearchEnginePreconnector` detects a
+    connection close of a &quot;long&quot; session (i.e. was not considered as
+    short per comparison with the threshold).
+  </summary>
+</histogram>
+
+<histogram
+    name="NavigationPredictor.SearchEnginePreconnector.PreconnectAttemptInterval"
+    units="ms" expires_after="2025-09-30">
+  <owner>suzukikeita@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The duration between successive preconnect attempts made by the
+    `SearchEnginePreconnector`. This is recorded when receiving the
+    preconnect-emitting event.
+  </summary>
+</histogram>
+
+<histogram name="NavigationPredictor.SearchEnginePreconnector.PreconnectDelay"
+    units="ms" expires_after="2025-09-30">
+  <owner>suzukikeita@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The duration `SearchEnginePreconnector` waits until running the next
+    preconnect attempt from the timing when preconnect-emitting event has been
+    issued. This is recorded when receiving the preconnect-emitting event and
+    when the delay has been calculated.
+  </summary>
+</histogram>
+
+<histogram name="NavigationPredictor.SearchEnginePreconnector.TriggerEvent"
+    enum="PreconnectTriggerEvent" expires_after="2025-09-30">
+  <owner>suzukikeita@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The event which triggered a preconnect. This is recorded when each event is
+    received by the `SearchEnginePreconnector`.
+  </summary>
+</histogram>
+
 <histogram name="NavigationSuggestion.Event2" enum="NavigationSuggestionEvent"
     expires_after="2025-10-12">
   <owner>meacer@chromium.org</owner>

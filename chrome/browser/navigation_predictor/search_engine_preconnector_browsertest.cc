@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
+
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -617,6 +619,8 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorEnabledOnlyBrowserTest,
   EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 }
 
+}  // namespace
+
 class SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest
     : public SearchEnginePreconnectorBrowserTest,
       public testing::WithParamInterface<bool> {
@@ -656,9 +660,6 @@ class SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest
     SearchEnginePreconnectorBrowserTest::OnPreresolveFinished(
         url, network_anonymization_key, observer, success);
   }
-
- protected:
-  /* mojo::Remote<network::mojom::ReconnectEventObserver> remote_; */
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -784,6 +785,7 @@ IN_PROC_BROWSER_TEST_P(
       GetSearchEnginePreconnector()
           ->GetConsecutiveConnectionFailureForTesting();
 
+  base::HistogramTester histogram_tester;
   GetSearchEnginePreconnector()->StartPreconnecting(
       /*with_startup_delay=*/false);
 
@@ -801,6 +803,13 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(1, GetSearchEnginePreconnector()
                        ->GetConsecutiveConnectionFailureForTesting() -
                    failure_before_testing);
+
+  histogram_tester.ExpectUniqueSample(
+      "NavigationPredictor.SearchEnginePreconnector."
+      "TriggerEvent",
+      static_cast<int>(
+          SearchEnginePreconnector::PreconnectTriggerEvent::kSessionClosed),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -828,6 +837,7 @@ IN_PROC_BROWSER_TEST_P(
       GetSearchEnginePreconnector()
           ->GetConsecutiveConnectionFailureForTesting();
 
+  base::HistogramTester histogram_tester;
   GetSearchEnginePreconnector()->StartPreconnecting(
       /*with_startup_delay=*/false);
 
@@ -845,6 +855,13 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(1, GetSearchEnginePreconnector()
                        ->GetConsecutiveConnectionFailureForTesting() -
                    failure_before_testing);
+
+  histogram_tester.ExpectUniqueSample(
+      "NavigationPredictor.SearchEnginePreconnector."
+      "TriggerEvent",
+      static_cast<int>(
+          SearchEnginePreconnector::PreconnectTriggerEvent::kConnectionFailed),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -868,6 +885,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(template_url);
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
+  base::HistogramTester histogram_tester;
   GetSearchEnginePreconnector()->StartPreconnecting(
       /*with_startup_delay=*/false);
 
@@ -881,6 +899,13 @@ IN_PROC_BROWSER_TEST_P(
 
   // Preconnect should occur for Google search.
   EXPECT_EQ(2, preresolve_counts_[search_url]);
+
+  histogram_tester.ExpectUniqueSample(
+      "NavigationPredictor.SearchEnginePreconnector."
+      "TriggerEvent",
+      static_cast<int>(
+          SearchEnginePreconnector::PreconnectTriggerEvent::kNetworkEvent),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1048,5 +1073,3 @@ IN_PROC_BROWSER_TEST_P(
   // Preconnect should occur for Google search.
   EXPECT_EQ(2, preresolve_counts_[search_url]);
 }
-
-}  // namespace
