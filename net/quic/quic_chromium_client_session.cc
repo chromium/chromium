@@ -1928,6 +1928,16 @@ void QuicChromiumClientSession::OnConnectionClosed(
         streams_waiting_to_write);
     UMA_HISTOGRAM_COUNTS_100("Net.QuicSession.NumActiveStreamsOnIdleTimeout",
                              GetNumActiveStreams());
+    if (IsGoogleHostWithAlpnH3(session_key_.host())) {
+      UMA_HISTOGRAM_COUNTS_100(
+          "Net.QuicSession.NumStreamsWaitingToWriteOnIdleTimeout."
+          "GoogleWithAlpnH3",
+          streams_waiting_to_write);
+      UMA_HISTOGRAM_COUNTS_100(
+          "Net.QuicSession.NumActiveStreamsOnIdleTimeout.GoogleHost."
+          "GoogleWithAlpnH3",
+          GetNumActiveStreams());
+    }
   }
 
   if (source == quic::ConnectionCloseSource::FROM_PEER) {
@@ -2070,6 +2080,13 @@ void QuicChromiumClientSession::OnConnectionClosed(
         "Net.QuicSession.ConnectionDuration",
         tick_clock_->NowTicks() - connect_timing_.connect_end);
     UMA_HISTOGRAM_COUNTS_100("Net.QuicSession.NumMigrations", num_migrations_);
+    if (IsGoogleHostWithAlpnH3(session_key_.host())) {
+      UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumPingsSent.GoogleWithAlpnH3",
+                                connection()->GetStats().ping_frames_sent);
+      UMA_HISTOGRAM_LONG_TIMES_100(
+          "Net.QuicSession.ConnectionDuration.GoogleWithAlpnH3",
+          tick_clock_->NowTicks() - connect_timing_.connect_end);
+    }
 
     // KeyUpdates are used in TLS, but we no longer support pre-TLS QUIC.
     DCHECK(connection()->version().UsesTls());
