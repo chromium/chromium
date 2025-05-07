@@ -34,10 +34,8 @@ class CookieControlsObserver : public base::CheckedObserver {
   virtual void OnCookieControlsIconStatusChanged(
       // Whether to show the user bypass icon.
       bool icon_visible,
-      // Whether protections (3PC blocking and ACT features) are on for the
-      // current site. NOTE: for the 3PC toggle this is true when the toggle is
-      // off/3PC are blocked.
-      bool protections_on,
+      // The state of the controls for the UI to change.
+      CookieControlsState controls_state,
       // 3PC blocking status for 3PCD: whether 3PC are limited or all blocked.
       CookieBlocking3pcdStatus blocking_status,
       // Whether we should highlight the user bypass icon.

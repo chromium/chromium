@@ -169,9 +169,8 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
     observer.OnStatusChanged(status.controls_state, status.enforcement,
                              status.blocking_status, status.expiration);
     observer.OnCookieControlsIconStatusChanged(
-        icon_visible,
-        status.controls_state == CookieControlsState::k3pcsBlocked,
-        status.blocking_status, should_highlight);
+        icon_visible, status.controls_state, status.blocking_status,
+        should_highlight);
   }
 }
 
@@ -454,9 +453,8 @@ void CookieControlsController::UpdateUserBypass() {
       ShouldHighlightUserBypass(status.controls_state);
   for (auto& observer : observers_) {
     observer.OnCookieControlsIconStatusChanged(
-        icon_visible,
-        status.controls_state == CookieControlsState::k3pcsBlocked,
-        status.blocking_status, should_highlight);
+        icon_visible, status.controls_state, status.blocking_status,
+        should_highlight);
   }
 }
 

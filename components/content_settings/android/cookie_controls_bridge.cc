@@ -87,7 +87,7 @@ void CookieControlsBridge::OnStatusChanged(
 
 void CookieControlsBridge::OnCookieControlsIconStatusChanged(
     bool icon_visible,
-    bool protections_on,
+    CookieControlsState controls_state,
     CookieBlocking3pcdStatus blocking_status,
     bool should_highlight) {
   // This function's main use is for web's User Bypass icon, which

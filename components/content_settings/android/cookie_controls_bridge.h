@@ -60,7 +60,7 @@ class CookieControlsBridge : public CookieControlsObserver {
 
   void OnCookieControlsIconStatusChanged(
       bool icon_visible,
-      bool protections_on,
+      CookieControlsState controls_state,
       CookieBlocking3pcdStatus blocking_status,
       bool should_highlight) override;
 
