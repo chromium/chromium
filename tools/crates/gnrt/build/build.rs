@@ -11,7 +11,7 @@
 //! https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts
 
 use anyhow::{ensure, Result};
-use heck::{ToPascalCase, ToShoutySnakeCase};
+use heck::ToPascalCase;
 use itertools::Itertools;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
@@ -25,10 +25,6 @@ fn write_pretty_file_fragment(mut w: impl Write, contents: TokenStream) -> Resul
 
 fn format_ident(s: &str) -> syn::Ident {
     format_ident!("{}", s.to_pascal_case())
-}
-
-fn format_const_ident(s: &str) -> syn::Ident {
-    format_ident!("{}", s.to_shouty_snake_case())
 }
 
 /// Represents one line of output from `rustc --print=cfg <triple_name>`.
@@ -71,7 +67,7 @@ fn generate_enum_for_named_property(
         .iter()
         .filter_map(|cfg| {
             if cfg.property_name == property_name {
-                Some((format_const_ident(cfg.triple_name), format_ident(&cfg.property_value)))
+                Some((format_ident(cfg.triple_name), format_ident(&cfg.property_value)))
             } else {
                 None
             }
@@ -82,6 +78,7 @@ fn generate_enum_for_named_property(
         .clone()
         .into_iter()
         .map(|(_, property_value)| property_value)
+        .sorted()
         .unique()
         .collect_vec();
     let (triple_idents, property_value_idents) =
@@ -90,17 +87,14 @@ fn generate_enum_for_named_property(
         #doc_string
         #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
         pub enum #enum_ident {
-            #( #unique_property_value_idents ),*
+            #( #unique_property_value_idents, )*
         }
 
-        impl TryFrom<RustTargetTriple> for #enum_ident {
-            type Error = anyhow::Error;
-
-            fn try_from(value: RustTargetTriple) -> Result<Self> {
+        impl From<RustTargetTriple> for #enum_ident {
+            fn from(value: RustTargetTriple) -> Self {
                 match value {
                     #( RustTargetTriple :: #triple_idents
-                        => Ok(#enum_ident :: #property_value_idents), )*
-                    other => Err(anyhow!("Not a single triple?: {other:?}")),
+                        => #enum_ident :: #property_value_idents, )*
                 }
             }
         }
@@ -117,7 +111,7 @@ fn write_target_triples_rs(path: &Path) -> Result<()> {
         .filter(|line| !line.trim().is_empty())
         .sorted()
         .collect_vec();
-    let triple_idents = triple_names.iter().map(|triple| format_const_ident(triple)).collect_vec();
+    let triple_idents = triple_names.iter().map(|triple| format_ident(triple)).collect_vec();
     let cfg_lines = triple_names
         .iter()
         .map(|&triple| get_cfg_lines(triple))
@@ -140,7 +134,7 @@ fn write_target_triples_rs(path: &Path) -> Result<()> {
             /// * The 1st tuple element is the name of a property (e.g. `target_env`)
             /// * The 2nd tuple element is the value of the property (e.g. `msvc`)
             pub static RUST_TRIPLE_PROPERTIES: [(&str, &str, &str); #len] = [
-                #( (#tuple_elem0s, #tuple_elem1s, #tuple_elem2s) ),*
+                #( (#tuple_elem0s, #tuple_elem1s, #tuple_elem2s), )*
             ];
         }
     };
@@ -165,40 +159,34 @@ fn write_target_triples_rs(path: &Path) -> Result<()> {
         &mut output_file,
         quote! {
             use anyhow::{anyhow, Result};
-            use bitflags::bitflags;
-            use std::convert::TryFrom;
+            use std::convert::From;
+            use std::collections::HashSet;
             use std::str::FromStr;
-        },
-    )?;
-    writeln!(&mut output_file)?;
+            use std::sync::LazyLock;
 
-    // `bitflags!` doesn't format well using `prettyplease`, so let's just
-    // manually `writeln!` it out.
-    writeln!(
-        &mut output_file,
-        r#"
-bitflags! {{
-    /// `RustTargetTriple` enum exhaustively names all target triples that are
-    /// supported by Chromium when compiling Rust libraries.
-    #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub struct RustTargetTriple: u64 {{"#
-    )?;
-    for (index, ident) in triple_idents.iter().enumerate() {
-        writeln!(&mut output_file, "        const {ident} = 1 << {index};")?;
-    }
-    writeln!(&mut output_file, "    }}")?;
-    writeln!(&mut output_file, "}}")?;
+            /// `RustTargetTriple` enum exhaustively names all target triples that are
+            /// supported by Chromium when compiling Rust libraries.
+            #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+            pub enum RustTargetTriple {
+                #( #triple_idents, )*
+            }
 
-    write_pretty_file_fragment(
-        &mut output_file,
-        quote! {
             impl RustTargetTriple {
-                pub fn as_triple_name(&self) -> Result<&'static str> {
+                pub fn as_triple_name(&self) -> &'static str {
                     match *self {
-                        #( RustTargetTriple :: #triple_idents
-                            => Ok(#triple_names), )*
-                        other => Err(anyhow!("Not a single triple?: {other:?}")),
+                        #( RustTargetTriple :: #triple_idents => #triple_names, )*
                     }
+                }
+
+                /// A set of all possible/known triples.
+                pub fn all() -> &'static HashSet<RustTargetTriple> {
+                    static ALL_TRIPLES: LazyLock<HashSet<RustTargetTriple>> =
+                        LazyLock::new(|| {
+                            [
+                                #( RustTargetTriple :: #triple_idents, )*
+                            ].into_iter().collect()
+                        });
+                    &ALL_TRIPLES
                 }
             }
 
@@ -206,7 +194,7 @@ bitflags! {{
                 type Err = anyhow::Error;
                 fn from_str(input: &str) -> Result<RustTargetTriple> {
                     for (s, t) in &[
-                        #( (#triple_names, RustTargetTriple::#triple_idents) ),*
+                        #( (#triple_names, RustTargetTriple::#triple_idents), )*
                     ] {
                         if input == *s {
                             return Ok(*t);

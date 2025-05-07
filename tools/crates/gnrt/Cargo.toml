@@ -14,7 +14,6 @@ path = "main.rs"
 
 [dependencies]
 anyhow = "1"
-bitflags = "2.9.0"
 cargo-platform = "0.1"
 clap = {version = "4", features = ["derive"]}
 guppy = "0.17.18"

@@ -517,7 +517,6 @@ name = "gnrt"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "bitflags 2.9.0",
  "cargo-platform",
  "clap",
  "env_logger",

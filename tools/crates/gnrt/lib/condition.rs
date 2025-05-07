@@ -6,11 +6,14 @@
 use crate::target_triple::{RustTargetTriple, RUST_TRIPLE_PROPERTIES};
 
 use anyhow::{anyhow, Result};
-use std::{collections::HashMap, sync::LazyLock};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::LazyLock,
+};
 
 /// Representation of a `Condition` associated with a conditional/optional
 /// dependency.
-#[derive(Clone, Debug, Hash, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Condition {
     /// The condition is always false.  In other words, supported Chromium
     /// builds never meet this condition.
@@ -22,11 +25,10 @@ pub enum Condition {
     /// Example: `#[cfg(not(target_arch = "powerpc"))]`.
     AlwaysTrue,
     /// The conditional dependency applies to a subset of target triples
-    /// (`RustTargetTriple` is a bit flag - it may have more than 1 bit set).
     ///
     /// For example `#[cfg(target_os = "windows")]` translates into
     /// `Condition::TripleSet(...)`.
-    TripleSet(RustTargetTriple),
+    TripleSet(HashSet<RustTargetTriple>),
     /// Some of the [conditional
     /// compilation](https://doc.rust-lang.org/reference/conditional-compilation.html) directives
     /// weren't recognized by `gnrt`.
@@ -45,10 +47,14 @@ impl Condition {
         *self == Condition::AlwaysFalse
     }
 
-    fn from_triple_set(set: RustTargetTriple) -> Self {
+    fn from_triple(triple: RustTargetTriple) -> Self {
+        Condition::TripleSet([triple].into())
+    }
+
+    fn from_triple_set(set: HashSet<RustTargetTriple>) -> Self {
         if set.is_empty() {
             Condition::AlwaysFalse
-        } else if set.is_all() {
+        } else if set == *RustTargetTriple::all() {
             Condition::AlwaysTrue
         } else {
             Condition::TripleSet(set)
@@ -63,7 +69,7 @@ impl Condition {
                 err.clone()
             }
             (Condition::TripleSet(lhs), Condition::TripleSet(rhs)) => {
-                Condition::from_triple_set(lhs | rhs)
+                Condition::from_triple_set(&lhs | &rhs)
             }
         }
     }
@@ -74,7 +80,7 @@ impl Condition {
             (Condition::AlwaysTrue, other) | (other, Condition::AlwaysTrue) => other,
             (err @ Condition::Unsupported(_), _) | (_, err @ Condition::Unsupported(_)) => err,
             (Condition::TripleSet(lhs), Condition::TripleSet(rhs)) => {
-                Condition::from_triple_set(lhs & rhs)
+                Condition::from_triple_set(&lhs & &rhs)
             }
         }
     }
@@ -84,14 +90,14 @@ impl Condition {
             Condition::AlwaysFalse => Condition::AlwaysTrue,
             Condition::AlwaysTrue => Condition::AlwaysFalse,
             err @ Condition::Unsupported(_) => err,
-            Condition::TripleSet(value) => Condition::TripleSet(!value),
+            Condition::TripleSet(value) => Condition::TripleSet(negate_triple_set(&value)),
         }
     }
 
     pub fn to_handlebars_value(&self) -> Result<Option<String>> {
         match self {
             Condition::AlwaysTrue => Ok(None),
-            Condition::TripleSet(set) => Ok(Some(format_as_gn_expr::format(*set))),
+            Condition::TripleSet(set) => Ok(Some(format_as_gn_expr::format(set))),
             Condition::AlwaysFalse => unreachable!(
                 "AlwaysFalse dependencies should be filtered out \
                               by `fn collect_dependencies` from `deps.rs`"
@@ -115,6 +121,10 @@ impl Condition {
     }
 }
 
+fn negate_triple_set(set: &HashSet<RustTargetTriple>) -> HashSet<RustTargetTriple> {
+    RustTargetTriple::all() - set
+}
+
 /// Module for converting a set of target triples into a conditional expression
 /// that uses GN/Chromium variables and syntax.
 ///
@@ -128,17 +138,17 @@ impl Condition {
 ///   `gn get_gn_target_triple_expr`).  This is used as a last resort, because
 ///   this results in long and not very readable expressions.
 mod format_as_gn_expr {
+    use super::negate_triple_set;
     use crate::target_triple::{RustTargetArch, RustTargetOs, RustTargetTriple};
     use itertools::Itertools;
     use std::collections::HashSet;
 
-    /// Translates `target_triples` (where 1 or more bits/triples can be set)
-    /// into a condition expressed in GN/Chromium syntax (e.g.  `is_win &&
-    /// current_cpu == "x64"`).  Tries to use heuristics to return a short,
-    /// readable expression.
-    pub fn format(target_triples: RustTargetTriple) -> String {
+    /// Translates `target_triples` into a condition expressed in GN/Chromium
+    /// syntax (e.g. `is_win && current_cpu == "x64"`).  Tries to use
+    /// heuristics to return a short, readable expression.
+    pub fn format(target_triples: &HashSet<RustTargetTriple>) -> String {
         assert!(!target_triples.is_empty());
-        assert!(!target_triples.is_all());
+        assert_ne!(target_triples, RustTargetTriple::all());
 
         if let Some(expr) = get_single_filter(target_triples, get_gn_os_expr) {
             return expr;
@@ -166,10 +176,10 @@ mod format_as_gn_expr {
     /// filter. `get_expr` should typically be `get_gn_os_expr` or
     /// `get_gn_arch_expr`.
     fn get_single_filter(
-        target_triples: RustTargetTriple,
-        get_expr: fn(RustTargetTriple) -> &'static str,
+        target_triples: &HashSet<RustTargetTriple>,
+        get_expr: fn(&RustTargetTriple) -> &'static str,
     ) -> Option<String> {
-        let get_expr_set = |triples: RustTargetTriple| -> HashSet<&'static str> {
+        let get_expr_set = |triples: &HashSet<RustTargetTriple>| -> HashSet<&'static str> {
             triples.iter().map(get_expr).collect()
         };
         fn negate(expr: &str) -> String {
@@ -180,7 +190,7 @@ mod format_as_gn_expr {
             }
         }
         let expr_in_target = get_expr_set(target_triples);
-        let expr_in_rest = get_expr_set(!target_triples);
+        let expr_in_rest = get_expr_set(&negate_triple_set(target_triples));
         if !expr_in_target.is_disjoint(&expr_in_rest)
             || expr_in_target.is_empty()
             || expr_in_rest.is_empty()
@@ -200,23 +210,20 @@ mod format_as_gn_expr {
     /// and or `get_expr2` should typically be `get_gn_os_expr` or
     /// `get_gn_arch_expr`.
     fn get_double_filter(
-        target_triples: RustTargetTriple,
-        get_expr1: fn(RustTargetTriple) -> &'static str,
-        get_expr2: fn(RustTargetTriple) -> &'static str,
+        target_triples: &HashSet<RustTargetTriple>,
+        get_expr1: fn(&RustTargetTriple) -> &'static str,
+        get_expr2: fn(&RustTargetTriple) -> &'static str,
     ) -> Option<String> {
         let mut or_operands = vec![];
-        let chunked = target_triples
-            .iter()
-            .sorted_by_key(|&triple| get_expr1(triple))
-            .chunk_by(|&triple| get_expr1(triple));
+        let chunked = target_triples.iter().copied().sorted_by_key(get_expr1).chunk_by(get_expr1);
         for (expr1, chunk) in chunked.into_iter() {
-            let target_triples_matching_expr1 = chunk.reduce(|x, y| x | y).unwrap();
+            let target_triples_matching_expr1 = chunk.collect::<HashSet<_>>();
             let all_triples_matching_expr1 = RustTargetTriple::all()
                 .iter()
-                .filter(|&triple| get_expr1(triple) == expr1)
-                .reduce(|x, y| x | y)
-                .expect("Expecting that at least one triple matches");
-            assert!(all_triples_matching_expr1.contains(target_triples_matching_expr1));
+                .copied()
+                .filter(|triple| get_expr1(triple) == expr1)
+                .collect::<HashSet<_>>();
+            assert!(all_triples_matching_expr1.is_superset(&target_triples_matching_expr1));
             if target_triples_matching_expr1 == all_triples_matching_expr1 {
                 or_operands.push(expr1.to_string());
             } else {
@@ -228,9 +235,9 @@ mod format_as_gn_expr {
                     .collect_vec();
                 let all_triples_matching_expr1_and_expr2 = all_triples_matching_expr1
                     .iter()
-                    .filter(|&triple| expr2_or_operands.contains(&get_expr2(triple)))
-                    .reduce(|x, y| x | y)
-                    .expect("Expecting that at least one triple matches");
+                    .copied()
+                    .filter(|triple| expr2_or_operands.contains(&get_expr2(triple)))
+                    .collect::<HashSet<_>>();
                 if all_triples_matching_expr1_and_expr2 != target_triples_matching_expr1 {
                     return None;
                 }
@@ -256,10 +263,10 @@ mod format_as_gn_expr {
 
     /// Translates `RustTargetTriple` into a GN conditional expression that will
     /// match the GN notion of the OS of that triple.
-    fn get_gn_os_expr(rust_triple: RustTargetTriple) -> &'static str {
-        // `RustTargetOs` and `try_into` come from `target_triples.rs` which is
+    fn get_gn_os_expr(rust_triple: &RustTargetTriple) -> &'static str {
+        // `RustTargetOs` and `into` come from `target_triples.rs` which is
         // auto-generated by `gnrt`'s `build.rs`.
-        let rust_os = rust_triple.try_into().expect("`rust_triple` should specify a single triple");
+        let rust_os = (*rust_triple).into();
         match rust_os {
             RustTargetOs::Android => "is_android",
             RustTargetOs::Fuchsia => "is_fuchsia",
@@ -272,10 +279,10 @@ mod format_as_gn_expr {
 
     /// Translates `RustTargetTriple` into a GN conditional expression that will
     /// match the GN notion of the CPU architecture of that triple.
-    fn get_gn_arch_expr(rust_triple: RustTargetTriple) -> &'static str {
-        // `RustTargetArch` and `try_into` come from `target_triples.rs` which is
+    fn get_gn_arch_expr(rust_triple: &RustTargetTriple) -> &'static str {
+        // `RustTargetArch` and `into` come from `target_triples.rs` which is
         // auto-generated by `gnrt`'s `build.rs`.
-        let rust_os = rust_triple.try_into().expect("`rust_triple` should specify a single triple");
+        let rust_os = (*rust_triple).into();
         match rust_os {
             RustTargetArch::Aarch64 => "current_cpu == \"arm64\"",
             RustTargetArch::Arm => "current_cpu == \"arm\"",
@@ -288,11 +295,10 @@ mod format_as_gn_expr {
     /// Translates `RustTargetTriple` into a GN conditional expression that will
     /// match the value of `rust_abi_target` as set by
     /// `//build/config/rust.gni`.
-    fn get_gn_target_triple_expr(rust_triple: RustTargetTriple) -> String {
+    fn get_gn_target_triple_expr(rust_triple: &RustTargetTriple) -> String {
         // `as_triple_name` comes from `target_triples.rs` which is auto-generated by
         // `gnrt`'s `build.rs`.
-        let rust_triple_name =
-            rust_triple.as_triple_name().expect("`rust_triple` should specify a single triple");
+        let rust_triple_name = rust_triple.as_triple_name();
         format!("rust_abi_target == \"{rust_triple_name}\"")
     }
 }
@@ -301,28 +307,26 @@ fn cfg_expr_to_condition(cfg_expr: &cargo_platform::CfgExpr) -> Condition {
     match cfg_expr {
         cargo_platform::CfgExpr::Not(expr) => Condition::not(cfg_expr_to_condition(expr)),
         cargo_platform::CfgExpr::All(exprs) => {
-            let mut conds = exprs.iter().map(cfg_expr_to_condition).collect::<Vec<_>>();
-            conds.sort();
-            conds.dedup();
-
             // https://doc.rust-lang.org/reference/conditional-compilation.html#r-cfg.predicate.all
             // says that "It is true if "all of the given predicates are true, or if the
             // list is empty."
-            conds.into_iter().fold(Condition::AlwaysTrue, |accumulated, condition| {
-                Condition::and(accumulated, condition)
-            })
+            exprs
+                .iter()
+                .map(cfg_expr_to_condition)
+                .fold(Condition::AlwaysTrue, |accumulated, condition| {
+                    Condition::and(accumulated, condition)
+                })
         }
         cargo_platform::CfgExpr::Any(exprs) => {
-            let mut conds = exprs.iter().map(cfg_expr_to_condition).collect::<Vec<_>>();
-            conds.sort();
-            conds.dedup();
-
             // https://doc.rust-lang.org/reference/conditional-compilation.html#r-cfg.predicate.any
             // says that "It is true if at least one of the given predicates is true. If
             // there are no predicates, it is false.".
-            conds.into_iter().fold(Condition::AlwaysFalse, |accumulated, condition| {
-                Condition::or(accumulated, condition)
-            })
+            exprs
+                .iter()
+                .map(cfg_expr_to_condition)
+                .fold(Condition::AlwaysFalse, |accumulated, condition| {
+                    Condition::or(accumulated, condition)
+                })
         }
         cargo_platform::CfgExpr::Value(cfg) => cfg_to_condition(cfg),
     }
@@ -341,15 +345,14 @@ fn cfg_to_condition(cfg: &cargo_platform::Cfg) -> Condition {
 /// is true (e.g. `target_env = "msvc"` is true for all 3 of Chromium Windows
 /// target triples).
 static PROP_NAME_TO_PROP_VALUE_TO_TRIPLE_SET: LazyLock<
-    HashMap<&str, HashMap<&str, RustTargetTriple>>,
+    HashMap<&str, HashMap<&str, HashSet<RustTargetTriple>>>,
 > = LazyLock::new(|| {
     // `RUST_TRIPLE_PROPERTIES` comes from `target_triples.rs` which is
     // auto-generated by `gnrt`'s `build.rs`.
-    let mut result: HashMap<_, HashMap<_, _>> = HashMap::new();
+    let mut result: HashMap<_, HashMap<_, HashSet<_>>> = HashMap::new();
     for (triple, prop_name, prop_value) in RUST_TRIPLE_PROPERTIES {
         let triple = triple.parse().unwrap();
-        let sets = result.entry(prop_name).or_default().entry(prop_value).or_insert(triple);
-        *sets |= triple;
+        result.entry(prop_name).or_default().entry(prop_value).or_default().insert(triple);
     }
     result
 });
@@ -362,7 +365,7 @@ fn cfg_key_value_pair_to_condition(key: &str, value: &str) -> Condition {
     if let Some(value_to_triple_set_map) = PROP_NAME_TO_PROP_VALUE_TO_TRIPLE_SET.get(key) {
         match value_to_triple_set_map.get(value) {
             None => return Condition::AlwaysFalse,
-            Some(set) => return Condition::TripleSet(*set),
+            Some(set) => return Condition::TripleSet(set.clone()),
         }
     }
 
@@ -397,7 +400,7 @@ fn cfg_name_to_condition(name: &str) -> Condition {
         // major issues.
         //
         // TODO(https://crbug.com/402096443): Handle this by tracking not only a set of
-        // `RustTargetTriple` but also a parallel bitflag of `RustDebugConfig` (with
+        // `RustTargetTriple` but also a parallel set/bitflag of `RustDebugConfig` (with
         // just two bits - on and off).
         return Condition::AlwaysTrue;
     }
@@ -439,7 +442,7 @@ fn panic_cfg_to_condition(value: &str) -> Condition {
 
 fn triple_to_condition(triple: &str) -> Condition {
     match triple.parse() {
-        Ok(set) => Condition::TripleSet(set),
+        Ok(triple) => Condition::from_triple(triple),
         Err(_) => Condition::AlwaysFalse,
     }
 }
@@ -573,7 +576,7 @@ mod tests {
                      not(target_abi = \"llvm\"), \
                      not(windows_raw_dylib))"
             ),
-            Condition::TripleSet(RustTargetTriple::I686_UNKNOWN_LINUX_GNU),
+            Condition::from_triple(RustTargetTriple::I686UnknownLinuxGnu),
         );
 
         // Cfg expressions taken from `getrandom-0.3` => `libc` dependency.
