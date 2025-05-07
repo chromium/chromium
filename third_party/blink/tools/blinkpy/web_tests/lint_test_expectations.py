@@ -448,7 +448,6 @@ def run_checks(host, options):
     finder = PathFinder(host.filesystem)
     # Add all extra expectation files to be linted.
     options.additional_expectations.extend([
-        finder.path_from_web_tests('MobileTestExpectations'),
         finder.path_from_web_tests('WebGPUExpectations'),
     ])
     # The checks and list of expectation files are generally not

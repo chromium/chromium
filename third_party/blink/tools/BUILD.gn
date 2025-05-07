@@ -54,7 +54,6 @@ if (is_android) {
 
       # Common expectation
       "//third_party/blink/web_tests/LeakExpectations",
-      "//third_party/blink/web_tests/MobileTestExpectations",
       "//third_party/blink/web_tests/NeverFixTests",
       "//third_party/blink/web_tests/SlowTests",
       "//third_party/blink/web_tests/StaleTestExpectations",
