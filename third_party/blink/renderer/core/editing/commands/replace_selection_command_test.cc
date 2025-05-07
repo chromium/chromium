@@ -290,4 +290,30 @@ TEST_F(ReplaceSelectionCommandTest, InsertImageInNonEditableBlock2) {
       "</div></strong>",
       GetSelectionTextFromBody());
 }
+
+TEST_F(ReplaceSelectionCommandTest, InsertLineFeedsToTextArea) {
+  SetBodyContent("<textarea></textarea>");
+  Element* field = QuerySelector("textarea");
+  field->Focus();
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), "\nfoo\n"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0, InputEvent::InputType::kNone);
+
+  EXPECT_TRUE(command.Apply());
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    EXPECT_EQ(
+        "<textarea><div><br>foo|<br>"
+        "<br id=\"textarea-placeholder-break\"></div></textarea>",
+        GetSelectionTextInFlatTreeFromBody(
+            Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));
+  } else {
+    EXPECT_EQ(
+        "<textarea><div>\nfoo|\n<br></div></textarea>",
+        GetSelectionTextInFlatTreeFromBody(
+            Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));
+  }
+}
+
 }  // namespace blink

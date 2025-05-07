@@ -928,25 +928,7 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
   } else {
     inner_editor->RemoveChildren();
     // For <textarea>, \n is replaced with <br>.
-    wtf_size_t start = 0;
-    wtf_size_t i = 0;
-    while (start < value.length()) {
-      i = value.find('\n', start);
-      if (i == WTF::kNotFound) {
-        inner_editor->AppendChild(
-            Text::Create(GetDocument(), value.Substring(start)));
-        break;
-      }
-      if (start != i) {
-        // Append [start, i).
-        inner_editor->AppendChild(
-            Text::Create(GetDocument(), value.Substring(start, i - start)));
-      }
-      // Append a BR.
-      inner_editor->AppendChild(
-          MakeGarbageCollected<HTMLBRElement>(GetDocument()));
-      start = i + 1;
-    }
+    AppendTextOrBr(value, *inner_editor);
   }
 
   // Add a placeholder <br> so that we can put the caret at the next line of
@@ -956,6 +938,27 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
   if (text_is_changed && GetLayoutObject()) {
     if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
       cache->HandleTextFormControlChanged(this);
+  }
+}
+
+void TextControlElement::AppendTextOrBr(const String& value,
+                                        ContainerNode& container) {
+  Document& doc = container.GetDocument();
+  wtf_size_t start = 0;
+  while (start < value.length()) {
+    wtf_size_t i = value.find('\n', start);
+    if (i == WTF::kNotFound) {
+      container.AppendChild(Text::Create(doc, value.Substring(start)));
+      break;
+    }
+    if (start != i) {
+      // Append [start, i).
+      container.AppendChild(
+          Text::Create(doc, value.Substring(start, i - start)));
+    }
+    // Append a BR.
+    container.AppendChild(MakeGarbageCollected<HTMLBRElement>(doc));
+    start = i + 1;
   }
 }
 

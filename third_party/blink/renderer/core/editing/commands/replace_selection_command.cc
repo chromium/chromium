@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_base_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
@@ -95,6 +96,8 @@ class ReplacementFragment final {
   Node* FirstChild() const;
   Node* LastChild() const;
 
+  String TrivialReplacementText() const { return trivial_text_; }
+
   bool IsEmpty() const;
 
   bool HasInterchangeNewlineAtStart() const {
@@ -108,6 +111,8 @@ class ReplacementFragment final {
   void RemoveNodePreservingChildren(ContainerNode*);
 
  private:
+  void UpdateFragmentForTextArea();
+  void UpdateTrivialReplacementText();
   HTMLElement* InsertFragmentForTestRendering(Element* root_editable_element);
   void RemoveUnrenderedNodes(ContainerNode*);
   void RestoreAndRemoveTestRenderingNodesToFragment(Element*);
@@ -117,6 +122,7 @@ class ReplacementFragment final {
 
   Document* document_;
   DocumentFragment* fragment_;
+  String trivial_text_;
   bool has_interchange_newline_at_start_;
   bool has_interchange_newline_at_end_;
 };
@@ -226,9 +232,14 @@ ReplacementFragment::ReplacementFragment(Document* document,
             selection.ToNormalizedEphemeralRange(), event->GetText());
         RemoveInterchangeNodes(fragment_);
       }
+      UpdateTrivialReplacementText();
+      if (IsA<HTMLTextAreaElement>(EnclosingTextControl(editable_root))) {
+        UpdateFragmentForTextArea();
+      }
       return;
     }
   }
+  UpdateTrivialReplacementText();
 
   HTMLElement* holder = InsertFragmentForTestRendering(editable_root);
   if (!holder) {
@@ -270,6 +281,52 @@ ReplacementFragment::ReplacementFragment(Document* document,
     RemoveUnrenderedNodes(holder);
     RestoreAndRemoveTestRenderingNodesToFragment(holder);
   }
+}
+
+void ReplacementFragment::UpdateFragmentForTextArea() {
+  if (!RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    return;
+  }
+  DocumentFragment* new_fragment = nullptr;
+  Node* next = nullptr;
+  for (Node* node = fragment_->firstChild(); node; node = next) {
+    // We need to get nextSibling before moving `node`.
+    next = node->nextSibling();
+    if (!node->IsTextNode()) {
+      if (new_fragment) {
+        new_fragment->AppendChild(node);
+      }
+      continue;
+    }
+    String value = node->textContent();
+    if (value.find('\n') == kNotFound) {
+      if (new_fragment) {
+        new_fragment->AppendChild(node);
+      }
+      continue;
+    }
+    if (!new_fragment) {
+      new_fragment = document_->createDocumentFragment();
+      Node* inner_next = nullptr;
+      for (Node* inner_node = fragment_->firstChild(); inner_node != node;
+           inner_node = inner_next) {
+        inner_next = inner_node->nextSibling();
+        new_fragment->AppendChild(inner_node);
+      }
+    }
+    TextControlElement::AppendTextOrBr(value, *new_fragment);
+  }
+  if (new_fragment) {
+    fragment_ = new_fragment;
+  }
+}
+
+void ReplacementFragment::UpdateTrivialReplacementText() {
+  if (!FirstChild() || FirstChild() != LastChild() ||
+      !FirstChild()->IsTextNode()) {
+    return;
+  }
+  trivial_text_ = To<Text>(FirstChild())->data();
 }
 
 bool ReplacementFragment::IsEmpty() const {
@@ -2130,12 +2187,12 @@ void ReplaceSelectionCommand::UpdateNodesInserted(Node* node) {
 bool ReplaceSelectionCommand::PerformTrivialReplace(
     const ReplacementFragment& fragment,
     EditingState* editing_state) {
+  // Save the text to set event data for input events.
+  input_event_data_ = fragment.TrivialReplacementText();
+
   if (!fragment.FirstChild() || fragment.FirstChild() != fragment.LastChild() ||
       !fragment.FirstChild()->IsTextNode())
     return false;
-
-  // Save the text to set event data for input events.
-  input_event_data_ = To<Text>(fragment.FirstChild())->data();
 
   // FIXME: Would be nice to handle smart replace in the fast path.
   if (smart_replace_ || fragment.HasInterchangeNewlineAtStart() ||
