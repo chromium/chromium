@@ -429,6 +429,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.CertificateStore.LevelDB.InitStatus.{Retry}"
+    units="code" expires_after="2026-02-10">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the initialization status returned after initializing {Retry} a
+    LevelDB database instance used by the managed client certificates store.
+  </summary>
+  <token key="Retry">
+    <variant name="NoRetry" summary="without retry"/>
+    <variant name="WithRetry" summary="with retry"/>
+  </token>
+</histogram>
+
 <histogram
     name="Enterprise.ClientCertificate.{Level}.CreateCertificate.Success.HasCert"
     enum="BooleanSuccess" expires_after="2026-02-10">

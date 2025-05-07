@@ -27,6 +27,10 @@ std::string_view SuccessToString(bool success) {
   return success ? "Success" : "Failure";
 }
 
+std::string_view WithRetryToString(bool with_retry) {
+  return with_retry ? "WithRetry" : "NoRetry";
+}
+
 }  // namespace
 
 void LogProvisioningError(const std::string& logging_context,
@@ -106,6 +110,16 @@ void LogPrivateKeyCreationSource(const std::string& logging_context,
       base::StringPrintf(kCreatePrivateKeySourceHistogram,
                          logging_context.c_str()),
       source);
+}
+
+void LogLevelDBInitStatus(leveldb_proto::Enums::InitStatus status,
+                          bool with_retry) {
+  static constexpr char kLevelDBInitHistogramFormat[] =
+      "Enterprise.CertificateStore.LevelDB.InitStatus.%s";
+  base::UmaHistogramSparse(
+      base::StringPrintf(kLevelDBInitHistogramFormat,
+                         WithRetryToString(with_retry).data()),
+      status);
 }
 
 }  // namespace client_certificates

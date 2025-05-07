@@ -11,6 +11,7 @@
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/store_error.h"
 #include "components/enterprise/client_certificates/core/upload_client_error.h"
+#include "components/leveldb_proto/public/proto_database.h"
 
 namespace client_certificates {
 
@@ -53,6 +54,9 @@ void LogProvisioningContext(const std::string& logging_context,
 
 void LogPrivateKeyCreationSource(const std::string& logging_context,
                                  PrivateKeySource source);
+
+void LogLevelDBInitStatus(leveldb_proto::Enums::InitStatus status,
+                          bool with_retry);
 
 }  // namespace client_certificates
 
