@@ -58,6 +58,10 @@ class BrowserUserData : public base::SupportsUserData::Data {
     return &kId;
   }
 
+ protected:
+  BrowserUserData() {}
+  explicit BrowserUserData(Browser* browser) {}
+
  private:
   // Default factory for T that invoke T's constructor. Can be overloaded
   // by sub-class if they want to create a sub-class of T instead.
