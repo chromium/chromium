@@ -15,6 +15,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
 namespace customize_chrome {
@@ -53,6 +54,21 @@ void MaybeDisableExtensionOverridingNtp(
   extensions::ExtensionRegistrar::Get(browser_context)
       ->DisableExtension(extension->id(),
                          {extensions::disable_reason::DISABLE_USER_ACTION});
+}
+
+bool IsExtensionNtp(const GURL& url, Profile* profile) {
+  if (!url.SchemeIs(extensions::kExtensionScheme)) {
+    return false;
+  }
+
+  const extensions::Extension* extension_managing_ntp =
+      extensions::GetExtensionOverridingNewTabPage(profile);
+
+  if (!extension_managing_ntp) {
+    return false;
+  }
+
+  return extension_managing_ntp->id() == url.host();
 }
 
 }  // namespace customize_chrome

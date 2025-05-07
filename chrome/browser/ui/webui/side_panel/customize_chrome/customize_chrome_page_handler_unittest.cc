@@ -169,7 +169,9 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
   MOCK_METHOD(void,
               ScrollToSection,
               (side_panel::mojom::CustomizeChromeSection));
-  MOCK_METHOD(void, AttachedTabStateUpdated, (bool));
+  MOCK_METHOD(void,
+              AttachedTabStateUpdated,
+              (side_panel::mojom::NewTabPageType));
   MOCK_METHOD(void, NtpManagedByNameUpdated, (const std::string&));
   MOCK_METHOD(void, SetFooterSettings, (bool visible));
 
@@ -810,18 +812,38 @@ TEST_F(CustomizeChromePageHandlerTest, ScrollToSection) {
   EXPECT_EQ(side_panel::mojom::CustomizeChromeSection::kAppearance, section);
 }
 
+// Ensures that url's are correctly mapped to their NewTabPage type.
+// Does not include test for `side_panel::mojom::NewTabPageType::kExtension`
+// See `CustomizeChromeInteractiveTest.FooterSectionForExtensionNtp` for
+// confirming Customize Chrome shows the footer section for Extension NTPs.
 TEST_F(CustomizeChromePageHandlerTest, AttachedTabStateUpdated) {
-  bool kIsSourceTabFirstPartyNtpValue = false;
+  std::vector<std::pair<side_panel::mojom::NewTabPageType, GURL>>
+      ntp_types_and_urls = {
+          {side_panel::mojom::NewTabPageType::kNone,
+           GURL("https://www.google.com/")},
+          {side_panel::mojom::NewTabPageType::kFirstPartyWebUI,
+           GURL(chrome::kChromeUINewTabPageURL)},
+          {side_panel::mojom::NewTabPageType::kThirdPartyWebUI,
+           GURL(chrome::kChromeUINewTabPageThirdPartyURL)},
+          {side_panel::mojom::NewTabPageType::kIncognito,
+           GURL(chrome::kChromeUINewTabURL)},
+          {side_panel::mojom::NewTabPageType::kGuestMode,
+           GURL(chrome::kChromeUINewTabURL)}};
 
-  bool isSourceTabFirstPartyNtp;
-  EXPECT_CALL(mock_page_, AttachedTabStateUpdated)
-      .Times(1)
-      .WillOnce(SaveArg<0>(&isSourceTabFirstPartyNtp));
+  for (const auto& ntp_type_and_url : ntp_types_and_urls) {
+    if (ntp_type_and_url.first ==
+        side_panel::mojom::NewTabPageType::kGuestMode) {
+      profile().SetGuestSession(true);
+    }
 
-  handler().AttachedTabStateUpdated(kIsSourceTabFirstPartyNtpValue);
-  mock_page_.FlushForTesting();
-
-  EXPECT_EQ(kIsSourceTabFirstPartyNtpValue, isSourceTabFirstPartyNtp);
+    side_panel::mojom::NewTabPageType source_tab;
+    EXPECT_CALL(mock_page_, AttachedTabStateUpdated)
+        .Times(1)
+        .WillOnce(SaveArg<0>(&source_tab));
+    handler().AttachedTabStateUpdated(ntp_type_and_url.second);
+    mock_page_.FlushForTesting();
+    EXPECT_EQ(ntp_type_and_url.first, source_tab);
+  }
 }
 
 TEST_F(CustomizeChromePageHandlerTest, ScrollToUnspecifiedSection) {
