@@ -16,7 +16,8 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="safety_hub_description"
         android:summary="@string/safety_hub_description"
-        app:allowDividerAbove="false" />
+        app:allowDividerAbove="false"
+        android:screenReaderFocusable="true" />
 
     <PreferenceCategory
         android:key="safety_modules"
