@@ -1187,7 +1187,7 @@ TEST_P(CrasAudioHandlerTest, InitializeWithHDMIOutput) {
   SetupAudioNodesAndExpectActiveNodes(
       /*initial_nodes=*/{kInternalSpeaker, kHDMIOutput},
       /*expected_active_input_node=*/nullptr,
-      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_active_output_node=*/kHDMIOutput,
       /*expected_has_alternative_input=*/std::nullopt,
       /*expected_has_alternative_output=*/true);
 }
@@ -1219,21 +1219,16 @@ TEST_P(CrasAudioHandlerTest, ConnectAndDisconnectHDMIOutput) {
   cras_audio_handler_->GetAudioDevices(&audio_devices);
   EXPECT_EQ(2u, audio_devices.size());
 
-  // Verify the active output device is not switched to hdmi output, and
-  // ActiveOutputChanged event is not fired.
-  EXPECT_EQ(0, test_observer_->active_output_node_changed_count());
-  ExpectActiveDevice(/*is_input=*/false,
-                     /*expected_active_device=*/kInternalSpeaker,
+  // Verify the active output device is switched to hdmi output, and
+  // ActiveOutputChanged event is fired.
+  EXPECT_EQ(1, test_observer_->active_output_node_changed_count());
+  ExpectActiveDevice(/*is_input=*/false, /*expected_active_device=*/kHDMIOutput,
                      /*has_alternative_device=*/true);
   system_monitor_observer_.reset_count();
 
   // Disconnect hdmi headset.
   audio_nodes.clear();
-  {
-    AudioNode active_internal_speaker = GenerateAudioNode(kInternalSpeaker);
-    active_internal_speaker.active = true;
-    audio_nodes.push_back(active_internal_speaker);
-  }
+  audio_nodes.push_back(GenerateAudioNode(kInternalSpeaker));
   ChangeAudioNodes(audio_nodes);
 
   // Verify the AudioNodesChanged event is fired and one audio device is
@@ -1243,9 +1238,9 @@ TEST_P(CrasAudioHandlerTest, ConnectAndDisconnectHDMIOutput) {
   cras_audio_handler_->GetAudioDevices(&audio_devices);
   EXPECT_EQ(1u, audio_devices.size());
 
-  // Verify the active output device is still the internal speaker, and
-  // ActiveOutputChanged event is not fired.
-  EXPECT_EQ(0, test_observer_->active_output_node_changed_count());
+  // Verify the active output device is switched to internal speaker, and
+  // ActiveOutputChanged event is fired.
+  EXPECT_EQ(2, test_observer_->active_output_node_changed_count());
   ExpectActiveDevice(/*is_input=*/false,
                      /*expected_active_device=*/kInternalSpeaker,
                      /*has_alternative_device=*/false);
@@ -1344,11 +1339,10 @@ TEST_P(CrasAudioHandlerTest, HandleHeadphoneAndHDMIOutput) {
   cras_audio_handler_->GetAudioDevices(&audio_devices);
   EXPECT_EQ(2u, audio_devices.size());
 
-  // Verify the active output device is switched to internal speaker, and
+  // Verify the active output device is switched to HDMI output, and
   // ActiveOutputChanged event is fired.
   EXPECT_EQ(1, test_observer_->active_output_node_changed_count());
-  ExpectActiveDevice(/*is_input=*/false,
-                     /*expected_active_device=*/kInternalSpeaker,
+  ExpectActiveDevice(/*is_input=*/false, /*expected_active_device=*/kHDMIOutput,
                      /*has_alternative_device=*/true);
 }
 
@@ -5029,7 +5023,7 @@ TEST_P(CrasAudioHandlerTest, HotPlug35mmMic_AudioSelectionImprovementFlagOn) {
 // priority
 // output devices already plugged and user has manually selected an active
 // output.
-TEST_P(CrasAudioHandlerTest, HotPlugHDMINotChangeActiveOutput) {
+TEST_P(CrasAudioHandlerTest, HotPlugHDMIChangeActiveOutput) {
   AudioNodeList audio_nodes;
   AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
   audio_nodes.push_back(internal_speaker);
@@ -5069,10 +5063,9 @@ TEST_P(CrasAudioHandlerTest, HotPlugHDMINotChangeActiveOutput) {
   audio_nodes.push_back(hdmi);
   ChangeAudioNodes(audio_nodes);
 
-  // The active output does not change to hdmi as it has lower built-in priority
-  // than the internal speaker.
-  EXPECT_EQ(kInternalSpeakerId,
-            cras_audio_handler_->GetPrimaryActiveOutputNode());
+  // The active output change to hdmi as it has higher built-in priority than
+  // the internal speaker.
+  EXPECT_EQ(kHDMIOutputId, cras_audio_handler_->GetPrimaryActiveOutputNode());
 }
 
 TEST_P(CrasAudioHandlerTest,
@@ -5152,18 +5145,24 @@ TEST_P(CrasAudioHandlerTest, ActiveNodeLostAfterResume) {
 // if it has a higher priority than the current active node.
 // crbug.com/443014.
 TEST_P(CrasAudioHandlerTest, HDMIRemainInactiveAfterSuspendResume) {
-  // Verify the internal speaker is selected as the active output since it has a
-  // higher priority.
+  // Verify the hdmi is selected as the active output since it has a higher
+  // priority.
   SetupAudioNodesAndExpectActiveNodes(
       /*initial_nodes=*/{kInternalSpeaker, kHDMIOutput},
       /*expected_active_input_node=*/nullptr,
-      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_active_output_node=*/kHDMIOutput,
       /*expected_has_alternative_input=*/std::nullopt,
       /*expected_has_alternative_output=*/true);
 
+  // Manually set the active output to internal speaker.
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  cras_audio_handler_->SwitchToDevice(AudioDevice(internal_speaker), true,
+                                      DeviceActivateType::kActivateByUser);
+  EXPECT_EQ(internal_speaker.id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+
   // Simulate the suspend and resume of the device during mirror mode. The HDMI
   // node will be lost first.
-  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
   AudioNodeList audio_nodes;
   internal_speaker.active = true;
   audio_nodes.push_back(internal_speaker);
@@ -5231,18 +5230,14 @@ TEST_P(CrasAudioHandlerTest, ActiveNodeLostDuringLoginSession) {
 
 // This test HDMI output rediscovering case in crbug.com/503667.
 TEST_P(CrasAudioHandlerTest, HDMIOutputRediscover) {
-  // Prepare and switch to HDMI, and verify audio output is not muted.
+  // Verify the HDMI device has been selected as the active output, and audio
+  // output is not muted.
   SetupAudioNodesAndExpectActiveNodes(
       /*initial_nodes=*/{kInternalSpeaker, kHDMIOutput},
       /*expected_active_input_node=*/nullptr,
-      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_active_output_node=*/kHDMIOutput,
       /*expected_has_alternative_input=*/std::nullopt,
       /*expected_has_alternative_output=*/true);
-
-  // Manually set the active output to HDMI.
-  AudioNode hdmi_output = GenerateAudioNode(kHDMIOutput);
-  cras_audio_handler_->SwitchToDevice(AudioDevice(hdmi_output), true,
-                                      DeviceActivateType::kActivateByUser);
 
   EXPECT_FALSE(cras_audio_handler_->IsOutputMuted());
 
@@ -5284,18 +5279,14 @@ TEST_P(CrasAudioHandlerTest, HDMIOutputRediscover) {
 // This tests the case of output unmuting event is not notified after the hdmi
 // output re-discover grace period ends.
 TEST_P(CrasAudioHandlerTest, HDMIOutputUnplugDuringSuspension) {
-  // Prepare and switch to HDMI, and verify audio output is not muted.
+  // Verify the HDMI device has been selected as the active output, and audio
+  // output is not muted.
   SetupAudioNodesAndExpectActiveNodes(
       /*initial_nodes=*/{kInternalSpeaker, kHDMIOutput},
       /*expected_active_input_node=*/nullptr,
-      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_active_output_node=*/kHDMIOutput,
       /*expected_has_alternative_input=*/std::nullopt,
       /*expected_has_alternative_output=*/true);
-
-  // Manually set the active output to HDMI.
-  AudioNode hdmi_output = GenerateAudioNode(kHDMIOutput);
-  cras_audio_handler_->SwitchToDevice(AudioDevice(hdmi_output), true,
-                                      DeviceActivateType::kActivateByUser);
 
   EXPECT_FALSE(cras_audio_handler_->IsOutputMuted());
 
@@ -6979,9 +6970,9 @@ TEST_P(CrasAudioHandlerTest,
 TEST_P(CrasAudioHandlerTest,
        AlternativeInputDeviceWithOneInternalAndOneExternalOutputDevice) {
   SetupAudioNodesAndExpectActiveNodes(
-      /*initial_nodes=*/{kInternalSpeaker, kUSBHeadphone1},
+      /*initial_nodes=*/{kInternalSpeaker, kHDMIOutput},
       /*expected_active_input_node=*/nullptr,
-      /*expected_active_output_node=*/kUSBHeadphone1,
+      /*expected_active_output_node=*/kHDMIOutput,
       /*expected_has_alternative_input=*/std::nullopt,
       /*expected_has_alternative_output=*/true);
 }

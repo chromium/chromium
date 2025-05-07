@@ -32,8 +32,8 @@ class Type:
 class T:
     Headphone = Type("Headphone", 4, False)
     USB = Type("USB", 3, False)
-    Internal = Type("Internal", 2, True)
-    HDMI = Type("HDMI", 1, True)
+    HDMI = Type("HDMI", 2, True)
+    Internal = Type("Internal", 1, True)
 
 
 @dataclasses.dataclass(frozen=True)
