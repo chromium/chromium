@@ -58,7 +58,8 @@ bool LCPCriticalPathPredictor::HasAnyHintData() const {
 }
 
 void LCPCriticalPathPredictor::set_lcp_element_locators(
-    const std::vector<std::string>& lcp_element_locator_strings) {
+    const std::vector<std::string>& lcp_element_locator_strings,
+    const std::vector<std::string>& lcp_element_locator_all_strings) {
   // Clear current set of locators before receiving replacements.
   lcp_element_locators_.clear();
   lcp_element_locator_strings_.clear();
@@ -80,6 +81,21 @@ void LCPCriticalPathPredictor::set_lcp_element_locators(
     }
   }
   CHECK_EQ(lcp_element_locators_.size(), lcp_element_locator_strings_.size());
+
+  lcp_element_locator_all_strings_.clear();
+  lcp_element_locator_all_strings_.reserve(
+      base::checked_cast<wtf_size_t>(lcp_element_locator_all_strings.size()));
+  for (const std::string& serialized_locator :
+       lcp_element_locator_all_strings) {
+    bool result = ElementLocator().ParseFromString(serialized_locator);
+    if (!result) {
+      // This can happen when the host LCPP database is corrupted or we
+      // updated the ElementLocator schema in an incompatible way.
+      LOG(INFO) << "Ignoring an invalid lcp_element_locator hint.";
+    } else {
+      lcp_element_locator_all_strings_.push_back(std::move(serialized_locator));
+    }
+  }
 }
 
 void LCPCriticalPathPredictor::set_lcp_influencer_scripts(
@@ -183,7 +199,7 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     // set_lcp_element_locators(lcp_element_locator_strings).
     // See PredictLcpElementLocators() for the contents detail.
     const wtf_size_t predicted_lcp_index =
-        lcp_element_locator_strings_.Find(lcp_element_locator_string);
+        lcp_element_locator_all_strings_.Find(lcp_element_locator_string);
     if (predicted_lcp_index != kNotFound) {
       MayRunPredictedCallbacks(&lcp_element);
     }
@@ -363,7 +379,7 @@ void LCPCriticalPathPredictor::OnOutermostMainFrameDocumentLoad() {
   is_outermost_main_frame_document_loaded_ = true;
   // Call callbacks as fallback because we can not detect
   // which is lcp in the lcps before onload.
-  if (has_lcp_occurred_ || lcp_element_locators_.empty()) {
+  if (has_lcp_occurred_ || lcp_element_locator_all_strings_.empty()) {
     MayRunPredictedCallbacks(nullptr);
   }
 }

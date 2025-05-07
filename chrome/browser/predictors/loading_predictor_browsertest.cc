@@ -1339,7 +1339,7 @@ class LCPPTimingPredictorBrowserTest : public LCPPTimingPredictorTestBase {
     NavigateAndWaitForLcpElement(kUrl,
                                  /*expected_events=*/"LCP@IMG, LCP@DIV, Onload",
                                  /*expected_lcp_count=*/2u,
-                                 /*expected_lcp_index=*/0u,  // =IMG
+                                 /*expected_lcp_index=*/1u,  // =DIV
                                  from_here);
   }
 
@@ -1358,6 +1358,40 @@ class LCPPTimingPredictorBrowserTest : public LCPPTimingPredictorTestBase {
 IN_PROC_BROWSER_TEST_F(LCPPTimingPredictorBrowserTest, MAYBE_Base) {
   TestPrediction();
 }
+
+class LCPPTimingPredictorBrowserFlagTest
+    : public LCPPTimingPredictorBrowserTest,
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  LCPPTimingPredictorBrowserFlagTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{blink::features::kLCPCriticalPathPredictor,
+          {{blink::features::kLCPCriticalPathPredictorRecordedLcpElementTypes
+                .name,
+            GetParam()}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// kLCPCriticalPathPredictorRecordedLcpElementTypes should not affect.
+// TODO(crbug.com/413192370): Flaky on win-rel.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WithKCriticalPathFlag DISABLED_WithKCriticalPathFlag
+#else
+#define MAYBE_WithKCriticalPathFlag WithKCriticalPathFlag
+#endif
+IN_PROC_BROWSER_TEST_P(LCPPTimingPredictorBrowserFlagTest,
+                       MAYBE_WithKCriticalPathFlag) {
+  TestPrediction();
+}
+
+INSTANTIATE_TEST_SUITE_P(Flags,
+                         LCPPTimingPredictorBrowserFlagTest,
+                         ::testing::Values("all", "image_only"));
 
 class SuppressesLoadingPredictorOnSlowNetworkBrowserTest
     : public LoadingPredictorBrowserTest {

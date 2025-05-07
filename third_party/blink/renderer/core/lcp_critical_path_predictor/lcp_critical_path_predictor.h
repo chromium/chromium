@@ -43,7 +43,8 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   bool HasAnyHintData() const;
 
   void set_lcp_element_locators(
-      const std::vector<std::string>& lcp_element_locator_strings);
+      const std::vector<std::string>& lcp_element_locator_strings,
+      const std::vector<std::string>& lcp_element_locator_all_strings);
 
   const Vector<ElementLocator>& lcp_element_locators() {
     return lcp_element_locators_;
@@ -102,6 +103,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   Vector<ElementLocator> lcp_element_locators_;
   Vector<std::string> lcp_element_locator_strings_;
+  Vector<std::string> lcp_element_locator_all_strings_;
   HashSet<KURL> lcp_influencer_scripts_;
   Vector<KURL> fetched_fonts_;
   Vector<url::Origin> preconnected_origins_;
