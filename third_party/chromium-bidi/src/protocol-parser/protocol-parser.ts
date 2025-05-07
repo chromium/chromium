@@ -472,6 +472,15 @@ export namespace Bluetooth {
         .SimulateGattConnectionResponseParametersSchema,
     ) as Protocol.Bluetooth.SimulateGattConnectionResponseParameters;
   }
+  export function parseSimulateGattDisconnectionParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulateGattDisconnectionParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth
+        .SimulateGattDisconnectionParametersSchema,
+    ) as Protocol.Bluetooth.SimulateGattDisconnectionParameters;
+  }
   export function parseSimulatePreconnectedPeripheralParams(
     params: unknown,
   ): Protocol.Bluetooth.SimulatePreconnectedPeripheralParameters {
@@ -480,6 +489,14 @@ export namespace Bluetooth {
       WebDriverBidiBluetooth.Bluetooth
         .SimulatePreconnectedPeripheralParametersSchema,
     ) as Protocol.Bluetooth.SimulatePreconnectedPeripheralParameters;
+  }
+  export function parseSimulateServiceParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulateServiceParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth.SimulateServiceParametersSchema,
+    ) as Protocol.Bluetooth.SimulateServiceParameters;
   }
 }
 

@@ -21,6 +21,22 @@ from test_helpers import (execute_command, send_JSON_command, subscribe,
 from . import disable_simulation, setup_granted_device
 
 
+async def is_gatt_connected(websocket, context_id: str) -> bool:
+    response = await execute_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': 'device.gatt.connected',
+                'awaitPromise': True,
+                'target': {
+                    'context': context_id,
+                },
+                'userActivation': True
+            }
+        })
+    return response['result']['value']
+
+
 @pytest_asyncio.fixture(autouse=True)
 async def teardown(websocket, context_id):
     yield
@@ -52,7 +68,6 @@ async def test_bluetooth_simulateGattConnectionResponse(
                 'userActivation': True
             }
         })
-
     event = await wait_for_event(websocket,
                                  'bluetooth.gattConnectionAttempted')
     await execute_command(
@@ -60,8 +75,19 @@ async def test_bluetooth_simulateGattConnectionResponse(
             'method': 'bluetooth.simulateGattConnectionResponse',
             'params': {
                 'context': context_id,
-                'accept': True,
                 'address': event['params']['address'],
                 'code': code
             }
         })
+    assert await is_gatt_connected(
+        websocket, context_id) == (True if code == 0x0 else False)
+
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateGattDisconnection',
+            'params': {
+                'context': context_id,
+                'address': event['params']['address'],
+            }
+        })
+    assert not await is_gatt_connected(websocket, context_id)

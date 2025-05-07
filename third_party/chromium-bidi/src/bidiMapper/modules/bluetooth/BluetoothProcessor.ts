@@ -24,9 +24,29 @@ import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
+/** Represents a Bluetooth service. */
+class BluetoothService {
+  readonly id: string;
+
+  constructor(id: string) {
+    this.id = id;
+  }
+}
+
+/** Represents a Bluetooth device. */
+class BluetoothDevice {
+  readonly address: string;
+  readonly services = new Map<string, BluetoothService>();
+
+  constructor(address: string) {
+    this.address = address;
+  }
+}
+
 export class BluetoothProcessor {
   #eventManager: EventManager;
   #browsingContextStorage: BrowsingContextStorage;
+  #bluetoothDevices: Map<string, BluetoothDevice>;
 
   constructor(
     eventManager: EventManager,
@@ -34,6 +54,7 @@ export class BluetoothProcessor {
   ) {
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#bluetoothDevices = new Map();
   }
 
   async simulateAdapter(
@@ -54,6 +75,7 @@ export class BluetoothProcessor {
     await context.cdpTarget.browserCdpClient.sendCommand(
       'BluetoothEmulation.disable',
     );
+    this.#bluetoothDevices.clear();
     await context.cdpTarget.browserCdpClient.sendCommand(
       'BluetoothEmulation.enable',
       {
@@ -71,12 +93,18 @@ export class BluetoothProcessor {
     await context.cdpTarget.browserCdpClient.sendCommand(
       'BluetoothEmulation.disable',
     );
+    this.#bluetoothDevices.clear();
     return {};
   }
 
   async simulatePreconnectedPeripheral(
     params: Bluetooth.SimulatePreconnectedPeripheralParameters,
   ): Promise<EmptyResult> {
+    if (this.#bluetoothDevices.has(params.address)) {
+      throw new InvalidArgumentException(
+        `Bluetooth device with address ${params.address} already exists`,
+      );
+    }
     const context = this.#browsingContextStorage.getContext(params.context);
     await context.cdpTarget.browserCdpClient.sendCommand(
       'BluetoothEmulation.simulatePreconnectedPeripheral',
@@ -87,6 +115,11 @@ export class BluetoothProcessor {
         manufacturerData: params.manufacturerData,
       },
     );
+    this.#bluetoothDevices.set(
+      params.address,
+      new BluetoothDevice(params.address),
+    );
+
     return {};
   }
 
@@ -118,6 +151,72 @@ export class BluetoothProcessor {
     return {};
   }
 
+  async simulateGattDisconnection(
+    params: Bluetooth.SimulateGattDisconnectionParameters,
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.simulateGATTDisconnection',
+      {
+        address: params.address,
+      },
+    );
+    return {};
+  }
+
+  async simulateService(
+    params: Bluetooth.SimulateServiceParameters,
+  ): Promise<EmptyResult> {
+    if (!this.#bluetoothDevices.has(params.address)) {
+      throw new InvalidArgumentException(
+        `Bluetooth device with address ${params.address} does not exist`,
+      );
+    }
+    const device = this.#bluetoothDevices.get(params.address);
+    const context = this.#browsingContextStorage.getContext(params.context);
+    switch (params.type) {
+      case 'add': {
+        if (device!.services.has(params.uuid)) {
+          throw new InvalidArgumentException(
+            `Service with UUID ${params.uuid} already exists`,
+          );
+        }
+        const response = await context.cdpTarget.browserCdpClient.sendCommand(
+          'BluetoothEmulation.addService',
+          {
+            address: params.address,
+            serviceUuid: params.uuid,
+          },
+        );
+        device!.services.set(
+          params.uuid,
+          new BluetoothService(response.serviceId),
+        );
+        return {};
+      }
+      case 'remove': {
+        if (!device!.services.has(params.uuid)) {
+          throw new InvalidArgumentException(
+            `Service with UUID ${params.uuid} does not exist`,
+          );
+        }
+        const service = device!.services.get(params.uuid);
+        await context.cdpTarget.browserCdpClient.sendCommand(
+          'BluetoothEmulation.removeService',
+          {
+            serviceId: service!.id,
+          },
+        );
+        device!.services.delete(params.uuid);
+        return {};
+      }
+      default:
+        throw new InvalidArgumentException(
+          `Parameter "type" of ${params.type} is not supported`,
+        );
+    }
+  }
+
   onCdpTargetCreated(cdpTarget: CdpTarget) {
     cdpTarget.cdpClient.on('DeviceAccess.deviceRequestPrompted', (event) => {
       this.#eventManager.registerEvent(
@@ -135,21 +234,40 @@ export class BluetoothProcessor {
     });
     cdpTarget.browserCdpClient.on(
       'BluetoothEmulation.gattOperationReceived',
-      (event) => {
-        if (event.type !== 'connection') {
-          return;
+      async (event) => {
+        switch (event.type) {
+          case 'connection':
+            this.#eventManager.registerEvent(
+              {
+                type: 'event',
+                method: 'bluetooth.gattConnectionAttempted',
+                params: {
+                  context: cdpTarget.id,
+                  address: event.address,
+                },
+              },
+              cdpTarget.id,
+            );
+            return;
+          case 'discovery':
+            // Chromium Web Bluetooth simulation generates this GATT discovery event when
+            // a page attempts to get services for a given Bluetooth device for the first time.
+            // This 'get services' operation is put on hold until a GATT discovery response
+            // is sent to the simulation.
+            // Note: Web Bluetooth automation (see https://webbluetoothcg.github.io/web-bluetooth/#automated-testing)
+            // does not support simulating a GATT discovery response. This is because simulated services, characteristics,
+            // or descriptors are immediately visible to the simulation, meaning it doesn't have a distinct
+            // DISCOVERY state. Therefore, this code simulates a successful GATT discovery
+            // response upon receiving this event.
+            await cdpTarget.browserCdpClient.sendCommand(
+              'BluetoothEmulation.simulateGATTOperationResponse',
+              {
+                address: event.address,
+                type: 'discovery',
+                code: 0x0,
+              },
+            );
         }
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: 'bluetooth.gattConnectionAttempted',
-            params: {
-              context: cdpTarget.id,
-              address: event.address,
-            },
-          },
-          cdpTarget.id,
-        );
       },
     );
   }

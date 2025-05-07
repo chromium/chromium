@@ -197,3 +197,40 @@ async def test_bluetooth_disable_simulation_in_another_context(
                     ['12345678-1234-5678-9abc-def123456789', ],
             }
         })
+
+
+@pytest.mark.asyncio
+async def test_bluetooth_simulate_same_address_device_twice(
+        websocket, context_id):
+    device_address = await setup_device(websocket, context_id)
+    with pytest.raises(
+            Exception,
+            match=str({
+                'error': 'invalid argument',
+                'message': f'Bluetooth device with address {device_address} already exists'
+            })):
+        await execute_command(
+            websocket, {
+                'method': 'bluetooth.simulatePreconnectedPeripheral',
+                'params': {
+                    'context': context_id,
+                    'address': device_address,
+                    'name': FAKE_DEVICE_NAME,
+                    'manufacturerData': [],
+                    'knownServiceUuids': [],
+                }
+            })
+
+
+@pytest.mark.asyncio
+async def test_bluetooth_simulate_device_after_reenable_simulation(
+        websocket, context_id):
+    await setup_device(websocket, context_id)
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.disableSimulation',
+            'params': {
+                'context': context_id,
+            }
+        })
+    await setup_device(websocket, context_id)

@@ -196,8 +196,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           ),
         );
       case 'bluetooth.simulateGattDisconnection':
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#bluetoothProcessor.simulateGattDisconnection(
+          this.#parser.parseSimulateGattDisconnectionParameters(command.params),
         );
       case 'bluetooth.simulatePreconnectedPeripheral':
         return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(
@@ -206,8 +206,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           ),
         );
       case 'bluetooth.simulateService':
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#bluetoothProcessor.simulateService(
+          this.#parser.parseSimulateServiceParameters(command.params),
         );
       // keep-sorted end
 

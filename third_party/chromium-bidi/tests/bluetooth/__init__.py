@@ -14,14 +14,18 @@
 #  limitations under the License.
 """Shared utilities and constants for Bluetooth BiDi tests."""
 
+import json
+
 from test_helpers import (execute_command, goto_url, send_JSON_command,
                           subscribe, wait_for_event)
 
 FAKE_DEVICE_ADDRESS = '09:09:09:09:09:09'
 FAKE_DEVICE_NAME = 'SomeDevice'
+HEART_RATE_SERVICE_UUID = '0000180d-0000-1000-8000-00805f9b34fb'
+BATTERY_SERVICE_UUID = '0000180f-0000-1000-8000-00805f9b34fb'
 
 
-async def setup_device(websocket, context_id: str) -> None:
+async def setup_device(websocket, context_id: str) -> str:
     """Simulates a powered-on Bluetooth adapter and a preconnected peripheral."""
     await execute_command(
         websocket, {
@@ -46,9 +50,12 @@ async def setup_device(websocket, context_id: str) -> None:
                     ['12345678-1234-5678-9abc-def123456789', ],
             }
         })
+    return FAKE_DEVICE_ADDRESS
 
 
-async def request_device(websocket, context_id: str) -> None:
+async def request_device(websocket,
+                         context_id: str,
+                         optional_services: list[str] = []) -> None:
     """Sends the JavaScript `navigator.bluetooth.requestDevice()` command.
 
     This function should be called after the test has navigated to the target page.
@@ -59,9 +66,12 @@ async def request_device(websocket, context_id: str) -> None:
         websocket, {
             'method': 'script.evaluate',
             'params': {
-                'expression': '''
+                'expression': f'''
                     let device;
-                    const options = {acceptAllDevices: true};
+                    const options = {{
+                        acceptAllDevices: true,
+                        optionalServices: {json.dumps(optional_services)},
+                    }};
                     navigator.bluetooth.requestDevice(options).then(d => device = d)
                 ''',
                 'awaitPromise': True,
@@ -73,7 +83,10 @@ async def request_device(websocket, context_id: str) -> None:
         })
 
 
-async def setup_granted_device(websocket, context_id: str, html) -> None:
+async def setup_granted_device(websocket,
+                               context_id: str,
+                               html,
+                               optional_services: list[str] = []) -> str:
     """Navigates, sets up simulation, and grants device access to the page.
 
     Combines navigation, device simulation setup, and device request steps.
@@ -81,9 +94,9 @@ async def setup_granted_device(websocket, context_id: str, html) -> None:
     JavaScript variable after this function completes.
     """
     await goto_url(websocket, context_id, html())
-    await setup_device(websocket, context_id)
+    device_address = await setup_device(websocket, context_id)
     await subscribe(websocket, ['bluetooth.requestDevicePromptUpdated'])
-    await request_device(websocket, context_id)
+    await request_device(websocket, context_id, optional_services)
     event = await wait_for_event(websocket,
                                  'bluetooth.requestDevicePromptUpdated')
     await execute_command(
@@ -94,6 +107,35 @@ async def setup_granted_device(websocket, context_id: str, html) -> None:
                 'accept': True,
                 'prompt': event['params']['prompt'],
                 'device': event['params']['devices'][0]['id']
+            }
+        })
+    return device_address
+
+
+async def create_gatt_connection(websocket, context_id: str) -> None:
+    await subscribe(websocket, ['bluetooth.gattConnectionAttempted'])
+    await send_JSON_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': 'device.gatt.connect()',
+                'awaitPromise': True,
+                'target': {
+                    'context': context_id,
+                },
+                'userActivation': True
+            }
+        })
+
+    event = await wait_for_event(websocket,
+                                 'bluetooth.gattConnectionAttempted')
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateGattConnectionResponse',
+            'params': {
+                'context': context_id,
+                'address': event['params']['address'],
+                'code': 0x0
             }
         })
 

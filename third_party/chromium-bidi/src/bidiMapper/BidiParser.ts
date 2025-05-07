@@ -48,9 +48,15 @@ export interface BidiCommandParameterParser {
   parseSimulateGattConnectionResponseParameters(
     params: unknown,
   ): Bluetooth.SimulateGattConnectionResponseParameters;
+  parseSimulateGattDisconnectionParameters(
+    params: unknown,
+  ): Bluetooth.SimulateGattDisconnectionParameters;
   parseSimulatePreconnectedPeripheralParameters(
     params: unknown,
   ): Bluetooth.SimulatePreconnectedPeripheralParameters;
+  parseSimulateServiceParameters(
+    params: unknown,
+  ): Bluetooth.SimulateServiceParameters;
   // keep-sorted end
 
   // Browser module
