@@ -17,6 +17,7 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/feature_utils.h"
@@ -73,6 +74,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
@@ -171,6 +173,7 @@
 #import "ios/chrome/browser/safe_browsing/ui_bundled/safe_browsing_coordinator.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_coordinator_delegate.h"
@@ -189,6 +192,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/add_contacts_commands.h"
@@ -196,6 +200,7 @@
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/collaboration_group_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -329,6 +334,7 @@ enum class ToolbarKind {
     AutofillAddCreditCardCoordinatorDelegate,
     BrowserCoordinatorCommands,
     BubblePresenterDelegate,
+    CollaborationGroupCommands,
     ContextualPanelEntrypointIPHCommands,
     ContextualSheetCommands,
     CountryCodePickerCommands,
@@ -1057,6 +1063,7 @@ enum class ToolbarKind {
     @protocol(AutoDeletionCommands),
     @protocol(AutofillCommands),
     @protocol(BrowserCoordinatorCommands),
+    @protocol(CollaborationGroupCommands),
     @protocol(ContextualPanelEntrypointIPHCommands),
     @protocol(ContextualSheetCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
@@ -4253,6 +4260,26 @@ enum class ToolbarKind {
 - (void)dismissNonModalSignInPromo {
   [self.nonModalSignInPromoCoordinator stop];
   self.nonModalSignInPromoCoordinator = nil;
+}
+
+#pragma mark - CollaborationGroupCommands
+
+- (void)
+    shareOrManageTabGroup:(const TabGroup*)tabGroup
+               entryPoint:
+                   (collaboration::CollaborationServiceShareOrManageEntryPoint)
+                       entryPoint {
+  Browser* browser = self.browser;
+
+  std::unique_ptr<collaboration::IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          browser, self.viewController,
+          TabGroupServiceFactory::GetForProfile(browser->GetProfile()),
+          collaboration::FlowType::kShareOrManage);
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(self.profile);
+  collaborationService->StartShareOrManageFlow(
+      std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }
 
 @end

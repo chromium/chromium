@@ -54,6 +54,10 @@ class CollaborationGroupInfoBarDelegate : public ConfirmInfoBarDelegate {
   // `instant_message_`.
   void ReopenTab();
 
+  // Starts a manage share kit flow for the collaboration group contained in
+  // `instant_message_`.
+  void ManageGroup();
+
   raw_ptr<ProfileIOS> profile_;
   collaboration::messaging::InstantMessage instant_message_;
 };

@@ -16,6 +16,7 @@ source_set("commands") {
     "bring_android_tabs_commands.h",
     "browser_commands.h",
     "browser_coordinator_commands.h",
+    "collaboration_group_commands.h",
     "command_dispatcher.h",
     "command_dispatcher.mm",
     "contextual_panel_entrypoint_commands.h",

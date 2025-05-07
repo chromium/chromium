@@ -113,6 +113,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="DesktopGroupEditorShareOrManageButton"/>
   <int value="20" label="DesktopNotification"/>
   <int value="21" label="DesktopRecentActivity"/>
+  <int value="22" label="iOSMessage"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceShareOrManageEntryPoint) -->

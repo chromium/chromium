@@ -219,6 +219,8 @@ std::string_view CollaborationServiceShareOrManageEntryPointToString(
       return "iOSTabGroupViewShare";
     case CollaborationServiceShareOrManageEntryPoint::kiOSTabGroupViewManage:
       return "iOSTabGroupViewManage";
+    case CollaborationServiceShareOrManageEntryPoint::kiOSMessage:
+      return "iOSMessage";
     case CollaborationServiceShareOrManageEntryPoint::
         kDesktopGroupEditorShareOrManageButton:
       return "DesktopGroupEditorShareOrManageButton";
