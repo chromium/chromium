@@ -67,7 +67,7 @@ PASS m.f is 20
 
 Test throwing exception from setMatrixValue
 PASS m.setMatrixValue("banana") threw exception SyntaxError: Failed to execute 'setMatrixValue' on 'DOMMatrix': Failed to parse 'banana'..
-PASS m.setMatrixValue("translate(10em, 20%)") threw exception SyntaxError: Failed to execute 'setMatrixValue' on 'DOMMatrix': Lengths must be absolute, not relative.
+PASS m.setMatrixValue("translate(10em, 20%)") threw exception SyntaxError: Failed to execute 'setMatrixValue' on 'DOMMatrix': Values must be resolvable at parse time.
 PASS m.setMatrixValue("translate(10px, 20px) scale()") threw exception SyntaxError: Failed to execute 'setMatrixValue' on 'DOMMatrix': Failed to parse 'translate(10px, 20px) scale()'..
 
 
