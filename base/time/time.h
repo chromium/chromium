@@ -69,7 +69,6 @@
 #include <concepts>
 #include <iosfwd>
 #include <limits>
-#include <ostream>
 #include <type_traits>
 
 #include "base/base_export.h"
@@ -103,6 +102,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <string>
+
 #include "base/gtest_prod_util.h"
 #include "base/win/windows_types.h"
 
