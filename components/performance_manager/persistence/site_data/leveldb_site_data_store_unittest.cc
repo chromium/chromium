@@ -14,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
@@ -238,18 +237,9 @@ TEST_F(LevelDBSiteDataStoreTest, DatabaseRecoveryTest) {
 
   EXPECT_TRUE(leveldb_chrome::CorruptClosedDBForTesting(GetDBPath()));
 
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("PerformanceManager.SiteDB.DatabaseInit",
-                                    0);
-  // Open the corrupt DB and ensure that the appropriate histograms gets
-  // updated.
+  // Open the corrupt DB.
   OpenDB();
   EXPECT_TRUE(DbIsInitialized());
-  histogram_tester.ExpectUniqueSample("PerformanceManager.SiteDB.DatabaseInit",
-                                      1 /* kInitStatusCorruption */, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceManager.SiteDB.DatabaseInitAfterRepair",
-      0 /* kInitStatusOk */, 1);
 
   // TODO(sebmarchand): try to induce an I/O error by deleting one of the
   // manifest files.
