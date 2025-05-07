@@ -512,7 +512,13 @@ config("compiler") {
   # Linux-specific compiler flags setup.
   # ------------------------------------
   if (use_icf && (!is_apple || use_lld)) {
-    ldflags += [ "-Wl,--icf=all" ]
+    if (is_fuchsia) {
+      # TODO(crbug.com/415810137): A temporary workaround to avoid crashing
+      # blink on fuchsia.
+      ldflags += [ "-Wl,--icf=safe" ]
+    } else {
+      ldflags += [ "-Wl,--icf=all" ]
+    }
   }
 
   if (is_linux || is_chromeos) {
