@@ -23,7 +23,7 @@ DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile);
 
 void AddAppToAllowlistForTesting(std::string_view app_id);
 void ResetAllowlistForTesting();
-void SetKioskSessionForTesting();
+void SetKioskSessionForTesting(bool value = true);
 
 BASE_DECLARE_FEATURE(kAllowUserInstalledChromeApps);
 BASE_DECLARE_FEATURE(kAllowChromeAppsInKioskSessions);

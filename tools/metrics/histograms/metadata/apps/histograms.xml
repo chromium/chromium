@@ -346,6 +346,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppLaunch.ChromeAppsDeprecationCheck"
+    enum="ChromeAppDeprecationLaunchOutcome" expires_after="2026-05-01">
+  <owner>giovax@google.com</owner>
+  <owner>src/apps/DEPRECATION_OWNERS</owner>
+  <summary>
+    The outcome of the deprecation checks performed during the launch of a
+    Chrome App.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppLaunchPerAppType" enum="AppType"
     expires_after="2025-09-14">
   <owner>ovn@google.com</owner>

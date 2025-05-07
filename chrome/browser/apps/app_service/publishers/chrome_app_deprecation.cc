@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/system_notification_builder.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -29,7 +30,6 @@ BASE_FEATURE(kAllowChromeAppsInKioskSessions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
-// TODO(crbug.com/413912653): Split the allowlists per context.
 constexpr auto kCommonAllowlist = base::MakeFixedFlatSet<std::string_view>(
     {"aakfkoilmhehmmadlkedfbcelkbamdkj", "aepgaekjheajlcifmpjcnpbjcencoefn",
      "afoipjmffplafpbfjopglheidddioiai", "afpnehpifljbjjplppeplamalioanmio",
@@ -107,7 +107,6 @@ constexpr auto kCommonAllowlist = base::MakeFixedFlatSet<std::string_view>(
 
 constexpr auto kUserInstalledAllowlist = base::flat_set<std::string_view>();
 
-// TODO(crbug.com/383754553): Add the finalised list only in M138 builds.
 constexpr auto kKioskSessionAllowlist =
     base::MakeFixedFlatSet<std::string_view>(
         {"adbijfidmjidmkkpiglnfkflcoblkfmn", "adpfhflbokfdhnfakijgjkpkjegncbpl",
@@ -167,6 +166,38 @@ constexpr auto kKioskSessionAllowlist =
 // because the allowlist are always valid while Chrome is running.
 static base::NoDestructor<std::unordered_set<std::string>> testAllowlistedApps;
 
+// This enum lists the possible outcomes of the deprecation checks performed
+// during the launch of a ChromeApp.
+//
+// These values are persisted to logs and the values match the entries of
+// `enum ChromeAppDeprecationLaunchOutcome` in
+// `tools/metrics/histograms/metadata/apps/enums.xml`.
+// Entries should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(ChromeAppDeprecationLaunchOutcome)
+enum class DeprecationCheckOutcome {
+  kUserInstalledAllowedByFlag = 0,
+  kUserInstalledAllowedByAllowlist = 1,
+  kUserInstalledBlocked = 2,
+  kKioskModeAllowedByFlag = 3,
+  kKioskModeAllowedByAllowlist = 4,
+  kKioskModeAllowedByAdminPolicy = 5,
+  kKioskModeBlocked = 6,
+  kManagedAllowedByFlag = 7,
+  kManagedAllowedByAllowlist = 8,
+  kManagedAllowedByAdminPolicy = 9,
+  kManagedBlocked = 10,
+  kAllowedNotChromeApp = 11,
+  kAllowedDefault = 12,
+  kBlockedDefault = 13,
+  kMaxValue = kBlockedDefault
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/apps/enums.xml:ChromeAppDeprecationLaunchOutcome)
+
+void ReportMetric(DeprecationCheckOutcome outcome) {
+  base::UmaHistogramEnumeration("Apps.AppLaunch.ChromeAppsDeprecationCheck",
+                                outcome);
+}
+
 static bool fakeKioskSessionForTesting = false;
 
 enum class AllowlistContext { UserInstalled, KioskSession };
@@ -223,14 +254,17 @@ DeprecationStatus HandleUserInstalledApp(const extensions::Extension& app,
                                          Profile* profile) {
   // TODO(crbug.com/379261516): Block the execution in M139.
   if (IsAllowlisted(app.id(), AllowlistContext::UserInstalled)) {
+    ReportMetric(DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist);
     return DeprecationStatus::kLaunchAllowed;
   }
 
   if (base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps)) {
     ShowNotification(app, profile);
+    ReportMetric(DeprecationCheckOutcome::kUserInstalledAllowedByFlag);
     return DeprecationStatus::kLaunchAllowed;
   }
 
+  ReportMetric(DeprecationCheckOutcome::kUserInstalledBlocked);
   return DeprecationStatus::kLaunchBlocked;
 }
 
@@ -238,17 +272,21 @@ DeprecationStatus HandleKioskSessionApp(const extensions::Extension& app,
                                         Profile* profile) {
   // TODO(crbug.com/379262711): Block the execution in M151.
   if (IsAllowlisted(app.id(), AllowlistContext::KioskSession)) {
+    ReportMetric(DeprecationCheckOutcome::kKioskModeAllowedByAllowlist);
     return DeprecationStatus::kLaunchAllowed;
   }
 
   if (profile->GetPrefs()->GetBoolean(prefs::kKioskChromeAppsForceAllowed)) {
+    ReportMetric(DeprecationCheckOutcome::kKioskModeAllowedByAdminPolicy);
     return DeprecationStatus::kLaunchAllowed;
   }
 
   if (base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions)) {
+    ReportMetric(DeprecationCheckOutcome::kKioskModeAllowedByFlag);
     return DeprecationStatus::kLaunchAllowed;
   }
 
+  ReportMetric(DeprecationCheckOutcome::kKioskModeBlocked);
   return DeprecationStatus::kLaunchBlocked;
 }
 }  // namespace
@@ -259,6 +297,7 @@ DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile) {
           app_id.data());
 
   if (!app || !app->is_app()) {
+    ReportMetric(DeprecationCheckOutcome::kAllowedNotChromeApp);
     return DeprecationStatus::kLaunchAllowed;
   }
 
@@ -270,6 +309,7 @@ DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile) {
     return HandleUserInstalledApp(*app, profile);
   }
 
+  ReportMetric(DeprecationCheckOutcome::kAllowedDefault);
   return DeprecationStatus::kLaunchAllowed;
 }
 
@@ -281,8 +321,8 @@ void ResetAllowlistForTesting() {
   testAllowlistedApps->clear();
 }
 
-void SetKioskSessionForTesting() {
-  fakeKioskSessionForTesting = true;
+void SetKioskSessionForTesting(bool value) {
+  fakeKioskSessionForTesting = value;
 }
 
 }  // namespace apps::chrome_app_deprecation
