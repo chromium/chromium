@@ -66,6 +66,11 @@ BASE_FEATURE(kClearBrowsingDataToast,
              "ClearBrowsingDataToast",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the pinned tab closing notification toast.
+BASE_FEATURE(kPinnedTabToastOnClose,
+             "PinnedTabToastOnClose",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // static
 bool IsEnabled(const base::Feature& feature) {
   return kToastDemoMode.Get() || base::FeatureList::IsEnabled(feature);

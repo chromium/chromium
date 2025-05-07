@@ -7506,6 +7506,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "pinned-tab-toast-on-close",
+    "owners": [
+      "dljames@chromium.org",
+      "top-chrome-desktop-ui@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "platform-keys-changes-wave-1",
     "owners": [
       "fsandrade@chromium.org",

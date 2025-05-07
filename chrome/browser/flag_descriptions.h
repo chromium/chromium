@@ -2304,6 +2304,9 @@ extern const char kTopChromeToastsDescription[];
 
 extern const char kTopChromeToastRefinementsName[];
 extern const char kTopChromeToastRefinementsDescription[];
+
+extern const char kPinnedTabToastOnCloseName[];
+extern const char kPinnedTabToastOnCloseDescription[];
 #endif
 
 extern const char kTopChromeTouchUiName[];

@@ -157,6 +157,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -980,6 +981,30 @@ void NewTabToRight(Browser* browser) {
 
 void CloseTab(Browser* browser) {
   base::RecordAction(UserMetricsAction("CloseTab_Accelerator"));
+
+  if (!toast_features::IsEnabled(toast_features::kPinnedTabToastOnClose)) {
+    browser->tab_strip_model()->CloseSelectedTabs();
+    return;
+  }
+
+  ToastController* toast_controller = browser->GetFeatures().toast_controller();
+  if (!toast_controller) {
+    browser->tab_strip_model()->CloseSelectedTabs();
+    return;
+  }
+
+  tabs::TabInterface* tab = browser->tab_strip_model()->GetActiveTab();
+  bool single_tab_selected =
+      browser->tab_strip_model()->selection_model().size() == 1;
+  if (tab->IsPinned() && single_tab_selected) {
+    // Pinned tabs should show a toast asking the user to continue holding the
+    // command for some time before a pinned tab is closed. The toast will
+    // handle the call to TabStripModel::CloseSelectedTabs so we don't need to
+    // handle it here.
+    toast_controller->MaybeShowToast(ToastParams(ToastId::kClosePinnedTab));
+    return;
+  }
+
   browser->tab_strip_model()->CloseSelectedTabs();
 }
 

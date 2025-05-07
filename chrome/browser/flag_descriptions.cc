@@ -3990,6 +3990,11 @@ const char kTopChromeToastsDescription[] =
 const char kTopChromeToastRefinementsName[] = "Top Chrome Toast Refinements";
 const char kTopChromeToastRefinementsDescription[] =
     "Enables the use of options to control which toasts appear.";
+
+const char kPinnedTabToastOnCloseName[] = "Pinned Tab Toast On Close";
+const char kPinnedTabToastOnCloseDescription[] =
+    "Enable to show a confirmation toast that displays when a pinned tab is "
+    "closed via the keyboard shortcut.";
 #endif
 
 const char kTopChromeTouchUiName[] = "Touch UI Layout";

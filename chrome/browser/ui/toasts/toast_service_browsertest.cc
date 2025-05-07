@@ -45,7 +45,8 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
          plus_addresses::features::kPlusAddressesEnabled,
          plus_addresses::features::kPlusAddressFullFormFill,
          safe_browsing::kEsbAsASyncedSetting,
-         data_sharing::features::kDataSharingFeature},
+         data_sharing::features::kDataSharingFeature,
+         toast_features::kPinnedTabToastOnClose},
         /*disabled_features*/ {});
     InProcessBrowserTest::SetUp();
   }
