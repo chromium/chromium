@@ -44,12 +44,15 @@ include_rules = [
   "+components/sessions",
   # Files needed by babelorca/
   "+chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h",
-  "+chrome/browser/browser_process.h",
   # Files needed by spotlight/
   "+chrome/browser/ash/policy/remote_commands/crd/public",
 ]
 
 specific_include_rules = {
+  "boca_manager_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+
   "content_settings_handler_unittest.cc": [
       "+chrome/browser/content_settings/host_content_settings_map_factory.h",
   ],
