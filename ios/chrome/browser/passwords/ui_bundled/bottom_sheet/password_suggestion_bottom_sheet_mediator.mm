@@ -20,6 +20,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/ios/features.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/prefs/pref_service.h"
@@ -81,6 +82,21 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
             typedValue:base::SysUTF8ToNSString(params.value)
                frameID:base::SysUTF8ToNSString(params.frame_id)
           onlyPassword:YES];
+}
+
+// Makes a copy of suggestions with `params` and `provider` set in the copies.
+NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
+    NSArray<FormSuggestion*>* suggestions,
+    const autofill::FormActivityParams& params,
+    id<FormSuggestionProvider> provider) {
+  NSMutableArray<FormSuggestion*>* suggestions_copy =
+      [NSMutableArray<FormSuggestion*> arrayWithCapacity:[suggestions count]];
+  for (FormSuggestion* suggestion in suggestions) {
+    [suggestions_copy addObject:[FormSuggestion copy:suggestion
+                                        andSetParams:params
+                                            provider:provider]];
+  }
+  return suggestions_copy;
 }
 
 }  // namespace
@@ -205,7 +221,13 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
                         webState:webState
                completionHandler:^(NSArray<FormSuggestion*>* suggestions,
                                    id<FormSuggestionProvider> delegate) {
-                 completion(suggestions);
+                 bool stateless = base::FeatureList::IsEnabled(
+                     password_manager::features::kIOSStatelessFillDataFlow);
+                 NSArray<FormSuggestion*>* wrappedSuggestions =
+                     stateless ? SetParamsAndProviderInSuggestions(
+                                     suggestions, params, delegate)
+                               : suggestions;
+                 completion(wrappedSuggestions);
                }];
 }
 
