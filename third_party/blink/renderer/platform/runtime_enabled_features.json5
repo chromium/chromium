@@ -4155,6 +4155,15 @@
     },
     {
       // Implements improved accessibility mappings for having an <input>
+      // inside of a <select> by keeping the child <input> in the a11y tree at
+      // the same place that its at in the DOM tree, but automatically setting
+      // up a controls relationship to the menu list popup.
+      name: "SelectAccessibilityNestedInput",
+      status: "test",
+      depends_on: ["CustomizableSelect"],
+    },
+    {
+      // Implements improved accessibility mappings for having an <input>
       // inside of a <select> by reparenting the child <input> in the
       // accessibility tree to be a sibling of the menu list popup.
       name: "SelectAccessibilityReparentInput",

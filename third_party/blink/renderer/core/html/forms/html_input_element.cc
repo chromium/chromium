@@ -2477,7 +2477,8 @@ void HTMLInputElement::SetFocused(bool is_focused,
 }
 
 bool HTMLInputElement::IsFirstTextInputInAncestorSelect() const {
-  if (!RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
+  if ((!RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() &&
+       !RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) ||
       !first_ancestor_select_) {
     return false;
   }
@@ -2485,7 +2486,8 @@ bool HTMLInputElement::IsFirstTextInputInAncestorSelect() const {
 }
 
 HTMLSelectElement* HTMLInputElement::FirstAncestorSelectElement() const {
-  if (!RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+  if (!RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() &&
+      !RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) {
     return nullptr;
   }
   return first_ancestor_select_;

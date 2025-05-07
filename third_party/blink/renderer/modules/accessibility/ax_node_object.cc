@@ -4459,7 +4459,8 @@ KURL AXNodeObject::Url() const {
 }
 
 AXObject* AXNodeObject::ChooserPopup() const {
-  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
+      RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) {
     // The first input inside of a select filters the listbox, and therefore
     // controls it.
     if (auto* input = DynamicTo<HTMLInputElement>(GetNode())) {

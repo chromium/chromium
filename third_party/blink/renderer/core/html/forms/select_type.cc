@@ -151,7 +151,9 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
         HTMLElement* element_to_focus = nullptr;
         if (auto* input = select->FirstDescendantTextInput();
             input &&
-            RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+            (RuntimeEnabledFeatures::
+                 SelectAccessibilityReparentInputEnabled() ||
+             RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled())) {
           // If there is a filter input at the top of the picker, then that
           // should be focused instead of options when opening.
           element_to_focus = input;

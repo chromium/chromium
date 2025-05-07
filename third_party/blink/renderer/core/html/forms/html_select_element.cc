@@ -134,8 +134,10 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
         if (record->attributeName() == html_names::kTabindexAttr ||
             record->attributeName() == html_names::kContenteditableAttr) {
           AddDescendantDisallowedErrorToNode(*record->target());
-        } else if (RuntimeEnabledFeatures::
-                       SelectAccessibilityReparentInputEnabled() &&
+        } else if ((RuntimeEnabledFeatures::
+                        SelectAccessibilityReparentInputEnabled() ||
+                    RuntimeEnabledFeatures::
+                        SelectAccessibilityNestedInputEnabled()) &&
                    record->attributeName() == html_names::kTypeAttr) {
           if (auto* input = DynamicTo<HTMLInputElement>(record->target())) {
             if (input->IsTextField()) {
@@ -216,7 +218,8 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   }
 
   void MaybeAddDescendantTextInput(Node* node) {
-    if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+    if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
+        RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) {
       if (auto* input = DynamicTo<HTMLInputElement>(node);
           input && input->IsTextField()) {
         select_->AddDescendantTextInput(input);
@@ -225,7 +228,8 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   }
 
   void MaybeRemoveDescendantTextInput(Node* node) {
-    if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+    if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
+        RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) {
       if (auto* input = DynamicTo<HTMLInputElement>(node);
           input && input->IsTextField()) {
         select_->RemoveDescendantTextInput(input);
@@ -327,7 +331,8 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
       return parent && IsA<HTMLSelectElement>(*parent) &&
              !ElementTraversal::PreviousSibling(node);
     }
-    if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+    if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
+        RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) {
       // <select>s are allowed to have one <input> before the options. We should
       // probably find a way to figure out if the <input> is actually placed
       // before the <option>s or not.
@@ -449,7 +454,8 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   }
 
   bool IsAllowedDescendantOfSelect(const Node& descendant, const Node& parent) {
-    if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+    if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
+        RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) {
       // <select>s are allowed to have one text <input>, although it should be
       // placed before any of the <option>s.
       if (select_->FirstDescendantTextInput() == descendant) {
@@ -2356,14 +2362,16 @@ void HTMLSelectElement::SelectedContentElementRemoved(
 }
 
 void HTMLSelectElement::AddDescendantTextInput(HTMLInputElement* input) {
-  CHECK(RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled());
+  CHECK(RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
+        RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled());
   CHECK(input->IsTextField());
   descendant_text_inputs_.Add(input);
   input->SetFirstAncestorSelectElement(this);
 }
 
 void HTMLSelectElement::RemoveDescendantTextInput(HTMLInputElement* input) {
-  CHECK(RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled());
+  CHECK(RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
+        RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled());
   descendant_text_inputs_.Remove(input);
   input->SetFirstAncestorSelectElement(nullptr);
 }
