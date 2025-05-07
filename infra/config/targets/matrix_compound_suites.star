@@ -442,7 +442,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "optimization_guide_ios_unittests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_18_0",
+                "SIM_IPHONE_14_18_2",
             ],
         ),
     },

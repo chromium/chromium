@@ -2642,7 +2642,7 @@
     'optimization_guide_ios_sim_gtests': {
       'optimization_guide_ios_unittests': {
         'variants': [
-          'SIM_IPHONE_14_18_0',
+          'SIM_IPHONE_14_18_2',
         ],
       },
     },
