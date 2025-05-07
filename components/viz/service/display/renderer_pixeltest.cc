@@ -4948,7 +4948,7 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadNearestNeighbor) {
 
   auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
-               mapped_resource, false, gfx::PointF(0, 0), gfx::PointF(1, 1),
+               mapped_resource, true, gfx::PointF(0, 0), gfx::PointF(1, 1),
                SkColors::kBlack, nearest_neighbor,
                /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 
