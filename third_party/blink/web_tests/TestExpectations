@@ -9214,6 +9214,10 @@ crbug.com/324536287 external/wpt/soft-navigation-heuristics/interaction-with-pai
 # Gardener 2025-05-01
 crbug.com/411161567 [ Linux ] accessibility/interest-target.html [ Failure Pass ]
 
+crbug.com/407751668 http/tests/devtools/elements/styles-4/styles-overloaded-shorthand.js [ Failure Pass ]
+crbug.com/407751668 http/tests/devtools/elements/styles-4/styles-properties-overload.js [ Failure Pass ]
+crbug.com/407751668 http/tests/devtools/elements/styles-4/styles-update-from-js.js [ Failure Pass ]
+
 # Gardener 2025-05-05
 crbug.com/413289778 [ Mac12 ] wpt_internal/fedcm/fedcm-cache-manifest.https.html [ Failure ]
 crbug.com/415747471 [ Mac ] virtual/text-antialias/international/bidi-CS-after-AN.html [ Failure ]
