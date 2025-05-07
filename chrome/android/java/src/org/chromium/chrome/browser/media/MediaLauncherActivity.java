@@ -66,8 +66,16 @@ public class MediaLauncherActivity extends Activity {
     }
 
     private String getMIMEType(Uri uri) {
+        if (uri == null) {
+            return "";
+        }
+        String uriScheme = uri.getScheme();
+        if (uriScheme == null) {
+            return "";
+        }
+
         // With a content URI, we can just query the ContentResolver.
-        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+        if (uriScheme.equals(ContentResolver.SCHEME_CONTENT)) {
             return getContentResolver().getType(uri);
         }
 
