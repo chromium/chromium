@@ -283,6 +283,9 @@ extern const char kHdrAgtmDescription[];
 extern const char kHistorySyncAlternativeIllustrationName[];
 extern const char kHistorySyncAlternativeIllustrationDescription[];
 
+extern const char kLeftClickOpensTabGroupBubbleName[];
+extern const char kLeftClickOpensTabGroupBubbleDescription[];
+
 extern const char kDeprecateUnloadName[];
 extern const char kDeprecateUnloadDescription[];
 

@@ -82,6 +82,11 @@ BASE_FEATURE(kEnableOriginatingSavedGroupCleanUp,
              "EnableOriginatingSavedGroupCleanUp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Swaps the click actions for the tab group header.
+BASE_FEATURE(kLeftClickOpensTabGroupBubble,
+             "LeftClickOpensTabGroupBubble",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsTabGroupSyncServiceDesktopMigrationEnabled() {
   return (base::FeatureList::IsEnabled(kTabGroupSyncServiceDesktopMigration) ||
           data_sharing::features::IsDataSharingFunctionalityEnabled());

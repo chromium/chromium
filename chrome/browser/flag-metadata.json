@@ -6037,6 +6037,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "left-click-opens-tab-group-bubble",
+    "owners": [ "dpenning@chromium.org" ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "left-hand-side-activity-indicators",
     "owners": [ "elklm@chromium.org", "//components/permissions/PERMISSIONS_OWNERS" ],
     "expiry_milestone": 135
