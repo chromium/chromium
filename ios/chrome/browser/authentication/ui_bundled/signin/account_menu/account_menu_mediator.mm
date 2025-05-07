@@ -460,6 +460,8 @@
     case AccountMenuAccessPoint::kSettings:
       return CreateChangeProfileSettingsContinuation();
     case AccountMenuAccessPoint::kWeb: {
+      GetApplicationContext()->GetLocalState()->SetBoolean(
+          prefs::kHasSwitchedAccountsViaWebFlow, true);
       if (_prepareChangeProfile) {
         _prepareChangeProfile();
       };
