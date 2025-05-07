@@ -154,7 +154,7 @@ class CORE_EXPORT LayoutInputNode {
   bool IsMathML() const { return box_->IsMathML(); }
 
   bool IsAnonymous() const { return box_->IsAnonymous(); }
-  bool IsAnonymousBlock() const { return box_->IsAnonymousBlock(); }
+  bool IsAnonymousBlockFlow() const { return box_->IsAnonymousBlockFlow(); }
 
   // If the node is a quirky container for margin collapsing, see:
   // https://html.spec.whatwg.org/C/#margin-collapsing-quirks

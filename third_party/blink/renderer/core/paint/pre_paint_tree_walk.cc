@@ -507,7 +507,7 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
       (fragment && fragment->IsMonolithic())) {
     // Anonymous blocks are not allowed to be containing blocks, so we should
     // skip over any such elements.
-    if (!fragment || !fragment->IsAnonymousBlock()) {
+    if (!fragment || !fragment->IsAnonymousBlockFlow()) {
       context.current_container.fragment = fragment;
     }
   }

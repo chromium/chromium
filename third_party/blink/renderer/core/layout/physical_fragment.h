@@ -237,8 +237,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   bool IsCSSBox() const { return !IsLineBox() && !IsFragmentainerBox(); }
 
   bool IsBlockFlow() const;
-  bool IsAnonymousBlock() const {
-    return IsCSSBox() && layout_object_->IsAnonymousBlock();
+  bool IsAnonymousBlockFlow() const {
+    return IsCSSBox() && layout_object_->IsAnonymousBlockFlow();
   }
   bool IsFrameSet() const { return IsCSSBox() && layout_object_->IsFrameSet(); }
   bool IsListMarker() const {

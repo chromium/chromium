@@ -2761,6 +2761,10 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
+      name: "LayoutIsAnonymousBlockFix",
+      status: "stable",
+    },
+    {
       name: "LayoutMinSizeIndefinite",
       status: "stable",
     },

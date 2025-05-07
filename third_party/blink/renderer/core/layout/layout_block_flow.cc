@@ -121,7 +121,7 @@ bool LayoutBlockFlow::CanContainFirstFormattedLine() const {
   // line of an element. For example, the first line of an anonymous block
   // box is only affected if it is the first child of its parent element.
   // https://drafts.csswg.org/css-text-3/#text-indent-property
-  return !IsAnonymousBlock() || !PreviousSibling() || IsFlexItem() ||
+  return !IsAnonymousBlockFlow() || !PreviousSibling() || IsFlexItem() ||
          IsGridItem();
 }
 
@@ -175,7 +175,7 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
 
       if (before_child && before_child->Parent() != this) {
         before_child = before_child->Parent();
-        DCHECK(before_child->IsAnonymousBlock());
+        DCHECK(before_child->IsAnonymousBlockFlow());
         DCHECK_EQ(before_child->Parent(), this);
       }
     }
@@ -189,7 +189,7 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
     LayoutObject* after_child =
         before_child ? before_child->PreviousSibling() : LastChild();
 
-    if (after_child && after_child->IsAnonymousBlock()) {
+    if (after_child && after_child->IsAnonymousBlockFlow()) {
       after_child->AddChild(new_child);
       return;
     }
@@ -213,14 +213,14 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
   // at this point.
   LayoutBox::AddChild(new_child, before_child);
   auto* parent_layout_block = DynamicTo<LayoutBlock>(Parent());
-  if (made_boxes_non_inline && IsAnonymousBlock() && parent_layout_block) {
+  if (made_boxes_non_inline && IsAnonymousBlockFlow() && parent_layout_block) {
     parent_layout_block->RemoveLeftoverAnonymousBlock(this);
     // |this| may be dead now.
   }
 }
 
 static bool IsMergeableAnonymousBlock(const LayoutBlockFlow* block) {
-  return block->IsAnonymousBlock() && !block->BeingDestroyed() &&
+  return block->IsAnonymousBlockFlow() && !block->BeingDestroyed() &&
          !block->IsViewTransitionRoot();
 }
 
@@ -287,7 +287,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
 
   if (FirstChild() && !BeingDestroyed() &&
       !old_child->IsFloatingOrOutOfFlowPositioned() &&
-      !old_child->IsAnonymousBlock()) {
+      !old_child->IsAnonymousBlockFlow()) {
     // If the child we're removing means that we can now treat all children as
     // inline without the need for anonymous blocks, then do that.
     MakeChildrenInlineIfPossible();
@@ -308,7 +308,7 @@ void LayoutBlockFlow::MoveAllChildrenIncludingFloatsTo(
 
 void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
   NOT_DESTROYED();
-  if (IsAnonymousBlock()) {
+  if (IsAnonymousBlockFlow()) {
     if (auto* parent_inline = DynamicTo<LayoutInline>(Parent())) {
       // The child used to be an in-flow block-in-inline, which requires an
       // anonymous wrapper (|this|). It is no longer needed for this child, so
@@ -323,7 +323,7 @@ void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
 
   // Reparent the child to an adjacent anonymous block if one is available.
   auto* prev = DynamicTo<LayoutBlockFlow>(child->PreviousSibling());
-  if (prev && prev->IsAnonymousBlock()) {
+  if (prev && prev->IsAnonymousBlockFlow()) {
     MoveChildTo(prev, child, nullptr, false);
     // The anonymous block we've moved to may now be adjacent to former siblings
     // of ours that it can contain also.
@@ -331,7 +331,7 @@ void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
     return;
   }
   auto* next = DynamicTo<LayoutBlockFlow>(child->NextSibling());
-  if (next && next->IsAnonymousBlock()) {
+  if (next && next->IsAnonymousBlockFlow()) {
     MoveChildTo(next, child, next->FirstChild(), false);
   }
 }
@@ -439,7 +439,7 @@ void LayoutBlockFlow::MakeChildrenInlineIfPossible() {
   }
   // Collapsing away anonymous wrappers isn't relevant for the children of
   // anonymous blocks.
-  if (IsAnonymousBlock()) {
+  if (IsAnonymousBlockFlow()) {
     return;
   }
 
@@ -454,8 +454,9 @@ void LayoutBlockFlow::MakeChildrenInlineIfPossible() {
     // There are still block children in the container, so any anonymous
     // wrappers are still needed.
     auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-    if (!child->IsAnonymousBlock() || !child_block_flow)
+    if (!child->IsAnonymousBlockFlow() || !child_block_flow) {
       return;
+    }
     // If one of the children is being destroyed then it is unsafe to clean up
     // anonymous wrappers as the
     // entire branch may be being destroyed.
@@ -571,15 +572,16 @@ void LayoutBlockFlow::ChildBecameNonInline(LayoutObject*) {
   NOT_DESTROYED();
   MakeChildrenNonInline();
   auto* parent_layout_block = DynamicTo<LayoutBlock>(Parent());
-  if (IsAnonymousBlock() && parent_layout_block)
+  if (IsAnonymousBlockFlow() && parent_layout_block) {
     parent_layout_block->RemoveLeftoverAnonymousBlock(this);
+  }
   // |this| may be dead here
 }
 
 bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
   NOT_DESTROYED();
   const LayoutObject* object_to_check = this;
-  if (IsAnonymousBlock()) {
+  if (IsAnonymousBlockFlow()) {
     const LayoutObject* parent = Parent();
     if (!parent || !parent->BehavesLikeBlockContainer()) {
       return false;

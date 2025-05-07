@@ -1326,8 +1326,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return bitfields_.IsAnonymous();
   }
-  bool IsAnonymousBlock() const {
+  bool IsAnonymousBlockFlow() const {
     NOT_DESTROYED();
+    if (RuntimeEnabledFeatures::LayoutIsAnonymousBlockFixEnabled()) {
+      return IsAnonymous() && IsLayoutBlockFlow() &&
+             StyleRef().Display() == EDisplay::kBlock &&
+             !IsLayoutFlowThread() && !IsLayoutMultiColumnSet();
+    }
     // This function is kept in sync with anonymous block creation conditions in
     // LayoutBlock::createAnonymousBlock(). This includes creating an anonymous
     // LayoutBlock having a BLOCK or BOX display. Other classes such as

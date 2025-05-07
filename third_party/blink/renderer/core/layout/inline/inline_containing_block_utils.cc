@@ -147,8 +147,9 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
   //    text </span> text.
   // </div>
   for (const auto& child : container_builder->Children()) {
-    if (!child.fragment->IsAnonymousBlock())
+    if (!child.fragment->IsAnonymousBlockFlow()) {
       continue;
+    }
 
     const auto& child_fragment = To<PhysicalBoxFragment>(*child.fragment);
     const auto* items = child_fragment.Items();
@@ -205,8 +206,9 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
       //    text </span> text.
       // </div>
       for (const auto& child : physical_fragment.Children()) {
-        if (!child.fragment->IsAnonymousBlock())
+        if (!child.fragment->IsAnonymousBlockFlow()) {
           continue;
+        }
 
         const auto& child_fragment = To<PhysicalBoxFragment>(*child.fragment);
         if (!child_fragment.HasItems())

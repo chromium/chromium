@@ -1781,7 +1781,7 @@ LogicalSize CalculateChildAvailableSize(
       ShrinkLogicalSize(border_box_size, border_scrollbar_padding);
 
   if (space.IsAnonymous() ||
-      (node.IsAnonymousBlock() &&
+      (node.IsAnonymousBlockFlow() &&
        child_available_size.block_size == kIndefiniteSize)) {
     child_available_size.block_size = space.AvailableSize().block_size;
   }
@@ -1814,7 +1814,7 @@ LogicalSize CalculateChildPercentageSize(
     const BlockNode node,
     const LogicalSize child_available_size) {
   // Anonymous block or spaces should use the parent percent block-size.
-  if (space.IsAnonymous() || node.IsAnonymousBlock()) {
+  if (space.IsAnonymous() || node.IsAnonymousBlockFlow()) {
     return {child_available_size.inline_size,
             space.PercentageResolutionBlockSize()};
   }
@@ -1836,7 +1836,7 @@ LogicalSize CalculateReplacedChildPercentageSize(
     const BoxStrut& border_scrollbar_padding,
     const BoxStrut& border_padding) {
   // Anonymous block or spaces should use the parent percent block-size.
-  if (space.IsAnonymous() || node.IsAnonymousBlock()) {
+  if (space.IsAnonymous() || node.IsAnonymousBlockFlow()) {
     return {child_available_size.inline_size,
             space.ReplacedChildPercentageResolutionBlockSize()};
   }

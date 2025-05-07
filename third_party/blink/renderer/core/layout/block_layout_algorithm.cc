@@ -435,7 +435,7 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
     }
 
     MinMaxSizesFloatInput child_float_input;
-    if (child.IsInline() || child.IsAnonymousBlock()) {
+    if (child.IsInline() || child.IsAnonymousBlockFlow()) {
       child_float_input.float_left_inline_size = float_left_inline_size;
       child_float_input.float_right_inline_size = float_right_inline_size;
     }
@@ -446,7 +446,7 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
     builder.SetPercentageResolutionBlockSize(
         PercentageSizeForChild(child).block_size);
     // Pass the replaced %-size down to inline layout.
-    if ((child.IsAnonymousBlock() || child.IsInline()) &&
+    if ((child.IsAnonymousBlockFlow() || child.IsInline()) &&
         replaced_child_percentage_size_.block_size !=
             child_percentage_size_.block_size) {
       builder.SetReplacedChildPercentageResolutionBlockSize(
@@ -3147,7 +3147,7 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
                   &Style())
               .GetPosition();
 
-      if (child.IsAnonymousBlock()) {
+      if (child.IsAnonymousBlockFlow()) {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
       } else if (justify_self == ItemPosition::kStretch && !has_auto_margins) {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
@@ -3231,7 +3231,7 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
                 {ItemPosition::kNormal, OverflowAlignment::kDefault}, &Style())
             .GetPosition();
 
-    if (child.IsAnonymousBlock()) {
+    if (child.IsAnonymousBlockFlow()) {
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
     } else if (justify_self == ItemPosition::kStretch && !has_auto_margins) {
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
@@ -3252,7 +3252,7 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   builder.SetPercentageResolutionSize(PercentageSizeForChild(child));
 
   // Pass the replaced %-size down to inline layout.
-  if ((child.IsAnonymousBlock() || child.IsInline()) &&
+  if ((child.IsAnonymousBlockFlow() || child.IsInline()) &&
       replaced_child_percentage_size_ != child_percentage_size_) {
     builder.SetReplacedChildPercentageResolutionSize(
         replaced_child_percentage_size_);
