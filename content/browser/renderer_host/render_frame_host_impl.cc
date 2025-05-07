@@ -1630,11 +1630,14 @@ void RecordNavigationTraceEventsAndMetrics(
       perfetto::Track::Global(kGlobalInstantTrackId));
 
   // Define a helper to log both a trace event slice and a corresponding metric
-  // for one stage of a navigation.
+  // for one stage of a navigation. If `histogram_name` is specified, it will be
+  // used for the histogram name instead of `name`. If `url` is specified, it
+  // will be emitted as page_load.url argument along the trace event.
   auto log_trace_event_and_uma =
-      [&](const std::string& name, const perfetto::NamedTrack track,
+      [&](perfetto::StaticString name, const perfetto::NamedTrack track,
           const base::TimeTicks& begin_time, const base::TimeTicks& end_time,
-          const std::string& histogram_name = std::string()) {
+          const std::string& histogram_name = std::string(),
+          const std::string& url = std::string()) {
         if (begin_time.is_null() || end_time.is_null()) {
           return;
         }
@@ -1657,8 +1660,15 @@ void RecordNavigationTraceEventsAndMetrics(
           return;
         }
 
-        TRACE_EVENT_BEGIN("navigation", perfetto::DynamicString{name}, track,
-                          begin_time);
+        TRACE_EVENT_BEGIN("navigation", name, track, begin_time,
+                          [&](perfetto::EventContext& ctx) {
+                            if (url.empty()) {
+                              return;
+                            }
+                            perfetto::protos::pbzero::PageLoad* page_load =
+                                ctx.event<ChromeTrackEvent>()->set_page_load();
+                            page_load->set_url(url);
+                          });
         TRACE_EVENT_END("navigation", track, end_time);
 
         // When provided, `histogram_name` is used to avoid including variable
@@ -1668,23 +1678,32 @@ void RecordNavigationTraceEventsAndMetrics(
         // URL in metric names for UMA.
         base::UmaHistogramTimes(
             "Navigation.Timeline." +
-                (histogram_name.empty() ? name : histogram_name) + ".Duration",
+                (histogram_name.empty() ? std::string(name.value)
+                                        : histogram_name) +
+                ".Duration",
             end_time - begin_time);
       };
 
   // Actual navigation events are logged below in contiguous (or nested)
   // intervals.
 
-  // Record a top-level "Navigation: url" trace event with the duration of the
+  // Record a top-level "Navigation" trace event with the duration of the
   // full navigation, and then break it down into nested intervals which will
-  // show up under it. Do not include `url` in the histogram name. Note that
-  // `url` is the committing URL, which might differ from the starting URL, e.g.
-  // due to redirects.
+  // show up under it. Note that `url` is the committing URL, which might differ
+  // from the starting URL, e.g. due to redirects.
   // TODO(crbug.com/405437928): Overlapping navigations may incorrectly appear
   // to be nested, using the wrong end times.
+  log_trace_event_and_uma("NavigationTotal", track1, timeline.start,
+                          timeline.finish,
+                          /*histogram_name=*/"Total", /*url=*/url.spec());
+  // Emit a trace event with url in the name for convenience.
+  // TODO(crbug.com/415720503): Remove once Perfetto navigation plugins
+  // surfaces urls.
   std::string top_level_trace_event_name = "Navigation: " + url.spec();
-  log_trace_event_and_uma(top_level_trace_event_name, track1, timeline.start,
-                          timeline.finish, /*histogram_name=*/"Total");
+  TRACE_EVENT_BEGIN("navigation",
+                    perfetto::DynamicString(top_level_trace_event_name), track1,
+                    timeline.start);
+  TRACE_EVENT_END("navigation", track1, timeline.finish);
 
   if (!timeline.begin_navigation.is_null()) {
     // Most navigations (other than synchronous renderer commits) go through
