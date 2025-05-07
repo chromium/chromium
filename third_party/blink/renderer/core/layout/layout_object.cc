@@ -4930,7 +4930,8 @@ void LayoutObject::InvalidateSelectedChildrenOnStyleChange() {
   // styling may apply to the entire subtree.
   for (LayoutObject* child = SlowFirstChild(); child;
        child = child->NextSibling()) {
-    if (!child->IsSelected()) {
+    // Anonymous objects never be IsSelected(). See SetSelectionStateIfNeeded().
+    if (!child->IsSelected() && !child->IsAnonymous()) {
       continue;
     }
     if (child->CanBeSelectionLeaf()) {

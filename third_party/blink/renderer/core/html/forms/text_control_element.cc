@@ -86,6 +86,41 @@ Position GetNextSoftBreak(const OffsetMapping& mapping, InlineCursor& cursor) {
   return Position();
 }
 
+void AppendWrappedNode(const Element& container,
+                       const Node& node,
+                       const OffsetMapping& mapping,
+                       InlineCursor& cursor,
+                       Position& break_position,
+                       StringBuilder& result) {
+  if (IsA<HTMLBRElement>(node)) {
+    if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
+        !TextControlElement::IsPlaceholderBreakElement(&node)) {
+      result.Append(kNewlineCharacter);
+    } else {
+      DCHECK_EQ(&node, container.lastChild());
+    }
+  } else if (auto* text_node = DynamicTo<Text>(node)) {
+    String data = text_node->data();
+    unsigned length = data.length();
+    unsigned position = 0;
+    while (break_position.AnchorNode() == node &&
+           static_cast<unsigned>(break_position.OffsetInContainerNode()) <=
+               length) {
+      unsigned break_offset = break_position.OffsetInContainerNode();
+      if (break_offset > position) {
+        result.Append(data, position, break_offset - position);
+        position = break_offset;
+        result.Append(kNewlineCharacter);
+      }
+      break_position = GetNextSoftBreak(mapping, cursor);
+    }
+    result.Append(data, position, length - position);
+  }
+  while (break_position.AnchorNode() == node) {
+    break_position = GetNextSoftBreak(mapping, cursor);
+  }
+}
+
 }  // namespace
 
 TextControlElement::TextControlElement(const QualifiedName& tag_name,
@@ -1015,6 +1050,34 @@ String TextControlElement::ValueWithHardLineBreaks() const {
   if (!layout_object)
     return Value();
 
+  if (RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
+    StringBuilder result;
+    bool has_valid_ifcs = false;
+    for (auto* anonymous = To<LayoutBlockFlow>(layout_object->FirstChild());
+         anonymous; anonymous = To<LayoutBlockFlow>(anonymous->NextSibling())) {
+      InlineCursor cursor(*anonymous);
+      if (!cursor) {
+        continue;
+      }
+      const auto* mapping = InlineNode::GetOffsetMapping(anonymous);
+      if (!mapping) {
+        continue;
+      }
+      has_valid_ifcs = true;
+      Position break_position = GetNextSoftBreak(*mapping, cursor);
+      const Node* node = anonymous->FirstChild()
+                             ? anonymous->FirstChild()->GetNode()
+                             : nullptr;
+      for (; node && node->GetLayoutObject() &&
+             node->GetLayoutObject()->Parent() == anonymous;
+           node = node->nextSibling()) {
+        AppendWrappedNode(*inner_text, *node, *mapping, cursor, break_position,
+                          result);
+      }
+    }
+    return has_valid_ifcs ? result.ReleaseString() : Value();
+  }
+
   if (layout_object->IsLayoutNGObject()) {
     InlineCursor cursor(*layout_object);
     if (!cursor)
@@ -1025,32 +1088,8 @@ String TextControlElement::ValueWithHardLineBreaks() const {
     Position break_position = GetNextSoftBreak(*mapping, cursor);
     StringBuilder result;
     for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {
-      if (IsA<HTMLBRElement>(node)) {
-        if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
-            !IsPlaceholderBreakElement(&node)) {
-          result.Append(kNewlineCharacter);
-        } else {
-          DCHECK_EQ(&node, inner_text->lastChild());
-        }
-      } else if (auto* text_node = DynamicTo<Text>(node)) {
-        String data = text_node->data();
-        unsigned length = data.length();
-        unsigned position = 0;
-        while (break_position.AnchorNode() == node &&
-               static_cast<unsigned>(break_position.OffsetInContainerNode()) <=
-                   length) {
-          unsigned break_offset = break_position.OffsetInContainerNode();
-          if (break_offset > position) {
-            result.Append(data, position, break_offset - position);
-            position = break_offset;
-            result.Append(kNewlineCharacter);
-          }
-          break_position = GetNextSoftBreak(*mapping, cursor);
-        }
-        result.Append(data, position, length - position);
-      }
-      while (break_position.AnchorNode() == node)
-        break_position = GetNextSoftBreak(*mapping, cursor);
+      AppendWrappedNode(*inner_text, node, *mapping, cursor, break_position,
+                        result);
     }
     return result.ToString();
   }

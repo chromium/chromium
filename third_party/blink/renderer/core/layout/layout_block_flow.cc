@@ -84,6 +84,10 @@ bool AllowsInlineChildren(const LayoutBlockFlow& block) {
          !block.IsScrollMarkerGroup();
 }
 
+bool IsInnerEditorChild(const LayoutBlockFlow& block) {
+  return block.Parent() && block.Parent()->IsTextControlInnerEditor();
+}
+
 }  // anonymous namespace
 
 struct SameSizeAsLayoutBlockFlow : public LayoutBlock {
@@ -221,7 +225,7 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
 
 static bool IsMergeableAnonymousBlock(const LayoutBlockFlow* block) {
   return block->IsAnonymousBlockFlow() && !block->BeingDestroyed() &&
-         !block->IsViewTransitionRoot();
+         !block->IsViewTransitionRoot() && !IsInnerEditorChild(*block);
 }
 
 void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
@@ -232,6 +236,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     LayoutBox::RemoveChild(old_child);
     return;
   }
+  const bool is_inner_editor_child = IsAnonymous() && IsInnerEditorChild(*this);
 
   // If this child is a block, and if our previous and next siblings are both
   // anonymous blocks with inline content, then we can go ahead and fold the
@@ -273,6 +278,23 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
   }
 
   LayoutBlock::RemoveChild(old_child);
+
+  if (is_inner_editor_child && !BeingDestroyed()) {
+    if (old_child->IsBR() && FirstChild()) {
+      // We removed a LayoutBR from `this`. If this still contains LayoutTexts,
+      // we move them to the next anonymous block. Then, remove `this` from the
+      // parent.
+      if (auto* next_anonymous = To<LayoutBlockFlow>(NextSibling())) {
+        CHECK(next_anonymous->IsAnonymous());
+        MoveAllChildrenTo(next_anonymous, next_anonymous->FirstChild());
+      }
+    }
+    if (!FirstChild() && Parent()) {
+      Parent()->RemoveChild(this);
+      Destroy();
+    }
+    return;
+  }
 
   LayoutObject* child = prev ? prev : next;
   auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);

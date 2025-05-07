@@ -4657,6 +4657,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/341564372
+      name: "TextareaMultipleIfcs",
+      depends_on: ["FastSelectionSync", "TextareaLineEndingsAsBr"],
+    },
+    {
       // killswitch for fix in M137
       name: "TextareaStableResizing",
       status: "stable",
