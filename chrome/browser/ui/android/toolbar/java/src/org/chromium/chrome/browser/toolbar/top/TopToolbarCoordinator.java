@@ -138,6 +138,8 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param tabCountSupplier Supplier of {@link
      *     org.chromium.chrome.browser.toolbar.CustomTabCount}.
      * @param homepageEnabledSupplier Supplier of whether Home button is enabled.
+     * @param homepageNonNtpSupplier Supplier of whether homepage is set to something other than the
+     *     NTP.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
      * @param historyDelegate Delegate used to display navigation history.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
@@ -167,6 +169,7 @@ public class TopToolbarCoordinator implements Toolbar {
             ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             ObservableSupplier<Integer> tabCountSupplier,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
+            ObservableSupplier<Boolean> homepageNonNtpSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
             HistoryDelegate historyDelegate,
             boolean initializeWithIncognitoColors,
@@ -249,7 +252,10 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
-        homepageEnabledSupplier.addObserver((show) -> mToolbarLayout.onHomeButtonUpdate(show));
+        homepageEnabledSupplier.addObserver(
+                (show) -> mToolbarLayout.onHomeButtonIsEnabledUpdate(show));
+        homepageNonNtpSupplier.addObserver(
+                (isNonNtp) -> mToolbarLayout.onHomepageIsNonNtpUpdate(isNonNtp));
     }
 
     /**

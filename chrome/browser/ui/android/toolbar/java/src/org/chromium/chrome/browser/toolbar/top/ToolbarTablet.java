@@ -444,7 +444,7 @@ public class ToolbarTablet extends ToolbarLayout {
     }
 
     @Override
-    void onHomeButtonUpdate(boolean homeButtonEnabled) {
+    void onHomeButtonIsEnabledUpdate(boolean homeButtonEnabled) {
         mHomeButton.setVisibility(homeButtonEnabled ? VISIBLE : GONE);
     }
 

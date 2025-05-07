@@ -1679,7 +1679,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
-    public void onHomeButtonUpdate(boolean homeButtonEnabled) {
+    public void onHomeButtonIsEnabledUpdate(boolean homeButtonEnabled) {
         mIsHomeButtonEnabled = homeButtonEnabled;
         updateButtonVisibility();
     }

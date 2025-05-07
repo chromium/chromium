@@ -229,6 +229,8 @@ public class ToolbarManager
     private final FullscreenManager.Observer mFullscreenObserver;
     private final ObservableSupplierImpl<Boolean> mHomepageEnabledSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mHomepageNonNtpSupplier =
+            new ObservableSupplierImpl<>();
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final ObservableSupplierImpl<Boolean> mIsNtpShowingSupplier =
             new ObservableSupplierImpl<>();
@@ -1737,6 +1739,7 @@ public class ToolbarManager
                         mTabSwitcherButtonCoordinator,
                         mCustomTabCount,
                         mHomepageEnabledSupplier,
+                        mHomepageNonNtpSupplier,
                         mCompositorViewHolder::getResourceManager,
                         historyDelegate,
                         initializeWithIncognitoColors,
@@ -1756,6 +1759,7 @@ public class ToolbarManager
         mHomepageStateListener =
                 () -> {
                     mHomepageEnabledSupplier.set(HomepageManager.getInstance().isHomepageEnabled());
+                    mHomepageNonNtpSupplier.set(HomepageManager.getInstance().isHomepageNonNtp());
                 };
 
         HomepageManager.getInstance().addListener(mHomepageStateListener);

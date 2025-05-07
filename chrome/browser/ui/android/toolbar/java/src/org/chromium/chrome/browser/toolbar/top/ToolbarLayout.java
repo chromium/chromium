@@ -516,19 +516,29 @@ public abstract class ToolbarLayout extends FrameLayout
     void updateBookmarkButton(boolean isBookmarked, boolean editingAllowed) {}
 
     /**
-     * Gives inheriting classes the chance to update home button UI if home button preference is
-     * changed.
+     * Gives inheriting classes the chance to update home button UI if home button's enable
+     * preference is changed.
      *
      * @param homeButtonEnabled Whether or not home button is enabled in preference.
      */
-    void onHomeButtonUpdate(boolean homeButtonEnabled) {}
+    void onHomeButtonIsEnabledUpdate(boolean homeButtonEnabled) {}
+
+    /**
+     * Gives inheriting classes the chance to update home button UI if the current homepage is set
+     * to something other than the NTP.
+     *
+     * @param isHomepageNonNtp Whether the current homepage is something other than the NTP.
+     */
+    // TODO(crbug.com/407554279): Usage will be added in follow-up CLs related to the NTP
+    // customization toolbar button.
+    void onHomepageIsNonNtpUpdate(boolean isHomepageNonNtp) {}
 
     /**
      * Triggered when the current tab or model has changed.
-     * <p>
-     * As there are cases where you can select a model with no tabs (i.e. having incognito
-     * tabs but no normal tabs will still allow you to select the normal model), this should
-     * not guarantee that the model's current tab is non-null.
+     *
+     * <p>As there are cases where you can select a model with no tabs (i.e. having incognito tabs
+     * but no normal tabs will still allow you to select the normal model), this should not
+     * guarantee that the model's current tab is non-null.
      */
     void onTabOrModelChanged() {}
 
