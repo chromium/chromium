@@ -94,6 +94,7 @@ class LegacyOutputAdapter:
         'read gclient': logging.DEBUG,
         'write output_properties_file': logging.DEBUG,
         'prepare skylab tests.': logging.DEBUG,
+        'update invocation instructions': logging.DEBUG,
     }
     # Setup logger for printing to the same line
     logger = logging.getLogger('single_line_logger')
