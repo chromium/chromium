@@ -4014,7 +4014,12 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
-  ASSERT_EQ(fake_change_processor_->changes().size(), 1u);
+  ASSERT_EQ(fake_change_processor_->changes().size(),
+            base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)
+                ? 0u
+                : 1u);
+  fake_change_processor_->changes().clear();
+
   ASSERT_EQ(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
             static_cast<int>(SK_ColorBLUE));
   ASSERT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
@@ -4029,7 +4034,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
-  EXPECT_EQ(2, std::ranges::count_if(
+  EXPECT_EQ(1, std::ranges::count_if(
                    fake_change_processor_->changes(), [](const auto& e) {
                      return e.sync_data().GetSpecifics().has_theme();
                    }));
