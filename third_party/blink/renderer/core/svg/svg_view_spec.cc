@@ -94,22 +94,27 @@ static ViewSpecFunctionType ScanViewSpecFunction(const CharType*& ptr,
   DCHECK_LT(ptr, end);
   switch (*ptr) {
     case 'v':
-      if (SkipToken(ptr, end, "viewBox"))
+      if (UNSAFE_TODO(SkipToken(ptr, end, "viewBox"))) {
         return kViewBox;
-      if (SkipToken(ptr, end, "viewTarget"))
+      }
+      if (UNSAFE_TODO(SkipToken(ptr, end, "viewTarget"))) {
         return kViewTarget;
+      }
       break;
     case 'z':
-      if (SkipToken(ptr, end, "zoomAndPan"))
+      if (UNSAFE_TODO(SkipToken(ptr, end, "zoomAndPan"))) {
         return kZoomAndPan;
+      }
       break;
     case 'p':
-      if (SkipToken(ptr, end, "preserveAspectRatio"))
+      if (UNSAFE_TODO(SkipToken(ptr, end, "preserveAspectRatio"))) {
         return kPreserveAspectRatio;
+      }
       break;
     case 't':
-      if (SkipToken(ptr, end, "transform"))
+      if (UNSAFE_TODO(SkipToken(ptr, end, "transform"))) {
         return kTransform;
+      }
       break;
   }
   return kUnknown;
@@ -121,8 +126,9 @@ template <typename CharType>
 bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
   const CharType* ptr = chars.data();
   const CharType* end = UNSAFE_TODO(ptr + chars.size());
-  if (!SkipToken(ptr, end, "svgView"))
+  if (!UNSAFE_TODO(SkipToken(ptr, end, "svgView"))) {
     return false;
+  }
 
   size_t position = ptr - chars.data();
   if (!SkipExactly<CharType>(chars, '(', position)) {
@@ -158,7 +164,7 @@ bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
       }
       case kViewTarget: {
         // Ignore arguments.
-        SkipUntil<CharType>(ptr, end, ')');
+        UNSAFE_TODO(SkipUntil<CharType>(ptr, end, ')'));
         break;
       }
       case kZoomAndPan:

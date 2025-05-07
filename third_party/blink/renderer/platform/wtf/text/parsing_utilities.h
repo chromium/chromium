@@ -28,16 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_PARSING_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_PARSING_UTILITIES_H_
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
 namespace WTF {
@@ -53,15 +49,6 @@ bool SkipExactly(base::span<const CharType> chars,
   return false;
 }
 
-template <typename CharType, bool characterPredicate(CharType)>
-bool SkipExactly(const CharType*& position, const CharType* end) {
-  if (position < end && characterPredicate(*position)) {
-    ++position;
-    return true;
-  }
-  return false;
-}
-
 template <typename CharType, bool predicate(CharType)>
 bool SkipExactly(base::span<const CharType> chars, size_t& position) {
   if (position < chars.size() && predicate(chars[position])) {
@@ -71,16 +58,17 @@ bool SkipExactly(base::span<const CharType> chars, size_t& position) {
   return false;
 }
 
+// Use a span version instead.
 template <typename CharType>
-bool SkipToken(const CharType*& position,
-               const CharType* end,
-               const char* token) {
+UNSAFE_BUFFER_USAGE bool SkipToken(const CharType*& position,
+                                   const CharType* end,
+                                   const char* token) {
   const CharType* current = position;
   while (current < end && *token) {
     if (*current != *token)
       return false;
-    ++current;
-    ++token;
+    UNSAFE_TODO(++current);
+    UNSAFE_TODO(++token);
   }
   if (*token)
     return false;
@@ -102,18 +90,13 @@ bool SkipToken(base::span<const CharType>& chars, std::string_view token) {
   return true;
 }
 
+// Use a span version instead.
 template <typename CharType>
-void SkipUntil(const CharType*& position,
-               const CharType* end,
-               CharType delimiter) {
+UNSAFE_BUFFER_USAGE void SkipUntil(const CharType*& position,
+                                   const CharType* end,
+                                   CharType delimiter) {
   while (position < end && *position != delimiter)
-    ++position;
-}
-
-template <typename CharType, bool characterPredicate(CharType)>
-void SkipUntil(const CharType*& position, const CharType* end) {
-  while (position < end && !characterPredicate(*position))
-    ++position;
+    UNSAFE_TODO(++position);
 }
 
 template <typename CharType, bool predicate(CharType)>
@@ -132,12 +115,6 @@ template <typename CharType, bool predicate(CharType)>
     ++position;
   }
   return position;
-}
-
-template <typename CharType, bool characterPredicate(CharType)>
-void ReverseSkipWhile(const CharType*& position, const CharType* start) {
-  while (position >= start && characterPredicate(*position))
-    --position;
 }
 
 template <typename CharType, bool predicate(CharType)>

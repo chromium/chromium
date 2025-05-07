@@ -324,21 +324,27 @@ SVGTransformType ParseAndSkipTransformType(const CharType*& ptr,
     return SVGTransformType::kUnknown;
 
   if (*ptr == 's') {
-    if (SkipToken(ptr, end, "skewX"))
+    if (UNSAFE_TODO(SkipToken(ptr, end, "skewX"))) {
       return SVGTransformType::kSkewx;
-    if (SkipToken(ptr, end, "skewY"))
+    }
+    if (UNSAFE_TODO(SkipToken(ptr, end, "skewY"))) {
       return SVGTransformType::kSkewy;
-    if (SkipToken(ptr, end, "scale"))
+    }
+    if (UNSAFE_TODO(SkipToken(ptr, end, "scale"))) {
       return SVGTransformType::kScale;
+    }
 
     return SVGTransformType::kUnknown;
   }
-  if (SkipToken(ptr, end, "translate"))
+  if (UNSAFE_TODO(SkipToken(ptr, end, "translate"))) {
     return SVGTransformType::kTranslate;
-  if (SkipToken(ptr, end, "rotate"))
+  }
+  if (UNSAFE_TODO(SkipToken(ptr, end, "rotate"))) {
     return SVGTransformType::kRotate;
-  if (SkipToken(ptr, end, "matrix"))
+  }
+  if (UNSAFE_TODO(SkipToken(ptr, end, "matrix"))) {
     return SVGTransformType::kMatrix;
+  }
 
   return SVGTransformType::kUnknown;
 }

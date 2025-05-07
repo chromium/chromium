@@ -49,10 +49,12 @@ bool SVGZoomAndPan::ParseAttribute(const QualifiedName& name,
 template <typename CharType>
 static SVGZoomAndPanType ParseZoomAndPanInternal(const CharType*& start,
                                                  const CharType* end) {
-  if (SkipToken(start, end, "disable"))
+  if (UNSAFE_TODO(SkipToken(start, end, "disable"))) {
     return kSVGZoomAndPanDisable;
-  if (SkipToken(start, end, "magnify"))
+  }
+  if (UNSAFE_TODO(SkipToken(start, end, "magnify"))) {
     return kSVGZoomAndPanMagnify;
+  }
   return kSVGZoomAndPanUnknown;
 }
 
