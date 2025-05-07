@@ -13,6 +13,7 @@
 
 class Browser;
 @protocol CreateTabGroupMediatorDelegate;
+class FaviconLoader;
 class TabGroup;
 @protocol TabGroupCreationConsumer;
 class WebStateList;
@@ -31,19 +32,23 @@ class WebStateID;
 // - `consumer` the UI that will receive updates.
 // - `identifiers` the list of selected tabs ID
 // - `browser` the browser containing the selected tabs.
+// `faviconLoader`: used to fetch favicons on Google server, can be `nullptr`.
 - (instancetype)
     initTabGroupCreationWithConsumer:(id<TabGroupCreationConsumer>)consumer
                         selectedTabs:(std::set<web::WebStateID>&)identifiers
-                             browser:(Browser*)browser;
+                             browser:(Browser*)browser
+                       faviconLoader:(FaviconLoader*)faviconLoader;
 
 // Init the tab group creation mediator with:
 // - `consumer` the UI that will receive updates.
 // - `tabGroup` the group to edit.
 // - `webStateList` the web state list containing `tabGroup`.
+// `faviconLoader`: used to fetch favicons on Google server, can be `nullptr`.
 - (instancetype)initTabGroupEditionWithConsumer:
                     (id<TabGroupCreationConsumer>)consumer
                                        tabGroup:(const TabGroup*)tabGroup
-                                   webStateList:(WebStateList*)webStateList;
+                                   webStateList:(WebStateList*)webStateList
+                                  faviconLoader:(FaviconLoader*)faviconLoader;
 
 // Disconnects the mediator's dependencies.
 - (void)disconnect;

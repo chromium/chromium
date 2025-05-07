@@ -91,7 +91,8 @@ TEST_F(CreateTabGroupMediatorTest, DeletingGroupNotifiesDelegate) {
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]
       initTabGroupEditionWithConsumer:consumer_
                              tabGroup:tab_group
-                         webStateList:&web_state_list_];
+                         webStateList:&web_state_list_
+                        faviconLoader:nil];
   mediator.delegate = delegate_;
   EXPECT_EQ(delegate_.editedGroupWasExternallyMutatedCallCount, 0);
 
@@ -115,7 +116,8 @@ TEST_F(CreateTabGroupMediatorTest, DeletingOtherGroupDoesntNotifyDelegate) {
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]
       initTabGroupEditionWithConsumer:consumer_
                              tabGroup:tab_group_0
-                         webStateList:&web_state_list_];
+                         webStateList:&web_state_list_
+                        faviconLoader:nil];
   mediator.delegate = delegate_;
   EXPECT_EQ(delegate_.editedGroupWasExternallyMutatedCallCount, 0);
 
@@ -138,7 +140,8 @@ TEST_F(CreateTabGroupMediatorTest, UpdatingGroupNotifiesDelegate) {
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]
       initTabGroupEditionWithConsumer:consumer_
                              tabGroup:tab_group
-                         webStateList:&web_state_list_];
+                         webStateList:&web_state_list_
+                        faviconLoader:nil];
   mediator.delegate = delegate_;
   EXPECT_EQ(delegate_.editedGroupWasExternallyMutatedCallCount, 0);
   tab_groups::TabGroupVisualData visual_data(u"Updated Group Name",
@@ -164,7 +167,8 @@ TEST_F(CreateTabGroupMediatorTest, UpdatingOtherGroupDoesntNotifyDelegate) {
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]
       initTabGroupEditionWithConsumer:consumer_
                              tabGroup:tab_group_0
-                         webStateList:&web_state_list_];
+                         webStateList:&web_state_list_
+                        faviconLoader:nil];
   mediator.delegate = delegate_;
   EXPECT_EQ(delegate_.editedGroupWasExternallyMutatedCallCount, 0);
   tab_groups::TabGroupVisualData visual_data(u"Updated Group Name",

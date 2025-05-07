@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -78,7 +79,8 @@
   return _tabGroup->visual_data().is_collapsed();
 }
 
-- (void)fetchGroupTabInfos:(GroupTabInfosFetchingCompletionBlock)completion {
+- (void)fetchGroupTabInfos:(GroupTabInfosFetchingCompletionBlock)completion
+             faviconLoader:(FaviconLoader*)faviconLoader {
   if (!_tabGroup) {
     __weak TabGroupItem* weakSelf = self;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -101,6 +103,7 @@
     CHECK(webState);
     __weak TabGroupItem* weakSelf = self;
     [TabGroupUtils fetchTabGroupInfoFromWebState:webState
+                                   faviconLoader:faviconLoader
                                       completion:^(GroupTabInfo* info) {
                                         [weakSelf
                                             groupTabInfoFetched:info

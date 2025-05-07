@@ -13,6 +13,7 @@
 #import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/tab_groups/tab_group_color.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -63,7 +64,8 @@
 - (instancetype)
     initTabGroupCreationWithConsumer:(id<TabGroupCreationConsumer>)consumer
                         selectedTabs:(std::set<web::WebStateID>&)identifiers
-                             browser:(Browser*)browser {
+                             browser:(Browser*)browser
+                       faviconLoader:(FaviconLoader*)faviconLoader {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
@@ -114,6 +116,7 @@
       [TabGroupUtils
           fetchTabGroupInfoFromWebState:currentWebStateList->GetWebStateAt(
                                             index)
+                          faviconLoader:faviconLoader
                              completion:^(GroupTabInfo* info) {
                                [weakSelf addInfo:info];
                                [weakSelf updateConsumer];
@@ -127,7 +130,8 @@
 - (instancetype)initTabGroupEditionWithConsumer:
                     (id<TabGroupCreationConsumer>)consumer
                                        tabGroup:(const TabGroup*)tabGroup
-                                   webStateList:(WebStateList*)webStateList {
+                                   webStateList:(WebStateList*)webStateList
+                                  faviconLoader:(FaviconLoader*)faviconLoader {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
@@ -149,11 +153,13 @@
     _groupItem = [[TabGroupItem alloc] initWithTabGroup:_tabGroup
                                            webStateList:_webStateList];
     __weak CreateTabGroupMediator* weakSelf = self;
-    [_groupItem fetchGroupTabInfos:^(TabGroupItem* item,
-                                     NSArray<GroupTabInfo*>* groupTabInfos) {
-      [weakSelf setGroupTabInfos:groupTabInfos];
-      [weakSelf updateConsumer];
-    }];
+    [_groupItem
+        fetchGroupTabInfos:^(TabGroupItem* item,
+                             NSArray<GroupTabInfo*>* groupTabInfos) {
+          [weakSelf setGroupTabInfos:groupTabInfos];
+          [weakSelf updateConsumer];
+        }
+             faviconLoader:faviconLoader];
 
     // Do not use the helper to get the following values as the title helper do
     // not return nil but the number of tabs. In this case, we want nil so it do

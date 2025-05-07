@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_BASE_GRID_MEDIATOR_ITEMS_PROVIDER_H_
 #define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_BASE_GRID_MEDIATOR_ITEMS_PROVIDER_H_
 
-@class GridItemIdentifier;
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 
 @class ActivityLabelData;
+@class GridItemIdentifier;
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -24,6 +25,10 @@ class WebStateID;
 
 // Returns the facePile view associated with the `itemID`.
 - (UIView*)facePileViewForItem:(GridItemIdentifier*)itemID;
+
+// Fetches the `tabGroupItem` info and executes the given `completion` block.
+- (void)fetchTabGroupItemInfo:(TabGroupItem*)tabGroupItem
+                   completion:(GroupTabInfosFetchingCompletionBlock)completion;
 
 @end
 

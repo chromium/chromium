@@ -2007,4 +2007,9 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   return nil;
 }
 
+- (void)fetchTabGroupItemInfo:(TabGroupItem*)tabGroupItem
+                   completion:(GroupTabInfosFetchingCompletionBlock)completion {
+  [tabGroupItem fetchGroupTabInfos:completion faviconLoader:nil];
+}
+
 @end

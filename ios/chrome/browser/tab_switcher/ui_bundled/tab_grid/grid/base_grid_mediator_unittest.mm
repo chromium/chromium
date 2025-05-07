@@ -95,10 +95,11 @@ class BaseGridMediatorTest
           nullptr, nullptr, nullptr, tab_group_service_);
 
       mediator_ = [[RegularGridMediator alloc]
-            initWithModeHolder:mode_holder_
-           tabGroupSyncService:tab_group_sync_service_.get()
-               shareKitService:share_kit_service_.get()
-              messagingService:nil];
+           initWithModeHolder:mode_holder_
+          tabGroupSyncService:tab_group_sync_service_.get()
+              shareKitService:share_kit_service_.get()
+             messagingService:nil
+                faviconLoader:nil];
     }
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();

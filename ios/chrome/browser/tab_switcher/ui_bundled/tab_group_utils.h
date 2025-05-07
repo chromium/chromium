@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+class FaviconLoader;
 @class GroupTabInfo;
 namespace web {
 class WebState;
@@ -15,7 +16,10 @@ class WebState;
 @interface TabGroupUtils : NSObject
 
 // Retrieves GroupTabInfo from the given `webState`.
+// `faviconLoader`: used to fetch favicons on Google server, can be `nullptr`.
+// `completion`: the block is executed with the fetched GroupTabInfo.
 + (void)fetchTabGroupInfoFromWebState:(web::WebState*)webState
+                        faviconLoader:(FaviconLoader*)faviconLoader
                            completion:(void (^)(GroupTabInfo*))completion;
 
 @end
