@@ -8066,11 +8066,16 @@ void NavigationRequest::DidCommitNavigation(
   // knows locally about it because we sent an empty name at frame creation
   // time. The renderer has now committed the page and we can safely enforce the
   // empty name on the browser side.
+  BrowserContext* context =
+      frame_tree_node_->navigator().controller().GetBrowserContext();
   bool should_clear_browsing_instance_name =
       browsing_context_group_swap().ShouldClearWindowName() ||
       (commit_params().is_cross_site_cross_browsing_context_group &&
        base::FeatureList::IsEnabled(
-           features::kClearCrossSiteCrossBrowsingContextGroupWindowName));
+           features::kClearCrossSiteCrossBrowsingContextGroupWindowName) &&
+       GetContentClient()
+           ->browser()
+           ->IsClearWindowNameForNewBrowsingContextGroupAllowed(context));
 
   if (should_clear_browsing_instance_name) {
     std::string name, unique_name;

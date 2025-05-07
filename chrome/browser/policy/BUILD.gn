@@ -286,6 +286,7 @@ source_set("policy_specific_browser_tests") {
       "test/automatic_fullscreen_policy_browsertest.cc",
       "test/autoplay_policy_browsertest.cc",
       "test/bookmark_bar_enabled_browsertest.cc",
+      "test/clear_window_name_for_new_browsing_context_group_browsertest.cc",
       "test/component_updater_policy_browsertest.cc",
       "test/data_url_policy_browsertest.cc",
       "test/developer_tools_policy_browsertest.cc",

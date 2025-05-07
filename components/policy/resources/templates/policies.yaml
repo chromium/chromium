@@ -1359,6 +1359,7 @@ policies:
   1358: TabGroupSharingSettings
   1359: NTPFooterManagementNoticeEnabled
   1360: NTPFooterThemeAttributionEnabled
+  1361: ClearWindowNameForNewBrowsingContextGroup
 
 atomic_groups:
   1: Homepage

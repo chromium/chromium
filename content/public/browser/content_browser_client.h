@@ -3036,6 +3036,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldReduceAcceptLanguage(
       content::BrowserContext* browser_context);
 
+  // Checks whether window.name is allowed to be cleared for top-level
+  // cross-site navigations that create a new BrowsingContextGroup.
+  virtual bool IsClearWindowNameForNewBrowsingContextGroupAllowed(
+      content::BrowserContext* browser_context);
+
   // Set whether the browser is running in minimal mode (where most subsystems
   // are left uninitialized).
   virtual void SetIsMinimalMode(bool minimal) {}

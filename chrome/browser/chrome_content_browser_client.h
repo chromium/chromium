@@ -1071,6 +1071,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldReduceAcceptLanguage(
       content::BrowserContext* browser_context) override;
 
+  bool IsClearWindowNameForNewBrowsingContextGroupAllowed(
+      content::BrowserContext* browser_context) override;
+
   void SetIsMinimalMode(bool minimal) override;
 
   bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const override;
