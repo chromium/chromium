@@ -272,12 +272,19 @@ WebGPUSwapBufferProvider::ExportCurrentSharedImage(
   // the current swap buffer's sync token.
   sync_token = current_swap_buffer_->GetSyncToken();
 
-  // This holds a ref on the SwapBuffers that will keep it alive until the
-  // mailbox is released (and while the release callback is running).
-  *out_release_callback =
-      WTF::BindOnce(&WebGPUSwapBufferProvider::MailboxReleased,
-                    scoped_refptr<WebGPUSwapBufferProvider>(this),
-                    std::move(current_swap_buffer_));
+  // We are binding current_swap_buffer_ to callback that can be destroyed on a
+  // different thread, so make sure we don't have any non thread-safe state.
+  CHECK(!current_swap_buffer_->mailbox_texture);
+  // This holds a ref on the current_swap_buffer_ that will keep it alive until
+  // the mailbox is released (and while the release callback is running). Note,
+  // that callback can be invoked only on this thread, but can be destroyed on
+  // any thread in case this thread was terminated. Ref to SwapBuffers is enough
+  // to keep underlying resources alive, so we don't need to hold ref to
+  // WebGPUSwapBufferProvider itself.
+  *out_release_callback = WTF::BindOnce(
+      &WebGPUSwapBufferProvider::MailboxReleased,
+      weak_ptr_factory_.GetWeakPtr(), base::PlatformThread::CurrentRef(),
+      std::move(current_swap_buffer_));
 
   return shared_image;
 }
@@ -351,6 +358,8 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
 }
 
 void WebGPUSwapBufferProvider::MailboxReleased(
+    base::WeakPtr<WebGPUSwapBufferProvider> provider,
+    base::PlatformThreadRef thread_ref,
     scoped_refptr<SwapBuffer> swap_buffer,
     const gpu::SyncToken& sync_token,
     bool lost_resource) {
@@ -361,7 +370,14 @@ void WebGPUSwapBufferProvider::MailboxReleased(
   if (lost_resource)
     return;
 
-  swap_buffer_pool_->ReleaseImage(std::move(swap_buffer));
+  // This callback should never run on different thread. In case our thread was
+  // destroyed, callback should be discarded (it can be discarded on any
+  // thread).
+  CHECK_EQ(thread_ref, base::PlatformThread::CurrentRef());
+
+  if (provider) {
+    provider->swap_buffer_pool_->ReleaseImage(std::move(swap_buffer));
+  }
 }
 
 WebGPUSwapBufferProvider::SwapBuffer::SwapBuffer(

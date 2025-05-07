@@ -337,17 +337,16 @@ TEST_F(WebGPUSwapBufferProviderTest,
   EXPECT_TRUE(
       provider_->PrepareTransferableResource(&resource3, &release_callback3));
 
-  // Release resources one by one, the provider should only be freed when the
-  // last one is called.
+  // Release resources one by one and expect shared images to be destroyed.
   provider_ = nullptr;
   std::move(release_callback1).Run(gpu::SyncToken(), false /* lostResource */);
-  ASSERT_EQ(provider_alive_, true);
+  EXPECT_EQ(sii_->shared_image_count(), 2u);
 
   std::move(release_callback2).Run(gpu::SyncToken(), false /* lostResource */);
-  ASSERT_EQ(provider_alive_, true);
+  EXPECT_EQ(sii_->shared_image_count(), 1u);
 
   std::move(release_callback3).Run(gpu::SyncToken(), false /* lostResource */);
-  ASSERT_EQ(provider_alive_, false);
+  EXPECT_EQ(sii_->shared_image_count(), 0u);
 }
 
 TEST_F(WebGPUSwapBufferProviderTest, VerifyResizingProperlyAffectsResources) {

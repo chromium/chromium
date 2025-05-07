@@ -76,7 +76,7 @@ struct GPU_EXPORT ImageInfo {
 // addition to the shared image it wraps. This allow clients to create its own
 // custom pool of images of ClientImage type and are not limited to creating
 // pool of only ClientSharedImage. See unittests for example.
-class GPU_EXPORT ClientImage : public base::RefCounted<ClientImage> {
+class GPU_EXPORT ClientImage : public base::RefCountedThreadSafe<ClientImage> {
  public:
   explicit ClientImage(scoped_refptr<ClientSharedImage> shared_image);
 
@@ -96,7 +96,7 @@ class GPU_EXPORT ClientImage : public base::RefCounted<ClientImage> {
   const SharedImagePoolId& GetPoolIdForTesting() const;
 
  protected:
-  friend class base::RefCounted<ClientImage>;
+  friend class base::RefCountedThreadSafe<ClientImage>;
   friend class SharedImagePoolBase;
 
   // Allow each instantiation of SharedImagePool to access `pool_id_`.
