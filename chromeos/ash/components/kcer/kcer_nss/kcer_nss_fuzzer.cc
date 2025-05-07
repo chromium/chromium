@@ -883,6 +883,12 @@ void KcerFuzzer::RunImportCertFromBytesUseValidCert() {
   if (!cert) {
     return;
   }
+  net::ScopedCERTCertificate nss_cert =
+      net::x509_util::CreateCERTCertificateFromX509Certificate(cert.get());
+  if (!nss_cert) {
+    // NSS doesn't consider the cert valid.
+    return;
+  }
 
   base::span<const uint8_t> cert_data = GetCertData(cert);
   CertDer cert_der(std::vector<uint8_t>(cert_data.begin(), cert_data.end()));
