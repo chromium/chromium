@@ -461,6 +461,7 @@ DesktopWebURLZpsSection::DesktopWebURLZpsSection(
 DesktopWebSearchZpsSection::DesktopWebSearchZpsSection(
     omnibox::GroupConfigMap& group_configs,
     size_t limit,
+    size_t contextual_action_limit,
     size_t contextual_search_limit)
     : Section(limit,
               {
@@ -468,6 +469,11 @@ DesktopWebSearchZpsSection::DesktopWebSearchZpsSection(
                         {
                             {omnibox::GROUP_VISITED_DOC_RELATED, limit},
                             {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, limit},
+                        }),
+                  Group(contextual_action_limit,
+                        {
+                            {omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION,
+                             contextual_action_limit},
                         }),
                   Group(contextual_search_limit,
                         {
@@ -484,7 +490,7 @@ DesktopWebZpsActionsSection::DesktopWebZpsActionsSection(
                  {
                      Group(2,
                            {
-                               {omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP, 2},
+                               {omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION, 2},
                            }),
                  },
                  group_configs) {}

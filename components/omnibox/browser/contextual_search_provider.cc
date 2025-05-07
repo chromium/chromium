@@ -314,8 +314,7 @@ void ContextualSearchProvider::AddPageSearchActionMatches(
   match.contents_class = {{0, ACMatchClassification::NONE}};
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
-  match.suggestion_group_id =
-      omnibox::GroupId::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP;
+  match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH_ACTION;
 
   auto add_action = [&](auto action) {
     match.relevance--;

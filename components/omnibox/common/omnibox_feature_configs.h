@@ -136,6 +136,9 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kContextualSearchBoxUsesContextualSearchProvider);
   DECLARE_FEATURE(kContextualSearchUseVerticalBar);
 
+  // Whether to use contextual search features, for example the lens action.
+  bool IsContextualSearchEnabled() const;
+
   // Whether the starter pack page scope is enabled.
   bool starter_pack_page;
 

@@ -215,6 +215,7 @@ class DesktopWebURLZpsSection : public ZpsSection {
 // Section expressing the Desktop Search ZPS limits and grouping for the Web.
 // - up to `limit` suggestions total.
 //  - up to `limit` page related or personalized search suggestions.
+//  - up to `contextual_action_limit` contextual search action suggestions.
 //  - up to `contextual_search_limit` contextual search suggestions.
 // TODO(crbug.com/409810808): Extending `ZpsSection` would reorder the matches
 // demoting contextual search suggestions in `ZpsSection::InitFromMatches()`.
@@ -224,6 +225,7 @@ class DesktopWebSearchZpsSection : public Section {
  public:
   explicit DesktopWebSearchZpsSection(omnibox::GroupConfigMap& group_configs,
                                       size_t limit,
+                                      size_t contextual_action_limit,
                                       size_t contextual_search_limit);
 };
 

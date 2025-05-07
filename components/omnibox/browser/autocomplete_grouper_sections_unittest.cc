@@ -1801,8 +1801,9 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsSectionWithUrls) {
     sections.push_back(
         std::make_unique<DesktopWebURLZpsSection>(group_configs, 4u));
     // Max 4 search suggestions.
-    sections.push_back(
-        std::make_unique<DesktopWebSearchZpsSection>(group_configs, 4u, 4u));
+    sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(
+        group_configs, /*limit=*/4u, /*contextual_action_limit=*/0u,
+        /*contextual_search_limit=*/4u));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -1859,10 +1860,9 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsWithActionsSection) {
     sections.push_back(
         std::make_unique<DesktopWebURLZpsSection>(group_configs, 3u));
     // Max 3 suggestions, with an upper limit of 3 search suggestions.
-    sections.push_back(
-        std::make_unique<DesktopWebSearchZpsSection>(group_configs, 3u, 3u));
-    sections.push_back(
-        std::make_unique<DesktopWebZpsActionsSection>(group_configs));
+    sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(
+        group_configs, /*limit=*/4u, /*contextual_action_limit=*/1u,
+        /*contextual_search_limit=*/3u));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -1870,8 +1870,8 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsWithActionsSection) {
     SCOPED_TRACE("ZPS action matches group after contextual search matches");
     test(
         {
-            CreateMatch(300, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
-            CreateMatch(299, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
+            CreateMatch(300, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
+            CreateMatch(299, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
             CreateMatch(200, omnibox::GROUP_CONTEXTUAL_SEARCH),
             CreateMatch(199, omnibox::GROUP_CONTEXTUAL_SEARCH),
             CreateMatch(100, omnibox::GROUP_MOST_VISITED),
@@ -1887,8 +1887,8 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsWithActionsSection) {
             CreateMatch(90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
             CreateMatch(89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
         },
-        // 3 URLs, 1 other search, 2 contextual searches, and 2 actions.
-        {100, 99, 98, 94, 200, 199, 300, 299});
+        // 3 URLs, 1 other search, 1 action, 2 contextual searches.
+        {100, 99, 98, 94, 300, 200, 199});
   }
 }
 
@@ -1899,7 +1899,8 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsNoContextualSuggestions) {
     sections.push_back(
         std::make_unique<DesktopWebURLZpsSection>(group_configs, 3u));
     sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(
-        group_configs, /*limit=*/3u, /*contextual_search_limit=*/0u));
+        group_configs, /*limit=*/4u, /*contextual_action_limit=*/0u,
+        /*contextual_search_limit=*/0u));
     sections.push_back(
         std::make_unique<DesktopWebZpsActionsSection>(group_configs));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
@@ -1912,9 +1913,9 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsNoContextualSuggestions) {
             CreateMatch(99, omnibox::GROUP_MOST_VISITED),
             CreateMatch(98, omnibox::GROUP_VISITED_DOC_RELATED),
             CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
-            CreateMatch(96, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
+            CreateMatch(96, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
             CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
-            CreateMatch(94, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
+            CreateMatch(94, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
             CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
         },
         // URLs, then searches, then actions, stable sorted.

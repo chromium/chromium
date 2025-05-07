@@ -127,6 +127,10 @@ ContextualSearch& ContextualSearch::operator=(const ContextualSearch&) =
     default;
 ContextualSearch::~ContextualSearch() = default;
 
+bool ContextualSearch::IsContextualSearchEnabled() const {
+  return contextual_zps_limit > 0;
+}
+
 DocumentProvider::DocumentProvider() {
   enabled = base::FeatureList::IsEnabled(omnibox::kDocumentProvider);
   min_query_length =
