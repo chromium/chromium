@@ -144,8 +144,13 @@ TabInterface* TabCollection::GetTabAtIndexRecursive(size_t index) const {
 }
 
 std::vector<TabInterface*> TabCollection::GetTabsRecursive() const {
-  std::list<TabInterface*> tabs = GetTabsRecursiveAsList();
-  return std::vector<TabInterface*>{tabs.begin(), tabs.end()};
+  std::vector<TabInterface*> tabs;
+  tabs.reserve(TabCountRecursive());
+  for (tabs::TabInterface* tab : *this) {
+    tabs.push_back(tab);
+  }
+
+  return tabs;
 }
 
 std::optional<size_t> TabCollection::GetIndexOfCollection(
@@ -255,25 +260,6 @@ void TabCollection::OnReparented(TabCollection* new_parent) {
   for (auto tab : GetTabsRecursive()) {
     tab->OnAncestorChanged(GetPassKey());
   }
-}
-
-std::list<TabInterface*> TabCollection::GetTabsRecursiveAsList() const {
-  const auto& children = impl_->GetChildren();
-  std::list<TabInterface*> tabs;
-
-  for (const auto& child : children) {
-    if (std::holds_alternative<std::unique_ptr<TabInterface>>(child)) {
-      TabInterface* tab = std::get<std::unique_ptr<TabInterface>>(child).get();
-      tabs.push_back(tab);
-    } else {
-      std::list<TabInterface*> tabs_to_insert =
-          std::get<std::unique_ptr<TabCollection>>(child)
-              ->GetTabsRecursiveAsList();
-      tabs.splice(tabs.end(), tabs_to_insert);
-    }
-  }
-
-  return tabs;
 }
 
 }  // namespace tabs

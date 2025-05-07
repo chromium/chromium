@@ -39,7 +39,7 @@ class TabCollection {
 
    public:
     using iterator_category = std::forward_iterator_tag;
-    using value_type = const tabs::TabInterface*;
+    using value_type = tabs::TabInterface*;
     using difference_type = ptrdiff_t;
     using pointer = value_type;
     using reference = value_type;
@@ -80,7 +80,7 @@ class TabCollection {
     };
 
     // Points to the currently accessed tab during iteration.
-    raw_ptr<const tabs::TabInterface> cur_;
+    raw_ptr<tabs::TabInterface> cur_;
 
     // Points to the root tab collection that the iterator is traversing.
     raw_ptr<const tabs::TabCollection> root_;
@@ -205,10 +205,6 @@ class TabCollection {
   base::PassKey<TabCollection> GetPassKey() const {
     return base::PassKey<TabCollection>();
   }
-
-  // Helper function for GetTabsRecursive that uses std::list, in order to take
-  // advantage of constant-time concatenation.
-  std::list<TabInterface*> GetTabsRecursiveAsList() const;
 
   const ChildrenVector& GetChildren() const { return impl_->GetChildren(); }
 
