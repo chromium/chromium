@@ -186,6 +186,11 @@ bool IsChildAccountStatusKnown(const PrefService& pref_service) {
 #endif
 
 bool IsSafeSitesEnabled(const PrefService& pref_service) {
+  if (base::FeatureList::IsEnabled(kDecoupleSafeSitesFromMainSwitch) &&
+      base::FeatureList::IsEnabled(kAlignSafeSitesValueWithBrowserDefault)) {
+    return pref_service.GetBoolean(prefs::kSupervisedUserSafeSites);
+  }
+
   return supervised_user::IsSubjectToParentalControls(pref_service) &&
          pref_service.GetBoolean(prefs::kSupervisedUserSafeSites);
 }

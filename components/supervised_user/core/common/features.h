@@ -72,6 +72,10 @@ BASE_DECLARE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl);
 // while keeping the default value neutral.
 BASE_DECLARE_FEATURE(kAlignSafeSitesValueWithBrowserDefault);
 
+// Allows reading SafeSites setting without extra supervised user guard. Can be
+// enabled iff kAlignSafeSitesValueWithBrowserDefault is also enabled.
+BASE_DECLARE_FEATURE(kDecoupleSafeSitesFromMainSwitch);
+
 // Returns whether the V3 version of the URL filter interstitial is
 // enabled.
 bool IsBlockInterstitialV3Enabled();

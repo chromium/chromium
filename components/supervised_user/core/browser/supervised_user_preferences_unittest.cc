@@ -123,26 +123,16 @@ TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledSupervisedUser) {
   EXPECT_TRUE(IsSafeSitesEnabled(pref_service_));
 }
 
-TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledNonSupervisedUser) {
-  // Requests safe sites check without parental controls.
-  EnableParentalControls(pref_service_);
-  // Clear the main switch
-  pref_service_.SetString(prefs::kSupervisedUserId, std::string());
-
-  EXPECT_FALSE(IsSafeSitesEnabled(pref_service_));
-}
-
-TEST_F(SupervisedUserPreferencesTest, IsSafeSitesDisabled) {
-  // Sanity check for disabled safe sites (also gated by kSupervisedUserId).
-  pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
-                                      base::Value(false));
+TEST_F(SupervisedUserPreferencesTest,
+       IsSafeSitesEnabledIndependentlyFromSupervision) {
+  // Default behavior.
   ASSERT_FALSE(IsSubjectToParentalControls(pref_service_));
-  EXPECT_FALSE(IsSafeSitesEnabled(pref_service_));
+  ASSERT_FALSE(IsSafeSitesEnabled(pref_service_));
 
   pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
                                       base::Value(true));
   ASSERT_FALSE(IsSubjectToParentalControls(pref_service_));
-  EXPECT_FALSE(IsSafeSitesEnabled(pref_service_));
+  EXPECT_TRUE(IsSafeSitesEnabled(pref_service_));
 }
 
 TEST_F(SupervisedUserPreferencesTest,
