@@ -49,7 +49,7 @@ public class AutofillManagerWrapper {
         private WeakReference<AutofillManagerWrapper> mManager;
 
         public AutofillInputUiMonitor(AutofillManagerWrapper manager) {
-            mManager = new WeakReference<AutofillManagerWrapper>(manager);
+            mManager = new WeakReference<>(manager);
         }
 
         @Override

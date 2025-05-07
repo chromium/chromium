@@ -22,7 +22,8 @@ namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAutofillDeprecateAccessibilityApi,
-    &kAutofillVirtualViewStructureAndroidInCct};
+    &kAutofillVirtualViewStructureAndroidInCct,
+    &kAndroidAutofillLazyFrameworkWrapper};
 
 }  // namespace
 
@@ -45,6 +46,15 @@ BASE_FEATURE(kAutofillVirtualViewStructureAndroidInCct,
 // passkey request with a long-press action on webauthn-annotated fields.
 BASE_FEATURE(kAutofillVirtualViewStructureAndroidPasskeyLongPress,
              "AutofillVirtualViewStructureAndroidPasskeyLongPress",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the AutofillManagerWrapper class will not be initialized when the
+// AutofillProvider Java class is initialized. Some apps do not use Autofill at
+// all, yet they incur the latency cost of initializing the wrapper. This
+// experiment tests whether lazily initializing the wrapper will cause any
+// issues.
+BASE_FEATURE(kAndroidAutofillLazyFrameworkWrapper,
+             "AndroidAutofillLazyFrameworkWrapper",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {
