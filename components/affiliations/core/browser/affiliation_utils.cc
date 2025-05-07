@@ -449,34 +449,11 @@ std::ostream& operator<<(std::ostream& os, const FacetURI& facet_uri) {
   return os << facet_uri.potentially_invalid_spec();
 }
 
-bool operator==(const FacetBrandingInfo& lhs, const FacetBrandingInfo& rhs) {
-  return std::tie(lhs.name, lhs.icon_url) == std::tie(rhs.name, rhs.icon_url);
-}
-
-bool operator!=(const FacetBrandingInfo& lhs, const FacetBrandingInfo& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator==(const Facet& lhs, const Facet& rhs) {
-  return std::tie(lhs.uri, lhs.branding_info, lhs.main_domain,
-                  lhs.change_password_url) ==
-         std::tie(rhs.uri, rhs.branding_info, rhs.main_domain,
-                  rhs.change_password_url);
-}
-
-bool operator!=(const Facet& lhs, const Facet& rhs) {
-  return !(lhs == rhs);
-}
-
 bool operator==(const GroupedFacets& lhs, const GroupedFacets& rhs) {
   if (!std::ranges::is_permutation(lhs.facets, rhs.facets)) {
     return false;
   }
   return lhs.branding_info == rhs.branding_info;
-}
-
-bool operator!=(const GroupedFacets& lhs, const GroupedFacets& rhs) {
-  return !(lhs == rhs);
 }
 
 bool AreEquivalenceClassesEqual(const AffiliatedFacets& a,

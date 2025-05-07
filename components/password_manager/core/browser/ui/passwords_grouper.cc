@@ -106,10 +106,10 @@ class SortedPasskeysView {
    public:
     iterator(size_t i, const SortedPasskeysView* sorted)
         : i_(i), sorted_(sorted) {}
+
+    friend bool operator==(const iterator&, const iterator&) = default;
+
     void operator++() { i_++; }
-    bool operator!=(const iterator& other) const {
-      return i_ != other.i_ || sorted_ != other.sorted_;
-    }
     const PasskeyCredential& operator*() {
       return sorted_->passkeys_[sorted_->sorted_indexes_[i_]];
     }
