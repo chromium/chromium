@@ -32,10 +32,10 @@ class ReportingEventRouter : public KeyedService {
 
   bool IsEventEnabled(const std::string& event);
 
-  void OnLoginEvent(const GURL& url,
-                    bool is_federated,
-                    const url::SchemeHostPort& federated_origin,
-                    const std::u16string& username);
+  virtual void OnLoginEvent(const GURL& url,
+                            bool is_federated,
+                            const url::SchemeHostPort& federated_origin,
+                            const std::u16string& username);
 
   void OnPasswordBreach(
       const std::string& trigger,

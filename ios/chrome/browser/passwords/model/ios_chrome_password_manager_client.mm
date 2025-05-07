@@ -231,7 +231,6 @@ bool IOSChromePasswordManagerClient::IsPasswordChangeOngoing() {
   return false;
 }
 
-// TODO(crbug.com/409047852): Add unit test to confirm the event trigger.
 void IOSChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
     const GURL& url,
     bool is_federated,
