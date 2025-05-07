@@ -6767,8 +6767,6 @@ data/ctrl-click-subframe-link.html
 data/dark_color_scheme_meta_slow.html
 data/data_url_navigations.html
 data/detach_frame_in_copy.html
-data/device_posture/no_token.html
-data/device_posture/valid_token.html
 data/device_sensors/cross_origin_iframe.html
 data/device_sensors/device_inertial_sensor_diagnostics.html
 data/device_sensors/device_motion_null_test.html

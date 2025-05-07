@@ -5001,11 +5001,7 @@
     },
     {
       name: "ViewportSegments",
-      status: "experimental",
-      public: true,
-      base_feature_status: "enabled",
-      copied_from_base_feature_if: "overridden",
-      origin_trial_feature_name: "FoldableAPIs",
+      status: "stable",
     },
     {
       name: "ViewTransitionDisableSnapBrowserControlsOnHidden",

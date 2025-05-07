@@ -9710,6 +9710,10 @@ interface ViewTransitionTypeSet
     method has
     method keys
     method values
+interface Viewport
+    attribute @@toStringTag
+    getter segments
+    method constructor
 interface VirtualKeyboard : EventTarget
     attribute @@toStringTag
     getter boundingRect
@@ -12140,6 +12144,7 @@ namespace console
     getter toolbar
     getter top
     getter trustedTypes
+    getter viewport
     getter visualViewport
     getter window
     method NodeFilter
@@ -12354,6 +12359,7 @@ namespace console
     setter status
     setter statusbar
     setter toolbar
+    setter viewport
     setter visualViewport
 PASS successfullyParsed is true
 

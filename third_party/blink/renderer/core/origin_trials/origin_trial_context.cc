@@ -547,10 +547,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(features::kSoftNavigationDetection);
   }
 
-  if (trial_name == "FoldableAPIs") {
-    return base::FeatureList::IsEnabled(features::kViewportSegments);
-  }
-
   if (trial_name == "PermissionElement") {
     return base::FeatureList::IsEnabled(blink::features::kPermissionElement);
   }

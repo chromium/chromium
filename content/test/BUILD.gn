@@ -1461,7 +1461,6 @@ test("content_browsertests") {
     "../browser/cookie_deprecation_label/cookie_deprecation_label_browsertest.cc",
     "../browser/cross_site_transfer_browsertest.cc",
     "../browser/data_decoder_browsertest.cc",
-    "../browser/device_posture/foldable_apis_origin_trial_browsertest.cc",
     "../browser/device_sensors/device_sensor_browsertest.cc",
     "../browser/devtools/devtools_issue_storage_browsertest.cc",
     "../browser/devtools/devtools_trust_token_browsertest.cc",
