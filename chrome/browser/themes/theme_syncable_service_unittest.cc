@@ -2191,14 +2191,11 @@ TEST_F(RealThemeSyncableServiceTest,
                 prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
             new_value);
 
-  // The local theme should be committed to the server.
-  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
-  ASSERT_EQ(changes.size(), 1u);
-  const sync_pb::ThemeSpecifics& change_specifics =
-      changes.back().sync_data().GetSpecifics().theme();
-  ASSERT_TRUE(change_specifics.has_browser_color_scheme());
-  ASSERT_TRUE(change_specifics.has_ntp_background());
-  EXPECT_EQ(change_specifics.ntp_background().url(), kTestUrl);
+  sync_pb::ThemeSpecifics current_specifics =
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting();
+  ASSERT_TRUE(current_specifics.has_browser_color_scheme());
+  ASSERT_TRUE(current_specifics.has_ntp_background());
+  EXPECT_EQ(current_specifics.ntp_background().url(), kTestUrl);
 }
 
 // Regression test for crbug.com/389026436.
@@ -2285,14 +2282,11 @@ TEST_F(RealThemeSyncableServiceTest,
                 prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
             new_value);
 
-  // The local theme should be committed to the server.
-  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
-  ASSERT_EQ(changes.size(), 1u);
-  const sync_pb::ThemeSpecifics& change_specifics =
-      changes.back().sync_data().GetSpecifics().theme();
-  ASSERT_TRUE(change_specifics.has_browser_color_scheme());
-  ASSERT_TRUE(change_specifics.has_ntp_background());
-  EXPECT_EQ(change_specifics.ntp_background().url(), kTestUrl);
+  sync_pb::ThemeSpecifics current_specifics =
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting();
+  ASSERT_TRUE(current_specifics.has_browser_color_scheme());
+  ASSERT_TRUE(current_specifics.has_ntp_background());
+  EXPECT_EQ(current_specifics.ntp_background().url(), kTestUrl);
 }
 
 TEST_F(RealThemeSyncableServiceTest,
@@ -2351,15 +2345,12 @@ TEST_F(RealThemeSyncableServiceTest,
   EXPECT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
   EXPECT_EQ(theme_service()->GetUserColor(), SK_ColorBLUE);
 
-  // The local theme should be committed to the server.
-  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
-  ASSERT_EQ(changes.size(), 1u);
-  const sync_pb::ThemeSpecifics& change_specifics =
-      changes.back().sync_data().GetSpecifics().theme();
-  ASSERT_TRUE(change_specifics.has_browser_color_scheme());
-  ASSERT_TRUE(change_specifics.has_user_color_theme());
-  EXPECT_EQ(change_specifics.user_color_theme().color(), SK_ColorBLUE);
-  EXPECT_EQ(change_specifics.user_color_theme().browser_color_variant(),
+  sync_pb::ThemeSpecifics current_specifics =
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting();
+  ASSERT_TRUE(current_specifics.has_browser_color_scheme());
+  ASSERT_TRUE(current_specifics.has_user_color_theme());
+  EXPECT_EQ(current_specifics.user_color_theme().color(), SK_ColorBLUE);
+  EXPECT_EQ(current_specifics.user_color_theme().browser_color_variant(),
             sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_NEUTRAL);
 }
 
@@ -2426,15 +2417,12 @@ TEST_F(RealThemeSyncableServiceTest,
   EXPECT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
   EXPECT_EQ(theme_service()->GetUserColor(), SK_ColorBLUE);
 
-  // The local theme should be committed to the server.
-  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
-  ASSERT_EQ(changes.size(), 1u);
-  const sync_pb::ThemeSpecifics& change_specifics =
-      changes.back().sync_data().GetSpecifics().theme();
-  ASSERT_TRUE(change_specifics.has_browser_color_scheme());
-  ASSERT_TRUE(change_specifics.has_user_color_theme());
-  EXPECT_EQ(change_specifics.user_color_theme().color(), SK_ColorBLUE);
-  EXPECT_EQ(change_specifics.user_color_theme().browser_color_variant(),
+  sync_pb::ThemeSpecifics current_specifics =
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting();
+  ASSERT_TRUE(current_specifics.has_browser_color_scheme());
+  ASSERT_TRUE(current_specifics.has_user_color_theme());
+  EXPECT_EQ(current_specifics.user_color_theme().color(), SK_ColorBLUE);
+  EXPECT_EQ(current_specifics.user_color_theme().browser_color_variant(),
             sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_NEUTRAL);
 }
 
