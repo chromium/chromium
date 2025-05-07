@@ -9216,3 +9216,6 @@ crbug.com/415747471 [ Mac ] virtual/text-antialias/international/bidi-CS-after-A
 crbug.com/415747471 [ Mac ] virtual/text-antialias/font-fallback.html [ Failure ]
 crbug.com/415747471 [ Mac ] virtual/text-antialias/complex-text-opacity.html [ Failure ]
 crbug.com/415747471 [ Mac ] svg/text/bidi-textlength.html [ Failure ]
+
+# Gardener 2025-05-07
+crbug.com/416123241 [ Linux ] fast/forms/select/customizable-select/disallowed-select-descendants-console-message.html [ Failure Pass ]
