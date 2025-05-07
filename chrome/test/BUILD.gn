@@ -10870,7 +10870,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/password_manager/password_user_education_interactive_uitest.cc",
       "../browser/permissions/one_time_permissions_tracker_helper_interactive_uitest.cc",
       "../browser/preloading/prerender/prerender_omnibox_ui_browsertest.cc",
-      "../browser/privacy_sandbox/browsing_topics_settings_interactive_uitest.cc",
       "../browser/renderer_context_menu/link_to_text_menu_observer_interactive_uitest.cc",
       "../browser/renderer_context_menu/render_view_context_menu_browsertest_util.cc",
       "../browser/renderer_context_menu/render_view_context_menu_browsertest_util.h",
@@ -11019,16 +11018,12 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/policy:test_support",
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:util",
+      "//chrome/browser/privacy_sandbox:interactive_ui_tests",
 
       # TODO(413315837): Remove this dependency when
       # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc
       # gets modularized.
       "//chrome/browser/privacy_sandbox:test_support",
-      "//chrome/browser/ui/privacy_sandbox",
-
-      # TODO(413315837): Remove this dep when browsing_topics_settings_interactive_uitest.cc
-      # gets build off of c/b/privacy_sandbox/BUILD.gn.
-      "//chrome/browser/privacy_sandbox:headers",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
@@ -11055,6 +11050,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/lens:interactive_ui_tests",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:tab_strip",
