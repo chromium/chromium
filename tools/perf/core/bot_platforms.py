@@ -516,7 +516,6 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
 # TODO(crbug.com/338630584): Remove it when other benchmarks can be run on
 # Android.
 _CROSSBENCH_ANDROID = frozenset([
-    _crossbench_speedometer3_0(arguments=['--fileserver']),
     _crossbench_speedometer3(arguments=['--fileserver']),
     _crossbench_loadline_phone(arguments=[
         '--cool-down-threshold=moderate',
