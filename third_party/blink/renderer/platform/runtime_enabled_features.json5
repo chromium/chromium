@@ -3815,12 +3815,6 @@
       name: "RemoveDataUrlInSvgUse",
       status: "stable",
     },
-    // Remove a node if it's selected fully even though it has children. See
-    // https://crbug.com/331074432
-    {
-      name: "RemoveNodeHavingChildrenIfFullySelected",
-      status: "stable",
-    },
     {
       // crbug.com/41047725
       name: "RemovePlaceholderBRForDisplayInline",
