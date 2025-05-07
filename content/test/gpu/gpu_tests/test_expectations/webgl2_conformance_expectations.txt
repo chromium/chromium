@@ -791,9 +791,6 @@ crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/i
 ## Mac ASAN ##
 
 
-# Flaky failure due to possible synchronization issues
-crbug.com/412679364 [ mac mac-arm64 ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
-
 ####################
 # Linux failures   #
 ####################
