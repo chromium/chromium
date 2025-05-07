@@ -117,6 +117,7 @@ class ReportScheduler {
   bool IsNextReportScheduledForTesting() const;
 
   ReportTrigger GetActiveTriggerForTesting() const;
+  ReportGenerationConfig GetActiveGenerationConfigForTesting() const;
 
   void QueueReportUploaderForTesting(std::unique_ptr<ReportUploader> uploader);
   Delegate* GetDelegateForTesting();

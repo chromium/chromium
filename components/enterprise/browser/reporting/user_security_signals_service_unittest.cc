@@ -5,8 +5,10 @@
 #include "components/enterprise/browser/reporting/user_security_signals_service.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -82,14 +84,25 @@ class UserSecuritySignalsServiceTest : public testing::Test {
     testing_prefs_.SetBoolean(kUserSecurityAuthenticatedReporting, use_auth);
   }
 
-  void CreateUserSecuritySignalsService(bool start_service = false) {
+  void CreateAndRunSignalsService(bool expect_reporting_enabled = true,
+                                  bool expect_using_cookie = false) {
+    // Creation of the service with the pref value already enabled will trigger
+    // an upload.
+    EXPECT_CALL(delegate_, OnReportEventTriggered(_))
+        .Times(expect_reporting_enabled ? 1 : 0);
+
+    if (expect_using_cookie) {
+      EXPECT_CALL(delegate_, GetCookieManager());
+    }
+
     service_ = std::make_unique<UserSecuritySignalsService>(&testing_prefs_,
                                                             &delegate_);
+    service_->Start();
+    task_environment_.RunUntilIdle();
 
-    if (start_service) {
-      service_->Start();
-      task_environment_.RunUntilIdle();
-    }
+    ASSERT_EQ(service_->IsSecuritySignalsReportingEnabled(),
+              expect_reporting_enabled);
+    ASSERT_EQ(service_->ShouldUseCookies(), expect_using_cookie);
   }
 
   void FastForwardTimeToTrigger() {
@@ -102,6 +115,10 @@ class UserSecuritySignalsServiceTest : public testing::Test {
     task_environment_.FastForwardBy(
         UserSecuritySignalsService::GetSecurityUploadCadence() / 2 +
         base::Seconds(1));
+  }
+
+  void FastForwardCustomTime(base::TimeDelta time) {
+    task_environment_.FastForwardBy(time);
   }
 
   void TriggerValidCookieInsert() {
@@ -117,6 +134,14 @@ class UserSecuritySignalsServiceTest : public testing::Test {
     }
   }
 
+  // Note: Cadence unit is hours.
+  void OverrideSecurityUploadCadence(base::TimeDelta new_cadence) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        enterprise_signals::features::kProfileSignalsReportingEnabled,
+        {{enterprise_signals::features::kProfileSignalsReportingInterval.name,
+          base::ToString(new_cadence.InHours()) + "h"}});
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -125,10 +150,12 @@ class UserSecuritySignalsServiceTest : public testing::Test {
   testing::StrictMock<MockUserSecuritySignalsServiceDelegate> delegate_;
   network::TestCookieManager test_cookie_manager_;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(UserSecuritySignalsServiceTest, NotStarted) {
-  CreateUserSecuritySignalsService();
+  service_ =
+      std::make_unique<UserSecuritySignalsService>(&testing_prefs_, &delegate_);
 
   EXPECT_FALSE(service_->IsSecuritySignalsReportingEnabled());
   EXPECT_FALSE(service_->ShouldUseCookies());
@@ -148,10 +175,7 @@ TEST_F(UserSecuritySignalsServiceTest, NotStarted) {
 TEST_F(UserSecuritySignalsServiceTest, PolicyDefault) {
   EXPECT_CALL(delegate_, OnReportEventTriggered(_)).Times(0);
 
-  CreateUserSecuritySignalsService(/*start_service=*/true);
-
-  EXPECT_FALSE(service_->IsSecuritySignalsReportingEnabled());
-  EXPECT_FALSE(service_->ShouldUseCookies());
+  CreateAndRunSignalsService(/*expect_reporting_enabled=*/false);
 
   // No trigger should occur even if we fast forward.
   FastForwardTimeToTrigger();
@@ -161,15 +185,8 @@ TEST_F(UserSecuritySignalsServiceTest, PolicyDefault) {
 TEST_F(UserSecuritySignalsServiceTest, PolicyEnabledWithoutCookies) {
   SetEnabledPolicy(true);
 
-  // Creation of the service with the pref value already enabled will trigger an
-  // upload.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
-      .Times(1);
+  CreateAndRunSignalsService();
 
-  CreateUserSecuritySignalsService(/*start_service=*/true);
-
-  EXPECT_TRUE(service_->IsSecuritySignalsReportingEnabled());
-  EXPECT_FALSE(service_->ShouldUseCookies());
   histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
                                        SecurityReportTrigger::kTimer, 1);
 }
@@ -178,24 +195,17 @@ TEST_F(UserSecuritySignalsServiceTest, PolicyEnabledWithCookies_FastForwards) {
   SetEnabledPolicy(true);
   SetUseAuthPolicy(true);
 
-  // A upload should occur first on service creation.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
-      .Times(1);
-  EXPECT_CALL(delegate_, GetCookieManager());
-
-  CreateUserSecuritySignalsService(/*start_service=*/true);
-
-  EXPECT_TRUE(service_->IsSecuritySignalsReportingEnabled());
-  EXPECT_TRUE(service_->ShouldUseCookies());
+  CreateAndRunSignalsService(/*expect_reporting_enabled=*/true,
+                             /*expect_using_cookie=*/true);
+  Mock::VerifyAndClearExpectations(&delegate_);
 
   // Fast forwarding should trigger another upload.
-  Mock::VerifyAndClearExpectations(&delegate_);
   EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
       .Times(1);
   FastForwardTimeToTrigger();
+  Mock::VerifyAndClearExpectations(&delegate_);
 
   // Fast forwarding again should trigger another upload.
-  Mock::VerifyAndClearExpectations(&delegate_);
   EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
       .Times(1);
   FastForwardTimeToTrigger();
@@ -212,18 +222,12 @@ TEST_F(UserSecuritySignalsServiceTest,
   SetEnabledPolicy(true);
   SetUseAuthPolicy(true);
 
-  // A upload should occur first on service creation.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
-      .Times(1);
-  EXPECT_CALL(delegate_, GetCookieManager());
-  CreateUserSecuritySignalsService(/*start_service=*/true);
-
-  EXPECT_TRUE(service_->IsSecuritySignalsReportingEnabled());
-  EXPECT_TRUE(service_->ShouldUseCookies());
+  CreateAndRunSignalsService(/*expect_reporting_enabled=*/true,
+                             /*expect_using_cookie=*/true);
+  Mock::VerifyAndClearExpectations(&delegate_);
 
   // Signaling that a report was uploaded after waiting a halftime means waiting
   // another halftime should not result in a second report being triggered.
-  Mock::VerifyAndClearExpectations(&delegate_);
   EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
       .Times(0);
   FastForwardByHalfTimeToTrigger();
@@ -235,7 +239,7 @@ TEST_F(UserSecuritySignalsServiceTest,
 }
 
 TEST_F(UserSecuritySignalsServiceTest, PolicyBecomesEnabledWithoutCookies) {
-  CreateUserSecuritySignalsService(/*start_service=*/true);
+  CreateAndRunSignalsService(/*expect_reporting_enabled=*/false);
   EXPECT_FALSE(service_->IsSecuritySignalsReportingEnabled());
   EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
       .Times(0);
@@ -266,7 +270,10 @@ TEST_F(UserSecuritySignalsServiceTest,
   // Having a broken cookie manager should not cause crashes.
   EXPECT_CALL(delegate_, GetCookieManager()).WillOnce(Return(nullptr));
 
-  CreateUserSecuritySignalsService(/*start_service=*/true);
+  service_ =
+      std::make_unique<UserSecuritySignalsService>(&testing_prefs_, &delegate_);
+  service_->Start();
+  task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(service_->IsSecuritySignalsReportingEnabled());
   EXPECT_TRUE(service_->ShouldUseCookies());
@@ -280,15 +287,8 @@ TEST_F(UserSecuritySignalsServiceTest,
   SetEnabledPolicy(true);
   SetUseAuthPolicy(true);
 
-  // A upload should occur first on service creation.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
-      .Times(1);
-  EXPECT_CALL(delegate_, GetCookieManager());
-
-  CreateUserSecuritySignalsService(/*start_service=*/true);
-
-  EXPECT_TRUE(service_->IsSecuritySignalsReportingEnabled());
-  EXPECT_TRUE(service_->ShouldUseCookies());
+  CreateAndRunSignalsService(/*expect_reporting_enabled=*/true,
+                             /*expect_using_cookie=*/true);
 
   EXPECT_CALL(delegate_,
               OnReportEventTriggered(SecurityReportTrigger::kCookieChange))
@@ -297,7 +297,6 @@ TEST_F(UserSecuritySignalsServiceTest,
   // Fake that the first-party authentication cookie was inserted for the first
   // time.
   TriggerValidCookieInsert();
-
   FlushForTesting();
 
   histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
@@ -311,15 +310,8 @@ TEST_F(UserSecuritySignalsServiceTest,
   SetEnabledPolicy(true);
   SetUseAuthPolicy(true);
 
-  // A upload should occur first on service creation.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
-      .Times(1);
-  EXPECT_CALL(delegate_, GetCookieManager());
-
-  CreateUserSecuritySignalsService(/*start_service=*/true);
-
-  EXPECT_TRUE(service_->IsSecuritySignalsReportingEnabled());
-  EXPECT_TRUE(service_->ShouldUseCookies());
+  CreateAndRunSignalsService(/*expect_reporting_enabled=*/true,
+                             /*expect_using_cookie=*/true);
 
   EXPECT_CALL(delegate_,
               OnReportEventTriggered(SecurityReportTrigger::kCookieChange))
@@ -333,8 +325,8 @@ TEST_F(UserSecuritySignalsServiceTest,
       GetTestCookie(GaiaUrls::GetInstance()->secure_google_url(),
                     GaiaConstants::kGaiaSigninCookieName),
       net::CookieAccessResult(), net::CookieChangeCause::OVERWRITE));
-  TriggerValidCookieInsert();
 
+  TriggerValidCookieInsert();
   FlushForTesting();
 
   histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
@@ -348,15 +340,8 @@ TEST_F(UserSecuritySignalsServiceTest,
   SetEnabledPolicy(true);
   SetUseAuthPolicy(true);
 
-  // A upload should occur first on service creation.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
-      .Times(1);
-  EXPECT_CALL(delegate_, GetCookieManager());
-
-  CreateUserSecuritySignalsService(/*start_service=*/true);
-
-  EXPECT_TRUE(service_->IsSecuritySignalsReportingEnabled());
-  EXPECT_TRUE(service_->ShouldUseCookies());
+  CreateAndRunSignalsService(/*expect_reporting_enabled=*/true,
+                             /*expect_using_cookie=*/true);
 
   // Fake that various cookie change events were triggered, none with "INSERT".
   // This means no additional report should be triggered.
@@ -399,11 +384,7 @@ TEST_F(UserSecuritySignalsServiceTest,
   SetEnabledPolicy(true);
   SetUseAuthPolicy(false);
 
-  // A upload should occur first on service creation.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
-      .Times(1);
-
-  CreateUserSecuritySignalsService(/*start_service=*/true);
+  CreateAndRunSignalsService();
 
   // Auth policy is not enabled, so this should not trigger any report.
   TriggerValidCookieInsert();
@@ -427,6 +408,81 @@ TEST_F(UserSecuritySignalsServiceTest,
                                       SecurityReportTrigger::kTimer, 1);
   histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
                                       SecurityReportTrigger::kCookieChange, 1);
+}
+
+// Test that verifies if the feature flag param overrides the upload cadence
+// correctly.
+TEST_F(UserSecuritySignalsServiceTest, FlagOverrideCadence) {
+  auto default_security_upload_cadence =
+      UserSecuritySignalsService::GetSecurityUploadCadence();
+
+  // Overwrite the feature flag parameter to double the upload interval.
+  OverrideSecurityUploadCadence(default_security_upload_cadence * 2);
+
+  SetEnabledPolicy(true);
+
+  CreateAndRunSignalsService();
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Fast forwarding should not trigger another upload, since the internval is
+  // overwritten.
+  EXPECT_CALL(delegate_, OnReportEventTriggered(_)).Times(0);
+  FastForwardCustomTime(default_security_upload_cadence);
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Fast forwarding again should trigger another upload.
+  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
+      .Times(1);
+  FastForwardCustomTime(default_security_upload_cadence);
+
+  histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
+                                       SecurityReportTrigger::kTimer, 2);
+}
+
+// Test that verifies if the feature flag param overrides the upload cadence
+// correctly, even when the timer has already started. Note that this affects
+// the timer on next upload while the currently running timer is unaffected.
+TEST_F(UserSecuritySignalsServiceTest, FlagOverrideCadenceWhileRunning) {
+  auto default_security_upload_cadence =
+      UserSecuritySignalsService::GetSecurityUploadCadence();
+
+  SetEnabledPolicy(true);
+
+  CreateAndRunSignalsService();
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Fast forwarding should trigger another upload, since the interval is still
+  // at default value.
+  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
+      .Times(1);
+  FastForwardCustomTime(default_security_upload_cadence);
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Overwrite the feature flag parameter to double the upload interval.
+  OverrideSecurityUploadCadence(default_security_upload_cadence * 2);
+
+  // Fast forwarding should trigger another upload because the timer started
+  // before we overwrite the interval, so it would be using the old value (i.e
+  // not doubled).
+  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
+      .Times(1);
+  FastForwardCustomTime(default_security_upload_cadence);
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // No upload trigger on first fast forward because interval is already
+  // doubled now.
+  EXPECT_CALL(delegate_, OnReportEventTriggered(_)).Times(0);
+  FastForwardCustomTime(default_security_upload_cadence);
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Fast forward again should trigger an upload since we reached the new,
+  // doubled upload deadline.
+  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
+      .Times(1);
+  FastForwardCustomTime(default_security_upload_cadence);
+
+  histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
+                                       SecurityReportTrigger::kTimer, 4);
 }
 
 }  // namespace enterprise_reporting

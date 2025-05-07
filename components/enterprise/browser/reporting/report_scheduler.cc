@@ -107,6 +107,11 @@ ReportScheduler::ReportTrigger ReportScheduler::GetActiveTriggerForTesting()
   return active_trigger_;
 }
 
+ReportGenerationConfig ReportScheduler::GetActiveGenerationConfigForTesting()
+    const {
+  return active_report_generation_config_;
+}
+
 void ReportScheduler::QueueReportUploaderForTesting(
     std::unique_ptr<ReportUploader> uploader) {
   report_uploaders_for_test_.push_back(std::move(uploader));
