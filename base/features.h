@@ -37,6 +37,7 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kCollectAndroidFrameTimelineMetrics);
 BASE_EXPORT BASE_DECLARE_FEATURE(
     kPostPowerMonitorBroadcastReceiverInitToBackground);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPostGetMyMemoryStateToBackground);
+BASE_EXPORT BASE_DECLARE_FEATURE(kUseSharedRebindServiceConnection);
 #endif
 
 #if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)

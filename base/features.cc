@@ -118,6 +118,12 @@ BASE_FEATURE(kPostPowerMonitorBroadcastReceiverInitToBackground,
 BASE_FEATURE(kPostGetMyMemoryStateToBackground,
              "PostGetMyMemoryStateToBackground",
              FEATURE_ENABLED_BY_DEFAULT);
+
+// Use shared service connection to rebind a service binding to update the LRU
+// in the ProcessList of OomAdjuster.
+BASE_FEATURE(kUseSharedRebindServiceConnection,
+             "UseSharedRebindServiceConnection",
+             FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void Init(EmitThreadControllerProfilerMetadata

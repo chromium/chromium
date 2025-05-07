@@ -21,6 +21,7 @@ import android.os.RemoteException;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BaseFeatureList;
 import org.chromium.base.BaseFeatureMap;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.BuildInfo;
@@ -185,6 +186,7 @@ public class ChildProcessConnection {
     // Cache BackgroundNotPerceptibleBinding feature flag value.
     private static @Nullable Boolean sUseBackgroundNotPerceptibleBinding;
 
+    private static @Nullable RebindServiceConnection sRebindServiceConnection;
     // Lock to protect all the fields that can be accessed outside launcher thread.
     private final Object mBindingStateLock = new Object();
 
@@ -192,6 +194,7 @@ public class ChildProcessConnection {
     private final Executor mLauncherExecutor;
     private ComponentName mServiceName;
     private final @Nullable ComponentName mFallbackServiceName;
+    private @Nullable Intent mBindIntent;
 
     // Parameters passed to the child process through the service binding intent.
     // If the service gets recreated by the framework the intent will be reused, so these parameters
@@ -281,8 +284,8 @@ public class ChildProcessConnection {
     // inconvenient to log some histogram where this information is available.
     private final boolean mIsSandboxedForHistograms;
 
-    // Use Context.BIND_EXTERNAL_SERVICE flag for this service.
-    private final boolean mBindAsExternalService;
+    // The service binding flags for the default binding (i.e. visible binding).
+    private final int mDefaultBindFlags;
 
     // Strong binding will make the service priority equal to the priority of the activity.
     private ChildServiceConnection mStrongBinding;
@@ -389,7 +392,11 @@ public class ChildProcessConnection {
         mIsSandboxedForHistograms = isSandboxedForHistograms;
         // Incremental install does not work with isolatedProcess, and externalService requires
         // isolatedProcess, so both need to be turned off for incremental install.
-        mBindAsExternalService = bindAsExternalService && !BuildConfig.IS_INCREMENTAL_INSTALL;
+        mDefaultBindFlags =
+                Context.BIND_AUTO_CREATE
+                        | ((bindAsExternalService && !BuildConfig.IS_INCREMENTAL_INSTALL)
+                                ? Context.BIND_EXTERNAL_SERVICE
+                                : 0);
         if (connectionFactory == null) {
             mConnectionFactory =
                     new ChildServiceConnectionFactory() {
@@ -443,39 +450,35 @@ public class ChildProcessConnection {
     }
 
     private void createBindings(ComponentName serviceName) {
-        Intent intent = new Intent();
-        intent.setComponent(serviceName);
+        mBindIntent = new Intent();
+        mBindIntent.setComponent(serviceName);
         if (mServiceBundle != null) {
-            intent.putExtras(mServiceBundle);
+            mBindIntent.putExtras(mServiceBundle);
         }
-
-        int defaultFlags =
-                Context.BIND_AUTO_CREATE
-                        | (mBindAsExternalService ? Context.BIND_EXTERNAL_SERVICE : 0);
 
         mVisibleBinding =
                 mConnectionFactory.createConnection(
-                        intent, defaultFlags, mConnectionDelegate, mInstanceName);
+                        mBindIntent, mDefaultBindFlags, mConnectionDelegate, mInstanceName);
         if (supportNotPerceptibleBinding()) {
-            int flags = defaultFlags | Context.BIND_NOT_PERCEPTIBLE;
+            int flags = mDefaultBindFlags | Context.BIND_NOT_PERCEPTIBLE;
             if (useBackgroundNotPerceptibleBinding()) {
                 flags |= Context.BIND_NOT_FOREGROUND;
             }
             mNotPerceptibleBinding =
                     mConnectionFactory.createConnection(
-                            intent, flags, mConnectionDelegate, mInstanceName);
+                            mBindIntent, flags, mConnectionDelegate, mInstanceName);
         }
 
         mStrongBinding =
                 mConnectionFactory.createConnection(
-                        intent,
-                        defaultFlags | Context.BIND_IMPORTANT,
+                        mBindIntent,
+                        mDefaultBindFlags | Context.BIND_IMPORTANT,
                         mConnectionDelegate,
                         mInstanceName);
         mWaivedBinding =
                 mConnectionFactory.createConnection(
-                        intent,
-                        defaultFlags | Context.BIND_WAIVE_PRIORITY,
+                        mBindIntent,
+                        mDefaultBindFlags | Context.BIND_WAIVE_PRIORITY,
                         mConnectionDelegate,
                         mInstanceName);
     }
@@ -569,7 +572,19 @@ public class ChildProcessConnection {
         assert isRunningOnLauncherThread();
         if (!isConnected()) return;
         assert mWaivedBinding.isBound();
-        mWaivedBinding.bindServiceConnection();
+        if (BaseFeatureList.sUseSharedRebindServiceConnection.isEnabled()) {
+            if (sRebindServiceConnection == null) {
+                sRebindServiceConnection =
+                        new RebindServiceConnection(
+                                BaseFeatureList.sMaxDeferredSharedRebindServiceConnection
+                                        .getValue());
+            }
+            assert mBindIntent != null;
+            sRebindServiceConnection.rebind(
+                    mBindIntent, mDefaultBindFlags | Context.BIND_WAIVE_PRIORITY, mInstanceName);
+        } else {
+            mWaivedBinding.bindServiceConnection();
+        }
     }
 
     /**
@@ -1015,6 +1030,8 @@ public class ChildProcessConnection {
         if (mNotPerceptibleBinding != null) {
             mNotPerceptibleBinding.retire();
         }
+        // We must clear shared waived binding when we unbind a waived binding.
+        clearSharedWaivedBinding();
         mWaivedBinding.retire();
         createBindings(mFallbackServiceName);
     }
@@ -1026,6 +1043,8 @@ public class ChildProcessConnection {
         mConnectionParams = null;
         mUnbound = true;
         mStrongBinding.unbindServiceConnection();
+        // We must clear shared waived binding when we unbind a waived binding.
+        clearSharedWaivedBinding();
         mWaivedBinding.unbindServiceConnection();
         if (mNotPerceptibleBinding != null) {
             mNotPerceptibleBinding.unbindServiceConnection();
@@ -1043,6 +1062,13 @@ public class ChildProcessConnection {
             final SelfFreezeCallback callback = mSelfFreezeCallback;
             MemoryPressureListener.removeSelfFreezeCallback(callback);
             mSelfFreezeCallback = null;
+        }
+    }
+
+    private void clearSharedWaivedBinding() {
+        assert isRunningOnLauncherThread();
+        if (sRebindServiceConnection != null) {
+            sRebindServiceConnection.unbind();
         }
     }
 

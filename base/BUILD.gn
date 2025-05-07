@@ -4573,6 +4573,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionDelegate.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionFactory.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionImpl.java",
+      "android/java/src/org/chromium/base/process_launcher/RebindServiceConnection.java",
     ]
   }
 
@@ -4595,6 +4596,7 @@ if (is_android) {
     # do no append to this list.
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
+      "android/java/src/org/chromium/base/BaseFeatureList.java",
       "android/java/src/org/chromium/base/BaseFeatureMap.java",
       "android/java/src/org/chromium/base/BinderCallsListener.java",
       "android/java/src/org/chromium/base/CallbackController.java",
