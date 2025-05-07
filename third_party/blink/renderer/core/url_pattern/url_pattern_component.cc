@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/url_pattern/url_pattern_util.h"
@@ -47,9 +48,12 @@ StringView TypeToString(Component::Type type) {
 }
 
 // Utility method to get the correct encoding callback for a given type.
-liburlpattern::EncodeCallback GetEncodeCallback(std::string_view pattern_utf8,
-                                                Component::Type type,
-                                                Component* protocol_component) {
+// `should_treat_as_standard_url` is used if and only if `type` equals
+// `kPathname`.
+liburlpattern::EncodeCallback GetEncodeCallback(
+    std::string_view pattern_utf8,
+    Component::Type type,
+    std::optional<bool> should_treat_as_standard_url) {
   switch (type) {
     case Component::Type::kProtocol:
       return ::url_pattern::ProtocolEncodeCallback;
@@ -73,26 +77,16 @@ liburlpattern::EncodeCallback GetEncodeCallback(std::string_view pattern_utf8,
       //
       //  https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
       //
-      // We prefer "standard" URL here by checking to see if the protocol
-      // pattern matches any of the known standard protocol strings.  So
-      // an exact pattern of `http` will match, but so will `http{s}?` and
-      // `*`.
-      //
-      // If the protocol pattern does not match any of the known standard URL
-      // protocols then we fall back to the "path" URL behavior.  This will
-      // normally be triggered by `data`, `javascript`, `about`, etc.  It
-      // will also be triggered for custom protocol strings.  We favor "path"
-      // behavior here because its better to under canonicalize since the
-      // developer can always manually canonicalize the pathname for a custom
-      // protocol.
-      //
-      // ShouldTreatAsStandardURL can by a bit expensive, so only do it if we
-      // actually have a pathname pattern to compile.
-      CHECK(protocol_component);
-      if (protocol_component->ShouldTreatAsStandardURL())
+      // In "path" URL cases, we fall back to the opaque pathname behavior.  We
+      // favor this behavior here because it is better to canonicalize less
+      // since developers can always manually canonicalize inputs for, e.g.,
+      // their custom protocols.
+      CHECK(should_treat_as_standard_url.has_value());
+      if (*should_treat_as_standard_url) {
         return ::url_pattern::StandardURLPathnameEncodeCallback;
-      else
+      } else {
         return ::url_pattern::PathURLPathnameEncodeCallback;
+      }
     case Component::Type::kSearch:
       return ::url_pattern::SearchEncodeCallback;
     case Component::Type::kHash:
@@ -196,10 +190,15 @@ Component* Component::Compile(v8::Isolate* isolate,
   // Lossy UTF8 conversion is fine given the input has come through a
   // USVString webidl argument.
   StringUTF8Adaptor utf8(final_pattern);
-  auto parse_result = liburlpattern::Parse(
-      utf8.AsStringView(),
-      GetEncodeCallback(utf8.AsStringView(), type, protocol_component),
-      options);
+  std::optional<bool> should_treat_as_standard_url =
+      protocol_component
+          ? std::optional(protocol_component->ShouldTreatAsStandardURL())
+          : std::nullopt;
+  auto parse_result =
+      liburlpattern::Parse(utf8.AsStringView(),
+                           GetEncodeCallback(utf8.AsStringView(), type,
+                                             should_treat_as_standard_url),
+                           options);
   if (!parse_result.has_value()) {
     exception_state.ThrowTypeError(
         "Invalid " + TypeToString(type) + " pattern '" + final_pattern + "'. " +
