@@ -9598,7 +9598,7 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
   UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
   Document* doc = parseHTMLInternal(context, html, exception_state);
-  SanitizerAPI::SanitizeUnsafeInternal(doc->body(), options, exception_state);
+  SanitizerAPI::SanitizeUnsafeInternal(doc, options, exception_state);
   return doc;
 }
 
@@ -9609,7 +9609,7 @@ Document* Document::parseHTML(ExecutionContext* context,
                               ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
   Document* doc = parseHTMLInternal(context, html, exception_state);
-  SanitizerAPI::SanitizeSafeInternal(doc->body(), options, exception_state);
+  SanitizerAPI::SanitizeSafeInternal(doc, options, exception_state);
   return doc;
 }
 
