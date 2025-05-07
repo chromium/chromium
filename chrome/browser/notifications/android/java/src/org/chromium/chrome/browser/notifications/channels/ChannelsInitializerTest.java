@@ -321,21 +321,6 @@ public class ChannelsInitializerTest {
 
     @Test
     @Feature({"Browser", "Notifications"})
-    public void testEnsureInitialized_priceDropChannel() {
-        mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.PRICE_DROP);
-
-        assertThat(getChannelsIgnoringDefault(), hasSize(1));
-        NotificationChannel channel = getChannelsIgnoringDefault().get(0);
-        assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.PRICE_DROP));
-        assertThat(
-                channel.getName().toString(),
-                is(mContext.getString(R.string.notification_category_price_drop)));
-        assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_DEFAULT));
-        assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
-    }
-
-    @Test
-    @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_priceDropDefaultChannel() {
         mChannelsInitializer.ensureInitialized(
                 ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
