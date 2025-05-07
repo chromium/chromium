@@ -67,6 +67,27 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
       TrustedVaultDownloadKeysStatusForUMA status_for_uma,
       AttemptRecoveryCallback cb);
 
+  void MarkAsRegistered();
+
+  void OnICloudKeysRetrievedForRegistration(
+      TrustedVaultThrottlingConnection* connection,
+      RegisterCallback cb,
+      std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys);
+  void OnRecoveryFactorStateDownloadedForRegistration(
+      TrustedVaultThrottlingConnection* connection,
+      RegisterCallback cb,
+      std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys,
+      DownloadAuthenticationFactorsRegistrationStateResult result);
+  void OnICloudKeyCreatedForRegistration(
+      TrustedVaultThrottlingConnection* connection,
+      RegisterCallback cb,
+      std::unique_ptr<ICloudRecoveryKey> local_icloud_key);
+  void OnRegistered(RegisterCallback cb,
+                    TrustedVaultRegistrationStatus status,
+                    int key_version);
+  void FulfillRegistrationWithFailure(TrustedVaultRegistrationStatus status,
+                                      RegisterCallback cb);
+
   const std::string icloud_keychain_access_group_;
   const SecurityDomainId security_domain_id_;
   const raw_ptr<StandaloneTrustedVaultStorage> storage_;
@@ -74,7 +95,13 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
 
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request>
-      ongoing_request_for_recovery_;
+      ongoing_download_registration_state_request_for_recovery_;
+  // Destroying this will cancel the ongoing request.
+  std::unique_ptr<TrustedVaultConnection::Request>
+      ongoing_download_registration_state_request_for_registration_;
+  // Destroying this will cancel the ongoing request.
+  std::unique_ptr<TrustedVaultConnection::Request>
+      ongoing_registration_request_;
 
   base::WeakPtrFactory<ICloudKeychainRecoveryFactor> weak_ptr_factory_{this};
 };

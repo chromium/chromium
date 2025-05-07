@@ -36,7 +36,8 @@ enum class TrustedVaultRecoveryFactorRegistrationStateForUMA {
   // TrustedVaultRecoveryFactorRegistrationOutcomeForUMA.
   kDeprecatedAttemptingRegistrationWithPersistentAuthError = 5,
   kAlreadyRegisteredV1 = 6,
-  kMaxValue = kAlreadyRegisteredV1,
+  kRegistrationWithConstantKeyNotSupported = 7,
+  kMaxValue = kRegistrationWithConstantKeyNotSupported,
 };
 // TODO(crbug.com/369980730): this is used in internals, replace usages with the
 // version above and delete this alias.
