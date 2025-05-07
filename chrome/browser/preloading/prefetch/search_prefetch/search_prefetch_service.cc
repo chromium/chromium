@@ -772,20 +772,13 @@ bool SearchPrefetchService::OnNavigationLikely(
   }
 
   GURL canonical_search_url;
+  std::u16string search_terms;
   if (!HasCanonicalPreloadingOmniboxSearchURL(match.destination_url, profile_,
-                                              &canonical_search_url)) {
+                                              &canonical_search_url,
+                                              &search_terms)) {
     return false;
   }
-
-  // Parse the search terms from the match URL to verify this is a valid search
-  // query.
-  std::u16string search_terms;
-  template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
-      match.destination_url, template_url_service->search_terms_data(),
-      &search_terms);
-
-  if (search_terms.size() == 0)
-    return false;
+  CHECK(!search_terms.empty());
 
   // Search history suggestions (those that are not also server suggestions)
   // don't have search term args. If search history suggestions are enabled,
