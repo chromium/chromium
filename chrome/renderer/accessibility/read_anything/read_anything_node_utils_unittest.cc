@@ -24,6 +24,43 @@ TEST_F(ReadAnythingNodeUtilsTest,
   EXPECT_FALSE(a11y::IsTextForReadAnything(nullptr, false, false));
 }
 
+TEST_F(ReadAnythingNodeUtilsTest,
+       IsTextForReadAnything_ReturnsTrueOnListMarker) {
+  static constexpr ui::AXNodeID kId = 2;
+  ui::AXNodeData data = test::TextNode(kId, u"Just regular text.");
+  data.role = ax::mojom::Role::kListMarker;
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, kId, 0);
+  node.SetData(std::move(data));
+  EXPECT_TRUE(a11y::IsTextForReadAnything(&node, false, false));
+}
+
+TEST_F(ReadAnythingNodeUtilsTest,
+       IsTextForReadAnything_ReturnsFalseWithHtmlTag) {
+  static constexpr ui::AXNodeID kId = 2;
+  ui::AXNodeData data = test::TextNode(kId, u"Text in HTML");
+  // Explicitly set the html tag to an empty string.
+  data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "p");
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, kId, 0);
+  node.SetData(std::move(data));
+  EXPECT_FALSE(a11y::IsTextForReadAnything(&node, false, false));
+}
+
+TEST_F(ReadAnythingNodeUtilsTest,
+       IsTextForReadAnything_ReturnsTrueWithEmptyHtmlTag) {
+  static constexpr ui::AXNodeID kId = 2;
+  ui::AXNodeData data = test::TextNode(kId, u"Sentence");
+  // Explicitly set the html tag to an empty string.
+  data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "");
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, kId, 0);
+  node.SetData(std::move(data));
+  EXPECT_TRUE(a11y::IsTextForReadAnything(&node, false, false));
+}
+
 TEST_F(ReadAnythingNodeUtilsTest, GetTextContent_PDF_FiltersReturnCharacters) {
   const std::u16string sentence =
       u"Hello, this is\n a sentence \r with line breaks.";
