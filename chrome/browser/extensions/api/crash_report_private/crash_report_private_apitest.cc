@@ -93,6 +93,7 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
   const std::optional<MockCrashEndpoint::Report>& last_report() {
     return crash_endpoint_->last_report();
   }
+  void clear_last_report() { crash_endpoint_->clear_last_report(); }
   raw_ptr<const Extension, DanglingUntriaged> extension_;
   std::unique_ptr<MockCrashEndpoint> crash_endpoint_;
   std::unique_ptr<ScopedMockChromeJsErrorReportProcessor> processor_;
@@ -259,12 +260,14 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, SuppressedIfDevtoolsOpen) {
   const std::optional<MockCrashEndpoint::Report>& report = last_report();
 
   // Ensure error is not reported since devtools is open.
+  clear_last_report();
   EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
   ASSERT_FALSE(report);
 
   DevToolsWindowTesting::CloseDevToolsWindow(devtools_window);
 
   // Ensure error is not reported after devtools has been closed.
+  clear_last_report();
   EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
   ASSERT_FALSE(report);
 }
