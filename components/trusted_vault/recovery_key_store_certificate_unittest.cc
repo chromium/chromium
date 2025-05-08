@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,6 +49,9 @@ static constexpr std::string_view kSigXml =
   <certificate>MIIFGTCCAwGgAwIBAgIRAOUOMMnP/H98t0zAwO3YjxIwDQYJKoZIhvcNAQELBQAwOTE3MDUGA1UEAxMuR29vZ2xlIENsb3VkIEtleSBWYXVsdCBTZXJ2aWNlIEludGVybWVkaWF0ZSBDQTAeFw0yMzA5MDUyMTUxMDBaFw0yODA5MDYyMTUxMDBaMDUxMzAxBgNVBAMTKkdvb2dsZSBDbG91ZCBLZXkgVmF1bHQgU2VydmljZSBTaWduaW5nIEtleTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANqoaDjGHUrdnO6raw9omQ+xnhSxqwTSY2dlC83an+F9JNlL/CHjvn+kyKP7rP57k4y9+9REqjvk+zaR6rQjzP6m2FbYf/kXsmS8ohtTXsmI9NTvobGCGZOYwFbB28yxoOiXA2A91cG+Rt/KmetMcGphFE0/9PGZg9JSmWiGLDJEvgG4ckz6fmL/orhbC/V1K3ArNZ2eJ8Sw29eMo62XpJqvmi+6BrFS3edcJNC1dUpC/ixP73G1J5XDVb60no4JolG1N7Utug/WlPr88eI7LdV05sMfRfX+ta4TrIK7yJ1urGuOVsIDBGFjsfgpRTlwiG829D9uGhRSAE8GzVCFiVF8AfQwlEtgahwg23QzWRaKYo6qeRMCw1hNURF31hQ5bgQeKcaS98x6MkzszBOT2aFiK0EWBzwsJLI3KadRYUMcKa3AFXSv7QLGkAU+Ivas/m3Mt0s7KQnIzjsYbOqiC895WsylxaQyMy5xvVKp0gYjmK2YtgfXo59hznqns1FzeR4fBsbKsh+NnWXzcJ8cEg8jbk0nxAz0reMj1IN25Wb1WDfUCiTy+9V6dfFLQFQ6KYDb/bbIRyPk4g176gWK9agVrHrhiQsDVstSN/cAgLBVUFi1oeLzZ0SwB4wCXuP8SmEVrGl3zxxv3szgUxwfm+elaZ0BrA5deSenJdhV1QQ3AgMBAAGjIDAeMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMA0GCSqGSIb3DQEBCwUAA4ICAQDuLSK5nov/grmYNc8CTnrKNZ1w8p5Wbi9QThzJXoSV1BuFklXNX4GlgjZ04eS5ns/lUCdqByx0K2ZGX24wzZX0sSUQ+74Fq5uDINm6ESPV46y6hXvqIotLYIrgpl7Z2Ej7D6JT5fPYzAncUQd8Z9LuNMMt/rG8IlfSN6yOuZnAxI8wKtCrp23QugtqYKHyfxCN/HzCMEs1XP7qhgolnmLoTqU9j2HlPPESmH4+St4w7QPVQWARQ2S0hdtT4dhjmkqeDBojBjkGn9fS+vsOKsH3CDTt3A0pFI66xQ9TwT5mHCIIkAxGzc/DzPtpTUz6XBhtWNyI59adbCHfOtWWNjpriYvTbOm1ZZL6DXsaFJIbYX0Cmh6unonuvZ2c1Pu6nnVxR1HamIdtDZjvgbyFRJ4wCWpMhAU9WVJSotz57OXf/CvbBI0gfhl/EmWtKsGiDryPjphILWrnO55V6G6HJgk6xpzcjZzSnWpf5UF9RGjUaZNwOtxma/57pM8o5vTCeaOrq/3dKUWO2JBgxkOG+/ZCOe0E0Q2CwCCWTtf4ReaUIbeYQTj4cfR4eaj6Z8euytwEM2UQCep+HXJdOxv6/eHRXPK21Alt0crWmhZ8J7hZyeZ/24a3in8hqg9X9wxZXPghXo4W3My3Tn+dP2m36RiBQOCHSoYWMRINZccj9284GQ==</certificate>
   <value>n6kI2dGZKz5CGbXnbz79m51QTDt+WszzNOvcqXsGm6g3ObmpjkghTU3wPmrJ0c5zUD1l4QQEmTKRBIACgK7Sp64JdC4IGP5y+z8HhXPslP3Dc5aySOk4b++m7AIbkAuw63SbPD8L2nQ20CMNiaVVBqZJ0uWUV04qN8IOll1L8NbeZLhjFUcx9riYBrzWOr9uis5IANkfPTFgFyPFjqFk9XrbVpPcNCRtz7Pew+L7OW5z7sh5rW8iZmjhhV/e4VDTgYBFq/Js5W4yalRI9uuEXLJqG1/US4L5cMnJoZOxPmz48an0ug/Pi8yV9cIq+xvER/XaeeUG53Fqy9cn2qG6ROwxH109toaLx3TZaLjdVh7wcJCLtOY6WngHksQbIyU1mDYzz7uWItCss2Nb0NbZ+QMn3k1GxDGIwlY/HXdt7OihPQWLRM2H/QRqlI9p8i1L+DaPrhyGrGHzYKN8z9qGZYx1AsQUWQCR0YeXvlxjtSvBEPtWkfEE0RrZPJtFh+bvrD55Id7XapnGKKXYMmYf9KbDJ3GMD1aT6xgMhlAhtltN5vNg08LSH5Ma4TXhmNpKny5JQqlAUTby1wIhgdElQSdU0jYpmle8N0wsuLoX+e3bHFKxWVkrwvXDC0v2wqH5mzm8FLhxXZDA2ApnGT+eOC1gjd8qTuouzm5GuMhjvig=</value>
 </signature>)";
+
+static constexpr base::Time kValidCertificateDate =
+    base::Time::FromSecondsSinceUnixEpoch(1740614400);
 
 std::string_view GetCertificate() {
   return std::string_view(std::begin(kSigXml) + 3615,
@@ -279,6 +284,84 @@ TEST_F(RecoveryKeyStoreCertificateTest, Internals_SigXmlNoSignature) {
 
 TEST_F(RecoveryKeyStoreCertificateTest, Internals_SigXmlEmptyString) {
   EXPECT_FALSE(internal::ParseRecoveryKeyStoreSigXML(""));
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest, Internals_VerifySignatureChainSuccess) {
+  std::vector<std::string> intermediates{std::string(GetIntermediate1()),
+                                         std::string(GetIntermediate2())};
+  std::shared_ptr<const bssl::ParsedCertificate> certificate =
+      internal::VerifySignatureChain(GetCertificate(), intermediates,
+                                     kValidCertificateDate);
+  EXPECT_TRUE(certificate);
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest,
+       Internals_VerifySignatureChainCertificateNotB64) {
+  std::vector<std::string> intermediates{std::string(GetIntermediate1()),
+                                         std::string(GetIntermediate2())};
+  std::shared_ptr<const bssl::ParsedCertificate> certificate =
+      internal::VerifySignatureChain("not base 64", intermediates,
+                                     kValidCertificateDate);
+  EXPECT_FALSE(certificate);
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest,
+       Internals_VerifySignatureChainSkipsNotB64Intermediates) {
+  std::vector<std::string> intermediates{"not base 64",
+                                         std::string(GetIntermediate1()),
+                                         std::string(GetIntermediate2())};
+  std::shared_ptr<const bssl::ParsedCertificate> certificate =
+      internal::VerifySignatureChain(GetCertificate(), intermediates,
+                                     kValidCertificateDate);
+  EXPECT_TRUE(certificate);
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest, Internals_VerifySignatureChainExpired) {
+  std::vector<std::string> intermediates{std::string(GetIntermediate1()),
+                                         std::string(GetIntermediate2())};
+  std::shared_ptr<const bssl::ParsedCertificate> certificate =
+      internal::VerifySignatureChain(GetCertificate(), intermediates,
+                                     kValidCertificateDate + base::Days(10000));
+  EXPECT_FALSE(certificate);
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest,
+       Internals_VerifySignatureChainNotYetValid) {
+  std::vector<std::string> intermediates = {std::string(GetIntermediate1()),
+                                            std::string(GetIntermediate2())};
+  std::shared_ptr<const bssl::ParsedCertificate> certificate =
+      internal::VerifySignatureChain(GetCertificate(), intermediates,
+                                     kValidCertificateDate - base::Days(10000));
+  EXPECT_FALSE(certificate);
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest, ParseSuccess) {
+  EXPECT_TRUE(RecoveryKeyStoreCertificate::Parse(kCertXml, kSigXml,
+                                                 kValidCertificateDate));
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest, Parse_BadCertXml) {
+  EXPECT_FALSE(RecoveryKeyStoreCertificate::Parse("not cert xml", kSigXml,
+                                                  kValidCertificateDate));
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest, Parse_BadSigXml) {
+  EXPECT_FALSE(RecoveryKeyStoreCertificate::Parse(kCertXml, "not sig xml",
+                                                  kValidCertificateDate));
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest, Parse_BadChain) {
+  static constexpr std::string_view kBadSigXml =
+      R"(<?xml version="1.0" encoding="UTF-8"?>
+<signature>
+  <intermediates>
+    <cert>intermediate</cert>
+  </intermediates>
+  <certificate>certificate</certificate>
+  <value>signature</value>
+</signature>)";
+  EXPECT_FALSE(RecoveryKeyStoreCertificate::Parse(kCertXml, kBadSigXml,
+                                                  kValidCertificateDate));
 }
 
 }  // namespace

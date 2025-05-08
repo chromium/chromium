@@ -5,10 +5,18 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_RECOVERY_KEY_STORE_CERTIFICATE_H_
 #define COMPONENTS_TRUSTED_VAULT_RECOVERY_KEY_STORE_CERTIFICATE_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
+
+#include "base/containers/span.h"
+#include "base/time/time.h"
+
+namespace bssl {
+class ParsedCertificate;
+}  // namespace bssl
 
 namespace trusted_vault {
 
@@ -46,6 +54,14 @@ std::optional<std::vector<std::string>> ParseRecoveryKeyStoreCertXML(
 std::optional<ParsedRecoveryKeyStoreSigXML> ParseRecoveryKeyStoreSigXML(
     std::string_view sig_xml);
 
+// Given a base64-encoded x509 certificate, and a list of intermediates,
+// attempts to build a chain to the root certificate.
+// Returns the leaf certificate if successful, nullptr otherwise.
+std::shared_ptr<const bssl::ParsedCertificate> VerifySignatureChain(
+    std::string_view certificate_b64,
+    base::span<std::string> intermediates_b64,
+    base::Time current_time);
+
 }  // namespace internal
 
 // Represents a certificate chain from the recovery key store.
@@ -56,7 +72,8 @@ class RecoveryKeyStoreCertificate {
   // source, like https://gstatic.com.
   static std::optional<RecoveryKeyStoreCertificate> Parse(
       std::string_view cert_xml,
-      std::string_view sig_xml);
+      std::string_view sig_xml,
+      base::Time current_time);
 
  private:
   RecoveryKeyStoreCertificate();

@@ -762,6 +762,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             '^services/cert_verifier/',
             '^components/certificate_transparency/',
             '^components/media_router/common/providers/cast/certificate/',
+            '^components/trusted_vault/',
             # gRPC provides some C++ libraries that use std::shared_ptr<>.
             '^chromeos/ash/services/libassistant/grpc/',
             '^chromecast/cast_core/grpc',
