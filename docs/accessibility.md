@@ -10,7 +10,6 @@
 * [Offscreen, Invisible and Size](accessibility/browser/offscreen.md)
 * [Text to Speech in Chrome and Chrome OS](accessibility/browser/tts.md)
 * [Performance Measurement](accessibility/browser/perf.md)
-* [Reader Mode on Desktop Platforms](accessibility/browser/reader_mode.md)
 
 ## Android
 
