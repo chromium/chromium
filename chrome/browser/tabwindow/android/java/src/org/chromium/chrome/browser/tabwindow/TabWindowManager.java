@@ -11,6 +11,7 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -186,4 +187,23 @@ public interface TabWindowManager {
 
     /** Sets the given archived {@link TabModelSelector} singleton instance. */
     void setArchivedTabModelSelector(TabModelSelector archivedTabModelSelector);
+
+    /**
+     * Starts to initialize tab models for all windows with data. Some may be headless.
+     *
+     * @param multiInstanceManager Used to fetch window ids.
+     * @param profile Used to scope access.
+     */
+    void keepAllTabModelsLoaded(MultiInstanceManager multiInstanceManager, Profile profile);
+
+    /**
+     * Tries to discern the correct window id that contains a tab group. This may be a like activity
+     * or in a headless tab model. If the requested tab group cannot be found, then
+     * INVALID_WINDOW_ID is returned.
+     *
+     * @param tabGroupId The group to look for.
+     * @return The window id that holds the given tab group.
+     */
+    @WindowId
+    int findWindowIdForTabGroup(Token tabGroupId);
 }

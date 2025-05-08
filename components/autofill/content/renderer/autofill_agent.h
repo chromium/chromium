@@ -381,7 +381,7 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebFormControlElement& element,
       AutofillSuggestionTriggerSource trigger_source,
       const SynchronousFormCache& form_cache,
-      base::optional_ref<const PasswordSuggestionRequest> password_request);
+      const std::optional<PasswordSuggestionRequest>& password_request);
 
   // Shows Autofill suggestions for `element` if `element` is a contenteditable.
   void ShowSuggestionsForContentEditable(

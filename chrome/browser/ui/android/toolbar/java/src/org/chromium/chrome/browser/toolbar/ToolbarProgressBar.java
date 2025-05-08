@@ -17,11 +17,12 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.Interpolator;
 import android.widget.ProgressBar;
 
-import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -34,6 +35,7 @@ import org.chromium.ui.util.ColorUtils;
  * indeterminate animation will begin playing and the animation will move across the screen smoothly
  * instead of jumping.
  */
+@NullMarked
 public class ToolbarProgressBar extends ClipDrawableProgressBar
         implements BrowserControlsStateProvider.Observer {
     /** Interface for progress bar animation interpolation logics. */
@@ -86,13 +88,13 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
     private int mThemeColor;
 
     /** The indeterminate animating view for the progress bar. */
-    private ToolbarProgressBarAnimatingView mAnimatingView;
+    private @Nullable ToolbarProgressBarAnimatingView mAnimatingView;
 
     /** The progress bar's height. */
     private final int mProgressBarHeight;
 
     /** The current running animator that controls the fade in/out of the progress bar. */
-    @Nullable private Animator mFadeAnimator;
+    private @Nullable Animator mFadeAnimator;
 
     private final Runnable mStartSmoothIndeterminate =
             new Runnable() {

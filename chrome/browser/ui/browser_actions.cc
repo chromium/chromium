@@ -669,9 +669,12 @@ void BrowserActions::InitializeBrowserActions() {
                    actions::ActionInvocationContext context) {
                   // TODO(crbug.com/356468503): Figure out how to capture
                   // action invocation location.
-                  browser->browser_window_features()
-                      ->cast_browser_controller()
-                      ->ToggleDialog();
+                  auto* cast_browser_controller =
+                      browser->browser_window_features()
+                          ->cast_browser_controller();
+                  if (cast_browser_controller) {
+                    cast_browser_controller->ToggleDialog();
+                  }
                 },
                 base::Unretained(browser)),
             kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,

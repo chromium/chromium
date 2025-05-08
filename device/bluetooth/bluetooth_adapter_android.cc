@@ -188,6 +188,21 @@ void BluetoothAdapterAndroid::OnAdapterStateChanged(
     const bool powered) {
   RunPendingPowerCallbacks();
   NotifyAdapterPoweredChanged(powered);
+  if (!powered) {
+    UpdateDeviceConnectStatesOnAdapterOff();
+  }
+}
+
+void BluetoothAdapterAndroid::UpdateDeviceConnectStatesOnAdapterOff() {
+  for (auto& device : devices_) {
+    BluetoothDeviceAndroid* device_android =
+        static_cast<BluetoothDeviceAndroid*>(device.second.get());
+    if (device_android->is_acl_connected()) {
+      device_android->UpdateAclConnectState(BLUETOOTH_TRANSPORT_DUAL,
+                                            /*connected=*/false);
+      NotifyDeviceChanged(device_android);
+    }
+  }
 }
 
 void BluetoothAdapterAndroid::OnScanFailed(

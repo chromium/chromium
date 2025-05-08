@@ -15,7 +15,6 @@
 
 namespace blink {
 
-class V8BlinkAudioWorkletProcessCallback;
 class V8BlinkAudioWorkletProcessorConstructor;
 
 // Represents a JavaScript class definition registered in the
@@ -42,7 +41,6 @@ class MODULES_EXPORT AudioWorkletProcessorDefinition final
   V8BlinkAudioWorkletProcessorConstructor* ConstructorFunction() const {
     return constructor_.Get();
   }
-  V8BlinkAudioWorkletProcessCallback* ProcessFunction();
 
   void SetAudioParamDescriptors(
       const HeapVector<Member<AudioParamDescriptor>>&);
@@ -67,7 +65,6 @@ class MODULES_EXPORT AudioWorkletProcessorDefinition final
   // The definition is per global scope. The active instance of
   // AudioProcessorWorklet should be passed into these to perform JS function.
   Member<V8BlinkAudioWorkletProcessorConstructor> constructor_;
-  Member<V8BlinkAudioWorkletProcessCallback> process_function_;
 
   HeapVector<Member<AudioParamDescriptor>> audio_param_descriptors_;
 };

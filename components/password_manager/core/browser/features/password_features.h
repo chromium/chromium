@@ -16,6 +16,11 @@ namespace password_manager::features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables filling of OTPs received via SMS on Android.
+BASE_DECLARE_FEATURE(kAndroidSmsOtpFilling);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // When enabled, updates to shared existing passwords from the same sender are
 // auto-approved.
 BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);
@@ -140,11 +145,6 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
 // The feature flag for the Identity Check feature. The feature makes biometric
 // authentication mandatory before password filling in untrusted locations.
 BASE_DECLARE_FEATURE(kBiometricAuthIdentityCheck);
-
-// If enabled, the profile login db will no longer be renamed to account
-// login db upon UPM with split stores activation. The db is cleared on
-// the following run anyway.
-BASE_DECLARE_FEATURE(kDropLoginDbRenameForUpmSyncingUsers);
 
 // If enabled, the password store no longer uses the Login DB as a backend.
 // Instead, it either uses the Android-specific storage or an empty backend

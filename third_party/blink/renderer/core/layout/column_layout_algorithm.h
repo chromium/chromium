@@ -61,6 +61,7 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   const LayoutResult* LayoutRow(const BlockBreakToken* next_column_token,
                                 LayoutUnit row_offset,
                                 LayoutUnit miminum_column_block_size,
+                                bool has_wrapped,
                                 MarginStrut*);
 
   // Lay out a column spanner. The return value will tell whether to break
@@ -70,6 +71,60 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   BreakStatus LayoutSpanner(BlockNode spanner_node,
                             const BlockBreakToken* break_token,
                             MarginStrut*);
+
+  // GapDecorations:
+  // Example of a multicol container with a spanner, and a row gap.
+  // Gap intersections are given by `X`.
+  // +------------------------X-----------------------------------------+
+  // | +---------+           Column Gap     +---------+                 |
+  // | |         |                          |         |                 |
+  // | +---------+                          +---------+                 |
+  // |                                                                  |
+  // |------------------------X-----------------------------------------|
+  // |                    Spanner                                       |
+  // |------------------------X-----------------------------------------|
+  // |                                                                  |
+  // | +---------+           Column Gap     +---------+                 |
+  // | |         |                          |         |                 |
+  // | +---------+                          +---------+                 |
+  // X=========Row Gap========X=========================================X
+  // |                                                                  |
+  // | +---------+           Column Gap                                 |
+  // | |         |                                                      |
+  // | +---------+                                                      |
+  // +------------------------X-----------------------------------------+
+  // To populate the gap intersections, we build them out as we place each
+  // column in a row of columns. If we run into a spanner, we modify the column
+  // intersections above the spanner to be "blocked after". If we run into a
+  // row gap, we build its intersections and modify the column intersections
+  // right above the row gap so that they fall in the middle of the row gap.
+  //
+  // Each column in a row of columns, except for the first column, can be
+  // associated with the following gap intersections:
+  // * The column intersection of the column gap with the first or last edge of
+  // the container (in the block direction).
+  // * The column intersection of the column gap with any spanner before the
+  // column.
+  void BuildGapIntersectionsForColumn(wtf_size_t column_index_in_row,
+                                      const LogicalRect& column_logical_rect,
+                                      bool has_wrapped,
+                                      bool row_preceeds_spanner);
+
+  // If a row gap exists, this will build the gap intersections for that row
+  // gap. These include:
+  // * Row intersections at the start and end of the row.
+  // * Row intersections of that row gap with any column gaps.
+  // * Column intersections of the row gap with any column gaps.
+  //
+  // We only need to do this once per row of columns.
+  void AdjustEveryColumnLastGapIntersectionsWithRowGap(LayoutUnit row_offset);
+
+  // If we have a row gap, we need to build the intersections of that row gap
+  // with each column gap separately. We need to do this once per row of
+  // columns, since it could be the case that the last row of columns has fewer
+  // columns than the row before it.
+  void BuildRowGapIntersections(const LogicalRect& column_logical_rect,
+                                GapIntersectionList& row_gap_intersections);
 
   // Attempt to position the list-item marker (if any) beside the child
   // fragment. This requires the fragment to have a baseline. If it doesn't,
@@ -162,6 +217,19 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   LayoutUnit intrinsic_block_size_;
   LayoutUnit tallest_unbreakable_block_size_;
   bool is_constrained_by_outer_fragmentation_context_ = false;
+
+  // This is used to determine whether we need to add new intersections for
+  // the edge of the container and the column gaps, or whether we need to
+  // modify the last intersection in each column gap. For instance, if we have
+  // a row of columns with fewer columns than the previous row.
+  bool need_to_add_final_intersections_to_column_gaps_ = false;
+  wtf_size_t num_columns_in_last_processed_row_ = 0;
+
+  Vector<GapIntersectionList> column_gaps_;
+  Vector<GapIntersectionList> row_gaps_;
+
+  LayoutUnit column_gap_size_;
+  LayoutUnit row_gap_size_;
 
   // This will be set during (outer) block fragmentation once we've processed
   // the first piece of content of the multicol container. It is used to check

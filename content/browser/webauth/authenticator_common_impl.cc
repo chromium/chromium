@@ -59,7 +59,7 @@
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/attestation_object.h"
@@ -153,12 +153,9 @@ WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
 // The application parameter is the SHA-256 hash of the UTF-8 encoding of
 // the application identity (i.e. relying_party_id) of the application
 // requesting the registration.
-std::array<uint8_t, crypto::kSHA256Length> CreateApplicationParameter(
+std::array<uint8_t, crypto::hash::kSha256Size> CreateApplicationParameter(
     const std::string& relying_party_id) {
-  std::array<uint8_t, crypto::kSHA256Length> application_parameter;
-  crypto::SHA256HashString(relying_party_id, application_parameter.data(),
-                           application_parameter.size());
-  return application_parameter;
+  return crypto::hash::Sha256(relying_party_id);
 }
 
 device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
@@ -1770,11 +1767,13 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
   auto completion_callback =
       base::BindOnce(&InsertIsPPAACapability).Then(std::move(callback));
 
+  bool immediate_get_enabled =
+      base::FeatureList::IsEnabled(device::kWebAuthnImmediateGet);
   // IMPORTANT: If you add or remove a capability check below (and expect to
   // collect the results of the check with the `BarrierCallback`), update this
   // constant to match the number of `barrier_callback.Run()` calls. Otherwise,
   // the `GetClientCapabilities()` call will crash or timeout.
-  constexpr size_t kNumberOfComputedCapabilities = 5;
+  const size_t kNumberOfComputedCapabilities = immediate_get_enabled ? 6 : 5;
   auto barrier_callback =
       base::BarrierCallback<blink::mojom::WebAuthnClientCapabilityPtr>(
           kNumberOfComputedCapabilities, std::move(completion_callback));
@@ -1799,6 +1798,10 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
       caller_origin,
       base::BindOnce(&MakeCapability, client_capabilities::kConditionalGet)
           .Then(barrier_callback));
+  if (immediate_get_enabled) {
+    barrier_callback.Run(
+        MakeCapability(client_capabilities::kImmediateGet, true));
+  }
 }
 
 void AuthenticatorCommonImpl::IsHybridTransportSupported(

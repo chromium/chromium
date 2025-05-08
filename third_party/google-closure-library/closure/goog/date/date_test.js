@@ -346,7 +346,7 @@ testSuite({
     assertEquals(3, date.getDate());
     assertEquals(new Date(2001, 2, 3).getTime(), date.getTime());
 
-    goog.now = () => new Date(2001, 2, 3, 4).getTime();
+    Date.now = () => new Date(2001, 2, 3, 4).getTime();
     date = new DateDate();
     assertEquals(2001, date.getFullYear());
     assertEquals(2, date.getMonth());
@@ -382,7 +382,7 @@ testSuite({
     assertEquals('20130101', date.toIsoString());
 
     date = new DateDate(12, 12, 1);
-    assertEquals('130101', date.toIsoString());
+    assertEquals('00130101', date.toIsoString());
   },
 
   testDateToIsoString() {
@@ -663,6 +663,66 @@ testSuite({
     assertEquals(`Got 08 hours from ${iso}`, 8, date.getUTCHours());
     assertEquals(`Got 22 minutes from ${iso}`, 22, date.getUTCMinutes());
     assertEquals(`Got 33 seconds from ${iso}`, 33, date.getUTCSeconds());
+
+    // +YYYYYY-MM-DD
+    iso = '+102005-02-22';
+    assertEquals(
+        `From ${iso}`, '+102005-02-22T00:00:00',
+        DateTime.fromIsoString(iso).toIsoString(true));
+
+    // +YYYYYY-MM-DDTHH:MM:SS
+    iso = '+102005-02-22T11:22:33';
+    assertEquals(
+        `From ${iso}`, '+102005-02-22T11:22:33',
+        DateTime.fromIsoString(iso).toIsoString(true));
+
+    // +YYYYYY-MM-DDTHH:MM:SS+03:00
+    iso = '+102005-02-22T11:22:33+03:00';
+    assertEquals(
+        `From ${iso}`, '+102005-02-22T08:22:33',
+        DateTime.fromIsoString(iso).toUTCIsoString(true));
+
+    // +YYYY-MM-DD
+    iso = '+2005-02-22';
+    assertEquals(
+        `From ${iso}`, '2005-02-22T00:00:00',
+        DateTime.fromIsoString(iso).toIsoString(true));
+
+    // +YYYYY-MM-DD
+    iso = '+12005-02-22';
+    assertEquals(
+        `From ${iso}`, '+012005-02-22T00:00:00',
+        DateTime.fromIsoString(iso).toIsoString(true));
+
+    // -YYYYYY-MM-DD
+    iso = '-000100-02-22';
+    assertEquals(
+        `From ${iso}`, '-000100-02-22T00:00:00',
+        DateTime.fromIsoString(iso).toIsoString(true));
+
+    // -YYYYYY-MM-DDTHH:MM:SS
+    iso = '-000100-02-22T11:22:33';
+    assertEquals(
+        `From ${iso}`, '-000100-02-22T11:22:33',
+        DateTime.fromIsoString(iso).toIsoString(true));
+
+    // -YYYYYY-MM-DDTHH:MM:SS+03:00
+    iso = '-000100-02-22T11:22:33+03:00';
+    assertEquals(
+        `From ${iso}`, '-000100-02-22T08:22:33',
+        DateTime.fromIsoString(iso).toUTCIsoString(true));
+
+    // -YYYY-MM-DD
+    iso = '-0100-02-22';
+    assertEquals(
+        `From ${iso}`, '-000100-02-22T00:00:00',
+        DateTime.fromIsoString(iso).toIsoString(true));
+
+    // -YYYYY-MM-DD
+    iso = '-00100-02-22';
+    assertEquals(
+        `From ${iso}`, '-000100-02-22T00:00:00',
+        DateTime.fromIsoString(iso).toIsoString(true));
 
     // On a DST boundary, using a UTC timestamp
     iso = '2019-03-10T11:22:33Z';
@@ -962,60 +1022,54 @@ testSuite({
     // Javascript Date objects have special behavior for years 0-99
     d = new DateDate(0, month.MAR, 3);
     d.add(new Interval(Interval.DAYS, -1));
-    // Note that ISO strings allow dropping leading zeros on the year.
-    assertEquals('0000-3-3 - 1d = 0000-03-02', '00302', d.toIsoString());
+    assertEquals('0000-3-3 - 1d = 0000-03-02', '00000302', d.toIsoString());
 
     // Javascript Date objects have special behavior for years 0-99
     d = new DateDate(99, month.OCT, 31);
     d.add(new Interval(Interval.DAYS, -1));
-    // Note that ISO strings allow dropping leading zeros on the year.
-    assertEquals('0099-10-31 - 1d = 0099-10-30', '991030', d.toIsoString());
+    assertEquals('0099-10-31 - 1d = 0099-10-30', '00991030', d.toIsoString());
 
     // Javascript Date objects have special behavior for years 0-99; -1 is just
     // outside that range.
     d = new DateDate(-1, month.JUN, 10);
     d.add(new Interval(Interval.DAYS, 1));
-    // Note that ISO strings allow dropping leading zeros on the year.
-    assertEquals('-0001-06-10 + 1d = -0001-06-11', '-10611', d.toIsoString());
+    assertEquals(
+        '-0001-06-10 + 1d = -0001-06-11', '-0000010611', d.toIsoString());
 
     // Javascript Date objects have special behavior for years 0-99; 100 is just
     // outside that range.
     d = new DateDate(100, month.JUN, 10);
     d.add(new Interval(Interval.DAYS, 1));
-    // Note that ISO strings allow dropping leading zeros on the year.
-    assertEquals('0100-06-10 + 1d = 0100-06-11', '1000611', d.toIsoString());
+    assertEquals('0100-06-10 + 1d = 0100-06-11', '01000611', d.toIsoString());
 
     // Javascript Date objects have special behavior for years 0-99; add an
     // interval that pushes the original date into the range from across the
     // bottom boundary.
     d = new DateDate(-1, month.DEC, 20);
     d.add(new Interval(Interval.DAYS, 12));
-    // Note that ISO strings allow dropping leading zeros on the year.
-    assertEquals('-0001-12-20 + 12d = 0000-01-01', '00101', d.toIsoString());
+    assertEquals('-0001-12-20 + 12d = 0000-01-01', '00000101', d.toIsoString());
 
     // Javascript Date objects have special behavior for years 0-99; add an
     // interval that pushes the original date into the range from across the top
     // boundary.
     d = new DateDate(100, month.JAN, 3);
     d.add(new Interval(Interval.DAYS, -3));
-    // Note that ISO strings allow dropping leading zeros on the year.
-    assertEquals('0100-01-03 - 3d = 0099-12-31', '991231', d.toIsoString());
+    assertEquals('0100-01-03 - 3d = 0099-12-31', '00991231', d.toIsoString());
 
     // Javascript Date objects have special behavior for years 0-99; add an
     // interval that pushes the original, special date outside the range across
     // the bottom boundary.
     d = new DateDate(0, month.JAN, 2);
     d.add(new Interval(Interval.DAYS, -2));
-    // Note that ISO strings allow dropping leading zeros on the year.
-    assertEquals('0000-01-02 - 2d = -0001-12-31', '-11231', d.toIsoString());
+    assertEquals(
+        '0000-01-02 - 2d = -000001-12-31', '-0000011231', d.toIsoString());
 
     // Javascript Date objects have special behavior for years 0-99; add an
     // interval that pushes the original, special date outside the range across
     // the top boundary.
     d = new DateDate(99, month.DEC, 30);
     d.add(new Interval(Interval.DAYS, 2));
-    // Note that ISO strings allow dropping leading zeros on the year.
-    assertEquals('0099-12-30 + 2d = 0100-01-01', '1000101', d.toIsoString());
+    assertEquals('0099-12-30 + 2d = 0100-01-01', '01000101', d.toIsoString());
   },
 
   /** @suppress {checkTypes} suppression added to enable type checking */
@@ -1075,7 +1129,7 @@ testSuite({
     assertEquals(7, date.getMilliseconds());
     assertEquals(new Date(2001, 2, 3, 4, 5, 6, 7).getTime(), date.getTime());
 
-    goog.now = () => new Date(2001, 2, 3, 4).getTime();
+    Date.now = () => new Date(2001, 2, 3, 4).getTime();
     date = new DateTime();
     assertEquals(2001, date.getFullYear());
     assertEquals(2, date.getMonth());

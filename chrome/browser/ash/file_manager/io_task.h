@@ -98,7 +98,6 @@ struct PolicyError {
   bool always_show_review = false;
 
   bool operator==(const PolicyError& other) const;
-  bool operator!=(const PolicyError& other) const;
 };
 
 // Unique identifier for any type of task.

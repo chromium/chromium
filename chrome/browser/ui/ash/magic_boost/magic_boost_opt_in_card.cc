@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
@@ -14,6 +16,7 @@
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -251,9 +254,13 @@ const char* MagicBoostOptInCard::GetWidgetName() {
 
 void MagicBoostOptInCard::UpdateWidgetBounds(
     const gfx::Rect& anchor_view_bounds) {
+  // TODO(crbug.com/416170323): Remove g_browser_process usage.
+  const std::string& app_locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->Get();
+
   // TODO(b/318733414): Move `GetEditorMenuBounds` to a common place to use.
   GetWidget()->SetBounds(
-      editor_menu::GetEditorMenuBounds(anchor_view_bounds, this));
+      editor_menu::GetEditorMenuBounds(anchor_view_bounds, this, app_locale));
 }
 
 void MagicBoostOptInCard::RequestFocus() {

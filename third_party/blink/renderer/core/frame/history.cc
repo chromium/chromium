@@ -70,14 +70,11 @@ void MaybeRecordUkm(LocalDOMWindow* window,
   bool from_ad = window->GetFrame()->IsAdScriptInStack() ||
                  window->GetFrame()->IsAdFrame();
 
-  ukm::UkmRecorder* ukm_recorder = window->UkmRecorder();
-
-  ukm::builders::HistoryApi builder(window->UkmSourceID());
-  builder.SetIsHistoryModifyingOperation(is_history_modifying_operation);
-  builder.SetHasStickyUserActivation(has_sticky_user_activation);
-  builder.SetFromAd(from_ad);
-
-  builder.Record(ukm_recorder->Get());
+  ukm::builders::HistoryApi(window->UkmSourceID())
+      .SetIsHistoryModifyingOperation(is_history_modifying_operation)
+      .SetHasStickyUserActivation(has_sticky_user_activation)
+      .SetFromAd(from_ad)
+      .Record(window->UkmRecorder());
 }
 
 }  // namespace

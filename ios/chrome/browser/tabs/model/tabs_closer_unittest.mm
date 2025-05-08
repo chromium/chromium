@@ -145,9 +145,6 @@ class TabsCloserTest : public PlatformTest {
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
-    builder.AddTestingFactory(
-        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               FakeTabRestoreService::GetTestingFactory());
     builder.AddTestingFactory(
@@ -778,7 +775,7 @@ TEST_F(TabsCloserTest, UndoCloseTabs_SavedTabs) {
     return;
   }
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
+  feature_list.InitWithFeatures({kTabGroupSync}, {});
 
   WebStateList* web_state_list = browser()->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);

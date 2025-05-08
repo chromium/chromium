@@ -28,6 +28,14 @@ bool IOSSearchEngineChoiceServiceClient::
 
 bool IOSSearchEngineChoiceServiceClient::DoesChoicePredateDeviceRestore(
     const search_engines::ChoiceCompletionMetadata& choice_metadata) {
+  if (IsDeviceRestoreDetectedInCurrentSession()) {
+    // LastDeviceRestoreTimestamp() returns no date on the current session of
+    // restore.
+    // TODO(crbug.com/413368496): This can be removed once crbug.com/413368496
+    // is fixed. `IsDeviceRestoreDetectedInCurrentSession()` should return a
+    // timestamp even during the first session after the restore.
+    return true;
+  }
   std::optional<base::Time> last_restore_date = LastDeviceRestoreTimestamp();
   return last_restore_date.has_value() &&
          (choice_metadata.timestamp < last_restore_date.value());

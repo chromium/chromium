@@ -28,7 +28,7 @@ class BnplTosViewDesktopBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     BnplTosModel model;
     model.issuer = BnplIssuer(
-        /*instrument_id=*/std::nullopt, std::string(kBnplAffirmIssuerId),
+        /*instrument_id=*/std::nullopt, BnplIssuer::IssuerId::kBnplAffirm,
         std::vector<BnplIssuer::EligiblePriceRange>{});
     LegalMessageLine::Parse(
         base::JSONReader::Read(

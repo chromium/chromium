@@ -15,6 +15,8 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace endpoint_fetcher {
+
 // Used to mock endpoint fetcher in tests.
 class MockEndpointFetcher : public EndpointFetcher {
  public:
@@ -35,5 +37,7 @@ class MockEndpointFetcher : public EndpointFetcher {
       int http_status_code = net::HTTP_OK,
       std::optional<FetchErrorType> error_type = std::nullopt);
 };
+
+}  // namespace endpoint_fetcher
 
 #endif  // COMPONENTS_ENDPOINT_FETCHER_MOCK_ENDPOINT_FETCHER_H_

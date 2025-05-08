@@ -4,17 +4,17 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class OptionalButtonViewBinder {
     static void bind(PropertyModel model, OptionalButtonView view, PropertyKey propertyKey) {
         if (OptionalButtonProperties.BUTTON_DATA.equals(propertyKey)) {
             view.updateButtonWithAnimation(model.get(OptionalButtonProperties.BUTTON_DATA));
         } else if (OptionalButtonProperties.IS_ENABLED.equals(propertyKey)) {
-            if (view.getButtonView() != null) {
-                view.getButtonView().setEnabled(model.get(OptionalButtonProperties.IS_ENABLED));
-            }
+            view.setEnabled(model.get(OptionalButtonProperties.IS_ENABLED));
         } else if (OptionalButtonProperties.TRANSITION_STARTED_CALLBACK.equals(propertyKey)) {
             view.setTransitionStartedCallback(
                     model.get(OptionalButtonProperties.TRANSITION_STARTED_CALLBACK));

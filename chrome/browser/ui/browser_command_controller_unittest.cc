@@ -609,10 +609,9 @@ class CreateShortcutBrowserCommandControllerTest
             extensions::ExtensionSystem::Get(browser()->profile()));
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(),
-        /*install_directory=*/base::FilePath(),
-        /*autoupdate_enabled=*/false);
+        /*install_directory=*/base::FilePath(), /*autoupdate_enabled=*/false);
     extensions::ExtensionRegistrar::Get(browser()->profile())
-        ->AddExtension(extension.get());
+        ->AddExtension(extension);
 
     return extension;
   }

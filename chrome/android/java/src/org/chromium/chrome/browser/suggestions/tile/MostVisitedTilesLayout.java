@@ -57,6 +57,10 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
         return null;
     }
 
+    public SiteSuggestion getTileViewData(TileView tileView) {
+        return ((SuggestionsTileView) tileView).getData();
+    }
+
     /**
      * Adjusts the edge margin of the tile elements when they are displayed in the center of the NTP
      * on the tablet.

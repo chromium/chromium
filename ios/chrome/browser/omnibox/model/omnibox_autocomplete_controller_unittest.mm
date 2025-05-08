@@ -15,12 +15,12 @@
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #import "components/omnibox/browser/omnibox_client.h"
-#import "components/omnibox/browser/omnibox_controller.h"
-#import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -72,10 +72,10 @@ class MockAutocompleteController : public AutocompleteController {
 };
 
 /// A mock class for OmniboxEditModel.
-class MockOmniboxEditModel : public OmniboxEditModel {
+class MockOmniboxEditModel : public OmniboxEditModelIOS {
  public:
-  MockOmniboxEditModel(OmniboxController* controller)
-      : OmniboxEditModel(controller, nullptr),
+  MockOmniboxEditModel(OmniboxControllerIOS* controller)
+      : OmniboxEditModelIOS(controller, nullptr),
         last_opened_selection(OmniboxPopupSelection(UINT_MAX)) {}
   MockOmniboxEditModel(const MockOmniboxEditModel&) = delete;
   MockOmniboxEditModel& operator=(const MockOmniboxEditModel&) = delete;
@@ -109,7 +109,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
 
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    omnibox_controller_ = std::make_unique<OmniboxController>(
+    omnibox_controller_ = std::make_unique<OmniboxControllerIOS>(
         /*view=*/nullptr, std::move(omnibox_client));
 
     auto autocomplete = std::make_unique<MockAutocompleteController>();
@@ -126,8 +126,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
         OCMProtocolMock(@protocol(OmniboxAutocompleteControllerDelegate));
 
     controller_ = [[OmniboxAutocompleteController alloc]
-        initWithOmniboxController:omnibox_controller_.get()
-                   omniboxViewIOS:nullptr];
+        initWithOmniboxController:omnibox_controller_.get()];
     controller_.delegate = controller_delegate_;
   }
 
@@ -165,7 +164,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   raw_ptr<MockAutocompleteController> autocomplete_controller_;
   raw_ptr<MockOmniboxEditModel> omnibox_edit_model_;
   raw_ptr<FakeClipboardRecentContent> clipboard_;
-  std::unique_ptr<OmniboxController> omnibox_controller_;
+  std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
   id controller_delegate_;
 };
 

@@ -31,6 +31,7 @@ include_rules = [
   "+gpu/ipc",
   "+gpu/skia_bindings",
   "+gpu/vulkan",
+  "+media/base/win/test_utils.h",
   "+media/gpu/chromeos/vulkan_overlay_adaptor.h",
   "+media/gpu/buildflags.h",
   "+mojo/public/cpp/bindings",
@@ -68,4 +69,7 @@ specific_include_rules = {
     "+ui/gl",
     "+ui/platform_window",
   ],
+  "software_output_device_win_swapchain_unittest.cc": [
+    "+media/base/win/d3d11_mocks.h",
+  ]
 }

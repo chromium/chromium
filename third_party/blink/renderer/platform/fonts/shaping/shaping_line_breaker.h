@@ -48,9 +48,6 @@ class PLATFORM_EXPORT ShapingLineBreaker {
     STACK_ALLOCATED();
 
    public:
-    // Indicates the limits of the space run.
-    std::optional<unsigned> non_hangable_run_end;
-
     // Indicates the resulting break offset.
     unsigned break_offset;
 
@@ -156,6 +153,11 @@ class PLATFORM_EXPORT ShapingLineBreaker {
 
   void SetBreakOffset(unsigned break_offset, const String&, Result*);
   void SetBreakOffset(const BreakOpportunity&, const String&, Result*);
+
+  template <TextDirection>
+  const ShapeResultView* ShapeLine(unsigned start_offset,
+                                   LayoutUnit available_space,
+                                   Result* result_out);
 
   const ShapeResult* result_;
   const LazyLineBreakIterator* break_iterator_;

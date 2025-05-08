@@ -6,7 +6,6 @@ package org.chromium.base.test.transit;
 
 import android.app.Activity;
 
-import androidx.annotation.CallSuper;
 import androidx.test.espresso.Espresso;
 
 import org.chromium.base.test.transit.Transition.TransitionOptions;
@@ -42,7 +41,7 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     private final String mName;
     private final @Nullable Class<HostActivity> mActivityClass;
 
-    protected @Nullable ActivityElement<HostActivity> mActivityElement;
+    protected final @Nullable ActivityElement<HostActivity> mActivityElement;
 
     /**
      * Create a base station.
@@ -55,6 +54,12 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
         mId = sLastStationId++;
         mName = String.format("<S%d: %s>", mId, getClass().getSimpleName());
         TrafficControl.notifyCreatedStation(this);
+
+        if (mActivityClass != null) {
+            mActivityElement = mElements.declareActivity(mActivityClass);
+        } else {
+            mActivityElement = null;
+        }
     }
 
     protected List<Facility<?>> getFacilitiesWithPhase(@Phase int phase) {
@@ -88,19 +93,31 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
         return mName;
     }
 
-    @CallSuper
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        if (mActivityClass != null) {
-            mActivityElement = elements.declareActivity(mActivityClass);
-        }
-    }
-
     /**
      * @return the self-incrementing id for logging purposes.
      */
     public int getId() {
         return mId;
+    }
+
+    void requireToBeInSameTask(Station<?> originStation) {
+        assertInPhase(Phase.NEW);
+        if (mActivityElement != null) {
+            originStation.assertInPhase(Phase.ACTIVE);
+            ActivityElement<?> originActivityElement = originStation.getActivityElement();
+            if (originActivityElement != null) {
+                mActivityElement.requireToBeInSameTask(originActivityElement.get());
+            } else {
+                mActivityElement.requireNoParticularTask();
+            }
+        }
+    }
+
+    void requireToBeInNewTask() {
+        assertInPhase(Phase.NEW);
+        if (mActivityElement != null) {
+            mActivityElement.requireToBeInNewTask();
+        }
     }
 
     /**
@@ -115,7 +132,9 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
      * @param <T> the type of the destination {@link Station}.
      */
     public final <T extends Station<?>> T travelToSync(T destination, @Nullable Trigger trigger) {
-        Trip trip = new Trip(this, destination, TransitionOptions.DEFAULT, trigger);
+        destination.requireToBeInSameTask(this);
+        Trip trip =
+                new Trip(List.of(this), List.of(destination), TransitionOptions.DEFAULT, trigger);
         trip.transitionSync();
         return destination;
     }
@@ -123,7 +142,8 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     /** Version of #travelToSync() with extra TransitionOptions. */
     public final <T extends Station<?>> T travelToSync(
             T destination, TransitionOptions options, @Nullable Trigger trigger) {
-        Trip trip = new Trip(this, destination, options, trigger);
+        destination.requireToBeInSameTask(this);
+        Trip trip = new Trip(List.of(this), List.of(destination), options, trigger);
         trip.transitionSync();
         return destination;
     }
@@ -301,6 +321,33 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /**
+     * Starts a transition into a {@link Station} without leaving the current one.
+     *
+     * <p>Useful for opening a new window.
+     *
+     * <p>Runs the transition |trigger|, and blocks until the destination {@link Station} is
+     * considered ACTIVE (enter Conditions are fulfilled) and the {@link Trip}'s transition
+     * conditions are fulfilled.
+     *
+     * @param destination the {@link Facility} to arrive at.
+     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     * @return the destination {@link Station}, now ACTIVE.
+     * @param <T> the type of the destination {@link Station}.
+     */
+    public static <T extends Station<?>> T spawnSync(T destination, @Nullable Trigger trigger) {
+        return spawnSync(destination, TransitionOptions.DEFAULT, trigger);
+    }
+
+    /** Version of {@link #spawnSync(T, Trigger)} with extra TransitionOptions. */
+    public static <T extends Station<?>> T spawnSync(
+            T destination, TransitionOptions options, @Nullable Trigger trigger) {
+        destination.requireToBeInNewTask();
+        Trip trip = new Trip(List.of(), List.of(destination), options, trigger);
+        trip.transitionSync();
+        return destination;
+    }
+
+    /**
      * Add a Facility which will be entered together with this Station. Both will become ACTIVE in
      * the same Trip.
      */
@@ -320,9 +367,7 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /** Get the activity element associate with this station, if there's any. */
-    public ActivityElement<HostActivity> getActivityElement() {
-        assert mActivityElement != null
-                : "Requesting an ActivityElement for a station with no host activity.";
+    public @Nullable ActivityElement<HostActivity> getActivityElement() {
         return mActivityElement;
     }
 

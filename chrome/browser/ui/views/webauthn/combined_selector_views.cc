@@ -79,6 +79,7 @@ void CombinedSelectorRadioButton::SetChecked(bool checked) {
       }
     }
     delegate_->OnRadioButtonChecked(index_);
+    RequestFocus();
   }
   Checkbox::SetChecked(checked);
 }
@@ -98,6 +99,17 @@ void CombinedSelectorRadioButton::GetRadioButtonsInList(int group,
     return;
   }
   list_view->GetViewsInGroup(group, views);
+}
+
+bool CombinedSelectorRadioButton::SkipDefaultKeyEventProcessing(
+    const ui::KeyEvent& event) {
+  // The radio button would show the ink drop on return key press. Since the
+  // radio buttons in the combined selector are tab focusable
+  // (IsGroupFocusTraversable), this is not required. The return key should not
+  // be handled by the radio button.
+  return event.key_code() == ui::VKEY_RETURN
+             ? false
+             : RadioButton::SkipDefaultKeyEventProcessing(event);
 }
 
 BEGIN_METADATA(CombinedSelectorRadioButton)
@@ -192,7 +204,6 @@ bool CombinedSelectorRowView::OnMousePressed(const ui::MouseEvent& event) {
         ui::EventType::kMousePressed, center, center, event.time_stamp(),
         event.flags(), event.changed_button_flags());
     radio_button_->OnMousePressed(synthetic_press_event);
-    radio_button_->RequestFocus();
     return true;
   }
   return views::TableLayoutView::OnMousePressed(event);
@@ -205,6 +216,7 @@ void CombinedSelectorRowView::OnMouseReleased(const ui::MouseEvent& event) {
         ui::EventType::kMouseReleased, center, center, event.time_stamp(),
         event.flags(), event.changed_button_flags());
     radio_button_->OnMouseReleased(synthetic_release_event);
+    RequestFocus();
     return;
   }
   views::TableLayoutView::OnMouseReleased(event);  // Default handling.

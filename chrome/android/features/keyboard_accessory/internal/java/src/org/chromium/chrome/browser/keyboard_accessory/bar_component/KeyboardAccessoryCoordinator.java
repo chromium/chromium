@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getValuableIcon;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -32,6 +34,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
@@ -191,15 +194,26 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         KeyboardAccessoryViewBinder.UiConfiguration uiConfiguration =
                 new KeyboardAccessoryViewBinder.UiConfiguration();
         uiConfiguration.suggestionDrawableFunction =
-                (suggestion) ->
-                        getCardIcon(
-                                context,
-                                imageFetcher,
-                                suggestion.getCustomIconUrl(),
-                                suggestion.getIconId(),
-                                ImageSize.SMALL,
-                                /* showCustomIcon= */ true);
+                (suggestion) -> getSuggestionIcon(context, imageFetcher, suggestion);
+
         return uiConfiguration;
+    }
+
+    private static @Nullable Drawable getSuggestionIcon(
+            Context context, AutofillImageFetcher imageFetcher, AutofillSuggestion suggestion) {
+        if (suggestion.getSuggestionType() == SuggestionType.LOYALTY_CARD_ENTRY) {
+            return getValuableIcon(
+                    context, imageFetcher, suggestion.getCustomIconUrl(), ImageSize.SMALL);
+        }
+        // TODO: crbug.com/404437211 - Figure out all suggestion types that have icons on Android
+        // and return icons in a switch.
+        return getCardIcon(
+                context,
+                imageFetcher,
+                suggestion.getCustomIconUrl(),
+                suggestion.getIconId(),
+                ImageSize.SMALL,
+                /* showCustomIcon= */ true);
     }
 
     /**

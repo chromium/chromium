@@ -37,17 +37,17 @@ class TestAdvancedProtectionStatusManager
   TestAdvancedProtectionStatusManager() = default;
   ~TestAdvancedProtectionStatusManager() override = default;
 
-  Type GetAdvancedProtectionType() const override {
-    return advanced_protection_type_;
+  bool IsUnderAdvancedProtection() const override {
+    return is_under_advanced_protection_;
   }
 
   void SetAdvancedProtectionStatusForTesting(bool enrolled) override {
-    advanced_protection_type_ = enrolled ? Type::kProfile : Type::kNone;
+    is_under_advanced_protection_ = enrolled;
     NotifyObserversStatusChanged();
   }
 
  private:
-  Type advanced_protection_type_ = Type::kNone;
+  bool is_under_advanced_protection_ = false;
 };
 
 }  // anonymous namespace

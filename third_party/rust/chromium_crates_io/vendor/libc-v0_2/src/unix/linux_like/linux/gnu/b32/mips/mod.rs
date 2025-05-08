@@ -8,22 +8,36 @@ s! {
         pub st_dev: c_ulong,
 
         st_pad1: [c_long; 3],
+
         pub st_ino: crate::ino_t,
+
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
+
         pub st_rdev: c_ulong,
+
+        #[cfg(not(gnu_file_offset_bits64))]
         st_pad2: [c_long; 2],
+        #[cfg(gnu_file_offset_bits64)]
+        st_pad2: [c_long; 3],
+
         pub st_size: off_t,
+
+        #[cfg(not(gnu_file_offset_bits64))]
         st_pad3: c_long,
+
         pub st_atime: crate::time_t,
         pub st_atime_nsec: c_long,
         pub st_mtime: crate::time_t,
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
+
         pub st_blksize: crate::blksize_t,
+        #[cfg(gnu_file_offset_bits64)]
+        st_pad4: c_long,
         pub st_blocks: crate::blkcnt_t,
         st_pad5: [c_long; 14],
     }
@@ -37,7 +51,7 @@ s! {
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: c_ulong,
-        st_pad2: [c_long; 2],
+        st_pad2: [c_long; 3],
         pub st_size: off64_t,
         pub st_atime: crate::time_t,
         pub st_atime_nsec: c_long,
@@ -176,9 +190,11 @@ s! {
         pub l_whence: c_short,
         pub l_start: off_t,
         pub l_len: off_t,
+        #[cfg(not(gnu_file_offset_bits64))]
         pub l_sysid: c_long,
         pub l_pid: crate::pid_t,
-        pad: [c_long; 4],
+        #[cfg(not(gnu_file_offset_bits64))]
+        __glibc_reserved0: [c_long; 4],
     }
 }
 
@@ -745,7 +761,13 @@ pub const MAP_HUGETLB: c_int = 0x080000;
 
 pub const EFD_NONBLOCK: c_int = 0x80;
 
-pub const F_GETLK: c_int = 14;
+cfg_if! {
+    if #[cfg(gnu_file_offset_bits64)] {
+        pub const F_GETLK: c_int = 33;
+    } else {
+        pub const F_GETLK: c_int = 14;
+    }
+}
 pub const F_GETOWN: c_int = 23;
 pub const F_SETOWN: c_int = 24;
 

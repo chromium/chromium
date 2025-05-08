@@ -53,7 +53,7 @@ enum class ActionButtonsVisibility {
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // The name of the banner image. Must be set before the view is loaded.
-@property(nonatomic, strong) NSString* bannerName;
+@property(nonatomic, copy) NSString* bannerName;
 
 // The ratio of the view covered by the banner.
 // - kExtraShort: 15%,

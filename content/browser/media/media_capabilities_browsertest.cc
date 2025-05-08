@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -56,7 +57,8 @@ enum StreamType {
   kAudioWithSpatialRendering,
   kVideoWithHdrMetadata,
   kVideoWithoutHdrMetadata,
-  kVideoWithHdrMetadataAndKeySystem
+  kVideoWithHdrMetadataAndKeySystem,
+  kVideoWithDolbyVisionAndKeySystem
 };
 
 enum ConfigType { kFile, kMediaSource, kWebRtc };
@@ -75,6 +77,8 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "MediaCapabilitiesSpatialAudio");
+    scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
+                                          {});
   }
 
   std::string CanDecodeAudio(std::string_view config_type,
@@ -122,6 +126,14 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
                      color_gamut, transfer_function, key_system);
   }
 
+  std::string CanDecodeVideoWithKeySystem(std::string_view config_type,
+                                          std::string_view content_type,
+                                          std::string_view key_system) {
+    return CanDecode(config_type, content_type,
+                     StreamType::kVideoWithDolbyVisionAndKeySystem, false, "",
+                     "", "", key_system);
+  }
+
   std::string CanDecode(std::string_view config_type,
                         std::string_view content_type,
                         StreamType stream_type,
@@ -158,6 +170,13 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
         base::StringAppendF(&command, "\"%.*s\",", static_cast<int>(x.size()),
                             x.data());
       }
+    } else if (stream_type == StreamType::kVideoWithDolbyVisionAndKeySystem) {
+      command.append("testVideoConfigWithKeySystem(");
+      for (auto x : {key_system}) {
+        DCHECK(!x.empty());
+        base::StringAppendF(&command, "\"%.*s\",", static_cast<int>(x.size()),
+                            x.data());
+      }
     } else {
       command.append("testVideoConfig(");
     }
@@ -177,6 +196,8 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
     title_watcher.AlsoWaitForTitle(std::u16string(kError16));
     return base::UTF16ToASCII(title_watcher.WaitAndGetTitle());
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Adds param for query type (file vs media-source) to
@@ -253,6 +274,34 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
   EXPECT_EQ(kUnsupported,
             CanDecodeVideo(config_type, "'video/mp4; codecs=\"vp9\"'"));
 }
+
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+// Cover Dolby Vision codec support of content types where the answer of support
+// (or not) should be common to both "media-source" and "file" query types.
+IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
+                       DolbyVisionVideoDecodeTypes) {
+  if (GetParam() == kWebRtc) {
+    GTEST_SKIP() << "The keySystemConfiguration object cannot be set for "
+                    "webrtc MediaDecodingType.";
+  }
+
+  base::FilePath file_path =
+      media::GetTestDataFilePath(std::string(kDecodeTestFile));
+
+  const auto config_type = GetTypeString();
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), content::GetFileUrlWithQuery(file_path, "")));
+
+  EXPECT_EQ(kSupported, CanDecodeVideoWithKeySystem(
+                            config_type, "'video/mp4; codecs=\"dvh1.05.06\"'",
+                            media::kExternalClearKeyKeySystem));
+
+  EXPECT_EQ(kSupported, CanDecodeVideoWithKeySystem(
+                            config_type, "'video/mp4; codecs=\"dvhe.08.07\"'",
+                            media::kExternalClearKeyKeySystem));
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 
 // Cover basic codec support. See media_canplaytype_browsertest.cc for more
 // exhaustive codec string testing.

@@ -18,11 +18,7 @@
 #endif  // defined(WEBVIEW_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(WEBVIEW_IMPLEMENTATION)
 #define WEBVIEW_EXPORT __attribute__((visibility("default")))
-#else
-#define WEBVIEW_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

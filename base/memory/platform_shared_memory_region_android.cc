@@ -7,11 +7,13 @@
 #include <sys/mman.h>
 
 #include "base/bits.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/types/expected.h"
 #include "third_party/ashmem/ashmem.h"
 
 namespace base {
@@ -37,11 +39,11 @@ int GetAshmemRegionProtectionMask(int fd) {
 }  // namespace
 
 // static
-PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
-    ScopedFD fd,
-    Mode mode,
-    size_t size,
-    const UnguessableToken& guid) {
+expected<PlatformSharedMemoryRegion, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::TakeOrFail(ScopedFD fd,
+                                       Mode mode,
+                                       size_t size,
+                                       const UnguessableToken& guid) {
   if (!fd.is_valid()) {
     return {};
   }
@@ -54,9 +56,10 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  CHECK(CheckPlatformHandlePermissionsCorrespondToMode(fd.get(), mode, size));
-
-  return PlatformSharedMemoryRegion(std::move(fd), mode, size, guid);
+  return CheckPlatformHandlePermissionsCorrespondToMode(fd.get(), mode, size)
+      .transform([&] {
+        return PlatformSharedMemoryRegion(std::move(fd), mode, size, guid);
+      });
 }
 
 int PlatformSharedMemoryRegion::GetPlatformHandle() const {
@@ -160,27 +163,25 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   return PlatformSharedMemoryRegion(std::move(scoped_fd), mode, size, guid);
 }
 
-bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
+expected<void, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
   int prot = GetAshmemRegionProtectionMask(handle);
   if (prot < 0) {
-    return false;
+    return unexpected(TakeError::kFailedToGetAshmemRegionProtectionMask);
   }
 
   bool is_read_only = (prot & PROT_WRITE) == 0;
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
-    LOG(ERROR) << "Ashmem region has a wrong protection mask: it is"
-               << (is_read_only ? " " : " not ") << "read-only but it should"
-               << (expected_read_only ? " " : " not ") << "be";
-    return false;
+    return unexpected(expected_read_only ? TakeError::kExpectedReadOnlyButNot
+                                         : TakeError::kExpectedWritableButNot);
   }
 
-  return true;
+  return ok();
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

@@ -20,8 +20,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBi
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionView;
-import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorView;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
@@ -49,10 +47,13 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
                                 parent.getContext(), R.layout.omnibox_basic_suggestion),
                 new BaseSuggestionViewBinder<View>(SuggestionViewViewBinder::bind));
 
+        // Similar to a default suggestion, with more action buttons.
         registerType(
                 OmniboxSuggestionUiType.EDIT_URL_SUGGESTION,
-                parent -> new EditUrlSuggestionView(parent.getContext()),
-                new EditUrlSuggestionViewBinder());
+                parent ->
+                        new BaseSuggestionView<View>(
+                                parent.getContext(), R.layout.omnibox_basic_suggestion),
+                new BaseSuggestionViewBinder<View>(SuggestionViewViewBinder::bind));
 
         registerType(
                 OmniboxSuggestionUiType.ANSWER_SUGGESTION,
@@ -96,11 +97,6 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
                 OmniboxSuggestionUiType.GROUP_SEPARATOR,
                 parent -> new GroupSeparatorView(parent.getContext()),
                 (m, v, p) -> {});
-
-        registerType(
-                OmniboxSuggestionUiType.QUERY_TILES,
-                BaseCarouselSuggestionItemViewBuilder::createView,
-                BaseCarouselSuggestionViewBinder::bind);
     }
 
     /* package */ void recordSessionMetrics() {

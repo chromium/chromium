@@ -16,13 +16,14 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
@@ -104,10 +105,10 @@ class ComponentLoader : public KeyedService {
   static void DisableHelpAppForTesting();
 #endif
 
-  // Adds the default component extensions. If |skip_session_components|
+  // Adds the default component extensions. If `skip_session_components`
   // the loader will skip loading component extensions that weren't supposed to
   // be loaded unless we are in signed user session (ChromeOS). For all other
-  // platforms this |skip_session_components| is expected to be unset.
+  // platforms this `skip_session_components` is expected to be unset.
   void AddDefaultComponentExtensions(bool skip_session_components);
 
   // Similar to above but adds the default component extensions for kiosk mode.
@@ -128,20 +129,18 @@ class ComponentLoader : public KeyedService {
       const base::FilePath::CharType* manifest_file_name,
       const base::FilePath::CharType* guest_manifest_file_name,
       base::OnceClosure done_cb);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Add a component extension from a specific directory. Assumes that the
   // extension uses a different manifest file when this is a guest session
-  // and that the manifest file lives in |root_directory|. Calls |done_cb|
+  // and that the manifest file lives in `root_directory`. Calls `done_cb`
   // on success, unless the component loader is shut down during loading.
   void AddComponentFromDir(const base::FilePath& root_directory,
                            const ExtensionId& extension_id,
                            base::OnceClosure done_cb);
 
   // Add a component extension from a specific directory. Assumes that the
-  // extension's manifest file lives in |root_directory| and its name is
-  // 'manifest.json'. |name_string| and |description_string| are used to
+  // extension's manifest file lives in `root_directory` and its name is
+  // 'manifest.json'. `name_string` and `description_string` are used to
   // localize component extension's name and description text exclusively.
   void AddWithNameAndDescriptionFromDir(const base::FilePath& root_directory,
                                         const ExtensionId& extension_id,
@@ -149,7 +148,7 @@ class ComponentLoader : public KeyedService {
                                         const std::string& description_string);
 
   void AddChromeOsSpeechSynthesisExtensions();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void set_ignore_allowlist_for_testing(bool value) {
     ignore_allowlist_for_testing_ = value;
@@ -219,9 +218,16 @@ class ComponentLoader : public KeyedService {
   void AddWebStoreApp();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Used as a reply callback by |AddComponentFromDir|.
-  // Called with a |root_directory| and parsed |manifest| and invokes
-  // |done_cb| after adding the extension.
+  void AddChromeApp();
+  void AddFileManagerExtension();
+  void AddGalleryExtension();
+  void AddImageLoaderExtension();
+  void AddGuestModeTestExtension(const base::FilePath& path);
+  void AddKeyboardApp();
+
+  // Used as a reply callback by `AddComponentFromDir`.
+  // Called with a `root_directory` and parsed `manifest` and invokes
+  // `done_cb` after adding the extension.
   void FinishAddComponentFromDir(
       const base::FilePath& root_directory,
       const ExtensionId& extension_id,
@@ -229,25 +235,20 @@ class ComponentLoader : public KeyedService {
       const std::optional<std::string>& description_string,
       base::OnceClosure done_cb,
       std::optional<base::Value::Dict> manifest);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void AddChromeApp();
-  void AddFileManagerExtension();
-  void AddGalleryExtension();
-  void AddImageLoaderExtension();
-  void AddGuestModeTestExtension(const base::FilePath& path);
-  void AddKeyboardApp();
+  // Finishes loading an extension tts engine.
+  void FinishLoadSpeechSynthesisExtension(const ExtensionId& extension_id);
+
+  // Grant ContentSettingsType permissions to Extension.
+  void GrantPermissions(const ExtensionId& extension_id,
+                        std::initializer_list<ContentSettingsType> permissions);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<const Extension> CreateExtension(
       const ComponentExtensionInfo& info, std::string* utf8_error);
 
-  // Unloads |component| from the memory.
+  // Unloads `component` from the memory.
   void UnloadComponent(ComponentExtensionInfo* component);
-
-  // Finishes loading an extension tts engine.
-  void FinishLoadSpeechSynthesisExtension(const ExtensionId& extension_id);
 
   raw_ptr<Profile> profile_;
 

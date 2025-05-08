@@ -306,8 +306,8 @@ public class AccessibilityHistogramRecorder {
 
     /** Record UMA histograms for the event counts for the OnDemand feature. */
     public void recordEventsHistograms() {
-        // There are only 2 AXModes, kAXModeComplete is used when a screenreader is active.
-        boolean isAXModeComplete = AccessibilityState.isScreenReaderEnabled();
+        // There are only 2 AXModes, kAXModeComplete is used when a complex service is active.
+        boolean isAXModeComplete = AccessibilityState.isComplexUserInteractionServiceEnabled();
         boolean isAXModeFormControls = AccessibilityState.isOnlyPasswordManagersEnabled();
 
         // If we did not enqueue any events, we can ignore the data as a trivial case.
@@ -455,8 +455,8 @@ public class AccessibilityHistogramRecorder {
     public void recordTimeToFirstAccessibilityFocus() {
         if (mHasRecordedTimeToFirstAccessibilityFocus) return;
 
-        // We are only interested in this for TalkBack, which always focuses the root node on load.
-        if (!AccessibilityState.getTalkBackEnabledState().first) return;
+        // We are only interested in this for screen readers, which focus the root node on load.
+        if (!AccessibilityState.isKnownScreenReaderEnabled()) return;
 
         // TODO(mschillaci): This uses a 5 sec max, check scale after initial data collection.
         RecordHistogram.recordCustomTimesHistogram(

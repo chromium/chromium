@@ -20,9 +20,6 @@ bool AccountInfo::IsEmpty() const {
   DCHECK_EQ(gaia.empty(), email.empty());
   return gaia.empty();
 }
-bool AccountInfo::operator==(const AccountInfo& rhs) const {
-  return tie(gaia, email) == tie(rhs.gaia, rhs.email);
-}
 
 std::ostream& operator<<(std::ostream& os, const AccountInfo& o) {
   if (o.IsEmpty()) {

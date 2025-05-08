@@ -1288,11 +1288,16 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[optimization_guide::prefs::
                      kProductSpecificationsEnterprisePolicyAllowed] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[optimization_guide::prefs::
+                     kAutofillPredictionImprovementsEnterprisePolicyAllowed] =
+      settings_api::PrefType::kNumber;
 
   // Glic prefs
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     (*s_allowlist)[glic::prefs::kGlicLauncherEnabled] =
+        settings_api::PrefType::kBoolean;
+    (*s_allowlist)[glic::prefs::kGlicClosedCaptioningEnabled] =
         settings_api::PrefType::kBoolean;
     (*s_allowlist)[glic::prefs::kGlicGeolocationEnabled] =
         settings_api::PrefType::kBoolean;

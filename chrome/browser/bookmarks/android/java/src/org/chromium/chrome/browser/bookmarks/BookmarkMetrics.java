@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -15,6 +16,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 
 /** Metrics utils for use in bookmarks. */
+@NullMarked
 public class BookmarkMetrics {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused. Keep up-to-date with the MobileBookmarkManagerFilter enum in

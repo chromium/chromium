@@ -18,12 +18,18 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /** Helper functions for using Android Autofill in Chrome. */
+@NullMarked
 @JNINamespace("autofill")
 public class AutofillClientProviderUtils {
     public static final String AUTOFILL_OPTIONS_DEEP_LINK_SHARED_PREFS_FILE =
@@ -32,7 +38,7 @@ public class AutofillClientProviderUtils {
             "AUTOFILL_OPTIONS_DEEP_LINK_FEATURE_KEY";
     private static final String AWG_COMPONENT_NAME =
             "com.google.android.gms/com.google.android.gms.autofill.service.AutofillService";
-    private static Integer sAndroidAutofillFrameworkAvailabilityForTesting;
+    private static @Nullable Integer sAndroidAutofillFrameworkAvailabilityForTesting;
 
     /**
      * Overrides the return value of {@link isAllowedToUseAndroidAutofillFramework} to the given
@@ -48,10 +54,28 @@ public class AutofillClientProviderUtils {
     }
 
     /**
+     * Checks whether all conditions are met for using the Android Autofill framework in CCTs. It
+     * simplifies the call to {@link getAndroidAutofillFrameworkAvailability}.
+     *
+     * @param profile A {@link Profile} which keeps the pref enabling this feature.
+     * @return true iff CCTs should be constructed with support for Android Autofill.
+     */
+    public static boolean isAutofillEnabledForCct(Profile profile) {
+        if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT
+                .isEnabled()) {
+            return false;
+        }
+        return AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(
+                        UserPrefs.get(profile))
+                == AndroidAutofillAvailabilityStatus.AVAILABLE;
+    }
+
+    /**
      * Returns whether all conditions are met for using the Android Autofill framework in Chrome on
      * Android: The AutofillManager exists, is enabled, and its provider is not Autofill with
      * Google.
      *
+     * @param profile A {@link PrefService} which keeps the pref enabling this feature.
      * @return {@link AndroidAutofillAvailabilityStatus.AVAILABLE} if Android Autofill can be used
      *     or a reason why it can't.
      */

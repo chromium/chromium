@@ -98,7 +98,8 @@ void WebNNContextProviderImpl::BindWebNNContextProvider(
 }
 
 // static
-void WebNNContextProviderImpl::CreateForTesting(
+base::optional_ref<WebNNContextProviderImpl>
+WebNNContextProviderImpl::CreateForTesting(
     mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
     WebNNStatus status,
     LoseAllContextsCallback lose_all_contexts_callback) {
@@ -123,11 +124,14 @@ void WebNNContextProviderImpl::CreateForTesting(
         DISABLE_WEBNN_FOR_NPU);
   }
 
-  mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
-      base::WrapUnique(new WebNNContextProviderImpl(
-          /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
-          std::move(gpu_info), std::move(lose_all_contexts_callback))),
-      std::move(receiver));
+  // Cast is safe because only a WebNNContextProviderImpl can be created.
+  return static_cast<WebNNContextProviderImpl*>(
+      mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
+          base::WrapUnique(new WebNNContextProviderImpl(
+              /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
+              std::move(gpu_info), std::move(lose_all_contexts_callback))),
+          std::move(receiver))
+          ->impl());
 }
 
 void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
@@ -218,6 +222,18 @@ void WebNNContextProviderImpl::CreateWebNNContext(
                                                   std::move(context_handle));
   std::move(callback).Run(
       mojom::CreateContextResult::NewSuccess(std::move(success)));
+}
+
+base::optional_ref<WebNNContextImpl>
+WebNNContextProviderImpl::GetWebNNContextImplForTesting(
+    const blink::WebNNContextToken& handle) {
+  CHECK_IS_TEST();
+  const auto it = impls_.find(handle);
+  if (it == impls_.end()) {
+    mojo::ReportBadMessage(kBadMessageInvalidContext);
+    return std::nullopt;
+  }
+  return it->get();
 }
 
 }  // namespace webnn

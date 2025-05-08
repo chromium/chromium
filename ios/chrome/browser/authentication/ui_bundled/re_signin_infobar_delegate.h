@@ -49,6 +49,8 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate,
   // IdentityManager::Observer.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  private:
   ReSignInInfoBarDelegate(AuthenticationService* authentication_service,

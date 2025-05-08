@@ -10,9 +10,10 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
@@ -25,6 +26,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+@NullMarked
 public class SafetyHubNotificationsPreference extends ChromeBasePreference
         implements ListMenu.Delegate {
     static interface MenuClickListener {
@@ -38,13 +40,13 @@ public class SafetyHubNotificationsPreference extends ChromeBasePreference
 
     private final NotificationPermissions mNotificationPermissions;
     private final LargeIconBridge mLargeIconBridge;
-    private MenuClickListener mMenuClickListener;
+    private @Nullable MenuClickListener mMenuClickListener;
     private boolean mFaviconFetched;
 
     SafetyHubNotificationsPreference(
             Context context,
-            @NonNull NotificationPermissions notificationPermissions,
-            @NonNull LargeIconBridge largeIconBridge) {
+            NotificationPermissions notificationPermissions,
+            LargeIconBridge largeIconBridge) {
         super(context);
 
         mNotificationPermissions = notificationPermissions;

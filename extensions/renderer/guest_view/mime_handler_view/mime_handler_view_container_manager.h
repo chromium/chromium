@@ -53,9 +53,9 @@ class MimeHandlerViewContainerManager
       content::RenderFrame* render_frame,
       mojo::PendingAssociatedReceiver<mojom::MimeHandlerViewContainerManager>
           receiver);
-  // Returns the container manager associated with |render_frame|. If none
-  // exists and |create_if_does_not_exist| is set true, creates and returns a
-  // new instance for |render_frame|.
+  // Returns the container manager associated with `render_frame`. If none
+  // exists and `create_if_does_not_exist` is set true, creates and returns a
+  // new instance for `render_frame`.
   static MimeHandlerViewContainerManager* Get(
       content::RenderFrame* render_frame,
       bool create_if_does_not_exist = false);
@@ -80,20 +80,20 @@ class MimeHandlerViewContainerManager
   void DidBlockMimeHandlerViewForDisallowedPlugin(
       const blink::WebElement& plugin_element);
   // A wrapper for custom postMessage scripts. There should already be a
-  // MimeHandlerViewFrameContainer for |plugin_element|.
+  // MimeHandlerViewFrameContainer for `plugin_element`.
   v8::Local<v8::Object> GetScriptableObject(
       const blink::WebElement& plugin_element,
       v8::Isolate* isolate);
-  // Removes the |frame_container| from |frame_containers_| and destroys it.
-  // Note: Calling this function may delete |this| if we are removing the last
-  // frame container, unless |retain_manager| is set to true.
+  // Removes the `frame_container` from `frame_containers_` and destroys it.
+  // Note: Calling this function may delete `this` if we are removing the last
+  // frame container, unless `retain_manager` is set to true.
   void RemoveFrameContainer(MimeHandlerViewFrameContainer* frame_container,
                             bool retain_manager);
   MimeHandlerViewFrameContainer* GetFrameContainer(
       const blink::WebElement& plugin_element);
   MimeHandlerViewFrameContainer* GetFrameContainer(int32_t element_instance_id);
   // Returns the instance of PostMessageSupport, if any, for the page navigation
-  // to MHV. This is used when |did_create_beforeunload_control_| is set.
+  // to MHV. This is used when `did_create_beforeunload_control_` is set.
   PostMessageSupport* GetPostMessageSupport();
 
   // content::RenderFrameObserver.
@@ -106,7 +106,7 @@ class MimeHandlerViewContainerManager
   void CreateBeforeUnloadControl(
       CreateBeforeUnloadControlCallback callback) override;
 
-  // Note: Calling this function may delete |this| if we are destroying the last
+  // Note: Calling this function may delete `this` if we are destroying the last
   // frame container.
   void DestroyFrameContainer(int32_t element_instance_id) override;
   void DidLoad(int32_t mime_handler_view_guest_element_instance_id,
@@ -124,7 +124,7 @@ class MimeHandlerViewContainerManager
       bool show_dialog,
       SetShowBeforeUnloadDialogCallback callback) override;
 
-  // Returns true if the |element| is managed by
+  // Returns true if the `element` is managed by
   // MimeHandlerViewContainerManager; this would be the element that is added by
   // the HTML string injected at MimeHandlerViewAttachHelper.
   bool IsManagedByContainerManager(const blink::WebElement& plugin_element);
@@ -137,7 +137,7 @@ class MimeHandlerViewContainerManager
   // Instantiated if this MHVFC is for a full-page MHV. This means MHV is
   // created when a frame was navigated to MHV resource by means other than
   // HTMLPlugInElement::RequestObjectInternal (e.g., omnibox). Note: the
-  // |post_message_support_| is only used for internal print messages and there
+  // `post_message_support_` is only used for internal print messages and there
   // is no web-accessible scriptable object exposed.
   std::unique_ptr<PostMessageSupport> post_message_support_;
 

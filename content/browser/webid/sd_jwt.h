@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 
@@ -51,8 +52,8 @@
   original value. Reverting back to the original value is
   important because they are signed and need to be verified.
 
-  So, a Jwt gets parsed into a json_t header and json_t payload,
-  which represent a string containing JSON, and a base64_t
+  So, a Jwt gets parsed into a JSON header and JSON payload,
+  which represent a string containing JSON, and a Base64
   signature, which represents a string containing a base64url
   encoded blob.
 
@@ -72,7 +73,7 @@
 
   An SdJwt gets parsed into the issued Jwt as well as into the list
   of selective disclosures. Like a Jwt, the selective disclosures
-  are represented as json_t so that they can be serialized back to
+  are represented as JSON so that they can be serialized back to
   their original values.
 
   SdJwt sd_jwt = SdJwt::From(SdJwt::Parse(encoding))
@@ -112,9 +113,9 @@ struct CONTENT_EXPORT Jwk {
 };
 
 // A string that can be parsed as application/json.
-typedef std::string json_t;
+using JSONString = base::StrongAlias<class JSONStringTag, std::string>;
 // A string that is base64url encoded.
-typedef std::string base64_t;
+using Base64String = base::StrongAlias<class Base64StringTag, std::string>;
 
 // https://datatracker.ietf.org/doc/html/rfc7519#section-5
 struct CONTENT_EXPORT Header {
@@ -128,8 +129,8 @@ struct CONTENT_EXPORT Header {
 
   static std::optional<Header> From(const base::Value::Dict& json);
 
-  std::optional<json_t> ToJson() const;
-  std::optional<base64_t> Serialize() const;
+  std::optional<JSONString> ToJson() const;
+  std::optional<Base64String> Serialize() const;
 };
 
 // This struct holds the JWK in the "cnf" [1] parameter in the
@@ -170,11 +171,11 @@ struct CONTENT_EXPORT Payload {
   std::string vct;
 
   // Used in the Issued JWT
-  std::vector<base64_t> _sd;
+  std::vector<Base64String> _sd;
   std::string _sd_alg;
 
   // Used in the Key Binding JWT
-  base64_t sd_hash;
+  Base64String sd_hash;
 
   Payload();
   ~Payload();
@@ -182,8 +183,8 @@ struct CONTENT_EXPORT Payload {
 
   static std::optional<Payload> From(const base::Value::Dict& json);
 
-  std::optional<json_t> ToJson() const;
-  std::optional<base64_t> Serialize() const;
+  std::optional<JSONString> ToJson() const;
+  std::optional<Base64String> Serialize() const;
 };
 
 /**
@@ -197,9 +198,9 @@ typedef base::OnceCallback<std::optional<std::vector<uint8_t>>(
 
 // https://datatracker.ietf.org/doc/html/rfc7519
 struct CONTENT_EXPORT Jwt {
-  json_t header;
-  json_t payload;
-  base64_t signature;
+  JSONString header;
+  JSONString payload;
+  Base64String signature;
 
   Jwt();
   ~Jwt();
@@ -209,7 +210,7 @@ struct CONTENT_EXPORT Jwt {
 
   static std::optional<Jwt> From(const base::Value::List& json);
   static std::optional<base::Value::List> Parse(const std::string_view& jwt);
-  json_t Serialize() const;
+  JSONString Serialize() const;
 };
 
 /**
@@ -233,7 +234,7 @@ typedef base::RepeatingCallback<std::vector<std::uint8_t>(std::string_view)>
  * can create disclosures as issuers.
  */
 struct CONTENT_EXPORT Disclosure {
-  base64_t salt;
+  Base64String salt;
   std::string name;
   std::string value;
 
@@ -245,17 +246,17 @@ struct CONTENT_EXPORT Disclosure {
 
   // Creates a random value with the following requirements:
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#name-entropy-of-the-salt
-  static base64_t CreateSalt();
+  static Base64String CreateSalt();
 
-  base64_t Serialize() const;
-  std::optional<json_t> ToJson() const;
-  std::optional<base64_t> Digest(Hasher hasher) const;
+  Base64String Serialize() const;
+  std::optional<JSONString> ToJson() const;
+  std::optional<Base64String> Digest(Hasher hasher) const;
 };
 
 // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html
 struct CONTENT_EXPORT SdJwt {
   Jwt jwt;
-  std::vector<json_t> disclosures;
+  std::vector<JSONString> disclosures;
 
   SdJwt();
   ~SdJwt();
@@ -264,8 +265,8 @@ struct CONTENT_EXPORT SdJwt {
   static std::optional<SdJwt> From(const base::Value::List& json);
   static std::optional<base::Value::List> Parse(const std::string_view& sdjwt);
 
-  static std::optional<std::vector<json_t>> Disclose(
-      const std::vector<std::pair<std::string, json_t>>& disclosures,
+  static std::optional<std::vector<JSONString>> Disclose(
+      const std::vector<std::pair<std::string, JSONString>>& disclosures,
       const std::vector<std::string>& selector);
 
   std::string Serialize() const;

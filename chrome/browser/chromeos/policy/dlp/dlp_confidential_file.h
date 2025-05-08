@@ -23,7 +23,6 @@ struct DlpConfidentialFile {
 
   // Files with the same file_path are considered equal.
   bool operator==(const DlpConfidentialFile& other) const;
-  bool operator!=(const DlpConfidentialFile& other) const;
   bool operator<(const DlpConfidentialFile& other) const;
   bool operator<=(const DlpConfidentialFile& other) const;
   bool operator>(const DlpConfidentialFile& other) const;

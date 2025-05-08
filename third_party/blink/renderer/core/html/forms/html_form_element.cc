@@ -83,11 +83,11 @@ namespace {
 
 // Invalidates the cache of all form elements that are ancestors of
 // `starting_node` or `starting_node` itself.
-void InvalidateShadowIncludingAncestorForms(ContainerNode* starting_node) {
+void InvalidateAncestorFormsForAutofill(ContainerNode* starting_node) {
   for (ContainerNode* node = starting_node; node;
        node = node->ParentOrShadowHostNode()) {
     if (HTMLFormElement* form = DynamicTo<HTMLFormElement>(node)) {
-      form->InvalidateListedElementsIncludingShadowTrees();
+      form->InvalidateListedElementsForAutofill();
     }
   }
 }
@@ -97,7 +97,7 @@ void InvalidateShadowIncludingAncestorForms(ContainerNode* starting_node) {
 HTMLFormElement::HTMLFormElement(Document& document)
     : HTMLElement(html_names::kFormTag, document),
       listed_elements_are_dirty_(false),
-      listed_elements_including_shadow_trees_are_dirty_(false),
+      listed_elements_for_autofill_are_dirty_(false),
       image_elements_are_dirty_(false),
       has_elements_associated_by_parser_(false),
       has_elements_associated_by_form_attribute_(false),
@@ -113,7 +113,7 @@ void HTMLFormElement::Trace(Visitor* visitor) const {
   visitor->Trace(past_names_map_);
   visitor->Trace(radio_button_group_scope_);
   visitor->Trace(listed_elements_);
-  visitor->Trace(listed_elements_including_shadow_trees_);
+  visitor->Trace(listed_elements_for_autofill_);
   visitor->Trace(image_elements_);
   visitor->Trace(rel_list_);
   HTMLElement::Trace(visitor);
@@ -137,7 +137,7 @@ Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(
   LogAddElementIfIsolatedWorldAndInDocument("form", html_names::kMethodAttr,
                                             html_names::kActionAttr);
   if (insertion_point.isConnected()) {
-    InvalidateShadowIncludingAncestorForms(ParentElementOrShadowRoot());
+    InvalidateAncestorFormsForAutofill(ParentElementOrShadowRoot());
     GetDocument().MarkTopLevelFormsDirty();
     GetDocument().DidChangeFormRelatedElementDynamically(
         this, WebFormRelatedChangeType::kAdd);
@@ -184,7 +184,7 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
 
   if (insertion_point.isConnected()) {
-    InvalidateShadowIncludingAncestorForms(&insertion_point);
+    InvalidateAncestorFormsForAutofill(&insertion_point);
     GetDocument().MarkTopLevelFormsDirty();
     GetDocument().DidChangeFormRelatedElementDynamically(
         this, WebFormRelatedChangeType::kRemove);
@@ -714,8 +714,8 @@ void HTMLFormElement::ParseAttribute(
 void HTMLFormElement::Associate(ListedElement& e) {
   listed_elements_are_dirty_ = true;
   listed_elements_.clear();
-  listed_elements_including_shadow_trees_are_dirty_ = true;
-  listed_elements_including_shadow_trees_.clear();
+  listed_elements_for_autofill_are_dirty_ = true;
+  listed_elements_for_autofill_.clear();
   if (e.ToHTMLElement().FastHasAttribute(html_names::kFormAttr))
     has_elements_associated_by_form_attribute_ = true;
 }
@@ -723,8 +723,8 @@ void HTMLFormElement::Associate(ListedElement& e) {
 void HTMLFormElement::Disassociate(ListedElement& e) {
   listed_elements_are_dirty_ = true;
   listed_elements_.clear();
-  listed_elements_including_shadow_trees_are_dirty_ = true;
-  listed_elements_including_shadow_trees_.clear();
+  listed_elements_for_autofill_are_dirty_ = true;
+  listed_elements_for_autofill_.clear();
   RemoveFromPastNamesMap(e.ToHTMLElement());
 }
 
@@ -760,17 +760,65 @@ HTMLFormControlsCollection* HTMLFormElement::elements() {
   return EnsureCachedCollection<HTMLFormControlsCollection>(kFormControls);
 }
 
+// 1. While both autofill and reference target are traversing shadow trees,
+// autofill is traversing shadow trees "inside" the form node, e.g.,
+// <form><x-input></form>, and reference target is traversing shadow trees
+// "outside" the form node, e.g., <x-form referencetarget=realform>
+// <form id=realform></x-form>
+// 2. Since reference target doesn't traverse shadow trees inside the form node,
+// `this->element_` doesn't need to be invalidated in
+// InvalidateAncestorFormsForAutofill which is for autofill scenarios.
+// 3. If a referencing element in a separate shadow tree is added or removed,
+// the element list will be invalidated via Associate/Disassociate methods.
+// 4. TODO(crbug.com/413427414): invalidate the element list when
+// shadowRoot.referenceTarget is changed.
+void HTMLFormElement::CollectListedElementsForReferenceTarget(
+    const Node& root,
+    ListedElement::List& elements,
+    ListedElement::List* elements_for_autofill) const {
+  CHECK(RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+      GetDocument().GetExecutionContext()));
+  for (HTMLElement& element : Traversal<HTMLElement>::DescendantsOf(root)) {
+    if (ListedElement* listed_element = ListedElement::From(element)) {
+      if (listed_element->Form() == this) {
+        elements.push_back(listed_element);
+      }
+
+      // TODO(crbug.com/414338073): optimize the perf (currently the traversal
+      // is O(n-logn)) by checking whether we've descended into `this`
+      if (elements_for_autofill &&
+          (listed_element->Form() == this ||
+           element.IsDescendantOrShadowDescendantOf(this))) {
+        elements_for_autofill->push_back(listed_element);
+      }
+    }
+
+    if (element.AuthorShadowRoot()) {
+      bool should_traverse_shadow_for_autofill =
+          elements_for_autofill &&
+          element.IsDescendantOrShadowDescendantOf(this);
+      bool should_traverse_shadow_for_reference_target =
+          element.GetShadowReferenceTarget(html_names::kFormAttr) == this;
+      if (should_traverse_shadow_for_autofill ||
+          should_traverse_shadow_for_reference_target) {
+        CollectListedElementsForReferenceTarget(
+            *element.AuthorShadowRoot(), elements, elements_for_autofill);
+      }
+    }
+  }
+}
+
 void HTMLFormElement::CollectListedElements(
     const Node* root,
     ListedElement::List& elements,
-    ListedElement::List* elements_including_shadow_trees,
+    ListedElement::List* elements_for_autofill,
     bool in_shadow_tree) const {
   CHECK(root);
-  DCHECK(!in_shadow_tree || elements_including_shadow_trees);
+  DCHECK(!in_shadow_tree || elements_for_autofill);
   HeapVector<Member<HTMLFormElement>> nested_forms;
   if (!in_shadow_tree) {
     elements.clear();
-    if (elements_including_shadow_trees) {
+    if (elements_for_autofill) {
       for (HTMLFormElement& nested_form :
            Traversal<HTMLFormElement>::DescendantsOf(*this)) {
         nested_forms.push_back(nested_form);
@@ -778,7 +826,7 @@ void HTMLFormElement::CollectListedElements(
     }
   }
 
-  // We flatten elements of nested forms into `elements_including_shadow_trees`.
+  // We flatten elements of nested forms into `elements_for_autofill`.
   // If one of the nested forms has an element associated by form attribute,
   // that element may be outside of `root`'s subtree and we need to start at the
   // root node.
@@ -803,29 +851,30 @@ void HTMLFormElement::CollectListedElements(
     if (ListedElement* listed_element = ListedElement::From(element)) {
       // Autofill only considers top level forms. We therefore include all form
       // control descendants of the form whose elements we collect in
-      // `elements_including_shadow_trees`, even if their closest ancestor is a
+      // `elements_for_autofill`, even if their closest ancestor is a
       // different form.
       // `elements` does not have this complication because it can check
       // `listed_element->Form()`.
       if (in_shadow_tree) {
-        elements_including_shadow_trees->push_back(listed_element);
+        elements_for_autofill->push_back(listed_element);
       } else if (listed_element->Form() == this) {
         elements.push_back(listed_element);
-        if (elements_including_shadow_trees)
-          elements_including_shadow_trees->push_back(listed_element);
+        if (elements_for_autofill) {
+          elements_for_autofill->push_back(listed_element);
+        }
       } else if (base::Contains(nested_forms, listed_element->Form())) {
-        elements_including_shadow_trees->push_back(listed_element);
+        elements_for_autofill->push_back(listed_element);
       }
     }
     // Descend recursively into shadow DOM if the following conditions are met:
     // - We are supposed to gather elements in shadow trees.
-    // - `element` is a shadow root.
+    // - `element` is a shadow host.
     // - `element` is a shadow-including descendant of `this`. If `root` is a
     //   descendant of `this`, then that is trivially true.
-    if (elements_including_shadow_trees && element.AuthorShadowRoot() &&
+    if (elements_for_autofill && element.AuthorShadowRoot() &&
         (root_is_descendant || element.IsDescendantOf(this))) {
       CollectListedElements(element.AuthorShadowRoot(), elements,
-                            elements_including_shadow_trees,
+                            elements_for_autofill,
                             /*in_shadow_tree=*/true);
     }
   }
@@ -843,26 +892,51 @@ const Node* HTMLFormElement::GetListedElementsScope() const {
   return scope;
 }
 
+const Node* HTMLFormElement::GetReferenceTargetScope() const {
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetDocument().GetExecutionContext())) {
+    return nullptr;
+  }
+
+  HTMLFormElement* mutable_this = const_cast<HTMLFormElement*>(this);
+  const Node* reference_target_scope = nullptr;
+  Element* host = mutable_this->OwnerShadowHost();
+  while (host && host->GetShadowReferenceTarget(html_names::kFormAttr) ==
+                     mutable_this) {
+    reference_target_scope = &host->GetTreeScope().RootNode();
+    host = host->OwnerShadowHost();
+  }
+  return reference_target_scope;
+}
+
 const ListedElement::List& HTMLFormElement::CollectAndCacheListedElements(
-    bool include_shadow_trees) const {
+    bool collect_for_autofill) const {
   bool collect_shadow_inputs =
-      include_shadow_trees && listed_elements_including_shadow_trees_are_dirty_;
+      collect_for_autofill && listed_elements_for_autofill_are_dirty_;
 
   if (listed_elements_are_dirty_ || collect_shadow_inputs) {
     HTMLFormElement* mutable_this = const_cast<HTMLFormElement*>(this);
     mutable_this->listed_elements_.clear();
-    mutable_this->listed_elements_including_shadow_trees_.clear();
-    const Node* scope = GetListedElementsScope();
-    CollectListedElements(
-        scope, mutable_this->listed_elements_,
-        collect_shadow_inputs
-            ? &mutable_this->listed_elements_including_shadow_trees_
-            : nullptr);
+    mutable_this->listed_elements_for_autofill_.clear();
+    ListedElement::List* elements_for_autofill =
+        collect_shadow_inputs ? &mutable_this->listed_elements_for_autofill_
+                              : nullptr;
+    // If this form is a reference target, we need to traverse the scope that
+    // includes the highest shadow host.
+    if (const Node* reference_target_scope = GetReferenceTargetScope()) {
+      CollectListedElementsForReferenceTarget(*reference_target_scope,
+                                              mutable_this->listed_elements_,
+                                              elements_for_autofill);
+    } else {
+      CollectListedElements(GetListedElementsScope(),
+                            mutable_this->listed_elements_,
+                            elements_for_autofill);
+    }
     mutable_this->listed_elements_are_dirty_ = false;
-    mutable_this->listed_elements_including_shadow_trees_are_dirty_ =
+    mutable_this->listed_elements_for_autofill_are_dirty_ =
         !collect_shadow_inputs;
   }
-  return include_shadow_trees ? listed_elements_including_shadow_trees_
+  return collect_for_autofill ? listed_elements_for_autofill_
                               : listed_elements_;
 }
 
@@ -1120,8 +1194,8 @@ void HTMLFormElement::InvalidateDefaultButtonStyle() const {
   }
 }
 
-void HTMLFormElement::InvalidateListedElementsIncludingShadowTrees() {
-  listed_elements_including_shadow_trees_are_dirty_ = true;
+void HTMLFormElement::InvalidateListedElementsForAutofill() {
+  listed_elements_for_autofill_are_dirty_ = true;
 }
 
 void HTMLFormElement::UseCountPropertyAccess(

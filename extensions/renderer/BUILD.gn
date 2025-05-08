@@ -46,6 +46,8 @@ source_set("renderer") {
     "api/runtime_hooks_delegate.h",
     "api/web_request_hooks.cc",
     "api/web_request_hooks.h",
+    "api/web_request_natives.cc",
+    "api/web_request_natives.h",
     "api_activity_logger.cc",
     "api_activity_logger.h",
     "api_definitions_natives.cc",

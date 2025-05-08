@@ -68,7 +68,7 @@ class MockAudioManager : public AudioManager {
   void SetAecDumpRecordingManager(base::WeakPtr<AecdumpRecordingManager>
                                       aecdump_recording_manager) override;
 
-  const char* GetName() override;
+  const std::string_view GetName() override;
 
   // Setters to emulate desired in-test behavior.
   void SetMakeOutputStreamCB(MakeOutputStreamCallback cb);

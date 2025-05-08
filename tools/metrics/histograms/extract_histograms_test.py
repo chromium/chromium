@@ -194,44 +194,44 @@ class ExtractHistogramsTest(unittest.TestCase):
 """
     chrome_histogram_correct_expiry_date = chrome_histogram_pattern.format(
         'expires_after="2211-11-22"')
-    _, had_errors = extract_histograms.ExtractHistogramsFromDom(
+    _, errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_correct_expiry_date))
-    self.assertFalse(had_errors)
+    self.assertFalse(errors)
 
     chrome_histogram_wrong_expiry_date_format = chrome_histogram_pattern.format(
         'expires_after="2211/11/22"')
-    _, had_errors = extract_histograms.ExtractHistogramsFromDom(
+    _, errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_wrong_expiry_date_format))
-    self.assertTrue(had_errors)
+    self.assertTrue(errors)
 
     chrome_histogram_wrong_expiry_date_value = chrome_histogram_pattern.format(
         'expires_after="2211-22-11"')
-    _, had_errors = extract_histograms.ExtractHistogramsFromDom(
+    _, errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_wrong_expiry_date_value))
-    self.assertTrue(had_errors)
+    self.assertTrue(errors)
 
     chrome_histogram_correct_expiry_milestone = chrome_histogram_pattern.format(
         'expires_after="M22"')
-    _, had_errors = extract_histograms.ExtractHistogramsFromDom(
+    _, errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_correct_expiry_milestone))
-    self.assertFalse(had_errors)
+    self.assertFalse(errors)
 
     chrome_histogram_wrong_expiry_milestone = chrome_histogram_pattern.format(
         'expires_after="22"')
-    _, had_errors = extract_histograms.ExtractHistogramsFromDom(
+    _, errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_wrong_expiry_milestone))
-    self.assertTrue(had_errors)
+    self.assertTrue(errors)
 
     chrome_histogram_wrong_expiry_milestone = chrome_histogram_pattern.format(
         'expires_after="MM22"')
     _, had_errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_wrong_expiry_milestone))
-    self.assertTrue(had_errors)
+    self.assertTrue(errors)
 
     chrome_histogram_no_expiry = chrome_histogram_pattern.format('')
     _, had_errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_no_expiry))
-    self.assertTrue(had_errors)
+    self.assertTrue(errors)
 
   def testExpiryDateExtraction(self):
     chrome_histogram_pattern = """<histogram-configuration>
@@ -347,9 +347,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+    _, errors = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_without_summary, {})
-    self.assertTrue(have_errors)
+    self.assertTrue(errors)
 
   def testNewHistogramWithEmptySummary(self):
     histogram_with_empty_summary = xml.dom.minidom.parseString("""
@@ -362,9 +362,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+    _, errors = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_with_empty_summary, {})
-    self.assertTrue(have_errors)
+    self.assertTrue(errors)
 
   def testNewHistogramWithoutEnumOrUnit(self):
     histogram_without_enum_or_unit = xml.dom.minidom.parseString("""
@@ -377,9 +377,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+    _, errors = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_without_enum_or_unit, {})
-    self.assertTrue(have_errors)
+    self.assertTrue(errors)
 
   def testNewHistogramWithEnumAndUnit(self):
     histogram_with_enum_and_unit = xml.dom.minidom.parseString("""
@@ -393,9 +393,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+    _, errors = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_with_enum_and_unit, {})
-    self.assertTrue(have_errors)
+    self.assertTrue(errors)
 
   def testEmptyEnum(self):
     empty_enum = xml.dom.minidom.parseString("""
@@ -407,8 +407,8 @@ class ExtractHistogramsTest(unittest.TestCase):
 </enums>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms.ExtractEnumsFromXmlTree(empty_enum)
-    self.assertTrue(have_errors)
+    _, errors = extract_histograms.ExtractEnumsFromXmlTree(empty_enum)
+    self.assertTrue(errors)
 
   def testNewHistogramWithEnum(self):
     histogram_with_enum = xml.dom.minidom.parseString("""
@@ -430,9 +430,8 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms.ExtractHistogramsFromDom(
-        histogram_with_enum)
-    self.assertFalse(have_errors)
+    _, errors = extract_histograms.ExtractHistogramsFromDom(histogram_with_enum)
+    self.assertFalse(errors)
 
   def testEnumWithDuplicateValues(self):
     bad_enum = xml.dom.minidom.parseString("""
@@ -445,8 +444,8 @@ class ExtractHistogramsTest(unittest.TestCase):
 </enums>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms.ExtractEnumsFromXmlTree(bad_enum)
-    self.assertTrue(have_errors)
+    _, errors = extract_histograms.ExtractEnumsFromXmlTree(bad_enum)
+    self.assertTrue(errors)
 
   def testEnumWithDuplicateLabels(self):
     bad_enum = xml.dom.minidom.parseString("""
@@ -459,8 +458,8 @@ class ExtractHistogramsTest(unittest.TestCase):
 </enums>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms.ExtractEnumsFromXmlTree(bad_enum)
-    self.assertTrue(have_errors)
+    _, errors = extract_histograms.ExtractEnumsFromXmlTree(bad_enum)
+    self.assertTrue(errors)
 
   def testNewHistogramWithUnits(self):
     histogram_with_units = xml.dom.minidom.parseString("""
@@ -473,9 +472,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+    _, errors = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_with_units, {})
-    self.assertFalse(have_errors)
+    self.assertFalse(errors)
 
   def testNewHistogramWithEmptyOwnerTag(self):
     histogram_with_empty_owner_tag = xml.dom.minidom.parseString("""
@@ -488,9 +487,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+    _, errors = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_with_empty_owner_tag, {})
-    self.assertTrue(have_errors)
+    self.assertTrue(errors)
 
   def testNewHistogramWithoutOwnerTag(self):
     histogram_without_owner_tag = xml.dom.minidom.parseString("""
@@ -502,9 +501,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+    _, errors = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_without_owner_tag, {})
-    self.assertTrue(have_errors)
+    self.assertTrue(errors)
 
   def testNewHistogramWithCommaSeparatedOwners(self):
     histogram_with_comma_separated_owners = xml.dom.minidom.parseString("""
@@ -517,9 +516,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+    _, errors = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_with_comma_separated_owners, {})
-    self.assertTrue(have_errors)
+    self.assertTrue(errors)
 
   def testNewHistogramWithInvalidOwner(self):
     histogram_with_invalid_owner = xml.dom.minidom.parseString("""
@@ -532,9 +531,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+    _, errors = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_with_invalid_owner, {})
-    self.assertTrue(have_errors)
+    self.assertTrue(errors)
 
   def testHistogramWithEscapeCharacters(self):
     histogram_with_owner_placeholder = xml.dom.minidom.parseString("""
@@ -547,9 +546,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    hists, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+    hists, errors = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_with_owner_placeholder, {})
-    self.assertFalse(have_errors)
+    self.assertFalse(errors)
     self.assertIn('Test.Histogram', hists)
     self.assertIn('summary', hists['Test.Histogram'])
     self.assertEqual('This is a summary with & and " and \'',
@@ -565,9 +564,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histogram_suffixes_list>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms.ExtractHistogramsFromDom(
+    _, errors = extract_histograms.ExtractHistogramsFromDom(
         suffix_without_label)
-    self.assertTrue(have_errors)
+    self.assertTrue(errors)
 
   def testNewSuffixWithLabel(self):
     suffix_with_label = xml.dom.minidom.parseString("""
@@ -579,9 +578,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histogram_suffixes_list>
 </histogram-configuration>
 """)
-    have_errors = extract_histograms._UpdateHistogramsWithSuffixes(
+    errors = extract_histograms._UpdateHistogramsWithSuffixes(
         suffix_with_label, {})
-    self.assertFalse(have_errors)
+    self.assertFalse(errors)
 
   @parameterized.expand([
       ('InlineTokens', TEST_HISTOGRAM_WITH_TOKENS),
@@ -657,9 +656,8 @@ class ExtractHistogramsTest(unittest.TestCase):
     histogram_with_duplicate_variant = xml.dom.minidom.parseString(input_xml)
     histograms_dict, _ = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_with_duplicate_variant, {})
-    _, have_errors = extract_histograms._UpdateHistogramsWithTokens(
-        histograms_dict)
-    self.assertTrue(have_errors)
+    _, errors = extract_histograms._UpdateHistogramsWithTokens(histograms_dict)
+    self.assertTrue(errors)
 
   def testVariantsNotExists(self):
     histogram_without_corresponding_variants = xml.dom.minidom.parseString("""
@@ -681,9 +679,9 @@ class ExtractHistogramsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """)
-    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
+    _, errors = extract_histograms._ExtractHistogramsFromXmlTree(
         histogram_without_corresponding_variants, {})
-    self.assertTrue(have_errors)
+    self.assertTrue(errors)
 
   def testSuffixCanExtendPatternedHistograms(self):
     patterned_suffix = ("""
@@ -711,9 +709,9 @@ class ExtractHistogramsTest(unittest.TestCase):
         </histogram-configuration>""")
     # Only when the histogram is first extended by the token, can the
     # histogram_suffixes find those affected histograms.
-    histograms_dict, had_errors = extract_histograms.ExtractHistogramsFromDom(
+    histograms_dict, errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(patterned_suffix))
-    self.assertFalse(had_errors)
+    self.assertFalse(errors)
     self.assertIn('Test.First.Found', histograms_dict)
     self.assertIn('Test.Last.Found', histograms_dict)
 
@@ -742,18 +740,18 @@ class ExtractHistogramsTest(unittest.TestCase):
     config_bad = config.format(histogram_name=histogram_name,
                                improvement_tag=improvement_tag_bad)
 
-    histograms_dict, had_errors = extract_histograms.ExtractHistogramsFromDom(
+    histograms_dict, errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(config_good))
-    self.assertFalse(had_errors)
+    self.assertFalse(errors)
     self.assertIn(histogram_name, histograms_dict)
     self.assertIn('improvement', histograms_dict[histogram_name])
     self.assertEqual(
         histogram_configuration_model.IMPROVEMENT_DIRECTION_HIGHER_IS_BETTER,
         histograms_dict[histogram_name]['improvement'])
 
-    histograms_dict, had_errors = extract_histograms.ExtractHistogramsFromDom(
+    histograms_dict, errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(config_bad))
-    self.assertTrue(had_errors)
+    self.assertTrue(errors)
     self.assertNotIn('improvement', histograms_dict[histogram_name])
 
 

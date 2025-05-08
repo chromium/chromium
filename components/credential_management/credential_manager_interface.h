@@ -52,7 +52,13 @@ class CredentialManagerInterface {
                    const std::vector<GURL>& federations,
                    GetCallback callback) = 0;
 
-  virtual void ResetPendingRequest() = 0;
+  // `ContentCredentialManager` that uses the `CredentialManagerInterface`
+  // implementation will call this method in `DisconnectBinding`.
+  // That happens when the `ContentCredentialManager` needs to service API calls
+  // in the context of the new WebContents::GetLastCommittedURL so the
+  // `CredentialManagerInterface` implementation needs to reset for that new
+  // URL.
+  virtual void ResetAfterDisconnecting() = 0;
 };
 
 }  // namespace credential_management

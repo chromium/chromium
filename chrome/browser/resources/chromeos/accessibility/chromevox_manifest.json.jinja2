@@ -37,7 +37,10 @@
     "settingsPrivate",
     "storage",
     "tabs",
-    "tts"{% if is_manifest_v3 != '1' %},
+    "tts",
+{% if is_manifest_v3 == '1' %}
+    "offscreen"
+{% else %}
     "chrome://resources/",
     "https://docs.google.com/*",
     "https://docs.sandbox.google.com/*"

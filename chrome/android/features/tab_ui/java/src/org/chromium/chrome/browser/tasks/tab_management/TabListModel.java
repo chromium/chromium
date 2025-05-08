@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_GROUP_SYNC_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 
 import android.util.Pair;
@@ -73,6 +74,22 @@ class TabListModel extends ModelList {
     }
 
     /**
+     * Lookup the position of a tab group by its sync ID.
+     *
+     * @param syncId The sync ID to search for.
+     * @return The index within the model list or {@link TabModel.INVALID_TAB_INDEX}.
+     */
+    public int indexFromSyncId(String syncId) {
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if (model.get(CARD_TYPE) == TAB_GROUP && model.get(TAB_GROUP_SYNC_ID).equals(syncId)) {
+                return i;
+            }
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
      * Lookup a {@link PropertyModel} for the tab by its ID.
      *
      * @param tabId The tab ID to search for.
@@ -82,6 +99,22 @@ class TabListModel extends ModelList {
         for (int i = 0; i < size(); i++) {
             PropertyModel model = get(i).model;
             if (model.get(CARD_TYPE) == TAB && model.get(TAB_ID) == tabId) return model;
+        }
+        return null;
+    }
+
+    /**
+     * Lookup a {@link PropertyModel} for the tab group by its sync ID.
+     *
+     * @param syncId The sync ID to search for.
+     * @return The property model in the model list or null.
+     */
+    public @Nullable PropertyModel getModelFromSyncId(String syncId) {
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if (model.get(CARD_TYPE) == TAB_GROUP && model.get(TAB_GROUP_SYNC_ID).equals(syncId)) {
+                return model;
+            }
         }
         return null;
     }

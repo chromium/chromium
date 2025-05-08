@@ -36,7 +36,10 @@ import zlib
 # https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang.md
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
-CLANG_REVISION = 'llvmorg-21-init-6681-g5b36835d'
+# These fields are written by //tools/clang/scripts/upload_revision.py, and
+# should not be changed manually.
+# They are also read by build/config/compiler/BUILD.gn.
+CLANG_REVISION = 'llvmorg-21-init-10851-gcd6c4b61'
 CLANG_SUB_REVISION = 1
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
@@ -328,15 +331,7 @@ def main():
   parser.add_argument('--print-clang-version', action='store_true',
                       help=('Print current clang release version (e.g. 9.0.0) '
                             'and exit.'))
-  parser.add_argument('--verify-version',
-                      help='Verify that clang has the passed-in version.')
   args = parser.parse_args()
-
-  if args.verify_version and args.verify_version != RELEASE_VERSION:
-    print('RELEASE_VERSION is %s but --verify-version argument was %s.' % (
-        RELEASE_VERSION, args.verify_version))
-    print('clang_version in build/toolchain/toolchain.gni is likely outdated.')
-    return 1
 
   if args.print_clang_version:
     print(RELEASE_VERSION)

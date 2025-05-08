@@ -81,7 +81,8 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
                                       jint android_gesture_classification,
                                       jint android_button_state,
                                       jint android_meta_state,
-                                      jboolean for_touch_handle) {
+                                      jboolean for_touch_handle,
+                                      std::optional<bool> verified_event) {
   TRACE_EVENT(
       "input", "EventForwarder::OnTouchEvent", [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -111,6 +112,9 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
             static_cast<
                 perfetto::protos::pbzero::EventForwarder::AMotionEventAction>(
                 android_action));
+        if (verified_event) {
+          forwarder->set_verified_event(*verified_event);
+        }
       });
   last_x_pos_ = pos_x_0;
   last_y_pos_ = pos_y_0;

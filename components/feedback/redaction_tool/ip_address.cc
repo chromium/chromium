@@ -115,10 +115,6 @@ bool IPAddressBytes::operator==(const IPAddressBytes& other) const {
   return std::ranges::equal(*this, other);
 }
 
-bool IPAddressBytes::operator!=(const IPAddressBytes& other) const {
-  return !(*this == other);
-}
-
 // static
 
 IPAddress::IPAddress() = default;
@@ -215,14 +211,6 @@ IPAddress IPAddress::IPv4AllZeros() {
 // static
 IPAddress IPAddress::IPv6AllZeros() {
   return AllZeros(kIPv6AddressSize);
-}
-
-bool IPAddress::operator==(const IPAddress& that) const {
-  return ip_address_ == that.ip_address_;
-}
-
-bool IPAddress::operator!=(const IPAddress& that) const {
-  return ip_address_ != that.ip_address_;
 }
 
 bool IPAddress::operator<(const IPAddress& that) const {

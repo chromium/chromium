@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
@@ -27,7 +28,7 @@ class ZeroSuggestVerbatimMatchProvider : public AutocompleteProvider {
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
-  void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
+  void Stop(AutocompleteStopReason stop_reason) override;
 
  private:
   void OnPageTitleRetrieved(const AutocompleteInput& input,

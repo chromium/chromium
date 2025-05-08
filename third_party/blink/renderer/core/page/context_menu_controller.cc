@@ -96,6 +96,7 @@
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
@@ -507,7 +508,18 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     for (Node* node = result.InnerNode(); node; node = node->parentNode()) {
       if (HTMLElement* element = DynamicTo<HTMLElement>(node);
           element && element->InterestTargetElement()) {
+        auto* context = element->GetDocument().GetExecutionContext();
+        CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+            context));
         data.opened_from_interest_target = true;
+        if (RuntimeEnabledFeatures::
+                HTMLInterestTargetContextMenuItemOnlyEnabled(context)) {
+          data.interest_target_node_id = element->NodeID();
+        } else {
+          static_assert(kInvalidDOMNodeId == 0,
+                        "The Android Java code assumes 0 === invalid");
+          data.interest_target_node_id = kInvalidDOMNodeId;
+        }
         break;
       }
     }

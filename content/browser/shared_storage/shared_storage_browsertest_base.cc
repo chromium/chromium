@@ -151,6 +151,12 @@ void SharedStorageBrowserTestBase::ExpectAccessObserved(
   observer_->ExpectAccessObserved(expected_accesses);
 }
 
+void SharedStorageBrowserTestBase::ExpectOperationFinishedInfosObserved(
+    const std::vector<TestSharedStorageObserver::OperationFinishedInfo>&
+        expected_infos) {
+  observer_->ExpectOperationFinishedInfosObserved(expected_infos);
+}
+
 double SharedStorageBrowserTestBase::GetRemainingBudget(
     const url::Origin& origin) {
   base::test::TestFuture<SharedStorageWorkletHost::BudgetResult> future;
@@ -166,8 +172,8 @@ FrameTreeNode* SharedStorageBrowserTestBase::PrimaryFrameTreeNodeRoot() {
       .root();
 }
 
-FrameTreeNodeId SharedStorageBrowserTestBase::MainFrameId() {
-  return PrimaryFrameTreeNodeRoot()->frame_tree_node_id();
+GlobalRenderFrameHostId SharedStorageBrowserTestBase::MainFrameId() {
+  return PrimaryFrameTreeNodeRoot()->current_frame_host()->GetGlobalId();
 }
 
 SharedStorageBudgetMetadata*

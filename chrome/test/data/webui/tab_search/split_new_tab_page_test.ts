@@ -4,7 +4,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SplitNewTabPageAppElement, Tab} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {TabAlertState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -39,10 +39,26 @@ suite('SplitNewTabPageTest', () => {
             visible: true,
           }),
           createTab({
+            alertStates: [TabAlertState.kMediaRecording],
             index: 2,
+            lastActiveTimeTicks: {internalValue: BigInt(2)},
             tabId: 6,
             title: 'Facebook',
             url: {url: 'https://www.facebook.com'},
+          }),
+          createTab({
+            index: 4,
+            lastActiveTimeTicks: {internalValue: BigInt(7)},
+            tabId: 7,
+            title: 'Expedia',
+            url: {url: 'https://www.expedia.com'},
+          }),
+          createTab({
+            index: 5,
+            lastActiveTimeTicks: {internalValue: BigInt(8)},
+            tabId: 8,
+            title: 'Wikipedia',
+            url: {url: 'https://en.wikipedia.org'},
           }),
         ],
       },
@@ -84,20 +100,31 @@ suite('SplitNewTabPageTest', () => {
     assertEquals(1, testApiProxy.getCallCount('getProfileData'));
     const tabSearchItems =
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
-    // 1 tab should be listed, as tabs in non-active windows as well as active
+    // 3 tabs should be listed, as tabs in non-active windows as well as active
     // or visible tabs in the active window should be excluded.
-    assertEquals(1, tabSearchItems.length);
+    assertEquals(3, tabSearchItems.length);
+  });
+
+  test('Sorts list', async () => {
+    await splitNewTabPageSetup();
+    const tabSearchItems =
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
+    assertEquals(3, tabSearchItems.length);
+    // Media tabs should appear first in the list, otherwise the list should
+    // be ordered from most to least recently active.
+    assertEquals('Facebook', tabSearchItems[0]!.data.tab.title);
+    assertEquals('Wikipedia', tabSearchItems[1]!.data.tab.title);
+    assertEquals('Expedia', tabSearchItems[2]!.data.tab.title);
   });
 
   test('Updates on tab updated', async () => {
     await splitNewTabPageSetup();
     const initialTabSearchItems =
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
-    assertEquals(1, initialTabSearchItems.length);
-    assertEquals('Facebook', initialTabSearchItems[0]!.data.tab.title);
+    assertEquals(3, initialTabSearchItems.length);
+    const tab = initialTabSearchItems[0]!.data.tab as Tab;
+    assertEquals('Facebook', tab.title);
 
-    const windowData = createWindowData();
-    const tab = windowData[0]!.tabs[2]!;
     tab.title = 'New Title';
     const tabUpdateInfo = {
       inActiveWindow: true,
@@ -108,20 +135,20 @@ suite('SplitNewTabPageTest', () => {
 
     const updatedTabSearchItems =
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
-    assertEquals(1, updatedTabSearchItems.length);
+    assertEquals(3, updatedTabSearchItems.length);
     assertEquals('New Title', updatedTabSearchItems[0]!.data.tab.title);
   });
 
   test('Updates on tabs changed', async () => {
     await splitNewTabPageSetup();
     assertEquals(
-        1,
+        3,
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item').length);
 
     const windowData = createWindowData();
     windowData[0]!.tabs.push(createTab({
-      index: 3,
-      tabId: 7,
+      index: 6,
+      tabId: 12,
       title: 'YouTube',
       url: {url: 'https://www.youtube.com'},
     }));
@@ -131,14 +158,14 @@ suite('SplitNewTabPageTest', () => {
     await microtasksFinished();
 
     assertEquals(
-        2,
+        4,
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item').length);
   });
 
   test('Updates on tabs removed', async () => {
     await splitNewTabPageSetup();
     assertEquals(
-        1,
+        3,
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item').length);
 
     testApiProxy.getCallbackRouterRemote().tabsRemoved({
@@ -148,7 +175,7 @@ suite('SplitNewTabPageTest', () => {
     await microtasksFinished();
 
     assertEquals(
-        0,
+        2,
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item').length);
   });
 

@@ -1,8 +1,8 @@
 Name: libxml
 URL: http://xmlsoft.org
-Version: 169857ad264e51d9b34d7119d2e2e006e35e60c2
-Revision: 169857ad264e51d9b34d7119d2e2e006e35e60c2
-CPEPrefix: cpe:/a:xmlsoft:libxml2:2.14.0
+Version: 2.14.2
+Revision: 0e145ae4881c2a05ae00128a3bd90d76d4dadc4b
+CPEPrefix: cpe:/a:xmlsoft:libxml2:2.14.2
 License: MIT
 License File: src/Copyright
 Security Critical: yes
@@ -20,6 +20,7 @@ Modifications:
   aren't implemented or don't work on several platforms.
 - counted_by.patch: Work around __counted_by__ supported in a cronet toolchain
   with a pre-release clang.
+- xml-attr-extra.patch: add an `extra` member to struct _xmlAttr.
 - Add helper classes in the chromium/ subdirectory.
 - Delete various unused files, see chromium/roll.py
 - Disable various unused libxml features:

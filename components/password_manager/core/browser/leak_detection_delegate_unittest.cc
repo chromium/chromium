@@ -358,7 +358,6 @@ TEST_F(LeakDetectionDelegateTest, DoNotStartLeakCheckIfLeakCheckIsOff) {
 
 TEST_F(LeakDetectionDelegateTest,
        StartCheckWithNoSafeBrowsingWhileLeakDetectionOn) {
-  feature_list.InitAndEnableFeature(safe_browsing::kPasswordLeakToggleMove);
   SetSBState(safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
   SetLeakDetectionEnabled(true);
   const PasswordForm form = CreateTestForm();
@@ -379,7 +378,6 @@ TEST_F(LeakDetectionDelegateTest,
 
 TEST_F(LeakDetectionDelegateTest,
        DoNotStartCheckWithEnhancedProtectionWhileLeakProtectionIsOff) {
-  feature_list.InitAndEnableFeature(safe_browsing::kPasswordLeakToggleMove);
   SetSBState(safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   SetLeakDetectionEnabled(false);
   const PasswordForm form = CreateTestForm();
@@ -840,7 +838,13 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithChangePwdFlag) {
 
 TEST_F(LeakDetectionDelegateTest,
        LeakDetectionWithkMarkAllCredentialsAsLeaked) {
-  base::test::ScopedFeatureList features(features::kMarkAllCredentialsAsLeaked);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {
+          features::kMarkAllCredentialsAsLeaked,
+          features::kImprovedPasswordChangeService,
+      },
+      {});
 
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
@@ -855,7 +859,7 @@ TEST_F(LeakDetectionDelegateTest,
   EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(Return(profile_store()));
 
-  // Since is_leaked is false there are no calls to password store.
+  // There are no calls to password store.
   EXPECT_CALL(*profile_store(), GetAutofillableLogins).Times(0);
   EXPECT_CALL(*profile_store(), UpdateLogin).Times(0);
 
@@ -873,7 +877,7 @@ TEST_F(LeakDetectionDelegateTest,
                   /* in_account_store = */ false)));
 
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/false, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
   WaitForPasswordStore();
 }
 

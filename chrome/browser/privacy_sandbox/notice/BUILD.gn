@@ -76,6 +76,8 @@ if (!is_android) {
       "//base",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/common",
+      "//components/tabs:public",
       "//content/public/browser",
     ]
   }
@@ -109,12 +111,16 @@ source_set("test_support") {
     ":interfaces",
     ":notice_mojom",
     "//base",
+    "//components/keyed_service/core:core",
+    "//content/public/browser:browser",
     "//testing/gmock",
   ]
 
   # (Desktop Only)
   if (!is_android) {
     sources += [
+      "mocks/mock_desktop_view_manager.cc",
+      "mocks/mock_desktop_view_manager.h",
       "mocks/mock_desktop_view_manager_observer.cc",
       "mocks/mock_desktop_view_manager_observer.h",
     ]
@@ -149,10 +155,7 @@ source_set("unit_tests") {
 
   # (Desktop Only)
   if (!is_android) {
-    sources += [
-      "desktop_entrypoint_handlers_unittest.cc",
-      "desktop_view_manager_unittest.cc",
-    ]
+    sources += [ "desktop_view_manager_unittest.cc" ]
     deps += [ ":desktop_view_manager" ]
   }
 }
@@ -165,6 +168,7 @@ source_set("browser_tests") {
     ":core",
     ":interfaces",
     ":notice",
+    ":test_support",
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
@@ -178,6 +182,10 @@ source_set("browser_tests") {
   }
 
   if (!is_android) {
-    deps += [ "//chrome/test:test_support_ui" ]
+    sources += [ "desktop_entrypoint_handlers_browsertest.cc" ]
+    deps += [
+      ":desktop_view_manager",
+      "//chrome/test:test_support_ui",
+    ]
   }
 }

@@ -60,7 +60,6 @@
 
 using ::blink::StorageKey;
 using ::blink::mojom::QuotaStatusCode;
-using ::blink::mojom::StorageType;
 
 namespace storage {
 

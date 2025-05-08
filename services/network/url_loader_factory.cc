@@ -384,7 +384,8 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       std::move(trust_token_observer), std::move(url_loader_network_observer),
       std::move(devtools_observer), std::move(device_bound_session_observer),
       std::move(accept_ch_frame_observer),
-      resource_request.shared_storage_writable_eligible);
+      resource_request.shared_storage_writable_eligible,
+      *context_->GetSharedResourceChecker());
 
   cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
 }

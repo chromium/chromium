@@ -38,12 +38,10 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   static DefaultBrowserPromptManager* GetInstance();
 
-  bool get_show_app_menu_item() const { return show_app_menu_item_; }
+  bool show_app_menu_item() const { return show_app_menu_item_; }
 
-  // This will trigger the showing of the info bar.
-  void InitTabStripTracker();
-
-  void MaybeShowPrompt();
+  // Returns true if the prompt was shown, false if not.
+  bool MaybeShowPrompt();
 
   void CloseAllPrompts(CloseReason close_reason);
 
@@ -52,6 +50,9 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   DefaultBrowserPromptManager();
   ~DefaultBrowserPromptManager() override;
+
+  // This will trigger the showing of the info bar.
+  void InitTabStripTracker();
 
   void CreateInfoBarForWebContents(content::WebContents* contents,
                                    Profile* profile);

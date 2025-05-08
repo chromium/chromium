@@ -63,7 +63,7 @@ class MessagePort
 
   ~MessagePort() override;
 
-  // Called right before a channel is created for this MessagePort and |port|.
+  // Called right before a channel is created for this MessagePort and `port`.
   // This allows us to ensure that the ports have no RenderFrameHost instances
   // in common.
   virtual void RemoveCommonFrames(const MessagePort& port);
@@ -95,7 +95,7 @@ class MessagePort
       std::optional<url::Origin> source_origin,
       const std::set<base::UnguessableToken>& open_channel_tracking_ids);
 
-  // Notifies the port that the channel has been closed. If |error_message| is
+  // Notifies the port that the channel has been closed. If `error_message` is
   // non-empty, it indicates an error occurred while opening the connection.
   virtual void DispatchOnDisconnect(const std::string& error_message);
 

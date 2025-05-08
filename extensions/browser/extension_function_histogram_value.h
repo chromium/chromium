@@ -1997,6 +1997,7 @@ enum HistogramValue {
   EXPERIMENTALACTOR_STARTTASK = 1934,
   EXPERIMENTALACTOR_EXECUTEACTION = 1935,
   EXPERIMENTALACTOR_STOPTASK = 1936,
+  BOOKMARKMANAGERPRIVATE_OPENINNEWTABGROUP = 1937,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

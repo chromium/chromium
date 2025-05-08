@@ -71,6 +71,7 @@ class ApplicationContextImpl : public ApplicationContext {
       override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   const std::string& GetApplicationLocale() override;
+  ApplicationLocaleStorage* GetApplicationLocaleStorage() override;
   const std::string& GetApplicationCountry() override;
   ProfileManagerIOS* GetProfileManager() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
@@ -118,7 +119,7 @@ class ApplicationContextImpl : public ApplicationContext {
   // application states.
   void OnAppEnterState(AppState app_state);
 
-  // Sets the locale used by the application.
+  // TODO(crbug.com/414379493): Remove this method.
   void SetApplicationLocale(const std::string& locale);
 
   // Create the local state.
@@ -159,6 +160,7 @@ class ApplicationContextImpl : public ApplicationContext {
       network_connection_tracker_;
 
   std::unique_ptr<PrefService> local_state_;
+  std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
   std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
   std::unique_ptr<IOSChromeIOThread> ios_chrome_io_thread_;

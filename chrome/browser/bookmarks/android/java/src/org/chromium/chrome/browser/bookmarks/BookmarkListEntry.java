@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.bookmarks;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -19,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import javax.annotation.Nonnull;
 
 /** Represents different type of views in the bookmark UI. */
+@NullMarked
 public final class BookmarkListEntry {
     /** Specifies the view types that the bookmark delegate screen can contain. */
     @Retention(RetentionPolicy.SOURCE)
@@ -57,9 +59,9 @@ public final class BookmarkListEntry {
     }
 
     private final @ViewType int mViewType;
-    @Nullable private final BookmarkItem mBookmarkItem;
-    @Nullable private final SectionHeaderData mSectionHeaderData;
-    @Nullable private final PowerBookmarkMeta mPowerBookmarkMeta;
+    private final @Nullable BookmarkItem mBookmarkItem;
+    private final @Nullable SectionHeaderData mSectionHeaderData;
+    private final @Nullable PowerBookmarkMeta mPowerBookmarkMeta;
 
     private BookmarkListEntry(
             int viewType,
@@ -146,22 +148,19 @@ public final class BookmarkListEntry {
     /**
      * Returns the view type used in the bookmark list UI. Can be null for non bookmark view types.
      */
-    @Nullable
-    BookmarkItem getBookmarkItem() {
+    @Nullable BookmarkItem getBookmarkItem() {
         return mBookmarkItem;
     }
 
     /**
      * @return The {@link SectionHeaderData}. Could be null if this entry is not a section header.
      */
-    @Nullable
-    SectionHeaderData getSectionHeaderData() {
+    @Nullable SectionHeaderData getSectionHeaderData() {
         return mSectionHeaderData;
     }
 
     /** Returns the PowerBookmarkMeta for this list entry. */
-    @Nullable
-    PowerBookmarkMeta getPowerBookmarkMeta() {
+    @Nullable PowerBookmarkMeta getPowerBookmarkMeta() {
         return mPowerBookmarkMeta;
     }
 }

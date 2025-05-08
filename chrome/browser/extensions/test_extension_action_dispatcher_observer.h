@@ -40,7 +40,7 @@ class TestExtensionActionDispatcherObserver
   ~TestExtensionActionDispatcherObserver() override;
 
   // Waits until the extension action is updated and the update is seen for all
-  // web contents in |contents_to_observe_| if |contents_to_observe_| is not
+  // web contents in `contents_to_observe_` if `contents_to_observe_` is not
   // empty.
   void Wait();
 

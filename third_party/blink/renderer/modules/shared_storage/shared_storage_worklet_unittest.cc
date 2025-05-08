@@ -520,6 +520,8 @@ class SharedStorageWorkletTest : public PageTestBase {
 
   ScopedSharedStorageWebLocksForTest
       shared_storage_web_locks_runtime_enabled_feature{/*enabled=*/true};
+  ScopedFledgeClickinessForTest clickiness_runtime_enabled_feature_{
+      /*enabled=*/true};
 
   mojo::Remote<mojom::SharedStorageWorkletService>
       shared_storage_worklet_service_;
@@ -1933,8 +1935,18 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
           /*for_debugging_only_in_cooldown_or_lockout=*/false,
           /*click_and_view_counts=*/
           blink::mojom::ViewAndClickCounts::New(
-              /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
-              /*click_counts=*/blink::mojom::ViewOrClickCounts::New()));
+              /*view_counts=*/blink::mojom::ViewOrClickCounts::New(
+                  /*past_hour=*/10,
+                  /*past_day=*/20,
+                  /*past_week=*/30,
+                  /*past_30_days=*/40,
+                  /*past_90_days=*/50),
+              /*click_counts=*/blink::mojom::ViewOrClickCounts::New(
+                  /*past_hour=*/1,
+                  /*past_day=*/2,
+                  /*past_week=*/3,
+                  /*past_30_days=*/4,
+                  /*past_90_days=*/5)));
 
   blink::InterestGroup ig;
   ig.expiry = now + base::Seconds(3000);
@@ -2152,6 +2164,13 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
               "biddingLogicUrl": "https://example.org/bid.js",
               "biddingWasmHelperURL": "https://example.org/bid.wasm",
               "biddingWasmHelperUrl": "https://example.org/bid.wasm",
+              "clickCounts": {
+                "past30Days": 4,
+                "past90Days": 5,
+                "pastDay": 2,
+                "pastHour": 1,
+                "pastWeek": 3
+              },
               "enableBiddingSignalsPrioritization": true,
               "estimatedSize": 1000,
               "executionMode": "group-by-origin",
@@ -2215,7 +2234,14 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
               "updateURL": "https://example.org/ig_update.json",
               "updateUrl": "https://example.org/ig_update.json",
               "userBiddingSignals": "hello",
-              "viewAndClickCountsProviders": ["https://example.test"]
+              "viewAndClickCountsProviders": ["https://example.test"],
+              "viewCounts": {
+                "past30Days": 40,
+                "past90Days": 50,
+                "pastDay": 20,
+                "pastHour": 10,
+                "pastWeek": 30
+              }
             }
           ];
 
@@ -2223,6 +2249,95 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
               expectedSortedGroups)) {
             throw Error("Actual groups: " + JSON.stringify(actualSortedGroups) +
               "\nExpected groups: " + JSON.stringify(expectedSortedGroups));
+          }
+        }
+      };
+
+      register("test-operation", TestClass);
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
+
+  test_client_->interest_groups_result_ =
+      blink::mojom::GetInterestGroupsResult::NewGroups(std::move(groups));
+
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
+
+  EXPECT_TRUE(run_result.success);
+  EXPECT_EQ(run_result.error_message, "");
+
+  EXPECT_EQ(test_client_->observed_get_interest_groups_count_, 1u);
+}
+
+class SharedStorageWorkletNoClickinessTest : public SharedStorageWorkletTest {
+ protected:
+  SharedStorageWorkletNoClickinessTest() = default;
+
+ private:
+  ScopedFledgeClickinessForTest clickiness_runtime_disable_feature_{
+      /*enabled=*/false};
+};
+
+TEST_F(SharedStorageWorkletNoClickinessTest, InterestGroups) {
+  base::Time now = base::Time::Now();
+
+  std::vector<blink::mojom::PreviousWinPtr> prev_wins;
+  blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals =
+      blink::mojom::BiddingBrowserSignals::New(
+          /*join_count=*/1,
+          /*bid_count=*/2, std::move(prev_wins),
+          /*for_debugging_only_in_cooldown_or_lockout=*/false,
+          /*click_and_view_counts=*/
+          blink::mojom::ViewAndClickCounts::New(
+              /*view_counts=*/blink::mojom::ViewOrClickCounts::New(
+                  /*past_hour=*/10,
+                  /*past_day=*/20,
+                  /*past_week=*/30,
+                  /*past_30_days=*/40,
+                  /*past_90_days=*/50),
+              /*click_counts=*/blink::mojom::ViewOrClickCounts::New(
+                  /*past_hour=*/1,
+                  /*past_day=*/2,
+                  /*past_week=*/3,
+                  /*past_30_days=*/4,
+                  /*past_90_days=*/5)));
+
+  blink::InterestGroup ig;
+  ig.expiry = now + base::Seconds(3000);
+  ig.owner = url::Origin::Create(GURL("https://example.org"));
+  ig.name = "ig_one";
+
+  blink::mojom::StorageInterestGroupPtr storage_interest_group =
+      blink::mojom::StorageInterestGroup::New(
+          std::move(ig), std::move(bidding_browser_signals),
+          /*joining_origin=*/
+          url::Origin::Create(GURL("https://joining-origin.com")),
+          /*join_time=*/now - base::Seconds(2000),
+          /*last_updated=*/now - base::Seconds(1500),
+          /*next_update_after=*/now + base::Seconds(2000),
+          /*estimated_size=*/1000);
+
+  std::vector<blink::mojom::StorageInterestGroupPtr> groups;
+  groups.push_back(std::move(storage_interest_group));
+
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          const groups = await interestGroups();
+
+          if (groups.length !== 1) {
+            throw Error("Unexpected groups.length: " + groups.length);
+          }
+
+          const group = groups[0];
+          if ('viewAndClickCountsProviders' in group) {
+            throw Error('viewAndClickCountsProviders included w/o clickiness');
+          }
+          if ('viewCounts' in group) {
+            throw Error('viewCounts included w/o clickiness');
+          }
+          if ('clickCounts' in group) {
+            throw Error('clickCounts included w/o clickiness');
           }
         }
       };

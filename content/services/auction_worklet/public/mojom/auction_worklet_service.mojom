@@ -5,6 +5,7 @@
 module auction_worklet.mojom;
 
 import "content/services/auction_worklet/public/mojom/bidder_worklet.mojom";
+import "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom";
 import "content/services/auction_worklet/public/mojom/seller_worklet.mojom";
 import "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom";
 import "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom";
@@ -66,8 +67,8 @@ interface AuctionWorkletService {
   // Attempts to load Javascript at the specified URL and create a BidderWorklet
   // from the response body. A single BidderWorklet object can be used for
   // multiple different InterestGroups, as long as they share the `bidding_url`
-  // `wasm_helper_url`, and `trusted_scoring_signals_url` that were passed in
-  // when creating the BidderWorklet. A single BidderWorklet can be used in
+  // `wasm_helper_load.url`, and `trusted_scoring_signals_url` that were passed
+  // in when creating the BidderWorklet. A single BidderWorklet can be used in
   // multiple auctions as long as they share a `top_window_origin`. In practice,
   // the DevTools hooks restrict sharing to auctions within a single
   // RenderFrame.
@@ -97,9 +98,10 @@ interface AuctionWorkletService {
   //  restricted to exactly those URLs (keeping in mind query parameter usage
   //  for trusted bidding signals and the allowed coalescing).
   //
-  // `script_source_url` The URL of the seller worklet script.
+  // `script_source_load` The InProgressAuctionDownload of the bidder worklet
+  // script.
   //
-  // `wasm_helper_url` The URL of the wasm helper to load.
+  // `wasm_helper_load` The InProgressAuctionDownload of the wasm helper.
   //
   // `trusted_bidding_signals_url` The trusted bidding signals URL to fetch
   //  for any any `trusted_bidding_signals_keys` provided to the BidderWorklet's
@@ -134,8 +136,8 @@ interface AuctionWorkletService {
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       pending_remote<AuctionNetworkEventsHandler> auction_network_events_handler,
-      url.mojom.Url script_source_url,
-      url.mojom.Url? wasm_helper_url,
+      InProgressAuctionDownload script_source_load,
+      InProgressAuctionDownload? wasm_helper_load,
       url.mojom.Url? trusted_bidding_signals_url,
       string trusted_bidding_signals_slot_size_param,
       url.mojom.Origin top_window_origin,
@@ -146,12 +148,13 @@ interface AuctionWorkletService {
   // Attempts to load Javascript at the specified URL and loads a SellerWorklet.
   // While a single SellerWorklet object can be used in auctions with different
   // AuctionAdConfigs, the configs of all auctions using a single SellerWorklet
-  // object must share a `script_source_url` and `trusted_scoring_signals_url`,
-  // which match the ones passed in when creating the SellerWorklet. All
-  // auctions sharing a SellerWorklet must also have the same
-  // `top_window_origin`. In practice, the DevTools hooks and URLLoaderFactory
-  // hooks (which make script fetches act as if they were made from the parent
-  // frame) restrict sharing to auctions within a single RenderFrame.
+  // object must share a `script_source_load.url` and
+  // `trusted_scoring_signals_url`, which match the ones passed in when creating
+  // the SellerWorklet. All auctions sharing a SellerWorklet must also have the
+  // same `top_window_origin`. In practice, the DevTools hooks and
+  // URLLoaderFactory hooks (which make script fetches act as if they were made
+  // from the parent frame) restrict sharing to auctions within a single
+  // RenderFrame.
   //
   // On load error, the worklet will close its pipe with a reason string. The
   // reason string, and worklet errors messages more generally, are considered
@@ -177,7 +180,8 @@ interface AuctionWorkletService {
   //  It's recommended that the implementation be restricted to only load the
   //  script URL.
   //
-  // `script_source_url` is the URL of the seller worklet script.
+  // `script_source_load` The InProgressAuctionDownload of the seller worklet
+  // script.
   //
   // `trusted_scoring_signals_url` The trusted scoring signals URL for the
   //  auction, if there is one.
@@ -194,10 +198,10 @@ interface AuctionWorkletService {
   // Also part of AuctionConfig.
   //
   // `load_seller_worklet_client` may be passed in to get a notification when
-  // the `script_source_url` has been loaded, and is passed whether
+  // the `script_source_load` has been loaded, and is passed whether
   // `trusted_scoring_signals_url` may be requested. It's needed when
   // `trusted_scoring_signals_url` is non-null and is cross-origin to
-  // `script_source_url`, and the trusted signals cache is in use. In that
+  // `script_source_load.url`, and the trusted signals cache is in use. In that
   // case, the browser process will be responsible for starting and managing
   // signals fetches, so needs to know if the seller script's headers have
   // provided permissions for signals to be requested from the scoring signals'
@@ -210,7 +214,7 @@ interface AuctionWorkletService {
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       pending_remote<AuctionNetworkEventsHandler> auction_network_events_handler,
-      url.mojom.Url script_source_url,
+      InProgressAuctionDownload script_source_load,
       url.mojom.Url? trusted_scoring_signals_url,
       url.mojom.Origin top_window_origin,
       AuctionWorkletPermissionsPolicyState permissions_policy_state,

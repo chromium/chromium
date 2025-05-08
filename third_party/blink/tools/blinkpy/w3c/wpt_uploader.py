@@ -43,6 +43,7 @@ class WptReportUploader(object):
 
         builders = [
             ("chromium", "ci", "android-15-chrome-wpt-fyi-rel"),
+            ("chromium", "ci", "android-15-chrome-stable-wpt-fyi-rel"),
             ("chromium", "ci", "android-15-webview-wpt-fyi-rel"),
             ("chromium", "ci", "ios-wpt-fyi-rel"),
         ]

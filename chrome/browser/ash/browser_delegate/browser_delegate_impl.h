@@ -19,11 +19,22 @@ class BrowserDelegateImpl : public BrowserDelegate {
 
   // BrowserDelegate:
   Browser& GetBrowser() const override;
+  BrowserType GetType() const override;
   SessionID GetSessionID() const override;
+  gfx::Rect GetBounds() const override;
   content::WebContents* GetActiveWebContents() const override;
+  size_t GetWebContentsCount() const override;
+  content::WebContents* GetWebContentsAt(size_t index) const override;
   aura::Window* GetNativeWindow() const override;
   bool IsClosing() const override;
   void Show() override;
+  void Minimize() override;
+  void Close() override;
+  void AddTab(const GURL& url,
+              std::optional<size_t> index,
+              TabDisposition disposition) override;
+  content::WebContents* NavigateWebApp(const GURL& url,
+                                       TabPinning pin_tab) override;
 
  private:
   const raw_ref<Browser> browser_;

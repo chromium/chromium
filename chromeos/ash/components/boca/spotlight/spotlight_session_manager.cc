@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_crd_manager.h"
@@ -88,9 +89,6 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
             base::BindOnce(&SpotlightSessionManager::OnConnectionCodeReceived,
                            weak_ptr_factory_.GetWeakPtr()));
         break;
-      case ::boca::ViewScreenConfig::ACTIVE:
-        spotlight_crd_manager_->ShowPersistentNotification(teacher_name_);
-        break;
       case ::boca::ViewScreenConfig::INACTIVE:
         request_in_progress_ = false;
         notification_handler_->StopSpotlightCountdown();
@@ -105,7 +103,9 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
 void SpotlightSessionManager::OnConnectionCodeReceived(
     const std::string& connection_code) {
   CHECK(spotlight_service_);
-  notification_handler_->StartSpotlightCountdownNotification();
+  notification_handler_->StartSpotlightCountdownNotification(
+      base::BindOnce(&SpotlightSessionManager::OnCountdownEnded,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   spotlight_service_->RegisterScreen(
       connection_code, BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(),
@@ -117,8 +117,10 @@ void SpotlightSessionManager::OnRegisterScreenRequestSent(
     base::expected<bool, google_apis::ApiErrorCode> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.has_value()) {
-    // TODO: crbug.com/366316261 - Add metrics for Spotlight failure.
-    LOG(WARNING) << "[Boca]Failed to send Spotlight connection code.";
+    boca::RecordOnRegisterScreenRequestSentErrorCode(result.error());
+    LOG(WARNING)
+        << "[Boca]Failed to send Spotlight connection code with error code: "
+        << result.error();
   }
   request_in_progress_ = false;
 
@@ -126,6 +128,10 @@ void SpotlightSessionManager::OnRegisterScreenRequestSent(
   // immediately updated locally.
   BocaAppClient::Get()->GetSessionManager()->LoadCurrentSession(
       /*from_polling=*/false);
+}
+
+void SpotlightSessionManager::OnCountdownEnded() {
+  spotlight_crd_manager_->ShowPersistentNotification(teacher_name_);
 }
 
 }  // namespace ash::boca

@@ -7,6 +7,7 @@ licenses(["notice"])
 closure_js_library(
     name = "nondisposableeventtarget",
     srcs = ["nondisposableeventtarget.js"],
+    lenient = True,
     deps = [
         "//closure/goog/array",
         "//closure/goog/asserts",
@@ -20,6 +21,7 @@ closure_js_library(
 closure_js_library(
     name = "touch",
     srcs = ["touch.js"],
+    lenient = True,
     deps = [
         "//closure/goog/array",
         "//closure/goog/asserts",

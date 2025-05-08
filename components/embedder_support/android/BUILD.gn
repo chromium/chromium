@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -178,9 +177,6 @@ generate_jni("view_jni_headers") {
 
 java_strings_grd("web_contents_delegate_strings_grd") {
   grd_file = "java/strings/web_contents_delegate_android_strings.grd"
-  outputs = [ "values/web_contents_delegate_android_strings.xml" ] + process_file_template(
-                android_bundle_locales_as_resources,
-                [ "values-{{source_name_part}}/web_contents_delegate_android_strings.xml" ])
 }
 
 static_library("web_contents_delegate") {

@@ -9,7 +9,6 @@
 #include <variant>
 
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1133,10 +1132,6 @@ void CloudPolicyClient::FetchRemoteCommands(
 
   // Unsigned commands and NONE signature are not supported.
   DCHECK_NE(signature_type, em::PolicyFetchRequest::NONE);
-
-  if (reason == RemoteCommandsFetchReason::kTest) {
-    CHECK_IS_TEST();
-  }
 
   auto params = DMServerJobConfiguration::CreateParams::WithClient(
       DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS, this);

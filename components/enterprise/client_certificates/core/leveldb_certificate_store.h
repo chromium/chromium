@@ -88,11 +88,12 @@ class LevelDbCertificateStore : public CertificateStore {
 
   // Will start the initialization of the Database. Is a no-op is the database
   // is already initialized.
-  void InitializeDatabase();
+  void InitializeDatabase(bool retry_on_failure = true);
 
   // Invoked as callback when the database is done initializing with `status` as
   // result.
-  void OnDatabaseInitialized(leveldb_proto::Enums::InitStatus status);
+  void OnDatabaseInitialized(bool retry_on_failure,
+                             leveldb_proto::Enums::InitStatus status);
 
   // Will wait for the database to be initialized and then retrieve the entry
   // with `identity_name`. If successful, will invoke `callback` with

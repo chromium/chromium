@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -21,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -60,6 +62,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/shared_storage_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_select_url_fenced_frame_config_observer.h"
 #include "content/public/test/test_shared_storage_header_observer.h"
@@ -93,6 +96,7 @@
 
 namespace content {
 
+using testing::ElementsAre;
 using testing::Pair;
 using testing::UnorderedElementsAre;
 using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
@@ -154,6 +158,118 @@ std::string ReplacePortInString(std::string str, uint16_t port) {
 
 auto describe_param = [](const auto& info) {
   return base::StrCat({"ResolveSelectURLTo", info.param ? "Config" : "URN"});
+};
+
+FrameTreeNode* PrimaryFrameTreeNodeRootFromShell(Shell* shell) {
+  return static_cast<WebContentsImpl*>(shell->web_contents())
+      ->GetPrimaryFrameTree()
+      .root();
+}
+
+bool IsLocalRoot(RenderFrameHost* rfh) {
+  CHECK(rfh);
+  return static_cast<RenderFrameHostImpl*>(rfh)->is_local_root();
+}
+
+std::string ValueToString(const base::Value* value) {
+  if (!value) {
+    return "[[NULL]]";
+  }
+  switch (value->type()) {
+    case base::Value::Type::STRING:
+      return value->GetString();
+    case base::Value::Type::NONE:
+      return "[[NONE]]";
+    case base::Value::Type::BOOLEAN:
+      return value->GetBool() ? "true" : "false";
+    case base::Value::Type::INTEGER:
+      return base::NumberToString(value->GetInt());
+    case base::Value::Type::DOUBLE:
+      return base::NumberToString(value->GetDouble());
+    case base::Value::Type::BINARY: {
+      const std::vector<uint8_t>& value_blob = value->GetBlob();
+      return std::string(value_blob.begin(), value_blob.end());
+    }
+    case base::Value::Type::LIST:
+      return base::WriteJson(value->GetList()).value_or("[[LIST]]");
+    case base::Value::Type::DICT:
+      return base::WriteJson(value->GetDict()).value_or("[[DICT]]");
+  }
+  NOTREACHED();
+}
+
+std::string SerializeVectorOfMapOfStrings(
+    const std::vector<std::map<std::string, std::string>>& input_vector) {
+  std::ostringstream oss;
+  oss << "[";
+  if (!input_vector.empty()) {
+    oss << "\n";
+  }
+  for (const auto& input_map : input_vector) {
+    oss << "  {";
+    for (const auto& map_pair : input_map) {
+      oss << " {" << map_pair.first << ", " << map_pair.second << "} ";
+    }
+    oss << "}\n";
+  }
+  oss << "]";
+  return oss.str();
+}
+
+class TestSharedStorageDevToolsClient : public TestDevToolsProtocolClient {
+ public:
+  explicit TestSharedStorageDevToolsClient(RenderFrameHost* rfh) {
+    AttachToFrameTreeHost(rfh);
+    SendCommandSync("Storage.setSharedStorageTracking",
+                    base::Value::Dict().Set("enable", true));
+  }
+  ~TestSharedStorageDevToolsClient() override { DetachProtocolClient(); }
+
+  void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
+                               base::span<const uint8_t> message) override {
+    std::string_view message_str(reinterpret_cast<const char*>(message.data()),
+                                 message.size());
+    base::Value parsed = *base::JSONReader::Read(message_str);
+    std::optional<int> id = parsed.GetDict().FindInt("id");
+    if (!id) {
+      const std::string* notification = parsed.GetDict().FindString("method");
+      ASSERT_TRUE(notification);
+      if (expected_notification_method_ == *notification) {
+        base::Value* params = parsed.GetDict().Find("params");
+        ASSERT_TRUE(params);
+        params_for_notifications_with_expected_method_.push_back(
+            std::move(*params).TakeDict());
+      }
+    }
+
+    TestDevToolsProtocolClient::DispatchProtocolMessage(agent_host,
+                                                        std::move(message));
+  }
+
+  std::vector<std::map<std::string, std::string>>
+  GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+      std::vector<std::string> selected_key_paths) const {
+    std::sort(selected_key_paths.begin(), selected_key_paths.end());
+    std::vector<std::map<std::string, std::string>>
+        selected_params_for_notifications_;
+    for (const base::Value::Dict& params :
+         params_for_notifications_with_expected_method_) {
+      selected_params_for_notifications_.push_back(
+          std::map<std::string, std::string>());
+      for (const std::string& path : selected_key_paths) {
+        const base::Value* param = params.FindByDottedPath(path);
+        if (param) {
+          selected_params_for_notifications_.back().emplace(
+              path, ValueToString(param));
+        }
+      }
+    }
+    return selected_params_for_notifications_;
+  }
+
+ private:
+  std::string expected_notification_method_ = "Storage.sharedStorageAccessed";
+  std::vector<base::Value::Dict> params_for_notifications_with_expected_method_;
 };
 
 }  // namespace
@@ -596,10 +712,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, RunOperation_Success) {
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation",
+            "test-operation", /*operation_id=*/0,
             /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/0, MainFrameId(), origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -886,9 +1006,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/false,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/0, MainFrameId(), origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -972,14 +1096,20 @@ IN_PROC_BROWSER_TEST_P(
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/false,
+            "test-operation", /*operation_id=*/1, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/0, MainFrameId(), origin_str},
+       {base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/1,
+        /*worklet_id=*/0, MainFrameId(), origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1050,7 +1180,7 @@ IN_PROC_BROWSER_TEST_P(
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/false,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
@@ -1122,7 +1252,7 @@ IN_PROC_BROWSER_TEST_P(
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/false,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
@@ -1444,9 +1574,14 @@ IN_PROC_BROWSER_TEST_P(
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/false,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/0, /*main_frame_id=*/GlobalRenderFrameHostId(),
+        origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1570,7 +1705,8 @@ IN_PROC_BROWSER_TEST_P(
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -1583,6 +1719,11 @@ IN_PROC_BROWSER_TEST_P(
             ResolveSelectURLToConfig(),
             /*saved_query=*/std::string(), urn_uuids_observed()[0],
             /*worklet_id=*/0)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
+        /*worklet_id=*/0, /*main_frame_id=*/GlobalRenderFrameHostId(),
+        origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
@@ -1864,7 +2005,8 @@ IN_PROC_BROWSER_TEST_P(
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -1981,7 +2123,8 @@ IN_PROC_BROWSER_TEST_P(
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -2103,7 +2246,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -2256,7 +2400,8 @@ IN_PROC_BROWSER_TEST_P(
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/true,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -2269,7 +2414,8 @@ IN_PROC_BROWSER_TEST_P(
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/1,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -2394,7 +2540,8 @@ IN_PROC_BROWSER_TEST_P(
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -2500,7 +2647,8 @@ IN_PROC_BROWSER_TEST_P(
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -2595,7 +2743,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/false,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
@@ -2712,13 +2860,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/1,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -2812,7 +2961,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/false,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
@@ -2930,7 +3079,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/true,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -2942,7 +3092,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/false,
+            "test-operation", /*operation_id=*/1, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
@@ -3050,7 +3200,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -3164,7 +3315,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -3270,7 +3422,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
@@ -3349,7 +3502,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInDocument) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
@@ -3415,7 +3568,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInDocument) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
@@ -3462,7 +3615,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInDocument) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
@@ -3519,7 +3672,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
@@ -3604,7 +3757,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
@@ -3663,7 +3816,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInWorklet) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
@@ -3725,7 +3878,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInWorklet) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
@@ -3846,7 +3999,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, GetOperationInWorklet) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "get-operation", /*keep_alive=*/true,
+            "get-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
@@ -3858,7 +4011,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, GetOperationInWorklet) {
                                                /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "get-operation", /*keep_alive=*/false,
+            "get-operation", /*operation_id=*/1, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
@@ -3874,6 +4027,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        AccessStorageInSameOriginDocument) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Cache the main frame ID for comparison below, since it will change with
+  // navigation.
+  GlobalRenderFrameHostId cached_main_frame_id = MainFrameId();
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.set('key0', 'value0');
@@ -3898,7 +4055,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kSet, MainFrameId(), origin_str,
+      {{AccessScope::kWindow, AccessMethod::kSet, cached_main_frame_id,
+        origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false)},
        {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         origin_str,
@@ -3906,7 +4064,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
@@ -3918,6 +4076,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        AccessStorageInDifferentOriginDocument) {
   GURL url1 = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  // Cache the main frame ID for comparison below, since it will change with
+  // navigation.
+  GlobalRenderFrameHostId cached_main_frame_id = MainFrameId();
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.set('key0', 'value0');
@@ -3942,7 +4104,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   std::string origin2_str = url::Origin::Create(url2).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kSet, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kSet, cached_main_frame_id,
         url::Origin::Create(url1).Serialize(),
         SharedStorageEventParams::CreateForSet("key0", "value0", false)},
        {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
@@ -3951,7 +4113,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin2_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
@@ -4010,7 +4172,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeysAndEntriesOperation) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kKeys, MainFrameId(),
@@ -4066,7 +4228,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ValuesOperation) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kValues,
@@ -4129,7 +4291,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   expected_accesses.emplace_back(
       AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
       SharedStorageEventParams::CreateForRunForTesting(
-          "test-operation", /*keep_alive=*/true,
+          "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
           SharedStorageEventParams::PrivateAggregationConfigWrapper(),
           blink::CloneableMessage(), /*worklet_id=*/0));
   expected_accesses.emplace_back(
@@ -4191,7 +4353,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WebLocksUsageHistograms) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
@@ -4281,7 +4443,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, MulipleBatchUpdates) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kBatchUpdate,
@@ -4382,7 +4544,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, EmptyBatchUpdate) {
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
@@ -9443,7 +9605,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                                          /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
@@ -9468,7 +9630,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                                          /*worklet_id=*/1)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/1)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
@@ -9486,6 +9648,175 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/1)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/0, MainFrameId(), origin_str},
+       {base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/1, MainFrameId(), origin_str}});
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
+                       TwoWindows_DevToolsNotificationsFilteredByMainFrame) {
+  GURL url1 = https_server()->GetURL("a.test", kPageWithBlankIframePath);
+  GURL url2 = https_server()->GetURL("b.test", kPageWithBlankIframePath);
+  GURL iframe_url1 = https_server()->GetURL("c.test", kSimplePagePath);
+  GURL iframe_url2 = https_server()->GetURL("d.test", kSimplePagePath);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  RenderFrameHost* main_rfh1 = PrimaryFrameTreeNodeRoot()->current_frame_host();
+  TestSharedStorageDevToolsClient main_frame_devtools_client1(main_rfh1);
+
+  EXPECT_TRUE(
+      NavigateIframeToURL(shell()->web_contents(), "test_iframe", iframe_url1));
+  RenderFrameHost* iframe1 =
+      PrimaryFrameTreeNodeRoot()->child_at(0)->current_frame_host();
+  TestSharedStorageDevToolsClient iframe_devtools_client1(iframe1);
+
+  EXPECT_TRUE(ExecJs(iframe1, "sharedStorage.delete('key0')"));
+
+  Shell* shell2 = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), url2, nullptr, gfx::Size());
+  ASSERT_TRUE(WaitForLoadStop(shell2->web_contents()));
+
+  RenderFrameHost* main_rfh2 =
+      PrimaryFrameTreeNodeRootFromShell(shell2)->current_frame_host();
+  TestSharedStorageDevToolsClient main_frame_devtools_client2(main_rfh2);
+
+  EXPECT_TRUE(
+      NavigateIframeToURL(shell2->web_contents(), "test_iframe", iframe_url2));
+  RenderFrameHost* iframe2 = PrimaryFrameTreeNodeRootFromShell(shell2)
+                                 ->child_at(0)
+                                 ->current_frame_host();
+  TestSharedStorageDevToolsClient iframe_devtools_client2(iframe2);
+
+  EXPECT_TRUE(ExecJs(iframe2, "sharedStorage.set('key2', 'value2')"));
+
+  GURL out_script_url1;
+  ExecuteScriptInWorklet(main_rfh1, R"(
+      sharedStorage.set('key0', 'value0');
+      sharedStorage.append('key0', 'value1');
+    )",
+                         &out_script_url1);
+
+  GURL out_script_url2;
+  ExecuteScriptInWorkletUsingCreateWorklet(main_rfh2, R"(
+      sharedStorage.delete('key1');
+      sharedStorage.clear();
+    )",
+                                           &out_script_url2,
+                                           /*expected_total_host_count=*/2u);
+
+  std::vector<std::string> selected_key_paths(
+      {"method", "ownerSite", "params.operationName", "params.ignoreIfPresent",
+       "params.key", "params.value", "params.workletId", "scope"});
+  std::vector<std::map<std::string, std::string>>
+      selected_params_observed_main1 =
+          main_frame_devtools_client1
+              .GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+                  selected_key_paths);
+
+  // `main_frame_devtools_client1` receives the expected shared storage
+  // notifications for `shell()`, including any notifications from subframes of
+  // this main frame, but no further "Storage.sharedStorageAccessed"
+  // notifications. In particular, it does not receive those from `shell2`.
+  ASSERT_EQ(selected_params_observed_main1.size(), 5u)
+      << SerializeVectorOfMapOfStrings(selected_params_observed_main1);
+  EXPECT_THAT(
+      selected_params_observed_main1[0],
+      ElementsAre(Pair("method", "delete"), Pair("ownerSite", "https://c.test"),
+                  Pair("params.key", "key0"), Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed_main1[1],
+      ElementsAre(Pair("method", "addModule"),
+                  Pair("ownerSite", "https://a.test"),
+                  Pair("params.workletId", "0"), Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed_main1[2],
+      ElementsAre(Pair("method", "run"), Pair("ownerSite", "https://a.test"),
+                  Pair("params.operationName", "test-operation"),
+                  Pair("params.workletId", "0"), Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed_main1[3],
+      ElementsAre(Pair("method", "set"), Pair("ownerSite", "https://a.test"),
+                  Pair("params.ignoreIfPresent", "false"),
+                  Pair("params.key", "key0"), Pair("params.value", "value0"),
+                  Pair("params.workletId", "0"),
+                  Pair("scope", "sharedStorageWorklet")));
+  EXPECT_THAT(
+      selected_params_observed_main1[4],
+      ElementsAre(Pair("method", "append"), Pair("ownerSite", "https://a.test"),
+                  Pair("params.key", "key0"), Pair("params.value", "value1"),
+                  Pair("params.workletId", "0"),
+                  Pair("scope", "sharedStorageWorklet")));
+
+  std::vector<std::map<std::string, std::string>>
+      selected_params_observed_main2 =
+          main_frame_devtools_client2
+              .GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+                  selected_key_paths);
+
+  // `main_frame_devtools_client2` receives the expected shared storage
+  // notifications for `shell2`, including any notifications from subframes of
+  // this main frame, but no further "Storage.sharedStorageAccessed"
+  // notifications. In particular, it does not receive those from `shell()`.
+  ASSERT_EQ(selected_params_observed_main2.size(), 5u)
+      << SerializeVectorOfMapOfStrings(selected_params_observed_main2);
+  EXPECT_THAT(
+      selected_params_observed_main2[0],
+      ElementsAre(Pair("method", "set"), Pair("ownerSite", "https://d.test"),
+                  Pair("params.ignoreIfPresent", "false"),
+                  Pair("params.key", "key2"), Pair("params.value", "value2"),
+                  Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed_main2[1],
+      ElementsAre(Pair("method", "createWorklet"),
+                  Pair("ownerSite", "https://b.test"),
+                  Pair("params.workletId", "1"), Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed_main2[2],
+      ElementsAre(Pair("method", "run"), Pair("ownerSite", "https://b.test"),
+                  Pair("params.operationName", "test-operation"),
+                  Pair("params.workletId", "1"), Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed_main2[3],
+      ElementsAre(Pair("method", "delete"), Pair("ownerSite", "https://b.test"),
+                  Pair("params.key", "key1"), Pair("params.workletId", "1"),
+                  Pair("scope", "sharedStorageWorklet")));
+  EXPECT_THAT(
+      selected_params_observed_main2[4],
+      ElementsAre(Pair("method", "clear"), Pair("ownerSite", "https://b.test"),
+                  Pair("params.workletId", "1"),
+                  Pair("scope", "sharedStorageWorklet")));
+
+  ASSERT_EQ(IsLocalRoot(iframe1), IsLocalRoot(iframe2));
+
+  if (!IsLocalRoot(iframe1)) {
+    // In this case, `iframe_devtools_client1` and `iframe_devtools_client2` are
+    // actually attached to their respective main frame hosts. They will have
+    // received the same notifications as above.
+    return;
+  }
+
+  std::vector<std::map<std::string, std::string>>
+      selected_params_observed_iframe1 =
+          iframe_devtools_client1
+              .GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+                  selected_key_paths);
+
+  std::vector<std::map<std::string, std::string>>
+      selected_params_observed_iframe2 =
+          iframe_devtools_client2
+              .GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+                  std::move(selected_key_paths));
+
+  // Neither `iframe_devtools_client1` nor `iframe_devtools_client2` receives
+  // any shared storage notifications. The notifications for the subframes'
+  // events were received by their respective main frame clients above.
+  EXPECT_TRUE(selected_params_observed_iframe1.empty())
+      << SerializeVectorOfMapOfStrings(selected_params_observed_iframe1);
+  EXPECT_TRUE(selected_params_observed_iframe2.empty())
+      << SerializeVectorOfMapOfStrings(selected_params_observed_iframe2);
 }
 
 }  // namespace content

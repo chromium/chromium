@@ -16,13 +16,13 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/tos/tos_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/uma/uma_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -62,8 +62,7 @@
 @property(nonatomic, strong)
     IdentityChooserCoordinator* identityChooserCoordinator;
 // Coordinator to add an identity.
-@property(nonatomic, strong) SigninCoordinator<StopAnimatedChromeCoordinator>*
-    addAccountSigninCoordinator;
+@property(nonatomic, strong) SigninCoordinator* addAccountSigninCoordinator;
 @property(nonatomic, assign) BOOL UMAReportingUserChoice;
 
 @end
@@ -154,12 +153,6 @@
 }
 
 - (void)stop {
-  [self stopAnimated:NO];
-}
-
-#pragma mark - StopAnimatedChromeCoordinator
-
-- (void)stopAnimated:(BOOL)animated {
   [self.browser->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(TOSCommands)];
   [self stopAddAccountCoordinator];

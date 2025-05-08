@@ -14,15 +14,6 @@
 
 namespace theme_service::test {
 
-// Struct to distinguish SkColor (aliased to uint32_t) for printing.
-bool PrintableSkColor::operator==(const PrintableSkColor& other) const {
-  return color == other.color;
-}
-
-bool PrintableSkColor::operator!=(const PrintableSkColor& other) const {
-  return !operator==(other);
-}
-
 std::ostream& operator<<(std::ostream& os, PrintableSkColor printable_color) {
   SkColor color = printable_color.color;
   return os << base::StringPrintf("#%02x%02x%02x%02x", SkColorGetA(color),

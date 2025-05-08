@@ -95,7 +95,7 @@ class WebStateList;
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
 
 // If the current session is off the record or not.
-@property(nonatomic, assign) bool isIncognito;
+@property(nonatomic, assign) bool incognito;
 
 // The Orderer to control the order of the overflow menu.
 @property(nonatomic, weak) OverflowMenuOrderer* menuOrderer;

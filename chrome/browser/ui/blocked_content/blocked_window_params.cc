@@ -49,7 +49,7 @@ NavigateParams BlockedWindowParams::CreateNavigateParams(
   nav_params.referrer = referrer_;
   nav_params.frame_name = frame_name_;
   nav_params.source_contents = web_contents;
-  nav_params.is_renderer_initiated = true;
+  nav_params.is_renderer_initiated = false;
   nav_params.window_action = NavigateParams::SHOW_WINDOW;
   nav_params.user_gesture = user_gesture_;
   nav_params.opened_by_another_window = !opener_suppressed_;

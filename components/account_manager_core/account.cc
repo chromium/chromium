@@ -20,32 +20,6 @@ AccountKey::AccountKey(const std::string& id, AccountType type)
   DCHECK(!id_.empty());
 }
 
-bool AccountKey::operator<(const AccountKey& other) const {
-  return std::tie(id_, account_type_) <
-         std::tie(other.id_, other.account_type_);
-}
-
-bool AccountKey::operator==(const AccountKey& other) const {
-  return std::tie(id_, account_type_) ==
-         std::tie(other.id_, other.account_type_);
-}
-
-bool AccountKey::operator!=(const AccountKey& other) const {
-  return !(*this == other);
-}
-
-bool Account::operator<(const Account& other) const {
-  return std::tie(key, raw_email) < std::tie(other.key, other.raw_email);
-}
-
-bool Account::operator==(const Account& other) const {
-  return std::tie(key, raw_email) == std::tie(other.key, other.raw_email);
-}
-
-bool Account::operator!=(const Account& other) const {
-  return !(*this == other);
-}
-
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 std::ostream& operator<<(std::ostream& os, const AccountType& account_type) {
   // Currently, we only support `kGaia` account type. Should a new type be added

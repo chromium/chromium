@@ -11,7 +11,7 @@
 @interface CountryItem : TableViewTextItem
 
 // The Country code.
-@property(nonatomic, assign) NSString* countryCode;
+@property(nonatomic, copy) NSString* countryCode;
 
 @end
 

@@ -27,5 +27,6 @@ public class GEN_JNI {
   public static native double this_is_a_package_prefix_org_jni_1zero_SampleForTests_methodOtherP0(long nativePtr, Object caller);
   public static native Object this_is_a_package_prefix_org_jni_1zero_SampleForTests_primitiveArrays(Object b, Object c, Object s, Object i, Object l, Object f, Object d);
   public static native Object this_is_a_package_prefix_org_jni_1zero_SampleForTests_returnAString(long nativeCPPClass, Object caller);
+  public static native int this_is_a_package_prefix_org_jni_1zero_SampleForTests_returnFromEnum();
   public static native void this_is_a_package_prefix_org_jni_1zero_SampleForTests_setNonPODDatatype(Object obj, Object rect);
 }

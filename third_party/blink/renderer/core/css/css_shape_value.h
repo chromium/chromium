@@ -96,9 +96,9 @@ using CSSShapeControlPoint = std::pair<CSSValueID, Member<const CSSValuePair>>;
 template <wtf_size_t NumControlPoints>
 class CSSShapeCurveCommand : public CSSShapeCommand {
  public:
-  CSSShapeCurveCommand<1>(Type type,
-                          const CSSValuePair& end_point,
-                          const CSSShapeControlPoint control_point)
+  CSSShapeCurveCommand(Type type,
+                       const CSSValuePair& end_point,
+                       const CSSShapeControlPoint control_point)
       : CSSShapeCommand(type, end_point), control_points_{control_point} {}
   CSSShapeCurveCommand(Type type,
                        const CSSValuePair& end_point,

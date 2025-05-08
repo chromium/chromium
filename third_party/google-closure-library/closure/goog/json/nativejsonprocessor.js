@@ -10,59 +10,69 @@
  * JSON library.
  */
 
-goog.provide('goog.json.NativeJsonProcessor');
+goog.module('goog.json.NativeJsonProcessor');
+goog.module.declareLegacyNamespace();
 
-goog.require('goog.asserts');
-goog.require('goog.json.Processor');
+const Parser = goog.require('goog.string.Parser');
+const Stringifier = goog.require('goog.string.Stringifier');
+const asserts = goog.require('goog.asserts');
+const {Replacer, Reviver} = goog.require('goog.json.types');
 
 
 
 /**
  * A class that parses and stringifies JSON using the browser's built-in JSON
- * library, if it is available.
+ * library.
  *
- * Note that the native JSON api has subtle differences across browsers, so
- * use this implementation with care.  See json_test#assertSerialize
- * for details on the differences from goog.json.
- *
- * This implementation is signficantly faster than goog.json, at least on
- * Chrome.  See json_perf.html for a perf test showing the difference.
- *
- * @param {?goog.json.Replacer=} opt_replacer An optional replacer to use during
- *     serialization.
- * @param {?goog.json.Reviver=} opt_reviver An optional reviver to use during
- *     parsing.
- * @constructor
- * @implements {goog.json.Processor}
+
+ * @implements {Parser}
+ * @implements {Stringifier}
  * @final
  */
-goog.json.NativeJsonProcessor = function(opt_replacer, opt_reviver) {
-  'use strict';
-  goog.asserts.assert(goog.global['JSON'] !== undefined, 'JSON not defined');
+exports = class {
+  /**
+   * @param {?Replacer=} opt_replacer An optional replacer to use during
+   *     serialization.
+   * @param {?=} opt_reviver An optional reviver to use during
+   *     parsing.
+   */
+  constructor(opt_replacer, opt_reviver) {
+    asserts.assert(goog.global['JSON'] !== undefined, 'JSON not defined');
+
+    /**
+     * @type {!Replacer|null|undefined}
+     * @private
+     */
+    this.replacer_ = opt_replacer;
+
+    /**
+     * @type {!Reviver|null|undefined}
+     * @private
+     */
+    this.reviver_ = opt_reviver;
+  };
 
   /**
-   * @type {goog.json.Replacer|null|undefined}
-   * @private
+   * Serializes an object or a value to a string.
+   * Agnostic to the particular format of object and string.
+   *
+   * @param {*} object The object to stringify.
+   * @return {string} A string representation of the input.
+   * @override
    */
-  this.replacer_ = opt_replacer;
+  stringify(object) {
+    return goog.global['JSON'].stringify(object, this.replacer_);
+  }
 
   /**
-   * @type {goog.json.Reviver|null|undefined}
-   * @private
+   * Parses a string into an object and returns the result.
+   * Agnostic to the format of string and object.
+   *
+   * @param {string} s The string to parse.
+   * @return {*} The object generated from the string.
+   * @override
    */
-  this.reviver_ = opt_reviver;
-};
-
-
-/** @override */
-goog.json.NativeJsonProcessor.prototype.stringify = function(object) {
-  'use strict';
-  return goog.global['JSON'].stringify(object, this.replacer_);
-};
-
-
-/** @override */
-goog.json.NativeJsonProcessor.prototype.parse = function(s) {
-  'use strict';
-  return goog.global['JSON'].parse(s, this.reviver_);
+  parse(s) {
+    return goog.global['JSON'].parse(s, this.reviver_);
+  }
 };

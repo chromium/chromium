@@ -37,14 +37,8 @@ impl CompileCtx {
                 let _ = lark;
                 bail!("lark_grammar is not supported in this build")
             }
-        } else if let Some(mut json_schema) = input.json_schema {
-            let mut opts = JsonCompileOptions::default();
-            if let Some(x_guidance) = json_schema.get("x-guidance") {
-                opts = serde_json::from_value(x_guidance.clone())?;
-                // TODO not removing it causes oneOf to be handled as anyOf in Github_medium---o61004.json
-                json_schema.as_object_mut().unwrap().remove("x-guidance");
-            }
-            opts.json_to_llg(builder, json_schema)?
+        } else if let Some(json_schema) = input.json_schema {
+            JsonCompileOptions::default().json_to_llg_with_overrides(builder, json_schema)?
         } else {
             bail!("grammar must have either lark_grammar or json_schema");
         };
@@ -85,12 +79,66 @@ impl CompileCtx {
             .collect();
 
         let builder = self.builder.unwrap();
+        let warnings = builder.get_warnings();
         let mut grammar = builder.grammar;
         let mut lexer_spec = builder.regex.spec;
 
         grammar.resolve_grammar_refs(&mut lexer_spec, &grammar_by_idx)?;
 
+        assert!(lexer_spec.grammar_warnings.is_empty());
+        lexer_spec.grammar_warnings = warnings;
+
         Ok((grammar, lexer_spec))
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum ValidationResult {
+    Valid,
+    Warnings(Vec<String>),
+    Error(String),
+}
+
+impl ValidationResult {
+    pub fn from_warning(w: Vec<String>) -> Self {
+        if w.is_empty() {
+            ValidationResult::Valid
+        } else {
+            ValidationResult::Warnings(w)
+        }
+    }
+
+    pub fn into_tuple(self) -> (bool, Vec<String>) {
+        match self {
+            ValidationResult::Valid => (false, vec![]),
+            ValidationResult::Warnings(w) => (false, w),
+            ValidationResult::Error(e) => (true, vec![e]),
+        }
+    }
+
+    pub fn into_error(self) -> Option<String> {
+        match self {
+            ValidationResult::Valid => None,
+            ValidationResult::Warnings(_) => None,
+            ValidationResult::Error(e) => Some(e),
+        }
+    }
+
+    pub fn render(&self, with_warnings: bool) -> String {
+        match self {
+            ValidationResult::Valid => String::new(),
+            ValidationResult::Warnings(w) => {
+                if with_warnings {
+                    w.iter()
+                        .map(|w| format!("WARNING: {}", w))
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                } else {
+                    String::new()
+                }
+            }
+            ValidationResult::Error(e) => format!("ERROR: {}", e),
+        }
     }
 }
 
@@ -116,6 +164,13 @@ impl GrammarInit {
 
                 ctx.run(input)
             }
+        }
+    }
+
+    pub fn validate(self, tok_env: Option<TokEnv>, limits: ParserLimits) -> ValidationResult {
+        match self.to_internal(tok_env, limits) {
+            Ok((_, lex_spec)) => ValidationResult::from_warning(lex_spec.render_warnings()),
+            Err(e) => ValidationResult::Error(e.to_string()),
         }
     }
 

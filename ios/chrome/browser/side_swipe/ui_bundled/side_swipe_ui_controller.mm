@@ -164,6 +164,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
 }
 
 - (void)setEnabled:(BOOL)enabled {
+  [_panGestureRecognizer setEnabled:enabled];
   [_swipeGestureRecognizer setEnabled:enabled];
 }
 

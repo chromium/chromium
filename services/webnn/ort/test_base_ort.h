@@ -7,11 +7,13 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-// GTEST_SKIP() will let method return directly.
-#define SKIP_TEST_IF(condition)   \
-  do {                            \
-    if (condition)                \
-      GTEST_SKIP() << #condition; \
-  } while (0)
+namespace webnn::ort {
+
+class TestBaseOrt : public testing::Test {
+ public:
+  void SetUp() override;
+};
+
+}  // namespace webnn::ort
 
 #endif  // SERVICES_WEBNN_ORT_TEST_BASE_ORT_H_

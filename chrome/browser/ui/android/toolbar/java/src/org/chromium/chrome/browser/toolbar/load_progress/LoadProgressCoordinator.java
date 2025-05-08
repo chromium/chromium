@@ -4,15 +4,16 @@
 
 package org.chromium.chrome.browser.toolbar.load_progress;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the load progress bar. Owns all progress bar sub-components. */
+@NullMarked
 public class LoadProgressCoordinator {
     private final PropertyModel mModel;
     private final LoadProgressMediator mMediator;
@@ -24,8 +25,7 @@ public class LoadProgressCoordinator {
      * @param progressBarView Toolbar progress bar view.
      */
     public LoadProgressCoordinator(
-            @NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull ToolbarProgressBar progressBarView) {
+            ObservableSupplier<@Nullable Tab> tabSupplier, ToolbarProgressBar progressBarView) {
         mProgressBarView = progressBarView;
         mModel = new PropertyModel(LoadProgressProperties.ALL_KEYS);
         mMediator = new LoadProgressMediator(tabSupplier, mModel);

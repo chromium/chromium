@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/base/address_list.h"
 
-#include <algorithm>
-#include <array>
+#include <stdint.h>
 
+#include <array>
+#include <ranges>
+#include <vector>
+
+#include "base/containers/span.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
 #include "net/base/ip_address.h"
@@ -30,14 +29,12 @@ const char kCanonicalHostname[] = "canonical.bar.com";
 
 TEST(AddressListTest, Canonical) {
   // Create an addrinfo with a canonical name.
-  struct sockaddr_in address;
-  // The contents of address do not matter for this test,
-  // so just zero-ing them out for consistency.
-  memset(&address, 0x0, sizeof(address));
+  // The contents of address do not matter for this test.
+  // Zero them out for consistency.
+  struct sockaddr_in address = {};
   // But we need to set the family.
   address.sin_family = AF_INET;
-  struct addrinfo ai;
-  memset(&ai, 0x0, sizeof(ai));
+  struct addrinfo ai = {};
   ai.ai_family = AF_INET;
   ai.ai_socktype = SOCK_STREAM;
   ai.ai_addrlen = sizeof(address);
@@ -66,11 +63,11 @@ TEST(AddressListTest, CreateFromAddrinfo) {
         reinterpret_cast<struct sockaddr_in*>(storage[i].addr());
     storage[i].addr_len = sizeof(struct sockaddr_in);
     // Populating the address with { i, i, i, i }.
-    memset(&addr->sin_addr, i, IPAddress::kIPv4AddressSize);
+    std::ranges::fill(base::byte_span_from_ref(addr->sin_addr), i);
     addr->sin_family = AF_INET;
     // Set port to i << 2;
     addr->sin_port = base::HostToNet16(static_cast<uint16_t>(i << 2));
-    memset(&ai[i], 0x0, sizeof(ai[i]));
+    ai[i] = {};
     ai[i].ai_family = addr->sin_family;
     ai[i].ai_socktype = SOCK_STREAM;
     ai[i].ai_addrlen = storage[i].addr_len;

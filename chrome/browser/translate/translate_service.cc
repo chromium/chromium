@@ -77,12 +77,9 @@ void TranslateService::Shutdown() {
 // static
 void TranslateService::InitializeForTesting(
     network::mojom::ConnectionType type) {
-  if (!g_translate_service) {
-    TranslateService::Initialize();
-    translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
-  } else {
-    translate::TranslateDownloadManager::GetInstance()->ResetForTesting();
-  }
+  translate::TranslateDownloadManager::GetInstance()->ResetForTesting();
+  TranslateService::Initialize();
+  translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
 
   g_translate_service->resource_request_allowed_notifier_
       .SetConnectionTypeForTesting(type);

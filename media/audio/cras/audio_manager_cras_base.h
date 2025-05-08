@@ -27,7 +27,7 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
   ~AudioManagerCrasBase() override;
 
   // AudioManager implementation.
-  const char* GetName() override;
+  const std::string_view GetName() override;
 
   // AudioManagerBase implementation.
   AudioOutputStream* MakeLinearOutputStream(

@@ -43,6 +43,12 @@ bool GeometryPropertiesChanged(const ComputedStyle& old_style,
          old_style.Rx() != new_style.Rx() || old_style.Ry() != new_style.Ry();
 }
 
+bool CalculateGeometryDependsOnViewport(const ComputedStyle& style) {
+  return style.Width().HasPercent() || style.Height().HasPercent() ||
+         style.X().HasPercent() || style.Y().HasPercent() ||
+         style.Rx().HasPercent() || style.Ry().HasPercent();
+}
+
 }  // namespace
 
 LayoutSVGRect::LayoutSVGRect(SVGRectElement* node) : LayoutSVGShape(node) {}
@@ -66,8 +72,10 @@ gfx::RectF LayoutSVGRect::UpdateShapeFromElement() {
   ClearPath();
   SetGeometryType(GeometryType::kEmpty);
 
-  const SVGViewportResolver viewport_resolver(*this);
   const ComputedStyle& style = StyleRef();
+  SetGeometryDependsOnViewport(CalculateGeometryDependsOnViewport(style));
+
+  const SVGViewportResolver viewport_resolver(*this);
   const gfx::PointF origin =
       PointForLengthPair(style.X(), style.Y(), viewport_resolver, style);
   const gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),

@@ -7,14 +7,16 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/reminder_notifications/model/reminder_notification_builder.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -24,12 +26,17 @@
 class ReminderNotificationClientTest : public PlatformTest {
  protected:
   ReminderNotificationClientTest() {
-    client_ = std::make_unique<ReminderNotificationClient>(&profile_manager_);
+    feature_list_.InitAndEnableFeature(kIOSPushNotificationMultiProfile);
+
+    profile_ = TestProfileIOS::Builder().Build();
+
+    client_ = std::make_unique<ReminderNotificationClient>(profile_.get());
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState local_state_;
-  TestProfileManagerIOS profile_manager_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<ReminderNotificationClient> client_;
 };
 

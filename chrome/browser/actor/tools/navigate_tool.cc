@@ -9,6 +9,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 
 using content::NavigationHandle;
@@ -53,17 +54,20 @@ void NavigateTool::Invoke(InvokeCallback callback) {
                              weak_ptr_factory_.GetWeakPtr()));
 }
 
+std::string NavigateTool::DebugString() const {
+  return absl::StrFormat("NavigateTool[%s]", url_.spec());
+}
+
 void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // TODO(crbug.com/411748801): We should probably handle the case where the
   // page navigates before it's done loading. Common with client-side redirects.
   if (pending_navigation_handle_id_ &&
       navigation_handle->GetNavigationId() == *pending_navigation_handle_id_) {
-    CHECK(invoke_callback_);
 
     bool success =
         navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage();
 
-    if (!success || navigation_handle->IsSameDocument()) {
+    if ((!success || navigation_handle->IsSameDocument()) && invoke_callback_) {
       PostResponseTask(std::move(invoke_callback_), success);
       return;
     }
@@ -93,7 +97,7 @@ void NavigateTool::DidStopLoading() {
   }
 
   post_navigation_state_->waiting_for_load = false;
-  if (post_navigation_state_->Done()) {
+  if (post_navigation_state_->Done() && invoke_callback_) {
     PostResponseTask(std::move(invoke_callback_), /*response=*/true);
   }
 }
@@ -104,7 +108,7 @@ void NavigateTool::OnFirstContentfulPaintInPrimaryMainFrame() {
   }
 
   post_navigation_state_->waiting_for_fcp = false;
-  if (post_navigation_state_->Done()) {
+  if (post_navigation_state_->Done() && invoke_callback_) {
     PostResponseTask(std::move(invoke_callback_), /*response=*/true);
   }
 }

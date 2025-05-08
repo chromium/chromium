@@ -56,7 +56,7 @@ api::cookies::CookieStore CreateCookieStore(Profile* profile,
                                             base::Value::List tab_ids);
 
 // Dispatch a request to the CookieManager for cookies associated with
-// |url| and |partition_key_collection|.
+// `url` and `partition_key_collection`.
 void GetCookieListFromManager(
     network::mojom::CookieManager* manager,
     const GURL& url,

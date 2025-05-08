@@ -36,13 +36,13 @@ class CompositorFrameSinkSupport;
 // provides the service backend for a client-side VizLayerContext.
 class LayerContextImpl : public cc::LayerTreeHostImplClient,
                          public cc::LayerTreeFrameSink,
-                         public cc::TileDisplayLayerImpl::Client,
                          public mojom::LayerContext {
  public:
   // Constructs a new LayerContextImpl which submits frames to the local
   // `compositor_sink` with client connection details given by `context`.
   LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
-                   mojom::PendingLayerContext& context);
+                   mojom::PendingLayerContext& context,
+                   bool draw_mode_is_gpu);
   ~LayerContextImpl() override;
 
   void BeginFrame(const BeginFrameArgs& args);
@@ -99,6 +99,7 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   void ClearHistory() override;
   void SetHasActiveThreadedScroll(bool is_scrolling) override;
   void SetWaitingForScrollEvent(bool waiting_for_scroll_event) override;
+  void ReturnResource(ReturnedResource returned_resource) override;
   size_t CommitDurationSampleCountForTesting() const override;
   void DidObserveFirstScrollDelay(
       int source_frame_number,
@@ -114,14 +115,11 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   void DidNotProduceFrame(const BeginFrameAck& ack,
                           cc::FrameSkippedReason reason) override;
 
-  // cc::TileDisplayLayerImpl::Client:
-  void ImportResource(TransferableResource resource) override;
-  void DiscardResource(ResourceId resource) override;
-
   // mojom::LayerContext:
   void SetVisible(bool visible) override;
   void UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) override;
-  void UpdateDisplayTiling(mojom::TilingPtr tiling) override;
+  void UpdateDisplayTiling(mojom::TilingPtr tiling,
+                           bool update_damage) override;
 
   base::expected<void, std::string> DoUpdateDisplayTree(
       mojom::LayerTreeUpdatePtr update);
@@ -134,11 +132,11 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   mojo::AssociatedRemote<mojom::LayerContextClient> client_;
   const std::unique_ptr<cc::TaskRunnerProvider> task_runner_provider_;
   const std::unique_ptr<cc::RenderingStatsInstrumentation> rendering_stats_;
-  const std::unique_ptr<cc::LayerTreeHostImpl> host_impl_;
 
   std::vector<ReturnedResource> resources_to_return_;
 
   raw_ptr<cc::LayerTreeFrameSinkClient> frame_sink_client_ = nullptr;
+  const std::unique_ptr<cc::LayerTreeHostImpl> host_impl_;
 };
 
 }  // namespace viz

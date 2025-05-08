@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/scoped_refptr.h"
+#import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -46,6 +46,9 @@ class Tracker;
 // Ask the Feature Engagement Tracker whether or not the Password Manager widget
 // promo can be shown.
 - (void)askFETToShowPasswordManagerWidgetPromo;
+
+// Ask to display or to hide the Trusted Vault widget promo if needed.
+- (void)displayOrHideTrustedVaultPasswordManagerWidgetPromo;
 
 @property(nonatomic, weak) id<PasswordsConsumer> consumer;
 

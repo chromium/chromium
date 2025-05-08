@@ -378,6 +378,11 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
   return MaybeConvertValue(*value, state, conversion_checkers);
 }
 
+void CSSInterpolationType::Trace(Visitor* v) const {
+  InterpolationType::Trace(v);
+  v->Trace(registration_);
+}
+
 InterpolationValue CSSInterpolationType::MaybeConvertUnderlyingValue(
     const CSSInterpolationEnvironment& environment) const {
   const ComputedStyle& style = environment.BaseStyle();

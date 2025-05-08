@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Process;
 
 import org.jni_zero.CalledByNative;
@@ -100,7 +99,6 @@ public final class ApkInfo {
                         /* resourcesVersion= */ instance.mResourcesVersion,
                         /* installerPackageName= */ instance.mInstallerPackageName,
                         /* isDebugApp= */ isDebugApp(),
-                        /* targetsAtleastU= */ targetsAtLeastU(),
                         /* targetSdkVersion= */ ContextUtils.getApplicationContext()
                                 .getApplicationInfo()
                                 .targetSdkVersion);
@@ -136,17 +134,6 @@ public final class ApkInfo {
 
     public static String getResourcesVersion() {
         return getInstance().mResourcesVersion;
-    }
-
-    /**
-     * Checks if the application targets pre-release SDK U. This must be manually maintained as the
-     * SDK goes through finalization! Avoid depending on this if possible; this is only intended for
-     * WebView.
-     */
-    public static boolean targetsAtLeastU() {
-        int target = ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
-
-        return target >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
 
     /**
@@ -344,7 +331,6 @@ public final class ApkInfo {
                 String resourcesVersion,
                 String installerPackageName,
                 boolean isDebugApp,
-                boolean targetsAtleastU,
                 int targetSdkVersion);
     }
 }

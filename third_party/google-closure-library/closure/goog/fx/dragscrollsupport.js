@@ -90,12 +90,23 @@ goog.fx.DragScrollSupport = function(
   this.scrollDelta_ = new goog.math.Coordinate();
 
   /**
+   * Whether the container actually represents the scrollable content instead of
+   * the parent of the scrollable content. For the entire page (BODY/HTML),
+   * the behavior for hit detection is different because we care about events
+   * relative to the viewport, which serves as the actual container.
+   * @private
+   * @const
+   */
+  this.containerIsActuallyContent_ =
+      containerNode.tagName === 'BODY' || containerNode.tagName === 'HTML';
+
+  /**
    * The container bounds.
    * @type {goog.math.Rect}
    * @private
    */
   this.containerBounds_ = goog.style.getBounds(containerNode);
-  if (containerNode.tagName === 'BODY' || containerNode.tagName === 'HTML') {
+  if (this.containerIsActuallyContent_) {
     var size = goog.dom.getViewportSize();
     this.containerBounds_.height = size.height;
     this.containerBounds_.width = size.width;
@@ -137,6 +148,12 @@ goog.fx.DragScrollSupport.TIMER_STEP_ = 50;
  */
 goog.fx.DragScrollSupport.SCROLL_STEP_ = 8;
 
+/**
+ * @type {!goog.math.Coordinate}
+ * @private
+ * @const
+ */
+goog.fx.DragScrollSupport.ORIGIN_COORDINATE_ = new goog.math.Coordinate(0, 0);
 
 /**
  * The suggested scrolling margin.
@@ -233,15 +250,24 @@ goog.fx.DragScrollSupport.prototype.onTick_ = function(event) {
 /**
  * Handler for mouse moves events.
  * @param {goog.events.Event} event Mouse move event.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.fx.DragScrollSupport.prototype.onMouseMove = function(event) {
   'use strict';
+  let eventOffset = this.containerIsActuallyContent_ ?
+      goog.fx.DragScrollSupport.ORIGIN_COORDINATE_ :
+      goog.dom.getDomHelper(this.containerNode_).getDocumentScroll();
+
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var deltaX = this.horizontalScrolling_ ?
       this.calculateScrollDelta(
-          event.clientX, this.scrollBounds_.left, this.scrollBounds_.width) :
+          event.clientX + eventOffset.x, this.scrollBounds_.left,
+          this.scrollBounds_.width) :
       0;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var deltaY = this.calculateScrollDelta(
-      event.clientY, this.scrollBounds_.top, this.scrollBounds_.height);
+      event.clientY + eventOffset.y, this.scrollBounds_.top,
+      this.scrollBounds_.height);
   this.scrollDelta_.x = deltaX;
   this.scrollDelta_.y = deltaY;
 
@@ -249,7 +275,8 @@ goog.fx.DragScrollSupport.prototype.onMouseMove = function(event) {
   // bounds of the container node.
   if ((!deltaX && !deltaY) ||
       (this.constrainScroll_ &&
-       !this.isInContainerBounds_(event.clientX, event.clientY))) {
+       !this.isInContainerBounds_(
+           event.clientX + eventOffset.x, event.clientY + eventOffset.y))) {
     this.scrollTimer_.stop();
   } else if (!this.scrollTimer_.enabled) {
     this.scrollTimer_.start();

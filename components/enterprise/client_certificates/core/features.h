@@ -23,6 +23,12 @@ BASE_DECLARE_FEATURE(kManagedBrowserClientCertificateEnabled);
 // Return true if the managed browser's client cert feature is enabled.
 bool IsManagedBrowserClientCertificateEnabled();
 
+// Controls whether user client certs storage relies on prefs or LevelDB.
+BASE_DECLARE_FEATURE(kManagedUserClientCertificateInPrefs);
+
+// Return true if the managed user certificate should be stored in prefs.
+bool IsManagedUserClientCertificateInPrefsEnabled();
+
 }  // namespace client_certificates::features
 
 #endif  // COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_FEATURES_H_

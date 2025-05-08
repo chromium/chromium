@@ -256,6 +256,8 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     // POINTER_LOCK has been deprecated.
     {ContentSettingsType::POINTER_LOCK, nullptr},
     {ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, nullptr},
+    {ContentSettingsType::ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
+     nullptr},
 });
 
 static_assert(
@@ -724,6 +726,7 @@ SiteSettingSource ProviderTypeToSiteSettingsSource(
     const ProviderType provider_type) {
   switch (provider_type) {
     case ProviderType::kWebuiAllowlistProvider:
+    case ProviderType::kComponentExtensionProvider:
       return SiteSettingSource::kAllowlist;
     case ProviderType::kPolicyProvider:
     case ProviderType::kSupervisedProvider:
@@ -760,6 +763,7 @@ std::string ProviderToDefaultSettingSourceString(const ProviderType provider) {
       return "preference";
     case ProviderType::kInstalledWebappProvider:
     case ProviderType::kWebuiAllowlistProvider:
+    case ProviderType::kComponentExtensionProvider:
     case ProviderType::kDefaultProvider:
       return "default";
     case ProviderType::kJavascriptOptimizerAndroidProvider:
@@ -1096,23 +1100,6 @@ void GetRawExceptionsForContentSettingsType(
   }
 }
 
-void Append3pcExceptions(Profile* profile,
-                         content::WebUI* web_ui,
-                         base::Value::List* exceptions) {
-  base::Value::List cookie_exceptions;
-  GetExceptionsForContentType(ContentSettingsType::COOKIES, profile, web_ui,
-                              /*incognito=*/false, &cookie_exceptions);
-  for (auto& cookie_exception : cookie_exceptions) {
-    auto& dict = cookie_exception.GetDict();
-    if (dict.contains(kOrigin) && *dict.FindString(kOrigin) == "*") {
-      dict.Set(kDescription,
-               l10n_util::GetStringUTF16(
-                   IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL));
-      exceptions->Append(std::move(cookie_exception));
-    }
-  }
-}
-
 void GetExceptionsForContentType(ContentSettingsType type,
                                  Profile* profile,
                                  content::WebUI* web_ui,
@@ -1174,11 +1161,6 @@ void GetExceptionsForContentType(ContentSettingsType type,
     for (auto& exception : one_provider_exceptions.second) {
       exceptions->Append(std::move(exception));
     }
-  }
-
-  // The TP exceptions list should also contain 3PC exceptions.
-  if (type == ContentSettingsType::TRACKING_PROTECTION) {
-    Append3pcExceptions(profile, web_ui, exceptions);
   }
 }
 

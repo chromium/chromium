@@ -671,7 +671,9 @@ constexpr char kAppLaunchMetric[] = "Apps.DefaultAppLaunch.FromFileManager";
 
 // Check the interception of ExecuteTask calls to replace Gallery for PNGs. The
 // Media App should always be used in this case.
-IN_PROC_BROWSER_TEST_F(FileSystemExtensionApiTestWithApps, OpenGalleryForPng) {
+// TODO(crbug.com/402514601): Test is flaky.
+IN_PROC_BROWSER_TEST_F(FileSystemExtensionApiTestWithApps,
+                       DISABLED_OpenGalleryForPng) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(RunBackgroundPageTestCase("open_gallery",
                                         "testPngOpensGalleryReturnsOpened"))

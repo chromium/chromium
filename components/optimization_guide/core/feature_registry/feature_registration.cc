@@ -45,6 +45,10 @@ const char kAutofillPredictionImprovementsEnterprisePolicyAllowed[] =
 const char kPasswordChangeSubmissionEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.password_change_submission_"
     "enterprise_policy_allowed";
+
+const char kNotificationContentDetectionEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.notification_content_detection_"
+    "enterprise_policy_allowed";
 }  // namespace prefs
 
 namespace features {
@@ -74,6 +78,10 @@ BASE_FEATURE(kFormsClassificationsMqlsLogging,
 
 BASE_FEATURE(kPasswordChangeSubmissionMqlsLogging,
              "PasswordChangeSubmissionMqlsLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNotificationContentDetectionMqlsLogging,
+             "NotificationContentDetectionMqlsLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
@@ -237,6 +245,24 @@ void RegisterAutofillPredictions() {
           &features::kFormsClassificationsMqlsLogging, FeedbackUnspecified()));
 }
 
+void RegisterNotificationContentDetection() {
+  EnterprisePolicyPref enterprise_policy =
+      EnterprisePolicyRegistry::GetInstance().Register(
+          prefs::kNotificationContentDetectionEnterprisePolicyAllowed);
+  UserFeedbackCallback logging_callback =
+      base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
+        return request_proto.notification_content_detection()
+            .quality()
+            .user_feedback();
+      });
+  auto metadata = std::make_unique<MqlsFeatureMetadata>(
+      "NotificationContentDetection",
+      proto::LogAiDataRequest::FeatureCase::kNotificationContentDetection,
+      enterprise_policy, &features::kNotificationContentDetectionMqlsLogging,
+      logging_callback);
+  MqlsFeatureRegistry::GetInstance().Register(std::move(metadata));
+}
+
 }  // anonymous namespace
 
 void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
@@ -254,6 +280,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     RegisterProductSpecifications();
     RegisterAutofillPredictions();
     RegisterPasswordChangeSubmission();
+    RegisterNotificationContentDetection();
     features_registered = true;
   }
   EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(pref_registry);

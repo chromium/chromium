@@ -91,59 +91,38 @@ class BtmServiceTest : public testing::Test {
 };
 
 TEST_F(BtmServiceTest, CreateServiceIfFeatureEnabled) {
-  ScopedInitBtmFeature init_dips(true);
+  ScopedInitBtmFeature init_btm(true);
 
   TestBrowserContext profile;
   EXPECT_NE(BtmServiceImpl::Get(&profile), nullptr);
 }
 
 TEST_F(BtmServiceTest, DontCreateServiceIfFeatureDisabled) {
-  ScopedInitBtmFeature init_dips(false);
+  ScopedInitBtmFeature init_btm(false);
 
   TestBrowserContext profile;
   EXPECT_EQ(BtmServiceImpl::Get(&profile), nullptr);
 }
 
-// Verifies that if database persistence is disabled via Finch, then when the
-// BTM Service is constructed, it deletes any BTM Database files for the
-// associated BrowserContext.
-TEST_F(BtmServiceTest, DeleteDbFilesIfPersistenceDisabled) {
+// Verifies that if the BTM feature is enabled, BTM database files are created
+// when a (non-OTR) profile is created.
+TEST_F(BtmServiceTest, CreateDbFilesIfBtmEnabled) {
   base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
   BtmServiceImpl* service;
   std::unique_ptr<TestBrowserContext> profile;
 
-  // Ensure the BTM feature is enabled and the database is set to be persisted.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"persist_database", "true"}});
+  // Ensure the BTM feature is enabled.
+  base::test::ScopedFeatureList feature_list(features::kBtm);
 
   profile = std::make_unique<TestBrowserContext>(data_path);
   service = BtmServiceImpl::Get(profile.get());
   ASSERT_NE(service, nullptr);
 
-  // Ensure the database files have been created and are NOT deleted since the
-  // BTM feature is enabled.
+  // Ensure the database files have been created since the BTM feature is
+  // enabled.
   WaitOnStorage(service);
-  service->WaitForFileDeletionCompleteForTesting();
-  ASSERT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
-
-  // Reset the feature list to set database persistence to false.
-  feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"persist_database", "false"}});
-
-  // Reset the TestBrowserContext, then create a new instance with the same user
-  // data path.
-  profile.reset();
-  profile = std::make_unique<TestBrowserContext>(data_path);
-
-  service = BtmServiceImpl::Get(profile.get());
-  ASSERT_NE(service, nullptr);
-
-  // Ensure the database files ARE deleted since the BTM feature is disabled.
-  WaitOnStorage(service);
-  service->WaitForFileDeletionCompleteForTesting();
-  EXPECT_FALSE(base::PathExists(GetBtmFilePath(profile.get())));
+  BrowserContextImpl::From(profile.get())->WaitForBtmCleanupForTesting();
+  EXPECT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
 }
 
 // Verifies that when an OTR profile is opened, the BTM database file for
@@ -151,10 +130,8 @@ TEST_F(BtmServiceTest, DeleteDbFilesIfPersistenceDisabled) {
 TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
 
-  // Ensure the BTM feature is enabled and the database is set to be persisted.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"persist_database", "true"}});
+  // Ensure the BTM feature is enabled.
+  base::test::ScopedFeatureList feature_list(features::kBtm);
 
   // Build a regular profile.
   std::unique_ptr<TestBrowserContext> profile =
@@ -163,9 +140,9 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   ASSERT_NE(service, nullptr);
 
   // Ensure the regular profile's database files have been created since the
-  // BTM feature and persistence are enabled.
+  // BTM feature is enabled.
   WaitOnStorage(service);
-  service->WaitForFileDeletionCompleteForTesting();
+  BrowserContextImpl::From(profile.get())->WaitForBtmCleanupForTesting();
   ASSERT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
 
   // Build an off-the-record profile based on `profile`.
@@ -178,7 +155,7 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   // Ensure the OTR profile's database has been initialized and any file
   // deletion tasks have finished (although there shouldn't be any).
   WaitOnStorage(otr_service);
-  otr_service->WaitForFileDeletionCompleteForTesting();
+  BrowserContextImpl::From(otr_profile.get())->WaitForBtmCleanupForTesting();
 
   // Ensure the regular profile's database files were NOT deleted.
   EXPECT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
@@ -187,6 +164,45 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   // But since `otr_profile` is sharing `profile`'s directory, we don't want it
   // to delete that folder (`profile` will).
   otr_profile->TakePath();
+}
+
+TEST_F(BtmServiceTest, DatabaseFileIsDeletedIfFeatureIsDisabled) {
+  base::FilePath user_data_dir;
+  base::FilePath db_path;
+
+  // First, create a browser context while BTM is enabled, and confirm a
+  // database file is created.
+  {
+    TestBrowserContext browser_context;
+    db_path = GetBtmFilePath(&browser_context);
+    // Wait for the database to be created.
+    BrowserContextImpl::From(&browser_context)
+        ->GetBtmService()
+        ->storage()
+        ->FlushPostedTasksForTesting();
+    ASSERT_TRUE(base::PathExists(db_path));
+
+    // Take ownership of the browser context's directory so we can reuse it.
+    user_data_dir = browser_context.TakePath();
+
+    // Confirm that WaitForBtmCleanupForTesting() returns even if the file is
+    // not deleted.
+    BrowserContextImpl::From(&browser_context)->WaitForBtmCleanupForTesting();
+    ASSERT_TRUE(base::PathExists(db_path));
+  }
+
+  // Confirm the file still exists after the browser context is destroyed.
+  ASSERT_TRUE(base::PathExists(db_path));
+
+  // Create another browser context for the same directory, while BTM is
+  // disabled. Confirm the database file is deleted.
+  {
+    ScopedInitBtmFeature disable_btm(false);
+    TestBrowserContext browser_context(user_data_dir);
+    ASSERT_FALSE(BrowserContextImpl::From(&browser_context)->GetBtmService());
+    BrowserContextImpl::From(&browser_context)->WaitForBtmCleanupForTesting();
+    ASSERT_FALSE(base::PathExists(db_path));
+  }
 }
 
 TEST_F(BtmServiceTest, EmptySiteEventsIgnored) {
@@ -281,11 +297,13 @@ class BtmServiceStateRemovalTest : public testing::Test {
     EXPECT_TRUE(client->IsFullCookieAccessAllowed(
         profile_.get(), nullptr, third_party_url,
         blink::StorageKey::CreateFirstParty(
-            url::Origin::Create(first_party_url))));
+            url::Origin::Create(first_party_url)),
+        /*overrides=*/{}));
     EXPECT_FALSE(client->IsFullCookieAccessAllowed(
         profile_.get(), nullptr, first_party_url,
         blink::StorageKey::CreateFirstParty(
-            url::Origin::Create(third_party_url))));
+            url::Origin::Create(third_party_url)),
+        /*overrides=*/{}));
   }
 
   void RecordBounce(
@@ -327,7 +345,7 @@ class RedirectChainCounter : public BtmService::Observer {
 }  // namespace
 
 TEST_F(BtmServiceStateRemovalTest,
-       CompleteChain_NotifiesDipsRedirectChainObservers) {
+       CompleteChain_NotifiesBtmRedirectChainObservers) {
   GetService()->SetStorageClockForTesting(base::DefaultClock::GetInstance());
   RedirectChainCounter chain_counter(GetService());
 
@@ -356,7 +374,7 @@ TEST_F(BtmServiceStateRemovalTest,
 }
 
 TEST_F(BtmServiceStateRemovalTest,
-       PartialChain_DoesNotNotifyDipsRedirectChainObservers) {
+       PartialChain_DoesNotNotifyBtmRedirectChainObservers) {
   GetService()->SetStorageClockForTesting(base::DefaultClock::GetInstance());
   RedirectChainCounter chain_counter(GetService());
 
@@ -392,7 +410,7 @@ TEST_F(BtmServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   // Record a bounce.
   GURL url("https://example.com");
@@ -418,7 +436,7 @@ TEST_F(BtmServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
       net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
-      (ContentBrowserClient::kDefaultDipsRemoveMask &
+      (ContentBrowserClient::kDefaultBtmRemoveMask &
        ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
           BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
       BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
@@ -448,52 +466,12 @@ TEST_F(BtmServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
               EntryUrlsAre("DIPS.Deletion", {"http://example.com/"}));
 }
 
-TEST_F(BtmServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "false"}, {"triggering_action", "bounce"}});
-
-  // Record a bounce.
-  GURL url("https://example.com");
-  base::Time bounce = base::Time::FromSecondsSinceUnixEpoch(2);
-  RecordBounce(url, GURL("https://initial.com"), GURL("https://final.com"),
-               bounce, false,
-               base::BindRepeating([](const GURL& final_url) {}));
-  WaitOnStorage(GetService());
-  EXPECT_TRUE(GetBtmState(GetService(), url).has_value());
-
-  // Set the current time to just after the bounce happened.
-  AdvanceTimeTo(bounce + tiny_delta);
-  FireBtmTimer();
-  task_environment_.RunUntilIdle();
-
-  // Verify the BTM entry was not removed and a removal task was not posted to
-  // the BrowsingDataRemover(Delegate).
-  delegate_.VerifyAndClearExpectations();
-  EXPECT_TRUE(GetBtmState(GetService(), url).has_value());
-
-  // Time-travel to after the grace period has ended for the bounce.
-  AdvanceTimeTo(bounce + grace_period + tiny_delta);
-  FireBtmTimer();
-  task_environment_.RunUntilIdle();
-
-  // Verify that the site's BTM entry WAS removed, but a removal task was NOT
-  // posted to the BrowsingDataRemover(Delegate) since
-  // `features::kBtmDeletionEnabled` is false.
-  delegate_.VerifyAndClearExpectations();
-  EXPECT_FALSE(GetBtmState(GetService(), url).has_value());
-
-  EXPECT_THAT(ukm_recorder,
-              EntryUrlsAre("DIPS.Deletion", {"http://example.com/"}));
-}
-
 TEST_F(BtmServiceStateRemovalTest,
        BrowsingDataDeletion_Respects3PExceptionsFor3PC) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   GURL excepted_3p_url("https://excepted-as-3p.com");
   GURL non_excepted_url("https://not-excepted.com");
@@ -536,7 +514,7 @@ TEST_F(BtmServiceStateRemovalTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   GURL excepted_1p_url("https://excepted-as-1p.com");
   GURL scoped_excepted_1p_url("https://excepted-as-1p-with-3p.com");
@@ -612,7 +590,7 @@ TEST_F(BtmServiceStateRemovalTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   std::vector<base::test::FeatureRefAndParams> enabled_features;
   enabled_features.push_back(
-      {features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}}});
+      {features::kBtm, {{"triggering_action", "bounce"}}});
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(enabled_features, {});
 
@@ -701,7 +679,7 @@ TEST_F(
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   GURL blocked_1p_url("https://excepted-as-1p.com");
   GURL scoped_blocked_1p_url("https://excepted-as-1p-with-3p.com");
@@ -771,7 +749,7 @@ TEST_F(
 TEST_F(BtmServiceStateRemovalTest, ImmediateEnforcement) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
   SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
 
   // Record a bounce.
@@ -799,7 +777,7 @@ TEST_F(BtmServiceStateRemovalTest, ImmediateEnforcement) {
       net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
-      (ContentBrowserClient::kDefaultDipsRemoveMask &
+      (ContentBrowserClient::kDefaultBtmRemoveMask &
        ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
           BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
       BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
@@ -858,7 +836,7 @@ class BtmServiceHistogramTest : public BtmServiceStateRemovalTest {
 TEST_F(BtmServiceHistogramTest, DeletionLatency) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "false"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   // Verify the histogram starts empty
   histograms().ExpectTotalCount("Privacy.DIPS.DeletionLatency2", 0);
@@ -892,45 +870,10 @@ TEST_F(BtmServiceHistogramTest, DeletionLatency) {
   EXPECT_FALSE(GetBtmState(GetService(), url).has_value());
 }
 
-TEST_F(BtmServiceHistogramTest, Deletion_Disallowed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm,
-      {{"delete", "false"}, {"triggering_action", "stateful_bounce"}});
-
-  // Verify the histogram is initially empty.
-  EXPECT_TRUE(histograms()
-                  .GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix)
-                  .empty());
-
-  // Record a bounce.
-  GURL url("https://example.com");
-  base::Time bounce_time = base::Time::FromSecondsSinceUnixEpoch(2);
-  RecordBounce(url, GURL("https://initial.com"), GURL("https://final.com"),
-               bounce_time, true,
-               base::BindRepeating([](const GURL& final_url) {}));
-  WaitOnStorage(GetService());
-
-  // Time-travel to after the grace period has ended for the bounce.
-  AdvanceTimeTo(bounce_time + grace_period + tiny_delta);
-  FireBtmTimer();
-  task_environment_.RunUntilIdle();
-
-  // Verify a deletion metric was emitted and the BTM entry was removed.
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts[kUmaHistogramDeletionPrefix + kBlock3PC] = 1;
-  EXPECT_THAT(histograms().GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix),
-              testing::ContainerEq(expected_counts));
-  histograms().ExpectUniqueSample(kUmaHistogramDeletionPrefix + kBlock3PC,
-                                  BtmDeletionAction::kDisallowed, 1);
-  EXPECT_FALSE(GetBtmState(GetService(), url).has_value());
-}
-
 TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs1P) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm,
-      {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
+      features::kBtm, {{"triggering_action", "stateful_bounce"}});
 
   // Verify the histogram is initially empty.
   EXPECT_TRUE(histograms()
@@ -964,8 +907,7 @@ TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs1P) {
 TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs3P) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm,
-      {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
+      features::kBtm, {{"triggering_action", "stateful_bounce"}});
 
   // Verify the histogram is initially empty.
   EXPECT_TRUE(histograms()
@@ -999,8 +941,7 @@ TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs3P) {
 TEST_F(BtmServiceHistogramTest, DISABLED_Deletion_Enforced) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm,
-      {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
+      features::kBtm, {{"triggering_action", "stateful_bounce"}});
 
   // Verify the histogram is initially empty.
   EXPECT_TRUE(histograms()
@@ -1033,7 +974,7 @@ TEST_F(BtmServiceHistogramTest, DISABLED_Deletion_Enforced) {
 TEST_F(BtmServiceHistogramTest, ServerBounceDelay) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "false"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   // Verify that the histograms start empty.
   histograms().ExpectTotalCount(kServerRedirectsDelayHist, 0);
@@ -1049,7 +990,7 @@ TEST_F(BtmServiceHistogramTest, ServerBounceDelay) {
   UrlAndSourceId first_redirect_url = MakeUrlAndId("http://b.test/");
   UrlAndSourceId second_redirect_url = MakeUrlAndId("http://c.test/");
 
-  DipsRedirectChainObserver observer(service, GURL());
+  BtmRedirectChainObserver observer(service, GURL());
   std::vector<BtmRedirectInfoPtr> redirects;
   redirects.push_back(BtmRedirectInfo::CreateForServer(
       first_redirect_url,
@@ -1114,7 +1055,7 @@ TEST_F(BtmServiceUkmTest, BothChainBeginAndChainEnd) {
   UrlAndSourceId redirect_url2 = MakeUrlAndId("http://c.test/first");
   UrlAndSourceId final_url = MakeUrlAndId("http://c.test/second");
 
-  DipsRedirectChainObserver observer(service, final_url.url);
+  BtmRedirectChainObserver observer(service, final_url.url);
   std::vector<BtmRedirectInfoPtr> redirects;
   redirects.push_back(BtmRedirectInfo::CreateForServer(
       redirect_url1,
@@ -1175,7 +1116,7 @@ TEST_F(BtmServiceUkmTest, InitialAndFinalSitesSame_True) {
   UrlAndSourceId redirect_url = MakeUrlAndId("http://b.test/");
   UrlAndSourceId final_url = MakeUrlAndId("http://a.test/different-path");
 
-  DipsRedirectChainObserver observer(service, final_url.url);
+  BtmRedirectChainObserver observer(service, final_url.url);
   std::vector<BtmRedirectInfoPtr> redirects;
   redirects.push_back(BtmRedirectInfo::CreateForServer(
       redirect_url,
@@ -1221,7 +1162,7 @@ TEST_F(BtmServiceUkmTest, DontReportEmptyChainsAtAll) {
   UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
   UrlAndSourceId final_url = MakeUrlAndId("http://b.test/");
 
-  DipsRedirectChainObserver observer(service, final_url.url);
+  BtmRedirectChainObserver observer(service, final_url.url);
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       initial_url, final_url,
       /*length=*/0, /*is_partial_chain=*/false);
@@ -1242,7 +1183,7 @@ TEST_F(BtmServiceUkmTest, DontReportChainBeginIfInvalidSourceId) {
   UrlAndSourceId redirect_url = MakeUrlAndId("http://b.test/");
   UrlAndSourceId final_url = MakeUrlAndId("http://c.test/");
 
-  DipsRedirectChainObserver observer(service, final_url.url);
+  BtmRedirectChainObserver observer(service, final_url.url);
   std::vector<BtmRedirectInfoPtr> redirects;
   redirects.push_back(BtmRedirectInfo::CreateForServer(
       redirect_url,
@@ -1278,7 +1219,7 @@ TEST_F(BtmServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
   UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
   UrlAndSourceId redirect_url = MakeUrlAndId("http://b.test/");
 
-  DipsRedirectChainObserver observer(service, GURL());
+  BtmRedirectChainObserver observer(service, GURL());
   std::vector<BtmRedirectInfoPtr> redirects;
   redirects.push_back(BtmRedirectInfo::CreateForServer(
       redirect_url,
@@ -1304,47 +1245,6 @@ TEST_F(BtmServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
               ElementsAre(AllOf(HasSourceId(redirect_url.source_id))));
 
   EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainEnd", {}), IsEmpty());
-}
-
-TEST(BtmCleanupTest, DatabaseFileIsDeletedIfFeatureIsDisabled) {
-  BrowserTaskEnvironment task_environment;
-
-  base::FilePath user_data_dir;
-  base::FilePath db_path;
-
-  // First, create a browser context while DIPS is enabled, and confirm a
-  // database file is created.
-  {
-    TestBrowserContext browser_context;
-    db_path = GetBtmFilePath(&browser_context);
-    // Wait for the database to be created.
-    BrowserContextImpl::From(&browser_context)
-        ->GetDipsService()
-        ->storage()
-        ->FlushPostedTasksForTesting();
-    ASSERT_TRUE(base::PathExists(db_path));
-
-    // Take ownership of the browser context's directory so we can reuse it.
-    user_data_dir = browser_context.TakePath();
-
-    // Confirm that WaitForDipsCleanupForTesting() returns even if the file is
-    // not deleted.
-    BrowserContextImpl::From(&browser_context)->WaitForDipsCleanupForTesting();
-    ASSERT_TRUE(base::PathExists(db_path));
-  }
-
-  // Confirm the file still exists after the browser context is destroyed.
-  ASSERT_TRUE(base::PathExists(db_path));
-
-  // Create another browser context for the same directory, while DIPS is
-  // disabled. Confirm the database file is deleted.
-  {
-    ScopedInitBtmFeature disable_dips(false);
-    TestBrowserContext browser_context(user_data_dir);
-    ASSERT_FALSE(BrowserContextImpl::From(&browser_context)->GetDipsService());
-    BrowserContextImpl::From(&browser_context)->WaitForDipsCleanupForTesting();
-    ASSERT_FALSE(base::PathExists(db_path));
-  }
 }
 
 }  // namespace content

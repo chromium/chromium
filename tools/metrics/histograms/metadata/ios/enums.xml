@@ -1315,6 +1315,17 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Exceeded allocated time for background task"/>
 </enum>
 
+<!-- LINT.IfChange(NonModalSignInPromoAction) -->
+
+<enum name="NonModalSignInPromoAction">
+  <int value="0" label="Accept"/>
+  <int value="1" label="Appear"/>
+  <int value="2" label="Dismiss"/>
+  <int value="3" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_metrics_util.h:NonModalSignInPromoAction) -->
+
 <!-- LINT.IfChange(NotificationType) -->
 
 <enum name="NotificationType">
@@ -1440,7 +1451,10 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Will Present Notification"/>
   <int value="1" label="Did Register With APNS"/>
   <int value="2" label="App Did Enter Foreground"/>
-  <int value="3" label="Handle Notification Response"/>
+<!-- DEPRECATED: This failure point is no longer used as the code path
+  that logged it has been removed. -->
+
+  <int value="3" label="Handle Notification Response (Deprecated)"/>
   <int value="4" label="Will Process Incoming Remote Notification"/>
   <int value="5" label="GetClientManager: Null Profile Input"/>
   <int value="6" label="GetClientManager: Missing Profile Service"/>
@@ -1462,6 +1476,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="GetProfileName: Missing or Empty Gaia ID"/>
   <int value="17" label="GetProfileName: Gaia ID Not Mapped"/>
   <int value="18" label="GetProfileName: Mapped Name Not Found In Storage"/>
+  <int value="19" label="GetClientManager: Profile Load Failed"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:PushNotificationClientManagerFailurePoint) -->
@@ -1506,6 +1521,35 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Ephemeral"/>
   <int value="5" label="Invalid"/>
 </enum>
+
+<!-- LINT.IfChange(PushNotificationTargetProfileHandlingResult) -->
+
+<enum name="PushNotificationTargetProfileHandlingResult">
+  <summary>
+    Records the outcome of handling a push notification interaction in a
+    multi-profile environment. Tracks whether the correct target Profile handled
+    the interaction, either because it was already active or because a profile
+    switch was initiated. Recorded in
+    IOS.PushNotification.MultiProfile.PushNotificationTargetProfileHandlingResult.
+  </summary>
+  <int value="0" label="CorrectProfileActive">
+    Success: The notification's target Profile was already the active Profile in
+    the target UI scene.
+  </int>
+  <int value="1" label="SwitchEnsuredCorrectProfile">
+    Success: The notification's target Profile was not the active Profile; a
+    profile switch was initiated.
+  </int>
+  <int value="2" label="ProfileUnidentifiable">
+    The originating Profile could not be determined from the notification's
+    metadata.
+  </int>
+  <int value="3" label="FailureSceneUnavailable">
+    Failure: No suitable UI scene could be found to handle the interaction.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:PushNotificationTargetProfileHandlingResult) -->
 
 <!-- LINT.IfChange(ReaderModeAmpClassification) -->
 

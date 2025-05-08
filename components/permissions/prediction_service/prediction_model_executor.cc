@@ -137,29 +137,21 @@ std::optional<GeneratePredictionsResponse> PredictionModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   DCHECK(request_type_ == RequestType::kNotifications ||
          request_type_ == RequestType::kGeolocation);
+
+  if (!model_metadata_ || !model_metadata_->has_not_grant_thresholds()) {
+    LOG(WARNING)
+        << "[CPSS] Failed to read model thresholds from metadata";
+    return std::nullopt;
+  }
+
   std::vector<float> data;
   if (!tflite::task::core::PopulateVector<float>(output_tensors[0], &data)
            .ok()) {
     return std::nullopt;
   }
 
-  float threshold = request_type_ == RequestType::kNotifications
-                        ? kNotificationPredictionsThreshold
-                        : kGeolocationPredictionsThreshold;
-
-  // If the model has a metadata which contains a threshold value,
-  // use that threshold value.
-  if (model_metadata_ && model_metadata_->has_not_grant_thresholds()) {
-    // max_likely represents very likely to not grant
-    threshold = model_metadata_->not_grant_thresholds().max_likely();
-    base::UmaHistogramEnumeration(
-        "Permissions.PredictionService.PredictionThresholdSource",
-        PermissionPredictionThresholdSource::MODEL_METADATA);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Permissions.PredictionService.PredictionThresholdSource",
-        PermissionPredictionThresholdSource::HARDCODED_FALLBACK);
-  }
+  // max_likely represents very likely to not grant
+  float threshold = model_metadata_->not_grant_thresholds().max_likely();
 
   GeneratePredictionsResponse response;
   response.mutable_prediction()

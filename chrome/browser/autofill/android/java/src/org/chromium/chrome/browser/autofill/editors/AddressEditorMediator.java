@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.CREATE_NEW_ADDRESS_PROFILE;
 import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
 import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
@@ -40,9 +41,9 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.vali
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AddressValidationType;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
@@ -55,7 +56,6 @@ import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
 import org.chromium.components.autofill.AutofillAddressUiComponent;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -67,7 +67,6 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -77,6 +76,7 @@ import java.util.function.Predicate;
  * Contains the logic for the autofill address editor component. It sets the state of the model and
  * reacts to events like address country selection.
  */
+@NullMarked
 class AddressEditorMediator {
     private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter =
             new PhoneNumberUtil.CountryAwareFormatTextWatcher();
@@ -95,11 +95,11 @@ class AddressEditorMediator {
     private final PropertyModel mPhoneField;
     private final PropertyModel mEmailField;
 
-    private AutofillAddressEditorUiInfo mEditorUiInfo;
-    @Nullable private String mCustomDoneButtonText;
+    private @Nullable AutofillAddressEditorUiInfo mEditorUiInfo;
+    private @Nullable String mCustomDoneButtonText;
     private boolean mAllowDelete;
 
-    @Nullable private PropertyModel mEditorModel;
+    private @Nullable PropertyModel mEditorModel;
 
     private PropertyModel getFieldForFieldType(@FieldType int fieldType) {
         if (!mAddressFields.containsKey(fieldType)) {
@@ -112,20 +112,6 @@ class AddressEditorMediator {
                             .build());
         }
         return mAddressFields.get(fieldType);
-    }
-
-    // TODO(crbug.com/40263955): remove temporary unsupported countries filtering.
-    private static List<DropdownKeyValue> getSupportedCountries(
-            PersonalDataManager personalDataManager, boolean filterOutUnsupportedCountries) {
-        List<DropdownKeyValue> supportedCountries = AutofillProfileBridge.getSupportedCountries();
-        if (filterOutUnsupportedCountries) {
-            supportedCountries.removeIf(
-                    entry ->
-                            !personalDataManager.isCountryEligibleForAccountStorage(
-                                    entry.getKey()));
-        }
-
-        return supportedCountries;
     }
 
     AddressEditorMediator(
@@ -153,10 +139,7 @@ class AddressEditorMediator {
                         .with(LABEL, mContext.getString(R.string.autofill_profile_editor_country))
                         .with(
                                 DROPDOWN_KEY_VALUE_LIST,
-                                getSupportedCountries(
-                                        mPersonalDataManager,
-                                        isAccountAddressProfile()
-                                                && mUserFlow != CREATE_NEW_ADDRESS_PROFILE))
+                                AutofillProfileBridge.getSupportedCountries())
                         .with(IS_REQUIRED, false)
                         .with(
                                 VALUE,
@@ -245,10 +228,11 @@ class AddressEditorMediator {
                     /** Update the list of fields according to the selected country. */
                     @Override
                     public void onResult(String countryCode) {
-                        mEditorModel.set(
-                                EDITOR_FIELDS,
-                                buildEditorFieldList(
-                                        countryCode, Locale.getDefault().getLanguage()));
+                        assumeNonNull(mEditorModel)
+                                .set(
+                                        EDITOR_FIELDS,
+                                        buildEditorFieldList(
+                                                countryCode, Locale.getDefault().getLanguage()));
 
                         mPhoneFormatter.setCountryCode(countryCode);
                     }
@@ -332,6 +316,7 @@ class AddressEditorMediator {
     }
 
     private void onCommitChanges() {
+        assumeNonNull(mEditorModel);
         if (!validateForm(mEditorModel)) {
             scrollToFieldWithErrorMessage(mEditorModel);
             return;
@@ -347,6 +332,7 @@ class AddressEditorMediator {
     }
 
     private void onCancelEditing() {
+        assumeNonNull(mEditorModel);
         mEditorModel.set(VISIBLE, false);
 
         mDelegate.onCancel();
@@ -355,9 +341,7 @@ class AddressEditorMediator {
     /** Saves the edited profile on disk. */
     private void commitChanges(AutofillProfile profile) {
         String country = mCountryField.get(VALUE);
-        if (willBeSavedInAccount()
-                && mUserFlow == CREATE_NEW_ADDRESS_PROFILE
-                && mPersonalDataManager.isCountryEligibleForAccountStorage(country)) {
+        if (willBeSavedInAccount() && mUserFlow == CREATE_NEW_ADDRESS_PROFILE) {
             profile.setRecordType(RecordType.ACCOUNT);
         }
         // Country code and phone number are always required and are always collected from the
@@ -370,6 +354,7 @@ class AddressEditorMediator {
             profile.setInfo(FieldType.EMAIL_ADDRESS, mEmailField.get(VALUE));
         }
 
+        assumeNonNull(mEditorUiInfo);
         // Autofill profile bridge normalizes the language code for the autofill profile.
         profile.setLanguageCode(mEditorUiInfo.getBestLanguageTag());
 

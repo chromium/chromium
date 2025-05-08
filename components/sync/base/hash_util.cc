@@ -10,6 +10,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 
 namespace syncer {
 
@@ -48,6 +49,11 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
 std::string GetUnhashedClientTagFromAutofillOfferSpecifics(
     const sync_pb::AutofillOfferSpecifics& specifics) {
   return base::NumberToString(specifics.id());
+}
+
+std::string GetUnhashedClientTagFromAutofillValuableSpecifics(
+    const sync_pb::AutofillValuableSpecifics& specifics) {
+  return specifics.id();
 }
 
 }  // namespace syncer

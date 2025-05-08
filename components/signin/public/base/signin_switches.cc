@@ -17,12 +17,6 @@ BASE_FEATURE(kCctSignInPrompt,
              "CctSignInPrompt",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Migrate usages of USM flag to force child account sign-in to use the account
-// capability `IsSubjectToParentalControls`.
-BASE_FEATURE(kForceSupervisedSigninWithCapabilities,
-             "ForceSupervisedSigninWithCapabilities",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Add history sync opt-in promo in the History Page.
 BASE_FEATURE(kHistoryPageHistorySyncPromo,
              "HistoryPageHistorySyncPromo",
@@ -81,13 +75,11 @@ constexpr base::FeatureParam<HistorySyncOptinExpansionPillOption>::Option
          "browse-across-devices"},
         {HistorySyncOptinExpansionPillOption::kSyncHistory, "sync-history"},
         {HistorySyncOptinExpansionPillOption::kSeeTabsFromOtherDevices,
-         "see-tabs-from-other-devices"},
-        {HistorySyncOptinExpansionPillOption::kSyncHistoryProfileMenu,
-         "sync-history-profile-menu"}};
+         "see-tabs-from-other-devices"}};
 
-// Determines the experiment arm of the History Sync Opt-in expansion pill (it
-// can be either a different text or a different action after the pill is
-// clicked).
+// Determines the experiment arm of the History Sync Opt-in expansion pill
+// (different text options).
+//
 // It is no-op unless "EnableHistorySyncOptin" is enabled.
 constexpr base::FeatureParam<HistorySyncOptinExpansionPillOption>
     kHistorySyncOptinExpansionPillOption = {
@@ -164,11 +156,11 @@ BASE_FEATURE(kUseIssueTokenToFetchAccessTokens,
 
 BASE_FEATURE(kEnablePreferencesAccountStorage,
              "EnablePreferencesAccountStorage",
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_CHROMEOS)
 );
 
 // This feature disables all extended sync promos.
@@ -186,14 +178,6 @@ BASE_FEATURE(kForceStartupSigninPromo,
 BASE_FEATURE(kInterceptBubblesDismissibleByAvatarButton,
              "InterceptBubblesDismissibleByAvatarButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kImprovedSigninUIOnDesktop,
-             "ImprovedSigninUIOnDesktop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsImprovedSigninUIOnDesktopEnabled() {
-  return base::FeatureList::IsEnabled(kImprovedSigninUIOnDesktop);
-}
 
 BASE_FEATURE(kImprovedSettingsUIOnDesktop,
              "ImprovedSettingsUIOnDesktop",
@@ -282,10 +266,6 @@ BASE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders,
 BASE_FEATURE(kProfilesReordering,
              "ProfilesReordering",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOutlineSilhouetteIcon,
-             "OutlineSilhouetteIcon",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kIgnoreMirrorHeadersInBackgoundTabs,

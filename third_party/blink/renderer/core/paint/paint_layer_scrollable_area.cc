@@ -52,6 +52,7 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/scroll_snap_data.h"
+#include "cc/input/scroll_utils.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/common/features.h"
@@ -854,20 +855,6 @@ bool PaintLayerScrollableArea::UserInputScrollable(
 
 bool PaintLayerScrollableArea::ShouldPlaceVerticalScrollbarOnLeft() const {
   return GetLayoutBox()->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft();
-}
-
-int PaintLayerScrollableArea::PageStep(ScrollbarOrientation orientation) const {
-  // Paging scroll operations should take scroll-padding into account [1]. So we
-  // use the snapport rect to calculate the page step instead of the visible
-  // rect.
-  // [1] https://drafts.csswg.org/css-scroll-snap/#scroll-padding
-  gfx::Size snapport_size = VisibleScrollSnapportRect().PixelSnappedSize();
-  int length = (orientation == kHorizontalScrollbar) ? snapport_size.width()
-                                                     : snapport_size.height();
-  int min_page_step = static_cast<float>(length) *
-                      ScrollableArea::MinFractionToStepWhenPaging();
-  int page_step = max(min_page_step, length - MaxOverlapBetweenPages());
-  return max(page_step, 1);
 }
 
 bool PaintLayerScrollableArea::IsRootFrameLayoutViewport() const {

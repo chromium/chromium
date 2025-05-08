@@ -17,8 +17,11 @@
 <script src="../resources/testharnessreport.js"></script>
 <script>
 test(() => {
+    assert_equals(document.getElementById("elm1").offsetLeft, 0);
     assert_equals(document.getElementById("elm1").offsetTop, 0);
-    assert_equals(document.getElementById("elm2").offsetTop, 80);
-    assert_equals(document.getElementById("elm3").offsetTop, 160);
+    assert_equals(document.getElementById("elm2").offsetLeft, 10);
+    assert_equals(document.getElementById("elm2").offsetTop, 0);
+    assert_equals(document.getElementById("elm3").offsetLeft, 20);
+    assert_equals(document.getElementById("elm3").offsetTop, 0);
 }, "Forced breaks should be allowed inside floats");
 </script>

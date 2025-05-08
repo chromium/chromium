@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -22,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.function.BooleanSupplier;
 
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
+@NullMarked
 public class BookmarkToolbarCoordinator {
     private final BookmarkToolbar mToolbar;
     private final PropertyModel mModel;

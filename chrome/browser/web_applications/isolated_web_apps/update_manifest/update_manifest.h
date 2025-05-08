@@ -14,12 +14,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/no_destructor.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
-#include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/webapps/isolated_web_apps/update_channel.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -30,36 +29,6 @@ inline constexpr std::string_view kUpdateManifestChannelNameKey = "name";
 inline constexpr std::string_view kUpdateManifestVersionKey = "version";
 inline constexpr std::string_view kUpdateManifestSrcKey = "src";
 inline constexpr std::string_view kUpdateManifestChannelsKey = "channels";
-
-class UpdateChannel {
- public:
-  // Returns an instance of the "default" update channel.
-  static const UpdateChannel& default_channel();
-
-  static base::expected<UpdateChannel, std::monostate> Create(
-      std::string input);
-
-  UpdateChannel(const UpdateChannel&);
-  UpdateChannel(UpdateChannel&&);
-  UpdateChannel& operator=(const UpdateChannel&);
-  UpdateChannel& operator=(UpdateChannel&&);
-
-  ~UpdateChannel();
-
-  bool operator==(const UpdateChannel& other) const;
-  auto operator<=>(const UpdateChannel& other) const;
-  bool operator<(const UpdateChannel& other) const;
-
-  const std::string& ToString() const { return name_; }
-
-  // For gtest
-  friend void PrintTo(const UpdateChannel& channel, std::ostream* os);
-
- private:
-  explicit UpdateChannel(std::string name);
-
-  std::string name_;
-};
 
 // An Isolated Web App Update Manifest contains a list of versions and download
 // URLs of an Isolated Web App. The format is described in more detail here:

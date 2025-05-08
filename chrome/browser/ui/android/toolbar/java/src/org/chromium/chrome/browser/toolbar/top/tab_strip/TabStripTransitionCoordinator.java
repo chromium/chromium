@@ -12,13 +12,13 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
@@ -30,8 +30,9 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 
 /** Class used to manage tab strip visibility and height updates. */
+@NullMarked
 public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHeaderObserver {
-    static Integer sHeightTransitionThresholdForTesting;
+    static @Nullable Integer sHeightTransitionThresholdForTesting;
 
     // Delay to kickoff the transition to avoid frame drops while application is too busy when the
     // configuration changed.
@@ -101,7 +102,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     private boolean mForceUpdateHeight;
     private boolean mForceFadeInStrip;
 
-    private OnLayoutChangeListener mOnLayoutChangedListener;
+    private @Nullable OnLayoutChangeListener mOnLayoutChangedListener;
     private @Nullable Runnable mLayoutTransitionTask;
 
     // TODO (crbug.com/345849359): Create a base handler class to hold common members.
@@ -130,9 +131,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
             int tabStripHeightFromResource,
             TabObscuringHandler tabObscuringHandler,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull
-                    OneshotSupplier<TabStripTransitionDelegate>
-                            tabStripTransitionDelegateSupplier) {
+            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
         mControlContainer = controlContainer;
         mTabStripHeightFromResource = tabStripHeightFromResource;
         mDesktopWindowStateManager = desktopWindowStateManager;
@@ -182,7 +181,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     // ComponentCallbacks implementation.
 
     @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    public void onConfigurationChanged(Configuration newConfig) {
         updateTabStripTransitionThreshold();
     }
 

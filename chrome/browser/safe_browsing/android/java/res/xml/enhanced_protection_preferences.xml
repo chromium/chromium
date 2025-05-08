@@ -43,12 +43,6 @@ found in the LICENSE file.
         app:iconTint="@color/default_icon_color_tint_list"
         app:allowDividerBelow="false" />
     <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:key="bullet_five"
-        android:summary="@string/safe_browsing_enhanced_protection_bullet_five"
-        android:icon="@drawable/ic_password_manager_key"
-        app:iconTint="@color/default_icon_color_tint_list"
-        app:allowDividerBelow="false" />
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="things_to_consider"
         android:title="@string/privacy_guide_things_to_consider"
         app:allowDividerBelow="false" />

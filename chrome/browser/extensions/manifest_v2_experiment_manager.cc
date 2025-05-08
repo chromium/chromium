@@ -12,7 +12,6 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -489,11 +488,11 @@ void ManifestV2ExperimentManager::DisableAffectedExtensions() {
     extensions_to_disable.insert(extension);
   }
 
-  ExtensionService* extension_service =
-      ExtensionSystem::Get(browser_context_)->extension_service();
+  auto* registrar = ExtensionRegistrar::Get(browser_context_);
   for (const auto& extension : extensions_to_disable) {
-    extension_service->DisableExtension(
-        extension->id(), disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
+    registrar->DisableExtension(
+        extension->id(),
+        {disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION});
     extension_prefs()->SetBooleanPref(extension->id(),
                                       kMV2DeprecationDidDisablePref, true);
   }

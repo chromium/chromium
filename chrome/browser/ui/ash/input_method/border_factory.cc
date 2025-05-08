@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/input_method/border_factory.h"
 
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace ui {
@@ -23,8 +24,10 @@ std::unique_ptr<views::BubbleBorder> GetBorderForWindow(
           views::LayoutProvider::Get()->GetShadowElevationMetric(
               views::Emphasis::kMedium));
   }
-  border->SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kMedium));
+
+  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMedium);
+  border->set_rounded_corners(gfx::RoundedCornersF(corner_radius));
   return border;
 }
 

@@ -404,10 +404,6 @@ void FederatedIdentityAccountKeyedPermissionContext::
 
 ContentSettingsForOneType FederatedIdentityAccountKeyedPermissionContext::
     GetSharingPermissionGrantsAsContentSettings() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kFedCmWithStorageAccessAPI)) {
-    return ContentSettingsForOneType();
-  }
   // ObjectPermissionContext stores its settings in the HostContentSettingsMap
   // keyed by <origin, null> with a value of `base::Value` (which is translated
   // to CONTENT_SETTING_DEFAULT). It's not possible to reconstruct the actual

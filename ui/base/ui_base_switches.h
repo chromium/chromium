@@ -28,6 +28,8 @@ COMPONENT_EXPORT(UI_BASE) extern const char kSystemFontFamily[];
 
 #if BUILDFLAG(IS_LINUX)
 COMPONENT_EXPORT(UI_BASE) extern const char kUiToolkitFlag[];
+COMPONENT_EXPORT(UI_BASE) extern const char kGtkVersionFlag[];
+COMPONENT_EXPORT(UI_BASE) extern const char kQtVersionFlag[];
 COMPONENT_EXPORT(UI_BASE) extern const char kDisableGtkIme[];
 #endif
 
@@ -47,9 +49,6 @@ COMPONENT_EXPORT(UI_BASE) extern const char kTopChromeTouchUiDisabled[];
 COMPONENT_EXPORT(UI_BASE) extern const char kTopChromeTouchUiEnabled[];
 COMPONENT_EXPORT(UI_BASE) extern const char kUIDisablePartialSwap[];
 COMPONENT_EXPORT(UI_BASE) extern const char kUseSystemClipboard[];
-
-// Headless related.
-COMPONENT_EXPORT(UI_BASE) extern const char kScreenInfo[];
 
 // Test related.
 COMPONENT_EXPORT(UI_BASE) extern const char kDisallowNonExactResourceReuse[];

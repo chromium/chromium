@@ -538,6 +538,7 @@ html element canvas
     property configureHighDynamicRange
     property getContext
     property height
+    property layoutSubtree
     property toBlob
     property toDataURL
     property transferControlToOffscreen
@@ -876,6 +877,12 @@ html element marquee
     property width
 html element menu
     property compact
+html element menubar
+html element menuitem
+    property checked
+    property defaultChecked
+    property disabled
+html element menulist
 html element meta
     property content
     property httpEquiv

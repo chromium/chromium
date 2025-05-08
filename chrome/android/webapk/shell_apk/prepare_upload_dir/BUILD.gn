@@ -8,17 +8,12 @@ import(
 
 upload_dir = "${target_gen_dir}/upload_to_build_bucket"
 
-# Copies |source_dir| to |destination_dir|.
 template("copy_dir") {
   copy_ex(target_name) {
     source_dir = invoker.source_dir
     dest = invoker.destination_dir
 
-    _sources_rel_build_rel =
-        exec_script("//build/android/gyp/find.py",
-                    [ rebase_path(source_dir, root_build_dir) ],
-                    "list lines")
-    renaming_sources = rebase_path(_sources_rel_build_rel, ".", root_build_dir)
+    renaming_sources = rebase_path(invoker.sources, ".", source_dir)
     renaming_destinations = rebase_path(renaming_sources, source_dir)
   }
 }
@@ -26,21 +21,113 @@ template("copy_dir") {
 copy_dir("copy_res_to_upload_dir") {
   source_dir = "//chrome/android/webapk/shell_apk/res"
   destination_dir = "${upload_dir}/res"
+  sources = [
+    "drawable-hdpi/ic_site_settings.png",
+    "drawable-hdpi/last_resort_runtime_host_logo.png",
+    "drawable-hdpi/notification_badge.png",
+    "drawable-hdpi/shortcut_1_icon.png",
+    "drawable-hdpi/shortcut_2_icon.png",
+    "drawable-hdpi/shortcut_3_icon.png",
+    "drawable-hdpi/shortcut_4_icon.png",
+    "drawable-hdpi/splash_icon.xml",
+    "drawable-mdpi/ic_site_settings.png",
+    "drawable-mdpi/notification_badge.png",
+    "drawable-mdpi/shortcut_1_icon.png",
+    "drawable-mdpi/shortcut_2_icon.png",
+    "drawable-mdpi/shortcut_3_icon.png",
+    "drawable-mdpi/shortcut_4_icon.png",
+    "drawable-mdpi/splash_icon.xml",
+    "drawable-xhdpi/ic_site_settings.png",
+    "drawable-xhdpi/notification_badge.png",
+    "drawable-xhdpi/shortcut_1_icon.png",
+    "drawable-xhdpi/shortcut_2_icon.png",
+    "drawable-xhdpi/shortcut_3_icon.png",
+    "drawable-xhdpi/shortcut_4_icon.png",
+    "drawable-xhdpi/splash_icon.xml",
+    "drawable-xxhdpi/ic_site_settings.png",
+    "drawable-xxhdpi/notification_badge.png",
+    "drawable-xxhdpi/shortcut_1_icon.png",
+    "drawable-xxhdpi/shortcut_2_icon.png",
+    "drawable-xxhdpi/shortcut_3_icon.png",
+    "drawable-xxhdpi/shortcut_4_icon.png",
+    "drawable-xxhdpi/splash_icon.xml",
+    "drawable-xxxhdpi/ic_site_settings.png",
+    "drawable-xxxhdpi/notification_badge.png",
+    "drawable-xxxhdpi/shortcut_1_icon.png",
+    "drawable-xxxhdpi/shortcut_2_icon.png",
+    "drawable-xxxhdpi/shortcut_3_icon.png",
+    "drawable-xxxhdpi/shortcut_4_icon.png",
+    "drawable-xxxhdpi/splash_icon.xml",
+    "layout-night-v31/splash_screen_view.xml",
+    "layout-v31/splash_screen_view.xml",
+    "layout/host_browser_list_item.xml",
+    "mipmap-anydpi-v26/ic_launcher.xml",
+    "mipmap-hdpi/ic_launcher.xml",
+    "mipmap-mdpi/ic_launcher.xml",
+    "mipmap-mdpi/ic_launcher_background.png",
+    "mipmap-mdpi/ic_launcher_foreground.png",
+    "mipmap-nodpi/app_icon_hdpi.png",
+    "mipmap-nodpi/app_icon_mdpi.png",
+    "mipmap-nodpi/app_icon_xhdpi.png",
+    "mipmap-nodpi/app_icon_xxhdpi.png",
+    "mipmap-nodpi/app_icon_xxxhdpi.png",
+    "mipmap-nodpi/maskable_app_icon_hdpi.png",
+    "mipmap-nodpi/maskable_app_icon_mdpi.png",
+    "mipmap-nodpi/maskable_app_icon_xhdpi.png",
+    "mipmap-nodpi/maskable_app_icon_xxhdpi.png",
+    "mipmap-nodpi/maskable_app_icon_xxxhdpi.png",
+    "mipmap-nodpi/maskable_splash_icon_xxhdpi.png",
+    "mipmap-nodpi/maskable_splash_icon_xxxhdpi.png",
+    "mipmap-nodpi/splash_icon_xxhdpi.png",
+    "mipmap-nodpi/splash_icon_xxxhdpi.png",
+    "mipmap-xhdpi/ic_launcher.xml",
+    "mipmap-xxhdpi/ic_launcher.xml",
+    "mipmap-xxxhdpi/ic_launcher.xml",
+    "values-hdpi/is_splash_icon_maskable_bool.xml",
+    "values-mdpi/is_splash_icon_maskable_bool.xml",
+    "values-night-v17/styles.xml",
+    "values-night-v31/dimens.xml",
+    "values-night-v31/styles.xml",
+    "values-v17/styles.xml",
+    "values-v31/dimens.xml",
+    "values-v31/styles.xml",
+    "values-xhdpi/is_splash_icon_maskable_bool.xml",
+    "values-xxhdpi/is_splash_icon_maskable_bool.xml",
+    "values-xxxhdpi/is_splash_icon_maskable_bool.xml",
+    "values/colors.xml",
+    "values/dimens.xml",
+    "xml/shortcuts.xml",
+  ]
 }
 
 copy_dir("copy_res_template_to_upload_dir") {
   source_dir = "//chrome/android/webapk/shell_apk/res_template"
   destination_dir = "${upload_dir}/res"
+  sources = [
+    "mipmap-nodpi/app_icon.xml",
+    "mipmap-nodpi/maskable_app_icon.xml",
+    "values/background_color.xml",
+  ]
 }
 
 copy_dir("copy_libs_common_res_splash_to_upload_dir") {
   source_dir = "//chrome/android/webapk/libs/common/res_splash"
   destination_dir = "${upload_dir}/res"
+  sources = [
+    "layout/webapp_splash_screen_large.xml",
+    "layout/webapp_splash_screen_no_icon.xml",
+    "values-v17/common_styles.xml",
+    "values/common_colors.xml",
+  ]
 }
 
 copy_dir("copy_components_libs_common_res_splash_to_upload_dir") {
   source_dir = "//components/webapk/android/libs/common/res_splash"
   destination_dir = "${upload_dir}/res"
+  sources = [
+    "values-sw600dp/common_dimens.xml",
+    "values/common_dimens.xml",
+  ]
 }
 
 copy_ex("copy_extra_files_to_upload_dir") {

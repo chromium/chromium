@@ -37,6 +37,9 @@ type MantisSafetyClassifierVerdict =
     import('./mantis_processor.mojom-webui.js').SafetyClassifierVerdict;
 type Uuid =
     import('//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js').Uuid;
+type MantisSegmentationMode =
+    import('./mantis_processor.mojom-webui.js').SegmentationMode;
+type MantisTouchPoint = import('./mantis_processor.mojom-webui.js').TouchPoint;
 
 /**
  * Wraps an HTML File object (or a mock, or media loaded through another means).
@@ -357,6 +360,14 @@ declare interface ClientApiDelegate {
    */
   outpaintImage(image: number[], mask: number[], seed: number):
       Promise<MantisResult>;
+
+  /**
+   * Infers the segmentation mode (e.g., scribble or lasso) from a list of
+   * touch events.
+   * @param gesture The list of user's touch point info.
+   */
+  inferSegmentationMode(gesture: MantisTouchPoint[]):
+      Promise<MantisSegmentationMode>;
 }
 
 /**

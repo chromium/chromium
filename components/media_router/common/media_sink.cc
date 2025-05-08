@@ -27,15 +27,6 @@ MediaSink::~MediaSink() = default;
 MediaSink& MediaSink::operator=(const MediaSink& other) = default;
 MediaSink& MediaSink::operator=(MediaSink&& other) noexcept = default;
 
-bool MediaSink::operator==(const MediaSink& other) const {
-  return sink_id_ == other.sink_id_ && name_ == other.name_ &&
-         icon_type_ == other.icon_type_ && provider_id_ == other.provider_id_;
-}
-
-bool MediaSink::operator!=(const MediaSink& other) const {
-  return !operator==(other);
-}
-
 bool MediaSink::CompareUsingCollator(const MediaSink& other,
                                      const icu::Collator* collator) const {
   if (icon_type_ != other.icon_type_) {

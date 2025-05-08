@@ -71,6 +71,9 @@ std::optional<user_manager::UserType> DeviceLocalAccountTypeToUserType(
       return user_manager::UserType::kWebKioskApp;
     case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
       return user_manager::UserType::kKioskIWA;
+    // TODO(crbug.com/388602323): Create new user type for ARCVM Kiosk.
+    case policy::DeviceLocalAccountType::kArcvmKioskApp:
+      NOTREACHED();
   }
 }
 

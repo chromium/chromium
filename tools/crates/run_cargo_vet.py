@@ -14,6 +14,7 @@ Arguments are passed through to `cargo vet`.
 
 import argparse
 import os
+import pathlib
 import platform
 import subprocess
 import sys
@@ -46,6 +47,7 @@ def main():
         'run `cargo vet` against `//third_party/rust/chromium_crates_io`')
     parser.add_argument('--rust-sysroot',
                         default=DEFAULT_SYSROOT,
+                        type=pathlib.Path,
                         help='use cargo and rustc from here')
     (args, unrecognized_args) = parser.parse_known_args()
 
@@ -63,7 +65,7 @@ def main():
         '--cargo-arg=-Zbindeps',
         '--no-registry-suggestions'
     ]
-    success = RunCargo(
+    retcode = RunCargo(
         args.rust_sysroot, None,
         _CARGO_ARGS + ['vet'] + unrecognized_args + _EXTRA_VET_ARGS)
 
@@ -86,7 +88,7 @@ def main():
                        '--frozen' in unrecognized_args
         assert not is_presubmit
 
-    return 0 if success else 1
+    return retcode
 
 
 if __name__ == '__main__':

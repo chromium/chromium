@@ -17,9 +17,9 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 
 namespace web_app::test {
 

@@ -26,13 +26,13 @@ LayerTreeSettings::LayerTreeSettings()
 LayerTreeSettings::LayerTreeSettings(const LayerTreeSettings& other) = default;
 LayerTreeSettings::~LayerTreeSettings() = default;
 
-bool LayerTreeSettings::UseLayerContextForDisplay() const {
-  return !is_layer_tree_for_ui && !is_display_tree &&
+bool LayerTreeSettings::TreesInVizInClientProcess() const {
+  return !is_layer_tree_for_ui && !trees_in_viz_in_viz_process &&
          base::FeatureList::IsEnabled(features::kTreesInViz);
 }
 
 bool LayerTreeSettings::UseLayerContextForAnimations() const {
-  return UseLayerContextForDisplay() &&
+  return TreesInVizInClientProcess() &&
          base::FeatureList::IsEnabled(features::kTreeAnimationsInViz);
 }
 
@@ -45,8 +45,6 @@ SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
   scheduler_settings.wait_for_all_pipeline_stages_before_draw =
       wait_for_all_pipeline_stages_before_draw;
   scheduler_settings.disable_frame_rate_limit = disable_frame_rate_limit;
-  scheduler_settings.use_layer_context_for_display =
-      UseLayerContextForDisplay();
 
   if (base::FeatureList::IsEnabled(::features::kDeferImplInvalidation)) {
     scheduler_settings.delay_impl_invalidation_frames =

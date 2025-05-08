@@ -102,7 +102,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "url/url_constants.h"
 
 namespace blink {
@@ -664,6 +664,7 @@ bool ResourceLoader::WillFollowRedirect(
 
     // CanRequest() checks only enforced CSP, so check report-only here to
     // ensure that violations are sent.
+    // CanRequest() will also perform IntegrityPolicy verifications if needed.
     Context().CheckCSPForRequest(
         request_context, request_destination, request_mode,
         new_url_prior_upgrade, options, reporting_disposition,
@@ -978,6 +979,7 @@ void ResourceLoader::DidReceiveResponseInternal(
     //
     // CanRequest() below only checks enforced policies: check report-only
     // here to ensure violations are sent.
+    // CanRequest() will also perform IntegrityPolicy verifications if needed.
     const KURL& response_url = response.ResponseUrl();
     Context().CheckCSPForRequest(
         request_context, request_destination, request_mode, response_url,
@@ -1510,11 +1512,11 @@ ResourceLoader::CheckResponseNosniff(
     fetcher_->GetConsoleLogger().AddConsoleMessage(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        "Refused to apply style from '" +
-            response.CurrentRequestUrl().ElidedString() +
-            "' because its MIME type ('" + mime_type + "') " +
-            "is not a supported stylesheet MIME type, and strict MIME checking "
-            "is enabled.");
+        WTF::StrCat({"Refused to apply style from '",
+                     response.CurrentRequestUrl().ElidedString(),
+                     "' because its MIME type ('", mime_type,
+                     "') is not a supported stylesheet MIME type, and strict "
+                     "MIME checking is enabled."}));
     return ResourceRequestBlockedReason::kContentType;
   }
   // TODO(mkwst): Move the 'nosniff' bit of 'AllowedByNosniff::MimeTypeAsScript'

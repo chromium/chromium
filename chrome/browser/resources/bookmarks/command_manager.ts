@@ -253,9 +253,10 @@ export class BookmarksCommandManagerElement extends
         return this.menuSource_ === MenuSource.ITEM && itemIds.size === 1 &&
             this.getState().search.term !== '' &&
             !isRootOrChildOfRoot(this.getState(), Array.from(itemIds)[0]!);
+      case Command.OPEN_INCOGNITO:
+      case Command.OPEN_NEW_GROUP:
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
-      case Command.OPEN_INCOGNITO:
         return itemIds.size > 0;
       case Command.ADD_BOOKMARK:
       case Command.ADD_FOLDER:
@@ -277,6 +278,7 @@ export class BookmarksCommandManagerElement extends
         return !this.containsMatchingNode_(itemIds, function(node) {
           return !canEditNode(state, node.id);
         });
+      case Command.OPEN_NEW_GROUP:
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
         return this.expandIds_(itemIds).length > 0;
@@ -394,9 +396,10 @@ export class BookmarksCommandManagerElement extends
       case Command.REDO:
         chrome.bookmarkManagerPrivate.redo();
         break;
+      case Command.OPEN_INCOGNITO:
+      case Command.OPEN_NEW_GROUP:
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
-      case Command.OPEN_INCOGNITO:
         this.openBookmarkIds_(this.expandIds_(itemIds), command);
         break;
       case Command.OPEN:
@@ -516,7 +519,8 @@ export class BookmarksCommandManagerElement extends
     assert(
         command === Command.OPEN || command === Command.OPEN_NEW_TAB ||
         command === Command.OPEN_NEW_WINDOW ||
-        command === Command.OPEN_INCOGNITO);
+        command === Command.OPEN_INCOGNITO ||
+        command === Command.OPEN_NEW_GROUP);
 
     if (ids.length === 0) {
       return;
@@ -527,6 +531,8 @@ export class BookmarksCommandManagerElement extends
       if (command === Command.OPEN_NEW_WINDOW || incognito) {
         BookmarkManagerApiProxyImpl.getInstance().openInNewWindow(
             ids, incognito);
+      } else if (command === Command.OPEN_NEW_GROUP) {
+        BookmarkManagerApiProxyImpl.getInstance().openInNewTabGroup(ids);
       } else {
         if (command === Command.OPEN) {
           BookmarkManagerApiProxyImpl.getInstance().openInNewTab(
@@ -665,6 +671,10 @@ export class BookmarksCommandManagerElement extends
         return this.getPluralizedOpenAllString_(
             'menuOpenAllIncognito', 'menuOpenIncognito',
             'menuOpenAllIncognitoWithCount');
+      case Command.OPEN_NEW_GROUP:
+        return this.getPluralizedOpenAllString_(
+            'menuOpenAllNewTabGroup', 'menuOpenNewTabGroup',
+            'menuOpenAllNewTabGroupWithCount');
     }
 
     assertNotReached();
@@ -700,9 +710,10 @@ export class BookmarksCommandManagerElement extends
           Command.COPY,
           Command.PASTE,
           // <hr>
+          Command.OPEN_INCOGNITO,
+          Command.OPEN_NEW_GROUP,
           Command.OPEN_NEW_TAB,
           Command.OPEN_NEW_WINDOW,
-          Command.OPEN_INCOGNITO,
         ];
       case MenuSource.TOOLBAR:
         return [

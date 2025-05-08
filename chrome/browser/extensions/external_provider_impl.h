@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "extensions/browser/external_provider_interface.h"
@@ -35,11 +35,11 @@ namespace extensions {
 // their entire life on the UI thread.
 class ExternalProviderImpl : public ExternalProviderInterface {
  public:
-  // The constructed provider will provide the extensions loaded from |loader|
-  // to |service|, that will deal with the installation. The location
+  // The constructed provider will provide the extensions loaded from `loader`
+  // to `service`, that will deal with the installation. The location
   // attributes of the provided extensions are also specified here:
-  // |crx_location|: extensions originating from crx files
-  // |download_location|: extensions originating from update URLs
+  // `crx_location`: extensions originating from crx files
+  // `download_location`: extensions originating from update URLs
   // If either of the origins is not supported by this provider, then it should
   // be initialized as mojom::ManifestLocation::kInvalidLocation.
   ExternalProviderImpl(VisitorInterface* service,
@@ -140,7 +140,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   bool ready_ = false;
 
   // The loader that loads the list of external extensions and reports them
-  // via |SetPrefs|.
+  // via `SetPrefs`.
   scoped_refptr<ExternalLoader> loader_;
 
   // The profile that will be used to install external extensions.

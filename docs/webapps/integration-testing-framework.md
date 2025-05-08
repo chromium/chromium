@@ -18,7 +18,7 @@ How-tos / guides:
 * [Why is this test failing?][why-is-this-test-failing]
 
 Related:
-  * [WebAppProvider README.md](/chrome/browser/web_applications/README.md)
+  * [WebAppProvider README.md](/docs/webapps/README.md)
 
 ## When to add integration tests?
 Any web app feature (or any code in general) should have a combination of unit tests and browser tests that focus on testing the specific feature itself. Unit tests are the least likely to become flaky, and allow fine-grained testing of a system. Browser tests are more likely to be flaky but enable testing with most of the system running. Regular unit tests or browser tests should be used for testing system parts in isolation and for testing minute details like handling of error cases.

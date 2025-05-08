@@ -189,12 +189,6 @@ RenderFrameHostDelegate::GetActiveTopLevelDocumentsInBrowsingContextGroup(
   return std::vector<RenderFrameHostImpl*>();
 }
 
-std::vector<RenderFrameHostImpl*>
-RenderFrameHostDelegate::GetActiveTopLevelDocumentsInCoopRelatedGroup(
-    RenderFrameHostImpl* render_frame_host) {
-  return std::vector<RenderFrameHostImpl*>();
-}
-
 PrerenderHostRegistry* RenderFrameHostDelegate::GetPrerenderHostRegistry() {
   return nullptr;
 }

@@ -404,6 +404,7 @@ bool CanComputeBlockSizeWithoutLayout(
     WritingDirectionMode container_writing_direction,
     ItemPosition block_alignment_position,
     bool has_auto_block_inset,
+    bool has_auto_margins,
     bool has_inline_size) {
   // Tables (even with an explicit size) apply a min-content constraint.
   if (node.IsTable()) {
@@ -425,7 +426,8 @@ bool CanComputeBlockSizeWithoutLayout(
       return false;
     }
     // Check for an explicit stretch.
-    if (block_alignment_position == ItemPosition::kStretch) {
+    if (block_alignment_position == ItemPosition::kStretch &&
+        !has_auto_margins) {
       return true;
     }
     // Non-normal alignment will trigger fit-content.
@@ -644,13 +646,17 @@ bool ComputeOofInlineDimensions(
 
   const auto alignment_position = alignment.inline_alignment.GetPosition();
   const auto block_alignment_position = alignment.block_alignment.GetPosition();
+  const bool has_auto_inline_margins =
+      style.MarginInlineStart().IsAuto() || style.MarginInlineEnd().IsAuto();
+  const bool has_auto_block_margins =
+      style.MarginBlockStart().IsAuto() || style.MarginBlockEnd().IsAuto();
 
   bool depends_on_min_max_sizes = false;
   const bool can_compute_block_size_without_layout =
-      CanComputeBlockSizeWithoutLayout(node, container_writing_direction,
-                                       block_alignment_position,
-                                       imcb.has_auto_block_inset,
-                                       /* has_inline_size */ false);
+      CanComputeBlockSizeWithoutLayout(
+          node, container_writing_direction, block_alignment_position,
+          imcb.has_auto_block_inset, has_auto_block_margins,
+          /* has_inline_size */ false);
 
   auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
     DCHECK(!node.IsReplaced());
@@ -695,14 +701,14 @@ bool ComputeOofInlineDimensions(
         !imcb.has_auto_inline_inset &&
         alignment_position == ItemPosition::kNormal;
     const bool is_explicit_stretch =
-        !imcb.has_auto_inline_inset &&
+        !imcb.has_auto_inline_inset && !has_auto_inline_margins &&
         alignment_position == ItemPosition::kStretch;
     const bool is_stretch = is_implicit_stretch || is_explicit_stretch;
 
     // If our block constraint is strong/explicit.
     const bool is_block_explicit =
         !style.LogicalHeight().HasAuto() ||
-        (!imcb.has_auto_block_inset &&
+        (!imcb.has_auto_block_inset && !has_auto_block_margins &&
          block_alignment_position == ItemPosition::kStretch);
 
     // Determine how "auto" should resolve.
@@ -798,6 +804,8 @@ const LayoutResult* ComputeOofBlockDimensions(
   DCHECK_GE(imcb.BlockSize(), LayoutUnit());
 
   const auto alignment_position = alignment.block_alignment.GetPosition();
+  const bool has_auto_margins =
+      style.MarginBlockStart().IsAuto() || style.MarginBlockEnd().IsAuto();
 
   const LayoutResult* result = nullptr;
   LayoutUnit block_size;
@@ -806,7 +814,7 @@ const LayoutResult* ComputeOofBlockDimensions(
     block_size = replaced_size->block_size;
   } else if (CanComputeBlockSizeWithoutLayout(
                  node, container_writing_direction, alignment_position,
-                 imcb.has_auto_block_inset,
+                 imcb.has_auto_block_inset, has_auto_margins,
                  /* has_inline_size */ dimensions->size.inline_size !=
                      kIndefiniteSize)) {
     DCHECK(!node.IsTable());
@@ -835,7 +843,7 @@ const LayoutResult* ComputeOofBlockDimensions(
 
     // Tables need to know about the explicit stretch constraint to produce
     // the correct result.
-    if (!imcb.has_auto_block_inset &&
+    if (!imcb.has_auto_block_inset && !has_auto_margins &&
         alignment_position == ItemPosition::kStretch) {
       builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
     }

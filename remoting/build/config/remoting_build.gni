@@ -8,9 +8,12 @@ import("//chrome/version.gni")
 import("//remoting/remoting_enable.gni")
 import("//remoting/remoting_locales.gni")
 import("//remoting/remoting_options.gni")
-import("//remoting/remoting_version.gni")
 import("//remoting/tools/build/remoting_localize.gni")
 import("//testing/test.gni")
+
+if (!is_android) {
+  import("//remoting/remoting_version.gni")
+}
 
 if (is_win) {
   import("//build/config/win/manifest.gni")
@@ -33,8 +36,8 @@ declare_args() {
 
   # Set to true to enable using Crashpad instead of Breakpad.
   # Currently, this is only implemented for linux.
-  enable_chromoting_crashpad = true
-
-  # Enable this to build the CLI client for testing.
-  enable_remoting_cli_client = false
+  enable_chromoting_crashpad = false
+  if (is_linux) {
+    enable_chromoting_crashpad = true
+  }
 }

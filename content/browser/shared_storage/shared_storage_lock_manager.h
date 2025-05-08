@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -54,7 +55,7 @@ class CONTENT_EXPORT SharedStorageLockManager
           method_with_options,
       const url::Origin& shared_storage_origin,
       AccessScope scope,
-      FrameTreeNodeId main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback);
 
@@ -68,7 +69,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       const std::optional<std::string>& with_lock,
       const url::Origin& shared_storage_origin,
       AccessScope scope,
-      FrameTreeNodeId main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback);
 
@@ -151,7 +152,7 @@ class CONTENT_EXPORT SharedStorageLockManager
           method_with_options,
       const url::Origin& shared_storage_origin,
       AccessScope scope,
-      FrameTreeNodeId main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback,
       std::optional<int> legacy_batch_update_id);
@@ -160,7 +161,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       network::mojom::SharedStorageModifierMethodPtr method,
       url::Origin shared_storage_origin,
       AccessScope scope,
-      FrameTreeNodeId main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback,
       std::optional<std::string> with_lock,
@@ -173,7 +174,7 @@ class CONTENT_EXPORT SharedStorageLockManager
           methods_with_options,
       url::Origin shared_storage_origin,
       AccessScope scope,
-      FrameTreeNodeId main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback,
       std::optional<std::string> with_lock,
@@ -192,7 +193,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       const network::mojom::SharedStorageModifierMethodPtr& method,
       const url::Origin& shared_storage_origin,
       AccessScope scope,
-      FrameTreeNodeId main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       std::optional<int> worklet_id,
       std::optional<std::string> with_lock,
       std::optional<int> batch_update_id);

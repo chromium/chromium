@@ -38,7 +38,7 @@
   if (IsIOSSoftLockEnabled()) {
     [self notifyConsumer:_reauthAgent.incognitoLockState];
   } else {
-    [_consumer
+    [self.consumer
         setItemsRequireAuthentication:_reauthAgent.authenticationRequired];
   }
 }
@@ -81,8 +81,8 @@
 
 // Returns the text that should be displayed by the lock screen primary button.
 // Returns nil if no lock screen should be displayed.
-- (NSString*)primaryButtonTextForState:(IncognitoLockState)incogitoLockState {
-  switch (incogitoLockState) {
+- (NSString*)primaryButtonTextForState:(IncognitoLockState)incognitoLockState {
+  switch (incognitoLockState) {
     case IncognitoLockState::kSoftLock:
       return l10n_util::GetNSString(
           IDS_IOS_INCOGNITO_REAUTH_CONTINUE_IN_INCOGNITO);

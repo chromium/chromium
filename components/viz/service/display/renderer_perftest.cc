@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <array>
 
@@ -377,7 +373,8 @@ class RendererPerfTest : public VizPerfTest {
             ResourceId recorded_id = tile_quad->resource_id;
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, tile_quad->texture_size,
-                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f}, tile_quad->is_premultiplied);
+                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
+                /*premultiplied_alpha=*/true);
             tile_quad->resource_id = actual_id;
           } break;
           case DrawQuad::Material::kTextureContent: {

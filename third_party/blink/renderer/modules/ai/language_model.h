@@ -94,6 +94,19 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
       mojom::blink::ModelExecutionContextInfoPtr context_info);
   void OnQuotaOverflow();
 
+  struct ValidateAndProcessPromptInputResult {
+    on_device_model::mojom::blink::ResponseConstraintPtr processed_constraint;
+    WTF::Vector<mojom::blink::AILanguageModelPromptPtr> processed_prompts;
+  };
+
+  // Validates and processed prompt input and returns the processed results.
+  // Returns std::nullopt on failure.
+  std::optional<ValidateAndProcessPromptInputResult>
+  ValidateAndProcessPromptInput(ScriptState* script_state,
+                                const V8LanguageModelPromptInput* input,
+                                const LanguageModelPromptOptions* options,
+                                ExceptionState& exception_state);
+
   uint64_t input_usage_;
   uint64_t input_quota_ = 0;
   uint32_t top_k_ = 0;

@@ -652,6 +652,7 @@ mojom("url_loader_base") {
     ":mojom_attribution",
     ":mojom_content_security_policy",
     ":mojom_integrity_algorithm",
+    ":mojom_integrity_policy",
     ":mojom_ip_address",
     ":mojom_network_isolation_partition",
     ":mojom_network_param",
@@ -919,7 +920,7 @@ mojom("url_loader_base") {
           },
           {
             mojom = "network.mojom.EcnMarking"
-            cpp = "::rtc::EcnMarking"
+            cpp = "::webrtc::EcnMarking"
           },
         ]
         traits_headers = [ "//services/network/public/cpp/p2p_param_traits.h" ]
@@ -1227,10 +1228,6 @@ mojom("mojom_first_party_sets") {
       shared_typemaps + [
         {
           types = [
-            {
-              mojom = "network.mojom.SiteIndex"
-              cpp = "::net::FirstPartySetEntry::SiteIndex"
-            },
             {
               mojom = "network.mojom.SiteType"
               cpp = "::net::SiteType"
@@ -1610,6 +1607,34 @@ mojom("mojom_host_resolver") {
   ]
 
   cpp_typemaps += shared_cpp_typemaps
+  blink_cpp_typemaps = shared_cpp_typemaps
+}
+
+mojom("mojom_integrity_policy") {
+  generate_java = true
+  sources = [ "integrity_policy.mojom" ]
+
+  public_deps = []
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  shared_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.IntegrityPolicy"
+          cpp = "::network::IntegrityPolicy"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/integrity_policy_mojom_traits.h" ]
+    },
+  ]
+
+  cpp_typemaps = shared_cpp_typemaps
   blink_cpp_typemaps = shared_cpp_typemaps
 }
 

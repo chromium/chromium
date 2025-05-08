@@ -69,6 +69,9 @@
 - (void)triggerToolbarSlideInAnimationFromBelow:(BOOL)fromBelow;
 // Shows the animation when transitioning to a prerendered page.
 - (void)showPrerenderingAnimation;
+// Highlights the tab grid button if `highlight` is YES, resets to original
+// color if NO.
+- (void)IPHHighlightTabGridButton:(BOOL)highlight;
 
 @end
 

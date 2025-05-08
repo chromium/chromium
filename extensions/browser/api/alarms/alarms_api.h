@@ -21,8 +21,8 @@ using AlarmList = std::vector<Alarm>;
 class AlarmsCreateFunction : public ExtensionFunction {
  public:
   AlarmsCreateFunction();
-  // Use |clock| instead of the default clock. Does not take ownership
-  // of |clock|. Used for testing.
+  // Use `clock` instead of the default clock. Does not take ownership
+  // of `clock`. Used for testing.
   explicit AlarmsCreateFunction(base::Clock* clock);
 
  protected:

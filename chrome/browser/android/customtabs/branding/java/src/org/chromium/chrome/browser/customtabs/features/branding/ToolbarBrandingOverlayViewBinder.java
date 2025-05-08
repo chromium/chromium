@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -19,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** View binder for the toolbar branding overlay. */
+@NullMarked
 public class ToolbarBrandingOverlayViewBinder {
     private static final int MAX_DRAWABLE_LEVEL = 10_000;
 

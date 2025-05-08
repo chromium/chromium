@@ -5,12 +5,12 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -30,19 +30,18 @@ public class CloseAllTabsHelper {
                         TabClosureParams.closeAllTabs().hideTabGroups(true).build(),
                         /* allowDialog= */ false);
 
-        Runnable undoRunnable = () -> {};
-        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
-            final Profile profile =
-                    tabModelSelector.getCurrentModel().getProfile().getOriginalProfile();
-            List<Integer> previouslyArchivedTabIds =
-                    unarchiveTabsForTabClosure(profile, regularTabCreator);
-            undoRunnable =
-                    () ->
-                            archiveTabsAfterTabClosureUndo(
-                                    profile,
-                                    tabModelSelector.getModel(/* incognito= */ false),
-                                    previouslyArchivedTabIds);
-        }
+        final Profile profile =
+                tabModelSelector.getCurrentModel().getProfile().getOriginalProfile();
+        List<Integer> previouslyArchivedTabIds =
+                unarchiveTabsForTabClosure(profile, regularTabCreator);
+        Runnable undoRunnable =
+                () ->
+                        archiveTabsAfterTabClosureUndo(
+                                profile,
+                                tabModelSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ false),
+                                previouslyArchivedTabIds);
         tabModelSelector
                 .getModel(/* incognito= */ false)
                 .getTabRemover()
@@ -101,7 +100,10 @@ public class CloseAllTabsHelper {
     }
 
     private static void archiveTabsAfterTabClosureUndo(
-            Profile profile, TabModel regularTabModel, List<Integer> previouslyArchivedTabIds) {
+            Profile profile,
+            TabGroupModelFilter regularTabGroupModelFilter,
+            List<Integer> previouslyArchivedTabIds) {
+        TabModel regularTabModel = regularTabGroupModelFilter.getTabModel();
         ArchivedTabModelOrchestrator orchestrator =
                 ArchivedTabModelOrchestrator.getForProfile(profile);
         TabArchiver archiver = orchestrator.getTabArchiver();
@@ -113,6 +115,6 @@ public class CloseAllTabsHelper {
             }
         }
 
-        archiver.archiveAndRemoveTabs(regularTabModel, tabsToArchive);
+        archiver.archiveAndRemoveTabs(regularTabGroupModelFilter, tabsToArchive);
     }
 }

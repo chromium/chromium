@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/theme/BottomUiThemeColorProvider.java",
+    "java/src/org/chromium/chrome/browser/theme/SurfaceColorUpdateUtils.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeModuleUtils.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeOverlayProvider.java",
@@ -40,7 +41,10 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/values/colors.xml" ]
+  sources = [
+    "java/res/values/colors.xml",
+    "java/res/values/values.xml",
+  ]
   deps = [
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
@@ -50,6 +54,7 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/theme/BottomUiThemeColorProviderTest.java",
+    "java/src/org/chromium/chrome/browser/theme/SurfaceColorUpdateUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeModuleUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeUtilsUnitTest.java",
   ]
@@ -62,6 +67,7 @@ robolectric_library("junit") {
     "//base:service_loader_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/styles/android:java",

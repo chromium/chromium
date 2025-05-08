@@ -13,6 +13,7 @@
 #include <iphlpapi.h>
 #include <wlanapi.h>
 
+#include "base/containers/span.h"
 #include "base/win/scoped_handle.h"
 #include "net/base/net_export.h"
 #include "net/base/network_interfaces.h"
@@ -85,6 +86,11 @@ NET_EXPORT bool GetNetworkListImpl(
     int policy,
     const IP_ADAPTER_ADDRESSES* ip_adapter_addresses);
 
+// Creates a span referencing the WLAN_INTERFACE_INFOs in a
+// WLAN_INTERFACE_INFO_LIST.
+NET_EXPORT base::span<WLAN_INTERFACE_INFO> WlanInterfaceInfoListToSpan(
+    WLAN_INTERFACE_INFO_LIST* interface_list);
+
 }  // namespace net::internal
 
-#endif   // NET_BASE_NETWORK_INTERFACES_WIN_H_
+#endif  // NET_BASE_NETWORK_INTERFACES_WIN_H_

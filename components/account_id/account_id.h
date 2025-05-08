@@ -47,7 +47,6 @@ class COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID) AccountId {
   // If both are not UNKNOWN and not equal then it returns false.
   // If AccountType == GOOGLE then it checks if either ids or emails are equal.
   bool operator==(const AccountId& other) const;
-  bool operator!=(const AccountId& other) const;
   bool operator<(const AccountId& right) const;
 
   bool empty() const;

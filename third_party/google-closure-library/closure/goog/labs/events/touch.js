@@ -58,6 +58,7 @@ goog.labs.events.touch.getTouchData = function(e) {
 
     // If the event is end or cancel, take the first changed touch,
     // otherwise the first target touch.
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     source = (e.type == goog.events.EventType.TOUCHEND ||
               e.type == goog.events.EventType.TOUCHCANCEL) ?
         e.changedTouches[0] :

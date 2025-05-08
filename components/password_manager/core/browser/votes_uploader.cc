@@ -134,26 +134,30 @@ void SetFieldLabelsOnSave(const FieldType password_type,
 void LabelFields(const FieldTypeMap& field_types,
                  const bool field_name_collision,
                  const VoteTypeMap& vote_types,
-                 FormStructure* form_structure,
-                 FieldTypeSet* available_field_types) {
+                 FormStructure& form_structure,
+                 autofill::EncodeUploadRequestOptions& options) {
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.FieldNameCollisionInVotes",
                         field_name_collision);
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    AutofillField* field = form_structure->field(i);
+  for (size_t i = 0; i < form_structure.field_count(); ++i) {
+    AutofillField* field = form_structure.field(i);
 
     FieldType type = autofill::UNKNOWN_TYPE;
     if (auto iter = field_types.find(field->renderer_id());
         iter != field_types.end()) {
       type = iter->second;
-      available_field_types->insert(type);
+      options.available_field_types.insert(type);
     }
 
     if (auto vote_type_iter = vote_types.find(field->renderer_id());
         vote_type_iter != vote_types.end()) {
-      field->set_vote_type(vote_type_iter->second);
+      AutofillUploadContents::Field::VoteType vote_type =
+          vote_type_iter->second;
+      options.fields[field->global_id()].vote_type = vote_type;
+      CHECK(type != autofill::USERNAME ||
+            vote_type != AutofillUploadContents::Field::NO_INFORMATION);
+    } else {
+      CHECK(type != autofill::USERNAME);
     }
-    CHECK(type != autofill::USERNAME ||
-          field->vote_type() != AutofillUploadContents::Field::NO_INFORMATION);
     FieldTypeSet types;
     types.insert(type);
     field->set_possible_types(types);
@@ -535,7 +539,7 @@ bool VotesUploader::UploadPasswordVote(
   LabelFields(
       field_types, field_name_collision,
       {{form_to_upload.username_element_renderer_id, username_vote_type}},
-      &form_structure, &options.available_field_types);
+      form_structure, options);
 
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
@@ -583,15 +587,15 @@ void VotesUploader::UploadFirstLoginVotes(
         AutofillUploadContents::Field::FIRST_USE;
   }
 
-  LabelFields(field_types, field_name_collision, vote_types, &form_structure,
-              &options.available_field_types);
+  LabelFields(field_types, field_name_collision, vote_types, form_structure,
+              options);
   SetKnownValueFlag(pending_credentials, best_matches, &form_structure);
 
   // Annotate the form with the source language of the page.
   form_structure.set_current_page_language(client_->GetPageLanguage());
 
   SetInitialHashValueOfUsernameField(
-      form_to_upload.username_element_renderer_id, &form_structure);
+      form_to_upload.username_element_renderer_id, form_structure, options);
 
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
@@ -606,19 +610,21 @@ void VotesUploader::UploadFirstLoginVotes(
 
 void VotesUploader::SetInitialHashValueOfUsernameField(
     FieldRendererId username_element_renderer_id,
-    FormStructure* form_structure) {
+    const FormStructure& form_structure,
+    autofill::EncodeUploadRequestOptions& options) {
   auto it = initial_values_.find(username_element_renderer_id);
 
   if (it == initial_values_.end() || it->second.empty()) {
     return;
   }
 
-  for (const auto& field : *form_structure) {
+  for (const auto& field : form_structure.fields()) {
     if (field && field->renderer_id() == username_element_renderer_id) {
       const std::u16string form_signature =
-          base::UTF8ToUTF16(form_structure->FormSignatureAsStr());
+          base::UTF8ToUTF16(form_structure.FormSignatureAsStr());
       const std::u16string seeded_input = it->second.append(form_signature);
-      field->set_initial_value_hash(GetLowEntropyHashValue(seeded_input));
+      options.fields[field->global_id()].initial_value_hash =
+          GetLowEntropyHashValue(seeded_input);
       break;
     }
   }
@@ -785,11 +791,10 @@ void VotesUploader::SetKnownValueFlag(
   // If we are updating a password, the known value is the old password, not
   // the new one.
   for (auto& field : *form) {
-    if (field->value(autofill::ValueSemantics::kCurrent).empty()) {
+    if (field->value().empty()) {
       continue;
     }
-    if (known_username == field->value(autofill::ValueSemantics::kCurrent) ||
-        known_password == field->value(autofill::ValueSemantics::kCurrent)) {
+    if (known_username == field->value() || known_password == field->value()) {
       field->set_properties_mask(field->properties_mask() |
                                  autofill::FieldPropertiesFlags::kKnownValue);
     }

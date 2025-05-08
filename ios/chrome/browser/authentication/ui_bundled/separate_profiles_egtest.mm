@@ -7,8 +7,8 @@
 #import "base/test/ios/wait_util.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/separate_profiles_util.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -66,6 +66,15 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 @end
 
 @implementation SeparateProfilesTestCase
+
++ (void)setUpForTestCase {
+  [SigninEarlGrey setUseFakeResponsesForProfileSeparationPolicyRequests];
+}
+
++ (void)tearDown {
+  [SigninEarlGrey clearUseFakeResponsesForProfileSeparationPolicyRequests];
+  [super tearDown];
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -142,22 +151,22 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                  ManagedProfileCreationBrowsingDataButtonMatcher()]
       performAction:grey_tap()];
 
-  // Wait for browsing data management screen
+  // Wait for the browsing data management screen.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       BrowsingDataManagementScreenMatcher()];
   [[EarlGrey selectElementWithMatcher:BrowsingDataManagementScreenMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-
   // Browsing data kept separate by default.
   [[EarlGrey selectElementWithMatcher:SeparateBrowsingDataCellMatcher()]
       assertWithMatcher:grey_selected()];
-
+  // Close the browsing data management screen by going back.
   [[EarlGrey
       selectElementWithMatcher:
           chrome_test_util::ManagedProfileCreationNavigationBarBackButton()]
       performAction:grey_tap()];
 
-  // Wait for the browsing data management screen to disappear.
+  // Wait for the browsing data management screen to disappear, and the
+  // enteprise onboarding screen to appear again.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       ManagedProfileCreationScreenMatcher()];
 
@@ -169,6 +178,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
+  // Note: The profile switch happens here.
+
   // History sync screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -177,17 +188,18 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 
-  // We should still be in a new managed profile.
+  // We should be in a new managed profile.
   NSString* newProfileName = [ChromeEarlGrey currentProfileName];
   GREYAssert(![originalProfileName isEqualToString:newProfileName],
-             @"Profile name should be unchanged");
+             @"Profile name should be changed");
 
+  // Sign out - that should cause a switch back to the personal profile.
   [SigninEarlGreyUI signOut];
   NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
   GREYAssert([personalProfileName isEqualToString:originalProfileName],
              @"Profile name should be the personal one");
 
-  // Signin again
+  // Sign in again.
   TapIdentityDisc();
   [[EarlGrey selectElementWithMatcher:ContinueButtonWithIdentityMatcher(
                                           managedIdentity)]
@@ -197,7 +209,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   // TODO(crbug.com/399033938): Find a better way to wait for this.
   GREYWaitForAppToIdle(@"App failed to idle");
 
-  // Use should be signed in without having to see the managed profile
+  // The user should be signed in without having to see the managed profile
   // onboarding a second time.
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }
@@ -236,8 +248,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   // Wait for enterprise onboarding screen.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       ManagedProfileCreationScreenMatcher()];
-
-  // Verifies that the subtitle is the right one.
+  // Verify that the subtitle is the right one.
   [[EarlGrey selectElementWithMatcher:ManagedProfileCreationSubtitleMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -251,8 +262,6 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       BrowsingDataManagementScreenMatcher()];
-  [[EarlGrey selectElementWithMatcher:BrowsingDataManagementScreenMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:SeparateBrowsingDataCellMatcher()]
       assertWithMatcher:grey_selected()];
@@ -268,7 +277,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
           chrome_test_util::ManagedProfileCreationNavigationBarBackButton()]
       performAction:grey_tap()];
 
-  // Wait for the browsing data management screen to disappear.
+  // Wait for the browsing data management screen to disappear, and the
+  // enteprise onboarding screen to appear again.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       ManagedProfileCreationScreenMatcher()];
 
@@ -279,6 +289,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
+
+  // Note: The profile switch happens here.
 
   // History sync screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
@@ -294,12 +306,13 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   GREYAssert([originalProfileName isEqualToString:newProfileName],
              @"Profile name should be unchanged");
 
+  // Sign out - this should cause a switch back to the personal profile.
   [SigninEarlGreyUI signOut];
   NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
   GREYAssert(![personalProfileName isEqualToString:newProfileName],
              @"Profile name should be the personal one");
 
-  // Signin again
+  // Sign in again
   TapIdentityDisc();
   [[EarlGrey selectElementWithMatcher:ContinueButtonWithIdentityMatcher(
                                           managedIdentity)]
@@ -309,14 +322,14 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   // TODO(crbug.com/399033938): Find a better way to wait for this.
   GREYWaitForAppToIdle(@"App failed to idle");
 
-  // Use should be signed in without having to see the managed profile
+  // The user should be signed in without having to see the managed profile
   // onboarding a second time.
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }
 
-// Tests that signing in from a signed out state with a managed account
-// shows the enterprise onboarding only the first time. And The user cannot
-// merge existing browsing data because it is disabled by policy.
+// Tests that signing in from a signed out state with a managed account shows
+// the enterprise onboarding only the first time. And the user cannot merge
+// existing browsing data because it is disabled by policy.
 // TODO(crbug.com/411035267): Fix this flaky test on simulator.
 #if TARGET_OS_SIMULATOR
 #define MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled \
@@ -339,7 +352,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGrey addFakeIdentity:managedIdentity];
 
-  // Disabled browsing data migration
+  // Browsing data migration is disabled by policy.
   [ChromeEarlGrey
       setIntegerValue:policy::ALWAYS_SEPARATE
           forUserPref:prefs::kProfileSeparationDataMigrationSettings];
@@ -348,8 +361,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       [ChromeEarlGrey
           userIntegerPref:prefs::kProfileSeparationDataMigrationSettings],
       @"Profile separation data migration settings not properly set.");
-
-  // Enabled on account level, but the strictest value should apply.
+  // It's enabled on account level, but the strictest value should apply.
   [SigninEarlGrey setPolicyResponseForNextProfileSeparationPolicyRequest:
                       policy::USER_OPT_IN];
 
@@ -363,7 +375,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       ManagedProfileCreationScreenMatcher()];
 
-  // The data migration disabled message should be shown
+  // The data migration disabled message should be shown.
   [[EarlGrey selectElementWithMatcher:
                  ManagedProfileCreationDataMigrationDisabledSubtitleMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -375,6 +387,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
+
+  // Note: The profile switch happens here.
 
   // History sync screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
@@ -389,25 +403,26 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   GREYAssert(![originalProfileName isEqualToString:newProfileName],
              @"Profile name should be unchanged");
 
+  // Sign out - this should cause a switch back to the personal profile.
   [SigninEarlGreyUI signOut];
   NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
   GREYAssert([personalProfileName isEqualToString:originalProfileName],
              @"Profile name should be the personal one");
 
-  // Signin again
+  // Sign in again.
   TapIdentityDisc();
   [[EarlGrey selectElementWithMatcher:ContinueButtonWithIdentityMatcher(
                                           managedIdentity)]
       performAction:grey_tap()];
 
-  // Use should be signed in without having to see the managed profile
+  // The user should be signed in without having to see the managed profile
   // onboarding a second time.
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }
 
-// Tests that signing in from a signed out state with a managed account
-// shows the enterprise onboarding. And The user cannot merge existing
-// browsing data because it is disabled by policy.
+// Tests that signing in from a signed out state with a managed account shows
+// the enterprise onboarding. And the user cannot merge existing browsing data
+// because it is disabled by policy.
 - (void)
     testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabledOnAccount {
   // Separate profiles are only available in iOS 17+.
@@ -419,7 +434,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGrey addFakeIdentity:managedIdentity];
 
-  // Disabled browsing data migration
+  // Browsing data migration is disabled by policy.
   [SigninEarlGrey setPolicyResponseForNextProfileSeparationPolicyRequest:
                       policy::ALWAYS_SEPARATE];
 
@@ -435,11 +450,11 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                                           managedIdentity)]
       performAction:grey_tap()];
 
-  // Wait for enterprise onboarding screen.
+  // Wait for the enterprise onboarding screen.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       ManagedProfileCreationScreenMatcher()];
 
-  // The data migration disabled message should be shown
+  // The data migration disabled message should be shown.
   [[EarlGrey selectElementWithMatcher:
                  ManagedProfileCreationDataMigrationDisabledSubtitleMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -451,6 +466,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
+
+  // Note: The profile switch happens here.
 
   // History sync screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
@@ -479,7 +496,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGrey addFakeIdentity:managedIdentity];
 
-  // Disabled browsing data migration
+  // Browsing data migration is suggested by policy.
   [ChromeEarlGrey
       setIntegerValue:policy::USER_OPT_OUT
           forUserPref:prefs::kProfileSeparationDataMigrationSettings];
@@ -495,7 +512,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                                           managedIdentity)]
       performAction:grey_tap()];
 
-  // Wait for enterprise onboarding screen.
+  // Wait for the enterprise onboarding screen.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       ManagedProfileCreationScreenMatcher()];
 
@@ -506,11 +523,10 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey selectElementWithMatcher:
                  ManagedProfileCreationBrowsingDataButtonMatcher()]
       performAction:grey_tap()];
-
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       BrowsingDataManagementScreenMatcher()];
 
-  // Browsing data merged by default.
+  // Browsing data should be merged by default due to the policy.
   [[EarlGrey selectElementWithMatcher:MergeBrowsingDataCellMatcher()]
       assertWithMatcher:grey_selected()];
 
@@ -531,6 +547,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
+  // Note: The profile switch happens here.
+
   // History sync screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -539,30 +557,32 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 
-  // We should be in the same managed profile.
+  // We should be in the same profile (personal profile got converted to
+  // managed).
   NSString* newProfileName = [ChromeEarlGrey currentProfileName];
   GREYAssert([originalProfileName isEqualToString:newProfileName],
              @"Profile name should be unchanged");
 
+  // Sign out - this should cause a switch to a new personal profile.
   [SigninEarlGreyUI signOut];
   NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
   GREYAssert(![personalProfileName isEqualToString:originalProfileName],
-             @"Profile name should be the personal one");
+             @"Personal profile should be different");
 
-  // Signin again
+  // Sign in again.
   TapIdentityDisc();
   [[EarlGrey selectElementWithMatcher:ContinueButtonWithIdentityMatcher(
                                           managedIdentity)]
       performAction:grey_tap()];
 
-  // Use should be signed in without having to see the managed profile
+  // The user should be signed in without having to see the managed profile
   // onboarding a second time.
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }
 
-// Tests that signing in from a signed out state with a managed account
-// shows the enterprise onboarding and when merging browsing data is suggested
-// by policy on the account, it does not actually suggest merging the data since
+// Tests that signing in from a signed out state with a managed account shows
+// the enterprise onboarding and when merging browsing data is suggested by
+// policy on the account, it does not actually suggest merging the data since
 // that value is not supported at account level.
 - (void)
     testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggestedOnAccount {
@@ -599,7 +619,6 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey selectElementWithMatcher:
                  ManagedProfileCreationBrowsingDataButtonMatcher()]
       performAction:grey_tap()];
-
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       BrowsingDataManagementScreenMatcher()];
 
@@ -624,6 +643,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
+
+  // Note: The profile switch happens here.
 
   // History sync screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
@@ -663,19 +684,19 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
 
-  // Wait for enterprise onboarding screen.
+  // Wait for the enterprise onboarding screen.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       ManagedProfileCreationScreenMatcher()];
-
-  // No merge browsing data button shown
+  // No merge browsing data button shown.
   [[EarlGrey selectElementWithMatcher:
                  ManagedProfileCreationBrowsingDataButtonMatcher()]
       assertWithMatcher:grey_notVisible()];
-
   // Confirm the enterprise onboarding screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
+
+  // Note: The profile switch happens here.
 
   // History sync screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
@@ -683,7 +704,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                                           PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
-  // Ensure the enterprise onboarding screen did disapepar.
+  // Ensure the New Tab page appeared in the new profile.
   [[EarlGrey selectElementWithMatcher:IdentityDiscMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -742,7 +763,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
 
-  // Wait for enterprise onboarding screen.
+  // Wait for the enterprise onboarding screen.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       ManagedProfileCreationScreenMatcher()];
 
@@ -761,7 +782,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should stay the same");
 }
 
-// Tests switching to a managed account and refuse the enterprise onboard
+// Tests switching to a managed account but refusing the enterprise onboarding
 // screen.
 // TODO(crbug.com/399015648): Test is flaky on device.
 #if TARGET_OS_SIMULATOR
@@ -807,27 +828,16 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                                           PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
-  // Wait for the new profile to finish loading.
-  // TODO(crbug.com/399033938): Find a better way to wait for this.
   GREYWaitForAppToIdle(@"App failed to idle");
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
 
-  // Verify that the profile was actually switched back.
+  // Verify that the profile was not switched.
   GREYAssert(
       [[ChromeEarlGrey currentProfileName] isEqualToString:personalProfileName],
-      @"Profile should have been switched");
+      @"Profile should not have been switched");
 }
-
-// TODO(crbug.com/411035267): Fix this flaky test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testProfileNotDeletedOnRemovePersonalAccount \
-  FLAKY_testProfileNotDeletedOnRemovePersonalAccount
-#else
-#define MAYBE_testProfileNotDeletedOnRemovePersonalAccount \
-  testProfileNotDeletedOnRemovePersonalAccount
-#endif
-- (void)MAYBE_testProfileNotDeletedOnRemovePersonalAccount {
+- (void)testProfileNotDeletedOnRemovePersonalAccount {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -919,6 +929,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
+  // Note: The profile switch happens here.
+
   // History sync screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -993,6 +1005,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
+  // Note: The profile switch happens here.
+
   // History sync screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -1013,15 +1027,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should have been switched back to personal");
 }
 
-// TODO(crbug.com/411035267): Fix this flaky test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testProfileDeletedOnManagedAccountGone \
-  FLAKY_testProfileDeletedOnManagedAccountGone
-#else
-#define MAYBE_testProfileDeletedOnManagedAccountGone \
-  testProfileDeletedOnManagedAccountGone
-#endif
-- (void)MAYBE_testProfileDeletedOnManagedAccountGone {
+- (void)testProfileDeletedOnManagedAccountGone {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -1185,12 +1191,11 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
   // Managed profile creation/confirmation screen: Accept.
   [ChromeEarlGrey waitForMatcher:ManagedProfileCreationScreenMatcher()];
-
-  // No merge browsing data button shown
+  // No merge browsing data button shown.
   [[EarlGrey selectElementWithMatcher:
                  ManagedProfileCreationBrowsingDataButtonMatcher()]
       assertWithMatcher:grey_notVisible()];
-
+  // Confirm the screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];

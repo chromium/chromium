@@ -25,6 +25,7 @@ pub struct LexerSpec {
     pub has_stop: bool,
     pub has_max_tokens: bool,
     pub has_temperature: bool,
+    pub grammar_warnings: Vec<(String, usize)>,
 }
 
 #[derive(Clone, Copy, Hash, PartialEq, Eq, Debug)]
@@ -142,7 +143,26 @@ impl LexerSpec {
             has_stop: false,
             has_max_tokens: false,
             has_temperature: false,
+            grammar_warnings: Vec::new(),
         })
+    }
+
+    pub fn render_warnings(&self) -> Vec<String> {
+        let mut total_len = 0;
+        let mut r = vec![];
+        for (msg, count) in &self.grammar_warnings {
+            let mut s = msg.clone();
+            if count > &1 {
+                s.push_str(&format!(" ({} times)", count));
+            }
+            total_len += s.len();
+            r.push(s);
+            if total_len > 16 * 1024 {
+                r.push("...".to_string());
+                break;
+            }
+        }
+        r
     }
 
     pub fn can_rollback(&self) -> bool {

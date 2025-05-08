@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/observer_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"

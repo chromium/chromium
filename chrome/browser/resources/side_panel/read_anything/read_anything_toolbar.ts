@@ -139,7 +139,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // This is set from the parent element via one way data binding.
   accessor isReadAloudPlayable: boolean = false;
   accessor localeToDisplayName: {[lang: string]: string} = {};
-  accessor previewVoicePlaying: SpeechSynthesisVoice|undefined;
+  accessor previewVoicePlaying: SpeechSynthesisVoice|null = null;
   accessor rateOptions: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
   accessor settingsPrefs: SettingsPrefs = {
     letterSpacing: 0,

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -12,8 +14,6 @@ import android.util.LruCache;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -22,6 +22,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -34,9 +37,9 @@ import org.chromium.chrome.browser.pdf.PdfUtils.PdfPageType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -52,12 +55,13 @@ import org.chromium.url.GURL;
 import java.util.Objects;
 
 /** Provides a way of accessing toolbar data and state. */
+@NullMarked
 public class LocationBarModel implements ToolbarDataProvider, LocationBarDataProvider {
     private static final int LRU_CACHE_SIZE = 10;
 
     static class SpannableDisplayTextCacheKey {
-        @NonNull private final String mUrl;
-        @NonNull private final String mDisplayText;
+        private final String mUrl;
+        private final String mDisplayText;
         private final int mSecurityLevel;
         private final int mNonEmphasizedColor;
         private final int mEmphasizedColor;
@@ -65,8 +69,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         private final int mSecureColor;
 
         private SpannableDisplayTextCacheKey(
-                @NonNull String url,
-                @NonNull String displayText,
+                String url,
+                String displayText,
                 int securityLevel,
                 int nonEmphasizedColor,
                 int emphasizedColor,
@@ -133,20 +137,19 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     private final Context mContext;
     private final NewTabPageDelegate mNtpDelegate;
-    private final @NonNull UrlFormatter mUrlFormatter;
-    private final @NonNull OfflineStatus mOfflineStatus;
+    private final UrlFormatter mUrlFormatter;
+    private final OfflineStatus mOfflineStatus;
     // Always null if optimizations are disabled. Otherwise, non-null and unchanging following
     // native init. Always tied to the original profile which is safe because no underlying
     // services have an incognito-specific instance.
-    @Nullable private AutocompleteSchemeClassifier mChromeAutocompleteSchemeClassifier;
-    @Nullable private Profile mProfile;
+    private @Nullable AutocompleteSchemeClassifier mChromeAutocompleteSchemeClassifier;
+    private @Nullable Profile mProfile;
     private boolean mInitializedProfileDependentFeatures;
 
-    @Nullable
-    private LruCache<SpannableDisplayTextCacheKey, SpannableStringBuilder>
+    private @Nullable LruCache<SpannableDisplayTextCacheKey, SpannableStringBuilder>
             mSpannableDisplayTextCache;
 
-    private Tab mTab;
+    private @Nullable Tab mTab;
     private int mPrimaryColor;
 
     private boolean mIsIncognitoBranded;
@@ -182,13 +185,14 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     public LocationBarModel(
             Context context,
             NewTabPageDelegate newTabPageDelegate,
-            @NonNull UrlFormatter urlFormatter,
-            @NonNull OfflineStatus offlineStatus) {
+            UrlFormatter urlFormatter,
+            OfflineStatus offlineStatus) {
         mContext = context;
         mNtpDelegate = newTabPageDelegate;
         mUrlFormatter = urlFormatter;
         mOfflineStatus = offlineStatus;
-        mPrimaryColor = ChromeColors.getDefaultThemeColor(context, false);
+        mPrimaryColor =
+                SurfaceColorUpdateUtils.getDefaultThemeColor(context, /* isIncognito= */ false);
         mUrlForDisplay = "";
         mFormattedFullUrl = "";
     }
@@ -204,12 +208,14 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         assert mProfile != null;
         mInitializedProfileDependentFeatures = true;
 
+        assumeNonNull(getProfile());
         mChromeAutocompleteSchemeClassifier =
                 new ChromeAutocompleteSchemeClassifier(getProfile().getOriginalProfile());
         recalculateFormattedUrls();
     }
 
     /** Destroys the native LocationBarModel. */
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mChromeAutocompleteSchemeClassifier != null) {
             mChromeAutocompleteSchemeClassifier.destroy();
@@ -224,7 +230,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      * @return The currently active WebContents being used by the Toolbar.
      */
     @CalledByNative
-    private WebContents getActiveWebContents() {
+    private @Nullable WebContents getActiveWebContents() {
         if (!hasTab()) return null;
         return mTab.getWebContents();
     }
@@ -236,7 +242,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      * @param profile The profile associated with the currently selected model, which must match the
      *     passed in tab if non-null.
      */
-    public void setTab(@Nullable Tab tab, @NonNull Profile profile) {
+    public void setTab(@Nullable Tab tab, Profile profile) {
         assert tab == null || tab.getProfile() == profile;
         assert profile != null;
 
@@ -261,11 +267,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
-    public Tab getTab() {
+    public @Nullable Tab getTab() {
         return hasTab() ? mTab : null;
     }
 
     @Override
+    @EnsuresNonNullIf("mTab")
     public boolean hasTab() {
         // TODO(crbug.com/40730536): Remove the isInitialized() and isDestroyed checks when
         // we no longer wait for TAB_CLOSED events to remove this tab.  Otherwise there is a chance
@@ -447,10 +454,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                         emphasizedColor,
                         dangerColor,
                         secureColor);
+        assumeNonNull(mSpannableDisplayTextCache);
         SpannableStringBuilder cachedSpannableDisplayText =
                 mSpannableDisplayTextCache.get(cacheKey);
 
         if (cachedSpannableDisplayText == null) {
+            assumeNonNull(mChromeAutocompleteSchemeClassifier);
             cachedSpannableDisplayText = new SpannableStringBuilder(displayText);
             OmniboxUrlEmphasizer.emphasizeUrl(
                     cachedSpannableDisplayText,
@@ -478,7 +487,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         return TrustedCdn.getPublisherUrl(mTab) == null;
     }
 
-    LruCache<SpannableDisplayTextCacheKey, SpannableStringBuilder> getCacheForTesting() {
+    @Nullable LruCache<SpannableDisplayTextCacheKey, SpannableStringBuilder> getCacheForTesting() {
         return mSpannableDisplayTextCache;
     }
 
@@ -492,9 +501,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public String getTitle() {
-        if (!hasTab()) return "";
+        Tab tab = getTab();
+        if (tab == null) return "";
 
-        String title = getTab().getTitle();
+        String title = tab.getTitle();
         return TextUtils.isEmpty(title) ? title : title.trim();
     }
 
@@ -530,7 +540,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
-    public Profile getProfile() {
+    public @Nullable Profile getProfile() {
         return mProfile;
     }
 
@@ -549,7 +559,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         mIsUsingBrandColor =
                 !isIncognitoBranded()
                         && mPrimaryColor
-                                != ChromeColors.getDefaultThemeColor(mContext, isIncognitoBranded())
+                                != SurfaceColorUpdateUtils.getDefaultThemeColor(
+                                        mContext, isIncognitoBranded())
                         && hasTab()
                         && !mTab.isNativePage();
     }
@@ -571,11 +582,13 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
+    @EnsuresNonNullIf("mTab")
     public boolean isOfflinePage() {
         return hasTab() && mOfflineStatus.isOfflinePage(mTab);
     }
 
     @Override
+    @EnsuresNonNullIf("mTab")
     public boolean isPaintPreview() {
         return hasTab() && TabbedPaintPreview.get(mTab).isShowing();
     }
@@ -618,7 +631,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @VisibleForTesting
     @ConnectionSecurityLevel
-    int getSecurityLevel(Tab tab, boolean isOfflinePage) {
+    int getSecurityLevel(@Nullable Tab tab, boolean isOfflinePage) {
         if (tab == null || isOfflinePage) {
             return ConnectionSecurityLevel.NONE;
         }
@@ -637,7 +650,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @VisibleForTesting
     @ConnectionSecurityLevel
-    int getSecurityLevelFromStateModel(WebContents webContents) {
+    int getSecurityLevelFromStateModel(@Nullable WebContents webContents) {
         int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(webContents);
         return securityLevel;
     }
@@ -779,6 +792,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 .getURLForDisplay(mNativeLocationBarModelAndroid, LocationBarModel.this);
     }
 
+    @SuppressWarnings("NullAway")
     protected GURL getUrlOfVisibleNavigationEntry() {
         if (mNativeLocationBarModelAndroid == 0) return GURL.emptyGURL();
         if (mNtpDelegate.isCurrentlyVisible()) {

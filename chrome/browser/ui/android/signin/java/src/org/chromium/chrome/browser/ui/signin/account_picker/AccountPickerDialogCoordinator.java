@@ -12,6 +12,7 @@ import androidx.annotation.MainThread;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator.Listener;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -22,6 +23,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator to show the modal account picker dialog. */
+@NullMarked
 public class AccountPickerDialogCoordinator {
     private final RecyclerView mAccountPickerView;
     private final AccountPickerCoordinator mCoordinator;

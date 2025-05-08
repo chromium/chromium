@@ -50,7 +50,7 @@
 @property(nonatomic, assign) Browser* browser;
 @property(nonatomic, assign) ProfileIOS* profile;
 // Mocked currentInterface.
-@property(nonatomic, assign) WrangledBrowser* currentInterface;
+@property(nonatomic, strong) WrangledBrowser* currentInterface;
 // BrowserViewWrangler to provide test setup for main coordinator and interface.
 @property(nonatomic, strong) BrowserViewWrangler* browserViewWrangler;
 // Argument for

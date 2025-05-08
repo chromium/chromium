@@ -116,8 +116,9 @@ const TokenLimits& SessionImpl::GetTokenLimits() const {
   return on_device_context_->opts().token_limits;
 }
 
-void SessionImpl::SetInput(MultimodalMessage request) {
-  const auto result = AddContextImpl(std::move(request));
+void SessionImpl::SetInput(MultimodalMessage request,
+                           SetInputCallback callback) {
+  const auto result = AddContextImpl(std::move(request), std::move(callback));
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceAddContextResult.",
@@ -127,11 +128,20 @@ void SessionImpl::SetInput(MultimodalMessage request) {
 
 void SessionImpl::AddContext(
     const google::protobuf::MessageLite& request_metadata) {
-  SetInput(MultimodalMessage(request_metadata));
+  SetInput(MultimodalMessage(request_metadata), {});
 }
 
 SessionImpl::AddContextResult SessionImpl::AddContextImpl(
-    MultimodalMessage request) {
+    MultimodalMessage request,
+    SetInputCallback callback) {
+  if (callback) {
+    callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+        std::move(callback),
+        base::unexpected(
+            OptimizationGuideModelExecutionError::FromModelExecutionError(
+                OptimizationGuideModelExecutionError::ModelExecutionError::
+                    kCancelled)));
+  }
   context_ = std::move(request);
   context_start_time_ = base::TimeTicks::Now();
 
@@ -145,7 +155,7 @@ SessionImpl::AddContextResult SessionImpl::AddContextImpl(
     return AddContextResult::kUsingServer;
   }
 
-  if (!on_device_context_->SetInput(context_.read())) {
+  if (!on_device_context_->SetInput(context_.read(), std::move(callback))) {
     // Use server if can't construct input.
     DestroyOnDeviceState();
     return AddContextResult::kFailedConstructingInput;
@@ -172,14 +182,14 @@ void SessionImpl::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
         callback) {
-  ExecuteModelWithResponseJsonSchema(request_metadata,
-                                     /*response_json_schema=*/std::nullopt,
+  ExecuteModelWithResponseConstraint(request_metadata,
+                                     /*constraint=*/nullptr,
                                      std::move(callback));
 }
 
-void SessionImpl::ExecuteModelWithResponseJsonSchema(
+void SessionImpl::ExecuteModelWithResponseConstraint(
     const google::protobuf::MessageLite& request_metadata,
-    const std::optional<std::string>& response_json_schema,
+    on_device_model::mojom::ResponseConstraintPtr constraint,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
         callback) {
   auto logger = std::make_unique<OnDeviceExecution::ResultLogger>(feature_);
@@ -218,8 +228,8 @@ void SessionImpl::ExecuteModelWithResponseJsonSchema(
   // Set new pending response.
   on_device_execution_.emplace(
       feature_, on_device_context_->opts(), execute_remote_fn_,
-      std::move(merged_request), std::move(response_json_schema),
-      std::move(logger), std::move(callback),
+      std::move(merged_request), std::move(constraint), std::move(logger),
+      std::move(callback),
       base::BindOnce(&SessionImpl::OnDeviceExecutionTerminated,
                      weak_ptr_factory_.GetWeakPtr()));
 

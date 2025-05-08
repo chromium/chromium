@@ -59,8 +59,8 @@ class SharedTabGroupFeedbackController : public TabStripModelObserver,
   // Only show the IPH when a shared tab becomes the active tab.
   void MaybeShowIPH(BrowserWindowInterface* browser_window_interface);
 
-  const raw_ptr<BrowserView> browser_view_ = nullptr;
-  const raw_ptr<TabGroupSyncService> tab_group_sync_service_ = nullptr;
+  raw_ptr<BrowserView> browser_view_;
+  const raw_ptr<TabGroupSyncService> tab_group_sync_service_;
 
   std::vector<base::CallbackListSubscription> active_tab_change_subscriptions_;
 

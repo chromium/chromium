@@ -206,7 +206,8 @@ public class TabGroupListMediatorUnitTest {
                         mTabGroupUiActionHandler,
                         mActionConfirmationManager,
                         mSyncService,
-                        mModalDialogManager);
+                        mModalDialogManager,
+                        /* enableContainment= */ true);
         verify(mSyncService).addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
         return mediator;
     }
@@ -236,7 +237,8 @@ public class TabGroupListMediatorUnitTest {
 
         PropertyModel model = mModelList.get(0).model;
         assertEquals(
-                new TabGroupRowViewTitleData("Title", 1, R.string.tab_group_row_accessibility_text),
+                new TabGroupRowViewTitleData(
+                        "Title", 1, R.plurals.tab_group_row_accessibility_text),
                 model.get(TITLE_DATA));
         assertEquals(TabGroupColorId.BLUE, model.get(COLOR_INDEX));
     }
@@ -260,13 +262,13 @@ public class TabGroupListMediatorUnitTest {
 
         PropertyModel barModel = mModelList.get(0).model;
         assertEquals(
-                new TabGroupRowViewTitleData("Bar", 3, R.string.tab_group_row_accessibility_text),
+                new TabGroupRowViewTitleData("Bar", 3, R.plurals.tab_group_row_accessibility_text),
                 barModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
 
         PropertyModel fooModel = mModelList.get(1).model;
         assertEquals(
-                new TabGroupRowViewTitleData("Foo", 2, R.string.tab_group_row_accessibility_text),
+                new TabGroupRowViewTitleData("Foo", 2, R.plurals.tab_group_row_accessibility_text),
                 fooModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.BLUE, fooModel.get(COLOR_INDEX));
     }
@@ -342,12 +344,12 @@ public class TabGroupListMediatorUnitTest {
         PropertyModel model1 = mModelList.get(0).model;
         assertEquals(
                 new TabGroupRowViewTitleData(
-                        "in current", 1, R.string.tab_group_row_accessibility_text),
+                        "in current", 1, R.plurals.tab_group_row_accessibility_text),
                 model1.get(TITLE_DATA));
         PropertyModel model2 = mModelList.get(1).model;
         assertEquals(
                 new TabGroupRowViewTitleData(
-                        "hidden", 1, R.string.tab_group_row_accessibility_text),
+                        "hidden", 1, R.plurals.tab_group_row_accessibility_text),
                 model2.get(TITLE_DATA));
     }
 
@@ -861,13 +863,13 @@ public class TabGroupListMediatorUnitTest {
 
         PropertyModel barModel = mModelList.get(1).model;
         assertEquals(
-                new TabGroupRowViewTitleData("Bar", 3, R.string.tab_group_row_accessibility_text),
+                new TabGroupRowViewTitleData("Bar", 3, R.plurals.tab_group_row_accessibility_text),
                 barModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
 
         PropertyModel fooModel = mModelList.get(2).model;
         assertEquals(
-                new TabGroupRowViewTitleData("Foo", 2, R.string.tab_group_row_accessibility_text),
+                new TabGroupRowViewTitleData("Foo", 2, R.plurals.tab_group_row_accessibility_text),
                 fooModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.BLUE, fooModel.get(COLOR_INDEX));
     }
@@ -909,13 +911,13 @@ public class TabGroupListMediatorUnitTest {
 
         PropertyModel barModel = mModelList.get(0).model;
         assertEquals(
-                new TabGroupRowViewTitleData("Bar", 3, R.string.tab_group_row_accessibility_text),
+                new TabGroupRowViewTitleData("Bar", 3, R.plurals.tab_group_row_accessibility_text),
                 barModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
 
         PropertyModel fooModel = mModelList.get(1).model;
         assertEquals(
-                new TabGroupRowViewTitleData("Foo", 2, R.string.tab_group_row_accessibility_text),
+                new TabGroupRowViewTitleData("Foo", 2, R.plurals.tab_group_row_accessibility_text),
                 fooModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.BLUE, fooModel.get(COLOR_INDEX));
     }

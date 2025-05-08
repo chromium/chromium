@@ -50,7 +50,7 @@ struct CpuTick {
   }
 };
 
-constexpr char kRestoredAppWindowCountHistogram[] =
+inline constexpr char kRestoredAppWindowCountHistogram[] =
     "Apps.RestoreArcWindowCount";
 
 // The restoration process might be blocked by some issues, e.g. the memory

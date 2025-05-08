@@ -167,7 +167,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
            !Style().ShouldIgnoreOverflowPropertyForInlineBlockBaseline();
   }
 
-  const GapGeometry* GapGeometry() const {
+  const GapGeometry* GetGapGeometry() const {
     return rare_data_ ? rare_data_->gap_geometry_.Get() : nullptr;
   }
 
@@ -288,6 +288,14 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
       return field->inflow_bounds;
     }
     return std::nullopt;
+  }
+
+  PhysicalOffset OffsetFromRootFragmentationContext() const {
+    if (const auto* field =
+            GetRareField(FieldId::kOffsetFromRootFragmentationContext)) {
+      return field->offset_from_root_fragmentation_context;
+    }
+    return PhysicalOffset();
   }
 
   // Return true if this is either a container that establishes an inline
@@ -482,6 +490,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     MutableForContainerLayout(base::PassKey<PhysicalBoxFragment>,
                               PhysicalBoxFragment& fragment);
     void SetMargins(const PhysicalBoxStrut& margins);
+    void SetOffsetFromRootFragmentationContext(PhysicalOffset);
 
    private:
     PhysicalBoxFragment& fragment_;

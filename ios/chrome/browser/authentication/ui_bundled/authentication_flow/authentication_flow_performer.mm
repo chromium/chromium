@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
@@ -123,6 +124,45 @@ void HandleSignoutForSnackbar(
       .Run(browser);
 }
 
+// Returns a reference to the global bool used by tests to immediately return a
+// fake policy response.
+bool& FakePolicyResponsesForTesting() {
+  static bool instance = false;
+  return instance;
+}
+
+// Returns a reference to the global used by tests to force the next policy
+// fetch to terminate with this policy value if set.
+std::optional<policy::ProfileSeparationDataMigrationSettings>&
+ForcedPolicyResponseForNextFetchRequestForTesting() {
+  static std::optional<policy::ProfileSeparationDataMigrationSettings> instance;
+  return instance;
+}
+
+bool ShouldUseFakePolicyResponseForTesting() {
+  return FakePolicyResponsesForTesting() ||
+         ForcedPolicyResponseForNextFetchRequestForTesting().has_value();
+}
+
+policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
+  CHECK(ShouldUseFakePolicyResponseForTesting());
+
+  policy::ProfileSeparationPolicies response;
+
+  // If a forced response is set for the next request, use (and reset) that.
+  std::optional<policy::ProfileSeparationDataMigrationSettings>&
+      forced_response = ForcedPolicyResponseForNextFetchRequestForTesting();
+  if (forced_response.has_value()) {
+    // Note: The ProfileSeparationSettings value doesn't matter here (only the
+    // ProfileSeparationDataMigrationSettings value does).
+    response = policy::ProfileSeparationPolicies(
+        policy::ProfileSeparationSettings::SUGGESTED, forced_response.value());
+    forced_response = std::nullopt;
+  }
+  // Otherwise: Just return the empty default value.
+  return response;
+}
+
 }  // namespace
 
 @interface AuthenticationFlowPerformer () <
@@ -144,6 +184,8 @@ void HandleSignoutForSnackbar(
   // calls it.
   std::unique_ptr<policy::UserCloudSigninRestrictionPolicyFetcher>
       _accountLevelSigninRestrictionPolicyFetcher;
+  // Capabilities fetcher for the subsequent History Sync Opt-In screen.
+  HistorySyncCapabilitiesFetcher* _capabilitiesFetcher;
   std::unique_ptr<base::OneShotTimer> _watchdogTimer;
   id<ChangeProfileCommands> _changeProfileHandler;
   ActionSheetCoordinator* _leavingPrimaryAccountConfirmationDialogCoordinator;
@@ -233,7 +275,6 @@ void HandleSignoutForSnackbar(
           GetApplicationContext()->GetBrowserPolicyConnector(),
           GetApplicationContext()->GetSharedURLLoaderFactory());
 
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   __weak __typeof(self) weakSelf = self;
   base::OnceCallback<void(const policy::ProfileSeparationPolicies&)> callback =
       base::BindOnce(
@@ -242,6 +283,15 @@ void HandleSignoutForSnackbar(
             [strongSelf didFetchProfileSeparationPolicies:policies];
           },
           weakSelf);
+
+  if (ShouldUseFakePolicyResponseForTesting()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), GetFakePolicyResponseForTesting()));
+    return;
+  }
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   _accountLevelSigninRestrictionPolicyFetcher
       ->GetManagedAccountsSigninRestriction(
           identity_manager,
@@ -260,6 +310,7 @@ void HandleSignoutForSnackbar(
 
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
                          sceneState:(SceneState*)sceneState
+                             reason:(ChangeProfileReason)reason
                       requestHelper:
                           (id<AuthenticationFlowRequestHelper>)requestHelper {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
@@ -284,11 +335,13 @@ void HandleSignoutForSnackbar(
 
   [self switchToProfileWithName:*profileName
                      sceneState:sceneState
+                         reason:reason
       changeProfileContinuation:std::move(continuation)];
 }
 
 - (void)switchToProfileWithName:(const std::string&)profileName
                      sceneState:(SceneState*)sceneState
+                         reason:(ChangeProfileReason)reason
       changeProfileContinuation:(ChangeProfileContinuation)continuation {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
 
@@ -298,6 +351,7 @@ void HandleSignoutForSnackbar(
       std::move(authenticationFlowContinuation), std::move(continuation));
   [_changeProfileHandler changeProfile:profileName
                               forScene:sceneState
+                                reason:reason
                           continuation:std::move(fullContinuation)];
 }
 
@@ -550,6 +604,21 @@ void HandleSignoutForSnackbar(
   [_delegate didFetchUserPolicyWithSuccess:success];
 }
 
+- (void)fetchAccountCapabilities:(ProfileIOS*)profile {
+  // Create the capability fetcher and start fetching capabilities.
+  _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
+      initWithIdentityManager:IdentityManagerFactory::GetForProfile(profile)];
+
+  __weak __typeof(self) weakSelf = self;
+  [_capabilitiesFetcher
+      startFetchingRestrictionCapabilityWithCallback:base::BindOnce(^(
+                                                         signin::Tribool
+                                                             capability) {
+        // The capability value is ignored.
+        [weakSelf didFetchAccountCapabilities];
+      })];
+}
+
 #pragma mark - Private
 
 // The change profile continuation for the authentication flow.
@@ -578,6 +647,10 @@ void HandleSignoutForSnackbar(
   }
   [_delegate didFetchProfileSeparationPolicies:
                  profile_separation_data_migration_settings];
+}
+
+- (void)didFetchAccountCapabilities {
+  [_delegate didFetchAccountCapabilities];
 }
 
 - (void)updateUserPolicyNotificationStatusIfNeeded:(PrefService*)prefService {
@@ -791,6 +864,23 @@ void HandleSignoutForSnackbar(
 
   [browser->GetSceneState().controller showSignin:command
                                baseViewController:viewController];
+}
+
+@end
+
+@implementation AuthenticationFlowPerformer (ForTesting)
+
++ (void)setUseFakePolicyResponsesForTesting:(BOOL)useFakeResponses {
+  FakePolicyResponsesForTesting() = useFakeResponses;
+}
+
++ (void)forcePolicyResponseForNextRequestForTesting:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profileSeparationDataMigrationSettings {
+  auto& optionalForcedPolicy =
+      ForcedPolicyResponseForNextFetchRequestForTesting();
+  CHECK(!optionalForcedPolicy.has_value());
+  optionalForcedPolicy = profileSeparationDataMigrationSettings;
 }
 
 @end

@@ -4,12 +4,21 @@
 
 #include "test_lens_overlay_query_controller.h"
 
+#include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "google_apis/common/api_error_codes.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+
+using base::test::EqualsProto;
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointFetcherCallback;
+using endpoint_fetcher::EndpointResponse;
+using endpoint_fetcher::HttpMethod;
 
 namespace lens {
 
@@ -70,7 +79,6 @@ TestLensOverlayQueryController::TestLensOverlayQueryController(
                                  invocation_source,
                                  use_dark_mode,
                                  gen204_controller) {}
-
 TestLensOverlayQueryController::~TestLensOverlayQueryController() = default;
 
 void TestLensOverlayQueryController::StartQueryFlow(
@@ -167,11 +175,11 @@ std::unique_ptr<EndpointFetcher>
 TestLensOverlayQueryController::CreateEndpointFetcher(
     std::string request_string,
     const GURL& fetch_url,
-    const HttpMethod& http_method,
-    const base::TimeDelta& timeout,
+    HttpMethod http_method,
+    base::TimeDelta timeout,
     const std::vector<std::string>& request_headers,
     const std::vector<std::string>& cors_exempt_headers,
-    const UploadProgressCallback upload_progress_callback) {
+    UploadProgressCallback upload_progress_callback) {
   lens::LensOverlayServerResponse fake_server_response;
   std::string fake_server_response_string;
   google_apis::ApiErrorCode fake_server_response_code =
@@ -328,5 +336,36 @@ void TestLensOverlayQueryController::SendSemanticEventGen204IfEnabled(
     std::optional<lens::LensOverlayRequestId> request_id) {
   last_semantic_event_ = event;
   last_semantic_event_gen204_request_id_ = request_id;
+}
+
+void TestLensOverlayQueryController::RunSuggestInputsCallback() {
+  const lens::proto::LensOverlaySuggestInputs& last_suggest_inputs =
+      suggest_inputs_for_testing();
+  if (last_suggest_inputs.encoded_request_id().empty()) {
+    LensOverlayQueryController::RunSuggestInputsCallback();
+    return;
+  }
+
+  // Decode the request id from the SuggestInputs callback.
+  lens::LensOverlayRequestId latest_request_id;
+  std::string serialized_proto;
+  EXPECT_TRUE(base::Base64UrlDecode(
+      last_suggest_inputs.encoded_request_id(),
+      base::Base64UrlDecodePolicy::DISALLOW_PADDING, &serialized_proto));
+  EXPECT_TRUE(latest_request_id.ParseFromString(serialized_proto));
+
+  // Get the current request id from the request id generator.
+  std::unique_ptr<lens::LensOverlayRequestId> current_request_id =
+      request_id_generator_for_testing()->GetCurrentRequestIdForTesting();
+  // Verifies that the last request ids passed in the SuggestInputs callback are
+  // the same as current request id in the request id generator.
+  // This is to ensure the LensOverlayController is always updated with the
+  // latest request ids.
+  EXPECT_THAT(latest_request_id, EqualsProto(*current_request_id))
+      << "The latest request id passed in the SuggestInputs callback is not "
+         "the same as the current request id in the request id generator. Did "
+         "you call RunSuggestInputsCallback() after updating the request id?";
+
+  LensOverlayQueryController::RunSuggestInputsCallback();
 }
 }  // namespace lens

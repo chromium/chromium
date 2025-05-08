@@ -223,10 +223,6 @@ bool TabIterator::operator==(TabIterator other) const {
          current_tab_ == other.current_tab_;
 }
 
-bool TabIterator::operator!=(TabIterator other) const {
-  return !(*this == other);
-}
-
 const sessions::tab_restore::Tab& TabIterator::operator*() const {
   return current_tab_
              ? ***current_tab_

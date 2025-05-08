@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
@@ -79,6 +80,7 @@ class SafetyHubPermissionsPreference extends ChromeBasePreference implements Vie
         }
     }
 
+    @NullMarked
     private String createSummary() {
         // TODO(crbug.com/406473591): Consider adding separate string for mixed (unused +
         // notifications revocation) cases.
@@ -87,18 +89,12 @@ class SafetyHubPermissionsPreference extends ChromeBasePreference implements Vie
             case PermissionsRevocationType.UNUSED_PERMISSIONS_AND_ABUSIVE_NOTIFICATIONS:
                 return getContext()
                         .getString(R.string.safety_hub_abusive_notification_permissions_sublabel);
-            case PermissionsRevocationType.DISRUPTIVE_NOTIFICATION_PERMISSIONS:
-            case PermissionsRevocationType.UNUSED_PERMISSIONS_AND_DISRUPTIVE_NOTIFICATIONS:
-                return getContext()
-                        .getString(
-                                R.string.safety_hub_disruptive_notification_permissions_sublabel);
         }
-        assert mPermissionsData.getRevocationType() == PermissionsRevocationType.UNUSED_PERMISSIONS;
-        return createUnusedPermissionsSummary();
+        return createUnusedOrDisruptivePermissionsSummary();
     }
 
-    private String createUnusedPermissionsSummary() {
-        assert mPermissionsData.getRevocationType() == PermissionsRevocationType.UNUSED_PERMISSIONS;
+    @NullMarked
+    private String createUnusedOrDisruptivePermissionsSummary() {
         String[] permissionNames =
                 UnusedSitePermissionsBridge.contentSettingsTypeToString(
                         mPermissionsData.getPermissions());

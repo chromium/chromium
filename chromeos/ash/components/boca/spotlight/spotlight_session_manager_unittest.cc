@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -43,6 +45,12 @@ constexpr char kSpotlightConnectionCode[] = "456";
 constexpr char kUserEmail[] = "cat@gmail.com";
 constexpr char kUserFullName[] = "Best Teacher";
 constexpr char kTestBaseUrl[] = "https://test";
+constexpr char kOnRegisterScreenRequestSentErrorCodeUmaPath[] =
+    "Ash.Boca.Spotlight.RegisterScreen.ErrorCode";
+// Length of the notification duration and one extra interval for the
+// notification to start.
+constexpr base::TimeDelta kTestNotificationDuration =
+    kSpotlightNotificationDuration + kSpotlightNotificationCountdownInterval;
 
 class MockBocaAppClient : public BocaAppClient {
  public:
@@ -154,7 +162,8 @@ class SpotlightSessionManagerTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockSessionManager* session_manager() { return session_manager_.get(); }
   MockSpotlightService* spotlight_service() { return spotlight_service_; }
   MockSpotlightCrdManager* spotlight_crd_manager() {
@@ -184,6 +193,8 @@ TEST_F(SpotlightSessionManagerTest, OnSessionEnded) {
 }
 
 TEST_F(SpotlightSessionManagerTest, IniatesSpotlightSessionWhenRequested) {
+  base::HistogramTester histograms;
+
   ::boca::StudentDevice device;
   device.mutable_view_screen_config()->set_view_screen_state(
       ::boca::ViewScreenConfig::REQUESTED);
@@ -193,20 +204,30 @@ TEST_F(SpotlightSessionManagerTest, IniatesSpotlightSessionWhenRequested) {
   std::map<std::string, ::boca::StudentStatus> activities;
   activities.emplace(kGaiaId, status);
 
+  // Expect CRD to return an connection code.
   EXPECT_CALL(*spotlight_crd_manager(), InitiateSpotlightSession)
       .WillOnce(WithArg<0>(Invoke([&](auto callback) {
         std::move(callback).Run(kSpotlightConnectionCode);
       })));
+  // Expect sending the code to server.
   EXPECT_CALL(*spotlight_service(),
               RegisterScreen(kSpotlightConnectionCode, kTestBaseUrl, _))
       .WillOnce(WithArg<2>(Invoke(
           [&](auto callback) { std::move(callback).Run(base::ok(true)); })));
+  // Expect persistent notification to show after countdown.
+  EXPECT_CALL(*spotlight_crd_manager(),
+              ShowPersistentNotification(kUserFullName))
+      .Times(1);
   EXPECT_CALL(*session_manager(), LoadCurrentSession(false)).Times(1);
 
   ::boca::UserIdentity producer;
   producer.set_email(kUserEmail);
+  producer.set_full_name(kUserFullName);
   spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
+  task_environment_.FastForwardBy(kTestNotificationDuration);
+
+  histograms.ExpectTotalCount(kOnRegisterScreenRequestSentErrorCodeUmaPath, 0);
 }
 
 TEST_F(SpotlightSessionManagerTest, DoesNotStartSpotlightWithInactiveSession) {
@@ -265,6 +286,8 @@ TEST_F(SpotlightSessionManagerTest, DoesNotStartSpotlightIfNotRequested) {
 }
 
 TEST_F(SpotlightSessionManagerTest, OnlyProcessesOneRequestAtATime) {
+  base::HistogramTester histograms;
+
   ::boca::StudentDevice device;
   device.mutable_view_screen_config()->set_view_screen_state(
       ::boca::ViewScreenConfig::REQUESTED);
@@ -294,47 +317,8 @@ TEST_F(SpotlightSessionManagerTest, OnlyProcessesOneRequestAtATime) {
   spotlight_session_manager_->OnSessionEnded(kSessionId);
   spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
-}
 
-TEST_F(SpotlightSessionManagerTest,
-       StartsPersistentNotificationWhenSpotlightActive) {
-  ::boca::StudentDevice device;
-  device.mutable_view_screen_config()->set_view_screen_state(
-      ::boca::ViewScreenConfig::ACTIVE);
-  ::boca::StudentStatus status;
-  status.mutable_devices()->emplace(kDeviceId, device);
-
-  std::map<std::string, ::boca::StudentStatus> activities;
-  activities.emplace(kGaiaId, status);
-
-  EXPECT_CALL(*spotlight_crd_manager(),
-              ShowPersistentNotification(kUserFullName))
-      .Times(1);
-
-  ::boca::UserIdentity producer;
-  producer.set_email(kUserEmail);
-  producer.set_full_name(kUserFullName);
-  spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
-  spotlight_session_manager_->OnConsumerActivityUpdated(activities);
-}
-
-TEST_F(SpotlightSessionManagerTest,
-       StopsPersistentNotificationWhenSpotlightInactive) {
-  ::boca::StudentDevice device;
-  device.mutable_view_screen_config()->set_view_screen_state(
-      ::boca::ViewScreenConfig::INACTIVE);
-  ::boca::StudentStatus status;
-  status.mutable_devices()->emplace(kDeviceId, device);
-
-  std::map<std::string, ::boca::StudentStatus> activities;
-  activities.emplace(kGaiaId, status);
-
-  EXPECT_CALL(*spotlight_crd_manager(), HidePersistentNotification).Times(1);
-
-  ::boca::UserIdentity producer;
-  producer.set_email(kUserEmail);
-  spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
-  spotlight_session_manager_->OnConsumerActivityUpdated(activities);
+  histograms.ExpectTotalCount(kOnRegisterScreenRequestSentErrorCodeUmaPath, 0);
 }
 
 }  // namespace

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 
 #include <memory>
+#include <string>
 #include <type_traits>
 
 #include "base/memory/memory_pressure_monitor.h"
@@ -199,11 +200,16 @@ class GlicProfileManagerPreloadingTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  GlicProfileManagerPreloadingTest() {
+  explicit GlicProfileManagerPreloadingTest(const std::string& delay_ms) {
     if (IsPreloadingEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                                features::kGlicRollout, features::kGlicWarming},
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{{features::kGlic, {}},
+                                {features::kTabstripComboButton, {}},
+                                {features::kGlicRollout, {}},
+                                {features::kGlicWarming,
+                                 {{features::kGlicWarmingDelayMs.name,
+                                   delay_ms},
+                                  {features::kGlicWarmingJitterMs.name, "0"}}}},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
@@ -211,6 +217,7 @@ class GlicProfileManagerPreloadingTest
                                 features::kGlicRollout},
           /*disabled_features=*/{features::kGlicWarming});
     }
+
     // We initialize memory pressure to moderate to prevent any premature
     // preloading.
     GlicProfileManager::ForceMemoryPressureForTesting(
@@ -219,6 +226,8 @@ class GlicProfileManagerPreloadingTest
     GlicProfileManager::ForceConnectionTypeForTesting(
         network::mojom::ConnectionType::CONNECTION_WIFI);
   }
+
+  GlicProfileManagerPreloadingTest() : GlicProfileManagerPreloadingTest("0") {}
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -304,8 +313,56 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   EXPECT_FALSE(WaitForShouldPreload());
 }
 
+// See *Deferred* below. Checks that we don't defer preloading when there's no
+// delay.
+IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
+                       ShouldPreloadForProfile_DoNotDefer) {
+  ResetMemoryPressure();
+  auto* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  service->TryPreload();
+  base::RunLoop run_loop;
+  // Since we have no delay, running until idle should mean that we do warm
+  // (provided warming is enabled).
+  run_loop.RunUntilIdle();
+  const bool should_preload = IsPreloadingEnabled();
+  EXPECT_EQ(should_preload, service->window_controller().IsWarmed());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          GlicProfileManagerPreloadingTest,
+                         ::testing::Bool());
+
+class GlicProfileManagerDeferredPreloadingTest
+    : public GlicProfileManagerPreloadingTest {
+ public:
+  // This sets the delay to 10 seconds (60 * 10 * 1000).
+  GlicProfileManagerDeferredPreloadingTest()
+      : GlicProfileManagerPreloadingTest(/*delay_ms=*/"600000") {}
+  ~GlicProfileManagerDeferredPreloadingTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This is really a keyed service test, but it is convenient to locate it here
+// for now. It just checks that if we have a preload delay, that we won't
+// preload immediately.
+IN_PROC_BROWSER_TEST_P(GlicProfileManagerDeferredPreloadingTest,
+                       ShouldPreloadForProfile_Defer) {
+  ResetMemoryPressure();
+  auto* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  service->TryPreload();
+  base::RunLoop run_loop;
+  // Since we shouldn't preload until after the delay, we shouldn't be warmed
+  // after running until idle.
+  run_loop.RunUntilIdle();
+  EXPECT_FALSE(service->window_controller().IsWarmed());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicProfileManagerDeferredPreloadingTest,
                          ::testing::Bool());
 
 }  // namespace

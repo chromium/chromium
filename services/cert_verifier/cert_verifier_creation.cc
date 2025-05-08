@@ -8,7 +8,6 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/network_time/time_tracker/time_tracker.h"
-#include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/crl_set.h"

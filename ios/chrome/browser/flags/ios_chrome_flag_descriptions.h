@@ -231,12 +231,6 @@ extern const char kEnableFeedHeaderSettingsDescription[];
 extern const char kEnableFeedCardMenuSignInPromoName[];
 extern const char kEnableFeedCardMenuSignInPromoDescription[];
 
-extern const char kEnableFollowIPHExpParamsName[];
-extern const char kEnableFollowIPHExpParamsDescription[];
-
-extern const char kEnableFollowUIUpdateName[];
-extern const char kEnableFollowUIUpdateDescription[];
-
 extern const char kEnableTraitCollectionRegistrationName[];
 extern const char kEnableTraitCollectionRegistrationDescription[];
 
@@ -275,9 +269,6 @@ extern const char kEnableIdentityInAuthErrorDescription[];
 
 extern const char kEnableVariationsGoogleGroupFilteringName[];
 extern const char kEnableVariationsGoogleGroupFilteringDescription[];
-
-extern const char kEnableWebChannelsName[];
-extern const char kEnableWebChannelsDescription[];
 
 extern const char kEnhancedCalendarName[];
 extern const char kEnhancedCalendarDescription[];
@@ -327,6 +318,9 @@ extern const char kIdentityDiscAccountMenuDescription[];
 extern const char kIdentityConfirmationSnackbarName[];
 extern const char kIdentityConfirmationSnackbarDescription[];
 
+extern const char kImportPasswordsFromSafariName[];
+extern const char kImportPasswordsFromSafariDescription[];
+
 extern const char kIndicateIdentityErrorInOverflowMenuName[];
 extern const char kIndicateIdentityErrorInOverflowMenuDescription[];
 
@@ -341,6 +335,9 @@ extern const char kIOSDockingPromoDescription[];
 
 extern const char kIOSEnableDeleteAllSavedCredentialsName[];
 extern const char kIOSEnableDeleteAllSavedCredentialsDescription[];
+
+extern const char kIOSEnablePasswordManagerTrustedVaultWidgetName[];
+extern const char kIOSEnablePasswordManagerTrustedVaultWidgetDescription[];
 
 extern const char kIOSEnableRealtimeEventReportingName[];
 extern const char kIOSEnableRealtimeEventReportingDescription[];
@@ -391,9 +388,6 @@ extern const char kIOSSaveToPhotosImprovementsDescription[];
 extern const char kIOSEnterpriseRealtimeUrlFilteringName[];
 extern const char kIOSEnterpriseRealtimeUrlFilteringDescription[];
 
-extern const char kNewFeedPositioningExperimentName[];
-extern const char kNewFeedPositioningExperimentDescription[];
-
 extern const char kNewShareExtensionName[];
 extern const char kNewShareExtensionDescription[];
 
@@ -421,11 +415,11 @@ extern const char kIOSStartTimeBrowserBackgroundRemediationsDescription[];
 extern const char kIOSStartTimeStartupRemediationsName[];
 extern const char kIOSStartTimeStartupRemediationsDescription[];
 
-extern const char kIOSTipsNotificationsName[];
-extern const char kIOSTipsNotificationsDescription[];
-
 extern const char kIOSReactivationNotificationsName[];
 extern const char kIOSReactivationNotificationsDescription[];
+
+extern const char kIOSExpandedTipsName[];
+extern const char kIOSExpandedTipsDescription[];
 
 extern const char kIOSProvidesAppNotificationSettingsName[];
 extern const char kIOSProvidesAppNotificationSettingsDescription[];
@@ -778,6 +772,9 @@ extern const char kSignInButtonNoAvatarDescription[];
 extern const char kNTPBackgroundCustomizationName[];
 extern const char kNTPBackgroundCustomizationDescription[];
 
+extern const char kNtpAlphaBackgroundCollectionsName[];
+extern const char kNtpAlphaBackgroundCollectionsDescription[];
+
 extern const char kSpotlightNeverRetainIndexName[];
 extern const char kSpotlightNeverRetainIndexDescription[];
 
@@ -826,9 +823,6 @@ extern const char kEnableLensContextMenuUnifiedExperienceDescription[];
 extern const char kTabGridNewTransitionsName[];
 extern const char kTabGridNewTransitionsDescription[];
 
-extern const char kTabGroupsIPadName[];
-extern const char kTabGroupsIPadDescription[];
-
 extern const char kTabResumptionName[];
 extern const char kTabResumptionDescription[];
 
@@ -861,6 +855,9 @@ extern const char kWebPageTextZoomIPadDescription[];
 
 extern const char kWelcomeBackInFirstRunName[];
 extern const char kWelcomeBackInFirstRunDescription[];
+
+extern const char kWidgetsForMultiprofileName[];
+extern const char kWidgetsForMultiprofileDescription[];
 
 extern const char kYoutubeIncognitoName[];
 extern const char kYoutubeIncognitoDescription[];

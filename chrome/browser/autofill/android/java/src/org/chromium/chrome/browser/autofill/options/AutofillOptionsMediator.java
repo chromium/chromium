@@ -21,6 +21,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.R;
@@ -42,6 +44,7 @@ import org.chromium.ui.text.SpanApplier;
  * The mediator of the autofill options component. Ensures that the model and the pref are in sync
  * (in either direction).
  */
+@NullMarked
 class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     private static final String NON_PACKAGE_NAME = "package:not.a.package.so.all.providers.show";
     private static final String SKIP_COMPATIBILITY_CHECK_PARAM_NAME = "skip_compatibility_check";
@@ -93,7 +96,6 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
                                 restartConfirmationModel,
                                 DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                 return;
-            case ModalDialogProperties.ButtonType.TITLE_ICON:
             case ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL:
                 assert false : "Unhandled button click!";
         }
@@ -105,6 +107,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         updateToggleStateFromPref(); // Radio buttons always change. Reset them to match the prefs.
     }
 
+    @Initializer
     void initialize(PropertyModel model, @AutofillOptionsReferrer int referrer, Context context) {
         mModel = model;
         mContext = context;

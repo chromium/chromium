@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/interpolable_grid_track_list.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -304,7 +305,7 @@ void CSSGridTemplatePropertyInterpolationType::Composite(
            *underlying_value_owner.Value().interpolable_value)
            .IsCompatibleWith(
                To<InterpolableGridTrackList>(*value.interpolable_value))) {
-    underlying_value_owner.Set(*this, value);
+    underlying_value_owner.Set(this, value);
     return;
   }
   underlying_value_owner.SetNonInterpolableValue(value.non_interpolable_value);

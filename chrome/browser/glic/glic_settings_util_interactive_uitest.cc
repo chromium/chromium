@@ -174,12 +174,12 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
   }
   RunTestSequence(
       VerifyOpensGlicSettings(glic::OpenGlicKeyboardShortcutSetting),
-      WaitForStateChange(
-          kSettingsTab,
-          ElementIsVisibleStateChange(
-              kKeyboardShortcutIsVisible,
-              {"settings-ui", "settings-main", "settings-basic-page",
-               "settings-glic-page", "#shortcutInput"})),
+      WaitForStateChange(kSettingsTab,
+                         ElementIsVisibleStateChange(
+                             kKeyboardShortcutIsVisible,
+                             {"settings-ui", "settings-main",
+                              "settings-basic-page", "settings-glic-page",
+                              "#mainShortcutSetting", ".shortcut-input"})),
       WaitForStateChange(kSettingsTab, ElementIsHiddenStateChange(
                                            kBubbleIsHidden,
                                            kKeyboardShortcutHelpBubbleQuery)));

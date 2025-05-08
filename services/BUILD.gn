@@ -161,6 +161,7 @@ if (is_android) {
       "$google_play_services_package:google_play_services_base_java",
       "$google_play_services_package:google_play_services_basement_java",
       "$google_play_services_package:google_play_services_location_java",
+      "$google_play_services_package:google_play_services_tasks_java",
       "$google_play_services_package:google_play_services_vision_common_java",
       "$google_play_services_package:google_play_services_vision_java",
       "//base:base_java",

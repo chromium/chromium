@@ -15,6 +15,7 @@
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_user_events/user_event_sync_bridge.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using sync_pb::UserEventSpecifics;
@@ -65,8 +66,8 @@ class UserEventServiceImplTest : public testing::Test {
         /*types=*/{syncer::UserSelectableType::kHistory});
     ON_CALL(mock_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
-    ON_CALL(mock_processor_, TrackedAccountId())
-        .WillByDefault(testing::Return("account_id"));
+    ON_CALL(mock_processor_, TrackedGaiaId())
+        .WillByDefault(testing::Return(GaiaId("gaia_id")));
   }
 
   std::unique_ptr<UserEventSyncBridge> MakeBridge() {

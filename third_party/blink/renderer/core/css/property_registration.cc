@@ -75,6 +75,7 @@ unsigned PropertyRegistration::GetViewportUnitFlags() const {
 void PropertyRegistration::Trace(Visitor* visitor) const {
   visitor->Trace(initial_);
   visitor->Trace(property_rule_);
+  visitor->Trace(interpolation_types_);
 }
 
 static bool ComputationallyIndependent(const CSSValue& value) {

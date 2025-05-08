@@ -234,11 +234,10 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     texture = front_buffer_texture->GetTexture();
 #endif
   } else {
+    if (!texture_) {
+      return false;
+    }
     texture = texture_->GetHandle();
-  }
-
-  if (!texture) {
-    return false;
   }
 
   return CopyTextureToResourceProvider(texture, resource_provider);

@@ -70,8 +70,9 @@ metrics::MetricsService* GetMetricsService() {
 + (BOOL)setMetricsAndCrashReportingForTesting:(BOOL)enabled {
   BOOL previousValue = g_metrics_enabled;
   g_metrics_enabled = enabled;
-  GetApplicationContext()->GetMetricsServicesManager()->UpdateUploadPermissions(
-      true);
+  GetApplicationContext()
+      ->GetMetricsServicesManager()
+      ->UpdateUploadPermissions();
   return previousValue;
 }
 

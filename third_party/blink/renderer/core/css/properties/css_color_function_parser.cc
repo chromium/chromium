@@ -447,30 +447,64 @@ void ColorFunctionParser::MakePerColorSpaceAdjustments(
   }
 }
 
+namespace {
+
+const CSSNumericLiteralValue* GetNumericLiteralValue(const CSSValue* value) {
+  auto* literal_value = DynamicTo<CSSNumericLiteralValue>(value);
+  // We can reach here with calc(NumericLiteral) as per ChannelIsResolvable.
+  if (auto* math_value = DynamicTo<CSSMathFunctionValue>(value)) {
+    DCHECK(math_value->ExpressionNode()->IsNumericLiteral());
+    literal_value = MakeGarbageCollected<CSSNumericLiteralValue>(
+        math_value->ExpressionNode()->DoubleValue(),
+        math_value->ExpressionNode()->ResolvedUnitType());
+  }
+  return literal_value;
+}
+
+double ResolveColorChannelForNumericLiteral(
+    const CSSNumericLiteralValue* value,
+    ColorFunctionParser::ChannelType channel_type,
+    double percentage_base) {
+  using ChannelType = ColorFunctionParser::ChannelType;
+  switch (channel_type) {
+    case ChannelType::kNumber:
+      if (value->IsAngle()) {
+        return value->ComputeDegrees();
+      } else {
+        return value->GetDoubleValueWithoutClamping();
+      }
+    case ChannelType::kPercentage:
+      return (value->GetDoubleValue() / 100.0) * percentage_base;
+    default:
+      NOTREACHED();
+  }
+}
+
+double ResolveAlphaForNumericLiteral(
+    const CSSNumericLiteralValue* value,
+    ColorFunctionParser::ChannelType channel_type) {
+  using ChannelType = ColorFunctionParser::ChannelType;
+  switch (channel_type) {
+    case ChannelType::kNumber:
+      return ClampTo<double>(value->GetDoubleValue(), 0.0, 1.0);
+    case ChannelType::kPercentage:
+      return ClampTo<double>(value->GetDoubleValue() / 100.0, 0.0, 1.0);
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
 double ColorFunctionParser::ResolveColorChannel(
     const CSSValue* value,
     ChannelType channel_type,
     double percentage_base,
     const CSSColorChannelMap& color_channel_map) {
-  if (const CSSPrimitiveValue* primitive_value =
-          DynamicTo<CSSPrimitiveValue>(value)) {
-    switch (channel_type) {
-      case ChannelType::kNumber:
-        if (primitive_value->IsAngle()) {
-          return primitive_value->ComputeDegrees();
-        } else {
-          return primitive_value->GetDoubleValueWithoutClamping();
-        }
-      case ChannelType::kPercentage:
-        return (primitive_value->GetDoubleValue() / 100.0) * percentage_base;
-      case ChannelType::kRelative:
-        // Proceed to relative channel value resolution below.
-        break;
-      default:
-        NOTREACHED();
-    }
+  if (value->IsPrimitiveValue() && channel_type != ChannelType::kRelative) {
+    return ResolveColorChannelForNumericLiteral(GetNumericLiteralValue(value),
+                                                channel_type, percentage_base);
   }
-
   return ResolveRelativeChannelValue(value, channel_type, percentage_base,
                                      color_channel_map);
 }
@@ -479,22 +513,10 @@ double ColorFunctionParser::ResolveAlpha(
     const CSSValue* value,
     ChannelType channel_type,
     const CSSColorChannelMap& color_channel_map) {
-  if (const CSSPrimitiveValue* primitive_value =
-          DynamicTo<CSSPrimitiveValue>(value)) {
-    switch (channel_type) {
-      case ChannelType::kNumber:
-        return ClampTo<double>(primitive_value->GetDoubleValue(), 0.0, 1.0);
-      case ChannelType::kPercentage:
-        return ClampTo<double>(primitive_value->GetDoubleValue() / 100.0, 0.0,
-                               1.0);
-      case ChannelType::kRelative:
-        // Proceed to relative channel value resolution below.
-        break;
-      default:
-        NOTREACHED();
-    }
+  if (value->IsPrimitiveValue() && channel_type != ChannelType::kRelative) {
+    return ResolveAlphaForNumericLiteral(GetNumericLiteralValue(value),
+                                         channel_type);
   }
-
   return ResolveRelativeChannelValue(
       value, channel_type, /*percentage_base=*/1.0, color_channel_map);
 }
@@ -514,20 +536,18 @@ double ColorFunctionParser::ResolveRelativeChannelValue(
     }
   }
 
-  if (const CSSMathFunctionValue* calc_value =
-          DynamicTo<CSSMathFunctionValue>(value)) {
-    switch (calc_value->Category()) {
-      case kCalcNumber:
-        return calc_value->DoubleValue();
-      case kCalcPercent:
-        return (CSSValueClampingUtils::ClampDouble(calc_value->DoubleValue()) /
-                100) *
-               percentage_base;
-      case kCalcAngle:
-        return calc_value->ComputeDegrees();
-      default:
-        NOTREACHED();
-    }
+  auto* literal_value = GetNumericLiteralValue(value);
+  switch (To<CSSMathFunctionValue>(value)->Category()) {
+    case kCalcNumber:
+      return literal_value->DoubleValue();
+    case kCalcPercent:
+      return (CSSValueClampingUtils::ClampDouble(literal_value->DoubleValue()) /
+              100) *
+             percentage_base;
+    case kCalcAngle:
+      return literal_value->ComputeDegrees();
+    default:
+      NOTREACHED();
   }
 
   NOTREACHED();

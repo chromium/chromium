@@ -11,7 +11,6 @@
 #import "base/task/thread_pool.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "base/test/test_file_util.h"
 #import "base/test/test_future.h"
 #import "base/uuid.h"
@@ -27,6 +26,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -66,6 +66,7 @@ using testing::UnorderedElementsAre;
 
 - (void)changeProfile:(std::string_view)profileName
              forScene:(SceneState*)sceneState
+               reason:(ChangeProfileReason)reason
          continuation:(ChangeProfileContinuation)continuation {
   NOTREACHED();
 }
@@ -356,8 +357,8 @@ class AccountProfileMapperTest : public PlatformTest {
 
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FakeProfileManagerIOS> profile_manager_;
   raw_ptr<FakeSystemIdentityManager> system_identity_manager_;
   std::unique_ptr<AccountProfileMapper> account_profile_mapper_;

@@ -31,7 +31,8 @@ class POLICY_EXPORT CloudExternalDataManager : public ExternalDataManager {
     MetadataEntry();
     MetadataEntry(const std::string& url, const std::string& hash);
 
-    bool operator!=(const MetadataEntry& other) const;
+    friend bool operator==(const MetadataEntry&,
+                           const MetadataEntry&) = default;
 
     std::string url;
     std::string hash;

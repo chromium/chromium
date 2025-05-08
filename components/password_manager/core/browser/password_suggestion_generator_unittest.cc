@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -45,6 +46,7 @@ namespace password_manager {
 namespace {
 
 using autofill::EqualsSuggestion;
+using autofill::MockIdentityCredentialDelegate;
 using autofill::PasswordAndMetadata;
 using autofill::PasswordFormFillData;
 using autofill::Suggestion;
@@ -101,6 +103,18 @@ Matcher<Suggestion> EqualsPasskeySuggestion(
             ElementsAre(ElementsAre(Suggestion::Text(authenticator_label)))),
       Field("custom_icon", &Suggestion::custom_icon, custom_icon),
       Field("payload", &Suggestion::payload, payload));
+}
+
+Matcher<Suggestion> EqualsIdentitySuggestion(
+    const std::u16string& main_text,
+    const std::u16string& label,
+    const gfx::Image& custom_icon,
+    const Suggestion::Payload& payload) {
+  return AllOf(EqualsSuggestion(SuggestionType::kIdentityCredential, main_text),
+               Field("labels", &Suggestion::labels,
+                     ElementsAre(ElementsAre(Suggestion::Text(label)))),
+               Field("custom_icon", &Suggestion::custom_icon, custom_icon),
+               Field("payload", &Suggestion::payload, payload));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -696,6 +710,47 @@ TEST_F(PasswordSuggestionGeneratorTest, DomainSuggestions_SuggestionOrder) {
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion(
               /*has_webauthn_credential=*/true)));
+}
+
+// Verify the identity suggestion content.
+TEST_F(PasswordSuggestionGeneratorTest, IdentitySuggestions_SingleAccount) {
+  std::vector<Suggestion> identity_suggestions;
+  std::string id = "user";
+  std::string email = "foo@idp.example";
+  GURL identity_provider = GURL("https://idp.example/fedcm.json");
+  std::string identity_provider_for_display = "idp.example";
+  gfx::Image decoded_picture = gfx::Image();
+
+  Suggestion suggestion(base::UTF8ToUTF16(email),
+                        SuggestionType::kIdentityCredential);
+  suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
+      base::UTF8ToUTF16(identity_provider_for_display)))});
+  suggestion.custom_icon = decoded_picture;
+  auto payload = Suggestion::IdentityCredentialPayload(identity_provider, id);
+  suggestion.payload = payload;
+  identity_suggestions.push_back(suggestion);
+
+  autofill_client().set_identity_credential_delegate(
+      std::make_unique<NiceMock<MockIdentityCredentialDelegate>>());
+
+  ON_CALL(static_cast<MockIdentityCredentialDelegate&>(
+              *autofill_client().GetIdentityCredentialDelegate()),
+          GetVerifiedAutofillSuggestions)
+      .WillByDefault(Return(identity_suggestions));
+
+  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
+      /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
+      OffersGeneration(false), ShowPasswordSuggestions(false),
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(true));
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsIdentitySuggestion(
+                  base::UTF8ToUTF16(email),
+                  l10n_util::GetStringFUTF16(
+                      IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
+                      base::UTF8ToUTF16(identity_provider_for_display)),
+                  decoded_picture, payload)));
 }
 
 // Manual fallback suggestions are only relevant for desktop platform.

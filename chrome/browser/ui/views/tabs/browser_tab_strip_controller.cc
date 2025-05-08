@@ -32,8 +32,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/split_tab_data.h"
-#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
+#include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
@@ -66,6 +65,9 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -337,8 +339,11 @@ void BrowserTabStripController::SelectTab(int model_index,
                                           const ui::Event& event) {
   // When selecting a split tab, activate the most recently focused tab in the
   // split.
-  if (tabstrip_->tab_at(model_index)->split().has_value()) {
-    model_index = GetIndexOfLastFocusedTabInSplit(model_index);
+  std::optional<split_tabs::SplitTabId> split_id =
+      tabstrip_->tab_at(model_index)->split();
+  if (split_id.has_value()) {
+    model_index = split_tabs::GetIndexOfLastActiveTab(
+        browser()->tab_strip_model(), split_id.value());
   }
 
   std::unique_ptr<viz::PeakGpuMemoryTracker> tracker =
@@ -826,8 +831,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
     content::WebContents* new_contents = selection.new_contents;
     std::optional<size_t> index = selection.new_model.active();
     if (new_contents && index.has_value()) {
-      TabUIHelper::FromWebContents(new_contents)
-          ->set_was_active_at_least_once();
+      TabUIHelper::FromWebContents(new_contents)->SetWasActiveAtLeastOnce();
       SetTabDataAt(new_contents, index.value());
     }
   }
@@ -1031,26 +1035,4 @@ void BrowserTabStripController::OnDiscardRingTreatmentEnabledChanged() {
     tabstrip_->tab_at(tab_index)->SetShouldShowDiscardIndicator(
         should_show_discard_indicator_);
   }
-}
-
-int BrowserTabStripController::GetIndexOfLastFocusedTabInSplit(
-    int model_index) {
-  const std::vector<tabs::TabInterface*> split_tabs =
-      browser()
-          ->tab_strip_model()
-          ->GetSplitData(tabstrip_->tab_at(model_index)->split().value())
-          ->ListTabs();
-
-  tabs::TabInterface* recently_active = *std::max_element(
-      split_tabs.begin(), split_tabs.end(),
-      [](tabs::TabInterface* a, tabs::TabInterface* b) {
-        auto get_last_focused_time_for_tab = [](const tabs::TabInterface* tab) {
-          return resource_coordinator::TabLifecycleUnitSource::
-              GetTabLifecycleUnitExternal(tab->GetContents())
-                  ->GetLastFocusedTime();
-        };
-        return get_last_focused_time_for_tab(b) >
-               get_last_focused_time_for_tab(a);
-      });
-  return browser()->tab_strip_model()->GetIndexOfTab(recently_active);
 }

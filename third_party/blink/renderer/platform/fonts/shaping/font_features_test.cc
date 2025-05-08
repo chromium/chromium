@@ -20,6 +20,15 @@ namespace {
 //
 class FontFeaturesTest : public testing::Test {};
 
+std::optional<uint32_t> FindValue(uint32_t tag, const FontFeatures& features) {
+  for (const FontFeatureRange& feature : features) {
+    if (feature.tag == tag) {
+      return feature.value;
+    }
+  }
+  return std::nullopt;
+}
+
 static const FontOrientation orientations[] = {
     FontOrientation::kHorizontal,
     FontOrientation::kVerticalRotated,
@@ -46,13 +55,13 @@ TEST_P(FontFeaturesByOrientationTest, EastAsianContextualSpacingOnByDefault) {
   FontDescription font_description;
   font_description.SetOrientation(GetOrientation());
   FontFeatures features;
-  features.Initialize(font_description);
+  FontFeatureRange::FromFontDescription(font_description, features);
   if (IsHorizontal()) {
-    EXPECT_EQ(features.FindValueForTesting(chws), 1u);
-    EXPECT_EQ(features.FindValueForTesting(vchw), std::nullopt);
+    EXPECT_EQ(FindValue(chws, features), 1u);
+    EXPECT_EQ(FindValue(vchw, features), std::nullopt);
   } else {
-    EXPECT_EQ(features.FindValueForTesting(chws), std::nullopt);
-    EXPECT_EQ(features.FindValueForTesting(vchw), 1u);
+    EXPECT_EQ(FindValue(chws, features), std::nullopt);
+    EXPECT_EQ(FindValue(vchw, features), 1u);
   }
 }
 
@@ -68,13 +77,13 @@ TEST_P(FontFeaturesByOrientationTest,
     font_description.SetOrientation(GetOrientation());
     font_description.SetFeatureSettings(settings);
     FontFeatures features;
-    features.Initialize(font_description);
+    FontFeatureRange::FromFontDescription(font_description, features);
     if (IsHorizontal()) {
-      EXPECT_EQ(features.FindValueForTesting(chws), value);
-      EXPECT_EQ(features.FindValueForTesting(vchw), std::nullopt);
+      EXPECT_EQ(FindValue(chws, features), value);
+      EXPECT_EQ(FindValue(vchw, features), std::nullopt);
     } else {
-      EXPECT_EQ(features.FindValueForTesting(chws), std::nullopt);
-      EXPECT_EQ(features.FindValueForTesting(vchw), value);
+      EXPECT_EQ(FindValue(chws, features), std::nullopt);
+      EXPECT_EQ(FindValue(vchw, features), value);
     }
   }
 }
@@ -95,9 +104,9 @@ TEST_P(FontFeaturesByOrientationTest,
     font_description.SetOrientation(GetOrientation());
     font_description.SetFeatureSettings(settings);
     FontFeatures features;
-    features.Initialize(font_description);
-    EXPECT_EQ(features.FindValueForTesting(chws), std::nullopt);
-    EXPECT_EQ(features.FindValueForTesting(vchw), std::nullopt);
+    FontFeatureRange::FromFontDescription(font_description, features);
+    EXPECT_EQ(FindValue(chws, features), std::nullopt);
+    EXPECT_EQ(FindValue(vchw, features), std::nullopt);
   }
 }
 
@@ -117,10 +126,10 @@ TEST_P(FontFeaturesByOrientationTest, MultipleGlyphWidthGPOS) {
   font_description.SetOrientation(GetOrientation());
   font_description.SetFeatureSettings(settings);
   FontFeatures features;
-  features.Initialize(font_description);
+  FontFeatureRange::FromFontDescription(font_description, features);
   // Check all features are enabled.
   for (const hb_tag_t tag : tags)
-    EXPECT_EQ(features.FindValueForTesting(tag), 1u);
+    EXPECT_EQ(FindValue(tag, features), 1u);
 }
 
 }  // namespace

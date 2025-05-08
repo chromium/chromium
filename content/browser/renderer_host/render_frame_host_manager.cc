@@ -667,10 +667,7 @@ void RenderFrameHostManager::InitRoot(
           frame_tree_node_->parent(),
           is_legacy_browsing_context_state_mode
               ? static_cast<std::optional<BrowsingInstanceId>>(std::nullopt)
-              : site_instance->GetBrowsingInstanceId(),
-          is_legacy_browsing_context_state_mode
-              ? static_cast<std::optional<base::UnguessableToken>>(std::nullopt)
-              : site_instance->coop_related_group_token());
+              : site_instance->GetBrowsingInstanceId());
   browsing_context_state->CommitFramePolicy(initial_main_frame_policy);
   browsing_context_state->SetFrameName(name, "");
   UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
@@ -719,10 +716,7 @@ void RenderFrameHostManager::InitChild(
           frame_tree_node_->parent(),
           is_legacy_browsing_context_state_mode
               ? static_cast<std::optional<BrowsingInstanceId>>(std::nullopt)
-              : site_instance->GetBrowsingInstanceId(),
-          is_legacy_browsing_context_state_mode
-              ? static_cast<std::optional<base::UnguessableToken>>(std::nullopt)
-              : site_instance->coop_related_group_token());
+              : site_instance->GetBrowsingInstanceId());
   browsing_context_state->CommitFramePolicy(frame_policy);
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitChild, site_instance, frame_routing_id,
@@ -2569,7 +2563,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     bool is_reload,
     bool is_same_document,
     IsSameSiteGetter& is_same_site,
-    CoopSwapResult coop_swap_result,
+    bool coop_swap,
     bool was_server_redirect,
     bool should_replace_current_entry,
     bool has_rel_opener) {
@@ -2600,7 +2594,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
         ShouldSwapBrowsingInstance::kNo_RendererDebugURL);
   }
 
-  if (coop_swap_result == CoopSwapResult::kSwap) {
+  if (coop_swap) {
     return BrowsingContextGroupSwap::CreateCoopSwap();
   }
 
@@ -2728,14 +2722,6 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     }
   }
 
-  // We've checked that we didn't need to do a hard BrowsingInstance swap. If
-  // COOP: restrict-properties asks for it, do a BrowsingInstance swap that
-  // preserves a reference to the previous BrowsingInstance. Such
-  // BrowsingInstances are said to be "related".
-  if (coop_swap_result == CoopSwapResult::kSwapRelated) {
-    return BrowsingContextGroupSwap::CreateRelatedCoopSwap();
-  }
-
   // When doing a history navigation, we cannot assume that the page will behave
   // in the same way as it did previously. It could change headers, lead to an
   // error page, etc. We only check the destination_instance once we're done
@@ -2745,11 +2731,8 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // BrowsingInstance. This is why this block is after security checks, but
   // before proactive BrowsingInstance swap.
   if (destination_instance) {
-    if (!destination_instance->IsCoopRelatedSiteInstance(current_instance)) {
-      return BrowsingContextGroupSwap::CreateSecuritySwap();
-    }
     if (!destination_instance->IsRelatedSiteInstance(current_instance)) {
-      return BrowsingContextGroupSwap::CreateRelatedCoopSwap();
+      return BrowsingContextGroupSwap::CreateSecuritySwap();
     }
     return BrowsingContextGroupSwap::CreateNoSwap(
         ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance);
@@ -2941,7 +2924,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     IsSameSiteGetter& is_same_site,
     bool dest_is_view_source_mode,
     bool was_server_redirect,
-    CoopSwapResult coop_swap_result,
+    bool coop_swap,
     bool should_replace_current_entry,
     bool force_new_browsing_instance,
     bool has_rel_opener,
@@ -2996,7 +2979,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
                 current_effective_url, current_is_view_source_mode,
                 source_instance, current_instance, dest_instance, dest_url_info,
                 dest_is_view_source_mode, transition, error_page_process,
-                is_reload, is_same_document, is_same_site, coop_swap_result,
+                is_reload, is_same_document, is_same_site, coop_swap,
                 was_server_redirect, should_replace_current_entry,
                 has_rel_opener);
 
@@ -3163,9 +3146,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // beyond COOP.
   ProcessReuseOnCOOPType coop_process_reuse_type =
       ProcessReuseOnCOOPType::kNone;
-  if (should_swap_result->type() == BrowsingContextGroupSwapType::kCoopSwap ||
-      should_swap_result->type() ==
-          BrowsingContextGroupSwapType::kRelatedCoopSwap) {
+  if (should_swap_result->type() == BrowsingContextGroupSwapType::kCoopSwap) {
     if (candidate_instance && candidate_instance != new_instance &&
         candidate_instance->GetSiteInfo() == new_instance->GetSiteInfo()) {
       coop_process_reuse_type = ProcessReuseOnCOOPType::kDifferentSiteInstance;
@@ -3187,9 +3168,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     DCHECK(frame_tree_node_->IsMainFrame());
     new_instance->ReuseExistingProcessIfPossible(process_to_reuse);
   }
-  if (should_swap_result->type() == BrowsingContextGroupSwapType::kCoopSwap ||
-      should_swap_result->type() ==
-          BrowsingContextGroupSwapType::kRelatedCoopSwap) {
+  if (should_swap_result->type() == BrowsingContextGroupSwapType::kCoopSwap) {
     if (new_instance->HasProcess()) {
       RecordProcessReuseOnCoopResult(coop_process_reuse_type, true);
     } else {
@@ -3358,15 +3337,6 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
                                     SiteInstanceRelation::RELATED);
     }
 
-    if (browsing_context_group_swap.type() ==
-        BrowsingContextGroupSwapType::kRelatedCoopSwap) {
-      // If we're dealing with COOP: restrict-properties, we need to stay in the
-      // same CoopRelatedGroup, so that further navigations get a
-      // chance to preserve their scriptability.
-      return SiteInstanceDescriptor(
-          computed_url_info, SiteInstanceRelation::RELATED_IN_COOP_GROUP);
-    }
-
     return SiteInstanceDescriptor(computed_url_info,
                                   SiteInstanceRelation::UNRELATED);
   }
@@ -3386,29 +3356,6 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   bool can_use_source_instance =
       CanUseSourceSiteInstance(dest_url_info, source_instance,
                                was_server_redirect, error_page_process, reason);
-  if (browsing_context_group_swap.type() ==
-      BrowsingContextGroupSwapType::kRelatedCoopSwap) {
-    // We typically expect `source_instance` to be in the same BrowsingInstance
-    // as `current_instance`. However when extensions use the chrome.tabs.update
-    // API to navigate to about:blank, `source_instance` is set to the
-    // extension's SiteInstance, which should be in a different
-    // BrowsingInstance. In that case, `source_instance` should not be in a
-    // different BrowsingInstance in the same CoopRelatedGroup as
-    // `current_instance`, but use its own extension's CoopRelatedGroup. Note
-    // that it can be in another BrowsingInstance in another CoopRelatedGroup,
-    // which we have to consider for the kSwap case below.
-    // TODO(crbug.com/40186710): Add a test verifying that we cannot end
-    // up in that situation using chrome.tabs.update. This could be the case if
-    // an extension use that API to navigate from a COOP: restrict-properties
-    // page to about:blank.
-    CHECK(!can_use_source_instance ||
-          source_instance->IsRelatedSiteInstance(current_instance) ||
-          !source_instance->IsCoopRelatedSiteInstance(current_instance));
-    AppendReason(reason,
-                 "DetermineSiteInstanceForURL => related_in_COOP_group");
-    return SiteInstanceDescriptor(dest_url_info,
-                                  SiteInstanceRelation::RELATED_IN_COOP_GROUP);
-  }
 
   // If a swap is required, we need to force the SiteInstance AND
   // BrowsingInstance to be different ones, using CreateForURL.
@@ -3641,20 +3588,12 @@ bool RenderFrameHostManager::CanUseDestinationInstance(
     bool was_server_redirect) {
   // Start by verifying that the dest_instance is compatible with the browsing
   // context group swap decision.
-  if (browsing_context_group_swap.ShouldSwap()) {
-    // 1. If we've decided that the target SiteInstance cannot be in the same
-    // BrowsingInstance, and that the dest_instance is, we should not reuse it.
-    if (dest_instance->IsRelatedSiteInstance(current_instance)) {
-      return false;
-    }
 
-    // 2. If we aren't looking for a SiteInstance in the same CoopRelatedGroup,
-    // then don't use a dest_instance in that group.
-    if (browsing_context_group_swap.type() !=
-            BrowsingContextGroupSwapType::kRelatedCoopSwap &&
-        dest_instance->IsCoopRelatedSiteInstance(current_instance)) {
-      return false;
-    }
+  // If we've decided that the target SiteInstance cannot be in the same
+  // BrowsingInstance, and that the dest_instance is, we should not reuse it.
+  if (browsing_context_group_swap.ShouldSwap() &&
+      dest_instance->IsRelatedSiteInstance(current_instance)) {
+    return false;
   }
 
   // Note: The later call to IsSuitableForUrlInfo does not have context
@@ -3824,11 +3763,6 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
         descriptor.dest_url_info);
   }
 
-  if (descriptor.relation == SiteInstanceRelation::RELATED_IN_COOP_GROUP) {
-    return current_instance->GetCoopRelatedSiteInstanceImpl(
-        descriptor.dest_url_info);
-  }
-
   // At this point we know an unrelated site instance must be returned.
 
   // If the current SiteInstance has fixed storage partition (e.g. <webview>
@@ -3845,7 +3779,7 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
   // `candidate_instance` is the SiteInstance that was created at request start
   // time.
   if (candidate_instance &&
-      !current_instance->IsCoopRelatedSiteInstance(candidate_instance) &&
+      !current_instance->IsRelatedSiteInstance(candidate_instance) &&
       candidate_instance->DoesSiteInfoForURLMatch(dest_url_info)) {
     return candidate_instance;
   }
@@ -4002,8 +3936,8 @@ void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
     SiteInstanceGroup* new_group,
     bool recovering_without_early_commit,
     const scoped_refptr<BrowsingContextState>& browsing_context_state) {
-  // Only create opener proxies if they are in the same CoopRelatedGroup.
-  if (new_group->IsCoopRelatedSiteInstanceGroup(old_group)) {
+  // Only create opener proxies if they are in the same BrowsingInstance.
+  if (new_group->IsRelatedSiteInstanceGroup(old_group)) {
     CreateOpenerProxies(new_group, frame_tree_node_, browsing_context_state);
   } else {
     // Ensure that the frame tree has RenderFrameProxyHosts for the
@@ -4287,8 +4221,7 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
             render_frame_host_->browsing_context_state()
                 ->current_replication_state()
                 .Clone(),
-            frame_tree_node_->parent(), new_instance->GetBrowsingInstanceId(),
-            new_instance->coop_related_group_token());
+            frame_tree_node_->parent(), new_instance->GetBrowsingInstanceId());
 
         // Add a proxy to the outer delegate if one exists, as this is not
         // copied over to the new BrowsingContextState otherwise.
@@ -4515,37 +4448,6 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
   }
 }
 
-void RenderFrameHostManager::CreateRenderFrameProxyAndAncestorChainIfNeeded(
-    SiteInstanceGroup* group) {
-  SiteInstanceGroup* current_site_instance_group =
-      current_frame_host()->GetSiteInstance()->group();
-  CHECK(!group->IsRelatedSiteInstanceGroup(current_site_instance_group));
-  CHECK(group->IsCoopRelatedSiteInstanceGroup(current_site_instance_group));
-
-  // If the frame we need to create a proxy for is a subframe, we need to make
-  // sure the entire ancestor chain exists as proxies as well, otherwise the
-  // subframe proxy would be floating around. Note: we only need to create
-  // ancestors in this frame tree, so we can use IsMainFrame().
-  std::vector<FrameTreeNode*> ancestor_chain;
-  FrameTreeNode* ancestor = frame_tree_node_;
-  while (ancestor) {
-    ancestor_chain.push_back(ancestor);
-    if (ancestor->IsMainFrame()) {
-      ancestor = nullptr;
-    } else {
-      ancestor = ancestor->parent()->frame_tree_node();
-    }
-  }
-
-  // Create proxies, from the top-level frame down to the initially specified
-  // subframe. TODO(crbug.com/40186710): Verify that the behavior is
-  // correct if the frame is pending deletion.
-  for (FrameTreeNode* node : base::Reversed(ancestor_chain)) {
-    node->render_manager()->CreateRenderFrameProxy(
-        group, node->current_frame_host()->browsing_context_state());
-  }
-}
-
 void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
   TRACE_EVENT_INSTANT(
       "navigation", "RenderFrameHostManager::CreateProxiesForChildFrame_Parent",
@@ -4768,7 +4670,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
           request->ComputeErrorPageProcess(), is_reload,
           request->IsSameDocument(), is_same_site,
           request->commit_params().is_view_source, request->WasServerRedirect(),
-          request->coop_status().browsing_instance_swap_result(),
+          request->coop_status().browsing_instance_swap(),
           request->common_params().should_replace_current_entry,
           request->force_new_browsing_instance(),
           request->begin_params().has_rel_opener, browsing_context_group_swap,
@@ -5567,8 +5469,7 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
 void RenderFrameHostManager::CollectOpenerFrameTrees(
     SiteInstanceGroup* site_instance_group,
     std::vector<FrameTree*>* opener_frame_trees,
-    std::unordered_set<FrameTreeNode*>* nodes_with_back_links,
-    std::unordered_set<FrameTreeNode*>* cross_browsing_context_group_openers) {
+    std::unordered_set<FrameTreeNode*>* nodes_with_back_links) {
   CHECK(opener_frame_trees);
   opener_frame_trees->push_back(&frame_tree_node_->frame_tree());
 
@@ -5585,27 +5486,6 @@ void RenderFrameHostManager::CollectOpenerFrameTrees(
     for (FrameTreeNode* node : frame_tree->Nodes()) {
       if (!node->opener())
         continue;
-
-      // Do not iterate recursively on FrameTrees in different BrowsingInstances
-      // in the same CoopRelatedGroup. Instead, simply record the direct opener
-      // in `cross_browsing_context_group_openers`. We can end up here with
-      // BrowsingInstance not in the same CoopRelatedGroup for rare cases
-      // involving outer delegate proxies. For example when a chrome app webview
-      // gets a new opener, we will iterate this opener tree and create proxies
-      // for newly connected frames in the outer delegate SiteInstanceGroup. We
-      // do not want to interact with these, so explicitly verify the
-      // CoopRelatedGroups match.
-      // TODO(crbug.com/40266207): It is not clear that this iteration is
-      // actually useful for outer delegate proxies. See if this can be
-      // prevented to simplify logic here.
-      SiteInstanceGroup* opener_sig =
-          node->opener()->current_frame_host()->GetSiteInstance()->group();
-      if (site_instance_group &&
-          !site_instance_group->IsRelatedSiteInstanceGroup(opener_sig) &&
-          site_instance_group->IsCoopRelatedSiteInstanceGroup(opener_sig)) {
-        cross_browsing_context_group_openers->insert(node->opener());
-        continue;
-      }
 
       FrameTree& opener_tree = node->opener()->frame_tree();
       const auto& existing_tree_it =
@@ -5641,19 +5521,8 @@ void RenderFrameHostManager::CreateOpenerProxies(
   // web_contents_impl.cc.
   std::vector<FrameTree*> opener_frame_trees;
   std::unordered_set<FrameTreeNode*> nodes_with_back_links;
-  std::unordered_set<FrameTreeNode*> cross_browsing_context_group_openers;
 
-  CollectOpenerFrameTrees(group, &opener_frame_trees, &nodes_with_back_links,
-                          &cross_browsing_context_group_openers);
-
-  // Create the proxies for openers outside of this BrowsingInstance. They are
-  // created separately on purpose, because we do not want to create proxies for
-  // their entire tree, only the single point of contact with this
-  // BrowsingInstance (and for any necessary ancestor frames).
-  for (auto* node : cross_browsing_context_group_openers) {
-    node->render_manager()->CreateRenderFrameProxyAndAncestorChainIfNeeded(
-        group);
-  }
+  CollectOpenerFrameTrees(group, &opener_frame_trees, &nodes_with_back_links);
 
   // Create opener proxies for frame trees, processing furthest openers from
   // this node first and this node last.  In the common case without cycles,

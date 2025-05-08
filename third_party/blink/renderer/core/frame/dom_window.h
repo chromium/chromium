@@ -158,8 +158,7 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
   void InstallCoopAccessMonitor(
       LocalFrame* accessing_frame,
       network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-          coop_reporter_params,
-      bool is_in_same_virtual_coop_related_group);
+          coop_reporter_params);
   // Whenever we detect that the enforcement of a report-only COOP policy would
   // have resulted in preventing access to this window, a report is potentially
   // sent when calling this function.
@@ -241,7 +240,6 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
         reporter;
     bool endpoint_defined;
     WTF::String reported_window_url;
-    bool is_in_same_virtual_coop_related_group = false;
   };
   HeapVector<Member<CoopAccessMonitor>> coop_access_monitor_;
   // Mutable: only used to downsample metrics, no change to observable state.

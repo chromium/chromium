@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.search_resumption;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.text.TextUtils;
 import android.view.ViewGroup;
 
@@ -11,6 +13,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -23,14 +27,17 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /** This is a utility class for search resumption module. */
+@NullMarked
 public class SearchResumptionModuleUtils {
     @IntDef({ModuleShowStatus.EXPANDED, ModuleShowStatus.COLLAPSED, ModuleShowStatus.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
@@ -102,7 +109,7 @@ public class SearchResumptionModuleUtils {
      * @param profile The profile of the user.
      * @param moduleContainerStubId The id of the search resumption module on its parent view.
      */
-    public static SearchResumptionModuleCoordinator mayCreateSearchResumptionModule(
+    public static @Nullable SearchResumptionModuleCoordinator mayCreateSearchResumptionModule(
             ViewGroup parent,
             TabModel tabModel,
             Tab currentTab,
@@ -139,6 +146,8 @@ public class SearchResumptionModuleUtils {
      * </ol>
      */
     @VisibleForTesting
+    @SuppressWarnings("NullAway")
+    // TODO(crbug.com/389129271): Follow up on whether this profile is always non-OTR.
     static boolean shouldShowSearchResumptionModule(Profile profile) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)) {
             recordModuleNotShownReason(ModuleNotShownReason.FEATURE_DISABLED);
@@ -157,9 +166,9 @@ public class SearchResumptionModuleUtils {
             return false;
         }
 
-        if (!SyncServiceFactory.getForProfile(profile)
-                .getSelectedTypes()
-                .contains(UserSelectableType.HISTORY)) {
+        SyncService syncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
+        Set<Integer> selectedTypes = syncService.getSelectedTypes();
+        if (!selectedTypes.contains(UserSelectableType.HISTORY)) {
             recordModuleNotShownReason(ModuleNotShownReason.NOT_SYNC);
             return false;
         }
@@ -195,7 +204,7 @@ public class SearchResumptionModuleUtils {
     }
 
     @VisibleForTesting
-    static SuggestionResult mayGetCachedResults(Tab currentTab, Tab tabToTrack) {
+    static @Nullable SuggestionResult mayGetCachedResults(Tab currentTab, Tab tabToTrack) {
         SuggestionResult cachedSuggestions = null;
         if (currentTab.canGoForward()) {
             // If the NTP is created due to any back operation, i.e., its Tab has navigated before,

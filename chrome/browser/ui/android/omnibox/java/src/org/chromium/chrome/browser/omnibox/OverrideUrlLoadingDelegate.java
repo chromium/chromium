@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 
 /**
  * Delegate interface that allows implementers to override the default URL loading behavior of the
  * LocationBar.
  */
+@NullMarked
 public interface OverrideUrlLoadingDelegate {
     /**
      * Evaluate whether supplied LoadUrlParams need special handling.

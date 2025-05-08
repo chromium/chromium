@@ -4,8 +4,6 @@
 
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 
-#include <utility>
-
 #include "base/check_op.h"
 
 namespace ui {
@@ -36,20 +34,9 @@ void AXPlatformForTest::DetachFromThread() {
   ax_platform_.DetachFromThreadForTesting();
 }
 
-AXMode AXPlatformForTest::GetProcessMode() {
+AXMode AXPlatformForTest::GetAccessibilityMode() {
   return mode_;
 }
-
-void AXPlatformForTest::SetProcessMode(AXMode new_mode) {
-  const AXMode old_mode = std::exchange(mode_, new_mode);
-
-  // Broadcast the new mode flags, if any, to the AXModeObservers.
-  if (const auto additions = new_mode & ~old_mode; !additions.is_mode_off()) {
-    ax_platform_.NotifyModeAdded(additions);
-  }
-}
-
-void AXPlatformForTest::OnAccessibilityApiUsage() {}
 
 #if BUILDFLAG(IS_WIN)
 AXPlatform::ProductStrings AXPlatformForTest::GetProductStrings() {

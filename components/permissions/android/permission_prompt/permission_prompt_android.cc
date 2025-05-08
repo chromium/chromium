@@ -173,15 +173,14 @@ PermissionPromptAndroid::GetAnnotatedMessageText() const {
 
   // We only end up here if 2 requests are combined in one prompt (which only
   // happens for Audio & Video). All other requests are handled in the if block
-  // above. For Audio and Video (which can be allowed once), only format origins
-  // bold if one time permissions are enabled.
+  // above. For Audio and Video (which can be allowed once), format origins
+  // bold.
   return PermissionRequest::GetDialogAnnotatedMessageText(
       url_formatter::FormatUrlForSecurityDisplay(
           delegate_->GetRequestingOrigin(),
           url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
       IDS_MEDIA_CAPTURE_AUDIO_AND_VIDEO_INFOBAR_TEXT,
-      /*format_origin_bold=*/
-      base::FeatureList::IsEnabled(permissions::features::kOneTimePermission));
+      /*format_origin_bold=*/true);
 }
 
 bool PermissionPromptAndroid::ShouldUseRequestingOriginFavicon() const {
@@ -221,12 +220,6 @@ PermissionPromptAndroid::GetBoldRanges(JNIEnv* env) const {
     bolded_ranges.push_back(base::checked_cast<int>(end));
   }
   return base::android::ToJavaIntArray(env, bolded_ranges);
-}
-
-bool PermissionPromptAndroid::IsOneTimePermissionRequest() const {
-  return base::FeatureList::IsEnabled(
-             permissions::features::kOneTimePermission) &&
-         PermissionUtil::DoesSupportTemporaryGrants(GetContentSettingType(0));
 }
 
 }  // namespace permissions

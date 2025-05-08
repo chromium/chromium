@@ -13,18 +13,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /**
- * Struct containing the info of ChromeTabbedActivity instance needed to manage
- * multi-instance support on Android S.
+ * Struct containing the info of ChromeTabbedActivity instance needed to manage multi-instance
+ * support on Android S.
  */
 @NullMarked
-final class InstanceInfo {
+public final class InstanceInfo {
     /** Type of the instance necessary for UI. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({Type.CURRENT, Type.ADJACENT, Type.OTHER})
     public @interface Type {
         int CURRENT = 1; // Current, active instance.
         int ADJACENT = 2; // Instance running in the adjacent window.
-        int OTHER = 3; // Hidden or uninstantiated yet.
+        int OTHER = 3; // Hidden or not yet instantiated.
     }
 
     /**
@@ -48,11 +48,17 @@ final class InstanceInfo {
     /** The number of normal tabs of an instance. */
     public final int tabCount;
 
-    /** The number of incongito tabs of an instance. */
+    /** The number of incognito tabs of an instance. */
     public final int incognitoTabCount;
 
     /** {@code true} if the active tab is of incognito type */
     public final boolean isIncognitoSelected;
+
+    /**
+     * The timestamp (in ms) reflecting the last time the instance was accessed. The timestamp is
+     * recorded when the instance is created and when its top resumed activity status changes.
+     */
+    public final long lastAccessedTime;
 
     public InstanceInfo(
             int instanceId,
@@ -62,7 +68,8 @@ final class InstanceInfo {
             String title,
             int tabCount,
             int incognitoTabCount,
-            boolean isIncognitoSelected) {
+            boolean isIncognitoSelected,
+            long lastAccessedTime) {
         this.instanceId = instanceId;
         this.taskId = taskId;
         this.type = type;
@@ -71,10 +78,12 @@ final class InstanceInfo {
         this.tabCount = tabCount;
         this.incognitoTabCount = incognitoTabCount;
         this.isIncognitoSelected = isIncognitoSelected;
+        this.lastAccessedTime = lastAccessedTime;
     }
 
     @Override
     public String toString() {
+        // TODO (crbug.com/414676281): Add lastAccessedTime as "time ago" string.
         return String.format(
                 Locale.ENGLISH,
                 "(%d,%3d) incognito: %s ntab:%d itab:%d (%s,%s)",

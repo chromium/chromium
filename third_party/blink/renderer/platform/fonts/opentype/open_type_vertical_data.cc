@@ -87,6 +87,9 @@ struct VheaTable {
 
 struct HmtxTable {
   DISALLOW_NEW();
+  // TODO(crbug.com/406666714): this is indexed "the wrong way" below,
+  // overrunning the stated length of the array, preventing rewrite to
+  // `std::array`.`
   struct Entry {
     DISALLOW_NEW();
     open_type::UInt16 advance_width;
@@ -96,6 +99,9 @@ struct HmtxTable {
 
 struct VmtxTable {
   DISALLOW_NEW();
+  // TODO(crbug.com/406666714): this is indexed "the wrong way" below,
+  // overrunning the stated length of the array, preventing rewrite to
+  // `std::array`.`
   struct Entry {
     DISALLOW_NEW();
     open_type::UInt16 advance_height;
@@ -109,6 +115,9 @@ struct VORGTable {
   open_type::UInt16 minor_version;
   open_type::Int16 default_vert_origin_y;
   open_type::UInt16 num_vert_origin_y_metrics;
+  // TODO(crbug.com/406666714): this is indexed "the wrong way" below,
+  // overrunning the stated length of the array, preventing rewrite to
+  // `std::array`.`
   struct VertOriginYMetrics {
     DISALLOW_NEW();
     open_type::UInt16 glyph_index;

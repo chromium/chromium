@@ -92,10 +92,6 @@ std::string StripFirstGenericPrefix(const std::string& host) {
   return host;
 }
 
-bool ShouldShowPopularSites() {
-  return base::FeatureList::IsEnabled(kUsePopularSitesSuggestions);
-}
-
 // Generate a short title for Most Visited items before they're converted to
 // custom links.
 std::u16string GenerateShortTitle(const std::u16string& title) {
@@ -259,10 +255,7 @@ void MostVisitedSites::AddMostVisitedURLsObserver(Observer* observer,
   // Starts observing the following sources when the first observer is added.
   if (!is_observing_) {
     is_observing_ = true;
-    // The order for this condition is important, ShouldShowPopularSites()
-    // should always be called last to keep metrics as relevant as possible.
-    if (popular_sites_ && NeedPopularSites(prefs_, GetMaxNumSites()) &&
-        ShouldShowPopularSites()) {
+    if (popular_sites_ && NeedPopularSites(prefs_, GetMaxNumSites())) {
       popular_sites_->MaybeStartFetch(
           false, base::BindOnce(&MostVisitedSites::OnPopularSitesDownloaded,
                                 base::Unretained(this)));
@@ -461,7 +454,7 @@ void MostVisitedSites::ResetProfilePrefs(PrefService* prefs) {
 
 size_t MostVisitedSites::GetMaxNumSites() const {
   return max_num_sites_ +
-         (custom_links_manager_ && IsCustomLinksEnabled() ? 1 : 0);
+         ((custom_links_manager_ && IsCustomLinksEnabled()) ? 1 : 0);
 }
 
 void MostVisitedSites::InitiateTopSitesQuery() {
@@ -541,7 +534,7 @@ MostVisitedSites::CreatePopularSitesSections(
   }
 #endif
 
-  if (!popular_sites_ || !ShouldShowPopularSites()) {
+  if (!popular_sites_) {
     return sections;
   }
 
@@ -761,12 +754,21 @@ void MostVisitedSites::MergeMostVisitedTiles(NTPTilesVector personal_tiles) {
 
 NTPTilesVector MostVisitedSites::ImposeCustomLinks(NTPTilesVector tiles) {
   NTPTilesVector out_tiles(custom_links_cache_.GetList());
-  // Exclude |tiles| elements with |url| found in |custom_links_cache_|.
-  std::copy_if(tiles.begin(), tiles.end(), std::back_inserter(out_tiles),
-               [&](const NTPTile& tile) -> bool {
-                 return !custom_links_cache_.HasUrl(tile.url);
-               });
-  out_tiles.resize(std::min(out_tiles.size(), GetMaxNumSites()));
+
+  // Insert |tiles| if there are aren't enough non-custom links.
+  size_t max_num_tiles_without_custom = GetMaxNumSites();
+  if (out_tiles.size() < max_num_tiles_without_custom) {
+    // Exclude |tiles| elements with |url| found in |custom_links_cache_|.
+    std::copy_if(tiles.begin(), tiles.end(), std::back_inserter(out_tiles),
+                 [&](const NTPTile& tile) -> bool {
+                   return !custom_links_cache_.HasUrl(tile.url);
+                 });
+    // Note that |out_tiles| truncation only happens under the "if" clause.
+    // So if |out_tiles| started with more than GetMaxNumSites() custom links,
+    // then no truncation takes place.
+    out_tiles.resize(std::min(out_tiles.size(), max_num_tiles_without_custom));
+  }
+
   return out_tiles;
 }
 

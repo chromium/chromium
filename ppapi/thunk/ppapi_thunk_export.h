@@ -15,11 +15,7 @@
 #endif  // defined(PPAPI_THUNK_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(PPAPI_THUNK_IMPLEMENTATION)
 #define PPAPI_THUNK_EXPORT __attribute__((visibility("default")))
-#else
-#define PPAPI_THUNK_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

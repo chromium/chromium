@@ -31,7 +31,6 @@ class Profile;
 
 namespace extensions {
 class Extension;
-class ExtensionService;
 class ExtensionSet;
 class ExtensionSyncData;
 }  // namespace extensions
@@ -87,8 +86,6 @@ class ExtensionSyncService : public syncer::SyncableService,
   FRIEND_TEST_ALL_PREFIXES(ExtensionDisabledGlobalErrorTest,
                            HigherPermissionsFromSync);
 
-  extensions::ExtensionService* extension_service() const;
-
   // extensions::ExtensionRegistryObserver:
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const extensions::Extension* extension,
@@ -104,7 +101,7 @@ class ExtensionSyncService : public syncer::SyncableService,
   void OnExtensionPrefsWillBeDestroyed(
       extensions::ExtensionPrefs* prefs) override;
 
-  // Gets the SyncBundle for the given |type|.
+  // Gets the SyncBundle for the given `type`.
   extensions::SyncBundle* GetSyncBundle(syncer::DataType type);
   const extensions::SyncBundle* GetSyncBundle(syncer::DataType type) const;
 

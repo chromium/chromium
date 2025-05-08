@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
@@ -86,6 +87,7 @@ namespace password_manager {
 namespace {
 
 using autofill::FillingProduct;
+using autofill::MockIdentityCredentialDelegate;
 using autofill::Suggestion;
 using autofill::SuggestionAdditionalLabelsContains;
 using autofill::SuggestionVectorIconsAre;
@@ -1531,6 +1533,89 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
               SelectPasskey(kPasskeyIdBase64, _));
   EXPECT_CALL(*webauthn_credentials_delegate_, HasPendingPasskeySelection)
       .WillOnce(Return(true));
+  EXPECT_CALL(autofill_client,
+              HideAutofillSuggestions(
+                  autofill::SuggestionHidingReason::kAcceptSuggestion))
+      .Times(0);
+
+  EXPECT_CALL(*client.mock_driver(), CanShowAutofillUi)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(autofill_client, UpdateAutofillSuggestions);
+  password_autofill_manager_->DidAcceptSuggestion(suggestion,
+                                                  SuggestionPosition{.row = 0});
+}
+
+TEST_F(PasswordAutofillManagerTest, ShowsIdentitySuggestions) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // Return a identity credential.
+  std::vector<Suggestion> identity_suggestions;
+  std::string id = "user";
+  std::string email = "foo@idp.example";
+  GURL identity_provider = GURL("https://idp.example/fedcm.json");
+  std::string identity_provider_for_display = "idp.example";
+  gfx::Image decoded_picture = gfx::Image();
+
+  Suggestion suggestion(base::UTF8ToUTF16(email),
+                        autofill::SuggestionType::kIdentityCredential);
+  suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
+      base::UTF8ToUTF16(identity_provider_for_display)))});
+  suggestion.custom_icon = decoded_picture;
+  auto payload = Suggestion::IdentityCredentialPayload(identity_provider, id);
+  suggestion.payload = payload;
+  identity_suggestions.push_back(suggestion);
+
+  autofill_client.set_identity_credential_delegate(
+      std::make_unique<NiceMock<MockIdentityCredentialDelegate>>());
+
+  ON_CALL(static_cast<MockIdentityCredentialDelegate&>(
+              *autofill_client.GetIdentityCredentialDelegate()),
+          GetVerifiedAutofillSuggestions)
+      .WillByDefault(Return(identity_suggestions));
+
+  // Show password suggestions including identity credentials.
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillSuggestions)
+      .WillOnce(SavePopupOpenArgs(open_args));
+  gfx::RectF element_bounds;
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      /*typed_username=*/std::u16string(), ShowWebAuthnCredentials(false),
+      ShowIdentityCredentials(true), element_bounds);
+  ASSERT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(
+                  autofill::SuggestionType::kIdentityCredential,
+                  autofill::SuggestionType::kPasswordEntry,
+                  autofill::SuggestionType::kSeparator,
+                  autofill::SuggestionType::kAllSavedPasswordsEntry));
+  EXPECT_EQ(open_args.suggestions[0]
+                .GetPayload<Suggestion::IdentityCredentialPayload>(),
+            payload);
+  EXPECT_EQ(open_args.suggestions[0].type,
+            autofill::SuggestionType::kIdentityCredential);
+  EXPECT_EQ(open_args.suggestions[0].main_text.value, base::UTF8ToUTF16(email));
+  EXPECT_TRUE(
+      std::holds_alternative<gfx::Image>(open_args.suggestions[0].custom_icon));
+  EXPECT_TRUE(
+      AreImagesEqual(std::get<gfx::Image>(open_args.suggestions[0].custom_icon),
+                     decoded_picture));
+  ASSERT_EQ(open_args.suggestions[0].labels.size(), 1U);
+  ASSERT_EQ(open_args.suggestions[0].labels[0].size(), 1U);
+  EXPECT_EQ(open_args.suggestions[0].labels[0][0].value,
+            l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
+                base::UTF8ToUTF16(identity_provider_for_display)));
+
+  testing::Mock::VerifyAndClearExpectations(client.mock_driver());
+
+  // Check that selecting the credential reports back to the client.
+  EXPECT_CALL(static_cast<MockIdentityCredentialDelegate&>(
+                  *autofill_client.GetIdentityCredentialDelegate()),
+              NotifySuggestionAccepted);
+  // Check that selecting the identity credential enters loading state.
   EXPECT_CALL(autofill_client,
               HideAutofillSuggestions(
                   autofill::SuggestionHidingReason::kAcceptSuggestion))

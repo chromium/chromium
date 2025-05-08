@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -321,14 +322,10 @@ base::expected<base::flat_set<std::string>, StringSetError> ExtractStringSet(
     return base::unexpected(StringSetError::kSetTooLong);
   }
 
-  std::vector<std::string> values;
-  values.reserve(list.size());
-
-  for (base::Value& item : list) {
-    values.emplace_back(std::move(item).TakeString());
-  }
-
-  return base::flat_set<std::string>(base::sorted_unique, std::move(values));
+  return base::flat_set<std::string>(
+      base::sorted_unique, base::ToVector(list, [](base::Value& item) {
+        return std::move(item).TakeString();
+      }));
 }
 
 }  // namespace attribution_reporting

@@ -54,8 +54,8 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
     // force-installed extensions configured, this method still gets called.
     virtual void OnForceInstalledExtensionsReady() {}
 
-    // Called when a force-installed extension with id |extension_id| fails to
-    // install with failure reason |reason|.
+    // Called when a force-installed extension with id `extension_id` fails to
+    // install with failure reason `reason`.
     //
     // Can be called multiple times, one for each failed extension install.
     virtual void OnForceInstalledExtensionFailed(
@@ -190,13 +190,13 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
 
   // Collection of all extensions we are interested in here. Don't update
   // directly, use AddExtensionInfo/RemoveExtensionInfo/ChangeExtensionStatus
-  // methods, as |pending_extension_counter_| has to be in sync with contents of
+  // methods, as `pending_extension_counter_` has to be in sync with contents of
   // this collection.
   std::map<ExtensionId, ExtensionInfo> extensions_;
 
-  // Number of extensions in |extensions_| with status |PENDING|.
+  // Number of extensions in `extensions_` with status `PENDING`.
   size_t load_pending_count_ = 0;
-  // Number of extensions in |extensions_| with status |PENDING| or |LOADED|.
+  // Number of extensions in `extensions_` with status `PENDING` or `LOADED`.
   // (ie. could be loaded, but not ready yet).
   size_t ready_pending_count_ = 0;
 
@@ -211,10 +211,10 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
     // Waiting for `kInstallForceList` to be populated.
     kWaitingForInstallForcelistPref,
     // Waiting for one or more extensions to finish loading. Listening for
-    // |ExtensionRegistryObserver| events.
+    // `ExtensionRegistryObserver` events.
     kWaitingForExtensionLoads,
     // Waiting for one or more extensions to finish loading. Listening for
-    // |ExtensionRegistryObserver| events. Extensions have already finished
+    // `ExtensionRegistryObserver` events. Extensions have already finished
     // loading; we're still waiting for the "ready" state. IsDoneLoading()
     // returns true, but IsReady() returns false.
     kWaitingForExtensionReady,

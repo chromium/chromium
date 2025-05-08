@@ -24,6 +24,7 @@
 #include "base/test/values_test_util.h"
 #include "content/common/features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/creative_info.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_status_code.h"
@@ -295,8 +296,8 @@ class TrustedSignalsTest : public testing::Test {
   }
 
   scoped_refptr<TrustedSignals::Result> FetchScoringSignals(
-      std::set<TrustedSignals::CreativeInfo> ads,
-      std::set<TrustedSignals::CreativeInfo> ad_components,
+      std::set<CreativeInfo> ads,
+      std::set<CreativeInfo> ad_components,
       const std::string& hostname,
       std::optional<uint16_t> experiment_group_id,
       bool send_creative_scanning_metadata = false) {
@@ -1457,7 +1458,7 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLAndComposeURL) {
   for (const bool send_creative_scanning_metadata : {false, true}) {
     SCOPED_TRACE(send_creative_scanning_metadata);
 
-    auto test_data = std::to_array<TrustedSignals::CreativeInfo>(
+    auto test_data = std::to_array<CreativeInfo>(
         {{/*ad_descriptor=*/blink::AdDescriptor(
               GURL("https://creative1.test"),
               std::optional(
@@ -1505,7 +1506,7 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLAndComposeURL) {
           std::optional(url::Origin::Create(GURL("https://bidder2.test"))),
           /*buyer_and_seller_reporting_id=*/"stool"}});
 
-    std::set<TrustedSignals::CreativeInfo> creative_set;
+    std::set<CreativeInfo> creative_set;
     for (auto& input : test_data) {
       if (!send_creative_scanning_metadata) {
         input.ad_descriptor.size = std::nullopt;
@@ -1518,8 +1519,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLAndComposeURL) {
 
     // Minimal valid input for main ad, to use when mainly testing component-ad
     // specific query params..
-    std::set<TrustedSignals::CreativeInfo> single_ad_set;
-    TrustedSignals::CreativeInfo single_ad;
+    std::set<CreativeInfo> single_ad_set;
+    CreativeInfo single_ad;
     single_ad.ad_descriptor.url = GURL("https://product.test");
     if (send_creative_scanning_metadata) {
       single_ad.interest_group_owner =
@@ -1614,16 +1615,16 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLAndComposeURL) {
 TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLNoSize) {
   for (const bool both_without_size : {false, true}) {
     SCOPED_TRACE(both_without_size);
-    std::set<TrustedSignals::CreativeInfo> input;
+    std::set<CreativeInfo> input;
 
-    input.insert(TrustedSignals::CreativeInfo(
+    input.insert(CreativeInfo(
         /*ad_descriptor=*/blink::AdDescriptor(GURL("https://c1.test"),
                                               /*size=*/std::nullopt),
         /*creative_scanning_metadata=*/"s1",
         /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")),
         /*buyer_and_seller_reporting_id=*/"stool"));
 
-    input.insert(TrustedSignals::CreativeInfo(
+    input.insert(CreativeInfo(
         /*ad_descriptor=*/blink::AdDescriptor(
             GURL("https://c2.test"),
             /*size=*/both_without_size
@@ -1670,9 +1671,9 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLNoSize) {
 
 TEST_F(TrustedSignalsTest,
        BuildTrustedScoringSignalsURLEmptyCreativeScanMetadata) {
-  std::set<TrustedSignals::CreativeInfo> input;
+  std::set<CreativeInfo> input;
 
-  input.insert(TrustedSignals::CreativeInfo(
+  input.insert(CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(
           GURL("https://c1.test"),
           blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
@@ -1681,7 +1682,7 @@ TEST_F(TrustedSignalsTest,
       /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")),
       /*buyer_and_seller_reporting_id=*/"stool"));
 
-  input.insert(TrustedSignals::CreativeInfo(
+  input.insert(CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(
           GURL("https://c2.test"),
           blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
@@ -1712,8 +1713,8 @@ TEST_F(TrustedSignalsTest,
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsCreativeScanning) {
-  std::set<TrustedSignals::CreativeInfo> ads;
-  ads.insert(TrustedSignals::CreativeInfo(
+  std::set<CreativeInfo> ads;
+  ads.insert(CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(
           GURL("https://foo.test"),
           blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
@@ -1722,7 +1723,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsCreativeScanning) {
       /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")),
       /*buyer_and_seller_reporting_id=*/"stool"));
 
-  ads.insert(TrustedSignals::CreativeInfo(
+  ads.insert(CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(
           GURL("https://foo.test"),
           blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
@@ -1731,14 +1732,14 @@ TEST_F(TrustedSignalsTest, ScoringSignalsCreativeScanning) {
       /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
       /*buyer_and_seller_reporting_id=*/"sofa"));
 
-  ads.insert(TrustedSignals::CreativeInfo(
+  ads.insert(CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(GURL("https://bar.test")),
       /*creative_scanning_metadata=*/"s3",
       /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
       /*buyer_and_seller_reporting_id=*/"chair"));
 
-  std::set<TrustedSignals::CreativeInfo> ad_components;
-  ad_components.insert(TrustedSignals::CreativeInfo(
+  std::set<CreativeInfo> ad_components;
+  ad_components.insert(CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(
           GURL("https://foosub.test"),
           blink::AdSize(30, blink::AdSize::LengthUnit::kPixels, 16,
@@ -1747,7 +1748,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsCreativeScanning) {
       /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")),
       /*buyer_and_seller_reporting_id=*/std::string()));
 
-  ad_components.insert(TrustedSignals::CreativeInfo(
+  ad_components.insert(CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(
           GURL("https://barsub.test"),
           blink::AdSize(60, blink::AdSize::LengthUnit::kPixels, 32,
@@ -2050,7 +2051,7 @@ TEST_F(TrustedSignalsTest, IncrementalBuildScoringSignalsURL3) {
   const GURL kBaseURL("https://tkv.com/");
   const uint16_t kExperiment = 123;
 
-  TrustedSignals::CreativeInfo m1(
+  CreativeInfo m1(
       /*ad_descriptor=*/blink::AdDescriptor(
           GURL("https://creative1.test"),
           std::optional(
@@ -2061,7 +2062,7 @@ TEST_F(TrustedSignalsTest, IncrementalBuildScoringSignalsURL3) {
       std::optional(url::Origin::Create(GURL("https://bidder1.test"))),
       /*buyer_and_seller_reporting_id=*/"chair");
 
-  TrustedSignals::CreativeInfo m2(
+  CreativeInfo m2(
       /*ad_descriptor=*/blink::AdDescriptor(
           GURL("https://creative1.test"),
           std::optional(
@@ -2072,14 +2073,14 @@ TEST_F(TrustedSignalsTest, IncrementalBuildScoringSignalsURL3) {
       std::optional(url::Origin::Create(GURL("https://bidder1.test"))),
       /*buyer_and_seller_reporting_id=*/"sofa");
 
-  TrustedSignals::CreativeInfo m3(
+  CreativeInfo m3(
       /*ad_descriptor=*/blink::AdDescriptor(GURL("https://creative2.test")),
       /*creative_scanning_metadata=*/"scan2",
       /*interest_group_owner=*/
       std::optional(url::Origin::Create(GURL("https://bidder2.test"))),
       /*buyer_and_seller_reporting_id=*/"stool");
 
-  TrustedSignals::CreativeInfo c1(
+  CreativeInfo c1(
       /*ad_descriptor=*/blink::AdDescriptor(
           GURL("https://c1.test"),
           std::optional(
@@ -2090,7 +2091,7 @@ TEST_F(TrustedSignalsTest, IncrementalBuildScoringSignalsURL3) {
       std::optional(url::Origin::Create(GURL("https://c.bidder1.test"))),
       /*buyer_and_seller_reporting_id=*/"c.chair");
 
-  TrustedSignals::CreativeInfo c2(
+  CreativeInfo c2(
       /*ad_descriptor=*/blink::AdDescriptor(
           GURL("https://c2.test"),
           std::optional(
@@ -2101,7 +2102,7 @@ TEST_F(TrustedSignalsTest, IncrementalBuildScoringSignalsURL3) {
       std::optional(url::Origin::Create(GURL("https://c.bidder1.test"))),
       /*buyer_and_seller_reporting_id=*/"c.sofa");
 
-  TrustedSignals::CreativeInfo c3(
+  CreativeInfo c3(
       /*ad_descriptor=*/blink::AdDescriptor(GURL("https://c3.test")),
       /*creative_scanning_metadata=*/"cs3",
       /*interest_group_owner=*/

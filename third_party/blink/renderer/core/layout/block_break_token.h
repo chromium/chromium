@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/block_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -87,6 +88,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   // size when used for legacy. This difference is represented by
   // |consumed_block_size_legacy_adjustment_|.
   LayoutUnit ConsumedBlockSizeForLegacy() const {
+    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
 #if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
 #endif

@@ -327,18 +327,17 @@ InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info,
                                          LayoutUnit line_box_height) const {
   const ConstraintSpace& space = GetConstraintSpace();
   LineClampData line_clamp_data = space.GetLineClampData();
-  if (line_clamp_data.IsLineClampContext()) {
-    if (!line_info->IsBlockInInline() && line_clamp_data.IsAtClampPoint()) {
-      if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled()) {
-        return LineClampState::kLineClampEllipsis;
-      }
-      return LineClampState::kTextOverflowEllipsis;
+  if (!line_info->IsBlockInInline() && line_clamp_data.IsAtClampPoint()) {
+    if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled()) {
+      return LineClampState::kLineClampEllipsis;
     }
-    if (line_clamp_data.ShouldHideForPaint()) {
-      return LineClampState::kHide;
-    }
-  } else if (!line_info->IsBlockInInline() && line_info->HasOverflow() &&
-             node_.GetLayoutBlockFlow()->ShouldTruncateOverflowingText()) {
+    return LineClampState::kTextOverflowEllipsis;
+  }
+  if (line_clamp_data.ShouldHideForPaint()) {
+    return LineClampState::kHide;
+  }
+  if (!line_info->IsBlockInInline() && line_info->HasOverflow() &&
+      node_.GetLayoutBlockFlow()->ShouldTruncateOverflowingText()) {
     return LineClampState::kTextOverflowEllipsis;
   }
 
@@ -517,6 +516,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   // the children have their layout_result, fragment, (or similar) set to null,
   // creating a "hole" in the array.
   box_states_->CreateBoxFragments(GetConstraintSpace(), line_box,
+                                  line_box_metrics.LineHeight(),
                                   line_info->IsBlockInInline());
   box_states_->ClearRubyColumnList();
 

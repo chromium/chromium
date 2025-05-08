@@ -27,7 +27,7 @@
 @property(nonatomic, readonly, strong) UILabel* detailTextLabel;
 
 // Identifier use to match an object with its cell.
-@property(nonatomic, strong) NSString* uniqueIdentifier;
+@property(nonatomic, copy) NSString* uniqueIdentifier;
 
 @end
 

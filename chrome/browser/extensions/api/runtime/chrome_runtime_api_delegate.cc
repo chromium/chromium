@@ -18,22 +18,17 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/view_type_utils.h"
@@ -50,6 +45,18 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#else
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #endif
 
 using extensions::Extension;
@@ -262,6 +269,7 @@ bool ChromeRuntimeAPIDelegate::CheckForUpdates(
 
 void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
   if (!browser) {
     browser = Browser::Create(Browser::CreateParams(profile, false));
@@ -275,6 +283,36 @@ void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.user_gesture = false;
   Navigate(&params);
+#else
+  TabModel* tab_model = nullptr;
+  for (TabModel* model : TabModelList::models()) {
+    if (model->GetProfile() == profile) {
+      tab_model = model;
+      break;
+    }
+  }
+
+  if (!tab_model) {
+    return;
+  }
+
+  std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser_context_));
+  content::WebContents* new_web_contents = contents.release();
+  tab_model->CreateTab(nullptr, new_web_contents, /*select=*/true);
+
+  content::NavigationController::LoadURLParams load_params(uninstall_url);
+  load_params.transition_type = ui::PAGE_TRANSITION_FROM_API;
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      new_web_contents->GetController().LoadURLWithParams(load_params);
+  // Navigation can fail for any number of reasons at the content layer.
+  // Unfortunately, we can't provide a detailed error message here, because
+  // there are too many possible triggers. At least add a log for diagnostics.
+  if (!navigation_handle) {
+    LOG(ERROR) << "navigation rejected for uninstall_url"
+               << uninstall_url.spec();
+  }
+#endif
 }
 
 bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
@@ -289,6 +327,8 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
     info->os = extensions::api::runtime::PlatformOs::kLinux;
   } else if (strcmp(os, "openbsd") == 0) {
     info->os = extensions::api::runtime::PlatformOs::kOpenbsd;
+  } else if (strcmp(os, "android") == 0) {
+    info->os = extensions::api::runtime::PlatformOs::kAndroid;
   } else {
     NOTREACHED() << "Platform not supported: " << os;
   }
@@ -344,12 +384,20 @@ bool ChromeRuntimeAPIDelegate::RestartDevice(std::string* error_message) {
 bool ChromeRuntimeAPIDelegate::OpenOptionsPage(
     const Extension* extension,
     content::BrowserContext* browser_context) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   return extensions::ExtensionTabUtil::OpenOptionsPageFromAPI(extension,
                                                               browser_context);
+#else
+  // TODO(crbug.com/383366125): Implement this when options page for extensions
+  // becomes available for desktop android.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+#endif
 }
 
 int ChromeRuntimeAPIDelegate::GetDeveloperToolsWindowId(
     content::WebContents* developer_tools_web_contents) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // For developer tools contexts, first check the docked state. If the
   // developer tools are docked, return the window ID of the inspected web
   // contents. Otherwise, return the window ID of the developer tools window.
@@ -367,6 +415,11 @@ int ChromeRuntimeAPIDelegate::GetDeveloperToolsWindowId(
   content::WebContents* web_contents_to_use =
       is_docked ? inspected_web_contents : developer_tools_web_contents;
   return extensions::ExtensionTabUtil::GetWindowIdOfTab(web_contents_to_use);
+#else
+  // TODO(crbug.com/383366125): Implement this function for desktop android.
+  NOTIMPLEMENTED();
+  return -1;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void ChromeRuntimeAPIDelegate::OnExtensionUpdateFound(
@@ -395,9 +448,9 @@ void ChromeRuntimeAPIDelegate::OnExtensionInstalled(
 
 void ChromeRuntimeAPIDelegate::UpdateCheckComplete(
     const extensions::ExtensionId& extension_id) {
-  ExtensionSystem* system = ExtensionSystem::Get(browser_context_);
-  extensions::ExtensionService* service = system->extension_service();
-  const Extension* update = service->GetPendingExtensionUpdate(extension_id);
+  const Extension* update =
+      extensions::DelayedInstallManager::Get(browser_context_)
+          ->GetPendingExtensionUpdate(extension_id);
   UpdateCheckInfo& info = update_check_info_[extension_id];
 
   // We always inform the BackoffEntry of a "failure" here, because we only

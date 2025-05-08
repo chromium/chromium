@@ -6,10 +6,13 @@
 #ifndef THIRD_PARTY_LIBURLPATTERN_UTILS_H_
 #define THIRD_PARTY_LIBURLPATTERN_UTILS_H_
 
+#include <functional>
 #include <string>
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 
 namespace liburlpattern {
@@ -17,6 +20,19 @@ namespace liburlpattern {
 // The "full wildcard" regex pattern.  This regex value is treated specially
 // resulting in a kFullWildcard Part instead of a kRegex Part.
 constexpr const char* kFullWildcardRegex = ".*";
+
+// A type for functor-style callback functions that validate the input and
+// potentially perform any encoding necessary.  For example, some characters
+// could be percent encoded.  The final encoded value for the input should be
+// returned.  The function will be called synchronously for each part of the
+// pattern consisting of text to match strictly against an input.  For example,
+// for the pattern:
+//
+//  `/foo/:bar.html`
+//
+// The callback will be invoked with `/foo`, `/`, and `.html` separately.
+using EncodeCallback =
+    std::function<base::expected<std::string, absl::Status>(std::string_view)>;
 
 // Return the expected length of the value returned by EscapeString().
 COMPONENT_EXPORT(LIBURLPATTERN)

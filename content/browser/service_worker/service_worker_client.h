@@ -60,11 +60,10 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // Constructor for window clients.
   //
   // For clients for prefetch, `ongoing_navigation_frame_tree_node_id` is null.
-  // TODO(https://crbug.com/40947546): Consider explicitly distinguish the
-  // clients for prefetch.
   ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
                       bool is_parent_frame_secure,
-                      FrameTreeNodeId ongoing_navigation_frame_tree_node_id);
+                      FrameTreeNodeId ongoing_navigation_frame_tree_node_id,
+                      bool is_initiated_by_prefetch);
 
   // Constructor for worker clients.
   ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
@@ -316,6 +315,13 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // For service worker clients.
   const std::string& client_uuid() const;
 
+  // The client ID used as `FetchEvent.resultingClientID`.
+  // https://w3c.github.io/ServiceWorker/#fetch-event-resultingclientid
+  //
+  // Prefetch expects the value to be empty.
+  // See: crbug.com/404294123
+  std::string client_uuid_for_resulting_client_id() const;
+
   // For service worker clients. Returns this client's controller.
   ServiceWorkerVersion* controller() const;
 
@@ -511,6 +517,12 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // the document does not have a parent frame, is_parent_frame_secure_| is
   // true.
   const bool is_parent_frame_secure_;
+
+  // |is_initiated_by_prefetch_| is true if ServiceWorkerClient is initiated
+  // by prefetch.  This is used for changing the resulting client ID behavior
+  // on prefetch.
+  // See: crbug.com/404294123
+  const bool is_initiated_by_prefetch_;
 
   // The phase that this container host is on.
   ClientPhase client_phase_ = ClientPhase::kInitial;

@@ -193,14 +193,6 @@ bool IsPlusAddressesManuallyTriggered(
          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses;
 }
 
-bool IsAddressFieldSwappingEnabled() {
-#if BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(features::kAutofillAddressFieldSwapping);
-#else
-  return true;
-#endif
-}
-
 bool IsPaymentsFieldSwappingEnabled() {
 #if BUILDFLAG(IS_IOS)
   return false;

@@ -26,6 +26,7 @@ class WebViewSafeBrowsingClient : public SafeBrowsingClient {
       const security_interstitials::UnsafeResource& resource) const override;
   bool OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
                                               const GURL& url) override;
+  bool ShouldForceSyncRealTimeUrlChecks() const override;
 
  private:
   raw_ptr<PrefService> prefs_;

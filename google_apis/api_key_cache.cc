@@ -42,15 +42,16 @@ namespace {
 // 5. Baked into the build.
 // |command_line_switch| may be NULL. Official Google Chrome builds will not
 // use the value provided by an environment variable.
-static std::string CalculateKeyValue(const char* baked_in_value,
-                                     const char* environment_variable_name,
-                                     const char* command_line_switch,
-                                     const std::string& default_if_unset,
-                                     base::Environment* environment,
-                                     base::CommandLine* command_line,
-                                     GaiaConfig* gaia_config,
-                                     bool allow_override_via_environment,
-                                     bool allow_unset_values) {
+static std::string CalculateKeyValue(
+    const char* baked_in_value,
+    base::cstring_view environment_variable_name,
+    const char* command_line_switch,
+    const std::string& default_if_unset,
+    base::Environment* environment,
+    base::CommandLine* command_line,
+    GaiaConfig* gaia_config,
+    bool allow_override_via_environment,
+    bool allow_unset_values) {
   std::string key_value = baked_in_value;
   std::string temp;
 #if BUILDFLAG(IS_APPLE)

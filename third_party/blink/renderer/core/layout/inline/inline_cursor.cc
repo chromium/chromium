@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 class HTMLBRElement;
@@ -525,6 +526,7 @@ PhysicalRect InlineCursor::CurrentLocalSelectionRectForReplaced() const {
 }
 
 PhysicalRect InlineCursor::CurrentRectInBlockFlow() const {
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   PhysicalRect rect = Current().RectInContainerFragment();
   // We'll now convert the offset from being relative to the containing fragment
   // to being relative to the containing LayoutBlockFlow. For writing modes that
@@ -561,6 +563,19 @@ PhysicalRect InlineCursor::CurrentRectInBlockFlow() const {
       break;
     }
   };
+  return rect;
+}
+
+PhysicalRect InlineCursor::CurrentRectInFirstContainerFragment() const {
+  DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
+  PhysicalRect rect = Current().RectInContainerFragment();
+  if (ContainerFragment().IsFirstForNode()) {
+    return rect;
+  }
+  const PhysicalBoxFragment& first_container_fragment =
+      *ContainerFragment().OwnerLayoutBox()->GetPhysicalFragment(0);
+  rect.offset += ContainerFragment().OffsetFromRootFragmentationContext() -
+                 first_container_fragment.OffsetFromRootFragmentationContext();
   return rect;
 }
 

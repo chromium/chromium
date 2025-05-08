@@ -27,9 +27,8 @@ namespace views::test {
 // Designed for use with the `InteractiveViewsTestApi::PollView()` testing verb.
 //
 // See `PollingElementStateObserver<T>` for more information on usage.
-template <typename T,
-          typename V,
-          typename = std::enable_if<std::is_base_of_v<View, V>>>
+template <typename T, typename V>
+  requires(std::is_base_of_v<View, V>)
 class PollingViewObserver : public ui::test::PollingElementStateObserver<T> {
  public:
   using PollViewCallback = base::RepeatingCallback<T(const V*)>;
@@ -69,9 +68,8 @@ class PollingViewObserver : public ui::test::PollingElementStateObserver<T> {
 // testing verb.
 //
 // See `PollingElementStateObserver<T>` for more information on usage.
-template <typename T,
-          typename V,
-          typename = std::enable_if<std::is_base_of_v<View, V>>>
+template <typename T, typename V>
+  requires(std::is_base_of_v<View, V>)
 class PollingViewPropertyObserver : public PollingViewObserver<T, V> {
  public:
   template <typename R>

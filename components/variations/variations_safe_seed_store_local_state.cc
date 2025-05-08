@@ -46,11 +46,7 @@ void VariationsSafeSeedStoreLocalState::SetFetchTime(
 }
 
 int VariationsSafeSeedStoreLocalState::GetMilestone() const {
-  return local_state_->GetInteger(prefs::kVariationsSafeSeedMilestone);
-}
-
-void VariationsSafeSeedStoreLocalState::SetMilestone(int milestone) {
-  local_state_->SetInteger(prefs::kVariationsSafeSeedMilestone, milestone);
+  return seed_reader_writer_->GetSeedData().milestone;
 }
 
 base::Time VariationsSafeSeedStoreLocalState::GetTimeForStudyDateChecks()
@@ -68,20 +64,8 @@ StoredSeed VariationsSafeSeedStoreLocalState::GetCompressedSeed() const {
 }
 
 void VariationsSafeSeedStoreLocalState::SetCompressedSeed(
-    const std::string& safe_compressed,
-    const std::string& base64_safe_compressed) {
-  seed_reader_writer_->StoreValidatedSeed(safe_compressed,
-                                          base64_safe_compressed);
-}
-
-std::string VariationsSafeSeedStoreLocalState::GetSignature() const {
-  return local_state_->GetString(prefs::kVariationsSafeSeedSignature);
-}
-
-void VariationsSafeSeedStoreLocalState::SetSignature(
-    const std::string& safe_seed_signature) {
-  local_state_->SetString(prefs::kVariationsSafeSeedSignature,
-                          safe_seed_signature);
+    ValidatedSeedInfo seed_info) {
+  seed_reader_writer_->StoreValidatedSeedInfo(seed_info);
 }
 
 std::string VariationsSafeSeedStoreLocalState::GetLocale() const {
@@ -127,15 +111,14 @@ void VariationsSafeSeedStoreLocalState::SetSeedReaderWriterForTesting(
 }
 
 void VariationsSafeSeedStoreLocalState::ClearState() {
-  seed_reader_writer_->ClearSeed();
+  // Seed and other related information is cleared by the SeedReaderWriter.
+  seed_reader_writer_->ClearSeedInfo();
   local_state_->ClearPref(prefs::kVariationsSafeSeedDate);
   local_state_->ClearPref(prefs::kVariationsSafeSeedFetchTime);
   local_state_->ClearPref(prefs::kVariationsSafeSeedLocale);
-  local_state_->ClearPref(prefs::kVariationsSafeSeedMilestone);
   local_state_->ClearPref(
       prefs::kVariationsSafeSeedPermanentConsistencyCountry);
   local_state_->ClearPref(prefs::kVariationsSafeSeedSessionConsistencyCountry);
-  local_state_->ClearPref(prefs::kVariationsSafeSeedSignature);
 }
 
 // static

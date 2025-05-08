@@ -48,4 +48,14 @@ public interface CustomLinkOperations {
      * @return Whether a custom link identified by {@param keyUrl} exists.
      */
     boolean hasCustomLink(GURL keyUrl);
+
+    /**
+     * Moves a custom link identified by {@param keyUrl} to a new position, and shift all other
+     * custom links between the old position and the new towards the former.
+     *
+     * @param keyUrl The URL of the custom link to move.
+     * @param newPos The new position for the custom link to move to.
+     * @return Whether the operation successfully ran.
+     */
+    boolean reorderCustomLink(GURL keyUrl, int newPos);
 }

@@ -41,9 +41,8 @@ namespace {
 // contains the offset to add to the pointer, in order to find the actual
 // desired pointer address.
 //
-// # Safety
-// If the value in the pointer does not provide an offset from the pointer that
-// stays inside the same allocation, Undefined Behaviour can result.
+// PRECONDITIONS: The value in the pointer must provide an offset from the
+// pointer that stays inside the same allocation.
 UNSAFE_BUFFER_USAGE void* ReadRelPtr(int32_t* relptr) {
   // SAFETY: This relies on the caller to provide a valid pointer + value.
   return UNSAFE_BUFFERS(reinterpret_cast<char*>(relptr) + *relptr);

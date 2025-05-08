@@ -15,11 +15,7 @@
 #endif  // defined(GFX_SKIA_IPC_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(GFX_SKIA_IPC_IMPLEMENTATION)
 #define GFX_SKIA_IPC_EXPORT __attribute__((visibility("default")))
-#else
-#define GFX_SKIA_IPC_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

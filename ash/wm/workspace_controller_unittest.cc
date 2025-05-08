@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/wm/workspace_controller.h"
 
+#include <array>
 #include <map>
+#include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
@@ -1410,25 +1407,23 @@ TEST_F(WorkspaceControllerTest, WindowEdgeHitTest) {
   // slightly outside the edges of the |second| window should still be targeted
   // to |second| to allow resizing the windows easily.
 
-  const int kNumPoints = 4;
-  struct {
-    const char* direction;
-    gfx::Point location;
-  } points[kNumPoints] = {
-      {"left", gfx::Point(28, 45)},    // outside the left edge.
-      {"top", gfx::Point(50, 38)},     // outside the top edge.
-      {"right", gfx::Point(72, 45)},   // outside the right edge.
-      {"bottom", gfx::Point(50, 52)},  // outside the bottom edge.
-  };
+  using TestPoint = std::pair<const char*, gfx::Point>;
+
+  constexpr auto test_points = std::to_array<TestPoint>({
+      {"left", {28, 45}},    // outside the left edge.
+      {"top", {50, 38}},     // outside the top edge.
+      {"right", {72, 45}},   // outside the right edge.
+      {"bottom", {50, 52}},  // outside the bottom edge.
+  });
+
   // Do two iterations, first without any transform on |second|, and the second
   // time after applying some transform on |second| so that it doesn't get
   // targeted.
   for (int times = 0; times < 2; ++times) {
     SCOPED_TRACE(times == 0 ? "Without transform" : "With transform");
     aura::Window* expected_target = times == 0 ? second.get() : first.get();
-    for (int i = 0; i < kNumPoints; ++i) {
-      SCOPED_TRACE(points[i].direction);
-      const gfx::Point& location = points[i].location;
+    for (const auto& [direction, location] : test_points) {
+      SCOPED_TRACE(direction);
       ui::MouseEvent mouse(ui::EventType::kMouseMoved, location, location,
                            ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
       ui::EventTarget* target = targeter->FindTargetForEvent(root, &mouse);

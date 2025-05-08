@@ -173,6 +173,14 @@ TEST(RecordRdataTest, ParseTxtRecord) {
   ASSERT_TRUE(record_obj->IsEqual(record_obj.get()));
 }
 
+TEST(RecordRdataTest, EmptyTxtRecordIsInvalid) {
+  // Create a record parser for an empty packet. Good enough for this test since
+  // the TXT record parser doesn't make use of `parser`.
+  DnsRecordParser parser(/*packet=*/{}, /*offset=*/0, /*num_records=*/0);
+
+  EXPECT_FALSE(TxtRecordRdata::Create(/*data=*/{}, parser));
+}
+
 TEST(RecordRdataTest, ParseNsecRecord) {
   // These are just the rdata portions of the DNS records, rather than complete
   // records, but it works well enough for this test.

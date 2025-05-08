@@ -35,7 +35,6 @@
 
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
@@ -153,7 +152,7 @@ class BLINK_EXPORT WebView {
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       std::optional<SkColor> page_base_background_color,
-      const BrowsingContextGroupInfo& browsing_context_group_info,
+      const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
       blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
 

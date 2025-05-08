@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DISPLAY_CAPTURE_CAPTURED_SURFACE_CONTROL_PERMISSION_CONTEXT_H_
 
 #include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_request_data.h"
 
 namespace permissions {
 
@@ -22,10 +23,10 @@ class CapturedSurfaceControlPermissionContext
       const CapturedSurfaceControlPermissionContext&) = delete;
 
  protected:
-  void UpdateContentSetting(const GURL& requesting_origin,
-                            const GURL& embedding_origin,
-                            ContentSetting content_setting,
-                            bool is_one_time) override;
+  void UpdateContentSetting(
+      const std::unique_ptr<PermissionRequestData>& request_data,
+      ContentSetting content_setting,
+      bool is_one_time) override;
 };
 
 }  // namespace permissions

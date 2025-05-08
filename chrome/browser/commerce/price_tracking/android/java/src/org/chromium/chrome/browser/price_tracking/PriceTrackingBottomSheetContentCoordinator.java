@@ -11,10 +11,10 @@ import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProvider;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
@@ -23,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator of the price tracking bottom sheet content. */
+@NullMarked
 public class PriceTrackingBottomSheetContentCoordinator
         implements CommerceBottomSheetContentProvider {
     private Context mContext;
@@ -30,9 +31,9 @@ public class PriceTrackingBottomSheetContentCoordinator
     private PriceTrackingBottomSheetContentMediator mMediator;
 
     public PriceTrackingBottomSheetContentCoordinator(
-            @NonNull Context context,
-            @NonNull Supplier<Tab> tabSupplier,
-            @NonNull PriceInsightsDelegate priceInsightsDelegate) {
+            Context context,
+            Supplier<Tab> tabSupplier,
+            PriceInsightsDelegate priceInsightsDelegate) {
         mContext = context;
         mPriceTrackingContentContainer =
                 LayoutInflater.from(mContext)
@@ -50,7 +51,7 @@ public class PriceTrackingBottomSheetContentCoordinator
     }
 
     @Override
-    public void requestContent(Callback<PropertyModel> contentReadyCallback) {
+    public void requestContent(Callback<@Nullable PropertyModel> contentReadyCallback) {
         Callback<Boolean> showContentCallback =
                 (hasContent) -> {
                     contentReadyCallback.onResult(hasContent ? createContentModel() : null);

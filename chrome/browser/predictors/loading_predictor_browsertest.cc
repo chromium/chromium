@@ -1285,12 +1285,23 @@ class LCPPTimingPredictorTestBase : public InProcessBrowserTest {
                 *predicted_lcp_locator);
     }
 
-    EXPECT_EQ(expected_events, content::EvalJs(web_contents, R"(
+    std::string actual_events = content::EvalJs(web_contents, R"(
       globalThis.events.join(", ")
-        )"))
+    )")
+                                    .ExtractString();
+
+    std::vector<std::string> expected_vec = base::SplitString(
+        expected_events, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::string> actual_vec = base::SplitString(
+        actual_events, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    EXPECT_THAT(actual_vec, testing::UnorderedElementsAreArray(expected_vec))
+        << "Expected events: " << expected_events
+        << "\nActual events: " << actual_events << "\nTimings: "
         << content::EvalJs(web_contents, R"(
       globalThis.timings.join(", ")
-        )");
+    )")
+               .ExtractString();
 
     LcpElementLearnWaiter lcp_element_waiter(
         loading_predictor()->resource_prefetch_predictor());
@@ -1328,7 +1339,7 @@ class LCPPTimingPredictorBrowserTest : public LCPPTimingPredictorTestBase {
     NavigateAndWaitForLcpElement(kUrl,
                                  /*expected_events=*/"LCP@IMG, LCP@DIV, Onload",
                                  /*expected_lcp_count=*/2u,
-                                 /*expected_lcp_index=*/0u,  // =IMG
+                                 /*expected_lcp_index=*/1u,  // =DIV
                                  from_here);
   }
 
@@ -1338,9 +1349,49 @@ class LCPPTimingPredictorBrowserTest : public LCPPTimingPredictorTestBase {
 
 // Confirm image element of the first LCP is predicted rather than div, or the
 // actual LCP(current implementation)
-IN_PROC_BROWSER_TEST_F(LCPPTimingPredictorBrowserTest, Base) {
+// TODO(crbug.com/413192370): Flaky on win-rel.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Base DISABLED_Base
+#else
+#define MAYBE_Base Base
+#endif
+IN_PROC_BROWSER_TEST_F(LCPPTimingPredictorBrowserTest, MAYBE_Base) {
   TestPrediction();
 }
+
+class LCPPTimingPredictorBrowserFlagTest
+    : public LCPPTimingPredictorBrowserTest,
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  LCPPTimingPredictorBrowserFlagTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{blink::features::kLCPCriticalPathPredictor,
+          {{blink::features::kLCPCriticalPathPredictorRecordedLcpElementTypes
+                .name,
+            GetParam()}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// kLCPCriticalPathPredictorRecordedLcpElementTypes should not affect.
+// TODO(crbug.com/413192370): Flaky on win-rel.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WithKCriticalPathFlag DISABLED_WithKCriticalPathFlag
+#else
+#define MAYBE_WithKCriticalPathFlag WithKCriticalPathFlag
+#endif
+IN_PROC_BROWSER_TEST_P(LCPPTimingPredictorBrowserFlagTest,
+                       MAYBE_WithKCriticalPathFlag) {
+  TestPrediction();
+}
+
+INSTANTIATE_TEST_SUITE_P(Flags,
+                         LCPPTimingPredictorBrowserFlagTest,
+                         ::testing::Values("all", "image_only"));
 
 class SuppressesLoadingPredictorOnSlowNetworkBrowserTest
     : public LoadingPredictorBrowserTest {

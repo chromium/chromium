@@ -42,12 +42,25 @@ bool IsDemoAccountSignInEnabled();
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
 // Set to power idle action policy to do nothing and use the DemoModeIdleHandler
 // when idle.
+// TODO(crbugs.com/355727308): This happens only when power policy override for
+// 24h session. Rename with `Enable24HSessionForDemoMode()`.
 void SetDoNothingWhenPowerIdle();
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
 // Whether force the session length count from ChromeOS session instead of first
 // user activity.
+// TODO(crbugs.com/355727308): This happens only when power policy override for
+// 24h session. Rename with `ShouldEnable24HSessionForDemoMode()`.
 bool ForceSessionLengthCountFromSessionStarts();
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
+// Call on setup demo account error failed by exceed QPS.Turn on "should
+// schedule logout" in current session.
+void TurnOnScheduleLogoutForMGS();
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
+// Whether should schedule a logout in current session to retry sign-in.
+bool GetShouldScheduleLogoutForMGS();
 
 }  // namespace ash::demo_mode
 

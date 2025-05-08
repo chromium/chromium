@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_H_
 
+#include "base/functional/callback_helpers.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_impl.h"
 
 namespace blink {
@@ -17,9 +18,13 @@ class PLATFORM_EXPORT CompositorThread : public NonMainThreadImpl {
   CompositorThread& operator=(const CompositorThread&) = delete;
   ~CompositorThread() override;
 
+  void InitializeHangWatcherAndThreadName();
+
  private:
   std::unique_ptr<NonMainThreadSchedulerBase> CreateNonMainThreadScheduler(
       base::sequence_manager::SequenceManager* sequence_manager) override;
+
+  base::ScopedClosureRunner hang_watcher_registration_;
 };
 
 }  // namespace scheduler

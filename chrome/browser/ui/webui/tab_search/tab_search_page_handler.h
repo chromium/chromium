@@ -219,8 +219,7 @@ class TabSearchPageHandler
 
   // Encapsulates tab details to facilitate performing an action on a tab.
   struct TabDetails {
-    TabDetails(Browser* browser, tabs::TabInterface* tab)
-        : browser(browser), tab(tab) {}
+    explicit TabDetails(tabs::TabInterface* tab) : tab(tab) {}
 
     int GetIndex() const {
       return tab->GetBrowserWindowInterface()
@@ -228,7 +227,6 @@ class TabSearchPageHandler
           ->GetIndexOfTab(tab);
     }
 
-    raw_ptr<Browser> browser;
     raw_ptr<tabs::TabInterface> tab;
   };
 
@@ -332,6 +330,7 @@ class TabSearchPageHandler
   mojo::Remote<tab_search::mojom::Page> page_;
   const raw_ptr<content::WebUI> web_ui_;
   const raw_ptr<TopChromeWebUIController, DanglingUntriaged> webui_controller_;
+  raw_ptr<Browser> browser_;
   const raw_ptr<MetricsReporter> metrics_reporter_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;

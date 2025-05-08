@@ -16,7 +16,7 @@ source_set("model") {
     "//ios/chrome/browser/location_bar/ui_bundled:protocols",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
-    "//ios/chrome/browser/omnibox/ui_bundled",
+    "//ios/chrome/browser/omnibox/ui",
     "//ui/base",
     "//ui/base:types",
     "//url",

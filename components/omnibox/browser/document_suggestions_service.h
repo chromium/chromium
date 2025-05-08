@@ -60,7 +60,7 @@ class DocumentSuggestionsService : public KeyedService,
                                         StartCallback start_callback,
                                         CompletionCallback completion_callback);
 
-  // Advises the service to stop any process that creates a suggestion request.
+  // Stops creating the request. Already created requests aren't affected.
   void StopCreatingDocumentSuggestionsRequest();
 
   signin::Tribool account_is_subject_to_enterprise_policies() {

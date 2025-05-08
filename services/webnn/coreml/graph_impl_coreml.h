@@ -19,6 +19,7 @@
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
@@ -45,7 +46,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
       ContextImplCoreml* context,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,
@@ -103,7 +104,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
   static void CreateAndBuildOnBackgroundThread(
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,

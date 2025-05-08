@@ -32,6 +32,7 @@
 #include "cc/base/math_util.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/paint/render_surface_filters.h"
+#include "cc/paint/tone_map_util.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -1398,12 +1399,6 @@ void SkiaRenderer::ClearFramebuffer() {
 
 bool SkiaRenderer::NeedsLayerForColorConversion(
     const AggregatedRenderPass* render_pass) {
-  if (!base::FeatureList::IsEnabled(features::kColorConversionInRenderer)) {
-    // Color conversion is already handled by a dedicated render pass if it was
-    // needed.
-    return false;
-  }
-
   if (!render_pass->ShouldDrawWithBlending()) {
     // We don't need to be in a color space suitable for blending if we're not
     // doing any blending.
@@ -2000,29 +1995,34 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
   scissor_rect.reset();
 }
 
-const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
+std::optional<const DrawQuad*> SkiaRenderer::CanPassBeDrawnDirectly(
     const AggregatedRenderPass* pass,
     const RenderPassRequirements& requirements) {
   // If render pass bypassing is disabled for testing
   if (settings_->disable_render_pass_bypassing)
-    return nullptr;
+    return std::nullopt;
+
+  // A pass that is functionally empty is bypass-able with a transparent quad.
+  if (pass->quad_list.empty() || pass->output_rect.IsEmpty()) {
+    return std::optional(nullptr);
+  }
 
   // Only supports bypassing render passes with a single child quad and simple
   // content.
   if (pass->quad_list.size() != 1) {
-    return nullptr;
+    return std::nullopt;
   }
 
   // If it there are supposed to be mipmaps, the renderpass must exist
   if (pass->generate_mipmap)
-    return nullptr;
+    return std::nullopt;
 
     // Force passes whose backings can be directly scanned out from being a
     // bypass quad. This logic should mirror
     // |GetRenderPassBackingForDirectScanout|.
 #if BUILDFLAG(IS_WIN)
   if (requirements.is_scanout) {
-    return nullptr;
+    return std::nullopt;
   }
 #else
   // This platform doesn't support direct scanout, so we don't expect any
@@ -2036,18 +2036,18 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // DrawRPDQParams.
   if (quad->material == DrawQuad::Material::kDebugBorder ||
       quad->material == DrawQuad::Material::kPictureContent)
-    return nullptr;
+    return std::nullopt;
 
   // TODO(penghuang): support composite TileDrawQuad in a sub render pass for
   // raw draw directly.
   if (is_using_raw_draw_ && quad->material == DrawQuad::Material::kTiledContent)
-    return nullptr;
+    return std::nullopt;
 
   // If the quad specifies nearest-neighbor scaling then there could be two
   // scaling operations at different quality levels. This requires drawing to an
   // intermediate render pass. See https://crbug.com/1155338.
   if (UseNearestNeighborSampling(quad))
-    return nullptr;
+    return std::nullopt;
 
   // In order to concatenate the bypass'ed quads transform with RP itself, it
   // needs to be invertible.
@@ -2058,7 +2058,7 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   SkMatrix flattened = gfx::TransformToFlattenedSkMatrix(
       quad->shared_quad_state->quad_to_target_transform);
   if (!flattened.invert(nullptr))
-    return nullptr;
+    return std::nullopt;
 
   // A renderpass normally draws its content into a transparent destination,
   // using the quad's blend mode, then that result is later drawn into the
@@ -2066,7 +2066,7 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // correctly, CalculateBypassParams must be able to reason about the quad's
   // blend mode.
   if (!IsPorterDuffBlendMode(quad->shared_quad_state->blend_mode))
-    return nullptr;
+    return std::nullopt;
   // All Porter-Duff blending with transparent black should fall into one of
   // these two categories:
   DCHECK(RenderPassPreservesContent(quad->shared_quad_state->blend_mode) ||
@@ -2079,15 +2079,15 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // bypass rrect separately and update PrepareCanvasForRDQP to apply the
   // additional clip.
   if (ShouldApplyRoundedCorner(quad))
-    return nullptr;
+    return std::nullopt;
 
   if (ShouldApplyGradientMask(quad))
-    return nullptr;
+    return std::nullopt;
 
   if (const auto* render_pass_quad =
           quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
     if (render_pass_quad->mask_resource_id()) {
-      return nullptr;
+      return std::nullopt;
     }
 
     // Only allow merging render passes containing RenderPassDrawQuads if they
@@ -2095,7 +2095,7 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
     // a single intermediate coordinate space.
     if (!Is2dScaleTranslateTransform(
             render_pass_quad->shared_quad_state->quad_to_target_transform)) {
-      return nullptr;
+      return std::nullopt;
     }
 
     const auto nested_render_pass_id = render_pass_quad->render_pass_id;
@@ -2110,7 +2110,7 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
     const auto& nested_render_pass = *it;
     if (!nested_render_pass->filters.IsEmpty() ||
         !nested_render_pass->backdrop_filters.IsEmpty()) {
-      return nullptr;
+      return std::nullopt;
     }
   }
 
@@ -2123,6 +2123,13 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
     const DrawQuad* bypass_quad,
     DrawRPDQParams* rpdq_params,
     DrawQuadParams* params) const {
+  // `bypass_quad` is nullptr if the render pass being bypassed is functionally
+  // empty. We want to draw a transparent quad in this case to support backdrop
+  // filters that can expand the bounding box.
+  if (!bypass_quad) {
+    return BypassMode::kDrawTransparentQuad;
+  }
+
   // Depending on bypass_quad's blend mode, its content may be irrelevant
   if (RenderPassRemainsTransparent(
           bypass_quad->shared_quad_state->blend_mode)) {
@@ -2697,18 +2704,27 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const gfx::HDRMetadata& src_hdr_metadata =
       resource_provider()->GetHDRMetadata(quad->resource_id);
 
-  const bool needs_color_conversion_filter =
-      ((quad->is_video_frame && src_color_space.IsHDR()) ||
-       src_color_space.IsToneMappedByDefault()) &&
-      // Don't do color conversions for stream video unless
-      // FixAndroidToneMapping is enabled.
-      (!quad->is_stream_video ||
-       base::FeatureList::IsEnabled(kFixAndroidToneMapping));
+  const bool needs_tone_map = [&]() {
+    // Don't do tone mapping for stream video unless FixAndroidToneMapping is
+    // enabled.
+    if (quad->is_stream_video &&
+        !base::FeatureList::IsEnabled(kFixAndroidToneMapping)) {
+      return false;
+    }
+    if (quad->is_video_frame && src_color_space.IsHDR()) {
+      return true;
+    }
+    if (src_color_space.IsToneMappedByDefault()) {
+      return true;
+    }
+    if (gfx::HdrMetadataAgtm::IsEnabled() &&
+        src_hdr_metadata.agtm.has_value()) {
+      return true;
+    }
+    return false;
+  }();
 
   sk_sp<SkColorSpace> override_color_space;
-  if (needs_color_conversion_filter) {
-    override_color_space = CurrentDrawLayerColorSpace().ToSkColorSpace();
-  }
   if (overlay_color_space) {
     override_color_space = overlay_color_space->ToSkColorSpace();
   }
@@ -2739,7 +2755,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const bool blend_background =
       quad->background_color != SkColors::kTransparent && !image->isOpaque();
 
-  if (!blend_background && !needs_color_conversion_filter && !rpdq_params) {
+  if (!blend_background && !needs_tone_map && !rpdq_params) {
     // This is a simple texture draw and can go into the batching system
     DCHECK(!MustFlushBatchedQuads(quad, rpdq_params, *params));
     AddQuadToBatch(image, valid_texel_bounds, params);
@@ -2767,15 +2783,26 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   // Auto-restore canvas state after applying clipShader and draw.
   SkAutoCanvasRestore acr(current_canvas_, /*do_save=*/true);
 
-  if (needs_color_conversion_filter) {
-    // Skia won't perform color conversion.
-    const gfx::ColorSpace dst_color_space = CurrentDrawLayerColorSpace();
-    DCHECK(SkColorSpace::Equals(image->colorSpace(),
-                                dst_color_space.ToSkColorSpace().get()));
-    sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
-        src_color_space, std::nullopt, src_hdr_metadata,
-        quad->dynamic_range_limit, dst_color_space, quad->is_video_frame);
-    paint.setColorFilter(color_filter->makeComposed(paint.refColorFilter()));
+  if (needs_tone_map) {
+    // Use the current SDR slider white level for PQ HDR videos on
+    // Windows, so that they look similar when rendered by the
+    // compositor and when rendered as an overlay (HDR10 MPO).
+    // https://crbug.com/1492817
+    auto hdr_metadata = src_hdr_metadata;
+    if (quad->is_video_frame &&
+        src_color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ &&
+        base::FeatureList::IsEnabled(
+            features::kUseDisplaySDRMaxLuminanceNits)) {
+      hdr_metadata =
+          gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(src_hdr_metadata);
+      hdr_metadata.ndwl = gfx::HdrMetadataNdwl(
+          current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
+    }
+    cc::ToneMapUtil::AddGlobalToneMapFilterToPaint(
+        paint, image, hdr_metadata,
+        quad->dynamic_range_limit.ComputeHdrHeadroom(
+            current_frame()
+                ->display_color_spaces.GetHDRMaxLuminanceRelative()));
   }
 
   // From gl_renderer, the final src color will be
@@ -2823,7 +2850,7 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
       is_using_raw_draw_ && !quad->ShouldDrawWithBlending();
   ScopedSkImageBuilder builder(
       this, quad->resource_id, /*maybe_concurrent_reads=*/false,
-      quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
+      kPremul_SkAlphaType,
       /*override_color_space=*/nullptr, raw_draw_if_possible);
 
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
@@ -3010,34 +3037,6 @@ void SkiaRenderer::ScheduleOverlays() {
 
   skia_output_surface_->ScheduleOverlays(
       std::move(current_frame()->overlay_list), std::move(sync_tokens));
-}
-
-sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
-    const gfx::ColorSpace& src,
-    std::optional<uint32_t> src_bit_depth,
-    std::optional<gfx::HDRMetadata> src_hdr_metadata,
-    const cc::PaintFlags::DynamicRangeLimitMixture& src_dynamic_range_limit,
-    const gfx::ColorSpace& dst,
-    bool is_video_frame) {
-  // Use the current SDR slider white level for PQ HDR videos on
-  // Windows, so that they look similar when rendered by the
-  // compositor and when rendered as an overlay (HDR10 MPO).
-  // https://crbug.com/1492817
-  auto hdr_metadata = src_hdr_metadata;
-  if (is_video_frame &&
-      src.GetTransferID() == gfx::ColorSpace::TransferID::PQ &&
-      base::FeatureList::IsEnabled(features::kUseDisplaySDRMaxLuminanceNits)) {
-    hdr_metadata =
-        gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(src_hdr_metadata);
-    hdr_metadata->ndwl = gfx::HdrMetadataNdwl(
-        current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
-  }
-
-  return color_filter_cache_.Get(
-      src, dst, src_bit_depth, hdr_metadata,
-      current_frame()->display_color_spaces.GetSDRMaxLuminanceNits(),
-      src_dynamic_range_limit.ComputeHdrHeadroom(
-          current_frame()->display_color_spaces.GetHDRMaxLuminanceRelative()));
 }
 
 namespace {

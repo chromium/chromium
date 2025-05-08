@@ -5742,7 +5742,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ClearClipPathEffectNode) {
   // removal of a clip-path.
   SetBodyInnerHTML(R"HTML(
     <svg>
-      <clipPath clip-path="circle()" id="clip"></clipPath>
+      <clipPath clip-path="circle()" id="clip"><text/></clipPath>
       <rect id="rect" width="800" clip-path="url(#clip)" height="800"/>
     </svg>
   )HTML");

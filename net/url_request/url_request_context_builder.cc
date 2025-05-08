@@ -21,6 +21,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "net/base/cache_type.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate_impl.h"
 #include "net/cert/cert_verifier.h"
@@ -39,6 +40,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_server_properties_manager.h"
+#include "net/http/no_vary_search_cache_storage_file_operations.h"
 #include "net/http/transport_security_persister.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
@@ -558,6 +560,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
             std::move(http_transaction_factory), enable_shared_zstd_);
   }
 
+  std::unique_ptr<NoVarySearchCacheStorageFileOperations> file_operations;
+
   if (http_cache_enabled_) {
     std::unique_ptr<HttpCache::BackendFactory> http_cache_backend;
     if (http_cache_params_.type != HttpCacheParams::IN_MEMORY) {
@@ -581,6 +585,10 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
           DISK_CACHE, backend_type, http_cache_params_.file_operations_factory,
           http_cache_params_.path, http_cache_params_.max_size,
           http_cache_params_.reset_cache);
+      if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch)) {
+        file_operations = NoVarySearchCacheStorageFileOperations::Create(
+            http_cache_params_.path);
+      }
     } else {
       http_cache_backend =
           HttpCache::DefaultBackend::InMemory(http_cache_params_.max_size);
@@ -591,7 +599,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
 #endif
 
     http_transaction_factory = std::make_unique<HttpCache>(
-        std::move(http_transaction_factory), std::move(http_cache_backend));
+        std::move(http_transaction_factory), std::move(http_cache_backend),
+        std::move(file_operations));
   }
   context->set_http_transaction_factory(std::move(http_transaction_factory));
 

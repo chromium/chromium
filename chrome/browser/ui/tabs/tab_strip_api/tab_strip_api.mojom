@@ -4,16 +4,108 @@
 
 module tabs_api.mojom;
 
-// The TabStripController is an object that lives alongside the
-// TabStripViewModel. It acts as the bridge between the model and any UI Dialog
-// or client.
-interface TabStripController {
+import "mojo/public/mojom/base/error.mojom";
+import "url/mojom/url.mojom";
 
-  // Creates a new tab.
-  // TODO (crbug.com/409821664). Returns a result type of bool for success or
-  // string for errors. These result types are temporary and will be changed
-  // once they are defined.
-  [Sync]
-  CreateNewTab() => result<bool, string>;
+// In C++, this enum is typemapped to
+// "//chrome/browser/ui/tabs/tab_enums.h"
+enum TabAlertState {
+  kMediaRecording,
+  kTabCapturing,
+  kAudioPlaying,
+  kAudioMuting,
+  kBluetoothConnected,
+  kBluetoothScanActive,
+  kUsbConnected,
+  kHidConnected,
+  kSerialConnected,
+  kPipPlaying,
+  kDesktopCapturing,
+  kVrPresentingInHeadset,
+  kAudioRecording,
+  kVideoRecording,
+  kGlicAccessing,
 };
 
+// In C++, this enum is typemapped to
+// "//chrome/browser/ui/tabs/tab_network_state.h"
+enum TabNetworkState {
+  kNone,
+  kWaiting,
+  kLoading,
+  kError,
+};
+
+// References a tab object. The id can refer to different types of underlying
+// resource. The |type| field can be used to differentiate between the type
+// of underlying resources.
+struct TabId {
+  // The type of object referenced by the id.
+  enum Type {
+    // An unknown type. This will never be returned by the service and usually
+    // indicates an invalid argument from the client.
+    kUnknown,
+    // A content tab.
+    kContent,
+    // A collection of tabs.
+    kCollection,
+  };
+
+  // An opaque string that uniquely identifies the underlying resource. This
+  // id will be unique across all resource types. Users should not try to
+  // extrapolate any sort of pattern from this string.
+  string id;
+
+  // The type of resource referenced by this id.
+  Type type;
+};
+
+struct Tab {
+  TabId id;
+  string title;
+  url.mojom.Url url;
+
+  // TODO(crbug.com/414630734). The favicon should be typemapped to ImageModel
+  // in c++. Leave this as a data uri for now.
+  url.mojom.Url favicon_url;
+
+  array<TabAlertState> alert_states;
+  TabNetworkState network_state;
+};
+
+// Position is an ephemeral object that should not be saved nor act as an
+// identifier. It is purely used in this API to determine the position within
+// the TabstripModel.
+struct Position {
+  // TODO (crbug.com/412935316). Create a generic id that represents the parent
+  // collection id.
+  uint32 index;
+};
+
+// The TabStripService is an object that lives alongside the
+// TabstripModel. It acts as the bridge between the model and any UI Dialog
+// or client.
+interface TabStripService {
+  // Creates a new tab.
+  // Position specifies the location of the Tab after creation. If position is
+  // empty, the new tab will be appended to the end of the Tabstrip.
+  // Url specifies what is loaded in the Tab. If url is empty, then the new
+  // tab-page is loaded instead.
+  [Sync]
+  CreateTabAt(Position? pos, url.mojom.Url? url)
+      => result<bool, mojo_base.mojom.Error>;
+
+  // Get tab data based on the Tab id. Currently the TabId refers to the Tab
+  // handle value.
+  [Sync]
+  GetTab(TabId id) => result<Tab, mojo_base.mojom.Error>;
+};
+
+// TODO (crbug.com/412955607)
+// TabsObserver is not a CheckedObserver. There is a potential UaF if the
+// observer list attempts to call a destroyed TabsObserver that hasn't removed
+// itself from the list.
+interface TabsObserver {
+  // TODO (crbug.com/411134070). Add in missing TabData.
+  OnTabsCreated(array<Position> pos);
+};

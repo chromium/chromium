@@ -54,6 +54,7 @@ static_library("internal") {
     "//components/sync/base:base",
     "//components/sync/model:model",
     "//components/sync/protocol:protocol",
+    "//google_apis/common",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//sql",

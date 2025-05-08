@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
+#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "extensions/browser/event_router_factory.h"
@@ -78,9 +79,10 @@ void BrowserContextKeyedAPIFactory<
   DependsOn(PermissionsManager::GetFactory());
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(ExtensionManagementFactory::GetInstance());
+  DependsOn(CommandService::GetFactoryInstance());
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(AppWindowRegistry::Factory::GetInstance());
-  DependsOn(CommandService::GetFactoryInstance());
   DependsOn(ToolbarActionsModelFactory::GetInstance());
   DependsOn(AccountExtensionTracker::GetFactory());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

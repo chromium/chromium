@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -790,15 +792,15 @@ ExtensionFunction::ResponseAction TerminalPrivateSetPrefsFunction::Run() {
   PrefService* service =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
 
-  static const base::NoDestructor<
-      base::flat_map<std::string, base::Value::Type>>
-      kAllowList{{{guest_os::prefs::kGuestOsTerminalSettings,
-                   base::Value::Type::DICT}}};
+  static constexpr auto kAllowList =
+      base::MakeFixedFlatMap<std::string_view, base::Value::Type>(
+          {{guest_os::prefs::kGuestOsTerminalSettings,
+            base::Value::Type::DICT}});
 
   for (const auto item : params->prefs.additional_properties) {
     // Write prefs if they are allowed, and match expected type, else ignore.
-    auto allow_it = kAllowList->find(item.first);
-    if (allow_it == kAllowList->end() ||
+    auto allow_it = kAllowList.find(item.first);
+    if (allow_it == kAllowList.end() ||
         allow_it->second != item.second.type()) {
       LOG(WARNING) << "Ignoring non-allowed SetPrefs path=" << item.first
                    << ", type=" << item.second.type();

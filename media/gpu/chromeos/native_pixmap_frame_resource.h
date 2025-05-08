@@ -127,25 +127,19 @@ class NativePixmapFrameResource : public FrameResource {
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandleForTesting()
       const override;
 
-  // CreateVideoFrame() is used to create a VideoFrame from the underlying
-  // NativePixmap. The DMABuf FDs are duplicated and a VideoFrame with the
-  // specified storage type is created. |storage_type| must be STORAGE_DMABUFS
-  // or STORAGE_GPU_MEMORY_BUFFER.
-  scoped_refptr<VideoFrame> CreateVideoFrame(
-      VideoFrame::StorageType storage_type) const;
-
- private:
-  ~NativePixmapFrameResource() override;
-
   // CreateDmabufVideoFrame() is used to create a VideoFrame from the underlying
   // NativePixmap. The DMABuf FDs are duplicated and a VideoFrame with storage
   // type STORAGE_DMABUFS is created.
   scoped_refptr<VideoFrame> CreateDmabufVideoFrame() const;
 
-  // CreateGmbVideoFrame() is used to create a VideoFrame from the underlying
-  // NativePixmap. The DMABuf FDs are duplicated and a VideoFrame with storage
-  // type STORAGE_GPU_MEMORY_BUFFER is created.
-  scoped_refptr<VideoFrame> CreateGmbVideoFrame() const;
+  // CreateMappableVideoFrame() is used to create a VideoFrame from the
+  // underlying NativePixmap. The DMABuf FDs are duplicated and a VideoFrame
+  // with storage type STORAGE_GPU_MEMORY_BUFFER is created.
+  scoped_refptr<VideoFrame> CreateMappableVideoFrame(
+      gpu::SharedImageInterface* sii) const;
+
+ private:
+  ~NativePixmapFrameResource() override;
 
   // |pixmap_| is the underlying NativePixmap. It is is set by the constructors.
   const scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap_;

@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Aloita jotain uutta tai pyydä apua.</translation>
 <translation id="1054048317165655285">Viimeistele käyttöönotto puhelimella</translation>
 <translation id="1054153489933238809">Avaa alkuperäinen &amp;kuva uudessa välilehdessä</translation>
-<translation id="1054187194995068149">Hei! Tämä on ennakkoversio</translation>
 <translation id="1054502481659725522">Sovellukset, verkkosivustot ja järjestelmäpalvelut voivat käyttää sijaintiasi</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Päivitä <ph name="DEVICE_TYPE" /> viikon sisällä}other{Päivitä <ph name="DEVICE_TYPE" /> {NUM_WEEKS} viikon sisällä}}</translation>
 <translation id="1055606969515662982">Lopeta striimaus kaukosäätimellä</translation>

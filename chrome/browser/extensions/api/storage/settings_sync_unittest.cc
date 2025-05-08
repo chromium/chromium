@@ -34,9 +34,12 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_extension_system.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using value_store::ValueStore;
 

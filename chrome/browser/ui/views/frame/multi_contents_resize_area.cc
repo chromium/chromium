@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 
+#include "base/i18n/rtl.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -86,13 +87,35 @@ MultiContentsResizeArea::MultiContentsResizeArea(
   SetPreferredSize(gfx::Size(kHandleWidth + kHandlePadding, kHandleHeight));
 }
 
+void MultiContentsResizeArea::OnGestureEvent(ui::GestureEvent* event) {
+  // If the gesture event was a double tap and was not part of a resizing event,
+  // swap the contents views.
+  if (!is_resizing() && event->type() == ui::EventType::kGestureTap &&
+      event->details().tap_count() == 2) {
+    multi_contents_view_->OnSwap();
+  }
+  ResizeArea::OnGestureEvent(event);
+}
+
+void MultiContentsResizeArea::OnMouseReleased(const ui::MouseEvent& event) {
+  // If the mouse event was a left double click and was not part of a resizing
+  // event, swap the contents views.
+  if (!is_resizing() && event.IsOnlyLeftMouseButton() &&
+      event.GetClickCount() == 2) {
+    multi_contents_view_->OnSwap();
+  }
+  ResizeArea::OnMouseReleased(event);
+}
+
 bool MultiContentsResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
   const int resize_increment = 50;
   if (event.key_code() == ui::VKEY_LEFT) {
-    multi_contents_view_->OnResize(-resize_increment, true);
+    multi_contents_view_->OnResize(
+        base::i18n::IsRTL() ? resize_increment : -resize_increment, true);
     return true;
   } else if (event.key_code() == ui::VKEY_RIGHT) {
-    multi_contents_view_->OnResize(resize_increment, true);
+    multi_contents_view_->OnResize(
+        base::i18n::IsRTL() ? -resize_increment : resize_increment, true);
     return true;
   }
   return false;

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/reading_list/features/reading_list.gni")
-
 source_set("core") {
   sources = [
     "dual_reading_list_model.cc",

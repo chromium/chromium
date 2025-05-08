@@ -42,7 +42,7 @@ public class TabListEditorMenuItem {
     private ColorStateList mIconTint;
 
     private Runnable mOnClickRunnable;
-    private Callback<List<Integer>> mOnSelectionStateChange;
+    private Callback<List<TabListEditorItemSelectionId>> mOnSelectionStateChange;
 
     /**
      * @param context for loading resources.
@@ -201,7 +201,7 @@ public class TabListEditorMenuItem {
         return mShouldDismissMenu;
     }
 
-    public void setOnSelectionStateChange(Callback<List<Integer>> callback) {
+    public void setOnSelectionStateChange(Callback<List<TabListEditorItemSelectionId>> callback) {
         mOnSelectionStateChange = callback;
     }
 
@@ -215,7 +215,7 @@ public class TabListEditorMenuItem {
     }
 
     /** Updates the {@link TabListEditorAction} with the currently selected tabs. */
-    public void onSelectionStateChange(List<Integer> tabIds) {
-        mOnSelectionStateChange.onResult(tabIds);
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
+        mOnSelectionStateChange.onResult(itemIds);
     }
 }

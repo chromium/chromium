@@ -61,7 +61,7 @@ extern NSString* const kToolsMenuOpenLensOverlay;
 // Open ai prototype item accessibility Identifier.
 extern NSString* const kToolsMenuOpenAIPrototype;
 // Open Reader mode item accessibility Identifier.
-extern NSString* const kToolsMenuOpenReaderMode;
+extern NSString* const kToolsMenuReaderMode;
 // EditBookmark item accessibility Identifier.
 extern NSString* const kToolsMenuEditBookmark;
 // SiteInformation item accessibility Identifier.

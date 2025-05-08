@@ -250,11 +250,6 @@ void WriteTrustAnchors(
           constraint_params.push_back("{}");
         }
 
-        constraint_params.push_back(
-            constraint.enforce_anchor_expiry() ? "true" : "false");
-        constraint_params.push_back(
-            constraint.enforce_anchor_constraints() ? "true" : "false");
-
         constraint_strings.push_back(
             base::StrCat({"{", base::JoinString(constraint_params, ","), "}"}));
 
@@ -265,6 +260,23 @@ void WriteTrustAnchors(
       *string_to_write += "};\n";
     }
   }
+}
+
+// Appends |trust_anchor|'s Trust Anchor ID (or empty string, if not present) to
+// |*string_to_write|, with a preceding comma. Returns false if the Trust Anchor
+// ID is malformed.
+bool WriteTrustAnchorID(const TrustAnchor& anchor,
+                        std::string* string_to_write) {
+  if (anchor.has_trust_anchor_id()) {
+    if (anchor.trust_anchor_id().find_first_not_of("0123456789.") !=
+        std::string::npos) {
+      return false;
+    }
+    base::StringAppendF(string_to_write, ", \"%s\"", anchor.trust_anchor_id());
+  } else {
+    *string_to_write += ", \"\"";
+  }
+  return true;
 }
 
 // Returns true if file was correctly written, false otherwise.
@@ -280,15 +292,54 @@ bool WriteRootCppFile(const RootStore& root_store,
   WriteTrustAnchors(root_store.additional_certs(), "Additional",
                     &string_to_write);
 
-  // Assemble list of trust anchors
+  // Assemble list of trust anchors.
   string_to_write += "constexpr ChromeRootCertInfo kChromeRootCertList[] = {\n";
   for (int i = 0; i < root_store.trust_anchors_size(); i++) {
     const auto& anchor = root_store.trust_anchors(i);
+    if (anchor.has_tls_trust_anchor()) {
+      // Anchors in |trust_anchors| are not supposed to have |tls_trust_anchor|
+      // set, because they are definitionally TLS trust anchors.
+      return false;
+    }
     base::StringAppendF(&string_to_write, "    {kChromeRootCert%d, ", i);
     if (anchor.constraints_size() > 0) {
       base::StringAppendF(&string_to_write, "kChromeRootConstraints%d", i);
     } else {
       string_to_write += "{}";
+    }
+
+    base::StringAppendF(
+        &string_to_write,
+        ", /*enforce_anchor_expiry=*/%s, /*enforce_anchor_constraints=*/%s",
+        anchor.enforce_anchor_expiry() ? "true" : "false",
+        anchor.enforce_anchor_constraints() ? "true" : "false");
+
+    if (!WriteTrustAnchorID(anchor, &string_to_write)) {
+      return false;
+    }
+    string_to_write += "},\n";
+  }
+  // Append additional_certs as TLS trust anchors, if they are marked as such.
+  for (int i = 0; i < root_store.additional_certs_size(); i++) {
+    const auto& anchor = root_store.additional_certs(i);
+    if (!anchor.tls_trust_anchor()) {
+      continue;
+    }
+    base::StringAppendF(&string_to_write, "    {kAdditionalCert%d, ", i);
+    if (anchor.constraints_size() > 0) {
+      base::StringAppendF(&string_to_write, "kAdditionalConstraints%d", i);
+    } else {
+      string_to_write += "{}";
+    }
+
+    base::StringAppendF(
+        &string_to_write,
+        ", /*enforce_anchor_expiry=*/%s, /*enforce_anchor_constraints=*/%s",
+        anchor.enforce_anchor_expiry() ? "true" : "false",
+        anchor.enforce_anchor_constraints() ? "true" : "false");
+
+    if (!WriteTrustAnchorID(anchor, &string_to_write)) {
+      return false;
     }
     string_to_write += "},\n";
   }

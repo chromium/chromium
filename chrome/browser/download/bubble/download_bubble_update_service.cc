@@ -209,16 +209,6 @@ bool DownloadBubbleUpdateService::ItemSortKey::operator<(
   return start_time > other.start_time;
 }
 
-bool DownloadBubbleUpdateService::ItemSortKey::operator==(
-    const DownloadBubbleUpdateService::ItemSortKey& other) const {
-  return std::tie(state, start_time) == std::tie(other.state, other.start_time);
-}
-
-bool DownloadBubbleUpdateService::ItemSortKey::operator!=(
-    const DownloadBubbleUpdateService::ItemSortKey& other) const {
-  return !(*this == other);
-}
-
 bool DownloadBubbleUpdateService::ItemSortKey::operator>(
     const DownloadBubbleUpdateService::ItemSortKey& other) const {
   return !(*this == other || *this < other);

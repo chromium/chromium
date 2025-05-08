@@ -108,15 +108,19 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
          * @return the URL of the current item for saving offline, or null if the item can't be
          *     saved offline.
          */
+        @Nullable
         GURL getUrl();
 
         /**
          * @return Title to be displayed in the context menu when applicable, or null if no title
-         *         should be displayed.
+         *     should be displayed.
          */
+        @Nullable
         String getContextMenuTitle();
 
-        /** @return whether the given menu item is supported. */
+        /**
+         * @return whether the given menu item is supported.
+         */
         boolean isItemSupported(@ContextMenuItemId int menuItemId);
 
         /** Called when a context menu has been created. */
@@ -316,6 +320,13 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         notifyContextMenuShown(delegate);
 
         return true;
+    }
+
+    /** Dismisses the context menu shown by {@link showListContextMenu()}, if any. */
+    public void hideListContextMenu() {
+        if (mListContextMenu != null) {
+            mListContextMenu.dismiss();
+        }
     }
 
     @Override

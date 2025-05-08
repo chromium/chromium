@@ -60,6 +60,10 @@ found in the LICENSE file.
     <dimen name="small_card_icon_corner_radius">2dp</dimen>
     <dimen name="square_card_icon_corner_radius">3dp</dimen>
 
+    <!-- Google Wallet valuable icon (like loyalty card icon, etc.) -->
+    <dimen name="large_valuable_icon_size">40dp</dimen>
+    <dimen name="small_valuable_icon_size">@dimen/chip_icon_size</dimen>
+
     <!-- Local credit card editor -->
     <dimen name="local_card_scanner_height">64dp</dimen>
     <dimen name="local_card_expiration_date_editor_width">150dp</dimen>

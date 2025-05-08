@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_tab_helper.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper.h"
 #import "ios/chrome/browser/download/model/document_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
@@ -207,7 +208,9 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     }
     AppLauncherTabHelper::CreateForWebState(
         web_state, [[AppLauncherAbuseDetector alloc] init], is_off_the_record);
-    ReaderModeTabHelper::CreateForWebState(web_state);
+
+    ReaderModeTabHelper::CreateForWebState(
+        web_state, DistillerServiceFactory::GetForProfile(profile));
   }
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       web_state);

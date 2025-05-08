@@ -246,9 +246,12 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemWithNonExistentPath) {
   EXPECT_CALL(connect_cb, Run(false)).Times(1);
   EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull())).Times(1);
 
+  base::RunLoop run_loop;
+  ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
   file_helper()->ConnectAutomaticFileSystem(
       path.AsUTF8Unsafe(), base::Uuid::GenerateRandomV4(),
-      /* add_if_missing */ false, base::DoNothing(), connect_cb.Get());
+      /* add_if_missing */ true, base::DoNothing(), connect_cb.Get());
+  run_loop.Run();
 
   EXPECT_THAT(profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths),
               IsEmpty());
@@ -283,10 +286,13 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemInfoBarDenied) {
   EXPECT_CALL(delegate(), FileSystemAdded("<permission denied>", IsNull()))
       .Times(1);
 
+  base::RunLoop run_loop;
+  ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
   file_helper()->ConnectAutomaticFileSystem(
       path.AsUTF8Unsafe(), base::Uuid::GenerateRandomV4(),
       /* add_if_missing */ true, handle_permissions_callback.Get(),
       connect_cb.Get());
+  run_loop.Run();
 
   EXPECT_THAT(profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths),
               IsEmpty());

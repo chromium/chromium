@@ -8,8 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.view.View;
 
-import androidx.test.espresso.action.ViewActions;
-
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
@@ -46,7 +44,7 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
         return mHostStation.swapFacilitySync(
                 this,
                 new OmniboxEnteredTextFacility(mOmniboxFacility, textToExpect),
-                urlBarElement.performTrigger(ViewActions.typeText(textToType)));
+                urlBarElement.getTypeTextTrigger(textToType));
     }
 
     /** Simulate autocomplete suggestion received from the server. */
@@ -62,6 +60,6 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
 
     /** Click the delete button to erase the text entered. */
     public void clickDelete() {
-        mHostStation.exitFacilitySync(this, deleteButtonElement.forgivingClickTrigger());
+        mHostStation.exitFacilitySync(this, deleteButtonElement.getForgivingClickTrigger());
     }
 }

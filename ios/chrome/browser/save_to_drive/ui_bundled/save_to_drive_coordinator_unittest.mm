@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
@@ -31,6 +30,7 @@
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -122,7 +122,7 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
         browser_->GetWebStateList()->GetActiveWebState());
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;

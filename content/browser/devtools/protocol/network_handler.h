@@ -106,7 +106,8 @@ class NetworkHandler : public DevToolsDomainHandler,
 
   Response Enable(std::optional<int> max_total_size,
                   std::optional<int> max_resource_size,
-                  std::optional<int> max_post_data_size) override;
+                  std::optional<int> max_post_data_size,
+                  std::optional<bool> report_direct_socket_traffic) override;
   Response Disable() override;
 
 #if BUILDFLAG(ENABLE_REPORTING)

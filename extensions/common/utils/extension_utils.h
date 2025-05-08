@@ -15,15 +15,15 @@ class Extension;
 // Returns the extension ID or an empty string if null.
 const ExtensionId& MaybeGetExtensionId(const Extension* extension);
 
-// Returns a HostID instance based on an |extension_id|.
+// Returns a HostID instance based on an `extension_id`.
 inline mojom::HostID GenerateHostIdFromExtensionId(
     const ExtensionId& extension_id) {
-  // Note: an empty |extension_id| can be used to refer to *all* extensions.
+  // Note: an empty `extension_id` can be used to refer to *all* extensions.
   // See comment in dispatcher.cc.
   return mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id);
 }
 
-// Returns a HostID instance based on an |extension|.
+// Returns a HostID instance based on an `extension`.
 inline mojom::HostID GenerateHostIdFromExtension(const Extension* extension) {
   // Note: in some cases, a null Extension can be used. These cases should
   // result in a HostID that's kExtensions with an id that's the empty string.
@@ -31,7 +31,7 @@ inline mojom::HostID GenerateHostIdFromExtension(const Extension* extension) {
   return GenerateHostIdFromExtensionId(MaybeGetExtensionId(extension));
 }
 
-// Returns an |extension_id| from a HostID instance. Will CHECK if
+// Returns an `extension_id` from a HostID instance. Will CHECK if
 // the HostID type isn't kExtensions.
 inline const ExtensionId& GenerateExtensionIdFromHostId(
     const mojom::HostID& host_id) {

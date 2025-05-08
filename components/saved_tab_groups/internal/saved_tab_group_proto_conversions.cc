@@ -180,8 +180,10 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
           data.local_tab_group_data().originating_tab_group_guid());
     }
     is_hidden = data.local_tab_group_data().is_group_hidden();
-    archival_time = TimeFromWindowsEpochMicros(
-        data.local_tab_group_data().archival_time_windows_epoch_micros());
+    if (data.local_tab_group_data().has_archival_time_windows_epoch_micros()) {
+      archival_time = TimeFromWindowsEpochMicros(
+          data.local_tab_group_data().archival_time_windows_epoch_micros());
+    }
   }
 
   SavedTabGroup group = SavedTabGroup(

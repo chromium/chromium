@@ -37,6 +37,7 @@ CloudProfileReportingServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<CloudProfileReportingService>(profile);
 }
+
 bool CloudProfileReportingServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;

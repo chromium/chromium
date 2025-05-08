@@ -22,6 +22,9 @@ class BabelOrcaController {
                                              bool translations_enabled) = 0;
 
   virtual void OnLocalCaptionConfigUpdated(bool local_captions_enabled) = 0;
+
+  virtual bool IsProducer() = 0;
+
  protected:
   BabelOrcaController() = default;
 };

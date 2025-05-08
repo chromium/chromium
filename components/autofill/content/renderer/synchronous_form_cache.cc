@@ -17,19 +17,20 @@ namespace autofill {
 
 SynchronousFormCache::SynchronousFormCache() = default;
 SynchronousFormCache::SynchronousFormCache(FormData& form) {
-  insert(form.renderer_id(), form);
+  Insert(form.renderer_id(), form);
 }
 SynchronousFormCache::SynchronousFormCache(
     FormRendererId form_id,
     base::optional_ref<const FormData> form) {
-  insert(form_id, form);
+  Insert(form_id, form);
 }
 SynchronousFormCache::SynchronousFormCache(
     const std::map<FormRendererId, std::unique_ptr<FormData>>& forms) {
   for (const auto& [id, form] : forms) {
-    insert(id, form.get());
+    Insert(id, form.get());
   }
 }
+
 SynchronousFormCache::~SynchronousFormCache() = default;
 
 std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
@@ -66,7 +67,7 @@ std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
                                     extract_options);
 }
 
-void SynchronousFormCache::insert(FormRendererId form_id,
+void SynchronousFormCache::Insert(FormRendererId form_id,
                                   base::optional_ref<const FormData> form) {
   if (base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)) {
     cache_.insert({form_id, form});

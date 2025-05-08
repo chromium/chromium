@@ -137,10 +137,6 @@ std::optional<Path> LayoutSVGResourceClipper::AsPath() {
   DCHECK_EQ(clip_content_path_validity_, kClipContentPathUnknown);
 
   clip_content_path_validity_ = kClipContentPathInvalid;
-  // If the current clip-path gets clipped itself, we have to fallback to
-  // masking.
-  if (StyleRef().HasClipPath())
-    return std::nullopt;
 
   unsigned op_count = 0;
   std::optional<SkOpBuilder> clip_path_builder;

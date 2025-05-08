@@ -197,7 +197,7 @@ void IncomingStream::ProcessClose() {
   if (fin_received_.value()) {
     ScriptState::Scope scope(script_state_);
     // Ignore exception because stream will be errored soon.
-    CloseAbortAndReset(IgnoreException(script_state_->GetIsolate()));
+    CloseAbortAndReset(IGNORE_EXCEPTION);
   }
 
   ScriptValue error;

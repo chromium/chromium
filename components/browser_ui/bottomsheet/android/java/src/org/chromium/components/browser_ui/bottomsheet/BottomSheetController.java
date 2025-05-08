@@ -106,9 +106,11 @@ public interface BottomSheetController {
      * @param hideReason The reason that the content is being hidden.
      */
     void hideContent(
-            BottomSheetContent content, boolean animate, @StateChangeReason int hideReason);
+            @Nullable BottomSheetContent content,
+            boolean animate,
+            @StateChangeReason int hideReason);
 
-    void hideContent(BottomSheetContent content, boolean animate);
+    void hideContent(@Nullable BottomSheetContent content, boolean animate);
 
     /** @param observer The observer to add. */
     void addObserver(BottomSheetObserver observer);
@@ -148,14 +150,16 @@ public interface BottomSheetController {
     int getCurrentOffset();
 
     /**
-     * @return The height of the bottom sheet's container in px. This will return 0 if the sheet has
-     *     not been initialized (content has not been requested).
+     * @return The height of the bottom sheet's parent container in px. This is not the bottom sheet
+     *     height. This will return 0 if the sheet has not been initialized (content has not been
+     *     requested).
      */
     int getContainerHeight();
 
     /**
-     * @return The width of the bottom sheet's container in px. This will return 0 if the sheet has
-     *     not been initialized (content has not been requested).
+     * @return The width of the bottom sheet's parent container in px. his is not the bottom sheet
+     *     width. This will return 0 if the sheet has not been initialized (content has not been
+     *     requested).
      */
     int getContainerWidth();
 

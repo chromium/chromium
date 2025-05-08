@@ -143,7 +143,7 @@ class MockAudioManager : public AudioManagerBase {
   MOCK_METHOD0(GetTaskRunner, scoped_refptr<base::SingleThreadTaskRunner>());
   MOCK_METHOD0(GetWorkerTaskRunner,
                scoped_refptr<base::SingleThreadTaskRunner>());
-  MOCK_METHOD0(GetName, const char*());
+  MOCK_METHOD0(GetName, const std::string_view());
 
   MOCK_METHOD2(MakeLinearOutputStream,
                AudioOutputStream*(const AudioParameters& params,

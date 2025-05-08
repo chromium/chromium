@@ -78,14 +78,18 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // This is used by OnStateChanged and currently only by ozone/wayland.
   struct COMPONENT_EXPORT(PLATFORM_WINDOW) State {
     bool operator==(const State& rhs) const {
-      return std::tie(window_state, bounds_dip, size_px, window_scale, ui_scale,
-                      occlusion_state) ==
-             std::tie(rhs.window_state, rhs.bounds_dip, rhs.size_px,
-                      rhs.window_scale, rhs.ui_scale, rhs.occlusion_state);
+      return std::tie(window_state, tiled_edges, bounds_dip, size_px,
+                      window_scale, ui_scale, occlusion_state) ==
+             std::tie(rhs.window_state, tiled_edges, rhs.bounds_dip,
+                      rhs.size_px, rhs.window_scale, rhs.ui_scale,
+                      rhs.occlusion_state);
     }
 
     // Current platform window state.
     PlatformWindowState window_state = PlatformWindowState::kUnknown;
+
+    // The tiled edges of the window.
+    WindowTiledEdges tiled_edges;
 
     // Bounds in DIP. The origin of `bounds_dip` does not affect whether it
     // produces a new frame or not. Only the size of `bounds_dip` does.

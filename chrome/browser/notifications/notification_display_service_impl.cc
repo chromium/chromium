@@ -169,6 +169,17 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
     case NotificationOperation::kSettings:
       handler->OpenSettings(profile_, origin);
       break;
+    case NotificationOperation::kReportAsSafe:
+      handler->ReportNotificationAsSafe(notification_id, origin, profile_);
+      break;
+    case NotificationOperation::kReportWarnedAsSpam:
+      handler->ReportWarnedNotificationAsSpam(notification_id, origin,
+                                              profile_);
+      break;
+    case NotificationOperation::kReportUnwarnedAsSpam:
+      handler->ReportUnwarnedNotificationAsSpam(notification_id, origin,
+                                                profile_);
+      break;
   }
 }
 

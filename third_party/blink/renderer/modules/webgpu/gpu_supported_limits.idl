@@ -39,8 +39,8 @@
     readonly attribute unsigned long maxComputeWorkgroupSizeY;
     readonly attribute unsigned long maxComputeWorkgroupSizeZ;
     readonly attribute unsigned long maxComputeWorkgroupsPerDimension;
-    [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute unsigned long maxStorageBuffersInFragmentStage;
-    [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute unsigned long maxStorageTexturesInFragmentStage;
-    [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute unsigned long maxStorageBuffersInVertexStage;
-    [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute unsigned long maxStorageTexturesInVertexStage;
+    [RuntimeEnabled=WebGPUCompatibilityMode] readonly attribute unsigned long maxStorageBuffersInFragmentStage;
+    [RuntimeEnabled=WebGPUCompatibilityMode] readonly attribute unsigned long maxStorageTexturesInFragmentStage;
+    [RuntimeEnabled=WebGPUCompatibilityMode] readonly attribute unsigned long maxStorageBuffersInVertexStage;
+    [RuntimeEnabled=WebGPUCompatibilityMode] readonly attribute unsigned long maxStorageTexturesInVertexStage;
 };

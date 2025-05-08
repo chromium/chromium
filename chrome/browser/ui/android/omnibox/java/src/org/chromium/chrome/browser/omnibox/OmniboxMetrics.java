@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.TimingMetric;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -20,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
 
 /** This class collects a variety of different Omnibox related metrics. */
+@NullMarked
 public class OmniboxMetrics {
     /**
      * Maximum number of suggest tile types we want to record. Anything beyond this will be reported
@@ -373,8 +374,7 @@ public class OmniboxMetrics {
      *     value is null if no prefetches have been started in the current omnibox session.
      */
     public static void recordTouchDownPrefetchResult(
-            @NonNull AutocompleteMatch navSuggestion,
-            @NonNull Optional<AutocompleteMatch> prefetchSuggestion) {
+            AutocompleteMatch navSuggestion, Optional<AutocompleteMatch> prefetchSuggestion) {
         @PrefetchResult
         int result =
                 prefetchSuggestion
@@ -406,7 +406,7 @@ public class OmniboxMetrics {
      * @param pageClass Page classification to translate.
      * @return Metric name.
      */
-    private static String histogramName(@NonNull String prefix, int pageClass) {
+    private static String histogramName(String prefix, int pageClass) {
         String suffix = "Other";
 
         switch (pageClass) {

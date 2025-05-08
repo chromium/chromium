@@ -1,3 +1,9 @@
 include_rules = [
   '+libxml',
 ]
+
+specific_include_rules = {
+  "memory.h": [
+    "+../../libxml.h",
+  ],
+}

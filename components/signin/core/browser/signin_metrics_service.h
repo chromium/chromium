@@ -71,6 +71,9 @@ class SigninMetricsService : public KeyedService,
   void OnRefreshTokensLoaded() override;
 
  private:
+  // KeyedService.
+  void Shutdown() override;
+
   // Helper handling functions for error analysis for different sign in states.
   void HandleSyncErrors(
       const GoogleServiceAuthError& error,

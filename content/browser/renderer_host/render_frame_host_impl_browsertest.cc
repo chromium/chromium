@@ -710,7 +710,8 @@ class RenderFrameHostImplForBeforeUnloadInterceptor
 
   void SendBeforeUnload(bool is_reload,
                         base::WeakPtr<RenderFrameHostImpl> rfh,
-                        bool for_legacy) override {
+                        bool for_legacy,
+                        const bool is_renderer_initiated_navigation) override {
     rfh->GetAssociatedLocalFrame()->BeforeUnload(is_reload, base::DoNothing());
   }
 
@@ -945,26 +946,20 @@ IN_PROC_BROWSER_TEST_P(
 
     // Check for timeline metrics, which should not include main frame only
     // versions, since those are limited to cross-document navigations.
-    // TODO(crbug.com/409589669): This should be 1, once same-document
-    // navigations generate these trace events and metrics.
     histogram_tester.ExpectTotalCount(
-        "Navigation.Timeline.TotalExcludingBeforeUnload.Duration", 0);
+        "Navigation.Timeline.TotalExcludingBeforeUnload.Duration", 1);
     histogram_tester.ExpectTotalCount(
         "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
         0);
     // This navigation has no start adjustment but it does ignore initial work
     // in the renderer process, so there are (non-main frame) IgnoredIncorrectly
     // metrics.
-    // TODO(crbug.com/409589669): This should be 1, once same-document
-    // navigations generate these trace events and metrics.
     histogram_tester.ExpectTotalCount(
-        "Navigation.Timeline.IgnoredIncorrectly.Duration", 0);
+        "Navigation.Timeline.IgnoredIncorrectly.Duration", 1);
     histogram_tester.ExpectTotalCount(
         "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration", 0);
-    // TODO(crbug.com/409589669): This should be 1, once same-document
-    // navigations generate these trace events and metrics.
     histogram_tester.ExpectTotalCount(
-        "Navigation.Timeline.IgnoredIncorrectly.Percentage", 0);
+        "Navigation.Timeline.IgnoredIncorrectly.Percentage", 1);
     histogram_tester.ExpectTotalCount(
         "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Percentage", 0);
   }
@@ -4352,17 +4347,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   main_frame->DidChangeBackForwardCacheDisablingFeatures(
       CreateBlockingDetails({}));
 }
-
-class RenderFrameHostImplSchemefulEnabledBrowserTest
-    : public RenderFrameHostImplBrowserTest {
- public:
-  RenderFrameHostImplSchemefulEnabledBrowserTest() {
-    scope_feature_list_.InitAndEnableFeature(net::features::kSchemefulSameSite);
-  }
-
- protected:
-  base::test::ScopedFeatureList scope_feature_list_;
-};
 
 class RenderFrameHostImplNoStrictSiteIsolationOnAndroidBrowserTest
     : public RenderFrameHostImplBrowserTest {

@@ -5,7 +5,7 @@
 import '/common/testing/test_import_manager.js';
 
 import {Flags} from '/common/flags.js';
-import {InstanceChecker} from '/common/mv2/instance_checker.js';
+import {InstanceChecker} from '/common/mv3/instance_checker.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Autoclick} from './autoclick/autoclick.js';
@@ -22,6 +22,9 @@ declare global {
  * are enabled.
  */
 export class AccessibilityCommon {
+  private static offscreenDocumentPromises_: Map<string, Promise<void>> =
+      new Map();
+
   private autoclick_: Autoclick|null = null;
   private magnifier_: Magnifier|null = null;
   private dictation_: Dictation|null = null;
@@ -45,6 +48,32 @@ export class AccessibilityCommon {
   static async init(): Promise<void> {
     await Flags.init();
     globalThis.accessibilityCommon = new AccessibilityCommon();
+    return AccessibilityCommon.initializeOffscreenDocuments();
+  }
+
+  static async initializeOffscreenDocuments(): Promise<void> {
+    await Promise.all([this.maybeCreateOffscreenDocument(
+        'accessibility_common/mv3/dictation/offscreen.html')]);
+  }
+
+  static async maybeCreateOffscreenDocument(url: string): Promise<void> {
+    const offscreenUrl = chrome.runtime.getURL(url);
+    const existingContexts = await chrome.runtime.getContexts({
+      contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
+      documentUrls: [offscreenUrl]
+    });
+    if (existingContexts.length > 0) {
+      return;
+    }
+    if (!this.offscreenDocumentPromises_.has(url)) {
+      const promise = chrome.offscreen.createDocument({
+        url: offscreenUrl,
+        reasons: [chrome.offscreen.Reason.WORKERS],
+        justification: 'Audio web API and web assembly execution',
+      });
+      await promise;
+      this.offscreenDocumentPromises_.set(url, promise);
+    }
   }
 
   getAutoclickForTest(): Autoclick|null {

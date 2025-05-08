@@ -196,6 +196,17 @@ message AutofillRandomizedFieldMetadata {
   repeated AutofillRandomizedSelectOption select_option = 13;
 }
 
+// A format string describes a value pattern.
+message FormatString {
+  enum Type {
+    // The format string represents a date as documented
+    // autofill::data_util::IsValidDateFormat().
+    DATE = 0;
+  }
+  optional Type type = 49;
+  optional string format_string = 50;
+}
+
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
 // Next available id: 49
@@ -355,15 +366,7 @@ message AutofillUploadContents {
     // wasn't changed. Not set if the field didn't have a pre-filled value.
     optional bool initial_value_changed = 47;
 
-    // List of format strings which the field's value matches.
-    message FormatString {
-      enum Type {
-        // The format string represents a date.
-        DATE = 0;
-      }
-      optional Type type = 49;
-      optional string format_string = 50;
-    }
+    // List of format strings which match the field's value.
     repeated FormatString format_string = 51;
   }
   repeated Field field_data = 48;

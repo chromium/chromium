@@ -650,14 +650,6 @@ void NewTabPageHandler::SetNoBackgroundImage() {
   LogEvent(NTP_BACKGROUND_IMAGE_RESET);
 }
 
-void NewTabPageHandler::RevertBackgroundChanges() {
-  ntp_custom_background_service_->RevertBackgroundChanges();
-}
-
-void NewTabPageHandler::ConfirmBackgroundChanges() {
-  ntp_custom_background_service_->ConfirmBackgroundChanges();
-}
-
 void NewTabPageHandler::GetBackgroundCollections(
     GetBackgroundCollectionsCallback callback) {
   if (!ntp_background_service_ || background_collections_callback_) {
@@ -851,12 +843,6 @@ void NewTabPageHandler::OnModulesLoadedWithData(
 }
 
 void NewTabPageHandler::OnModuleUsed(const std::string& module_id) {
-  auto* tab = web_contents_.get();
-  // Close the associated IPH promo if open, as interaction with a module
-  // indicates the user is aware of how to interact with modules.
-  feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
-      feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature, tab);
-
   IncrementDictPrefKeyCount(prefs::kNtpModulesInteractedCountDict, module_id);
   MaybeLaunchInteractionSurvey(kUseInteraction, module_id);
 }
@@ -990,11 +976,6 @@ void NewTabPageHandler::MaybeShowFeaturePromo(
     case new_tab_page::mojom::IphFeature::kCustomizeChrome: {
       feature_promo_helper_->MaybeShowFeaturePromo(
           feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-          web_contents_.get());
-    } break;
-    case new_tab_page::mojom::IphFeature::kCustomizeModules: {
-      feature_promo_helper_->MaybeShowFeaturePromo(
-          feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature,
           web_contents_.get());
     } break;
     default:

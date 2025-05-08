@@ -61,12 +61,19 @@ NSString* WidgetPromoDisabledImageName();
 // Accessibility identifier for the Password Manager widget promo.
 extern NSString* const kWidgetPromoID;
 
+// Accessibility identifier for the Password Manager Trusted Vault widget promo.
+extern NSString* const kWidgetTrustedVaultPromoID;
+
 // Accessibility identifier for the Password Manager widget promo's close
 // button.
 extern NSString* const kWidgetPromoCloseButtonID;
 
 // Accessibility identifier for the Password Manager widget promo's image.
 extern NSString* const kWidgetPromoImageID;
+
+// Accessibility identifier for the Password Manager Trusted Vault widget
+// promo's image.
+extern NSString* const kWidgetTrustedVaultPromoImageID;
 
 // Name of histogram tracking actions taken on the Password Manager widget
 // promo.
@@ -90,6 +97,7 @@ typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
   SectionIdentifierAddPasswordButton,
   SectionIdentifierManageAccountHeader,
   SectionIdentifierWidgetPromo,
+  SectionIdentifierTrustedVaultWidgetPromo,
 };
 
 // Enum with all possible UI states for the Password Manager's Password Checkup

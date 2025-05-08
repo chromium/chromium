@@ -111,7 +111,7 @@ void IceTransport::ApplyNetworkSettings(const NetworkSettings& settings) {
 
 void IceTransport::CreateChannel(const std::string& name,
                                  ChannelCreatedCallback callback) {
-  DCHECK(!channels_[name]);
+  DCHECK(!channels_.contains(name));
 
   if (!network_settings_) {
     DCHECK(!pending_channel_created_callbacks_[name]);

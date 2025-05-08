@@ -51,30 +51,6 @@ static constexpr float kLr = 0.2627;
 static constexpr float kLg = 0.6780;
 static constexpr float kLb = 0.0593;
 
-struct SkShaderUniforms {
-  float offset = 0.f;
-  float multiplier = 0.f;
-  float pq_tonemap_a = 1.f;
-  float pq_tonemap_b = 1.f;
-  float hlg_ootf_gamma_minus_one = 0.f;
-  float hlg_dst_max_luminance_relative = 1.0f;
-  float nits_to_sdr_relative_factor = 0.f;
-  float sdr_relative_to_nits_factor = 0.f;
-};
-
-void InitStringStream(std::stringstream* ss) {
-  ss->imbue(std::locale::classic());
-  ss->precision(8);
-  *ss << std::scientific;
-}
-
-std::string Str(float f) {
-  std::stringstream ss;
-  InitStringStream(&ss);
-  ss << f;
-  return ss.str();
-}
-
 SkM44 Invert(const SkM44& t) {
   SkM44 ret = t;
   if (!t.invert(&ret)) {
@@ -203,9 +179,6 @@ class ColorTransformStep {
       ColorTransform::TriStim* color,
       size_t num,
       const ColorTransform::RuntimeOptions& options) const = 0;
-  virtual void AppendSkShaderSource(std::stringstream* src) const = 0;
-  virtual void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
-                                 SkShaderUniforms* uniforms) const {}
 };
 
 class ColorTransformInternal : public ColorTransform {
@@ -231,9 +204,6 @@ class ColorTransformInternal : public ColorTransform {
       step->Transform(colors, num, options);
     }
   }
-  sk_sp<SkRuntimeEffect> GetSkRuntimeEffect() const override;
-  sk_sp<SkData> GetSkShaderUniforms(
-      const RuntimeOptions& options) const override;
   bool IsIdentity() const override { return steps_.empty(); }
   size_t NumberOfStepsForTesting() const override { return steps_.size(); }
 
@@ -256,7 +226,6 @@ class ColorTransformNull : public ColorTransformStep {
                  size_t num,
                  const ColorTransform::RuntimeOptions& options) const override {
   }
-  void AppendSkShaderSource(std::stringstream* src) const override {}
 };
 
 class ColorTransformMatrix : public ColorTransformStep {
@@ -280,32 +249,6 @@ class ColorTransformMatrix : public ColorTransformStep {
       auto& color = colors[i];
       SkV4 mapped = matrix_.map(color.x(), color.y(), color.z(), 1);
       color.SetPoint(mapped.x, mapped.y, mapped.z);
-    }
-  }
-
-  void AppendSkShaderSource(std::stringstream* src) const override {
-    *src << "  color = half4x4(";
-    *src << matrix_.rc(0, 0) << ", " << matrix_.rc(1, 0) << ", "
-         << matrix_.rc(2, 0) << ", 0,";
-    *src << endl;
-    *src << "               ";
-    *src << matrix_.rc(0, 1) << ", " << matrix_.rc(1, 1) << ", "
-         << matrix_.rc(2, 1) << ", 0,";
-    *src << endl;
-    *src << "               ";
-    *src << matrix_.rc(0, 2) << ", " << matrix_.rc(1, 2) << ", "
-         << matrix_.rc(2, 2) << ", 0,";
-    *src << endl;
-    *src << "0, 0, 0, 1)";
-    *src << " * color;" << endl;
-
-    // Only print the translational component if it isn't the identity.
-    if (matrix_.rc(0, 3) != 0.f || matrix_.rc(1, 3) != 0.f ||
-        matrix_.rc(2, 3) != 0.f) {
-      *src << "  color += half4(";
-      *src << matrix_.rc(0, 3) << ", " << matrix_.rc(1, 3) << ", "
-           << matrix_.rc(2, 3);
-      *src << ", 0);" << endl;
     }
   }
 
@@ -335,33 +278,7 @@ class ColorTransformPerChannelTransferFn : public ColorTransformStep {
     }
   }
 
-  void AppendSkShaderSource(std::stringstream* src) const override {
-    if (extended_) {
-      *src << "{  half v = abs(color.r);" << endl;
-      AppendTransferShaderSource(src, false /* is_glsl */);
-      *src << "  color.r = sign(color.r) * v; }" << endl;
-      *src << "{  half v = abs(color.g);" << endl;
-      AppendTransferShaderSource(src, false /* is_glsl */);
-      *src << "  color.g = sign(color.g) * v; }" << endl;
-      *src << "{  half v = abs(color.b);" << endl;
-      AppendTransferShaderSource(src, false /* is_glsl */);
-      *src << "  color.b = sign(color.b) * v; }" << endl;
-    } else {
-      *src << "{  half v = color.r;" << endl;
-      AppendTransferShaderSource(src, false /* is_glsl */);
-      *src << "  color.r = v; }" << endl;
-      *src << "{  half v = color.g;" << endl;
-      AppendTransferShaderSource(src, false /* is_glsl */);
-      *src << "  color.g = v; }" << endl;
-      *src << "{  half v = color.b;" << endl;
-      AppendTransferShaderSource(src, false /* is_glsl */);
-      *src << "  color.b = v; }" << endl;
-    }
-  }
-
   virtual float Evaluate(float x) const = 0;
-  virtual void AppendTransferShaderSource(std::stringstream* src,
-                                          bool is_glsl) const = 0;
 
  private:
   // True if the transfer function is extended to be defined for all real
@@ -400,38 +317,6 @@ class ColorTransformSkTransferFn : public ColorTransformPerChannelTransferFn {
     // Note that the sign-extension is performed by the caller.
     return SkTransferFnEvalUnclamped(fn_, v);
   }
-  void AppendTransferShaderSource(std::stringstream* result,
-                                  bool is_glsl) const override {
-    const float kEpsilon = 1.f / 1024.f;
-
-    // Construct the linear segment
-    //   linear = C * x + F
-    // Elide operations that will be close to the identity.
-    std::string linear = "v";
-    if (std::abs(fn_.c - 1.f) > kEpsilon)
-      linear = Str(fn_.c) + " * " + linear;
-    if (std::abs(fn_.f) > kEpsilon)
-      linear = linear + " + " + Str(fn_.f);
-
-    // Construct the nonlinear segment.
-    //   nonlinear = pow(A * x + B, G) + E
-    // Elide operations (especially the pow) that will be close to the
-    // identity.
-    std::string nonlinear = "v";
-    if (std::abs(fn_.a - 1.f) > kEpsilon)
-      nonlinear = Str(fn_.a) + " * " + nonlinear;
-    if (std::abs(fn_.b) > kEpsilon)
-      nonlinear = nonlinear + " + " + Str(fn_.b);
-    if (std::abs(fn_.g - 1.f) > kEpsilon)
-      nonlinear = "pow(" + nonlinear + ", " + Str(fn_.g) + ")";
-    if (std::abs(fn_.e) > kEpsilon)
-      nonlinear = nonlinear + " + " + Str(fn_.e);
-
-    *result << "  if (v < " << Str(fn_.d) << ")" << endl;
-    *result << "    v = " << linear << ";" << endl;
-    *result << "  else" << endl;
-    *result << "    v = " << nonlinear << ";" << endl;
-  }
 
  private:
   skcms_TransferFunction fn_;
@@ -454,19 +339,6 @@ class ColorTransformHLG_OETF : public ColorTransformPerChannelTransferFn {
       return 0.5f * sqrt(v);
     return a * log(v - b) + c;
   }
-
-  void AppendTransferShaderSource(std::stringstream* src,
-                                  bool is_glsl) const override {
-    std::string scalar_type = is_glsl ? "float" : "half";
-    *src << "  v = max(0.0, v);\n"
-         << "  " << scalar_type << " a = 0.17883277;\n"
-         << "  " << scalar_type << " b = 0.28466892;\n"
-         << "  " << scalar_type << " c = 0.55991073;\n"
-         << "  if (v <= 1.0)\n"
-            "    v = 0.5 * sqrt(v);\n"
-            "  else\n"
-            "    v = a * log(v - b) + c;\n";
-  }
 };
 
 class ColorTransformPQFromLinear : public ColorTransformPerChannelTransferFn {
@@ -484,19 +356,6 @@ class ColorTransformPQFromLinear : public ColorTransformPerChannelTransferFn {
     float c3 = (2392.0f / 4096.0f) * 32.0f;
     float p = powf(v, m1);
     return powf((c1 + c2 * p) / (1.0f + c3 * p), m2);
-  }
-  void AppendTransferShaderSource(std::stringstream* src,
-                                  bool is_glsl) const override {
-    std::string scalar_type = is_glsl ? "float" : "half";
-    *src << "  v = max(0.0, v);\n"
-         << "  " << scalar_type << " m1 = (2610.0 / 4096.0) / 4.0;\n"
-         << "  " << scalar_type << " m2 = (2523.0 / 4096.0) * 128.0;\n"
-         << "  " << scalar_type << " c1 = 3424.0 / 4096.0;\n"
-         << "  " << scalar_type << " c2 = (2413.0 / 4096.0) * 32.0;\n"
-         << "  " << scalar_type
-         << " c3 = (2392.0 / 4096.0) * 32.0;\n"
-            "  v =  pow((c1 + c2 * pow(v, m1)) / \n"
-            "           (1.0 + c3 * pow(v, m1)), m2);\n";
   }
 };
 
@@ -520,21 +379,6 @@ class ColorTransformHLG_InvOETF : public ColorTransformPerChannelTransferFn {
     }
     return v / 12.f;
   }
-
-  void AppendTransferShaderSource(std::stringstream* src,
-                                  bool is_glsl) const override {
-    std::string scalar_type = is_glsl ? "float" : "half";
-
-    *src << "  v = max(0.0, v);\n"
-         << "  " << scalar_type << " a = 0.17883277;\n"
-         << "  " << scalar_type << " b = 0.28466892;\n"
-         << "  " << scalar_type << " c = 0.55991073;\n"
-         << "  if (v <= 0.5)\n"
-            "    v = v * v * 4.0;\n"
-            "  else\n"
-            "    v = exp((v - c) / a) + b;\n"
-            "  v = v / 12.0;";
-  }
 };
 
 class ColorTransformPQToLinear : public ColorTransformPerChannelTransferFn {
@@ -554,28 +398,6 @@ class ColorTransformPQToLinear : public ColorTransformPerChannelTransferFn {
     v = powf(max(p - c1, 0.0f) / (c2 - c3 * p), 1.0f / m1);
     return v;
   }
-  void AppendTransferShaderSource(std::stringstream* src,
-                                  bool is_glsl) const override {
-    std::string scalar_type = is_glsl ? "float" : "half";
-    *src << "  v = max(0.0, v);\n"
-         << "  " << scalar_type << " m1 = (2610.0 / 4096.0) / 4.0;\n"
-         << "  " << scalar_type << " m2 = (2523.0 / 4096.0) * 128.0;\n"
-         << "  " << scalar_type << " c1 = 3424.0 / 4096.0;\n"
-         << "  " << scalar_type << " c2 = (2413.0 / 4096.0) * 32.0;\n"
-         << "  " << scalar_type << " c3 = (2392.0 / 4096.0) * 32.0;\n";
-    if (is_glsl) {
-      *src << "  #ifdef GL_FRAGMENT_PRECISION_HIGH\n"
-              "  highp float v2 = v;\n"
-              "  #else\n"
-              "  float v2 = v;\n"
-              "  #endif\n";
-    } else {
-      *src << "  " << scalar_type << " v2 = v;\n";
-    }
-    *src << "  v2 = pow(max(pow(v2, 1.0 / m2) - c1, 0.0) /\n"
-            "              (c2 - c3 * pow(v2, 1.0 / m2)), 1.0 / m1);\n"
-            "  v = v2;\n";
-  }
 };
 
 class ColorTransformFromLinear : public ColorTransformPerChannelTransferFn {
@@ -588,49 +410,6 @@ class ColorTransformFromLinear : public ColorTransformPerChannelTransferFn {
 
   // ColorTransformPerChannelTransferFn implementation:
   float Evaluate(float v) const override { return FromLinear(transfer_, v); }
-  void AppendTransferShaderSource(std::stringstream* src,
-                                  bool is_glsl) const override {
-    std::string scalar_type = is_glsl ? "float" : "half";
-    // This is a string-ized copy-paste from FromLinear.
-    switch (transfer_) {
-      case ColorSpace::TransferID::LOG:
-        *src << "  if (v < 0.01)\n"
-                "    v = 0.0;\n"
-                "  else\n"
-                "    v =  1.0 + log(v) / log(10.0) / 2.0;\n";
-        return;
-      case ColorSpace::TransferID::LOG_SQRT:
-        *src << "  if (v < sqrt(10.0) / 1000.0)\n"
-                "    v = 0.0;\n"
-                "  else\n"
-                "    v = 1.0 + log(v) / log(10.0) / 2.5;\n";
-        return;
-      case ColorSpace::TransferID::IEC61966_2_4:
-        *src << "  " << scalar_type << " a = 1.099296826809442;\n"
-             << "  " << scalar_type << " b = 0.018053968510807;\n"
-             << "  if (v < -b)\n"
-                "    v = -a * pow(-v, 0.45) + (a - 1.0);\n"
-                "  else if (v <= b)\n"
-                "    v = 4.5 * v;\n"
-                "  else\n"
-                "    v = a * pow(v, 0.45) - (a - 1.0);\n";
-        return;
-      case ColorSpace::TransferID::BT1361_ECG:
-        *src << "  " << scalar_type << " a = 1.099;\n"
-             << "  " << scalar_type << " b = 0.018;\n"
-             << "  " << scalar_type << " l = 0.0045;\n"
-             << "  if (v < -l)\n"
-                "    v = -(a * pow(-4.0 * v, 0.45) + (a - 1.0)) / 4.0;\n"
-                "  else if (v <= b)\n"
-                "    v = 4.5 * v;\n"
-                "  else\n"
-                "    v = a * pow(v, 0.45) - (a - 1.0);\n";
-        return;
-      default:
-        break;
-    }
-    NOTREACHED();
-  }
 
  private:
   friend class ColorTransformToLinear;
@@ -657,51 +436,6 @@ class ColorTransformToLinear : public ColorTransformPerChannelTransferFn {
   // ColorTransformPerChannelTransferFn implementation:
   float Evaluate(float v) const override { return ToLinear(transfer_, v); }
 
-  // This is a string-ized copy-paste from ToLinear.
-  void AppendTransferShaderSource(std::stringstream* src,
-                                  bool is_glsl) const override {
-    std::string scalar_type = is_glsl ? "float" : "half";
-    switch (transfer_) {
-      case ColorSpace::TransferID::LOG:
-        *src << "  if (v < 0.0)\n"
-                "    v = 0.0;\n"
-                "  else\n"
-                "    v = pow(10.0, (v - 1.0) * 2.0);\n";
-        return;
-      case ColorSpace::TransferID::LOG_SQRT:
-        *src << "  if (v < 0.0)\n"
-                "    v = 0.0;\n"
-                "  else\n"
-                "    v = pow(10.0, (v - 1.0) * 2.5);\n";
-        return;
-      case ColorSpace::TransferID::IEC61966_2_4:
-        *src << "  " << scalar_type << " a = 1.099296826809442;\n"
-             << "  " << scalar_type << " from_linear_neg_a = -1.047844;\n"
-             << "  " << scalar_type << " from_linear_b = 0.081243;\n"
-             << "  if (v < from_linear_neg_a)\n"
-                "    v = -pow((a - 1.0 - v) / a, 1.0 / 0.45);\n"
-                "  else if (v <= from_linear_b)\n"
-                "    v = v / 4.5;\n"
-                "  else\n"
-                "    v = pow((v + a - 1.0) / a, 1.0 / 0.45);\n";
-        return;
-      case ColorSpace::TransferID::BT1361_ECG:
-        *src << "  " << scalar_type << " a = 1.099;\n"
-             << "  " << scalar_type << " from_linear_neg_l = -0.020250;\n"
-             << "  " << scalar_type << " from_linear_b = 0.081000;\n"
-             << "  if (v < from_linear_neg_l)\n"
-                "    v = -pow((1.0 - a - v * 4.0) / a, 1.0 / 0.45) / 4.0;\n"
-                "  else if (v <= from_linear_b)\n"
-                "    v = v / 4.5;\n"
-                "  else\n"
-                "    v = pow((v + a - 1.0) / a, 1.0 / 0.45);\n";
-        return;
-      default:
-        break;
-    }
-    NOTREACHED();
-  }
-
  private:
   ColorSpace::TransferID transfer_;
 };
@@ -727,23 +461,6 @@ class ColorTransformHLG_OOTF : public ColorTransformStep {
         color[i].Scale(dst_max_luminance_relative);
       }
     }
-  }
-  void AppendSkShaderSource(std::stringstream* src) const override {
-    *src << "{\n"
-         << "  half4 luma_vec = half4(" << kLr << ", " << kLg << ", " << kLb
-         << ", 0.0);\n"
-         << "  half L = dot(color, luma_vec);\n"
-         << "  if (L > 0.0) {\n"
-         << "    color.rgb *= pow(L, hlg_ootf_gamma_minus_one);\n"
-         << "    color.rgb *= hlg_dst_max_luminance_relative;\n"
-         << "  }\n"
-         << "}\n";
-  }
-  void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
-                         SkShaderUniforms* uniforms) const override {
-    uniforms->hlg_dst_max_luminance_relative =
-        options.dst_max_luminance_relative;
-    ComputeHLGToneMapConstants(options, uniforms->hlg_ootf_gamma_minus_one);
   }
 
  private:
@@ -777,16 +494,6 @@ class ColorTransformHLG_RefOOTF : public ColorTransformStep {
       }
     }
   }
-  void AppendSkShaderSource(std::stringstream* src) const override {
-    *src << "{\n"
-         << "  half4 luma_vec = half4(" << kLr << ", " << kLg << ", " << kLb
-         << ", 0.0);\n"
-         << "  half L = dot(color, luma_vec);\n"
-         << "  if (L > 0.0) {\n"
-         << "    color.rgb *= pow(L, " << kGammaMinusOne << ");\n"
-         << "  }\n"
-         << "}\n";
-  }
 };
 
 // Scale the color such that the luminance `input_max_value` maps to
@@ -811,20 +518,6 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
         color[i].Scale((1.f + a * maximum) / (1.f + b * maximum));
       }
     }
-  }
-  void AppendSkShaderSource(std::stringstream* src) const override {
-    *src << "{\n"
-         << "  half maximum = max(color.r, max(color.g, color.b));\n"
-         << "  if (maximum > 0.0) {\n"
-         << "    color.rgb *= (1.0 + pq_tonemap_a * maximum) / \n"
-         << "                 (1.0 + pq_tonemap_b * maximum);\n"
-         << "  }\n"
-         << "}\n";
-  }
-  void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
-                         SkShaderUniforms* uniforms) const override {
-    ComputeToneMapConstants(options, uniforms->pq_tonemap_a,
-                            uniforms->pq_tonemap_b);
   }
 
  private:
@@ -884,14 +577,6 @@ class ColorTransformSrcNitsToSdrRelative : public ColorTransformStep {
       color[i].Scale(factor);
     }
   }
-  void AppendSkShaderSource(std::stringstream* src) const override {
-    *src << "  color.rgb *= nits_to_sdr_relative_factor;\n";
-  }
-  void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
-                         SkShaderUniforms* uniforms) const override {
-    uniforms->nits_to_sdr_relative_factor =
-        ComputeNitsToSdrRelativeFactor(options);
-  }
 
  private:
   float ComputeNitsToSdrRelativeFactor(
@@ -926,14 +611,6 @@ class ColorTransformSdrToDstNitsRelative : public ColorTransformStep {
     for (size_t i = 0; i < num; i++) {
       color[i].Scale(factor);
     }
-  }
-  void AppendSkShaderSource(std::stringstream* src) const override {
-    *src << "  color.rgb *= sdr_relative_to_nits_factor;\n";
-  }
-  void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
-                         SkShaderUniforms* uniforms) const override {
-    uniforms->sdr_relative_to_nits_factor =
-        ComputeSdrRelativeToNitsFactor(options);
   }
 
  private:
@@ -1113,56 +790,6 @@ ColorTransformInternal::ColorTransformInternal(const ColorSpace& src,
   AppendColorSpaceToColorSpaceTransform(src_, dst_, options);
   if (!options.disable_optimizations)
     Simplify();
-}
-
-sk_sp<SkRuntimeEffect> ColorTransformInternal::GetSkRuntimeEffect() const {
-  std::stringstream src;
-  InitStringStream(&src);
-
-  src << "uniform half offset;\n"
-      << "uniform half multiplier;\n"
-      << "uniform half pq_tonemap_a;\n"
-      << "uniform half pq_tonemap_b;\n"
-      << "uniform half hlg_ootf_gamma_minus_one;\n"
-      << "uniform half hlg_dst_max_luminance_relative;\n"
-      << "uniform half nits_to_sdr_relative_factor;\n"
-      << "uniform half sdr_relative_to_nits_factor;\n"
-      << "\n"
-      << "half4 main(half4 color) {\n"
-      << "  // Un-premultiply alpha\n"
-      << "  if (color.a > 0)\n"
-      << "    color.rgb /= color.a;\n"
-      << "\n"
-      << "  color.rgb -= offset;\n"
-      << "  color.rgb *= multiplier;\n";
-
-  for (const auto& step : steps_)
-    step->AppendSkShaderSource(&src);
-
-  src << "  // premultiply alpha\n"
-         "  color.rgb *= color.a;\n"
-         "  return color;\n"
-         "}\n";
-
-  auto sksl_source = src.str();
-  auto result = SkRuntimeEffect::MakeForColorFilter(
-      SkString(sksl_source.c_str(), sksl_source.size()),
-      /*options=*/{});
-  DCHECK(result.effect) << '\n'
-                        << result.errorText.c_str() << "\n\nShader Source:\n"
-                        << sksl_source;
-  return result.effect;
-}
-
-sk_sp<SkData> ColorTransformInternal::GetSkShaderUniforms(
-    const RuntimeOptions& options) const {
-  SkShaderUniforms data;
-  data.offset = options.offset;
-  data.multiplier = options.multiplier;
-  for (const auto& step : steps_) {
-    step->SetShaderUniforms(options, &data);
-  }
-  return SkData::MakeWithCopy(&data, sizeof(data));
 }
 
 ColorTransformInternal::~ColorTransformInternal() = default;

@@ -356,8 +356,6 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
 // triggered and prefix-matching is not applied.
 TEST_F(PlusAddressSuggestionGeneratorTest,
        FillingSuggestionOnPreviouslyAutofilledFields) {
-  base::test::ScopedFeatureList field_swapping{
-      autofill::features::kAutofillAddressFieldSwapping};
   PlusAddressSuggestionGenerator generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")));

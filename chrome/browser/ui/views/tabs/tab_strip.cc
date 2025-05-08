@@ -13,6 +13,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -612,20 +613,18 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       CHECK_NE(dragged_view->parent(), this, base::NotFatalUntil::M128);
       AddChildViewRaw(dragged_view);
       dragged_view->set_dragging(true);
-    }
-
-    // If this is a header drag, start painting the group highlight.
-    TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(views[0]);
-    if (header) {
-      tab_strip_->tab_container_->GetGroupViews(header->group().value())
-          ->highlight()
-          ->SetVisible(true);
-      // Make sure the bounds of the group views are up to date right now
-      // instead of waiting for subsequent drag events - if we are dragging a
-      // window by a group header, we won't get any more events. See
-      // https://crbug.com/1344774.
-      tab_strip_->tab_container_->UpdateTabGroupVisuals(
-          header->group().value());
+      if (TabGroupHeader* header =
+              views::AsViewClass<TabGroupHeader>(dragged_view)) {
+        tab_strip_->tab_container_->GetGroupViews(header->group().value())
+            ->highlight()
+            ->SetVisible(true);
+        // Make sure the bounds of the group views are up to date right now
+        // instead of waiting for subsequent drag events - if we are dragging a
+        // window by a group header, we won't get any more events. See
+        // https://crbug.com/1344774.
+        tab_strip_->tab_container_->UpdateTabGroupVisuals(
+            header->group().value());
+      }
     }
 
     tab_strip_->tab_container_->SetTabSlotVisibility();
@@ -725,11 +724,17 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     // preferred width.
     PreferredSizeChanged();
 
-    // If the dragged tabs are in a group, we need to update the bounds of the
-    // corresponding underline and header.
-    if (views[0]->group()) {
-      tab_strip_->tab_container_->UpdateTabGroupVisuals(
-          views[0]->group().value());
+    // If any of the dragged tabs are in a group, we need to update the bounds
+    // of the corresponding underlines and headers.
+    std::unordered_set<tab_groups::TabGroupId, tab_groups::TabGroupIdHash>
+        updated_groups;
+    for (TabSlotView* view : views) {
+      if (view->group().has_value() &&
+          !updated_groups.contains(view->group().value())) {
+        tab_strip_->tab_container_->UpdateTabGroupVisuals(
+            view->group().value());
+        updated_groups.insert(view->group().value());
+      }
     }
   }
 

@@ -197,7 +197,8 @@ public class ClosableTabListEditorTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabListEditorController.show(tabs, /* recyclerViewPosition= */ null);
+                    mTabListEditorController.show(
+                            tabs, new ArrayList<>(), /* recyclerViewPosition= */ null);
                     mTabListEditorController.setToolbarTitle("testing");
                 });
 
@@ -212,7 +213,8 @@ public class ClosableTabListEditorTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabListEditorController.show(tabs, /* recyclerViewPosition= */ null);
+                    mTabListEditorController.show(
+                            tabs, new ArrayList<>(), /* recyclerViewPosition= */ null);
                     mTabListEditorController.setNavigationProvider(mNavigationProvider);
                     mTabListEditorController.handleBackPress();
                 });
@@ -235,7 +237,8 @@ public class ClosableTabListEditorTest {
     private void showTabListEditor(List<Tab> tabs) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabListEditorController.show(tabs, /* recyclerViewPosition= */ null);
+                    mTabListEditorController.show(
+                            tabs, new ArrayList<>(), /* recyclerViewPosition= */ null);
                 });
     }
 }

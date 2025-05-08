@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "net/quic/quic_session_pool.h"
 
@@ -174,7 +170,8 @@ class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
         /*cert_verify_flags=*/0,
         /*dns_resolution_start_time=*/base::TimeTicks(),
         /*dns_resolution_end_time=*/base::TimeTicks(), /*use_dns_aliases=*/true,
-        /*dns_aliases=*/{}, MultiplexedSessionCreationInitiator::kUnknown);
+        /*dns_aliases=*/{}, MultiplexedSessionCreationInitiator::kUnknown,
+        /*connection_management_config=*/std::nullopt);
   }
 
   SessionAttemptHelper(const SessionAttemptHelper&) = delete;
@@ -14888,6 +14885,50 @@ TEST_P(QuicSessionPoolTest, NotifyConnectionChangeOnNetworkChangeEvent) {
   ASSERT_TRUE(connection_change_observer_->last_network_event().has_value());
   ASSERT_EQ(NetworkChangeEvent::kConnected,
             connection_change_observer_->last_network_event().value());
+}
+
+TEST_P(QuicSessionPoolTest, SendPingOnExistingSession) {
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+
+  int packet_num = 1;
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS,
+                       ConstructInitialSettingsPacket(packet_num++));
+  socket_data.AddWrite(
+      SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Initiate a request to create a session.
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  // Ensure that we have an active session.
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(factory_.get(), session));
+
+  // Build a session with `ConnectionKeepAliveConfig`.
+  RequestBuilder builder2(this);
+  auto connection_management_config = ConnectionManagementConfig();
+  auto keep_alive_config = ConnectionKeepAliveConfig();
+  keep_alive_config.enable_connection_keep_alive = true;
+  keep_alive_config.ping_interval_in_seconds = 10;
+  keep_alive_config.idle_timeout_in_seconds = 30;
+  connection_management_config.keep_alive_config = std::move(keep_alive_config);
+
+  builder2.connection_management_config =
+      std::move(connection_management_config);
+
+  // We should get OK since we already have an session
+  EXPECT_EQ(OK, builder2.CallRequest());
+
+  // We should expect the write data including a ping to the peer is consumed
+  // since `enable_connection_keep_alive` is enabled, and we already have an
+  // existing session.
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 }  // namespace net::test

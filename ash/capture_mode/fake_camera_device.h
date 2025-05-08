@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace ash {
@@ -65,6 +66,7 @@ class ASH_EXPORT FakeCameraDevice
           subscription,
       CreatePushSubscriptionCallback callback) override;
 
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   void RegisterVideoEffectsProcessor(
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote)
       override;
@@ -72,6 +74,7 @@ class ASH_EXPORT FakeCameraDevice
   void RegisterReadonlyVideoEffectsManager(
       mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> remote)
       override;
+#endif
 
   // video_capture::mojom::VideoFrameAccessHandler:
   void OnFinishedConsumingBuffer(int32_t buffer_id) override;

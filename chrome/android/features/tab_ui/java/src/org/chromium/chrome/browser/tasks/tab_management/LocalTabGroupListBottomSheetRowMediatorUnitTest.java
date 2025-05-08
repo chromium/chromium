@@ -24,6 +24,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabUngrouper;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -45,7 +47,9 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private FaviconResolver mFaviconResolver;
     @Mock private Runnable mOnClickRunnable;
+    @Mock private TabMovedCallback mTabMovedCallback;
     @Mock private TabModel mTabModel;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
 
@@ -60,6 +64,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         mTabs.add(mTab1);
 
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabGroupModelFilter.getTabsInGroup(mGroupId)).thenReturn(mTabs);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(mGroupId)).thenReturn(TEST_ROOT_ID);
         when(mTabGroupModelFilter.tabGroupExists(mGroupId)).thenReturn(true);
@@ -72,7 +77,12 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
 
         mMediator =
                 new LocalTabGroupListBottomSheetRowMediator(
-                        mGroupId, mTabGroupModelFilter, mFaviconResolver, mOnClickRunnable, mTabs);
+                        mGroupId,
+                        mTabGroupModelFilter,
+                        mFaviconResolver,
+                        mOnClickRunnable,
+                        mTabMovedCallback,
+                        mTabs);
     }
 
     @Test
@@ -86,7 +96,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         assertEquals(TEST_TITLE, titleData.title);
         assertEquals(1, titleData.numTabs);
         assertEquals(
-                R.string.tab_group_bottom_sheet_row_accessibility_text,
+                R.plurals.tab_group_bottom_sheet_row_accessibility_text,
                 titleData.rowAccessibilityTextResId);
         assertNull(model.get(TabGroupRowProperties.TIMESTAMP_EVENT));
     }
@@ -100,6 +110,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
                         mTabGroupModelFilter,
                         mFaviconResolver,
                         mOnClickRunnable,
+                        mTabMovedCallback,
                         tabList);
         PropertyModel model = mMediator.getModel();
 
@@ -107,6 +118,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupModelFilter).mergeListOfTabsToGroup(tabList, mTab1, true);
+        verify(mTabMovedCallback).onTabMoved();
         verify(mOnClickRunnable).run();
     }
 
@@ -119,6 +131,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab1, true);
+        verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
 
@@ -132,6 +145,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab1, true);
+        verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
 }

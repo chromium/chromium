@@ -86,14 +86,25 @@ public class AppMenuItemProperties {
             new WritableBooleanPropertyKey("MENU_ICON_AT_START");
 
     /**
-     * The sub menu for the menu item, this is used for the menu item which has sub menu items. ex.
-     * icon row. The {link ModelList} here do not need a view type since this diverges from other,
-     * non sub-menu-items that use AppMenuItemProperties.
-     *
-     * <p>A SUBMENU should not have a SUBMENU (don't support nesting).
+     * Additional icons associated with a particular menu item. Only certain menu item types support
+     * additional icons (e.g. icon rows). The number of supported icons also depends on the menu
+     * item type.
      */
-    public static final WritableObjectPropertyKey<ModelList> SUBMENU =
-            new WritableObjectPropertyKey<>("SUBMENU");
+    public static final WritableObjectPropertyKey<ModelList> ADDITIONAL_ICONS =
+            new WritableObjectPropertyKey<>("ADDITIONAL_ICONS");
+
+    public static final PropertyKey[] ALL_ICON_KEYS =
+            new PropertyKey[] {
+                MENU_ITEM_ID,
+                TITLE,
+                TITLE_CONDENSED,
+                CHECKABLE,
+                CHECKED,
+                ICON,
+                ENABLED,
+                HIGHLIGHTED,
+                CLICK_HANDLER
+            };
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -112,6 +123,6 @@ public class AppMenuItemProperties {
                 SUPPORT_ENTER_ANIMATION,
                 CLICK_HANDLER,
                 MENU_ICON_AT_START,
-                SUBMENU
+                ADDITIONAL_ICONS
             };
 }

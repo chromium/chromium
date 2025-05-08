@@ -341,7 +341,7 @@ int NodeReader::FillAffixesForLeafMatch(
       return 0;
     }
     auto [affix_id_bytes, rest] = following_array.split_at<2u>();
-    uint16_t affix_id = base::numerics::U16FromLittleEndian(affix_id_bytes);
+    uint16_t affix_id = base::U16FromLittleEndian(affix_id_bytes);
     following_array = rest;
     if (affix_id == BDict::LEAF_NODE_FOLLOWING_LIST_TERMINATOR) {
       return i + list_offset;  // Found the end of the list.
@@ -384,10 +384,10 @@ NodeReader::FindResult NodeReader::ReaderForLookup0th(
     NodeReader* result) const {
   size_t child_offset;
   if (is_lookup_32()) {
-    child_offset = base::numerics::U32FromLittleEndian(
+    child_offset = base::U32FromLittleEndian(
         bdict_data_.subspan(zeroth_entry_offset()).first<4>());
   } else {
-    child_offset = base::numerics::U16FromLittleEndian(
+    child_offset = base::U16FromLittleEndian(
         bdict_data_.subspan(zeroth_entry_offset()).first<2>());
     child_offset += node_offset_;
   }
@@ -416,7 +416,7 @@ NodeReader::FindResult NodeReader::ReaderForLookupAt(
   size_t child_offset = 0;
   if (is_lookup_32()) {
     // Table contains 32-bit absolute offsets.
-    child_offset = base::numerics::U32FromLittleEndian(
+    child_offset = base::U32FromLittleEndian(
         bdict_data_.subspan(table_offset + index * sizeof(uint32_t))
             .first<4>());
     if (!child_offset) {
@@ -424,7 +424,7 @@ NodeReader::FindResult NodeReader::ReaderForLookupAt(
     }
   } else {
     // Table contains 16-bit offsets relative to the current node.
-    child_offset = base::numerics::U16FromLittleEndian(
+    child_offset = base::U16FromLittleEndian(
         bdict_data_.subspan(table_offset + index * sizeof(uint16_t))
             .first<2>());
     if (!child_offset) {
@@ -507,7 +507,7 @@ NodeReader::FindResult NodeReader::ReaderForListAt(
     // The children begin right after the list.
     size_t children_begin = list_begin + list_item_count() * 3;
     offset = children_begin +
-             base::numerics::U16FromLittleEndian(list_item.subspan<1>());
+             base::U16FromLittleEndian(list_item.subspan<1>());
   } else {
     auto list_item = bdict_data_.subspan(list_begin + index * 2).first<2>();
     *found_char = list_item[0];

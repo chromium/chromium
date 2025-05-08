@@ -12,7 +12,7 @@
 
 namespace arc {
 
-constexpr char kArcPowerThrottleObserverName[] = "ArcPower";
+inline constexpr char kArcPowerThrottleObserverName[] = "ArcPower";
 
 // Listens ARC power events and lifts CPU throttling when needed.
 class ArcPowerThrottleObserver : public ash::ThrottleObserver,

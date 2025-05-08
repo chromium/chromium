@@ -41,11 +41,11 @@ class CC_EXPORT LayerContext {
       const gfx::Rect& viewport_damage_rect) = 0;
 
   // Pushes an update to a single tile in the context's display tree.
-  virtual void UpdateDisplayTile(
-      PictureLayerImpl& layer,
-      const Tile& tile,
-      viz::ClientResourceProvider& resource_provider,
-      viz::RasterContextProvider& context_provider) = 0;
+  virtual void UpdateDisplayTile(PictureLayerImpl& layer,
+                                 const Tile& tile,
+                                 viz::ClientResourceProvider& resource_provider,
+                                 viz::RasterContextProvider& context_provider,
+                                 bool update_damage) = 0;
 };
 
 }  // namespace cc

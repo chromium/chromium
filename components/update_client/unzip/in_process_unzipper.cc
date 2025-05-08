@@ -17,12 +17,15 @@ namespace {
 
 class InProcessUnzipper : public Unzipper {
  public:
-  InProcessUnzipper() = default;
+  explicit InProcessUnzipper(
+      InProcessUnzipperFactory::SymlinkOption symlink_option)
+      : symlink_option_(symlink_option) {}
 
   void Unzip(const base::FilePath& zip_path,
              const base::FilePath& output_path,
              UnzipCompleteCallback callback) override {
-    std::move(callback).Run(zip::Unzip(zip_path, output_path));
+    std::move(callback).Run(
+        zip::Unzip(zip_path, output_path, /*options=*/{}, symlink_option_));
   }
 
   base::OnceClosure DecodeXz(const base::FilePath& xz_file,
@@ -31,14 +34,18 @@ class InProcessUnzipper : public Unzipper {
     return unzip::DecodeXz(unzip::LaunchInProcessUnzipper(), xz_file,
                            destination, std::move(callback));
   }
+
+ private:
+  const InProcessUnzipperFactory::SymlinkOption symlink_option_;
 };
 
 }  // namespace
 
-InProcessUnzipperFactory::InProcessUnzipperFactory() = default;
+InProcessUnzipperFactory::InProcessUnzipperFactory(SymlinkOption symlink_option)
+    : symlink_option_(symlink_option) {}
 
 std::unique_ptr<Unzipper> InProcessUnzipperFactory::Create() const {
-  return std::make_unique<InProcessUnzipper>();
+  return std::make_unique<InProcessUnzipper>(symlink_option_);
 }
 
 InProcessUnzipperFactory::~InProcessUnzipperFactory() = default;

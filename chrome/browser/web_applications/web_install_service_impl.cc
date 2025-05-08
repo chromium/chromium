@@ -27,6 +27,8 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/installable_params.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -295,12 +297,38 @@ void WebInstallServiceImpl::OnPermissionDecided(
                             GURL());
     return;
   }
-  auto* profile =
-      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
 
-  auto* provider = WebAppProvider::GetForWebApps(profile);
-  provider->scheduler().InstallAppFromUrl(
-      install_target, manifest_id,
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+
+  webapps::MLInstallabilityPromoter* promoter =
+      webapps::MLInstallabilityPromoter::FromWebContents(web_contents);
+  CHECK(promoter);
+  if (promoter->HasCurrentInstall()) {
+    // The current web contents is being installed via another method. Cancel
+    // this background install.
+    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
+                            GURL());
+    return;
+  }
+
+  auto* provider = WebAppProvider::GetForWebContents(web_contents);
+  CHECK(provider);
+  if (provider->command_manager().IsInstallingForWebContents(web_contents)) {
+    // Another install is already scheduled on the current web contents. Cancel
+    // this background install.
+    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
+                            GURL());
+    return;
+  }
+
+  // Register the background install on the current web contents.
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      promoter->RegisterCurrentInstallForWebContents(
+          webapps::WebappInstallSource::WEB_INSTALL);
+
+  provider->ui_manager().TriggerInstallDialogForBackgroundInstall(
+      web_contents, std::move(install_tracker), install_target, manifest_id,
       base::BindOnce(&WebInstallServiceImpl::OnAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

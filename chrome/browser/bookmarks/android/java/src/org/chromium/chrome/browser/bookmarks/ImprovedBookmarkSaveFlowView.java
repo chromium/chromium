@@ -13,7 +13,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Controls the bookmarks save-flow view. */
+@NullMarked
 public class ImprovedBookmarkSaveFlowView extends FrameLayout {
     private View mBookmarkContainer;
     private ImageView mBookmarkImageView;

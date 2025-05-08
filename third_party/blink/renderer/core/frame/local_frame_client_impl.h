@@ -273,9 +273,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   v8::Local<v8::Object> GetScriptableObject(HTMLPlugInElement&,
                                             v8::Isolate*) override;
 
-  scoped_refptr<WebWorkerFetchContext> CreateWorkerFetchContext() override;
-  scoped_refptr<WebWorkerFetchContext>
-  CreateWorkerFetchContextForPlzDedicatedWorker(
+  scoped_refptr<WebWorkerFetchContext> CreateWorkletFetchContext() override;
+  scoped_refptr<WebWorkerFetchContext> CreateWorkerFetchContext(
       WebDedicatedWorkerHostFactoryClient*) override;
   std::unique_ptr<WebContentSettingsClient> CreateWorkerContentSettingsClient()
       override;

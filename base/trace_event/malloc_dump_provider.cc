@@ -25,8 +25,8 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/partition_alloc_config.h"   // nogncheck
-#include "partition_alloc/partition_bucket_lookup.h"  // nogncheck
+#include "partition_alloc/bucket_lookup.h"           // nogncheck
+#include "partition_alloc/partition_alloc_config.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -252,13 +252,10 @@ void ReportPartitionAllocThreadCacheStats(
 
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   if (stats.alloc_count && detailed) {
-    partition_alloc::internal::BucketIndexLookup lookup{};
     std::string name = dump->absolute_name();
-    for (size_t i = 0; i < partition_alloc::kNumBuckets; i++) {
-      size_t bucket_size = lookup.bucket_sizes()[i];
-      if (bucket_size == partition_alloc::kInvalidBucketSize) {
-        continue;
-      }
+    for (uint16_t i = 0; i < partition_alloc::BucketIndexLookup::kNumBuckets;
+         i++) {
+      size_t bucket_size = partition_alloc::BucketIndexLookup::GetBucketSize(i);
       // Covers all normal buckets, that is up to ~1MiB, so 7 digits.
       std::string dump_name = base::StringPrintf(
           "%s/buckets_alloc/%07d", name.c_str(), static_cast<int>(bucket_size));

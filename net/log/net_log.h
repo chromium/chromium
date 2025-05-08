@@ -8,10 +8,12 @@
 #include <stdint.h>
 
 #include <atomic>
+#include <concepts>
 #include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
@@ -203,29 +205,16 @@ class NET_EXPORT NetLog {
   void AddEntry(NetLogEventType type,
                 const NetLogSource& source,
                 NetLogEventPhase phase);
-
-  // NetLog parameter generators (lambdas) come in two flavors -- those that
-  // take no arguments, and those that take a single NetLogCaptureMode. This
-  // code allows differentiating between the two.
-  template <typename T, typename = void>
-  struct ExpectsCaptureMode : std::false_type {};
-  template <typename T>
-  struct ExpectsCaptureMode<T,
-                            decltype(void(std::declval<T>()(
-                                NetLogCaptureMode::kDefault)))>
-      : std::true_type {};
-
   // Adds an entry for the given source, phase, and type, whose parameters are
   // obtained by invoking |get_params()| with no arguments.
   //
   // See "Materializing parameters" for details.
   template <typename ParametersCallback>
-  inline typename std::enable_if<!ExpectsCaptureMode<ParametersCallback>::value,
-                                 void>::type
-  AddEntry(NetLogEventType type,
-           const NetLogSource& source,
-           NetLogEventPhase phase,
-           const ParametersCallback& get_params) {
+    requires(!std::invocable<ParametersCallback, NetLogCaptureMode>)
+  inline void AddEntry(NetLogEventType type,
+                       const NetLogSource& source,
+                       NetLogEventPhase phase,
+                       const ParametersCallback& get_params) {
     if (!IsCapturing()) [[likely]] {
       return;
     }
@@ -238,32 +227,16 @@ class NET_EXPORT NetLog {
   //
   // See "Materializing parameters" for details.
   template <typename ParametersCallback>
-  inline typename std::enable_if<ExpectsCaptureMode<ParametersCallback>::value,
-                                 void>::type
-  AddEntry(NetLogEventType type,
-           const NetLogSource& source,
-           NetLogEventPhase phase,
-           const ParametersCallback& get_params) {
+    requires(std::invocable<ParametersCallback, NetLogCaptureMode>)
+  inline void AddEntry(NetLogEventType type,
+                       const NetLogSource& source,
+                       NetLogEventPhase phase,
+                       const ParametersCallback& get_params) {
     if (!IsCapturing()) [[likely]] {
       return;
     }
 
-    // Indirect through virtual dispatch to reduce code bloat, as this is
-    // inlined in a number of places.
-    class GetParamsImpl : public GetParamsInterface {
-     public:
-      explicit GetParamsImpl(const ParametersCallback& get_params)
-          : get_params_(get_params) {}
-      base::Value::Dict GetParams(NetLogCaptureMode mode) const override {
-        return (*get_params_)(mode);
-      }
-
-     private:
-      const raw_ref<const ParametersCallback> get_params_;
-    };
-
-    GetParamsImpl wrapper(get_params);
-    AddEntryInternal(type, source, phase, &wrapper);
+    AddEntryInternal(type, source, phase, get_params);
   }
 
   // Emits a global event to the log stream, with its own unique source ID.
@@ -349,18 +322,13 @@ class NET_EXPORT NetLog {
   static const char* EventPhaseToString(NetLogEventPhase event_phase);
 
  private:
-  class GetParamsInterface {
-   public:
-    virtual base::Value::Dict GetParams(NetLogCaptureMode mode) const = 0;
-    virtual ~GetParamsInterface() = default;
-  };
-
   // Helper for implementing AddEntry() that indirects parameter getting through
   // virtual dispatch.
-  void AddEntryInternal(NetLogEventType type,
-                        const NetLogSource& source,
-                        NetLogEventPhase phase,
-                        const GetParamsInterface* get_params);
+  NOINLINE void AddEntryInternal(
+      NetLogEventType type,
+      const NetLogSource& source,
+      NetLogEventPhase phase,
+      base::FunctionRef<base::Value::Dict(NetLogCaptureMode)> get_params);
 
   // Returns the set of all capture modes being observed.
   NetLogCaptureModeSet GetObserverCaptureModes() const {

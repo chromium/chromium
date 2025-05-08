@@ -232,9 +232,14 @@ public class TracingSettings extends PreferenceFragmentCompat
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updatePreferences();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        updatePreferences();
         TracingController.getInstance().addObserver(this);
     }
 
@@ -301,5 +306,10 @@ public class TracingSettings extends PreferenceFragmentCompat
             mPrefStartRecording.setTitle(MSG_ACTIVE);
             mPrefTracingStatus.setTitle(MSG_ACTIVE_SUMMARY);
         }
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

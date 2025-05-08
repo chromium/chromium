@@ -139,7 +139,7 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
             .SetManifestVersion(3)
             .AddHostPermission(host_permission)
             .Build();
-    extension_registrar()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension);
     EXPECT_TRUE(
         extension_registry()->enabled_extensions().GetByID(extension->id()));
     return extension.get();

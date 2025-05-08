@@ -264,9 +264,11 @@ struct StarboardSampleInfo {
 
 // Copy of SbPlayerCreationParam from starboard.
 struct StarboardPlayerCreationParam {
-  // Note: a DRM system is not included in this struct. Due to the architecture
-  // of cast, the MediaPipelineBackend does not have direct access to the CDM.
-  // So instead we pass a global to Starboard (in starboard_media_api.cc).
+  // Provides an appropriate DRM system if the media stream has encrypted
+  // portions. It will be null if the stream does not have encrypted portions.
+  //
+  // If not null, drm_system should point to an object of type SbDrmSystem.
+  void* drm_system;
 
   // Contains a populated SbMediaAudioSampleInfo if |audio_sample_info.codec|
   // isn't |kSbMediaAudioCodecNone|.  When |audio_sample_info.codec| is

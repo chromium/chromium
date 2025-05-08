@@ -46,10 +46,6 @@ extra_kv = { include_coverage = true }
 # The build script conditionally generates a file; it's simplest to just paste
 # raw GN into the output. (crbug.com/1470653)
 extra_kv = { include_coverage = false, raw_gn = 'if (current_cpu == "arm64") { build_script_outputs = ["outlined_atomics.rs"] }' }
-extra_src_roots = [
-  # compiler_builtins depends on libm on windows crbug.com/1472681
-  '../libm',
-]
 extra_build_script_src_roots = [
   '../configure.rs',
 ]

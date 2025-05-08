@@ -26,7 +26,7 @@ class MEDIA_EXPORT FakeAudioManager : public AudioManagerBase {
   // Implementation of AudioManager.
   bool HasAudioOutputDevices() override;
   bool HasAudioInputDevices() override;
-  const char* GetName() override;
+  const std::string_view GetName() override;
 
   // Implementation of AudioManagerBase.
   AudioOutputStream* MakeLinearOutputStream(

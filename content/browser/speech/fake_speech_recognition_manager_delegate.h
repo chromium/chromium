@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/soda/soda_installer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
@@ -20,35 +19,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
-
-// A mocked version instance of SodaInstaller for testing purposes.
-class MockSodaInstaller : public speech::SodaInstaller {
- public:
-  MockSodaInstaller();
-  MockSodaInstaller(const MockSodaInstaller&) = delete;
-  MockSodaInstaller& operator=(const MockSodaInstaller&) = delete;
-  ~MockSodaInstaller() override;
-
-  MOCK_METHOD(base::FilePath, GetSodaBinaryPath, (), (const, override));
-  MOCK_METHOD(base::FilePath,
-              GetLanguagePath,
-              (const std::string&),
-              (const, override));
-  MOCK_METHOD(void,
-              InstallLanguage,
-              (const std::string&, PrefService*),
-              (override));
-  MOCK_METHOD(void,
-              UninstallLanguage,
-              (const std::string&, PrefService*),
-              (override));
-  MOCK_METHOD(std::vector<std::string>,
-              GetAvailableLanguages,
-              (),
-              (const, override));
-  MOCK_METHOD(void, InstallSoda, (PrefService*), (override));
-  MOCK_METHOD(void, UninstallSoda, (PrefService*), (override));
-};
 
 class MockOnDeviceWebSpeechRecognitionService
     : public media::mojom::SpeechRecognitionContext,

@@ -300,6 +300,7 @@ bool CheckDynamic(const network::mojom::blink::CSPSourceList* directive,
                   CSPDirectiveName effective_type) {
   // 'strict-dynamic' only applies to scripts
   if (effective_type != CSPDirectiveName::ScriptSrc &&
+      effective_type != CSPDirectiveName::ScriptSrcV2 &&
       effective_type != CSPDirectiveName::ScriptSrcAttr &&
       effective_type != CSPDirectiveName::ScriptSrcElem &&
       effective_type != CSPDirectiveName::WorkerSrc) {
@@ -529,6 +530,7 @@ void ReportViolationForCheckSource(
       prefix = prefix + "load plugin data from '";
       break;
     case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcV2:
     case CSPDirectiveName::ScriptSrcAttr:
     case CSPDirectiveName::ScriptSrcElem:
       prefix = prefix + "load the script '";
@@ -862,6 +864,7 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
          type == CSPDirectiveName::MediaSrc ||
          type == CSPDirectiveName::ObjectSrc ||
          type == CSPDirectiveName::ScriptSrc ||
+         type == CSPDirectiveName::ScriptSrcV2 ||
          type == CSPDirectiveName::ScriptSrcElem ||
          type == CSPDirectiveName::StyleSrc ||
          type == CSPDirectiveName::StyleSrcElem ||
@@ -1029,6 +1032,42 @@ CSPOperativeDirective CSPDirectiveListOperativeDirective(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     CSPDirectiveName type) {
   return OperativeDirective(csp, type);
+}
+
+void FillInCSPHashValues(
+    const String& source,
+    const WTF::HashSet<IntegrityAlgorithm>& hash_algorithms_used,
+    Vector<network::mojom::blink::CSPHashSourcePtr>& csp_hash_values) {
+  // Any additions or subtractions from this struct should also modify the
+  // respective entries in the kSupportedPrefixes array in
+  // SourceListDirective::parseHash().
+  static const struct {
+    IntegrityAlgorithm csp_hash_algorithm;
+    HashAlgorithm algorithm;
+  } kAlgorithmMap[] = {{IntegrityAlgorithm::kSha256, kHashAlgorithmSha256},
+                       {IntegrityAlgorithm::kSha384, kHashAlgorithmSha384},
+                       {IntegrityAlgorithm::kSha512, kHashAlgorithmSha512}};
+
+  // Only bother normalizing the source/computing digests if there are any
+  // checks to be done.
+  if (hash_algorithms_used.empty()) {
+    return;
+  }
+
+  StringUTF8Adaptor utf8_source(source,
+                                Utf8ConversionMode::kStrictReplacingErrors);
+
+  for (const auto& algorithm_map : kAlgorithmMap) {
+    DigestValue digest;
+    if (hash_algorithms_used.Contains(algorithm_map.csp_hash_algorithm)) {
+      bool digest_success = ComputeDigest(
+          algorithm_map.algorithm, base::as_byte_span(utf8_source), digest);
+      if (digest_success) {
+        csp_hash_values.push_back(network::mojom::blink::CSPHashSource::New(
+            algorithm_map.csp_hash_algorithm, Vector<uint8_t>(digest)));
+      }
+    }
+  }
 }
 
 }  // namespace blink

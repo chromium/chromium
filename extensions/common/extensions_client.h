@@ -62,10 +62,10 @@ class ExtensionsClient {
   // TODO(devlin): We should find a way to remove this.
   std::unique_ptr<JSONFeatureProviderSource> CreateAPIFeatureSource() const;
 
-  // Returns true iff a schema named |name| is generated.
+  // Returns true iff a schema named `name` is generated.
   bool IsAPISchemaGenerated(const std::string& name) const;
 
-  // Gets the generated API schema named |name|.
+  // Gets the generated API schema named `name`.
   std::string_view GetAPISchema(const std::string& name) const;
 
   // Adds a new API provider.
@@ -92,15 +92,15 @@ class ExtensionsClient {
   virtual const std::string GetProductName() = 0;
 
   // Takes the list of all hosts and filters out those with special
-  // permission strings. Adds the regular hosts to |new_hosts|,
-  // and adds any additional permissions to |permissions|.
+  // permission strings. Adds the regular hosts to `new_hosts`,
+  // and adds any additional permissions to `permissions`.
   // TODO(sashab): Split this function in two: One to filter out ignored host
   // permissions, and one to get permissions for the given hosts.
   virtual void FilterHostPermissions(const URLPatternSet& hosts,
                                      URLPatternSet* new_hosts,
                                      PermissionIDSet* permissions) const = 0;
 
-  // Replaces the scripting allowlist with |allowlist|. Used in the renderer;
+  // Replaces the scripting allowlist with `allowlist`. Used in the renderer;
   // only used for testing in the browser process.
   virtual void SetScriptingAllowlist(const ScriptingAllowlist& allowlist) = 0;
 
@@ -108,13 +108,13 @@ class ExtensionsClient {
   // any origin.
   virtual const ScriptingAllowlist& GetScriptingAllowlist() const = 0;
 
-  // Get the set of chrome:// hosts that |extension| can have host permissions
+  // Get the set of chrome:// hosts that `extension` can have host permissions
   // for.
   virtual URLPatternSet GetPermittedChromeSchemeHosts(
       const Extension* extension,
       const APIPermissionSet& api_permissions) const = 0;
 
-  // Returns false if content scripts are forbidden from running on |url|.
+  // Returns false if content scripts are forbidden from running on `url`.
   virtual bool IsScriptableURL(const GURL& url, std::string* error) const = 0;
 
   // Returns the base webstore URL prefix.
@@ -146,7 +146,7 @@ class ExtensionsClient {
   virtual std::set<base::FilePath> GetBrowserImagePaths(
       const Extension* extension);
 
-  // Adds client specific permitted origins to |origin_patterns| for
+  // Adds client specific permitted origins to `origin_patterns` for
   // cross-origin communication for an extension context.
   virtual void AddOriginAccessPermissions(
       const Extension& extension,

@@ -17,6 +17,7 @@
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -116,7 +117,7 @@ class UserEventSyncBridgeTest : public testing::Test {
   }
 
   void WaitUntilModelReadyToSync(
-      const std::string& account_id = "test_account_id") {
+      const GaiaId& gaia_id = GaiaId("test_account_id")) {
     base::RunLoop loop;
     base::RepeatingClosure quit_closure = loop.QuitClosure();
     // Let the bridge initialize fully, which should run ModelReadyToSync().
@@ -124,7 +125,7 @@ class UserEventSyncBridgeTest : public testing::Test {
         .WillByDefault(InvokeWithoutArgs([=]() { quit_closure.Run(); }));
     loop.Run();
     ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
-    ON_CALL(*processor(), TrackedAccountId()).WillByDefault(Return(account_id));
+    ON_CALL(*processor(), TrackedGaiaId()).WillByDefault(Return(gaia_id));
   }
 
   static std::string GetStorageKey(const UserEventSpecifics& specifics) {
@@ -345,10 +346,10 @@ TEST_F(UserEventSyncBridgeTest, MulipleEventsChanging) {
 
 TEST_F(UserEventSyncBridgeTest, RecordBeforeMetadataLoads) {
   ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(false));
-  ON_CALL(*processor(), TrackedAccountId()).WillByDefault(Return(""));
+  ON_CALL(*processor(), TrackedGaiaId()).WillByDefault(Return(GaiaId()));
   bridge()->RecordUserEvent(SpecificsUniquePtr(1u, 2u, 3u));
   EXPECT_CALL(*processor(), ModelReadyToSync);
-  WaitUntilModelReadyToSync("account_id");
+  WaitUntilModelReadyToSync(GaiaId("gaia_id"));
   EXPECT_THAT(GetAllDataForDebugging(), IsEmpty());
 }
 

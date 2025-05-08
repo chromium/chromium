@@ -99,8 +99,24 @@ found in the LICENSE file.
     border-color: red;
   }
 
+  #screenWakeLockStatus::before {
+    content: "Can sleep normally.";
+  }
+  #screenWakeLockStatus[lockStatus*="acquired"]::before {
+    content: "Locked in awake state!";
+    background-color: fuchsia;
+  }
+  #screenWakeLockStatus[lockStatus*="unexpectedRelease"]::before {
+    content: "Awake lock was released unexpectedly.";
+    background-color: yellow;
+  }
+  #screenWakeLockStatus[lockStatus*="error"]::before {
+    content: "Error acquiring awake lock! (can still sleep)";
+    background-color: red;
+  }
+
   #successUI {
-      border-color: green;
+    border-color: green;
   }
 
   .fitWindow html {
@@ -187,6 +203,15 @@ found in the LICENSE file.
   </label>
 </div>
 <div class="section">
+  <h1>Closed Captions Setting</h1>
+  <div class="permission-switch">
+    <label for="closedCaptioningSwitch">Closed Captioning:</label>
+    <input type="checkbox" id="closedCaptioningSwitch" disabled />
+    <button id="setClosedCaptioningTrue" style="margin-left: 1em;">Set True</button>
+    <button id="setClosedCaptioningFalse">Set False</button>
+  </div>
+  </div>
+  <div class="section">
   <h1>Chrome Permissions</h1>
   <div class="permission-switch">
     <label for="microphoneSwitch">Microphone:</label>
@@ -401,6 +426,14 @@ found in the LICENSE file.
   <div id="audioStatus"></div>
 </div>
 <div class="section">
+  <h1>Screen Wake Lock</h1>
+  <label for="screenWakeLockSwitch">Keep screen awake:
+    <input type="checkbox" id="screenWakeLockSwitch" />
+  </label>
+  <br />
+  <label id="screenWakeLockStatus" lockStatus="released"/>
+</div>
+<div class="section">
   <h1>Desktop Screenshot</h1>
   <button id="desktopScreenshot">Capture</button>
   <button id="panelScreenshot">Capture Panel</button>
@@ -429,6 +462,10 @@ found in the LICENSE file.
     <input id="scrollToTextFragmentTextEnd" type="text" placeholder="textEnd">
     <div><label>Search Range Start Node</label><select disabled id="scrollToTextFragmentSearchStart"
         class="scrollToNodeSelect"></select></div>
+  </div>
+  <div class="scrollToSelector">
+    <h2>Node Selector</h2>
+    <div><label>Node</label><select disabled id="scrollToNode" class="scrollToNodeSelect"></select></div>
   </div>
   <button id="scrollToBn" style="margin-top: 12px;">Scroll!</button>
 </div>

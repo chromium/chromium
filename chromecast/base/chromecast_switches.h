@@ -19,6 +19,7 @@ extern const char kSwitchValueFalse[];
 // Switches for crash_uploader
 extern const char kCrashServerUrl[];
 extern const char kCrashUploaderDaemon[];
+extern const char kCrashReportProductName[];
 
 // Disable Crash Reporting
 extern const char kDisableCrashReporter[];

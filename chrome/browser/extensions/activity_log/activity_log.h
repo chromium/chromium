@@ -73,7 +73,7 @@ class ActivityLog : public BrowserContextKeyedAPI,
                          const ExecutingScriptsMap& extension_ids,
                          const GURL& on_url);
 
-  // Observe tabs.executeScript on the given |executor|.
+  // Observe tabs.executeScript on the given `executor`.
   void ObserveScripts(ScriptExecutor* executor);
 
   // Add/remove observer: the activityLogPrivate API only listens when the
@@ -171,8 +171,8 @@ class ActivityLog : public BrowserContextKeyedAPI,
   void ChooseDatabasePolicy();
   void SetDatabasePolicy(ActivityLogPolicy::PolicyType policy_type);
 
-  // Checks the current |is_active_| state and modifies it if appropriate.
-  // If |use_cached| is true, then this checks the cached_consumer_count_ for
+  // Checks the current `is_active_` state and modifies it if appropriate.
+  // If `use_cached` is true, then this checks the cached_consumer_count_ for
   // whether or not a consumer is active. Otherwise, checks active_consumers_.
   void CheckActive(bool use_cached);
 

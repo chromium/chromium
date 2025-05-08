@@ -53,7 +53,6 @@
 -ContentSecurityPolicyIsolatedAppWebSocketBrowserTest.CheckCsp/Wss
 -DataDecoderBrowserTest.DecodeImage
 -DataDecoderBrowserTest.DecodeImageIsolated
--Default/MediaTest.VideoBear12DepthVP9/0
 -DevToolsProtocolDeviceEmulationPrerenderTest.DeviceSize
 -DevToolsProtocolDeviceEmulationTest.DeviceSize
 -DohHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
@@ -74,10 +73,6 @@
 -KeyboardLockBrowserTest.LockCalledBeforeFullscreen
 -KeyboardLockBrowserTest.LockRequestBeforeCrossOriginIFrameIsFullscreen
 -KeyboardLockBrowserTest.LockRequestWhileCrossOriginIFrameIsFullscreen
--MSE_ClearKey/EncryptedMediaTest.Playback_VideoOnly_MP4_VP9Profile2/0
--MSE_ClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_VP9Profile2/0
--MediaColorTest.Yuv420pTheora
--MediaColorTest.Yuv420pVp8
 -MemoryInstrumentationTest.PrivateFootprintComputation
 -MojoSandboxTest.IsProcessSandboxed
 -NetworkResponseProtocolECHTest.SecurityDetailsECH
@@ -96,7 +91,6 @@
 -RenderWidgetHostSitePerProcessTest.BrowserClosesSelectPopup
 -RenderWidgetHostTouchEmulatorBrowserTest.TouchEmulatorPinchWithGestureFling
 -RenderWidgetHostViewChildFrameBrowserTest.VisualPropertiesPropagation_RootViewportSegments
--SRC_ClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_VP9Profile2/0
 -ScrollBehaviorBrowserTest.InstantScriptScrollAdjustsSmoothWheelScroll
 -ScrollBehaviorBrowserTest.SmoothWheelScrollCompletesWithScriptedMirror
 -SignedExchangeSubresourcePrefetchBrowserTest.IntegrityMismatchSendsReport
@@ -116,42 +110,8 @@
 -WebRtcGetUserMediaBrowserTest.TestGetUserMediaAspectRatio1To1
 -WebRtcGetUserMediaBrowserTest.TestGetUserMediaAspectRatio4To3
 
-# TODO(crbug.com/40276544): cannot create shared image.
--Default/MediaTest.VideoBearMp4/1
--Default/MediaTest.VideoBearMp4Hevc10bit/1
--Default/MediaTest.VideoBearMp4Hevc10bit422/1
--Default/MediaTest.VideoBearMp4Hevc10bit444/1
--Default/MediaTest.VideoBearRotated0/1
--Default/MediaTest.VideoBearRotated180/1
--Default/MediaTest.VideoBearRotated270/1
--Default/MediaTest.VideoBearRotated90/1
--Default/MediaTest.VideoBearSilentMp4/1
--MediaColorTest.Yuv420pH264
--MediaColorTest.Yuv420pHighBitDepth
--MediaColorTest.Yuv420pRec709H264
--MediaColorTest.Yuvj420pH264
--MediaSourceTest.Playback_Video_MP4_Audio_WEBM
-
 # TODO(crbug.com/41482069): these flakily timeout.
 -All/BackForwardCacheNetworkLimitBrowserTest.ImageStillLoading*
-
-# TODO(crbug.com/40276545): hitting unexpected driver errors.
--ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/0
--ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/1
--ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/2
--ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/3
--ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/0
--ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/1
--ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/2
--ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/3
--ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/0
--ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/1
--ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/2
--ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/3
--ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/0
--ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/1
--ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/2
--ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/3
 
 # TODO(crbug.com/40276556): unexpected `fallback_after_restore` ID.
 # Resize-while-hidden should give the `DelegatedFrameHost` a new primary ID
@@ -162,9 +122,6 @@
 # `WC::GetRenderWidgetHostView()->GetViewBounds()`; `ui::GrabViewSnapshot` isn't
 # implemented for IOS.
 -RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition.NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
-
-# TODO(crbug.com/40276565): unexpected level of support for codec.
--MediaCanPlayTypeTest.CodecSupportTest_mp4
 
 # TODO(crbug.com/40276950): This test is flaky.
 -BackForwardCacheBrowserTest.NavigateToTwoPagesOnSameSiteWithSubframes
@@ -198,62 +155,9 @@
 -AudioContextManagerTest.AudioContextPlaybackRecorded
 -AudioContextManagerTest.AudioContextPlaybackTimeUkm
 -BackForwardCacheBrowserTest.VideoSuspendAndResume
--Default/MediaTest.AudioBearFlac/0
--Default/MediaTest.AudioBearFlac/1
--Default/MediaTest.AudioBearFlac192kHzMp4/0
--Default/MediaTest.AudioBearFlac192kHzMp4/1
--Default/MediaTest.AudioBearFlacMp4/0
--Default/MediaTest.AudioBearFlacMp4/1
--Default/MediaTest.AudioBearFlacOgg/0
--Default/MediaTest.AudioBearFlacOgg/1
--Default/MediaTest.AudioBearOpusMp4/0
--Default/MediaTest.AudioBearOpusMp4/1
--Default/MediaTest.AudioBearOpusOgg/0
--Default/MediaTest.AudioBearOpusOgg/1
--Default/MediaTest.AudioBearOpusOgg_FileProtocol/0
--Default/MediaTest.AudioBearOpusOgg_FileProtocol/1
--Default/MediaTest.AudioBearOpusWebm/0
--Default/MediaTest.AudioBearOpusWebm/1
--Default/MediaTest.Navigate/0
--Default/MediaTest.Navigate/1
--Default/MediaTest.VideoBear3gpAacH264/0
--Default/MediaTest.VideoBear3gpAacH264/1
--Default/MediaTest.VideoBearHighBitDepthMp4/0
--Default/MediaTest.VideoBearHighBitDepthMp4/1
--Default/MediaTest.VideoBearMovPcmS16be/0
--Default/MediaTest.VideoBearMovPcmS16be/1
--Default/MediaTest.VideoBearMovPcmS24be/0
--Default/MediaTest.VideoBearMovPcmS24be/1
--Default/MediaTest.VideoBearMp4/0
--Default/MediaTest.VideoBearTheora/0
--Default/MediaTest.VideoBearTheora/1
--Default/MediaTest.VideoBearWavAlaw/0
--Default/MediaTest.VideoBearWavAlaw/1
--Default/MediaTest.VideoBearWavMulaw/0
--Default/MediaTest.VideoBearWavMulaw/1
--Default/MediaTest.VideoBearWavPcm/0
--Default/MediaTest.VideoBearWavPcm/1
--Default/MediaTest.VideoBearWavPcm192kHz/0
--Default/MediaTest.VideoBearWavPcm192kHz/1
--Default/MediaTest.VideoBearWavPcm3kHz/0
--Default/MediaTest.VideoBearWavPcm3kHz/1
--Default/MediaTest.VideoBearWebm/0
--Default/MediaTest.VideoBearWebm/1
--Default/MediaTest.VideoBearWebm_FileProtocol/0
--Default/MediaTest.VideoBearWebm_FileProtocol/1
--Default/MediaTest.VideoTulipWebm/0
--Default/MediaTest.VideoTulipWebm/1
 -MSE_ClearKey/EncryptedMediaTest.ConfigChangeVideo_ClearToClear/0
 -MSE_ClearKey/EncryptedMediaTest.Playback_Encryption_CENC/0
 -MediaRedirectTest.CanPlayHiddenWebm
--MediaSourceTest.ConfigChangeVideo
--MediaSourceTest.Playback_AudioOnly_AAC_ADTS
--MediaSourceTest.Playback_AudioOnly_FLAC_MP4
--MediaSourceTest.Playback_AudioOnly_MP3
--MediaSourceTest.Playback_AudioOnly_Opus_WebM
--MediaSourceTest.Playback_AudioOnly_WebM
--MediaSourceTest.Playback_VideoAudio_WebM
--MediaSourceTest.Playback_Video_WEBM_Audio_MP4
 -MediaSuspendTest.ForcedSrcSuspend
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/0
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/1
@@ -265,10 +169,6 @@
 -OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/2
 -OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/3
 -OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/4
--ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/0
--ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/1
--ProprietaryCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/0
--ProprietaryCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/1
 -WebRtcAudioBrowserTest.CanMakeVideoCallAndThenRenegotiateToAudio
 -WebRtcAudioBrowserTest.EnsureLocalVideoMuteDoesntMuteAudio
 -WebRtcAudioBrowserTest.EnsureRemoteVideoMuteDoesntMuteAudio
@@ -753,10 +653,12 @@
 -All/DumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpen/blink
 -All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
 -All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
+-All/DumpAccessibilityTreeTest.AccessibilityMultiSelectable/blink
 -All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
 -All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
 -All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
 -All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
+-All/OnScreenModeDumpAccessibilityTreeTest.ContentWith3ViewPortScrollsForOnScreenMode/blink
 
 # TODO(crbug.com/368335261): These tests have been failing since
 # https://crrev.com/c/5464569.
@@ -806,10 +708,6 @@
 -All/AccessibilityHitTestingBrowserTest.HitTestingInStitchedChildTree/ZoomFactor1
 -All/AccessibilityHitTestingBrowserTest.HitTestingInStitchedChildTree/ZoomFactor2
 
-# TODO(crbug.com/381127650): This test has been failing on the bot.
--ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/2
--ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/3
-
 # TODO(crbug.com/381282539): This test has been failing since
 # https://crrev.com/c/6013928.
 -ContentBrowserTest.BrowserCrashCallStack
@@ -851,3 +749,7 @@
 -PrerenderTargetHintEnabledBrowserTest.BackgroundedPage_ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
 -PrerenderTargetHintEnabledBrowserTest.SessionStorage_TargetBlank_WithTargetHintBlank
 -PrerenderTargetHintOriginTrialBrowserTest.Prerender2InNewTabOriginTrial
+
+# These tests have been failing since https://crrev.com/c/6459930.
+-Default/MediaTest.HLSSingleWithoutExtension/0
+-Default/MediaTest.HLSSingleWithoutExtension/1

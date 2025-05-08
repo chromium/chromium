@@ -32,8 +32,11 @@ class TabStripModel;
 class TranslateBubbleController;
 class ToastController;
 class ToastService;
-class DataSharingOpenGroupHelper;
 class DownloadToolbarUIController;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+class PdfInfoBarController;
+#endif
 
 namespace extensions {
 class ExtensionSidePanelManager;
@@ -76,7 +79,7 @@ class SendTabToSelfToolbarBubbleController;
 }  // namespace send_tab_to_self
 
 namespace tabs_api::mojom {
-class TabStripController;
+class TabStripService;
 }
 
 // This class owns the core controllers for features that are scoped to a given
@@ -138,6 +141,12 @@ class BrowserWindowFeatures {
     return bookmarks_side_panel_coordinator_.get();
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  PdfInfoBarController* pdf_infobar_controller() {
+    return pdf_infobar_controller_.get();
+  }
+#endif
+
   // TODO(crbug.com/346158959): For historical reasons, side_panel_ui is an
   // abstract base class that contains some, but not all of the public interface
   // of SidePanelCoordinator. One of the accessors side_panel_ui() or
@@ -185,10 +194,6 @@ class BrowserWindowFeatures {
 
   extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
     return extension_side_panel_manager_.get();
-  }
-
-  DataSharingOpenGroupHelper* data_sharing_open_group_helper() {
-    return data_sharing_open_group_helper_.get();
   }
 
   DownloadToolbarUIController* download_toolbar_ui_controller() {
@@ -259,6 +264,10 @@ class BrowserWindowFeatures {
   std::unique_ptr<BookmarksSidePanelCoordinator>
       bookmarks_side_panel_coordinator_;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  std::unique_ptr<PdfInfoBarController> pdf_infobar_controller_;
+#endif
+
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 
   std::unique_ptr<tab_groups::SessionServiceTabGroupSyncObserver>
@@ -271,8 +280,6 @@ class BrowserWindowFeatures {
   // tab-scoped extension side-panel manager.
   std::unique_ptr<extensions::ExtensionSidePanelManager>
       extension_side_panel_manager_;
-
-  std::unique_ptr<DataSharingOpenGroupHelper> data_sharing_open_group_helper_;
 
   std::unique_ptr<media_router::CastBrowserController> cast_browser_controller_;
 
@@ -303,7 +310,7 @@ class BrowserWindowFeatures {
       cookie_controls_bubble_coordinator_;
 
   // This is an experimental API that interacts with the TabStripModel.
-  std::unique_ptr<tabs_api::mojom::TabStripController> tab_strip_controller_;
+  std::unique_ptr<tabs_api::mojom::TabStripService> tab_strip_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

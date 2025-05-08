@@ -27,8 +27,6 @@ struct DnsSdService {
            service_host_port.Equals(other.service_host_port) &&
            ip_address == other.ip_address && service_data == other.service_data;
   }
-
-  bool operator!=(const DnsSdService& other) const { return !(*this == other); }
 };
 
 // Delegate that is notified when a watched service is added, updated or

@@ -82,7 +82,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 
-/** Tests for the password checkup-related methods in {@link PasswordManagerHelper}.* */
+/** Tests for the password checkup-related methods in {@link PasswordManagerHelper}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,

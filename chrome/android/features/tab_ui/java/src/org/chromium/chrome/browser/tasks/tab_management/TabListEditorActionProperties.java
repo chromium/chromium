@@ -48,7 +48,7 @@ public class TabListEditorActionProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey SHOULD_DISMISS_MENU =
             new WritableBooleanPropertyKey();
-    public static final WritableObjectPropertyKey<Callback<List<Integer>>>
+    public static final WritableObjectPropertyKey<Callback<List<TabListEditorItemSelectionId>>>
             ON_SELECTION_STATE_CHANGE = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<Destroyable> DESTROYABLE =

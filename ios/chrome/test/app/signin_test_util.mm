@@ -17,6 +17,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view.h"
@@ -214,11 +215,19 @@ void ResetSyncAccountSettingsPrefs() {
       ->KeepAccountSettingsPrefsOnlyForUsers({});
 }
 
+void SetUseFakeResponsesForProfileSeparationPolicyRequests() {
+  [AuthenticationFlowPerformer setUseFakePolicyResponsesForTesting:YES];
+}
+
+void ClearUseFakeResponsesForProfileSeparationPolicyRequests() {
+  [AuthenticationFlowPerformer setUseFakePolicyResponsesForTesting:NO];
+}
+
 void SetPolicyResponseForNextProfileSeparationPolicyRequest(
     policy::ProfileSeparationDataMigrationSettings
         profileSeparationDataMigrationSettings) {
-  [AuthenticationFlow forcePolicyResponseForNextRequestForTesting:
-                          profileSeparationDataMigrationSettings];
+  [AuthenticationFlowPerformer forcePolicyResponseForNextRequestForTesting:
+                                   profileSeparationDataMigrationSettings];
 }
 
 }  // namespace chrome_test_util

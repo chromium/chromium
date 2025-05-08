@@ -56,11 +56,11 @@ suite('PrintButtonTest', function() {
       // that the preview is ready.
       const sidebar = page.$.sidebar;
       const buttonStrip =
-          sidebar.shadowRoot!.querySelector('print-preview-button-strip');
+          sidebar.shadowRoot.querySelector('print-preview-button-strip');
       assertTrue(!!buttonStrip);
       if (printBeforePreviewReady) {
         const printButton =
-            buttonStrip.shadowRoot!.querySelector<CrButtonElement>(
+            buttonStrip.shadowRoot.querySelector<CrButtonElement>(
                 '.action-button');
         assertTrue(!!printButton);
         assertFalse(printButton.disabled);
@@ -69,7 +69,7 @@ suite('PrintButtonTest', function() {
       if (cancelBeforePreviewReady) {
         flush();
         const cancelButton =
-            buttonStrip.shadowRoot!.querySelector<CrButtonElement>(
+            buttonStrip.shadowRoot.querySelector<CrButtonElement>(
                 '.cancel-button');
         assertTrue(!!cancelButton);
         assertFalse(cancelButton.disabled);

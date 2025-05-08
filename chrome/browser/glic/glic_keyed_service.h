@@ -21,6 +21,10 @@ class BrowserWindowInterface;
 class Profile;
 class ProfileManager;
 
+namespace actor {
+class ActorCoordinator;
+}  // namespace actor
+
 namespace contextual_cueing {
 class ContextualCueingService;
 }  // namespace contextual_cueing
@@ -37,7 +41,7 @@ class GlicEnabling;
 class GlicMetrics;
 class GlicProfileManager;
 class GlicScreenshotCapturer;
-class GlicWindowController;
+class GlicWindowControllerImpl;
 
 // The GlicKeyedService is created for each eligible (i.e. non-incognito,
 // non-system, etc.) browser profile if Glic flags are enabled, regardless
@@ -70,13 +74,13 @@ class GlicKeyedService : public KeyedService {
                 bool prevent_close,
                 mojom::InvocationSource source);
 
+  void OpenFreDialogInNewTab(BrowserWindowInterface* bwi);
+
   // Forcibly close the UI. This is similar to Shutdown in that it causes the
   // window controller to shutdown (and clear cached state), but unlike
   // Shutdown, it doesn't unregister as the "active glic" with the profile
   // manager.
   void CloseUI();
-
-  void FocusUI();
 
   // The user has performed an action suggesting that they made open the UI
   // soon.
@@ -91,7 +95,7 @@ class GlicKeyedService : public KeyedService {
   GlicEnabling& enabling() { return *enabling_.get(); }
 
   GlicMetrics* metrics() { return metrics_.get(); }
-  GlicWindowController& window_controller() { return *window_controller_; }
+  GlicWindowController& window_controller();
 
   // Called when a webview guest is created within a chrome://glic WebUI.
   void GuestAdded(content::WebContents* guest_contents);
@@ -196,6 +200,15 @@ class GlicKeyedService : public KeyedService {
       const mojom::GetTabContextOptions& options,
       mojom::WebClientHandler::ActInFocusedTabCallback callback);
 
+  void StopActorTask();
+
+  // Returns true if the associated ActorCoordinator is active on the given
+  // `tab`. This can be used by callers to customize certain behaviour that
+  // might interfere with the ActorCoordinator.
+  bool IsActorCoordinatorActingOnTab(const content::WebContents* tab) const;
+
+  actor::ActorCoordinator& GetActorCoordinatorForTesting();
+
   void CaptureScreenshot(
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
 
@@ -246,7 +259,7 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<Host> host_;
-  std::unique_ptr<GlicWindowController> window_controller_;
+  std::unique_ptr<GlicWindowControllerImpl> window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;

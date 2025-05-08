@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 
@@ -47,6 +43,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -174,6 +171,8 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   const AnalysisSettings& settings() const override { return settings_.get(); }
 
+  signin::IdentityManager* identity_manager() const override { return nullptr; }
+
   // These methods correspond to fields in `BinaryUploadService::Request`.
   int user_action_requests_count() const override {
     return user_action_requests_count_;
@@ -194,6 +193,12 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   ContentAnalysisRequest::Reason reason() const override {
     return ContentAnalysisRequest::FILE_PICKER_DIALOG;
+  }
+
+  google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+  referrer_chain() const override {
+    return google::protobuf::RepeatedPtrField<
+        ::safe_browsing::ReferrerChainEntry>();
   }
 
  private:
@@ -345,6 +350,9 @@ class FilesRequestHandlerTest : public BaseTest {
     enterprise_connectors::test::SetAnalysisConnector(
         profile_->GetPrefs(), AnalysisConnector::FILE_ATTACHED,
         kBlockingScansForDlpAndMalware);
+
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kEnhancedFieldsForSecOps);
   }
 
   void FakeFileUploadCallback(

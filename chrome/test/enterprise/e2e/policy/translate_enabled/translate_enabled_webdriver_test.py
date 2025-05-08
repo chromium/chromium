@@ -41,7 +41,7 @@ def main(argv):
        .child_window(title="Translate this page?", control_type="Pane") \
        .print_control_identifiers()
     translatePopupVisible = True
-  except ElementNotFoundError as error:
+  except ElementNotFoundError:
     translatePopupVisible = False
   finally:
     driver.quit()

@@ -576,6 +576,64 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Forced Tips Notification</string>
+			<key>Key</key>
+			<string>ForcedTipsNotificationType</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+				<integer>8</integer>
+				<integer>9</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>Default Browser</string>
+				<string>Whats New</string>
+				<string>Sign In</string>
+				<string>Set Up List</string>
+				<string>Docking</string>
+				<string>Omnibox Position</string>
+				<string>Lens</string>
+				<string>Enhanced Safe Browsing</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Tips Notification Trigger</string>
+			<key>Key</key>
+			<string>TipsNotificationTrigger</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>5</integer>
+				<integer>10</integer>
+				<integer>30</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>5 Seconds</string>
+				<string>10 Seconds</string>
+				<string>30 Seconds</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Enterprise Settings</string>

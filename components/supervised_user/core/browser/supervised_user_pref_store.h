@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
+#include "components/prefs/pref_value_map.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 
 namespace base {
@@ -22,6 +23,13 @@ class PrefValueMap;
 
 namespace supervised_user {
 class SupervisedUserSettingsService;
+
+// Writes default values to `pref_values` as used within the
+// SupervisedUserPrefStore. In this context "default" doesn't indicate the
+// bottom pref store in hierarchy which yields fallback values for the
+// PrefService, but rather preset values within a single PrefStore.
+void SetSupervisedUserPrefStoreDefaults(PrefValueMap& pref_values);
+
 }  // namespace supervised_user
 
 // A PrefStore that gets its values from supervised user settings via the

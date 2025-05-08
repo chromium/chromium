@@ -13,15 +13,42 @@ import static org.chromium.components.search_engines.SearchEnginesFeatures.CLAY_
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchEnginesFeatureUtilsUnitTest {
+
+    @After
+    public void tearDown() {
+        CommandLine commandLine = CommandLine.getInstance();
+        commandLine.removeSwitch(SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_DEBUG_SWITCH);
+        commandLine.removeSwitch(SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH);
+    }
+
+    @Test
+    public void testIsChoiceApisDebugEnabled() {
+        assertFalse(SearchEnginesFeatureUtils.isChoiceApisDebugEnabled());
+
+        CommandLine.getInstance()
+                .appendSwitch(SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_DEBUG_SWITCH);
+        assertTrue(SearchEnginesFeatureUtils.isChoiceApisDebugEnabled());
+    }
+
+    @Test
+    public void testIsChoiceApisFakeBackendEnabled() {
+        assertFalse(SearchEnginesFeatureUtils.isChoiceApisFakeBackendEnabled());
+
+        CommandLine.getInstance()
+                .appendSwitch(SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH);
+        assertTrue(SearchEnginesFeatureUtils.isChoiceApisFakeBackendEnabled());
+    }
 
     @Test
     public void clayBlockingFeatureParamAsBoolean() {
@@ -75,11 +102,10 @@ public class SearchEnginesFeatureUtilsUnitTest {
 
     @Test
     public void clayBlockingUseFakeBackend() {
-        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder().enable(CLAY_BLOCKING);
-        overrides.apply();
         assertFalse(SearchEnginesFeatureUtils.clayBlockingUseFakeBackend());
 
-        overrides.param("use_fake_backend", true).apply();
+        CommandLine.getInstance()
+                .appendSwitch(SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH);
         assertTrue(SearchEnginesFeatureUtils.clayBlockingUseFakeBackend());
     }
 
@@ -95,13 +121,11 @@ public class SearchEnginesFeatureUtilsUnitTest {
 
     @Test
     public void clayBlockingEnableVerboseLogging() {
-        // TODO(crbug.com/391570180): Remove this test once the cleanup is done.
-        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder().enable(CLAY_BLOCKING);
-        overrides.apply();
         assertFalse(SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging());
 
-        overrides.param("enable_verbose_logging", false).apply();
-        assertFalse(SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging());
+        CommandLine.getInstance()
+                .appendSwitch(SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_DEBUG_SWITCH);
+        assertTrue(SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging());
     }
 
     @Test

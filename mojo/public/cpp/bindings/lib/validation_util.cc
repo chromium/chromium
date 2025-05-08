@@ -6,8 +6,6 @@
 
 #include <stdint.h>
 
-#include <limits>
-
 #include "base/containers/adapters.h"
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"

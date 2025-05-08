@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -85,13 +86,16 @@ using base::UserMetricsAction;
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
+  ProvisionalPushNotificationService* provisionalPushNotificationService =
+      ProvisionalPushNotificationServiceFactory::GetForProfile(profile);
 
   self.feedTopSectionMediator = [[FeedTopSectionMediator alloc]
-      initWithConsumer:self.feedTopSectionViewController
-       identityManager:identityManager
-           authService:authenticationService
-             incognito:profile->IsOffTheRecord()
-           prefService:profile->GetPrefs()];
+                        initWithConsumer:self.feedTopSectionViewController
+                         identityManager:identityManager
+                             authService:authenticationService
+      provisionalPushNotificationService:provisionalPushNotificationService
+                               incognito:profile->IsOffTheRecord()
+                             prefService:profile->GetPrefs()];
   self.isSignInPromoEnabled =
       ShouldShowTopOfFeedSyncPromo() && authenticationService &&
       [self.NTPDelegate isSignInAllowed] &&

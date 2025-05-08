@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.password_manager.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logExportFlowLastStepMetric;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING;
 import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.logPasswordsExportResult;
 
 import android.content.ActivityNotFoundException;
@@ -30,7 +29,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult;
 import org.chromium.chrome.browser.password_manager.R;
@@ -284,10 +282,6 @@ public class ExportFlow implements ExportFlowInterface {
                     .show();
             // Re-enable exporting, the current one was cancelled by Chrome.
             mExportState = ExportState.INACTIVE;
-            if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
-                logPasswordsExportResult(
-                        mCallerMetricsId, HistogramExportResult.NO_SCREEN_LOCK_SET_UP);
-            }
             maybeLogExportFlowLastStepMetric(
                     PasswordAccessLossWarningExportStep.NO_SCREEN_LOCK_SET_UP);
         } else {
@@ -371,11 +365,6 @@ public class ExportFlow implements ExportFlowInterface {
                     (unusedDialogInterface, button) -> {
                         if (button == AlertDialog.BUTTON_NEGATIVE) {
                             mExportState = ExportState.INACTIVE;
-                            if (ChromeFeatureList.isEnabled(
-                                    UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
-                                logPasswordsExportResult(
-                                        mCallerMetricsId, HistogramExportResult.USER_ABORTED);
-                            }
                         }
                     });
             mProgressBarManager.show(progressBarDialogFragment, mDelegate.getFragmentManager());
@@ -420,10 +409,6 @@ public class ExportFlow implements ExportFlowInterface {
             @Nullable String detailedDescription,
             int positiveButtonLabelId,
             @HistogramExportResult int histogramExportResult) {
-        if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
-            logPasswordsExportResult(mCallerMetricsId, histogramExportResult);
-        }
-
         mErrorDialogParams = new ExportErrorDialogFragment.ErrorDialogParams();
         mErrorDialogParams.positiveButtonLabelId = positiveButtonLabelId;
         mErrorDialogParams.description =

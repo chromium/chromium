@@ -263,18 +263,18 @@ ScriptValue ScriptIterator::CloseSync(ScriptState* script_state,
     return ScriptValue();
   }
 
+  // 4. If innerResult is a normal completion, then
+  //   a. Let return be innerResult.[[Value]].
+  //   b. If return is undefined, return ? completion.
+  if (return_method->IsNullOrUndefined()) {
+    return ScriptValue();
+  }
+
   // 7.3.10 GetMethod(V, P):
   //
   // 3. If IsCallable(func) is false, throw a TypeError exception.
   if (!return_method->IsFunction()) {
     exception_state.ThrowTypeError("return() function must be callable.");
-    return ScriptValue();
-  }
-
-  // 4. If innerResult is a normal completion, then
-  //   a. Let return be innerResult.[[Value]].
-  //   b. If return is undefined, return ? completion.
-  if (return_method->IsNullOrUndefined()) {
     return ScriptValue();
   }
 

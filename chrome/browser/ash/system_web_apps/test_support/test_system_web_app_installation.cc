@@ -115,7 +115,8 @@ UnittestingSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
 gfx::Size UnittestingSystemAppDelegate::GetMinimumWindowSize() const {
   return minimum_window_size_;
 }
-Browser* UnittestingSystemAppDelegate::GetWindowForLaunch(
+
+BrowserDelegate* UnittestingSystemAppDelegate::GetWindowForLaunch(
     Profile* profile,
     const GURL& url) const {
   return single_window_ ? SystemWebAppDelegate::GetWindowForLaunch(profile, url)
@@ -175,14 +176,14 @@ UnittestingSystemAppDelegate::GetTimerInfo() const {
   return timer_info_;
 }
 gfx::Rect UnittestingSystemAppDelegate::GetDefaultBounds(
-    Browser* browser) const {
+    BrowserDelegate* browser) const {
   if (get_default_bounds_) {
     return get_default_bounds_.Run(browser);
   }
   return gfx::Rect();
 }
 
-Browser* UnittestingSystemAppDelegate::LaunchAndNavigateSystemWebApp(
+BrowserDelegate* UnittestingSystemAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
     web_app::WebAppProvider* provider,
     const GURL& url,
@@ -271,7 +272,7 @@ void UnittestingSystemAppDelegate::SetTimerInfo(
   timer_info_ = timer_info;
 }
 void UnittestingSystemAppDelegate::SetDefaultBounds(
-    base::RepeatingCallback<gfx::Rect(Browser*)> lambda) {
+    base::RepeatingCallback<gfx::Rect(BrowserDelegate*)> lambda) {
   get_default_bounds_ = std::move(lambda);
 }
 void UnittestingSystemAppDelegate::SetLaunchAndNavigateSystemWebApp(
@@ -660,8 +661,8 @@ TestSystemWebAppInstallation::SetUpAppWithDefaultBounds(
           SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
-  delegate->SetDefaultBounds(
-      base::BindLambdaForTesting([&](Browser*) { return default_bounds; }));
+  delegate->SetDefaultBounds(base::BindLambdaForTesting(
+      [&](BrowserDelegate*) { return default_bounds; }));
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));
@@ -730,9 +731,11 @@ TestSystemWebAppInstallation::SetUpAppThatAbortsLaunch() {
           SystemWebAppType::OS_FEEDBACK, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
-  delegate->SetLaunchAndNavigateSystemWebApp(base::BindRepeating(
-      [](Profile*, web_app::WebAppProvider*, const GURL&,
-         const apps::AppLaunchParams&) -> Browser* { return nullptr; }));
+  delegate->SetLaunchAndNavigateSystemWebApp(
+      base::BindRepeating([](Profile*, web_app::WebAppProvider*, const GURL&,
+                             const apps::AppLaunchParams&) -> BrowserDelegate* {
+        return nullptr;
+      }));
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));

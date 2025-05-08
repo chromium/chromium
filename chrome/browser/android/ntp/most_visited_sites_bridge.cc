@@ -241,6 +241,12 @@ jboolean MostVisitedSitesBridge::HasCustomLink(JNIEnv* env,
   return most_visited_->HasCustomLink(key_url);
 }
 
+jboolean MostVisitedSitesBridge::ReorderCustomLink(JNIEnv* env,
+                                                   const GURL& key_url,
+                                                   jint new_pos) {
+  return most_visited_->ReorderCustomLink(key_url, new_pos);
+}
+
 void MostVisitedSitesBridge::AddOrRemoveBlockedUrl(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,

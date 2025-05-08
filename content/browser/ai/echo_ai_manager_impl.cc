@@ -99,11 +99,18 @@ void EchoAIManagerImpl::CreateLanguageModel(
   mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> client_remote(
       std::move(client));
 
-  if (options->system_prompt.has_value() &&
-      options->system_prompt->size() > kMaxContextSizeInTokens) {
-    client_remote->OnError(
-        blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
-    return;
+  size_t initial_size = 0;
+  for (const auto& initial_prompt : options->initial_prompts) {
+    if (initial_prompt->content->is_text()) {
+      initial_size += initial_prompt->content->get_text().size();
+    } else {
+      initial_size += 100;  // TODO(crbug.com/415304330): Improve estimate.
+    }
+    if (initial_size > kMaxContextSizeInTokens) {
+      client_remote->OnError(
+          blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+      return;
+    }
   }
 
   base::flat_set<blink::mojom::AILanguageModelPromptType> enabled_input_types;

@@ -4,6 +4,8 @@
 
 #include "components/autofill/content/browser/content_identity_credential_delegate.h"
 
+#include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -17,19 +19,31 @@ namespace autofill {
 
 ContentIdentityCredentialDelegate::ContentIdentityCredentialDelegate(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : ContentIdentityCredentialDelegate(base::BindRepeating(
+          [](content::WebContents* web_contents)
+              -> content::FederatedAuthAutofillSource* {
+            return content::FederatedAuthAutofillSource::FromPage(
+                web_contents->GetPrimaryPage());
+          },
+          web_contents)) {}
+
+ContentIdentityCredentialDelegate::ContentIdentityCredentialDelegate(
+    base::RepeatingCallback<content::FederatedAuthAutofillSource*()> source)
+    : source_(std::move(source)) {}
+
+ContentIdentityCredentialDelegate::~ContentIdentityCredentialDelegate() =
+    default;
 
 std::vector<Suggestion>
 ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
     const FieldType& field_type) const {
-  if (field_type != FieldType::EMAIL_ADDRESS) {
+  if (!(field_type == PASSWORD || field_type == EMAIL_ADDRESS ||
+        field_type == NAME_FULL || field_type == PHONE_HOME_WHOLE_NUMBER)) {
     return {};
   }
   // TODO(crbug.com/380367784): reproduce and add a test to make sure this
   // works properly when FedCM is called from inner frames.
-  content::FederatedAuthAutofillSource* source =
-      content::FederatedAuthAutofillSource::FromPage(
-          web_contents_->GetPrimaryPage());
+  content::FederatedAuthAutofillSource* source = source_.Run();
 
   if (!source) {
     return {};
@@ -44,19 +58,55 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
 
   std::vector<Suggestion> suggestions;
   for (IdentityRequestAccountPtr account : *accounts) {
-    Suggestion suggestion(base::UTF8ToUTF16(account->email),
-                          SuggestionType::kIdentityCredential);
-
-    suggestion.icon = Suggestion::Icon::kEmail;
-    suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_IDENTITY_CREDENTIAL_MINOR_TEXT,
-        base::UTF8ToUTF16(account->identity_provider->idp_for_display)));
-    suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL))});
+    Suggestion suggestion(SuggestionType::kIdentityCredential);
     auto payload = Suggestion::IdentityCredentialPayload(
         account->identity_provider->idp_metadata.config_url, account->id);
-    // TODO(crbug.com/380367784): add more field types.
-    payload.fields[HtmlFieldType::kEmail] = base::UTF8ToUTF16(account->email);
+
+    if (!account->email.empty() &&
+        base::Contains(account->identity_provider->disclosure_fields,
+                       content::IdentityRequestDialogDisclosureField::kEmail)) {
+      payload.fields[EMAIL_ADDRESS] = base::UTF8ToUTF16(account->email);
+    }
+
+    if (!account->name.empty() &&
+        base::Contains(account->identity_provider->disclosure_fields,
+                       content::IdentityRequestDialogDisclosureField::kName)) {
+      payload.fields[NAME_FULL] = base::UTF8ToUTF16(account->name);
+    }
+
+    if (!account->phone.empty() &&
+        base::Contains(
+            account->identity_provider->disclosure_fields,
+            content::IdentityRequestDialogDisclosureField::kPhoneNumber)) {
+      payload.fields[PHONE_HOME_WHOLE_NUMBER] =
+          base::UTF8ToUTF16(account->phone);
+    }
+
+    if (field_type == EMAIL_ADDRESS || field_type == NAME_FULL ||
+        field_type == PHONE_HOME_WHOLE_NUMBER) {
+      if (!payload.fields.contains(field_type)) {
+        continue;
+      }
+
+      suggestion.main_text = Suggestion::Text(payload.fields[field_type]);
+      // TODO(crbug.com/380367784): revisit the iconography of the suggestion
+      // if the field goes beyond email.
+      suggestion.icon = Suggestion::Icon::kEmail;
+      suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_IDENTITY_CREDENTIAL_MINOR_TEXT,
+          base::UTF8ToUTF16(account->identity_provider->idp_for_display)));
+      suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL))});
+    } else if (field_type == PASSWORD) {
+      suggestion.main_text =
+          Suggestion::Text(base::UTF8ToUTF16(account->email));
+      suggestion.custom_icon = account->decoded_picture;
+      // TODO(crbug.com/410421491): support more context.
+      suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
+          base::UTF8ToUTF16(account->identity_provider->idp_for_display)))});
+    }
+
     suggestion.payload = payload;
     suggestions.push_back(std::move(suggestion));
   }
@@ -66,10 +116,9 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
 
 void ContentIdentityCredentialDelegate::NotifySuggestionAccepted(
     const Suggestion& suggestion,
+    bool show_modal,
     OnFederatedTokenReceivedCallback callback) const {
-  content::FederatedAuthAutofillSource* source =
-      content::FederatedAuthAutofillSource::FromPage(
-          web_contents_->GetPrimaryPage());
+  content::FederatedAuthAutofillSource* source = source_.Run();
 
   if (!source) {
     return;
@@ -78,9 +127,8 @@ void ContentIdentityCredentialDelegate::NotifySuggestionAccepted(
   Suggestion::IdentityCredentialPayload payload =
       suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
 
-  // TODO(crbug.com/410533051): Pass the callback to the source.
-  source->NotifyAutofillSuggestionAccepted(payload.config_url,
-                                           payload.account_id);
+  source->NotifyAutofillSuggestionAccepted(
+      payload.config_url, payload.account_id, show_modal, std::move(callback));
 }
 
 }  // namespace autofill

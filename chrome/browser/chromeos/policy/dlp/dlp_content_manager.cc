@@ -291,11 +291,6 @@ bool DlpContentManager::ScreenShareInfo::operator==(
   return label_ == other.label_ && media_id_ == other.media_id_;
 }
 
-bool DlpContentManager::ScreenShareInfo::operator!=(
-    const DlpContentManager::ScreenShareInfo& other) const {
-  return !(*this == other);
-}
-
 const content::DesktopMediaID& DlpContentManager::ScreenShareInfo::media_id()
     const {
   return media_id_;

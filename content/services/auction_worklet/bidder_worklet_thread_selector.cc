@@ -16,13 +16,13 @@ namespace auction_worklet {
 
 BidderWorkletThreadSelector::BidderWorkletThreadSelector(size_t num_threads)
     : num_threads_(num_threads),
-      join_origin_hash_salt_(base::NumberToString(base::RandUint64())),
+      group_by_origin_key_hash_salt_(base::RandUint64()),
       tasks_sent_to_each_thread_(num_threads, 0) {}
 
 BidderWorkletThreadSelector::~BidderWorkletThreadSelector() = default;
 
 size_t BidderWorkletThreadSelector::GetThread(
-    std::optional<url::Origin> joining_origin) {
+    std::optional<uint64_t> group_by_origin_key) {
   if (num_threads_ == 1) {
     // Don't bother storing any information in this class
     // if we only have 1 thread.
@@ -30,7 +30,7 @@ size_t BidderWorkletThreadSelector::GetThread(
   }
   if (!base::FeatureList::IsEnabled(
           features::kFledgeBidderUseBalancingThreadSelector)) {
-    return GetThreadWithLegacyLogic(joining_origin);
+    return GetThreadWithLegacyLogic(group_by_origin_key);
   }
   // Default to the least used thread.
   auto least_used_thread_it = std::min_element(
@@ -38,20 +38,20 @@ size_t BidderWorkletThreadSelector::GetThread(
   size_t chosen_thread =
       std::distance(tasks_sent_to_each_thread_.begin(), least_used_thread_it);
 
-  // If it exists, choose a thread that has already seen this `joining_origin`
-  // unless it would cause a large imbalance.
-  if (joining_origin) {
-    auto it = joining_origin_to_thread_.find(joining_origin.value());
-    if (it != joining_origin_to_thread_.end() &&
+  // If it exists, choose a thread that has already seen this
+  // `group_by_origin_key` unless it would cause a large imbalance.
+  if (group_by_origin_key) {
+    auto it = group_by_origin_key_to_thread_.find(group_by_origin_key.value());
+    if (it != group_by_origin_key_to_thread_.end() &&
         (tasks_sent_to_each_thread_[it->second] <
          *least_used_thread_it +
              features::kFledgeBidderThreadSelectorMaxImbalance.Get())) {
       chosen_thread = it->second;
+    } else {
+      // Purposely overwrite any previously chosen thread because each thread
+      // uses a LRU cache of contexts and the new thread has a shorter queue.
+      group_by_origin_key_to_thread_[*group_by_origin_key] = chosen_thread;
     }
-
-    // Purposely overwrite any previously chosen thread because each thread uses
-    // a LRU cache of contexts and the new thread has a shorter queue.
-    joining_origin_to_thread_[joining_origin.value()] = chosen_thread;
   }
   CHECK_LT(chosen_thread, num_threads_);
 
@@ -65,14 +65,14 @@ void BidderWorkletThreadSelector::TaskCompletedOnThread(size_t thread) {
 }
 
 size_t BidderWorkletThreadSelector::GetThreadWithLegacyLogic(
-    const std::optional<url::Origin>& joining_origin) {
+    std::optional<uint64_t> group_by_origin_key) {
   // In 'group-by-origin' mode, make the thread assignment sticky to
-  // join_origin. This favors context reuse to save memory. The per-worklet
-  // random salt is added to make sure certain origins won't always be grouped
-  // together.
-  if (joining_origin) {
+  // group_by_origin_key. This favors context reuse to save memory. The
+  // inclusion of the random auction ID in the hash concidentally makes sure
+  // certain origins won't always be grouped together.
+  if (group_by_origin_key) {
     size_t join_origin_hash =
-        base::FastHash(join_origin_hash_salt_ + joining_origin->Serialize());
+        base::HashCombine(group_by_origin_key_hash_salt_, group_by_origin_key);
     return join_origin_hash % num_threads_;
   }
   return GetNextThread();

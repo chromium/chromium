@@ -21,6 +21,7 @@
 #include "content/services/auction_worklet/bidder_worklet.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/seller_worklet.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -286,8 +287,8 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
         pending_url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
-    const GURL& script_source_url,
-    const std::optional<GURL>& wasm_helper_url,
+    mojom::InProgressAuctionDownloadPtr script_source_load,
+    mojom::InProgressAuctionDownloadPtr wasm_helper_load,
     const std::optional<GURL>& trusted_bidding_signals_url,
     const std::string& trusted_bidding_signals_slot_size_param,
     const url::Origin& top_window_origin,
@@ -311,10 +312,10 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
       std::move(v8_helpers), std::move(shared_storage_hosts),
       pause_for_debugger_on_start, std::move(pending_url_loader_factory),
       std::move(auction_network_events_handler), GetTrustedSignalsKVv2Manager(),
-      script_source_url, wasm_helper_url, trusted_bidding_signals_url,
-      trusted_bidding_signals_slot_size_param, top_window_origin,
-      std::move(permissions_policy_state), experiment_group_id,
-      std::move(public_key));
+      std::move(script_source_load), std::move(wasm_helper_load),
+      trusted_bidding_signals_url, trusted_bidding_signals_slot_size_param,
+      top_window_origin, std::move(permissions_policy_state),
+      experiment_group_id, std::move(public_key));
   auto* bidder_worklet_ptr = bidder_worklet.get();
 
   mojo::ReceiverId receiver_id = bidder_worklets_.Add(
@@ -334,7 +335,7 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
         pending_url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
-    const GURL& decision_logic_url,
+    mojom::InProgressAuctionDownloadPtr decision_logic_load,
     const std::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
@@ -355,9 +356,10 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
       std::move(v8_helpers), std::move(shared_storage_hosts),
       pause_for_debugger_on_start, std::move(pending_url_loader_factory),
       std::move(auction_network_events_handler), GetTrustedSignalsKVv2Manager(),
-      decision_logic_url, trusted_scoring_signals_url, top_window_origin,
-      std::move(permissions_policy_state), experiment_group_id,
-      send_creative_scanning_metadata, std::move(public_key),
+      std::move(decision_logic_load), trusted_scoring_signals_url,
+      top_window_origin, std::move(permissions_policy_state),
+      experiment_group_id, send_creative_scanning_metadata,
+      std::move(public_key),
       base::BindRepeating(
           &AuctionWorkletServiceImpl::GetNextSellerWorkletThreadIndex,
           base::Unretained(this)),

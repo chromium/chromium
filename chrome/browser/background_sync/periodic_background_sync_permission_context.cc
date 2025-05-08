@@ -130,7 +130,7 @@ PeriodicBackgroundSyncPermissionContext::GetPermissionStatusInternal(
 }
 
 void PeriodicBackgroundSyncPermissionContext::DecidePermission(
-    permissions::PermissionRequestData request_data,
+    std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
   // The user should never be prompted to authorize Periodic Background Sync
   // from PeriodicBackgroundSyncPermissionContext.
@@ -138,9 +138,7 @@ void PeriodicBackgroundSyncPermissionContext::DecidePermission(
 }
 
 void PeriodicBackgroundSyncPermissionContext::NotifyPermissionSet(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -150,8 +148,8 @@ void PeriodicBackgroundSyncPermissionContext::NotifyPermissionSet(
   DCHECK(is_final_decision);
 
   permissions::PermissionContextBase::NotifyPermissionSet(
-      id, requesting_origin, embedding_origin, std::move(callback), persist,
-      content_setting, is_one_time, is_final_decision);
+      request_data, std::move(callback), persist, content_setting, is_one_time,
+      is_final_decision);
 }
 
 void PeriodicBackgroundSyncPermissionContext::OnContentSettingChanged(

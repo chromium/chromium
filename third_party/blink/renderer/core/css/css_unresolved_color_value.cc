@@ -27,8 +27,8 @@ static void AppendChannel(const CSSPrimitiveValue* value,
                           Color::ColorSpace color_space,
                           StringBuilder& result) {
   if (value) {
-    if (value->IsNumericLiteralValue()) {
-      double val = value->GetDoubleValue();
+    if (const auto* literal = DynamicTo<CSSNumericLiteralValue>(value)) {
+      double val = literal->GetDoubleValue();
       if (value->IsPercentage()) {
         val /= 100.0;
       }
@@ -83,8 +83,9 @@ WTF::String CSSUnresolvedColorValue::CustomCSSText() const {
     // known to be 1.0 or above. (Note: alpha_->IsOne() would return false for
     // e.g. 1.5.).
     std::optional<double> alpha;
-    if (alpha_->IsNumericLiteralValue()) {
-      alpha = alpha_->GetDoubleValue();
+    if (const auto* literal_alpha =
+            DynamicTo<CSSNumericLiteralValue>(*alpha_)) {
+      alpha = literal_alpha->GetDoubleValue();
     } else {
       // See corresponding code in AppendChannel().
       const CSSMathFunctionValue* calc =

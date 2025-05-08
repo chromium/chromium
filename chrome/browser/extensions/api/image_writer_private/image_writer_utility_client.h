@@ -41,11 +41,11 @@ class ImageWriterUtilityClient
   static void SetFactoryForTesting(ImageWriterUtilityClientFactory* factory);
 
   // Starts the write operation.
-  // |progress_callback|: Called periodically with the count of bytes processed.
-  // |success_callback|: Called at successful completion.
-  // |error_callback|: Called with an error message on failure.
-  // |source|: The path to the source file to read data from.
-  // |target|: The path to the target device to write the image file to.
+  // `progress_callback`: Called periodically with the count of bytes processed.
+  // `success_callback`: Called at successful completion.
+  // `error_callback`: Called with an error message on failure.
+  // `source`: The path to the source file to read data from.
+  // `target`: The path to the target device to write the image file to.
   virtual void Write(ProgressCallback progress_callback,
                      SuccessCallback success_callback,
                      ErrorCallback error_callback,
@@ -53,11 +53,11 @@ class ImageWriterUtilityClient
                      const base::FilePath& target);
 
   // Starts a verify operation.
-  // |progress_callback|: Called periodically with the count of bytes processed.
-  // |success_callback|: Called at successful completion.
-  // |error_callback|: Called with an error message on failure.
-  // |source|: The path to the source file to read data from.
-  // |target|: The path to the target device file to verify.
+  // `progress_callback`: Called periodically with the count of bytes processed.
+  // `success_callback`: Called at successful completion.
+  // `error_callback`: Called with an error message on failure.
+  // `source`: The path to the source file to read data from.
+  // `target`: The path to the target device file to verify.
   virtual void Verify(ProgressCallback progress_callback,
                       SuccessCallback success_callback,
                       ErrorCallback error_callback,
@@ -65,7 +65,7 @@ class ImageWriterUtilityClient
                       const base::FilePath& target);
 
   // Cancels any pending write or verify operation.
-  // |cancel_callback|: Called when the cancel has actually occurred.
+  // `cancel_callback`: Called when the cancel has actually occurred.
   // TODO(crbug.com/40511721): Consider removing this API.
   virtual void Cancel(CancelCallback cancel_callback);
 

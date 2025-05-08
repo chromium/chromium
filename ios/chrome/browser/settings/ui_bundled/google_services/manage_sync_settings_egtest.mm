@@ -10,7 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -610,7 +610,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Open the account settings.
   [ChromeEarlGreyUI openSettingsMenu];
@@ -739,7 +739,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity
+              waitForSyncTransportActive:NO];
 
   // Disable the policy dynamically.
   policy_test_utils::ClearPolicies();
@@ -752,7 +753,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kSyncPasswordsIdentifier,
                                           /*is_toggled_on=*/NO,
-                                          /*enabled=*/YES)]
+                                          /*is_enabled=*/YES)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -1778,11 +1779,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Test signing out from the account menu.
 - (void)testSignOutFromAccountFromAccountMenu {
-  // TODO(crbug.com/404180896): Test fails on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
-  }
-
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;

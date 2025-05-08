@@ -51,8 +51,7 @@ class POLICY_EXPORT DMAuth {
   DMAuth(DMAuth&& other);
   DMAuth& operator=(DMAuth&& other);
 
-  bool operator==(const DMAuth& other) const;
-  bool operator!=(const DMAuth& other) const;
+  friend bool operator==(const DMAuth&, const DMAuth&) = default;
 
   // Creates a copy of DMAuth.
   DMAuth Clone() const;

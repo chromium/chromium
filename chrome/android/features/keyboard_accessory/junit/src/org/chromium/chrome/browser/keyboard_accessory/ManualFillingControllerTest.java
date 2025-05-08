@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
@@ -136,6 +137,7 @@ public class ManualFillingControllerTest {
     @Mock private InsetObserver mInsetObserver;
     @Mock private BackPressManager mMockBackPressManager;
     @Mock private EdgeToEdgeController mMockEdgeToEdgeController;
+    @Mock private MultiWindowModeStateDispatcher mMockMultiWindowModeStateDispatcher;
 
     private final ManualFillingCoordinator mController = new ManualFillingCoordinator();
     private final ManualFillingMediator mMediator = mController.getMediatorForTesting();
@@ -325,7 +327,7 @@ public class ManualFillingControllerTest {
         when(mMockActivity.getTabModelSelector()).thenReturn(mMockTabModelSelector);
         when(mMockActivity.getActivityTabProvider()).thenReturn(mActivityTabProvider);
         BrowserControlsManager browserControlsManager =
-                new BrowserControlsManager(mMockActivity, 0);
+                new BrowserControlsManager(mMockActivity, 0, mMockMultiWindowModeStateDispatcher);
         when(mMockActivity.getBrowserControlsManager()).thenReturn(browserControlsManager);
         when(mMockActivity.getFullscreenManager()).thenReturn(mMockFullscreenManager);
         doNothing().when(mMockFullscreenManager).addObserver(mFullscreenObserverCaptor.capture());

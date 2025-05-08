@@ -29,7 +29,8 @@
 #import "ios/web/public/web_state.h"
 
 SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
-    : browser_(browser),
+    : BrowserUserData(browser),
+      browser_(browser),
       model_(
           SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
               ->GetSendTabToSelfModel()) {

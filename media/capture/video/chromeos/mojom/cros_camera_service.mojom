@@ -15,8 +15,9 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // CameraClientType indicates the type of a CameraHalClient.
 // It should be kept in sync with the ChromeOSCameraClientType enum in
-// tools/metrics/histograms/enums.xml in chromium.
+// tools/metrics/histograms/metadata/chromeos/enums.xml in chromium.
 [Extensible]
+// LINT.IfChange(CameraClientType)
 enum CameraClientType {
   UNKNOWN = 0,
   TESTING = 1,
@@ -24,8 +25,9 @@ enum CameraClientType {
   ANDROID = 3,
   PLUGINVM = 4,
   ASH_CHROME = 5,
-  LACROS_CHROME = 6,
+  // LACROS_CHROME = 6,  // this value is deprecated, as Lacros was sunsetted
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/chromeos/enums.xml:ChromeOSCameraClientType)
 
 // CameraPrivacySwitchState indicates the state of the camera privacy switch.
 // This can represent both software and hardware privacy switch statuses.

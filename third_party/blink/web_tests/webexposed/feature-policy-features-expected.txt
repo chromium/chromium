@@ -57,6 +57,7 @@ join-ad-interest-group
 keyboard-map
 language-detector
 local-fonts
+local-network-access
 magnetometer
 media-playback-while-not-visible
 microphone
@@ -70,6 +71,7 @@ private-state-token-issuance
 private-state-token-redemption
 publickey-credentials-create
 publickey-credentials-get
+record-ad-auction-events
 rewriter
 run-ad-auction
 screen-wake-lock

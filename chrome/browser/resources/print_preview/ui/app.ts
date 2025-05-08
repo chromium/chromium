@@ -69,7 +69,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       controlsManaged_: {
         type: Boolean,
         computed: 'computeControlsManaged_(destinationsManaged_, ' +
-            'settingsManaged_, maxSheets_)',
+            'settingsManaged_)',
       },
 
       destination_: Object,
@@ -111,8 +111,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         type: Object,
         value: null,
       },
-
-      maxSheets_: Number,
     };
   }
 
@@ -129,7 +127,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   declare private printableArea_: PrintableArea;
   declare private settingsManaged_: boolean;
   declare private measurementSystem_: MeasurementSystem|null;
-  declare private maxSheets_: number;
 
   private nativeLayer_: NativeLayer|null = null;
   private tracker_: EventTracker = new EventTracker();
@@ -316,9 +313,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
    *     are managed.
    */
   private computeControlsManaged_(): boolean {
-    // If |this.maxSheets_| equals to 0, no sheets limit policy is present.
-    return this.destinationsManaged_ || this.settingsManaged_ ||
-        this.maxSheets_ > 0;
+    return this.destinationsManaged_ || this.settingsManaged_;
   }
 
   private onDestinationStateChange_() {
@@ -540,6 +535,14 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
   private close_() {
     this.$.state.transitTo(State.CLOSING);
+  }
+
+  private onDestinationChanged_(e: CustomEvent<{value: Destination}>) {
+    this.destination_ = e.detail.value;
+  }
+
+  private onDestinationCapabilitiesChanged_() {
+    this.$.model.updateSettingsFromDestination();
   }
 }
 

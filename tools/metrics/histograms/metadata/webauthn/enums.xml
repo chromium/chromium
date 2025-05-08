@@ -289,6 +289,21 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Other Failure"/>
 </enum>
 
+<!-- LINT.IfChange(WebAuthenticationIOSContentAreaEvent) -->
+
+<enum name="WebAuthenticationIOSContentAreaEvent">
+  <int value="0" label="GetRequested">
+    Page requested a WebAuthn credential using the navigator.credentials.get
+    API.
+  </int>
+  <int value="1" label="CreateRequested">
+    Page requested a new WebAuthn credential using the
+    navigator.credentials.create API.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/webauthn/ios/passkey_java_script_feature.mm) -->
+
 <enum name="WebAuthenticationMacOSPasskeysPermission">
   <int value="0" label="Requested permission during a create() call"/>
   <int value="1" label="Permission approved during a create() call"/>

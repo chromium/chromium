@@ -1782,13 +1782,15 @@ void View::AddAccelerator(const ui::Accelerator& accelerator) {
 }
 
 void View::RemoveAccelerator(const ui::Accelerator& accelerator) {
-  CHECK(accelerators_) << "Removing non-existent accelerator";
+  CHECK(accelerators_) << "Removing non-existent accelerator "
+                       << accelerator.GetShortcutText();
 
-  auto i(std::ranges::find(*accelerators_, accelerator));
-  CHECK(i != accelerators_->end()) << "Removing non-existent accelerator";
+  const auto found_iter = std::ranges::find(*accelerators_, accelerator);
+  CHECK(found_iter != accelerators_->end())
+      << "Removing non-existent accelerator " << accelerator.GetShortcutText();
 
-  auto index = static_cast<size_t>(i - accelerators_->begin());
-  accelerators_->erase(i);
+  const auto index = static_cast<size_t>(found_iter - accelerators_->begin());
+  accelerators_->erase(found_iter);
   if (index >= registered_accelerator_count_) {
     // The accelerator is not registered to FocusManager.
     return;

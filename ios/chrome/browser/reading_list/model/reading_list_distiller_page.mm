@@ -75,6 +75,10 @@ ReadingListDistillerPage::ReadingListDistillerPage(
 
 ReadingListDistillerPage::~ReadingListDistillerPage() {}
 
+bool ReadingListDistillerPage::ShouldFetchOfflineData() {
+  return true;
+}
+
 void ReadingListDistillerPage::DistillPageImpl(const GURL& url,
                                                const std::string& script) {
   std::unique_ptr<web::WebState> old_web_state = DetachWebState();

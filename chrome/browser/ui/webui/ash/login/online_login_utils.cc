@@ -13,7 +13,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/ash/login/signin_ui.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
@@ -72,10 +71,6 @@ OnlineSigninArtifacts::OnlineSigninArtifacts(OnlineSigninArtifacts&& original)
       sync_trusted_vault_keys(std::move(original.sync_trusted_vault_keys)),
       challenge_response_key(std::move(original.challenge_response_key)),
       cookies(original.cookies) {}
-
-bool ExtractSamlPasswordAttributesEnabled() {
-  return base::FeatureList::IsEnabled(::features::kInSessionPasswordChange);
-}
 
 base::OnceClosure GetStartSigninSession(::content::WebUI* web_ui,
                                         LoadGaiaWithPartition callback) {
@@ -199,9 +194,7 @@ std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
                                 : UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML);
   if (using_saml) {
     user_context->SetIsUsingSamlPrincipalsApi(using_saml_api);
-    if (ExtractSamlPasswordAttributesEnabled()) {
-      user_context->SetSamlPasswordAttributes(password_attributes);
-    }
+    user_context->SetSamlPasswordAttributes(password_attributes);
   }
 
   if (sync_trusted_vault_keys.has_value()) {

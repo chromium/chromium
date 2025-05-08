@@ -331,7 +331,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   // --- Section 1: Common tab helpers ---
-  if (page_info::IsAboutThisSiteAsyncFetchingEnabled()) {
+  if (page_info::IsAboutThisSiteFeatureEnabled()) {
     if (auto* optimization_guide_decider =
             OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
       AboutThisSiteTabHelper::CreateForWebContents(web_contents,

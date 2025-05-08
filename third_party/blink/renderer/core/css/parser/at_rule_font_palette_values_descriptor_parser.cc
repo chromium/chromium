@@ -28,7 +28,15 @@ CSSValue* ConsumeBasePalette(CSSParserTokenStream& stream,
     return ident;
   }
 
-  return css_parsing_utils::ConsumeInteger(stream, context, 0);
+  CSSPrimitiveValue* palette_index =
+      css_parsing_utils::ConsumeInteger(stream, context, 0);
+  if (palette_index && palette_index->GetValueIfKnown().has_value()) {
+    // Only calc() expressions that can be fully simplified at parse time are
+    // valid. If not, the rely on an element context, and @font-palette-values
+    // descriptors are not in an element context.
+    return palette_index;
+  }
+  return nullptr;
 }
 
 CSSValue* ConsumeColorOverride(CSSParserTokenStream& stream,

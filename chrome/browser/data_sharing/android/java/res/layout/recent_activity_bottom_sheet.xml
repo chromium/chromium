@@ -14,14 +14,33 @@ found in the LICENSE file.
 
     <include layout="@layout/bottom_sheet_handlebar"/>
 
-    <TextView
-        android:id="@+id/title"
-        android:textAppearance="@style/TextAppearance.Headline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/recent_activity_title_top_margin"
-        android:layout_marginStart="@dimen/list_item_default_margin"
-        android:text="@string/data_sharing_recent_activity_bottom_sheet_title"/>
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginTop="@dimen/recent_activity_title_top_margin"
+    android:paddingStart="@dimen/list_item_default_margin">
+
+        <TextView
+            android:id="@+id/title"
+            android:textAppearance="@style/TextAppearance.Headline2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/data_sharing_recent_activity_bottom_sheet_title"/>
+
+        <org.chromium.ui.listmenu.ListMenuButton
+            android:id="@+id/recent_activity_menu_button"
+            android:layout_width="@dimen/min_touch_target_size"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:paddingEnd="@dimen/list_item_default_margin"
+            android:background="@null"
+            android:src="@drawable/ic_more_vert_24dp"
+            android:contentDescription="@string/collaboration_recent_activity_menu_option"
+            app:tint="@color/default_icon_color_tint_list" />
+
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -37,6 +56,7 @@ found in the LICENSE file.
             android:gravity="center"
             android:text="@string/data_sharing_recent_activity_empty"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:textIsSelectable="true"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView

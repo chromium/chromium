@@ -4,9 +4,8 @@
 
 import type {PrintPreviewDuplexSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {DuplexMode} from 'chrome://print/print_preview.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
 
@@ -24,49 +23,50 @@ suite('DuplexSettingsTest', function() {
     model.set('settings.duplexShortEdge.available', true);
 
     duplexSection = document.createElement('print-preview-duplex-settings');
-    duplexSection.settings = model.settings;
     duplexSection.disabled = false;
-    fakeDataBind(model, duplexSection, 'settings');
     document.body.appendChild(duplexSection);
-    flush();
   });
 
   // Tests that making short edge unavailable prevents the collapse from
   // showing.
-  test('short edge unavailable', function() {
-    const collapse = duplexSection.shadowRoot!.querySelector('cr-collapse')!;
+  test('short edge unavailable', async function() {
+    const collapse = duplexSection.shadowRoot.querySelector('cr-collapse')!;
     duplexSection.setSetting('duplex', true);
+    await microtasksFinished();
     assertTrue(collapse.opened);
 
-    [false, true].forEach(value => {
+    for (const value of [false, true]) {
       model.set('settings.duplexShortEdge.available', value);
+      await microtasksFinished();
       assertEquals(value, collapse.opened);
-    });
+    }
   });
 
   // Tests that setting the setting updates the UI.
-  test('set setting', () => {
-    const checkbox = duplexSection.shadowRoot!.querySelector('cr-checkbox')!;
-    const collapse = duplexSection.shadowRoot!.querySelector('cr-collapse')!;
+  test('set setting', async () => {
+    const checkbox = duplexSection.shadowRoot.querySelector('cr-checkbox')!;
+    const collapse = duplexSection.shadowRoot.querySelector('cr-collapse')!;
     assertFalse(checkbox.checked);
     assertFalse(collapse.opened);
 
     duplexSection.setSetting('duplex', true);
+    await microtasksFinished();
     assertTrue(checkbox.checked);
     assertTrue(collapse.opened);
 
-    const select = duplexSection.shadowRoot!.querySelector('select')!;
+    const select = duplexSection.shadowRoot.querySelector('select')!;
     assertEquals(DuplexMode.LONG_EDGE.toString(), select.value);
 
     duplexSection.setSetting('duplexShortEdge', true);
+    await microtasksFinished();
     assertEquals(DuplexMode.SHORT_EDGE.toString(), select.value);
   });
 
   // Tests that checking the box or selecting a new option in the dropdown
   // updates the setting.
   test('select option', async () => {
-    const checkbox = duplexSection.shadowRoot!.querySelector('cr-checkbox')!;
-    const collapse = duplexSection.shadowRoot!.querySelector('cr-collapse')!;
+    const checkbox = duplexSection.shadowRoot.querySelector('cr-checkbox')!;
+    const collapse = duplexSection.shadowRoot.querySelector('cr-collapse')!;
     assertFalse(checkbox.checked);
     assertFalse(collapse.opened);
     assertFalse(duplexSection.getSettingValue('duplex') as boolean);
@@ -77,13 +77,14 @@ suite('DuplexSettingsTest', function() {
     checkbox.checked = true;
     checkbox.dispatchEvent(
         new CustomEvent('change', {bubbles: true, composed: true}));
+    await microtasksFinished();
     assertTrue(collapse.opened);
     assertTrue(duplexSection.getSettingValue('duplex') as boolean);
     assertFalse(duplexSection.getSettingValue('duplexShortEdge') as boolean);
     assertTrue(duplexSection.getSetting('duplex').setFromUi);
     assertFalse(duplexSection.getSetting('duplexShortEdge').setFromUi);
 
-    const select = duplexSection.shadowRoot!.querySelector('select')!;
+    const select = duplexSection.shadowRoot.querySelector('select')!;
     assertEquals(DuplexMode.LONG_EDGE.toString(), select.value);
     assertEquals(2, select.options.length);
 

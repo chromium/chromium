@@ -589,22 +589,21 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self._RunActualGpuTraceTest(test_path, params)
     elif isinstance(params, _CacheTraceTestArguments):
       # Create a new temporary directory for each cache test that is run.
-      cache_profile_dir = tempfile.TemporaryDirectory()
+      with tempfile.TemporaryDirectory() as cache_profile_dir:
+        # Run the first load page and get the number of expected cache hits.
+        load_params = params.GenerateFirstLoadTest()
+        results =\
+          self._RunActualGpuTraceTest(test_path,
+                                      load_params,
+                                      profile_dir=cache_profile_dir,
+                                      profile_type='exact')
 
-      # Run the first load page and get the number of expected cache hits.
-      load_params = params.GenerateFirstLoadTest()
-      results =\
-        self._RunActualGpuTraceTest(test_path,
-                                    load_params,
-                                    profile_dir=cache_profile_dir.name,
-                                    profile_type='exact')
-
-      # Generate and run the cache hit tests using the seeded cache dir.
-      for (hit_path, trace_params) in params.GenerateCacheHitTests(results):
-        self._RunActualGpuTraceTest(hit_path,
-                                    trace_params,
-                                    profile_dir=cache_profile_dir.name,
-                                    profile_type='clean')
+        # Generate and run the cache hit tests using the seeded cache dir.
+        for (hit_path, trace_params) in params.GenerateCacheHitTests(results):
+          self._RunActualGpuTraceTest(hit_path,
+                                      trace_params,
+                                      profile_dir=cache_profile_dir,
+                                      profile_type='clean')
 
   @classmethod
   def SetUpProcess(cls) -> None:

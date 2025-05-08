@@ -16,11 +16,12 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import com.google.android.material.shape.MaterialShapeDrawable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -29,6 +30,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
  *
  * Allows for setting of text inside the dot and animating the width when text changes.
  */
+@NullMarked
 public class SectionHeaderBadgeDrawable extends Drawable {
     private static final int ANIMATION_DURATION_MS = 400;
     private static final int ANIMATION_START_DELAY_MS = 1500;
@@ -40,8 +42,8 @@ public class SectionHeaderBadgeDrawable extends Drawable {
     private final float mTextSize;
 
     private String mText;
-    private ValueAnimator mAnimator;
-    private View mAnchor;
+    private @Nullable ValueAnimator mAnimator;
+    private @Nullable View mAnchor;
     private boolean mHasPendingAnimation;
 
     public SectionHeaderBadgeDrawable(Context context) {
@@ -72,7 +74,7 @@ public class SectionHeaderBadgeDrawable extends Drawable {
      *
      * @param text The text to show inside the dot.
      */
-    public void setText(String text) {
+    public void setText(@Nullable String text) {
         // Cast null to empty string first.
         final String finalText = (text == null) ? "" : text;
         // Do nothing if no change.
@@ -238,6 +240,7 @@ public class SectionHeaderBadgeDrawable extends Drawable {
     private void setUpAndRunAnimation() {
         mAnimator = ValueAnimator.ofInt(0, 100);
         Rect bounds = getBounds();
+        assert mAnchor != null;
         Rect toBounds = calculateBounds(mAnchor, "");
         mAnimator.addUpdateListener(
                 (ValueAnimator animation) -> {
@@ -275,7 +278,7 @@ public class SectionHeaderBadgeDrawable extends Drawable {
         return mHasPendingAnimation;
     }
 
-    ValueAnimator getAnimatorForTest() {
+    @Nullable ValueAnimator getAnimatorForTest() {
         return mAnimator;
     }
 }

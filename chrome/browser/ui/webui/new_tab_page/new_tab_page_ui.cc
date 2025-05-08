@@ -199,9 +199,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddInteger(
       "multipleLoadedModulesMaxModuleInstanceCount",
       ntp_features::GetMultipleLoadedModulesMaxModuleInstanceCount());
-  source->AddBoolean("mostRelevantTabResumptionEnabled",
-                     IsEnUSLocaleOnlyFeatureEnabled(
-                         ntp_features::kNtpMostRelevantTabResumptionModule));
   source->AddBoolean(
       "mostRelevantTabResumptionAllowFaviconServerFallback",
       base::FeatureList::IsEnabled(

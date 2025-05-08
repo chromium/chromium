@@ -9,18 +9,18 @@ import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.crash.PureJavaExceptionReporter;
 import org.chromium.ui.widget.Toast;
@@ -28,6 +28,7 @@ import org.chromium.ui.widget.Toast;
 import java.util.concurrent.TimeUnit;
 
 /** Controls the strategy to start branding, and the duration to show branding. */
+@NullMarked
 public class BrandingController {
     private static final String TAG = "CctBrand";
 
@@ -55,8 +56,9 @@ public class BrandingController {
     private final String mAppId;
     private final String mBrowserName;
     private final int mToastTemplateId;
-    @Nullable private final PureJavaExceptionReporter mExceptionReporter;
-    private ToolbarBrandingDelegate mToolbarBrandingDelegate;
+    private final @Nullable PureJavaExceptionReporter mExceptionReporter;
+    // Non-null once initialized by onToolbarInitialized.
+    private @MonotonicNonNull ToolbarBrandingDelegate mToolbarBrandingDelegate;
     private @Nullable Toast mToast;
     private long mToolbarInitializedTime;
     private boolean mIsDestroyed;
@@ -78,7 +80,7 @@ public class BrandingController {
             String appId,
             String browserName,
             @StringRes int toastTemplateId,
-            @NonNull Supplier<MismatchNotificationChecker> mismatchNotificationChecker,
+            Supplier<MismatchNotificationChecker> mismatchNotificationChecker,
             @Nullable PureJavaExceptionReporter exceptionReporter) {
         mContext = context;
         mAppId = appId;
@@ -105,7 +107,7 @@ public class BrandingController {
      *
      * @param delegate {@link ToolbarBrandingDelegate} instance from CCT Toolbar.
      */
-    public void onToolbarInitialized(@NonNull ToolbarBrandingDelegate delegate) {
+    public void onToolbarInitialized(ToolbarBrandingDelegate delegate) {
         if (mIsDestroyed) {
             reportErrorMessage("BrandingController should not be access after destroyed.");
             return;
@@ -136,7 +138,7 @@ public class BrandingController {
         BrandingInfo info = mBrandingInfo.get();
         if (mToolbarBrandingDelegate == null || info == null) return;
 
-        @BrandingDecision int brandingDecision = info.getDecision();
+        @BrandingDecision Integer brandingDecision = info.getDecision();
 
         // Mismatch notification checker is invoked when branding decision data is available
         // to respect the timing with which the decision is made. The decision making takes
@@ -154,6 +156,8 @@ public class BrandingController {
         long timeToolbarEmpty = SystemClock.elapsedRealtime() - mToolbarInitializedTime;
         long remainingBrandingTime = TOTAL_BRANDING_DELAY_MS - timeToolbarEmpty;
 
+        assert brandingDecision != null : "Unreachable state!";
+
         switch (brandingDecision) {
             case BrandingDecision.MIM:
             case BrandingDecision.NONE:
@@ -169,11 +173,12 @@ public class BrandingController {
             default:
                 assert false : "Unreachable state!";
         }
-        mBrandingInfo.get().setDecision(brandingDecision);
+        info.setDecision(brandingDecision);
         finish();
     }
 
     private void showToolbarBranding(long durationMs) {
+        if (mToolbarBrandingDelegate == null) return;
         mToolbarBrandingDelegate.showBrandingLocationBar();
 
         Runnable hideToolbarBranding =
@@ -229,7 +234,8 @@ public class BrandingController {
     }
 
     private void finish() {
-        if (getBrandingDecision() == BrandingDecision.MIM) {
+        var brandingDecision = getBrandingDecision();
+        if (brandingDecision != null && brandingDecision == BrandingDecision.MIM) {
             var storage = SharedPreferencesBrandingTimeStorage.getInstance();
             storage.putLastShowTimeGlobal(SystemClock.elapsedRealtime());
         }
@@ -238,11 +244,6 @@ public class BrandingController {
                 TaskTraits.BEST_EFFORT,
                 mCallbackController.makeCancelable(
                         () -> {
-                            int numberOfPackages =
-                                    SharedPreferencesBrandingTimeStorage.getInstance().getSize();
-                            RecordHistogram.recordCount100Histogram(
-                                    "CustomTabs.Branding.NumberOfClients", numberOfPackages);
-
                             // Release the in-memory share pref from the current session if branding
                             // checker didn't timeout.
                             if (!mBrandingChecker.isCancelled()) {
@@ -253,7 +254,7 @@ public class BrandingController {
 
     @VisibleForTesting
     @BrandingDecision
-    Integer getBrandingDecision() {
+    @Nullable Integer getBrandingDecision() {
         BrandingInfo info = mBrandingInfo.get();
         return info != null ? info.getDecision() : null;
     }

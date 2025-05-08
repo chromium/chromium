@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
@@ -53,6 +54,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/collaboration/public/messaging/message.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -946,6 +948,20 @@ bool Tab::HasThumbnail() const {
 // consistency.
 bool Tab::ShouldUpdateAccessibleName(TabRendererData& old_data,
                                      TabRendererData& new_data) {
+  bool has_old_message = old_data.collaboration_messaging &&
+                         old_data.collaboration_messaging->HasMessage();
+  bool has_new_message = new_data.collaboration_messaging &&
+                         new_data.collaboration_messaging->HasMessage();
+  bool collaboration_message_changed = has_old_message != has_new_message;
+  if (!collaboration_message_changed && has_old_message) {
+    // Old and new data have both have messages, so compare the contents.
+    collaboration_message_changed =
+        (old_data.collaboration_messaging->given_name() !=
+         new_data.collaboration_messaging->given_name()) ||
+        (old_data.collaboration_messaging->collaboration_event() !=
+         new_data.collaboration_messaging->collaboration_event());
+  }
+
   return ((old_data.network_state != new_data.network_state) ||
           old_data.crashed_status != new_data.crashed_status ||
           old_data.alert_state != new_data.alert_state ||
@@ -955,7 +971,7 @@ bool Tab::ShouldUpdateAccessibleName(TabRendererData& old_data,
               new_data.discarded_memory_savings_in_bytes ||
           old_data.tab_resource_usage != new_data.tab_resource_usage ||
           old_data.pinned != new_data.pinned ||
-          old_data.title != new_data.title);
+          old_data.title != new_data.title || collaboration_message_changed);
 }
 
 void Tab::SetData(TabRendererData data) {

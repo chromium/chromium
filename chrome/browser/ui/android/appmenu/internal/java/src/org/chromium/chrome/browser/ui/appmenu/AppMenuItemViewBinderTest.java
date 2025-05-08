@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -34,7 +35,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -220,18 +220,7 @@ public class AppMenuItemViewBinderTest {
                     mMenuList = new ModelListAdapter.ModelList();
                     mModelListAdapter = new ModelListAdapter(mMenuList);
 
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.STANDARD,
-                            new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
-                            AppMenuItemViewBinder::bindStandardItem);
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.TITLE_BUTTON,
-                            new LayoutViewBuilder(R.layout.title_button_menu_item),
-                            AppMenuItemViewBinder::bindTitleButtonItem);
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.BUTTON_ROW,
-                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                            AppMenuItemViewBinder::bindIconRowItem);
+                    AppMenuHandlerImpl.registerDefaultViewBinders(mModelListAdapter, true);
                 });
     }
 
@@ -247,7 +236,6 @@ public class AppMenuItemViewBinderTest {
     }
 
     private PropertyModel createTitleMenuItem(
-            int mainMenuId,
             int titleMenuId,
             String title,
             @Nullable Drawable menuIcon,
@@ -255,34 +243,28 @@ public class AppMenuItemViewBinderTest {
             String buttonTitle,
             boolean checkable,
             boolean checked) {
-        PropertyModel model =
-                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                        .with(AppMenuItemProperties.MENU_ITEM_ID, mainMenuId)
-                        .build();
-
-        ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
         PropertyModel titleModel =
                 new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
                         .with(AppMenuItemProperties.MENU_ITEM_ID, titleMenuId)
                         .with(AppMenuItemProperties.TITLE, title)
+                        .with(AppMenuItemProperties.ICON, menuIcon)
                         .build();
-        if (menuIcon != null) {
-            titleModel.set(AppMenuItemProperties.ICON, menuIcon);
-        }
+
         PropertyModel buttonModel =
-                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_ICON_KEYS)
                         .with(AppMenuItemProperties.MENU_ITEM_ID, buttonMenuId)
                         .with(AppMenuItemProperties.TITLE, buttonTitle)
                         .with(AppMenuItemProperties.CHECKABLE, checkable)
                         .with(AppMenuItemProperties.CHECKED, checked)
                         .build();
-        subList.add(new ModelListAdapter.ListItem(0, titleModel));
+
+        ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
         subList.add(new ModelListAdapter.ListItem(0, buttonModel));
 
-        model.set(AppMenuItemProperties.SUBMENU, subList);
-        mMenuList.add(new ModelListAdapter.ListItem(AppMenuItemType.TITLE_BUTTON, model));
+        titleModel.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
+        mMenuList.add(new ModelListAdapter.ListItem(AppMenuItemType.TITLE_BUTTON, titleModel));
 
-        return model;
+        return titleModel;
     }
 
     private PropertyModel createIconRowMenuItem(
@@ -319,7 +301,7 @@ public class AppMenuItemViewBinderTest {
             }
         }
 
-        model.set(AppMenuItemProperties.SUBMENU, subList);
+        model.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
         mMenuList.add(new ModelListAdapter.ListItem(menutype, model));
 
         return model;
@@ -422,8 +404,8 @@ public class AppMenuItemViewBinderTest {
     @UiThreadTest
     @MediumTest
     public void testConvertView_Reused_TitleMenuItem() {
-        createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, null, MENU_ID3, TITLE_3, true, true);
-        createTitleMenuItem(MENU_ID4, MENU_ID5, TITLE_5, null, MENU_ID6, TITLE_6, true, false);
+        createTitleMenuItem(MENU_ID2, TITLE_2, null, MENU_ID3, TITLE_3, true, true);
+        createTitleMenuItem(MENU_ID5, TITLE_5, null, MENU_ID6, TITLE_6, true, false);
 
         Assert.assertEquals(
                 "Wrong item view type",
@@ -432,13 +414,13 @@ public class AppMenuItemViewBinderTest {
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
-        TextViewWithCompoundDrawables titleView =
-                (TextViewWithCompoundDrawables) view1.findViewById(R.id.title);
+        TextView titleView = view1.findViewById(R.id.menu_item_text);
 
         Assert.assertEquals("Incorrect title text for item 1", TITLE_2, titleView.getText());
 
-        Assert.assertNull(
-                "Should not have icon for item 1", view1.findViewById(R.id.menu_item_icon));
+        ImageView iconView = view1.findViewById(R.id.menu_item_icon);
+        Assert.assertNotNull(iconView);
+        Assert.assertNotEquals(View.VISIBLE, iconView.getVisibility());
 
         View view2 = mModelListAdapter.getView(1, view1, parentView);
         Assert.assertEquals("Convert view should have been re-used", view1, view2);
@@ -454,8 +436,8 @@ public class AppMenuItemViewBinderTest {
                         mActivity,
                         org.chromium.chrome.browser.ui.appmenu.test.R.drawable
                                 .test_ic_vintage_filter);
-        createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, icon, MENU_ID3, TITLE_3, true, true);
-        createTitleMenuItem(MENU_ID4, MENU_ID5, TITLE_5, icon, MENU_ID6, TITLE_6, true, false);
+        createTitleMenuItem(MENU_ID2, TITLE_2, icon, MENU_ID3, TITLE_3, true, true);
+        createTitleMenuItem(MENU_ID5, TITLE_5, icon, MENU_ID6, TITLE_6, true, false);
 
         Assert.assertEquals(
                 "Wrong item view type",
@@ -464,9 +446,11 @@ public class AppMenuItemViewBinderTest {
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
-        TextViewWithCompoundDrawables titleView = view1.findViewById(R.id.title);
-        Drawable[] drawables = titleView.getCompoundDrawablesRelative();
-        Assert.assertNotNull("Should have icon for item 1", drawables[0]);
+        Assert.assertNotNull(
+                "Should have icon for item 1", view1.findViewById(R.id.menu_item_icon));
+
+        View view2 = mModelListAdapter.getView(1, view1, parentView);
+        Assert.assertEquals("Convert view should have been re-used", view1, view2);
     }
 
     @Test
@@ -635,7 +619,7 @@ public class AppMenuItemViewBinderTest {
     @MediumTest
     public void testConvertView_NotReused() {
         createStandardMenuItem(MENU_ID1, TITLE_1);
-        createTitleMenuItem(MENU_ID2, MENU_ID3, TITLE_3, null, MENU_ID4, TITLE_4, true, true);
+        createTitleMenuItem(MENU_ID3, TITLE_3, null, MENU_ID4, TITLE_4, true, true);
 
         Assert.assertEquals(
                 "Wrong item view type for item 1",
@@ -726,7 +710,7 @@ public class AppMenuItemViewBinderTest {
     @UiThreadTest
     @MediumTest
     public void testTitleMenuItem_Checkbox() {
-        createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, null, MENU_ID3, TITLE_3, true, true);
+        createTitleMenuItem(MENU_ID2, TITLE_2, null, MENU_ID3, TITLE_3, true, true);
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
@@ -739,7 +723,7 @@ public class AppMenuItemViewBinderTest {
     @UiThreadTest
     @MediumTest
     public void testTitleMenuItem_ToggleCheckbox() {
-        createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, null, MENU_ID3, TITLE_3, true, false);
+        createTitleMenuItem(MENU_ID2, TITLE_2, null, MENU_ID3, TITLE_3, true, false);
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);

@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
@@ -59,7 +60,7 @@ class ShortcutsProviderExtensionTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<ChromeAutocompleteProviderClient> client_;
+  std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<ShortcutsBackend> backend_;
   scoped_refptr<ShortcutsProvider> provider_;
 };
@@ -75,9 +76,11 @@ void ShortcutsProviderExtensionTest::SetUp() {
       base::BindRepeating(
           &ShortcutsBackendFactory::BuildProfileNoDatabaseForTesting));
 
-  client_ = std::make_unique<ChromeAutocompleteProviderClient>(profile_.get());
+  client_ = std::make_unique<FakeAutocompleteProviderClient>();
   backend_ = ShortcutsBackendFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(backend_.get());
+  client_->set_shortcuts_backend(backend_);
+  ASSERT_TRUE(client_->GetShortcutsBackend());
   provider_ = new ShortcutsProvider(client_.get());
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
                                        shortcut_test_db,

@@ -8,9 +8,11 @@
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_socket_dns_query_type.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/inspector/protocol/network.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -43,6 +45,9 @@ class MODULES_EXPORT Socket : public ExecutionContextLifecycleStateObserver {
   static DOMException* CreateDOMExceptionFromNetErrorCode(int32_t net_error);
 
   void Trace(Visitor*) const override;
+
+  static protocol::Network::DirectSocketDnsQueryType MapProbeDnsQueryType(
+      V8SocketDnsQueryType dns_query_type);
 
  protected:
   ScriptState* GetScriptState() const { return script_state_.Get(); }

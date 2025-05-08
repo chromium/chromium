@@ -20,13 +20,19 @@ ListItemOrdinal::ListItemOrdinal() : type_(kNeedsUpdate) {}
 
 bool ListItemOrdinal::IsListOwner(const Node& node) {
   // Counters must not cross the list owner, which can be either <ol>, <ul>,
-  // or <menu> element. Additionally, counters should not cross elements that
-  // have style containment, hence we pretend such elements are list owners for
-  // the purposes of calculating ordinal values.
+  // or <menu> element and should produce a CSS box. Additionally, counters
+  // should not cross elements that have style containment, hence we pretend
+  // such elements are list owners for the purposes of calculating ordinal
+  // values.
   // See https://html.spec.whatwg.org/#the-li-element and
   // https://drafts.csswg.org/css-contain-2/#containment-style for more details.
-  return IsA<HTMLUListElement>(node) || IsA<HTMLOListElement>(node) ||
-         IsA<HTMLMenuElement>(node) || HasStyleContainment(node);
+  bool is_list_owner_element = IsA<HTMLUListElement>(node) ||
+                               IsA<HTMLOListElement>(node) ||
+                               IsA<HTMLMenuElement>(node);
+  return (is_list_owner_element &&
+          (!RuntimeEnabledFeatures::ListOwnerMustHaveCSSBoxEnabled() ||
+           node.GetLayoutObject())) ||
+         HasStyleContainment(node);
 }
 
 bool ListItemOrdinal::IsListItem(const LayoutObject* layout_object) {

@@ -360,7 +360,9 @@ void AXNodePositionFuzzerGenerator::CallPositionAPIs(
   std::ignore = position->AtStartOfContent();
   std::ignore = position->AtEndOfContent();
   std::ignore = position->LowestCommonAnchor(*other_position);
-  std::ignore = position->CompareTo(*other_position);
+  if (position->IsValid() && other_position->IsValid()) {
+    std::ignore = position->CompareTo(*other_position);
+  }
   std::ignore = position->GetText();
   std::ignore = position->IsPointingToLineBreak();
   std::ignore = position->IsInTextObject();

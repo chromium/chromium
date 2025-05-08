@@ -222,10 +222,6 @@ public final class ProductionSupportedFlagList {
                 "Enables the ability to use Document Policy header to control feature"
                         + " ExpectNoLinkedResources."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY,
-                "Only allow extra headers added via loadUrl() to be sent to the same origin "
-                        + "as the original request."),
-        Flag.baseFeature(
                 BlinkFeatures.WEBVIEW_ACCELERATE_SMALL_CANVASES,
                 "Accelerate all canvases in webview."),
         Flag.baseFeature(
@@ -237,8 +233,11 @@ public final class ProductionSupportedFlagList {
                 "Enables retrieval of the emoji font through GMS Core "
                         + "improving emoji glyph coverage."),
         Flag.baseFeature(
-                AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME,
-                "Enable the workaround for autofill bottom sheet platform bug."),
+                AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME,
+                "Disables checking AutofilManager#isEnabled too early. Mainly affects CCTs."),
+        Flag.baseFeature(
+                AndroidAutofillFeatures.ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME,
+                "Enable lazily initializing framework Autofill wrapper."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ACCEPT_DOM_MUTATION_AFTER_AUTOFILL_SUBMISSION,
                 "Accepts DOM_MUTATION_AFTER_AUTOFILL submissions detected on password forms."),
@@ -260,18 +259,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_FORM_TRACKING,
                 "Improves form submission tracking and duplicate submission handling"),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_FIX_VALUE_SEMANTICS,
-                "Fixes the overloaded meaning of FormFieldData::value"),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_FIX_VALUE_SEMANTICS,
-                "Fixes the overloaded meaning of FormFieldData::value"),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_FIX_INITIAL_VALUE_OF_SELECT,
-                "Sets the AutofillField's initial value for select elements"),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_FIX_CURRENT_VALUE_IN_IMPORT,
-                "Prevents the AutofillField's current value from being reset for import"),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_IMPROVE_CITY_FIELD_CLASSIFICATION,
                 "Reduces city field false positive classifications"),
@@ -667,9 +654,6 @@ public final class ProductionSupportedFlagList {
                         + "targeting a cross-origin iframe which has moved within its "
                         + "embedding page recently."),
         Flag.baseFeature(
-                ContentFeatures.BACK_FORWARD_CACHE_MEDIA_SESSION_SERVICE,
-                "Enables media session usage when bfcache is enabled"),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_AUTO_SAA,
                 "Enable auto granting storage access API requests. This will be done "
                         + "if a relationship is detected between the app and the website."),
@@ -696,10 +680,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8FlushCodeBasedOnTime"),
         Flag.baseFeature("V8MemoryReducer"),
         Flag.baseFeature("V8MinorMS"),
+        Flag.baseFeature("V8PreconfigureOldGen"),
         Flag.baseFeature("V8ScavengerHigherCapacity"),
-        Flag.baseFeature("V8SingleThreadedGCInBackground"),
-        Flag.baseFeature("V8SingleThreadedGCInBackgroundNoIncrementalMarking"),
-        Flag.baseFeature("V8SingleThreadedGCInBackgroundParallelPause"),
         Flag.baseFeature("V8IncrementalMarkingStartUserVisible"),
         Flag.baseFeature("V8ExternalMemoryAccountedInGlobalLimit"),
         Flag.baseFeature("V8GCSpeedUsesCounters"),
@@ -910,25 +892,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(ContentFeatures.PWA_NAVIGATION_CAPTURING),
         Flag.baseFeature("TransportSecurityFileWriterSchedule"),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER,
-                "When enabled, WebView performs normal processing work for cookie request headers"
-                    + " and response headers for the shouldInterceptRequest API. However, whether"
-                    + " the app is provided the cookie jar contents is controlled by "
-                        + AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER_READ_WRITE
-                        + ". Whether Set-Cookie headers affect the cookie jar is also controlled by"
-                        + " "
-                        + AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER_READ_WRITE
-                        + ". When this flag is disabled, set-cookie headers are ignored and the"
-                        + " cookie jar is never read."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER_READ_WRITE,
-                "When enabled in conjunction with WebViewInterceptedCookieHeader flag, the cookie"
-                    + " header in the request headers will be included for shouldInterceptRequest."
-                    + " Also, the set-cookie header in the response headers will be processed for"
-                    + " shouldInterceptRequest. When disabled while WebViewInterceptedCookieHeader"
-                    + " is enabled, the response headers passed to the app remain unchanged. Also,"
-                    + " the set-cookie header has no effect on the cookie jar."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU,
                 "Enables hyperlink context menu in WebView"),
         Flag.baseFeature("MojoUseBinder"),
@@ -969,9 +932,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_WEBAUTHN,
                 "Enable WebAuthn setWebAuthenticationSupport / getWebAuthenticationSupport APIs."),
         Flag.baseFeature(
-                CcFeatures.THROTTLE_FRAME_RATE_ON_MANY_DID_NOT_PRODUCE_FRAME,
-                "Reduce frame rate when pixels aren't updated for many frames"),
-        Flag.baseFeature(
                 BlinkFeatures.BF_CACHE_OPEN_BROADCAST_CHANNEL,
                 "Start putting pages with broadcast channel into bfcache."),
         Flag.baseFeature(
@@ -982,9 +942,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "AllowSensorsToEnterBfcache",
                 "Allow pages with sensors to enter back/forward cache."),
-        Flag.baseFeature(
-                BlinkFeatures.FONTATIONS_FONT_BACKEND,
-                "Enables the Fontations font backend for web fonts."),
         Flag.baseFeature("OverrideAPIKey"),
         Flag.baseFeature(
                 "RustyPng", "When enabled, uses Rust `png` crate to decode and encode PNG images."),
@@ -1092,13 +1049,11 @@ public final class ProductionSupportedFlagList {
                 "Controls behavior of network deferrals during media src=file playbacks."),
         Flag.baseFeature("PrefetchScheduler"),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_SEQUENCED_SHOULD_INTERCEPT_REQUEST,
-                "Enforces sequencing of calls to shouldInterceptRequest, "
-                        + "instead of invoking each call on a separate background thread."),
-        Flag.baseFeature(
                 BlinkFeatures.RENDER_BLOCKING_FULL_FRAME_RATE,
                 "Enable the <link blocking=\"full-frame-rate\"/> API to lower the frame rate during"
                         + " loading"),
+        Flag.baseFeature("ProgressiveAccessibility"),
+        Flag.baseFeature("PreloadingNoSamePageFragmentAnchorTracking"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

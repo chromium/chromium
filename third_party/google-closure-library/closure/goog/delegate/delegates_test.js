@@ -37,37 +37,6 @@ testSuite({
     assertCallCounts(1, 1, 1, 0);
   },
 
-  testWithDelegatesRegistered_defaultFunctionsAreNotCalled() {
-    const funcs = [
-      () => 'non-default',
-    ];
-
-    assertEquals('non-default', delegates.callFirst(funcs, f => f(), () => {
-      throw new Error('Default should not have been called');
-    }));
-    assertEquals(
-        'non-default',
-        delegates.callUntilDefinedAndNotNull(funcs, f => f(), () => {
-          throw new Error('Default should not have been called');
-        }));
-    assertEquals(
-        'non-default', delegates.callUntilTruthy(funcs, f => f(), () => {
-          throw new Error('Default should not have been called');
-        }));
-  },
-
-  testWithNoDelegatesRegistered_defaultFunctionsAreCalled() {
-    const funcs = [];
-
-    assertEquals(
-        'default', delegates.callFirst(funcs, f => f(), () => 'default'));
-    assertEquals(
-        'default',
-        delegates.callUntilDefinedAndNotNull(funcs, f => f(), () => 'default'));
-    assertEquals(
-        'default', delegates.callUntilTruthy(funcs, f => f(), () => 'default'));
-  },
-
   testResultNeverDefined() {
     const funcs = [
       recordFunction(),

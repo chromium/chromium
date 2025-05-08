@@ -1439,6 +1439,10 @@ base::Value::Dict SpdySession::GetInfoAsValue() const {
     dict.Set("drain_error", *drain_error_);
     dict.Set("drain_description", drain_description_);
   }
+  if (go_away_error_.has_value()) {
+    dict.Set("go_away_error", static_cast<int>(*go_away_error_));
+    dict.Set("go_away_debug_data", go_away_debug_data_);
+  }
 
   if (!pooled_aliases_.empty()) {
     base::Value::List alias_list;
@@ -2820,6 +2824,8 @@ void SpdySession::OnGoAway(spdy::SpdyStreamId last_accepted_stream_id,
                           last_accepted_stream_id, active_streams_.size(),
                           error_code, debug_data, capture_mode);
                     });
+  go_away_error_ = error_code;
+  go_away_debug_data_ = std::string(debug_data);
   MakeUnavailable();
   if (error_code == spdy::ERROR_CODE_HTTP_1_1_REQUIRED) {
     // TODO(bnc): Record histogram with number of open streams capped at 50.

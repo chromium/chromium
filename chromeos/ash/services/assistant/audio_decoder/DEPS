@@ -1,5 +1,0 @@
-include_rules = [
-  "+media/filters",
-  "+media/formats",
-  "+media/mojo",
-]

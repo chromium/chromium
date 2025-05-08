@@ -37,6 +37,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
@@ -452,7 +453,8 @@ class WebMediaPlayer {
   // information. This information helps identify why a request to enter picture
   // in picture automatically is denied/accepted.
   virtual void RecordAutoPictureInPictureInfo(
-      const WebString& auto_picture_in_picture_info) = 0;
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) = 0;
 };
 
 }  // namespace blink

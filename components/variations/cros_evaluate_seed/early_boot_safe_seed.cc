@@ -22,10 +22,8 @@ base::Time EarlyBootSafeSeed::GetFetchTime() const {
 void EarlyBootSafeSeed::SetFetchTime(const base::Time& fetch_time) {}
 
 int EarlyBootSafeSeed::GetMilestone() const {
-  return safe_seed_details_.milestone();
+  return GetCompressedSeed().milestone;
 }
-
-void EarlyBootSafeSeed::SetMilestone(int milestone) {}
 
 base::Time EarlyBootSafeSeed::GetTimeForStudyDateChecks() const {
   return base::Time::FromDeltaSinceWindowsEpoch(
@@ -36,19 +34,14 @@ void EarlyBootSafeSeed::SetTimeForStudyDateChecks(
     const base::Time& safe_seed_time) {}
 
 StoredSeed EarlyBootSafeSeed::GetCompressedSeed() const {
-  return {StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
-          safe_seed_details_.b64_compressed_data()};
+  return {
+      .storage_format = StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
+      .data = safe_seed_details_.b64_compressed_data(),
+      .signature = safe_seed_details_.signature(),
+      .milestone = safe_seed_details_.milestone()};
 }
 
-void EarlyBootSafeSeed::SetCompressedSeed(
-    const std::string& safe_compressed,
-    const std::string& base64_safe_compressed) {}
-
-std::string EarlyBootSafeSeed::GetSignature() const {
-  return safe_seed_details_.signature();
-}
-
-void EarlyBootSafeSeed::SetSignature(const std::string& safe_seed_signature) {}
+void EarlyBootSafeSeed::SetCompressedSeed(ValidatedSeedInfo seed_info) {}
 
 std::string EarlyBootSafeSeed::GetLocale() const {
   return safe_seed_details_.locale();

@@ -34,7 +34,7 @@ public interface ChildProcessServiceDelegate {
      * @param binderBox an optional binder box which may contain other binders to be unpacked
      */
     void onConnectionSetup(
-            Bundle connectionBundle, List<IBinder> clientInterfaces, IBinder binderBox);
+            IChildProcessArgs connectionArgs, List<IBinder> clientInterfaces, IBinder binderBox);
 
     /**
      * Called when the delegate should load the native library.

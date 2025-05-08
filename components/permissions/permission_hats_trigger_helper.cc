@@ -401,8 +401,7 @@ void PermissionHatsTriggerHelper::
     IncrementOneTimePermissionPromptsDecidedIfApplicable(
         ContentSettingsType type,
         PrefService* pref_service) {
-  if (base::FeatureList::IsEnabled(features::kOneTimePermission) &&
-      PermissionUtil::DoesSupportTemporaryGrants(type)) {
+  if (PermissionUtil::DoesSupportTemporaryGrants(type)) {
     pref_service->SetInteger(
         prefs::kOneTimePermissionPromptsDecidedCount,
         pref_service->GetInteger(prefs::kOneTimePermissionPromptsDecidedCount) +

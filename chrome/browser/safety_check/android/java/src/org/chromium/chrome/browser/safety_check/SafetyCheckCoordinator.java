@@ -4,19 +4,26 @@
 
 package org.chromium.chrome.browser.safety_check;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal;
 
-import androidx.annotation.Nullable;
+import android.os.Handler;
+
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckControllerFactory;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.prefs.PrefService;
@@ -27,15 +34,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the Safety check settings page. */
+@NullMarked
 public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyCheckComponentUi {
     private SafetyCheckSettingsFragment mSettingsFragment;
     private SafetyCheckUpdatesDelegate mUpdatesClient;
-    private SafetyCheckMediator mMediator;
-    private SyncService mSyncService;
+    private @MonotonicNonNull SafetyCheckMediator mMediator;
+    private @Nullable SyncService mSyncService;
     private PrefService mPrefService;
-    private PasswordStoreBridge mPasswordStoreBridge;
-    private PropertyModel mPasswordCheckLocalModel;
-    private PropertyModel mPasswordCheckAccountModel;
+    private @Nullable PasswordStoreBridge mPasswordStoreBridge;
+    private @Nullable PropertyModel mPasswordCheckLocalModel;
+    private @Nullable PropertyModel mPasswordCheckAccountModel;
 
     /**
      * Creates a new instance given a settings fragment, an updates client, and a settings launcher.
@@ -137,7 +145,9 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                                     signinLauncher,
                                                     syncService,
                                                     prefService,
+                                                    new Handler(),
                                                     passwordStoreBridge,
+                                                    new PasswordCheckControllerFactory(),
                                                     passwordManagerHelper,
                                                     modalDialogManagerSupplier,
                                                     settingsCustomTabLauncher);
@@ -152,6 +162,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                         new DefaultLifecycleObserver() {
                             @Override
                             public void onResume(LifecycleOwner lifecycleOwner) {
+                                assumeNonNull(mMediator);
                                 if (mSettingsFragment.shouldRunSafetyCheckImmediately()) {
                                     mMediator.performSafetyCheck();
                                     return;
@@ -165,6 +176,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                 .addObserver(
                         new DefaultLifecycleObserver() {
                             @Override
+                            @SuppressWarnings("NullAway")
                             public void onDestroy(LifecycleOwner lifecycleOwner) {
                                 mSettingsFragment = null;
                                 mUpdatesClient = null;
@@ -236,6 +248,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
      * multiple views (e.g. when the user navigation pushes the fragment into the back stack and
      * then pops it).
      */
+    @SuppressWarnings("NullAway")
     @Override
     public void onDestroy(LifecycleOwner owner) {
         // Stop observing the Lifecycle of the View as it is about to be destroyed.
@@ -253,9 +266,9 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
     }
 
     @Override
+    @EnsuresNonNullIf("mSyncService")
     public boolean isAccountPasswordStorageUsed() {
-        if (PasswordManagerHelper.hasChosenToSyncPasswords(mSyncService)) return true;
-        return false;
+        return mSyncService != null && PasswordManagerHelper.hasChosenToSyncPasswords(mSyncService);
     }
 
     private boolean usesFullUpm() {

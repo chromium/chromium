@@ -311,7 +311,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // `ExecutionStatus` will never be `ExecutionStatus::kSuccess`.
   virtual base::expected<std::unique_ptr<ModelExecutionTaskType>,
                          ExecutionStatus>
-  BuildModelExecutionTask(const base::File& model_file) = 0;
+  BuildModelExecutionTask(base::File& model_file) = 0;
 
  private:
   using FileDeleteOnTaskRunner =

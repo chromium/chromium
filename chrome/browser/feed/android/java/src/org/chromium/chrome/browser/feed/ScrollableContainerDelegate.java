@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.feed;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Delegate that represents the scrollable container that contains the different NTP views (e.g.,
  * omnibox, feed, etc.).
  */
+@NullMarked
 public interface ScrollableContainerDelegate {
     /** Adds a |listener| for the scroll events from the root surface. */
     void addScrollListener(ScrollListener listener);

@@ -48,6 +48,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(chrome/browser/resources/data_sharing/data_sharing_app.ts:DataSharingIntentType) -->
 
+<enum name="DataSharingUserAction">
+  <int value="0" label="Share link in share flow"/>
+  <int value="1" label="Open learn more url in share flow"/>
+  <int value="2" label="Join and open in join flow"/>
+  <int value="3" label="Open learn more url in join flow"/>
+  <int value="4" label="Share link in manage flow"/>
+  <int value="5" label="Leave group in manage flow"/>
+  <int value="6" label="Block person in manage flow"/>
+  <int value="7" label="Block and leave group in manage flow"/>
+  <int value="8" label="Remove person in manage flow"/>
+  <int value="9" label="Stop sharing in manage flow"/>
+  <int value="10" label="Open learn more url in manage flow"/>
+  <int value="11" label="Show activity logs in manage flow"/>
+</enum>
+
 <enum name="JoinActionStateAndroid">
   <int value="0" label="Join triggered"/>
   <int value="1" label="Profile available"/>

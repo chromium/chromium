@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/events/mobile_scroller.h"
 
+#include <array>
 #include <cmath>
 #include <ostream>
 
@@ -137,8 +134,8 @@ struct SplineConstants {
  private:
   enum { NUM_SAMPLES = 100 };
 
-  float spline_position_[NUM_SAMPLES + 1];
-  float spline_time_[NUM_SAMPLES + 1];
+  std::array<float, NUM_SAMPLES + 1> spline_position_;
+  std::array<float, NUM_SAMPLES + 1> spline_time_;
 };
 
 float ComputeDeceleration(float friction) {

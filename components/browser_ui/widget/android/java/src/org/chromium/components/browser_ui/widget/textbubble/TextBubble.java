@@ -517,7 +517,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      * @param onTouchListener A callback for all touch events being dispatched to the bubble.
      * @see PopupWindow#setTouchInterceptor(OnTouchListener)
      */
-    public void setTouchInterceptor(OnTouchListener onTouchListener) {
+    public void setTouchInterceptor(@Nullable OnTouchListener onTouchListener) {
         mPopupWindow.setTouchInterceptor(onTouchListener);
     }
 

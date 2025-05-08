@@ -89,49 +89,6 @@ bool IsLocalWebApprovalsEnabledForSubframes() {
   return base::FeatureList::IsEnabled(kAllowSubframeLocalWebApprovals);
 }
 
-BASE_FEATURE(kEnableSupervisedUserSkipParentApprovalToInstallExtensions,
-             "EnableSupervisedUserSkipParentApprovalToInstallExtensions",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-
-BASE_FEATURE(kUpdatedSupervisedUserExtensionApprovalStrings,
-             "UpdatedSupervisedUserExtensionApprovalStrings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_DESKTOP_ANDROID)
-BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
-             "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-BASE_FEATURE(kExposedParentalControlNeededForExtensionInstallation,
-             "ExposedParentalControlNeededForExtensionInstallation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return base::FeatureList::IsEnabled(
-      kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_DESKTOP_ANDROID)
-  bool skipParentApprovalEnabled = base::FeatureList::IsEnabled(
-      kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
-  bool permissionExtensionsForSupervisedUsersEnabled =
-      base::FeatureList::IsEnabled(
-          kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-  if (skipParentApprovalEnabled) {
-    DCHECK(permissionExtensionsForSupervisedUsersEnabled);
-  }
-  return skipParentApprovalEnabled &&
-         permissionExtensionsForSupervisedUsersEnabled;
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kCustomProfileStringsForSupervisedUsers,
              "CustomProfileStringsForSupervisedUsers",
@@ -183,5 +140,12 @@ BASE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+BASE_FEATURE(kAlignSafeSitesValueWithBrowserDefault,
+             "AlignSafeSitesValueWithBrowserDefault",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDecoupleSafeSitesFromMainSwitch,
+             "DecoupleSafeSitesFromMainSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace supervised_user

@@ -16,8 +16,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/switches.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

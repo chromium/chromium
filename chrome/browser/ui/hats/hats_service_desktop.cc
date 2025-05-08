@@ -173,18 +173,8 @@ void HatsServiceDesktop::DelayedSurveyTask::Launch() {
 
 void HatsServiceDesktop::DelayedSurveyTask::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_behaviour_ == NavigationBehaviour::ALLOW_ANY ||
-      !navigation_handle || !navigation_handle->IsInPrimaryMainFrame()) {
-    return;
-  }
-
-  if (navigation_behaviour_ == NavigationBehaviour::REQUIRE_SAME_DOCUMENT &&
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  if (navigation_behaviour_ == NavigationBehaviour::REQUIRE_SAME_ORIGIN &&
-      navigation_handle->HasCommitted() && navigation_handle->IsSameOrigin()) {
+  if (hats_service_->IsNavigationAllowed(navigation_handle,
+                                         navigation_behaviour_)) {
     return;
   }
 
@@ -677,10 +667,14 @@ void HatsServiceDesktop::LaunchSurveyForBrowser(
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data,
     const std::optional<std::string_view>& supplied_trigger_id) {
+  if (!browser || browser->IsAttemptingToCloseBrowser()) {
+    // Don't launch surveys during browser closure.
+    return;
+  }
+
   CHECK(survey_configs_by_triggers_.find(trigger) !=
         survey_configs_by_triggers_.end());
   auto survey_config = survey_configs_by_triggers_[trigger];
-
   if (!IsRightBrowserType(browser, survey_config.requested_browser_type)) {
     UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
                               ShouldShowSurveyReasons::kNoWrongBrowserType);

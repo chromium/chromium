@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] .container 1
+  assert_equals: \n<div class="container" data-expected-scroll-width="100" data-expected-scroll-height="100">\n    <div style="transform: translate(-200px, -200px);" class="element">\n    </div>\n  </div>\nscrollWidth expected 100 but got 200
+[FAIL] .container 2
+  assert_equals: \n<div class="container" data-expected-scroll-width="150" data-expected-scroll-height="150">\n    <div style="transform: translate(-25%, -25%);" class="element">\n    </div>\n  </div>\nscrollWidth expected 150 but got 200
+Harness: the test ran to completion.
+

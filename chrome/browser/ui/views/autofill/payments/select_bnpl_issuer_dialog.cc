@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
@@ -141,6 +142,8 @@ void SelectBnplIssuerDialog::DisplayThrobber() {
           .Build());
   throbber->Start();
   throbber->SizeToPreferredSize();
+  throbber->GetViewAccessibility().AnnouncePolitely(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE));
 }
 
 bool SelectBnplIssuerDialog::OnCancelled() {
@@ -151,12 +154,14 @@ bool SelectBnplIssuerDialog::OnCancelled() {
 }
 
 void SelectBnplIssuerDialog::AddedToWidget() {
+  std::u16string title = controller_->GetTitle();
   // The BubbleFrameView is only available after this view is added to the
   // Widget.
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(
-          controller_->GetTitle(),
-          TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+          title, TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
+  SetAccessibleTitle(title);
 }
 
 void SelectBnplIssuerDialog::OnSettingsLinkClicked() {

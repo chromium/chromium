@@ -186,7 +186,7 @@ builder.
   * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
   * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
 
-* [android-cronet-x64-dbg-15-tests](https://ci.chromium.org/p/chromium/builders/try/android-cronet-x64-dbg-15-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-x64-dbg-15-tests""))
+* [android-cronet-x64-dbg-16-tests](https://ci.chromium.org/p/chromium/builders/try/android-cronet-x64-dbg-16-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-x64-dbg-16-tests""))
 
   Location filters:
   * [`//components/cronet/.+`](https://cs.chromium.org/chromium/src/components/cronet/)
@@ -614,6 +614,7 @@ builder.
   * [`//testing/xvfb\.py`](https://cs.chromium.org/search?q=+file:testing/xvfb\.py)
   * [`//third_party/wayland/.+`](https://cs.chromium.org/chromium/src/third_party/wayland/)
   * [`//third_party/wayland-protocols/.+`](https://cs.chromium.org/chromium/src/third_party/wayland-protocols/)
+  * [`//third_party/weston/.+`](https://cs.chromium.org/chromium/src/third_party/weston/)
   * [`//ui/ozone/platform/wayland/.+`](https://cs.chromium.org/chromium/src/ui/ozone/platform/wayland/)
   * [`//ui/views/widget/.+test.+`](https://cs.chromium.org/search?q=+file:ui/views/widget/.+test)
 
@@ -673,6 +674,11 @@ builder.
 
   Location filters:
   * [`//chrome/enterprise_companion/.+`](https://cs.chromium.org/chromium/src/chrome/enterprise_companion/)
+
+* [mac-official](https://ci.chromium.org/p/chromium/builders/try/mac-official) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-official""))
+
+  Location filters:
+  * [`//chrome/build/mac-arm.pgo.txt`](https://cs.chromium.org/search?q=+file:chrome/build/mac-arm.pgo.txt)
 
 * [mac-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/mac-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-updater-try-builder-dbg""))
 
@@ -851,6 +857,9 @@ as required builders.
 
 * [mac14-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac14-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac14-arm64-rel""))
   * Experiment percentage: 75.0
+
+* [mac15-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac15-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac15-arm64-rel""))
+  * Experiment percentage: 1.0
 
 * [tricium-clang-tidy](https://ci.chromium.org/p/chromium/builders/try/tricium-clang-tidy) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""tricium-clang-tidy""))
   * Experiment percentage: 100.0

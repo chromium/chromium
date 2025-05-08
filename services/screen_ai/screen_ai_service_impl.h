@@ -59,20 +59,14 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   void LoadLibrary(const base::FilePath& library_path);
 
   // mojom::ScreenAIAnnotator:
-  void SetClientType(mojom::OcrClientType client) override;
-
-  // mojom::Screen2xMainContentExtractor:
-  void SetClientType(mojom::MceClientType client) override;
-
-  // mojom::ScreenAIAnnotator:
   void PerformOcrAndReturnAXTreeUpdate(
       const SkBitmap& image,
       PerformOcrAndReturnAXTreeUpdateCallback callback) override;
-
-  // mojom::ScreenAIAnnotator:
   void PerformOcrAndReturnAnnotation(
       const SkBitmap& image,
       PerformOcrAndReturnAnnotationCallback callback) override;
+  void SetClientType(mojom::OcrClientType client) override;
+  void GetMaxImageDimension(GetMaxImageDimensionCallback callback) override;
 
   // mojom::Screen2xMainContentExtractor:
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
@@ -81,14 +75,7 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
                        ExtractMainNodeCallback callback) override;
   void IdentifyMainNode(const ui::AXTreeUpdate& snapshot,
                         IdentifyMainNodeCallback callback) override;
-
-  // mojom::ScreenAIServiceFactory:
-  void InitializeMainContentExtraction(
-      const base::FilePath& library_path,
-      base::flat_map<base::FilePath, base::File> model_files,
-      mojo::PendingReceiver<mojom::MainContentExtractionService>
-          main_content_extractor_service_receiver,
-      InitializeMainContentExtractionCallback callback) override;
+  void SetClientType(mojom::MceClientType client) override;
 
   // mojom::ScreenAIServiceFactory:
   void InitializeOCR(
@@ -96,11 +83,12 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       base::flat_map<base::FilePath, base::File> model_files,
       mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
       InitializeOCRCallback callback) override;
-
-  // mojom::ScreenAIServiceFactory:
-  void ShutDownIfNoClients() override;
-
-  // mojom::ScreenAIServiceFactory:
+  void InitializeMainContentExtraction(
+      const base::FilePath& library_path,
+      base::flat_map<base::FilePath, base::File> model_files,
+      mojo::PendingReceiver<mojom::MainContentExtractionService>
+          main_content_extractor_service_receiver,
+      InitializeMainContentExtractionCallback callback) override;
   void BindShutdownHandler(
       mojo::PendingRemote<mojom::ScreenAIServiceShutdownHandler>
           shutdown_handler) override;
@@ -130,10 +118,19 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   void OcrReceiverDisconnected();
   void MceReceiverDisconnected();
 
-  // Returns a boolean pointer that should be set to true, when the task is
-  // finished. If it's not done before the timer goes off, it is assumed that
-  // the library is not responsive and process is terminated.
-  bool* StartProcessNotResponsiveKillTimer(bool request_is_ocr);
+  // Starts a timer to frequently check if the service is idle. This is only
+  // triggered after the library is initialized for either of the
+  // functionalities.
+  void StartShutDownOnIdleTimer();
+  void ShutDownOnIdle();
+
+  // Max image dimension for OCR that is processed without downsampling.
+  // This value is received via `GetMaxImageDimension` after OCR is initialized,
+  // and since it does not change after that, it is stored to be reused for
+  // subsequent calls.
+  // TODO(crbug.com/412553116): Update here and all callers in case the above
+  // assumption changes.
+  uint32_t max_ocr_dimension_ = 0;
 
   // Last time the feature is used. A null value means never, it is set when the
   // feature is initialized, and each time it is used.
@@ -167,6 +164,9 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   // extractors.
   mojo::ReceiverSet<mojom::Screen2xMainContentExtractor>
       screen2x_main_content_extractors_;
+
+  // Task runner used to monitor unresponsiveness.
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   base::WeakPtrFactory<ScreenAIService> weak_ptr_factory_{this};
 };

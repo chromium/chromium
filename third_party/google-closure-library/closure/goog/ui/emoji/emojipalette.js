@@ -128,6 +128,7 @@ goog.ui.emoji.EmojiPalette.prototype.imageLoader_;
  * @param {Object} emojiGroup The group of emoji for this page.
  * @return {!Array<!HTMLDivElement>} The emoji items.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.emoji.EmojiPalette.prototype.getEmojiArrayFromProperties_ = function(
     emojiGroup) {
@@ -140,6 +141,7 @@ goog.ui.emoji.EmojiPalette.prototype.getEmojiArrayFromProperties_ = function(
     const spriteInfo = emojiGroup[i][2];
     const displayUrl = spriteInfo ? spriteInfo.getUrl() : this.urlPrefix_ + url;
 
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     const item = this.getRenderer().createPaletteItem(
         this.getDomHelper(), id, spriteInfo, displayUrl);
     emojiItems.push(item);
@@ -192,10 +194,13 @@ goog.ui.emoji.EmojiPalette.prototype.loadAnimatedEmoji = function() {
  *
  * @param {goog.events.Event} e The event object.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.emoji.EmojiPalette.prototype.handleImageLoad_ = function(e) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const id = e.target.id;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const url = e.target.src;
   // Just to be safe, we check to make sure we have an id and src url from
   // the event target, which the ImageLoader sets to an Image object.
@@ -250,6 +255,7 @@ goog.ui.emoji.EmojiPalette.prototype.getGoomojiIdFromElement_ = function(el) {
     return null;
   }
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const item = this.getRenderer().getContainingItem(this, el);
   if (item) {
     return item.getAttribute(goog.ui.emoji.Emoji.ATTRIBUTE) != '' ?
@@ -273,6 +279,7 @@ goog.ui.emoji.EmojiPalette.prototype.getSelectedEmoji = function() {
 
 /**
  * @return {number} The number of emoji managed by this palette.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.emoji.EmojiPalette.prototype.getNumberOfEmoji = function() {
   'use strict';

@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.price_history;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for price history bottom sheet content. */
+@NullMarked
 public class PriceHistoryBottomSheetContentProperties {
     public static final WritableObjectPropertyKey<String> PRICE_HISTORY_TITLE =
             new WritableObjectPropertyKey<>();

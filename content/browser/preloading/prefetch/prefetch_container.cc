@@ -216,47 +216,6 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
   }
 }
 
-void RecordPrefetchMatchingBlockedNavigationWithPrefetchHistogram(
-    const PrefetchType& prefetch_type,
-    bool blocked_until_head) {
-  if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
-    base::UmaHistogramBoolean(
-        base::StrCat({"PrefetchProxy.AfterClick."
-                      "PrefetchMatchingBlockedNavigationWithPrefetch.",
-                      GetPrefetchEagernessHistogramSuffix(
-                          prefetch_type.GetEagerness())}),
-        blocked_until_head);
-  } else {
-    // TODO(crbug.com/40946257, crbug.com/40898833): Extend the metrics for
-    // embedder triggers.
-  }
-}
-
-void MaybeRecordBlockUntilHeadDuration2Histogram(
-    const PrefetchType& prefetch_type,
-    const std::optional<base::TimeDelta>& blocked_duration,
-    bool served) {
-  if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
-    base::UmaHistogramTimes(
-        base::StrCat({"PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.",
-                      served ? "Served." : "NotServed.",
-                      GetPrefetchEagernessHistogramSuffix(
-                          prefetch_type.GetEagerness())}),
-        blocked_duration.value_or(base::Seconds(0)));
-    if (blocked_duration.has_value()) {
-      base::UmaHistogramTimes(
-          base::StrCat({"PrefetchProxy.AfterClick.BlockUntilHeadDuration2.",
-                        served ? "Served." : "NotServed.",
-                        GetPrefetchEagernessHistogramSuffix(
-                            prefetch_type.GetEagerness())}),
-          blocked_duration.value());
-    }
-  } else {
-    // TODO(crbug.com/40946257, crbug.com/40898833): Extend the metrics for
-    // embedder triggers.
-  }
-}
-
 ukm::SourceId GetUkmSourceId(RenderFrameHostImpl& rfhi) {
   // Prerendering page should not trigger prefetches.
   CHECK(
@@ -2060,11 +2019,10 @@ void PrefetchContainer::OnUnregisterCandidate(
                              redirect_chain_.size());
   }
 
-  RecordPrefetchMatchingBlockedNavigationWithPrefetchHistogram(
-      prefetch_type_, blocked_duration.has_value());
+  RecordPrefetchMatchingBlockedNavigationHistogram(
+      blocked_duration.has_value());
 
-  MaybeRecordBlockUntilHeadDuration2Histogram(prefetch_type_, blocked_duration,
-                                              is_served);
+  RecordBlockUntilHeadDurationHistogram(blocked_duration, is_served);
 
   // Note that `PreloadingAttemptImpl::SetIsAccurateTriggering()` is called for
   // prefetch in
@@ -2245,46 +2203,7 @@ void PrefetchContainer::OnServiceWorkerStateDetermined(
   }
 }
 
-const char* PrefetchContainer::GetMetricsSuffixTriggerTypeAndEagerness() {
-  switch (prefetch_type_.trigger_type()) {
-    case PreloadingTriggerType::kSpeculationRule:
-      switch (prefetch_type_.GetEagerness()) {
-        case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRule_Eager";
-        case blink::mojom::SpeculationEagerness::kModerate:
-          return "SpeculationRule_Moderate";
-        case blink::mojom::SpeculationEagerness::kConservative:
-          return "SpeculationRule_Conservative";
-      }
-    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
-      switch (prefetch_type_.GetEagerness()) {
-        case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRuleFromIsolatedWorld_Eager";
-        case blink::mojom::SpeculationEagerness::kModerate:
-          return "SpeculationRuleFromIsolatedWorld_Moderate";
-        case blink::mojom::SpeculationEagerness::kConservative:
-          return "SpeculationRuleFromIsolatedWorld_Conservative";
-      }
-    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
-      switch (prefetch_type_.GetEagerness()) {
-        case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRuleFromAutoSpeculationRules_Eager";
-        case blink::mojom::SpeculationEagerness::kModerate:
-          return "SpeculationRuleFromAutoSpeculationRules_Moderate";
-        case blink::mojom::SpeculationEagerness::kConservative:
-          return "SpeculationRuleFromAutoSpeculationRules_Conservative";
-      }
-    case PreloadingTriggerType::kEmbedder:
-      // TODO(crrev.com/c/6367815): Add "_<embedder_histogram_suffix>".
-      return "Embedder";
-  }
-}
-
 void PrefetchContainer::RecordDurationFromAdded() {
-  // TODO(crrev.com/c/6367815): Update
-  // `GetMetricsSuffixTriggerTypeAndEagerness()` and remove suffix
-  // `.NoEmbedderSuffix`.
-
   if (!time_added_to_prefetch_service_.has_value()) {
     return;
   }
@@ -2296,8 +2215,8 @@ void PrefetchContainer::RecordDurationFromAdded() {
   base::UmaHistogramTimes(
       base::StrCat({
           "Prefetch.PrefetchContainer.AddedToInitialEligibility.",
-          GetMetricsSuffixTriggerTypeAndEagerness(),
-          ".NoEmbedderSuffix",
+          GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type_,
+                                                  embedder_histogram_suffix_),
       }),
       time_initial_eligibility_got_.value() -
           time_added_to_prefetch_service_.value());
@@ -2309,8 +2228,8 @@ void PrefetchContainer::RecordDurationFromAdded() {
   base::UmaHistogramTimes(
       base::StrCat({
           "Prefetch.PrefetchContainer.AddedToPrefetchStarted.",
-          GetMetricsSuffixTriggerTypeAndEagerness(),
-          ".NoEmbedderSuffix",
+          GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type_,
+                                                  embedder_histogram_suffix_),
       }),
       time_prefetch_started_.value() - time_added_to_prefetch_service_.value());
 
@@ -2321,8 +2240,8 @@ void PrefetchContainer::RecordDurationFromAdded() {
   base::UmaHistogramTimes(base::StrCat({
                               "Prefetch.PrefetchContainer."
                               "AddedToHeaderDeterminedSuccessfully.",
-                              GetMetricsSuffixTriggerTypeAndEagerness(),
-                              ".NoEmbedderSuffix",
+                              GetMetricsSuffixTriggerTypeAndEagerness(
+                                  prefetch_type_, embedder_histogram_suffix_),
                           }),
                           time_header_determined_successfully_.value() -
                               time_added_to_prefetch_service_.value());
@@ -2334,11 +2253,31 @@ void PrefetchContainer::RecordDurationFromAdded() {
   base::UmaHistogramTimes(base::StrCat({
                               "Prefetch.PrefetchContainer."
                               "AddedToPrefetchCompletedSuccessfully.",
-                              GetMetricsSuffixTriggerTypeAndEagerness(),
-                              ".NoEmbedderSuffix",
+                              GetMetricsSuffixTriggerTypeAndEagerness(
+                                  prefetch_type_, embedder_histogram_suffix_),
                           }),
                           time_prefetch_completed_successfully_.value() -
                               time_added_to_prefetch_service_.value());
 }
 
+void PrefetchContainer::RecordPrefetchMatchingBlockedNavigationHistogram(
+    bool blocked_until_head) {
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           GetMetricsSuffixTriggerTypeAndEagerness(
+               prefetch_type_, embedder_histogram_suffix_)}),
+      blocked_until_head);
+}
+
+void PrefetchContainer::RecordBlockUntilHeadDurationHistogram(
+    const std::optional<base::TimeDelta>& blocked_duration,
+    bool served) {
+  base::UmaHistogramTimes(
+      base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.",
+                    served ? "Served." : "NotServed.",
+                    GetMetricsSuffixTriggerTypeAndEagerness(
+                        prefetch_type_, embedder_histogram_suffix_)}),
+      blocked_duration.value_or(base::Seconds(0)));
+}
 }  // namespace content

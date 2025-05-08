@@ -74,7 +74,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.0.100"
+  cargo_pkg_version = "2.0.101"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "syn"
   cargo_pkg_description = "Parser for Rust source code"

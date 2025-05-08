@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.content_settings.ContentSettingsType;
 
@@ -46,6 +47,7 @@ class FakeUnusedSitePermissionsBridge implements UnusedSitePermissionsBridge.Nat
     }
 
     @Override
+    @NullMarked
     public String[] contentSettingsTypeToString(int[] contentSettingsTypeList) {
         String[] contentSettingsNamesList = new String[contentSettingsTypeList.length];
         for (int i = 0; i < contentSettingsTypeList.length; i++) {
@@ -62,6 +64,9 @@ class FakeUnusedSitePermissionsBridge implements UnusedSitePermissionsBridge.Nat
                     break;
                 case ContentSettingsType.BACKGROUND_SYNC:
                     contentSettingsName = "Background sync";
+                    break;
+                case ContentSettingsType.NOTIFICATIONS:
+                    contentSettingsName = "Notifications";
                     break;
                 default:
                     assert false : "Unreached";

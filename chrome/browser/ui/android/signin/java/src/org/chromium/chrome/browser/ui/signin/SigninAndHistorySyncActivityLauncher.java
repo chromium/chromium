@@ -9,9 +9,9 @@ import android.content.Intent;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -19,6 +19,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Allows for launching {@link SigninAndHistorySyncActivity} in modularized code. */
+@NullMarked
 public interface SigninAndHistorySyncActivityLauncher {
     /** Sign-in access points that are eligible to the sign-in and history opt-in flow. */
     @IntDef({
@@ -51,11 +52,10 @@ public interface SigninAndHistorySyncActivityLauncher {
      * @param accessPoint The access point from which the sign-in was triggered.
      */
     @MainThread
-    @Nullable
-    Intent createBottomSheetSigninIntentOrShowError(
+    @Nullable Intent createBottomSheetSigninIntentOrShowError(
             Context context,
             Profile profile,
-            @NonNull BottomSheetSigninAndHistorySyncConfig config,
+            BottomSheetSigninAndHistorySyncConfig config,
             @AccessPoint int accessPoint);
 
     /**

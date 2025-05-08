@@ -223,6 +223,7 @@ build_webui("build") {
       "mwb_shared_vars.css",
       "policy/cr_policy_indicator.css",
       "search_highlight_style.css",
+      "search_highlight_style_lit.css",
     ]
   }
 

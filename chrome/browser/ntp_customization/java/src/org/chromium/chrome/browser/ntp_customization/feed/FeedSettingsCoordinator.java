@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerViewBinder;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetViewBinder;
@@ -33,6 +34,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Coordinator for the feed settings bottom sheet in the NTP customization. */
+@NullMarked
 public class FeedSettingsCoordinator {
     private FeedSettingsMediator mMediator;
 

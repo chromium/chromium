@@ -28,20 +28,6 @@
 
 namespace ash {
 
-ScopedDeviceSettingsTestHelper::ScopedDeviceSettingsTestHelper() {
-  DeviceSettingsService::Initialize();
-  DeviceSettingsService::Get()->SetSessionManager(
-      &session_manager_client_, new ownership::MockOwnerKeyUtil());
-  DeviceSettingsService::Get()->Load();
-  content::RunAllTasksUntilIdle();
-}
-
-ScopedDeviceSettingsTestHelper::~ScopedDeviceSettingsTestHelper() {
-  content::RunAllTasksUntilIdle();
-  DeviceSettingsService::Get()->UnsetSessionManager();
-  DeviceSettingsService::Shutdown();
-}
-
 DeviceSettingsTestBase::DeviceSettingsTestBase(bool profile_creation_enabled)
     : profile_creation_enabled_(profile_creation_enabled),
       task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}

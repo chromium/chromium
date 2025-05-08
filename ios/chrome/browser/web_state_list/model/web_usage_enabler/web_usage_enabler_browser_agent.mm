@@ -8,7 +8,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 
 WebUsageEnablerBrowserAgent::WebUsageEnablerBrowserAgent(Browser* browser)
-    : browser_(browser) {
+    : BrowserUserData(browser), browser_(browser) {
   browser_observation_.Observe(browser_.get());
 
   WebStateList* web_state_list = browser_->GetWebStateList();

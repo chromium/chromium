@@ -29,6 +29,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -213,7 +214,8 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
         {media::kContextMenuSaveVideoFrameAs,
          media::kContextMenuSearchForVideoFrame,
          toast_features::kLinkCopiedToast, toast_features::kImageCopiedToast,
-         toast_features::kToastFramework},
+         toast_features::kToastFramework,
+         toast_features::kVideoFrameCopiedToast},
         {});
   }
 
@@ -1364,6 +1366,15 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, ShowsToastOnImageCopied) {
   EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }
 
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, ShowsToastOnVideoFrameCopied) {
+  content::ContextMenuParams params;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kCanvas;
+
+  auto menu = CreateContextMenuFromParams(params);
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME, /*event_flags=*/0);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
                        ShowToastOnSidePanelContextMenus) {
   auto* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
@@ -2213,7 +2224,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
 
   // Avoid showing What's New.
   PrefService* pref_service = g_browser_process->local_state();
-  pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
+  pref_service->SetInteger(prefs::kLastWhatsNewVersion,
+                           version_info::GetMajorVersionNumberAsInt());
 
   // Create the profiles.
   ProfileAttributesStorage& storage =

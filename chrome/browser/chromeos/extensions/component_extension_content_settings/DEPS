@@ -11,6 +11,9 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # crbug.com/332804822. Whenever possible, avoid adding new //chrome
   # dependencies to this list.
-  "+chrome/browser/profiles",
+  "+chrome/browser/content_settings/host_content_settings_map_factory.h",
   "+chrome/browser/extensions/component_extensions_allowlist/allowlist.h",
+  "+chrome/browser/profiles",
+  "+chrome/common/extensions/extension_constants.h",
+  "+chrome/test",
 ]

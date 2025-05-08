@@ -24,6 +24,8 @@ class ScrollButtonPseudoElement : public PseudoElement,
   Node* InnerNodeForHitTesting() final { return this; }
 
   bool IsEnabled() const { return enabled_; }
+  bool IsDisabledFormControl() const final { return !IsEnabled(); }
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const final;
 
   // ScrollSnapshotClient:
   void UpdateSnapshot() override;
@@ -34,6 +36,8 @@ class ScrollButtonPseudoElement : public PseudoElement,
 
  private:
   bool UpdateSnapshotInternal();
+
+  void HandleButtonActivation();
 
   bool enabled_ = true;
 };

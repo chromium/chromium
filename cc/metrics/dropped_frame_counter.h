@@ -29,7 +29,7 @@ class TotalFrameCounter;
 
 // This class maintains a counter for produced/dropped frames, and can be used
 // to estimate the recent throughput.
-class CC_EXPORT DroppedFrameCounter {
+class CC_EXPORT DroppedFrameCounter : public FrameSorterObserver {
  public:
   enum FrameState {
     kFrameStateDropped,
@@ -61,11 +61,10 @@ class CC_EXPORT DroppedFrameCounter {
     std::array<uint32_t, 101> histogram_bins_ = {0};
     std::array<uint32_t, 7> smoothness_buckets_ = {0};
     uint32_t total_count_ = 0;
-    bool export_extra_metrics_ = !features::StopExportDFCMetrics();
   };
 
   DroppedFrameCounter();
-  virtual ~DroppedFrameCounter();
+  ~DroppedFrameCounter() override;
 
   DroppedFrameCounter(const DroppedFrameCounter&) = delete;
   DroppedFrameCounter& operator=(const DroppedFrameCounter&) = delete;
@@ -78,11 +77,6 @@ class CC_EXPORT DroppedFrameCounter {
 
   uint32_t GetAverageThroughput() const;
 
-  using SortedFrameCallback =
-      base::RepeatingCallback<void(const viz::BeginFrameArgs& args,
-                                   const FrameInfo&)>;
-  void SetSortedFrameCallback(SortedFrameCallback callback);
-
   typedef base::RingBuffer<FrameState, 180> RingBufferType;
   RingBufferType::Iterator Begin() const { return ring_buffer_.Begin(); }
   // `End()` points to the last `FrameState`, not past it.
@@ -94,9 +88,6 @@ class CC_EXPORT DroppedFrameCounter {
   void ReportFrames();
   void ReportFramesOnEveryFrameForUI();
 
-  void OnBeginFrame(const viz::BeginFrameArgs& args);
-  virtual void OnEndFrame(const viz::BeginFrameArgs& args,
-                          const FrameInfo& frame_info);
   void SetUkmSmoothnessDestination(UkmSmoothnessDataShared* smoothness_data);
   void OnFirstContentfulPaintReceived();
 
@@ -139,14 +130,6 @@ class CC_EXPORT DroppedFrameCounter {
     return sliding_window_max_percent_dropped_After_5_sec_;
   }
 
-  uint32_t SlidingWindow95PercentilePercentDropped(
-      SmoothnessStrategy strategy) const {
-    DCHECK_GT(SmoothnessStrategy::kStrategyCount, strategy);
-    return export_extra_metrics_ ? sliding_window_histogram_[strategy]
-                                       .GetPercentDroppedFramePercentile(0.95)
-                                 : 0.0;
-  }
-
   uint32_t SlidingWindowMedianPercentDropped(
       SmoothnessStrategy strategy) const {
     DCHECK_GT(SmoothnessStrategy::kStrategyCount, strategy);
@@ -170,13 +153,18 @@ class CC_EXPORT DroppedFrameCounter {
     return sliding_window_current_percent_dropped_.value_or(0);
   }
 
+  bool first_contentful_paint_received() {
+    return first_contentful_paint_received_;
+  }
+
  private:
-  void NotifyFrameResult(const viz::BeginFrameArgs& args,
-                         const FrameInfo& frame_info);
+  void AddSortedFrame(const viz::BeginFrameArgs& args,
+                      const FrameInfo& frame_info) override;
+  virtual void OnEndFrame(const viz::BeginFrameArgs& args,
+                          const FrameInfo& frame_info);
   base::TimeDelta ComputeCurrentWindowSize() const;
 
   void PopSlidingWindow();
-  void UpdateMaxPercentDroppedFrame(double percent_dropped_frame);
 
   // Adds count to dropped_frame_count_in_window_ of each strategy.
   void UpdateDroppedFrameCountInWindow(const FrameInfo& frame_info, int count);
@@ -203,7 +191,6 @@ class CC_EXPORT DroppedFrameCounter {
   std::optional<double> sliding_window_max_percent_dropped_After_5_sec_;
   base::TimeTicks time_first_contentful_paint_received_;
   raw_ptr<UkmSmoothnessDataShared> ukm_smoothness_data_ = nullptr;
-  FrameSorter frame_sorter_;
   raw_ptr<TotalFrameCounter> total_counter_ = nullptr;
 
   struct {
@@ -211,11 +198,8 @@ class CC_EXPORT DroppedFrameCounter {
     double p95_window = 0;
   } last_reported_metrics_;
 
-  SortedFrameCallback sorted_frame_callback_;
-
   bool report_for_ui_ = false;
   std::optional<double> sliding_window_current_percent_dropped_;
-  bool export_extra_metrics_ = !features::StopExportDFCMetrics();
 
   // Sets to true on a newly dropped frame and stays true as long as the frames
   // that follow are dropped. Reset when a frame is presented. It is used to

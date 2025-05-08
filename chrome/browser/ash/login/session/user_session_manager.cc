@@ -17,6 +17,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
+#include "ash/public/cpp/token_handle_store.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/base_paths.h"
@@ -83,10 +84,11 @@
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer_factory.h"
+#include "chrome/browser/ash/login/signin/legacy_token_handle_fetcher.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter_factory.h"
-#include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
+#include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
@@ -132,6 +134,7 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -370,7 +373,24 @@ void InitLocaleAndInputMethodsForNewUser(
   prefs->SetBoolean(::prefs::kLanguageShouldMergeInputMethods, true);
 }
 
-bool CanPerformEarlyRestart() {
+bool IsKioskProfile(Profile* profile) {
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  return user && user->IsKioskType();
+}
+
+bool AreKioskTroubleshootingToolsEnabled(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      ::prefs::kKioskTroubleshootingToolsEnabled);
+}
+
+bool CanPerformEarlyRestart(Profile* profile) {
+  // Allow early restart in kiosk mode to apply flags for experimentation when
+  // the troubleshooting tools policy is set.
+  if (IsKioskProfile(profile) && AreKioskTroubleshootingToolsEnabled(profile)) {
+    return true;
+  }
+
   const ExistingUserController* controller =
       ExistingUserController::current_controller();
   if (!controller)
@@ -985,14 +1005,9 @@ bool UserSessionManager::RestartToApplyPerSessionFlagsIfNeed(
 
   MaybeSaveSessionStartedTimeBeforeRestart(profile);
 
-  // Kiosk sessions keeps the startup flags.
-  if (user_manager::UserManager::Get() &&
-      user_manager::UserManager::Get()->IsLoggedInAsKioskApp()) {
+  if (early_restart && !CanPerformEarlyRestart(profile)) {
     return false;
   }
-
-  if (early_restart && !CanPerformEarlyRestart())
-    return false;
 
   // We can't really restart if we've already restarted as a part of
   // user session restore after crash of in case when flags were changed inside
@@ -1661,19 +1676,14 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
       }
     }
 
-    const bool in_session_password_change_feature_enabled =
-        base::FeatureList::IsEnabled(::features::kInSessionPasswordChange);
-
-    if (in_session_password_change_feature_enabled &&
-        user_context_.GetSamlPasswordAttributes().has_value()) {
+    if (user_context_.GetSamlPasswordAttributes().has_value()) {
       // Update password expiry data if new data came in during SAML login,
       // and the in-session password change feature is enabled:
       user_context_.GetSamlPasswordAttributes()->SaveToPrefs(
           profile->GetPrefs());
 
-    } else if (!in_session_password_change_feature_enabled ||
-               user_context_.GetAuthFlow() ==
-                   UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML) {
+    } else if (user_context_.GetAuthFlow() ==
+               UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML) {
       // These attributes are no longer relevant and should be deleted if
       // either a) the in-session password change feature is no longer enabled
       // or b) this user is no longer using SAML to log in.
@@ -2121,10 +2131,10 @@ void UserSessionManager::OnUserProfileLoaded(Profile* profile,
       // If the user has gone through an online Gaia flow, then their LST is
       // guaranteed to have changed/created. We need to update the token handle,
       // regardless of the state of the previous token handle, if any.
-      if (!token_handle_util_->HasToken(user_context_.GetAccountId())) {
+      if (!token_handle_store_->HasToken(user_context_.GetAccountId())) {
         // New user.
-        token_handle_fetcher_ = std::make_unique<TokenHandleFetcher>(
-            profile, token_handle_util_.get(), user_context_.GetAccountId());
+        token_handle_fetcher_ = std::make_unique<LegacyTokenHandleFetcher>(
+            profile, token_handle_store_.get(), user_context_.GetAccountId());
         token_handle_fetcher_->FillForNewUser(
             user_context_.GetAccessToken(),
             Sha1Digest(user_context_.GetRefreshToken()),
@@ -2550,7 +2560,6 @@ bool UserSessionManager::TokenHandlesEnabled() {
 
 void UserSessionManager::Shutdown() {
   token_handle_fetcher_.reset();
-  token_handle_util_.reset();
   token_observers_.clear();
   always_on_vpn_manager_.reset();
   child_policy_observer_.reset();
@@ -2559,6 +2568,7 @@ void UserSessionManager::Shutdown() {
   password_service_voted_.reset();
   password_was_saved_ = false;
   xdr_manager_.reset();
+  token_handle_store_ = nullptr;
 }
 
 void UserSessionManager::SetSwitchesForUser(
@@ -2616,15 +2626,17 @@ UserSessionManager::GetUserSessionManagerAsWeakPtr() {
 }
 
 void UserSessionManager::CreateTokenUtilIfMissing() {
-  if (!token_handle_util_.get())
-    token_handle_util_ = std::make_unique<TokenHandleUtil>();
+  if (!token_handle_store_) {
+    token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
+  }
 }
 
 void UserSessionManager::UpdateTokenHandleIfRequired(
     Profile* const profile,
     const AccountId& account_id) {
-  if (!token_handle_util_->ShouldObtainHandle(account_id))
+  if (!token_handle_store_->ShouldObtainHandle(account_id)) {
     return;
+  }
   if (token_handle_fetcher_.get())
     return;
 
@@ -2633,8 +2645,8 @@ void UserSessionManager::UpdateTokenHandleIfRequired(
 
 void UserSessionManager::UpdateTokenHandle(Profile* const profile,
                                            const AccountId& account_id) {
-  token_handle_fetcher_ = std::make_unique<TokenHandleFetcher>(
-      profile, token_handle_util_.get(), account_id);
+  token_handle_fetcher_ = std::make_unique<LegacyTokenHandleFetcher>(
+      profile, token_handle_store_.get(), account_id);
   token_handle_fetcher_->BackfillToken(
       base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
                      GetUserSessionManagerAsWeakPtr()));

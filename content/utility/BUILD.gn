@@ -80,12 +80,12 @@ source_set("utility") {
     "//url",
   ]
 
-  if (is_linux) {
-    deps += [ "//services/video_effects:sandbox_hook" ]
-  }
-
   if (enable_video_effects) {
     deps += [ "//services/video_effects:service" ]
+
+    if (is_linux) {
+      deps += [ "//services/video_effects:sandbox_hook" ]
+    }
   }
 
   # When library CDMs are supported, we support running the CDM in the utility
@@ -104,7 +104,7 @@ source_set("utility") {
       "//chromeos/ash/services/ime:sandbox_hook",
       "//chromeos/services/tts:sandbox_hook",
     ]
-    if (use_vaapi || use_v4l2_codec) {
+    if (use_linux_video_acceleration) {
       deps += [ "//chromeos/ash/experiences/arc/video_accelerator" ]
     }
   }
@@ -112,12 +112,16 @@ source_set("utility") {
   if (is_linux || is_chromeos) {
     deps += [
       "//content/utility/speech:speech_recognition_sandbox_hook",
-      "//gpu/config",
       "//media/gpu/sandbox",
       "//media/mojo/services",
       "//services/network:network_sandbox_hook",
-      "//third_party/angle:angle_gpu_info_util",
     ]
+    if (use_linux_video_acceleration) {
+      deps += [
+        "//gpu/config",
+        "//third_party/angle:angle_gpu_info_util",
+      ]
+    }
     if (enable_oop_printing) {
       deps += [ "//printing:printing_sandbox_hook" ]
     }

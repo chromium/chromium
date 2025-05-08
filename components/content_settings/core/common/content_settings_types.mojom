@@ -221,6 +221,8 @@ enum ContentSettingsType {
   // Stores whether to allow insecure websites to make private network requests.
   // See also: https://wicg.github.io/cors-rfc1918
   // Set through enterprise policies only.
+  //
+  // TODO(crbug.com/394636065): remove this
   INSECURE_PRIVATE_NETWORK,
 
   // Content setting which stores whether or not a site can access low-level
@@ -483,5 +485,9 @@ enum ContentSettingsType {
   // Content setting for whether the site is allowed to make local network
   // requests.
   LOCAL_NETWORK_ACCESS,
+
+  // Stores information on-device language packs for which a site has
+  // installed using the Web Speech API.
+  ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
 };
 // LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)

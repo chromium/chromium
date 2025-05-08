@@ -2,34 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import './destination_dialog.js';
 import './destination_select.js';
-import './print_preview_shared.css.js';
-import './print_preview_vars.css.js';
-import './throbber.css.js';
-import './settings_section.js';
 import '/strings.m.js';
 
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Destination, RecentDestination} from '../data/destination.js';
 import {createRecentDestinationKey, isPdfPrinter, makeRecentDestination, PrinterType} from '../data/destination.js';
-
 import {DestinationErrorType, DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
 import {Error, State} from '../data/state.js';
 
 import type {PrintPreviewDestinationDialogElement} from './destination_dialog.js';
 import type {PrintPreviewDestinationSelectElement} from './destination_select.js';
-import {getTemplate} from './destination_settings.html.js';
-import {SettingsMixin} from './settings_mixin.js';
+import {getHtml} from './destination_settings.html.js';
+import {getCss as getPrintPreviewSharedLitCss} from './print_preview_shared_lit.css.js';
+import {SettingsMixinLit} from './settings_mixin_lit.js';
 
 export enum DestinationState {
   INIT = 0,
@@ -50,13 +45,13 @@ const NUM_UNPINNED_DESTINATIONS: number = 3;
 export interface PrintPreviewDestinationSettingsElement {
   $: {
     destinationDialog:
-        CrLazyRenderElement<PrintPreviewDestinationDialogElement>,
+        CrLazyRenderLitElement<PrintPreviewDestinationDialogElement>,
     destinationSelect: PrintPreviewDestinationSelectElement,
   };
 }
 
 const PrintPreviewDestinationSettingsElementBase =
-    I18nMixin(WebUiListenerMixin(SettingsMixin(PolymerElement)));
+    I18nMixinLit(WebUiListenerMixinLit(SettingsMixinLit(CrLitElement)));
 
 export class PrintPreviewDestinationSettingsElement extends
     PrintPreviewDestinationSettingsElementBase {
@@ -64,78 +59,61 @@ export class PrintPreviewDestinationSettingsElement extends
     return 'print-preview-destination-settings';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getPrintPreviewSharedLitCss(),
+    ];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      dark: Boolean,
+      dark: {type: Boolean},
 
       destination: {
         type: Object,
         notify: true,
-        value: null,
       },
 
       destinationState: {
         type: Number,
         notify: true,
-        value: DestinationState.INIT,
-        observer: 'updateDestinationSelect_',
       },
 
-      disabled: Boolean,
+      disabled: {type: Boolean},
 
       error: {
         type: Number,
         notify: true,
-        observer: 'onErrorChanged_',
       },
 
-      firstLoad: Boolean,
-
-      state: Number,
-
-      destinationStore_: {
-        type: Object,
-        value: null,
-      },
-
-      displayedDestinations_: Array,
-
-      isDialogOpen_: {
-        type: Boolean,
-        value: false,
-      },
-
-      noDestinations_: {
-        type: Boolean,
-        value: false,
-      },
-
-      pdfPrinterDisabled_: Boolean,
-
-      loaded_: {
-        type: Boolean,
-        computed: 'computeLoaded_(destinationState, destination)',
-      },
+      firstLoad: {type: Boolean},
+      state: {type: Number},
+      destinationStore_: {type: Object},
+      displayedDestinations_: {type: Array},
+      isDialogOpen_: {type: Boolean},
+      noDestinations_: {type: Boolean},
+      pdfPrinterDisabled_: {type: Boolean},
+      loaded_: {type: Boolean},
     };
   }
 
-  declare dark: boolean;
-  declare destination: Destination;
-  declare destinationState: DestinationState;
-  declare disabled: boolean;
-  declare error: Error;
-  declare firstLoad: boolean;
-  declare state: State;
-  declare private destinationStore_: DestinationStore|null;
-  declare private displayedDestinations_: Destination[];
-  declare private isDialogOpen_: boolean;
-  declare private noDestinations_: boolean;
-  declare private pdfPrinterDisabled_: boolean;
-  declare private loaded_: boolean;
+  accessor dark: boolean;
+  accessor destination: Destination|null = null;
+  accessor destinationState: DestinationState = DestinationState.INIT;
+  accessor disabled: boolean;
+  accessor error: Error;
+  accessor firstLoad: boolean;
+  accessor state: State;
+  protected accessor destinationStore_: DestinationStore|null = null;
+  protected accessor displayedDestinations_: Destination[];
+  private accessor isDialogOpen_: boolean = false;
+  protected accessor noDestinations_: boolean = false;
+  protected accessor pdfPrinterDisabled_: boolean;
+  protected accessor loaded_: boolean;
 
   private lastUser_: string = '';
   private tracker_: EventTracker = new EventTracker();
@@ -170,6 +148,27 @@ export class PrintPreviewDestinationSettingsElement extends
 
     this.destinationStore_!.resetTracker();
     this.tracker_.removeAll();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('error')) {
+      this.onErrorChanged_();
+    }
+
+    if (changedProperties.has('destinationState') ||
+        changedProperties.has('destination')) {
+      this.loaded_ = this.computeLoaded_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('destinationState')) {
+      this.updateDestinationSelect_();
+    }
   }
 
   /**
@@ -233,8 +232,13 @@ export class PrintPreviewDestinationSettingsElement extends
     this.updateRecentDestinations_();
   }
 
-  private onDestinationCapabilitiesReady_() {
-    this.notifyPath('destination.capabilities');
+  private async onDestinationCapabilitiesReady_() {
+    // Wait for any 'destination-changed' events to be fired first.
+    await this.updateComplete;
+
+    this.fire(
+        'destination-capabilities-changed',
+        this.destinationStore_!.selectedDestination);
     this.updateRecentDestinations_();
     if (this.destinationState === DestinationState.SET) {
       this.destinationState = DestinationState.UPDATED;
@@ -308,12 +312,19 @@ export class PrintPreviewDestinationSettingsElement extends
       indexFound = NUM_PERSISTED_DESTINATIONS - 1;
     }
 
+    // Create a clone first, otherwise array modifications will not be detected
+    // by the underlying Observable instance.
+    const recentDestinationsClone = recentDestinations.slice();
+
     if (indexFound !== -1) {
-      this.setSettingSplice('recentDestinations', indexFound, 1, null);
+      // Remove from the list if it already exists, it will be re-added to the
+      // front below.
+      recentDestinationsClone.splice(indexFound, 1);
     }
 
     // Add the most recent destination
-    this.setSettingSplice('recentDestinations', 0, 0, newDestination);
+    recentDestinationsClone.splice(0, 0, newDestination);
+    this.setSetting('recentDestinations', recentDestinationsClone);
 
     // The dropdown needs to be updated if a new printer or one not currently
     // visible in the dropdown has been added.
@@ -348,7 +359,7 @@ export class PrintPreviewDestinationSettingsElement extends
   /**
    * @return Whether the destinations dropdown should be disabled.
    */
-  private shouldDisableDropdown_(): boolean {
+  protected shouldDisableDropdown_(): boolean {
     return this.state === State.FATAL_ERROR ||
         (this.destinationState === DestinationState.UPDATED && this.disabled &&
          this.state !== State.NOT_READY);
@@ -366,7 +377,7 @@ export class PrintPreviewDestinationSettingsElement extends
    * @param e Event containing the key of the recent destination that was
    *     selected, or "seeMore".
    */
-  private onSelectedDestinationOptionChange_(e: CustomEvent<string>) {
+  protected onSelectedDestinationOptionChange_(e: CustomEvent<string>) {
     const value = e.detail;
     if (value === 'seeMore') {
       this.destinationStore_!.startLoadAllDestinations();
@@ -377,7 +388,7 @@ export class PrintPreviewDestinationSettingsElement extends
     }
   }
 
-  private onDialogClose_() {
+  protected onDialogClose_() {
     // Reset the select value if the user dismissed the dialog without
     // selecting a new destination.
     this.updateDestinationSelect_();
@@ -395,12 +406,11 @@ export class PrintPreviewDestinationSettingsElement extends
 
     const shouldFocus =
         this.destinationState !== DestinationState.SET && !this.firstLoad;
-    beforeNextRender(this.$.destinationSelect, () => {
-      this.$.destinationSelect.updateDestination();
-      if (shouldFocus) {
-        this.$.destinationSelect.focus();
-      }
-    });
+
+    this.$.destinationSelect.updateDestination();
+    if (shouldFocus) {
+      this.$.destinationSelect.focus();
+    }
   }
 
   getDestinationStoreForTest(): DestinationStore {
@@ -408,6 +418,8 @@ export class PrintPreviewDestinationSettingsElement extends
     return this.destinationStore_;
   }
 }
+
+export type DestinationSettingsElement = PrintPreviewDestinationSettingsElement;
 
 declare global {
   interface HTMLElementTagNameMap {

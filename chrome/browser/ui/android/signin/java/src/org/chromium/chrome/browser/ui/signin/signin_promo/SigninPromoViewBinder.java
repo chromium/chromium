@@ -11,12 +11,14 @@ import android.view.ViewGroup;
 
 import androidx.annotation.DimenRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 final class SigninPromoViewBinder {
     public static void bind(
             PropertyModel model, PersonalizedSigninPromoView view, PropertyKey key) {

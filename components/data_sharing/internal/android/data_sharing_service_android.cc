@@ -260,9 +260,8 @@ ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetDataSharingUrl(
 ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::ParseDataSharingUrl(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
-  DataSharingService::ParseUrlResult parse_result =
-      data_sharing_service_->ParseDataSharingUrl(
-          url::GURLAndroid::ToNativeGURL(env, j_url));
+  ParseUrlResult parse_result = DataSharingUtils::ParseDataSharingUrl(
+      url::GURLAndroid::ToNativeGURL(env, j_url));
   return DataSharingConversionBridge::CreateParseUrlResult(env, parse_result);
 }
 

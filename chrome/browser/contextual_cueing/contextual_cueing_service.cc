@@ -59,17 +59,6 @@ bool IsGlicTabContextEnabled(PrefService* pref_service) {
 }
 #endif
 
-void DeleteZeroStateSuggestionsPageData(
-    base::WeakPtr<content::WebContents> web_contents) {
-  if (!web_contents) {
-    return;
-  }
-  if (ZeroStateSuggestionsPageData::GetForPage(
-          web_contents->GetPrimaryPage())) {
-    ZeroStateSuggestionsPageData::DeleteForPage(web_contents->GetPrimaryPage());
-  }
-}
-
 }  // namespace
 
 ContextualCueingService::ContextualCueingService(
@@ -234,6 +223,12 @@ void ContextualCueingService::OnNudgeActivity(
       break;
     case tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged:
       interaction = NudgeInteraction::kIgnoredTabChange;
+      // The ActiveTabChanged activity is called very aggresivly and there may
+      // not be an actively shown nudge. We should only log this as an action if
+      // there is a shown nudge is dismissed
+      if (!nudge_time) {
+        return;
+      }
       log_ukm = true;
       break;
     case tabs::GlicNudgeActivity::kNudgeIgnoredNavigation:
@@ -305,31 +300,32 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
     return;
   }
 
-  // Remote suggestions generation.
   ZeroStateSuggestionsPageData* page_data =
       ZeroStateSuggestionsPageData::GetOrCreateForPage(
           web_contents->GetPrimaryPage());
   page_data->FetchSuggestions(
       is_fre, base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
-                             GetWeakPtr(), web_contents, std::move(callback)));
+                             weak_ptr_factory_.GetWeakPtr(),
+                             base::TimeTicks::Now(), std::move(callback)));
 #else
   std::move(callback).Run(std::nullopt);
 #endif
 }
 
 void ContextualCueingService::OnSuggestionsReceived(
-    content::WebContents* web_contents,
+    base::TimeTicks fetch_begin_time,
     GlicSuggestionsCallback callback,
     std::optional<std::vector<std::string>> suggestions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::move(callback).Run(suggestions);
+  base::UmaHistogramTimes(suggestions
+                              ? "ContextualCueing.GlicSuggestions."
+                                "SuggestionsFetchLatency.ValidSuggestions"
+                              : "ContextualCueing.GlicSuggestions."
+                                "SuggestionsFetchLatency.EmptySuggestions",
+                          base::TimeTicks::Now() - fetch_begin_time);
 
-  // Delete zero state suggestions at end. It is possible for multiple callbacks
-  // to be run, so do not delete page data until all of those have been run.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&DeleteZeroStateSuggestionsPageData,
-                                web_contents->GetWeakPtr()));
+  std::move(callback).Run(suggestions);
 }
 
 void ContextualCueingService::OnPageContentExtracted(

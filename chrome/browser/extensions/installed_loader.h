@@ -56,7 +56,7 @@ class InstalledLoader {
   void LoadAllExtensions(Profile* profile);
 
   // Record a histogram using the PermissionMessage enum values for each
-  // permission in |e|.
+  // permission in `extension`.
   // NOTE: If this is ever called with high frequency, the implementation may
   // need to be made more efficient.
   static void RecordPermissionMessagesHistogram(

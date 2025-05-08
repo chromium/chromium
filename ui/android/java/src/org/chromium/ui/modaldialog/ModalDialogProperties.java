@@ -54,15 +54,13 @@ public class ModalDialogProperties {
     @IntDef({
         ModalDialogProperties.ButtonType.POSITIVE,
         ModalDialogProperties.ButtonType.NEGATIVE,
-        ModalDialogProperties.ButtonType.TITLE_ICON,
         ButtonType.POSITIVE_EPHEMERAL
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonType {
         int POSITIVE = 0;
         int NEGATIVE = 1;
-        int TITLE_ICON = 2;
-        int POSITIVE_EPHEMERAL = 3;
+        int POSITIVE_EPHEMERAL = 2;
     }
 
     /**

@@ -49,11 +49,6 @@ bool PaymentDetailsModifier::operator==(
          additional_display_items == other.additional_display_items;
 }
 
-bool PaymentDetailsModifier::operator!=(
-    const PaymentDetailsModifier& other) const {
-  return !(*this == other);
-}
-
 base::Value::Dict PaymentDetailsModifier::ToValueDict() const {
   base::Value::Dict result;
   result.Set(kPaymentDetailsModifierSupportedMethods,

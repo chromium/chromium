@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
@@ -144,6 +145,10 @@ InterpolationValue CSSFontVariationSettingsInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
     ConversionCheckers&) const {
+  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
+  // and sibling-count() if necessary.
+  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
+  // if necessary.
   scoped_refptr<FontVariationSettings> settings =
       StyleBuilderConverter::ConvertFontVariationSettings(state, value);
   return ConvertFontVariationSettings(settings.get());
@@ -178,7 +183,7 @@ void CSSFontVariationSettingsInterpolationType::Composite(
     underlying_value_owner.MutableValue().interpolable_value->ScaleAndAdd(
         underlying_fraction, *value.interpolable_value);
   } else {
-    underlying_value_owner.Set(*this, value);
+    underlying_value_owner.Set(this, value);
   }
 }
 

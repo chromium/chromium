@@ -28,7 +28,7 @@
 
 namespace content {
 class NavigationHandle;
-class NavigationThrottle;
+class NavigationThrottleRegistry;
 class Page;
 class RenderFrameHost;
 }  // namespace content
@@ -179,8 +179,7 @@ class ContentSubresourceFilterThrottleManager
   //
   // Note that there is currently no constraints on the ordering of throttles.
   void MaybeAppendNavigationThrottles(
-      content::NavigationHandle* navigation_handle,
-      std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles);
+      content::NavigationThrottleRegistry& registry);
 
   PageLoadStatistics* page_load_statistics() const { return statistics_.get(); }
 

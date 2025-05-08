@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.price_tracking;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentProperties.PRICE_TRACKING_BUTTON_BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentProperties.PRICE_TRACKING_BUTTON_FOREGROUND_COLOR;
 import static org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentProperties.PRICE_TRACKING_BUTTON_ICON;
@@ -14,13 +15,14 @@ import static org.chromium.chrome.browser.price_tracking.PriceTrackingBottomShee
 import android.content.Context;
 import android.view.View.OnClickListener;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -33,6 +35,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 
 /** Mediator for price tracking bottom sheet responsible for property model update. */
+@NullMarked
 public class PriceTrackingBottomSheetContentMediator {
     private final Context mContext;
     private final Supplier<Tab> mTabSupplier;
@@ -41,14 +44,14 @@ public class PriceTrackingBottomSheetContentMediator {
     private final Callback<Boolean> mUpdatePriceTrackingButtonModelCallback =
             this::updatePriceTrackingButtonModel;
 
-    private ObservableSupplier<Boolean> mPriceTrackingStateSupplier;
+    private @Nullable ObservableSupplier<Boolean> mPriceTrackingStateSupplier;
     private @PriceBucket int mPriceBucket;
 
     public PriceTrackingBottomSheetContentMediator(
-            @NonNull Context context,
-            @NonNull Supplier<Tab> tabSupplier,
-            @NonNull PropertyModel propertyModel,
-            @NonNull PriceInsightsDelegate priceInsightsDelegate) {
+            Context context,
+            Supplier<Tab> tabSupplier,
+            PropertyModel propertyModel,
+            PriceInsightsDelegate priceInsightsDelegate) {
         mContext = context;
         mTabSupplier = tabSupplier;
         mPropertyModel = propertyModel;
@@ -72,7 +75,8 @@ public class PriceTrackingBottomSheetContentMediator {
                 (url, info) -> {
                     boolean hasProductInfo = info != null && info.productClusterId.isPresent();
                     if (hasProductInfo) {
-                        updatePriceTrackingButtonModel(mPriceTrackingStateSupplier.get());
+                        updatePriceTrackingButtonModel(
+                                assumeNonNull(mPriceTrackingStateSupplier).get());
                     }
                     contentReadyCallback.onResult(hasProductInfo);
                 });
@@ -136,7 +140,8 @@ public class PriceTrackingBottomSheetContentMediator {
             logPriceTrackingButtonClicked(shouldBeTracked);
             Callback<Boolean> callback =
                     (success) -> {
-                        updatePriceTrackingButtonModel(mPriceTrackingStateSupplier.get());
+                        updatePriceTrackingButtonModel(
+                                assumeNonNull(mPriceTrackingStateSupplier).get());
                         showToastMessage(shouldBeTracked, success);
                     };
             updatePriceTrackingButtonState(shouldBeTracked);

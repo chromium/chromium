@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 
 #include <cmath>
+#include <optional>
 
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
@@ -583,6 +584,43 @@ DiscreteSet<bool> RescaleSetFromConstraint(
     return DiscreteSet<bool>({true});
 
   return DiscreteSet<bool>::EmptySet();
+}
+
+NumericRangeWithBoolSupportSet<double>
+DoubleRangeWithBoolSupportSetFromConstraint(
+    const DoubleOrBooleanConstraint& constraint) {
+  if (!constraint.HasMandatory()) {
+    return NumericRangeWithBoolSupportSet<double>();
+  }
+
+  std::optional<double> max, min;
+  std::optional<bool> support;
+
+  if (constraint.HasMax()) {
+    max = constraint.Max();
+    support = true;
+  }
+  if (constraint.HasMin()) {
+    min = constraint.Min();
+    support = true;
+  }
+  if (constraint.HasExact()) {
+    if ((max && *max < constraint.Exact()) ||
+        (min && *min > constraint.Exact())) {
+      return NumericRangeWithBoolSupportSet<double>::EmptySet();
+    }
+    max = min = constraint.Exact();
+    support = true;
+  }
+  if (constraint.HasExactBoolean()) {
+    if (support.has_value() && *support != constraint.ExactBoolean()) {
+      return NumericRangeWithBoolSupportSet<double>::EmptySet();
+    }
+    support = constraint.ExactBoolean();
+  }
+
+  return NumericRangeWithBoolSupportSet<double>(std::move(min), std::move(max),
+                                                std::move(support));
 }
 
 }  // namespace media_constraints

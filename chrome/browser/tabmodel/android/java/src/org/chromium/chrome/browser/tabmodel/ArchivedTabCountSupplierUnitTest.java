@@ -1,0 +1,124 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.tabmodel;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
+
+import java.util.List;
+
+/** Unit tests for {@link ArchivedTabCountSupplier}. */
+@RunWith(BaseRobolectricTestRunner.class)
+public class ArchivedTabCountSupplierUnitTest {
+    private static final int BASE_TAB_COUNT = 1;
+    private static final int TAB_MODEL_TAB_COUNT = 2;
+    private static final String SYNC_GROUP_ID = "test_sync_group_id1";
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private ObservableSupplier<Integer> mArchivedTabModelTabCountSupplier;
+    @Mock private TabModel mTabModel;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+
+    @Captor ArgumentCaptor<Callback<Integer>> mArchivedTabModelTabCountObserverCaptor;
+    @Captor ArgumentCaptor<Observer> mTabGroupSyncServiceObserverCaptor;
+
+    private ArchivedTabCountSupplier mArchivedTabCountSupplier;
+
+    @Before
+    public void setUp() {
+        when(mTabModel.getTabCountSupplier()).thenReturn(mArchivedTabModelTabCountSupplier);
+        when(mArchivedTabModelTabCountSupplier.get()).thenReturn(BASE_TAB_COUNT);
+        doReturn(null)
+                .when(mArchivedTabModelTabCountSupplier)
+                .addObserver(mArchivedTabModelTabCountObserverCaptor.capture());
+        doNothing()
+                .when(mTabGroupSyncService)
+                .addObserver(mTabGroupSyncServiceObserverCaptor.capture());
+
+        mArchivedTabCountSupplier = new ArchivedTabCountSupplier(mTabModel, mTabGroupSyncService);
+    }
+
+    @Test
+    public void testTabModelUpdate() {
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.syncId = SYNC_GROUP_ID;
+        savedTabGroup.savedTabs = List.of(savedTab);
+        savedTabGroup.archivalTimeMs = System.currentTimeMillis();
+
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID)).thenReturn(savedTabGroup);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID});
+        when(mTabModel.getCount()).thenReturn(TAB_MODEL_TAB_COUNT);
+
+        mArchivedTabModelTabCountObserverCaptor.getValue().onResult(TAB_MODEL_TAB_COUNT);
+        assertEquals(
+                TAB_MODEL_TAB_COUNT + savedTabGroup.savedTabs.size(),
+                mArchivedTabCountSupplier.get().intValue());
+    }
+
+    @Test
+    public void testTabGroupSyncUpdate() {
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.syncId = SYNC_GROUP_ID;
+        savedTabGroup.savedTabs = List.of(savedTab);
+        savedTabGroup.archivalTimeMs = System.currentTimeMillis();
+
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID)).thenReturn(savedTabGroup);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID});
+        when(mTabModel.getCount()).thenReturn(TAB_MODEL_TAB_COUNT);
+
+        mTabGroupSyncServiceObserverCaptor.getValue().onInitialized();
+        assertEquals(
+                TAB_MODEL_TAB_COUNT + savedTabGroup.savedTabs.size(),
+                mArchivedTabCountSupplier.get().intValue());
+    }
+
+    @Test
+    public void testAllObserversUpdate() {
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.syncId = SYNC_GROUP_ID;
+        savedTabGroup.savedTabs = List.of(savedTab);
+        savedTabGroup.archivalTimeMs = System.currentTimeMillis();
+
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID)).thenReturn(savedTabGroup);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID});
+        when(mTabModel.getCount()).thenReturn(BASE_TAB_COUNT);
+
+        mTabGroupSyncServiceObserverCaptor.getValue().onInitialized();
+        assertEquals(
+                BASE_TAB_COUNT + savedTabGroup.savedTabs.size(),
+                mArchivedTabCountSupplier.get().intValue());
+
+        when(mTabModel.getCount()).thenReturn(TAB_MODEL_TAB_COUNT);
+
+        mArchivedTabModelTabCountObserverCaptor.getValue().onResult(TAB_MODEL_TAB_COUNT);
+        assertEquals(
+                TAB_MODEL_TAB_COUNT + savedTabGroup.savedTabs.size(),
+                mArchivedTabCountSupplier.get().intValue());
+    }
+}

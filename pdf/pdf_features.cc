@@ -45,7 +45,7 @@ BASE_FEATURE(kPdfSaveOriginalFromMemory,
              "PdfSaveOriginalFromMemory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPdfSearchify, "PdfSearchify", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPdfSearchify, "PdfSearchify", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPdfSearchifySave,
              "PdfSearchifySave",

@@ -66,6 +66,15 @@ class SharedTabGroupAccountDataSyncBridge : public syncer::DataTypeSyncBridge,
   void SavedTabGroupModelLoaded() override;
   void SavedTabGroupTabLastSeenTimeUpdated(const base::Uuid& saved_tab_id,
                                            TriggerSource source) override;
+  void SavedTabGroupUpdatedLocally(
+      const base::Uuid& group_guid,
+      const std::optional<base::Uuid>& tab_guid) override;
+  void SavedTabGroupUpdatedFromSync(
+      const base::Uuid& group_guid,
+      const std::optional<base::Uuid>& tab_guid) override;
+  void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;
+  void SavedTabGroupRemovedFromSync(
+      const SavedTabGroup& removed_group) override;
 
   // Returns whether the sync bridge has initialized by reading data
   // from the on-disk store.
@@ -73,6 +82,8 @@ class SharedTabGroupAccountDataSyncBridge : public syncer::DataTypeSyncBridge,
 
   // Returns whether the bridge is tracking the storage key for this tab.
   bool HasSpecificsForTab(const SavedTabGroupTab& tab) const;
+  std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>
+  GetSpecificsForStorageKey(const std::string& storage_key) const;
 
  private:
   // Loads the data already stored in the DataTypeStore.
@@ -101,6 +112,10 @@ class SharedTabGroupAccountDataSyncBridge : public syncer::DataTypeSyncBridge,
   // Write a new entity to sync. This is used when the model is updated
   // with a new value and sync needs to be triggered.
   void WriteEntityToSync(std::unique_ptr<syncer::EntityData> entity);
+
+  // Delete an entity from sync. Also deletes from local storage and in-memory
+  // cache.
+  void RemoveEntitySpecifics(const std::string& storage_key);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

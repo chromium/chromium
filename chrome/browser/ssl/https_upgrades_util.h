@@ -40,9 +40,6 @@ bool IsBalancedModeAvailable();
 // in security settings.
 bool IsBalancedModeEnabled(PrefService* prefs);
 
-// Returns true if the updated HTTPS-First Mode interstitial should be used.
-bool IsNewHttpsFirstModeInterstitialEnabled();
-
 // Returns true if the HTTPS-First Mode interstitial is enabled globally by the
 // UI pref or by one of the Site Engagement and Typically Secure User
 // heuristics.

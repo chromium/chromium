@@ -122,6 +122,7 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
     case autofill::FillingProduct::kAutofillAi:
     case autofill::FillingProduct::kMerchantPromoCode:
     case autofill::FillingProduct::kLoyaltyCard:
+    case autofill::FillingProduct::kIdentityCredential:
       // These cases are currently not available on iOS.
       NOTREACHED();
   }

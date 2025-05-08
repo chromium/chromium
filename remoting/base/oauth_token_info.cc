@@ -6,11 +6,11 @@
 
 namespace remoting {
 
-OAuthTokenInfo::OAuthTokenInfo(const std::string& token)
-    : access_token_(token), user_email_("") {}
+OAuthTokenInfo::OAuthTokenInfo(const std::string& access_token)
+    : access_token_(access_token), user_email_("") {}
 
-OAuthTokenInfo::OAuthTokenInfo(const std::string& token,
-                               const std::string& email)
-    : access_token_(token), user_email_(email) {}
+OAuthTokenInfo::OAuthTokenInfo(const std::string& access_token,
+                               const std::string& user_email)
+    : access_token_(access_token), user_email_(user_email) {}
 
 }  // namespace remoting

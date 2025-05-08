@@ -45,7 +45,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "components/policy/core/common/device_local_account_type.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
@@ -82,10 +82,13 @@ const web_package::test::Ed25519KeyPair kPublicKeyPair =
     test::GetDefaultEd25519KeyPair();
 
 const SignedWebBundleId kWebBundleId2 = test::GetDefaultEcdsaP256WebBundleId();
+const web_package::test::EcdsaP256KeyPair kPublicKeyPair2 =
+    test::GetDefaultEcdsaP256KeyPair();
 
 KioskMixin::Config GetKioskIwaManualLaunchConfig(
+    const SignedWebBundleId& bundle_id,
     const GURL& update_manifest_url) {
-  KioskMixin::IsolatedWebAppOption iwa_option(kEmail, kWebBundleId,
+  KioskMixin::IsolatedWebAppOption iwa_option(kEmail, bundle_id,
                                               update_manifest_url);
   return {kIwaName,
           /*auto_launch_account_id=*/{},
@@ -248,6 +251,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
                      kiosk_mixin.Configure(
                          scoped_update,
                          GetKioskIwaManualLaunchConfig(
+                             installed_iwa,
                              iwa_mixin_.GetUpdateManifestUrl(installed_iwa)));
                    },
                },
@@ -321,10 +325,15 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   }
 
   void AddNewVersionToUpdateServer(std::string_view version) {
+    AddNewIwaToServer(kPublicKeyPair, version);
+  }
+
+  void AddNewIwaToServer(const web_package::test::KeyPair& key_pair,
+                         std::string_view version) {
     iwa_mixin_.AddBundle(
         IsolatedWebAppBuilder(
             ManifestBuilder().SetName(kIwaName).SetVersion(version))
-            .BuildBundle(kPublicKeyPair));
+            .BuildBundle(key_pair));
   }
 
   void OpenIwa() { OpenIsolatedWebApp(profile(), GetAppId()); }
@@ -499,34 +508,42 @@ INSTANTIATE_TEST_SUITE_P(
     IwaCacheTest,
     testing::Values(SessionType::kManagedGuestSession, SessionType::kKiosk));
 
-// This test class is made for cases when Managed Guest Session configuration
-// need to be different from the one in `IwaCacheBaseTest`. Call
-// `ConfigureSession` in test with specified parameters.
-class IwaCacheNonConfiguredManagedGuestSessionTest : public IwaCacheBaseTest {
+// This test class is made for cases when session configuration need to be
+// different from the one in `IwaCacheBaseTest`. Call `ConfigureSession` in
+// tests with specified parameters.
+class IwaCacheNonConfiguredSessionTest
+    : public IwaCacheBaseTest,
+      public testing::WithParamInterface<SessionType> {
  public:
-  IwaCacheNonConfiguredManagedGuestSessionTest()
-      : IwaCacheBaseTest(SessionType::kManagedGuestSession,
+  IwaCacheNonConfiguredSessionTest()
+      : IwaCacheBaseTest(GetParam(),
                          /*should_configure_session=*/false) {}
 };
 
-IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredManagedGuestSessionTest,
+IN_PROC_BROWSER_TEST_P(IwaCacheNonConfiguredSessionTest,
                        PRE_RemoveCachedBundleForUninstalledIwa) {
   ConfigureSession(kWebBundleId);
   LaunchSession();
   AssertAppInstalledAtVersion(kBaseVersion);
-  WaitUntilPathExists(GetCachedBundlePath(kBaseVersion));
+  WaitUntilPathExists(GetCachedBundlePath(kBaseVersion, kWebBundleId));
 }
 
-// When IWA is no longer in the force install policy list, `IwaCacheManager`
-// will remove it's cache on session start.
-IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredManagedGuestSessionTest,
+// When IWA is no longer in the policy list, `IwaCacheManager` will remove it's
+// cache on session start.
+IN_PROC_BROWSER_TEST_P(IwaCacheNonConfiguredSessionTest,
                        RemoveCachedBundleForUninstalledIwa) {
+  AddNewIwaToServer(kPublicKeyPair2, kBaseVersion);
   ConfigureSession(kWebBundleId2);
   LaunchSession();
 
-  auto bundle_path = GetCachedBundlePath(kBaseVersion, kWebBundleId2);
+  auto bundle_path = GetCachedBundlePath(kBaseVersion, kWebBundleId);
   WaitUntilPathDoesNotExist(bundle_path);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IwaCacheNonConfiguredSessionTest,
+    testing::Values(SessionType::kManagedGuestSession, SessionType::kKiosk));
 
 // Covers Managed Guest Session (MGS) specific tests which cannot be tested in
 // kiosk. For example, kiosk always launch the IWA app, but in MGS it is

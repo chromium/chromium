@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("chooser_controller") {
@@ -45,6 +47,9 @@ source_set("unit_tests") {
     "//services/data_decoder/public/cpp:test_support",
     "//url",
   ]
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
   if (!is_android) {
     deps += [
       "//chrome/browser/extensions:test_support",

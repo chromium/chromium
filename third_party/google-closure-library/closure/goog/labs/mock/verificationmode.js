@@ -26,6 +26,7 @@ goog.provide('goog.labs.mock.verification.VerificationMode');
  * description returned from `#describe` will be shown in the
  * test failure message.  Sample usage:
  *
+ * ```
  * goog.module('my.package.MyClassTest');
  * goog.setTestOnly('my.package.MyClassTest');
  *
@@ -45,6 +46,7 @@ goog.provide('goog.labs.mock.verification.VerificationMode');
  *     goog.labs.mock.verify(mockObj, times(1));
  *   }
  * });
+ * ```
  *
  * For an example implementation, see `TimesVerificationMode_`.
  *

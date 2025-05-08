@@ -55,7 +55,7 @@ export class PrintPreviewCopiesSettingsElement extends
     };
   }
 
-  accessor capability: CopiesCapability;
+  accessor capability: CopiesCapability|null;
   accessor disabled: boolean;
   protected accessor copiesMax_: number;
   protected accessor currentValue_: string;

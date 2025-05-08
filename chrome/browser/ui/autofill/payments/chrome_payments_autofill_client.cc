@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
@@ -558,11 +559,12 @@ void ChromePaymentsAutofillClient::CloseAutofillProgressDialog(
 }
 
 void ChromePaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
+    CreditCard::RecordType card_type,
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
   card_unmask_otp_input_dialog_controller_ =
-      std::make_unique<CardUnmaskOtpInputDialogControllerImpl>(challenge_option,
-                                                               delegate);
+      std::make_unique<CardUnmaskOtpInputDialogControllerImpl>(
+          card_type, challenge_option, delegate);
   card_unmask_otp_input_dialog_controller_->ShowDialog(
       base::BindOnce(&CreateAndShowOtpInputDialog,
                      card_unmask_otp_input_dialog_controller_->GetWeakPtr(),
@@ -878,7 +880,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
           ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
           !cards_to_suggest.empty());
 
-  return touch_to_fill_payment_method_controller_.Show(
+  return touch_to_fill_payment_method_controller_.ShowCreditCards(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
       delegate, std::move(cards_to_suggest), std::move(suggestions));
 #else
@@ -891,9 +893,22 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillIban(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::Iban> ibans_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
-  return touch_to_fill_payment_method_controller_.Show(
+  return touch_to_fill_payment_method_controller_.ShowIbans(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
       delegate, std::move(ibans_to_suggest));
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED();
+#endif
+}
+
+bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const autofill::LoyaltyCard> loyalty_cards_to_suggest) {
+#if BUILDFLAG(IS_ANDROID)
+  return touch_to_fill_payment_method_controller_.ShowLoyaltyCards(
+      std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
+      delegate, std::move(loyalty_cards_to_suggest));
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();
@@ -973,12 +988,12 @@ void ChromePaymentsAutofillClient::DismissSelectBnplIssuerDialog() {
   }
 }
 
-bool ChromePaymentsAutofillClient::IsTabModalPopup() const {
+bool ChromePaymentsAutofillClient::IsTabModalPopupDeprecated() const {
 #if !BUILDFLAG(IS_ANDROID)
   tabs::TabInterface* const tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
-  return tab_interface &&
-         tab_interface->GetBrowserWindowInterface()->IsTabModalPopup();
+  return tab_interface && tab_interface->GetBrowserWindowInterface()
+                              ->IsTabModalPopupDeprecated();
 #else
   return false;
 #endif  // !BUILDFLAG(IS_ANDROID)

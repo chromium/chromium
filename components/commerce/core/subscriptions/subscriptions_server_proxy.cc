@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
+
 #include <queue>
 #include <string>
 #include <unordered_map>
@@ -16,7 +18,6 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
-#include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -24,6 +25,9 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointResponse;
 
 namespace {
 

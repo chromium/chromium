@@ -72,9 +72,14 @@ inline bool IsBreakInside(const BlockBreakToken* token) {
 // overflow is clipped). In some cases it's not enough to just check if we're
 // currently performing block fragmentation; we also need to know if it has
 // already been fragmented (to resume layout correctly, but not break again).
+inline bool InvolvedInBlockFragmentation(
+    const ConstraintSpace& space,
+    const BlockBreakToken* previous_break_token) {
+  return space.HasBlockFragmentation() || IsBreakInside(previous_break_token);
+}
 inline bool InvolvedInBlockFragmentation(const BoxFragmentBuilder& builder) {
-  return builder.GetConstraintSpace().HasBlockFragmentation() ||
-         IsBreakInside(builder.PreviousBreakToken());
+  return InvolvedInBlockFragmentation(builder.GetConstraintSpace(),
+                                      builder.PreviousBreakToken());
 }
 
 // Return the fragment index (into the layout results vector in LayoutBox),

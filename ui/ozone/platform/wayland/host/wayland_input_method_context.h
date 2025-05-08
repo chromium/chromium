@@ -20,8 +20,9 @@
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
-#include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
-#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_v1.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_v3.h"
 
 namespace ui {
 
@@ -29,8 +30,7 @@ class WaylandConnection;
 
 class WaylandInputMethodContext : public LinuxInputMethodContext,
                                   public VirtualKeyboardController,
-                                  public WaylandWindowObserver,
-                                  public ZWPTextInputWrapperClient {
+                                  public WaylandWindow::FocusClient {
  public:
   class Delegate;
 
@@ -42,10 +42,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
       delete;
   ~WaylandInputMethodContext() override;
 
-  void Init(bool initialize_for_testing = false,
-            std::unique_ptr<ZWPTextInputWrapper> wrapper_for_testing = nullptr,
-            std::optional<base::nix::DesktopEnvironment> desktop_for_testing =
-                std::nullopt);
+  void Init();
 
   // LinuxInputMethodContext overrides:
   bool DispatchKeyEvent(const KeyEvent& key_event) override;
@@ -73,49 +70,49 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void RemoveObserver(VirtualKeyboardControllerObserver* observer) override;
   bool IsKeyboardVisible() override;
 
-  // WaylandWindowObserver overrides:
-  void OnKeyboardFocusedWindowChanged() override;
+  // WaylandWindow::FocusClient overrides:
+  void OnKeyboardFocusChanged(bool focused) override;
+  void OnTextInputFocusChanged(bool focused) override;
 
-  // ZWPTextInputWrapperClient overrides:
+  // Callbacks from the v1 and v3 clients.
   void OnPreeditString(std::string_view text,
                        const std::vector<SpanStyle>& spans,
-                       const gfx::Range& preedit_cursor) override;
-  void OnCommitString(std::string_view text) override;
-  void OnCursorPosition(int32_t index, int32_t anchor) override;
-  void OnDeleteSurroundingText(int32_t index, uint32_t length) override;
+                       const gfx::Range& preedit_cursor);
+  void OnCommitString(std::string_view text);
+  void OnCursorPosition(int32_t index, int32_t anchor);
+  void OnDeleteSurroundingText(int32_t index, uint32_t length);
   void OnKeysym(uint32_t keysym,
                 uint32_t state,
                 uint32_t modifiers,
-                uint32_t time) override;
-  void OnSetPreeditRegion(int32_t index,
-                          uint32_t length,
-                          const std::vector<SpanStyle>& spans) override;
-  void OnClearGrammarFragments(const gfx::Range& range) override;
-  void OnAddGrammarFragment(const GrammarFragment& fragment) override;
-  void OnSetAutocorrectRange(const gfx::Range& range) override;
-  void OnSetVirtualKeyboardOccludedBounds(
-      const gfx::Rect& screen_bounds) override;
-  void OnConfirmPreedit(bool keep_selection) override;
-  void OnInputPanelState(uint32_t state) override;
-  void OnModifiersMap(std::vector<std::string> modifiers_map) override;
-  void OnInsertImage(const GURL& src) override;
+                uint32_t time);
+
+  void OnInputPanelState(uint32_t state);
+  void OnModifiersMap(std::vector<std::string> modifiers_map);
 
   const SurroundingTextTracker::State& predicted_state_for_testing() const {
     return surrounding_text_tracker_.predicted_state();
   }
 
+  void SetTextInputV1ForTesting(ZwpTextInputV1* text_input_v1);
+
+  void SetTextInputV3ForTesting(ZwpTextInputV3* text_input_v3);
+
+  void SetDesktopEnvironmentForTesting(
+      base::nix::DesktopEnvironment desktop_environment) {
+    desktop_environment_ = desktop_environment;
+  }
+
  private:
-  void CreateTextInputWrapper();
-  void Focus(bool skip_virtual_keyboard_update,
-             TextInputClient::FocusReason reason);
+  void CreateTextInput();
+  void Focus(bool skip_virtual_keyboard_update);
   void Blur(bool skip_virtual_keyboard_update);
   void UpdatePreeditText(const std::u16string& preedit_text);
+  bool WindowIsActiveForTextInputV1() const;
   // If |skip_virtual_keyboard_update| is true, no virtual keyboard show/hide
   // requests will be sent. This is used to prevent flickering the virtual
   // keyboard when it would be immediately reshown anyway, e.g. when changing
   // focus from one text input to another.
-  void MaybeUpdateActivated(bool skip_virtual_keyboard_update,
-                            TextInputClient::FocusReason reason);
+  void MaybeUpdateActivated(bool skip_virtual_keyboard_update);
 
   const raw_ptr<WaylandConnection>
       connection_;  // TODO(jani) Handle this better
@@ -126,10 +123,20 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // Delegate IME-specific events to be handled by //ui code.
   const raw_ptr<LinuxInputMethodContextDelegate> ime_delegate_;
 
-  std::unique_ptr<ZWPTextInputWrapper> text_input_;
+  // Window obtained from IME delegate's widget. This WaylandInputMethodContext
+  // will be associated exclusively with this window and so this object will not
+  // change for the lifetime of the window.
+  base::WeakPtr<WaylandWindow> window_;
+  std::unique_ptr<ZwpTextInputV1Client> text_input_v1_client_;
+  std::unique_ptr<ZwpTextInputV3Client> text_input_v3_client_;
+  raw_ptr<ZwpTextInputV1> text_input_v1_;
+  raw_ptr<ZwpTextInputV3> text_input_v3_;
 
   // Tracks whether InputMethod in Chrome has some focus.
   bool focused_ = false;
+
+  // Tracks whether the window associated with the input method is focused.
+  bool window_focused_ = false;
 
   // Tracks whether a request to activate InputMethod is sent to wayland
   // compositor.

@@ -275,6 +275,9 @@ class MahiPanelViewTest : public AshTestBase {
     auto* const send_button = panel_view()->GetViewByID(
         mahi_constants::ViewId::kAskQuestionSendButton);
     ASSERT_TRUE(send_button);
+    // Send button enable state doesn't get updated on calling question
+    // textfield `SetText()`, set it manually.
+    send_button->SetEnabled(true);
     LeftClickOn(send_button);
   }
 
@@ -753,12 +756,10 @@ TEST_F(MahiPanelViewTest, TransitionToQuestionAnswerView) {
   ASSERT_TRUE(go_to_question_answer_button);
   EXPECT_FALSE(go_to_question_answer_button->GetVisible());
 
-  // Provide a valid input in the textfield so it can be sent as a question.
-  question_textfield->SetText(u"input");
-
   // Pressing the send button with a valid input in the textfield should take
   // the user to the Q&A view.
-  LeftClickOn(send_button);
+  SubmitTestQuestion(u"input");
+
   EXPECT_FALSE(summary_outlines_section->GetVisible());
   EXPECT_TRUE(question_answer_view->GetVisible());
   EXPECT_TRUE(go_to_summary_outlines_button->GetVisible());
@@ -811,14 +812,9 @@ TEST_F(MahiPanelViewTest, ScrollViewContentsDynamicSize) {
                 mahi_constants::kScrollContentsViewBottomPadding,
             scroll_view_contents->GetPreferredSize().height());
 
-  auto* const question_textfield = views::AsViewClass<views::Textfield>(
-      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
-  question_textfield->SetText(u"input");
-
   // Transition to Q&A view. Scroll view should change its preferred height (the
   // height that the view will take when it is not constrained by `ScrollView`).
-  LeftClickOn(panel_view()->GetViewByID(
-      mahi_constants::ViewId::kAskQuestionSendButton));
+  SubmitTestQuestion(u"input");
 
   // Run layout so the views update their size.
   views::test::RunScheduledLayout(widget());
@@ -865,12 +861,11 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
             std::move(callback).Run(answer1, MahiResponseStatus::kSuccess);
           });
 
-  // Set a valid text in the question textfield.
+  // Pressing the send button with a valid question should create a question and
+  // answer text bubble.
   const std::u16string question1(u"question 1");
-  question_textfield->SetText(question1);
+  SubmitTestQuestion(question1);
 
-  // Pressing the send button should create a question and answer text bubble.
-  LeftClickOn(send_button);
   ASSERT_EQ(2u, question_answer_view->children().size());
   EXPECT_EQ(views::AsViewClass<views::Label>(
                 question_answer_view->children()[0]->GetViewByID(
@@ -898,6 +893,7 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
   // Set another valid text in the question textfield.
   const std::u16string question2(u"question 2");
   question_textfield->SetText(question2);
+  send_button->SetEnabled(true);
 
   // Pressing the "Enter" key while the textfield is focused should create a
   // question and answer text bubble.
@@ -919,15 +915,9 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
   EXPECT_TRUE(question_textfield->GetText().empty());
 }
 
-// Tests that the question textfield does not send requests to the manager while
-// it is waiting to load an answer.
-TEST_F(MahiPanelViewTest, QuestionTextfield_InputDisabledWhileLoadingAnswer) {
-  // Send button is initially enabled.
-  const auto* const send_button =
-      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
-  ASSERT_TRUE(send_button);
-  EXPECT_TRUE(send_button->GetEnabled());
-
+// Tests that the question send button state is controlled by both pending QA
+// request and question textfield content.
+TEST_F(MahiPanelViewTest, QuestionTextfield_SendButtonState) {
   // Config the mock mahi manager to return an answer asyncly.
   base::test::TestFuture<void> answer_waiter;
   EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
@@ -940,35 +930,63 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_InputDisabledWhileLoadingAnswer) {
                                        std::move(callback));
           });
 
-  // Set up the textfield to have a valid input.
+  // Question textfield is initially empty therefore send button is disabled.
   auto* const question_textfield = views::AsViewClass<views::Textfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+  auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
   ASSERT_TRUE(question_textfield);
-  const std::u16string question(u"fake question");
-  question_textfield->SetText(question);
-
-  // After a question is posted and before an answer is loaded, the send button
-  // should be disabled.
-  LeftClickOn(send_button);
+  ASSERT_TRUE(send_button);
+  EXPECT_TRUE(question_textfield->GetText().empty());
   EXPECT_FALSE(send_button->GetEnabled());
 
-  // Set up the textfield to have a valid input again.
-  question_textfield->SetText(question);
+  question_textfield->RequestFocus();
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+
+  // Types something in the question textfield, the send button is enabled.
+  generator.PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(question_textfield->GetText(), u"a");
+  EXPECT_TRUE(send_button->GetEnabled());
+
+  // Presses backspace to make the textfield empty, the send button is disabled.
+  generator.PressKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+  EXPECT_TRUE(question_textfield->GetText().empty());
+  EXPECT_FALSE(send_button->GetEnabled());
+
+  // Types something again to enable the send button.
+  generator.PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  EXPECT_TRUE(send_button->GetEnabled());
+
+  // Sends the question, pending QA request is present.
+  LeftClickOn(send_button);
+
+  // Sending question empties the textfield and disables the send button.
+  EXPECT_TRUE(question_textfield->GetText().empty());
+  EXPECT_FALSE(send_button->GetEnabled());
+
+  // When pending QA request, send button is disabled even if user types in the
+  // question text field.
+  generator.PressKey(ui::KeyboardCode::VKEY_B, ui::EF_NONE);
+  EXPECT_EQ(question_textfield->GetText(), u"b");
+  EXPECT_FALSE(send_button->GetEnabled());
 
   // Attempt sending a question while loading. It should not be processed either
-  // by attempting to press the send button or by pressing `Enter`.
+  // by attempting to press the send button or by pressing "Enter" key.
   LeftClickOn(send_button);
   question_textfield->RequestFocus();
   PressEnter();
 
-  // Wait until an answer is loaded. Send button should be enabled again.
+  // Wait until an answer is loaded. Send button should be enabled again because
+  // the question textfield is not empty.
   ASSERT_TRUE(answer_waiter.Wait());
+  EXPECT_EQ(question_textfield->GetText(), u"b");
   EXPECT_TRUE(send_button->GetEnabled());
   Mock::VerifyAndClearExpectations(&mock_mahi_manager());
 
-  // Attempting to send now should process the new input.
+  // Attempting to send with "Enter" key should process the new input.
   EXPECT_CALL(mock_mahi_manager(), AnswerQuestion);
   PressEnter();
+  EXPECT_TRUE(question_textfield->GetText().empty());
   EXPECT_FALSE(send_button->GetEnabled());
   Mock::VerifyAndClearExpectations(&mock_mahi_manager());
 }
@@ -981,34 +999,29 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_EmptyInput) {
   ASSERT_TRUE(question_textfield);
   EXPECT_TRUE(question_textfield->GetText().empty());
 
-  // Attempting to send an empty input should not process the text.
+  // Send button is disabled when text field is empty.
   auto* const send_button =
       panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
   ASSERT_TRUE(send_button);
+  EXPECT_FALSE(send_button->GetEnabled());
+
+  // Even forcing the button enabled and attempting to send an empty input
+  // should not process the text.
+  send_button->SetEnabled(true);
   LeftClickOn(send_button);
   const auto* const question_answer_view =
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
   ASSERT_TRUE(question_answer_view);
   EXPECT_TRUE(question_answer_view->children().empty());
 
-  // Set a value of whitespace for the textfield.
-  question_textfield->SetText(u"   ");
-  EXPECT_FALSE(question_textfield->GetText().empty());
-
   // Attempting to send only whitespace should not process the text.
-  LeftClickOn(send_button);
+  SubmitTestQuestion(u"    ");
   EXPECT_TRUE(question_answer_view->children().empty());
 }
 
 // Tests that the question textfield trims whitespace from the front and back of
 // the provided text.
 TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
-  // Set a text in the textfield with leading and trailing whitespace.
-  auto* const question_textfield = views::AsViewClass<views::Textfield>(
-      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
-  ASSERT_TRUE(question_textfield);
-  question_textfield->SetText(u"   leading and trailing   ");
-
   ON_CALL(mock_mahi_manager(), AnswerQuestion)
       .WillByDefault(
           [](const std::u16string& question, bool current_panel_content,
@@ -1017,12 +1030,11 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
                                     MahiResponseStatus::kSuccess);
           });
 
+  // Send a question with leading and trailing whitespace.
+  SubmitTestQuestion(u"   leading and trailing   ");
+
   // Sending the text should create a question and answer text bubble.
   // The whitespace should be trimmed from the sides.
-  auto* const send_button =
-      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
-  ASSERT_TRUE(send_button);
-  LeftClickOn(send_button);
   auto* const question_answer_view =
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
   ASSERT_TRUE(question_answer_view);
@@ -1035,13 +1047,12 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
                     mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
                 ->GetText());
 
-  // Set a text in the textfield with whitespace between the string.
+  // Send a question with whitespace between the string.
   const std::u16string question_text(u"whitespace     between");
-  question_textfield->SetText(question_text);
+  SubmitTestQuestion(question_text);
 
   // Sending the text should create a question and answer text bubble.
   // The whitespace should not be trimmed if it's not on the sides.
-  LeftClickOn(send_button);
   ASSERT_EQ(question_answer_view->children().size(), 4u);
   EXPECT_EQ(views::AsViewClass<views::Label>(
                 question_answer_view->children()[2]->GetViewByID(
@@ -1144,15 +1155,7 @@ TEST_F(MahiPanelViewTest, ScrollViewScrollsAfterLayout) {
   EXPECT_TRUE(scroll_bar->GetVisible());
 
   // Switch to the Q&A view, which should initially not be scrollable.
-  auto* const question_textfield = views::AsViewClass<views::Textfield>(
-      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
-  ASSERT_TRUE(question_textfield);
-  question_textfield->SetText(u"question");
-
-  const auto* const send_button =
-      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
-  ASSERT_TRUE(send_button);
-  LeftClickOn(send_button);
+  SubmitTestQuestion(u"question");
 
   const auto* const question_answer_view =
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
@@ -1164,15 +1167,13 @@ TEST_F(MahiPanelViewTest, ScrollViewScrollsAfterLayout) {
 
   // Add enough questions to make the view scrollable.
   while (!scroll_bar->GetVisible()) {
-    question_textfield->SetText(u"question");
-    LeftClickOn(send_button);
+    SubmitTestQuestion(u"question");
     views::test::RunScheduledLayout(widget());
   }
 
   // Ensure that the view scrolls down after a new question is added.
   int previous_scroll_bar_position = scroll_bar->GetPosition();
-  question_textfield->SetText(u"question");
-  LeftClickOn(send_button);
+  SubmitTestQuestion(u"question");
   views::test::RunScheduledLayout(widget());
   EXPECT_GT(scroll_bar->GetPosition(), previous_scroll_bar_position);
 
@@ -1255,6 +1256,19 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
             mahi_constants::ViewId::kQuestionAnswerErrorLabel));
     EXPECT_EQ(nullptr, error_label_view);
 
+    auto* const question_textfield = views::AsViewClass<views::Textfield>(
+        panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+    auto* const send_button = panel_view()->GetViewByID(
+        mahi_constants::ViewId::kAskQuestionSendButton);
+
+    // When pending answer / error, send button is disabled even if user types
+    // in the question text field.
+    question_textfield->RequestFocus();
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+    EXPECT_EQ(question_textfield->GetText(), u"a");
+    EXPECT_FALSE(send_button->GetEnabled());
+
     // Waits until an answer is loaded with an error.
     ASSERT_TRUE(answer_waiter.WaitAndClear());
 
@@ -1271,8 +1285,8 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
         error_label_view->GetText(),
         l10n_util::GetStringUTF16(mahi_utils::GetErrorStatusViewTextId(error)));
 
-    auto* const send_button = panel_view()->GetViewByID(
-        mahi_constants::ViewId::kAskQuestionSendButton);
+    // After the pending QA is complete by the error, send button is enabled
+    // because the question text field is not empty.
     EXPECT_TRUE(send_button->GetEnabled());
 
     EXPECT_FALSE(question_answer_view->GetViewByID(
@@ -1290,10 +1304,7 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
             });
 
     // Asks another question.
-    auto* const question_textfield = views::AsViewClass<views::Textfield>(
-        panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
-    question_textfield->SetText(u"A new question");
-    LeftClickOn(send_button);
+    SubmitTestQuestion(u"A new question");
     Mock::VerifyAndClearExpectations(&mock_mahi_manager());
 
     // Loading animated image should show again.
@@ -1330,8 +1341,7 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
               ReturnDefaultAnswerAsyncly(answer_waiter, error,
                                          std::move(callback));
             });
-    const std::u16string question2(u"A new question that brings errors");
-    SubmitTestQuestion(question2);
+    SubmitTestQuestion(u"A new question that brings errors");
     Mock::VerifyAndClearExpectations(&mock_mahi_manager());
 
     // Shows the new error message inline.
@@ -1763,8 +1773,6 @@ TEST_F(MahiPanelViewTest, DISABLED_ClickMetrics) {
       mahi_constants::ViewId::kGoToSummaryOutlinesButton);
   auto* const back_to_question_answer_button = panel_view()->GetViewByID(
       mahi_constants::ViewId::kGoToQuestionAndAnswerButton);
-  auto* const question_textfield = views::AsViewClass<views::Textfield>(
-      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
 
   // Send question button.
   // Should not send question when the question text is empty.
@@ -1777,9 +1785,7 @@ TEST_F(MahiPanelViewTest, DISABLED_ClickMetrics) {
 
   // Should send question when the question text is not empty.
   EXPECT_FALSE(back_to_summary_outlines_button->GetVisible());
-  const std::u16string question(u"question text");
-  question_textfield->SetText(question);
-  LeftClickOn(send_button);
+  SubmitTestQuestion(u"question text");
   histogram.ExpectBucketCount(
       mahi_constants::kMahiButtonClickHistogramName,
       mahi_constants::PanelButton::kAskQuestionSendButton, 1);
@@ -1968,13 +1974,7 @@ TEST_F(MahiPanelViewTest, RandomizedTextQuestionAnswerLabels) {
           });
 
   auto random_question = GetRandomString(/*max_words_count=*/100);
-  views::AsViewClass<views::Textfield>(
-      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield))
-      ->SetText(random_question);
-
-  // Pressing the send button should create a question and answer text bubble.
-  LeftClickOn(panel_view()->GetViewByID(
-      mahi_constants::ViewId::kAskQuestionSendButton));
+  SubmitTestQuestion(random_question);
 
   views::test::RunScheduledLayout(widget());
 

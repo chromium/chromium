@@ -32,14 +32,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A {@link ListMenu} for the {@link TabListEditorToolbar} that helps manage a
- * {@link TabListEditorActionViewLayout} for Action views. The menu contains a list of
- * {@link TabListEditorMenuItem}s which hold optional action views if room is available.
+ * A {@link ListMenu} for the {@link TabListEditorToolbar} that helps manage a {@link
+ * TabListEditorActionViewLayout} for Action views. The menu contains a list of {@link
+ * TabListEditorMenuItem}s which hold optional action views if room is available.
  */
 public class TabListEditorMenu
         implements ListMenu,
                 OnItemClickListener,
-                SelectionDelegate.SelectionObserver<Integer>,
+                SelectionDelegate.SelectionObserver<TabListEditorItemSelectionId>,
                 ActionViewLayoutDelegate {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListItemType.MENU_ITEM})
@@ -151,10 +151,11 @@ public class TabListEditorMenu
 
     /**
      * Delegates selection updates to each menu item.
+     *
      * @param selectedItems the currently selected items.
      */
     @Override
-    public void onSelectionStateChange(List<Integer> selectedItems) {
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> selectedItems) {
         for (TabListEditorMenuItem menuItem : mMenuItems.values()) {
             menuItem.onSelectionStateChange(selectedItems);
         }

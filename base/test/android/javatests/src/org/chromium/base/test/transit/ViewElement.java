@@ -12,12 +12,15 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
 import org.chromium.base.test.util.ForgivingClickAction;
+import org.chromium.base.test.util.KeyUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -64,7 +67,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     }
 
     @Override
-    public ConditionWithResult<ViewT> createEnterCondition() {
+    public @Nullable ConditionWithResult<ViewT> createEnterCondition() {
         Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
         DisplayedCondition.Options conditionOptions =
                 DisplayedCondition.newOptions()
@@ -106,8 +109,21 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         return mViewSpec;
     }
 
+    /** Returns a {@link ViewSpec} to declare a descandant of this ViewElement. */
+    @SafeVarargs
+    public final ViewSpec<View> descendant(Matcher<View>... viewMatcher) {
+        return mViewSpec.descendant(viewMatcher);
+    }
+
+    /** Returns a {@link ViewSpec} to declare a descandant of this ViewElement. */
+    @SafeVarargs
+    public final <DescendantViewT extends View> ViewSpec<DescendantViewT> descendant(
+            Class<DescendantViewT> viewClass, Matcher<View>... viewMatcher) {
+        return mViewSpec.descendant(viewClass, viewMatcher);
+    }
+
     /** Trigger an Espresso action on this View. */
-    public Transition.Trigger performTrigger(ViewAction action) {
+    public Transition.Trigger getPerformTrigger(ViewAction action) {
         return () -> {
             View view = get();
             Espresso.onView(is(view)).perform(action);
@@ -119,29 +135,38 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
      *
      * <p>Requires it to be >90% displayed.
      */
-    public Transition.Trigger clickTrigger() {
-        return performTrigger(ViewActions.click());
+    public Transition.Trigger getClickTrigger() {
+        return getPerformTrigger(ViewActions.click());
     }
 
     /**
      * Trigger an Espresso click on this View.
      *
-     * <p>Does not require the View to be > 90% displayed like {@link #clickTrigger()}.
+     * <p>Does not require the View to be > 90% displayed like {@link #getClickTrigger()}.
      *
      * <p>TODO(crbug.com/411140394): Rename clickTrigger() to strictClickTrigger() and rename this
      * to clickTrigger().
      */
-    public Transition.Trigger forgivingClickTrigger() {
-        return performTrigger(ForgivingClickAction.forgivingClick());
+    public Transition.Trigger getForgivingClickTrigger() {
+        return getPerformTrigger(ForgivingClickAction.forgivingClick());
     }
 
     /**
-     * Trigger an Espresso long click on this View.
+     * Trigger an Espresso long press on this View.
      *
      * <p>Requires it to be >90% displayed.
      */
-    public Transition.Trigger longClickTrigger() {
-        return performTrigger(ViewActions.longClick());
+    public Transition.Trigger getLongPressTrigger() {
+        return getPerformTrigger(ViewActions.longClick());
+    }
+
+    /** Send keycodes to the View to type |text|. */
+    public Transition.Trigger getTypeTextTrigger(String text) {
+        return () ->
+                ThreadUtils.runOnUiThread(
+                        () ->
+                                KeyUtils.typeTextIntoView(
+                                        InstrumentationRegistry.getInstrumentation(), get(), text));
     }
 
     /** Trigger an Espresso ViewAssertion on this View. */

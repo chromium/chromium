@@ -111,7 +111,7 @@ class PrintJobSubmitter {
   gfx::NativeWindow native_window_;
   const raw_ptr<content::BrowserContext> browser_context_;
 
-  // Tracks whether |native_window_| got destroyed.
+  // Tracks whether `native_window_` got destroyed.
   std::unique_ptr<views::NativeWindowTracker> native_window_tracker_;
 
   // These objects are owned by PrintingAPIHandler.

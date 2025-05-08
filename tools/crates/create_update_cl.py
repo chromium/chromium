@@ -575,7 +575,7 @@ def IsGitDirty():
 
 def RaiseErrorIfGitIsDirty():
     if IsGitDirty():
-        raise RuntimeError("Dirty `git status` - save you local changes "\
+        raise RuntimeError("Dirty `git status` - save your local changes "\
                            "before rerunning the script")
 
 

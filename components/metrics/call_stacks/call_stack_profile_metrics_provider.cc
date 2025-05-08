@@ -29,8 +29,6 @@ constexpr base::FeatureState kSamplingProfilerReportingDefaultState =
     base::FEATURE_ENABLED_BY_DEFAULT;
 
 bool SamplingProfilerReportingEnabled() {
-  // TODO(crbug.com/40246378): Do not call this function before the FeatureList
-  // is registered.
   if (!base::FeatureList::GetInstance()) {
     // The FeatureList is not registered: use the feature's default state. This
     // means that any override from the command line or variations service is

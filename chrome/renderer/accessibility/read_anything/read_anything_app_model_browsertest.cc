@@ -22,6 +22,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
+#include "ui/accessibility/ax_event_intent.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_updates_and_events.h"
@@ -865,7 +866,7 @@ TEST_F(ReadAnythingAppModelTest,
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update)});
   ProcessDisplayNodes({2, 3});
-  model().set_selection_from_reading_mode(true);
+  model().increment_selections_from_reading_mode();
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -1833,8 +1834,6 @@ TEST_F(ReadAnythingAppModelTest, Collapse_Redraws) {
   EXPECT_TRUE(model().selection_node_ids().empty());
 }
 
-// The read aloud flag is already enabled on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ReadAnythingAppModelTest, ContentEditableValueChanged_ResetsDrawTimer) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
@@ -1847,78 +1846,102 @@ TEST_F(ReadAnythingAppModelTest, ContentEditableValueChanged_ResetsDrawTimer) {
   ui::AXEvent event;
   event.id = kId;
   event.event_type = ax::mojom::Event::kValueChanged;
+  event.event_from = ax::mojom::EventFrom::kUser;
+  ui::AXEventIntent eventIntent;
+  event.event_intents = {std::move(eventIntent)};
   std::vector<ui::AXEvent> events = {std::move(event)};
   // This update changes the structure of the tree. When the controller receives
   // it in AccessibilityEventReceived, it will re-distill the tree.
   model().AccessibilityEventReceived(tree_id_, updates, events, false);
-  EXPECT_TRUE(model().reset_draw_timer());
+  ASSERT_TRUE(model().reset_draw_timer());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ReadAnythingAppModelTest,
-       ContentEditableValueChanged_ReadAloudEnabled_ResetsDrawTimer) {
-  EnableReadAloud();
-  // Create a tree with a text field.
-  ui::AXNodeData root;
-  root.id = 1;
-  ui::AXNodeData text_field;
-  text_field.id = 2;
-  text_field.role = ax::mojom::Role::kTextField;
-  text_field.AddState(ax::mojom::State::kEditable);
-  root.child_ids = {text_field.id};
-  ui::AXNodeData static_text;
-  static_text.id = 3;
-  static_text.role = ax::mojom::Role::kStaticText;
-  static_text.AddState(ax::mojom::State::kEditable);
-  text_field.child_ids = {static_text.id};
-  // Send the initial tree update.
-  ui::AXTreeUpdate initial_update;
-  test::SetUpdateTreeID(&initial_update, tree_id_);
-  initial_update.root_id = root.id;
-  initial_update.nodes = {std::move(root), text_field, static_text};
-  AccessibilityEventReceived({std::move(initial_update)});
-
-  // This update changes the structure of the tree. When the controller receives
-  // it in AccessibilityEventReceived, it will re-distill the tree.
+       ContentEditableValueChanged_FromPage_DoesNotResetDrawTimer) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
-  static_text.SetName("Something has changed within me");
-  update.nodes = {std::move(static_text)};
-  AccessibilityEventReceived({std::move(update)});
+  ui::AXNodeData node1;
+  static constexpr int kId = 1;
+  node1.id = kId;
+  update.nodes = {std::move(node1)};
+  ReadAnythingAppModel::Updates updates = {std::move(update)};
 
-  EXPECT_TRUE(model().reset_draw_timer());
+  ui::AXEvent event;
+  event.id = kId;
+  event.event_type = ax::mojom::Event::kValueChanged;
+  event.event_from = ax::mojom::EventFrom::kPage;
+  ui::AXEventIntent eventIntent;
+  event.event_intents = {std::move(eventIntent)};
+  std::vector<ui::AXEvent> events = {std::move(event)};
+  // This update changes the structure of the tree. When the controller receives
+  // it in AccessibilityEventReceived, it will re-distill the tree.
+  model().AccessibilityEventReceived(tree_id_, updates, events, false);
+  ASSERT_FALSE(model().reset_draw_timer());
 }
-TEST_F(ReadAnythingAppModelTest,
-       ContentEditableValueChanged_OnPDF_DoesNotResetDrawTimer) {
-  EnableReadAloud();
-  model().set_is_pdf(true);
-  // Create a tree with a text field.
-  ui::AXNodeData root;
-  root.id = 1;
-  ui::AXNodeData text_field;
-  text_field.id = 2;
-  text_field.role = ax::mojom::Role::kTextField;
-  text_field.AddState(ax::mojom::State::kEditable);
-  root.child_ids = {text_field.id};
-  ui::AXNodeData static_text;
-  static_text.id = 3;
-  static_text.role = ax::mojom::Role::kStaticText;
-  static_text.AddState(ax::mojom::State::kEditable);
-  text_field.child_ids = {static_text.id};
-  // Send the initial tree update.
-  ui::AXTreeUpdate initial_update;
-  test::SetUpdateTreeID(&initial_update, tree_id_);
-  initial_update.root_id = root.id;
-  initial_update.nodes = {std::move(root), text_field, static_text};
-  AccessibilityEventReceived({std::move(initial_update)});
 
-  // This update changes the structure of the tree. When the controller receives
-  // it in AccessibilityEventReceived, it will re-distill the tree.
+TEST_F(ReadAnythingAppModelTest,
+       ContentEditableValueChanged_NoIntents_DoesNotResetDrawTimer) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
-  static_text.SetName("Something has changed within me");
-  update.nodes = {std::move(static_text)};
-  AccessibilityEventReceived({std::move(update)});
+  ui::AXNodeData node1;
+  static constexpr int kId = 1;
+  node1.id = kId;
+  update.nodes = {std::move(node1)};
+  ReadAnythingAppModel::Updates updates = {std::move(update)};
 
-  EXPECT_FALSE(model().reset_draw_timer());
+  ui::AXEvent event;
+  event.id = kId;
+  event.event_type = ax::mojom::Event::kValueChanged;
+  event.event_from = ax::mojom::EventFrom::kUser;
+  std::vector<ui::AXEvent> events = {std::move(event)};
+  // This update changes the structure of the tree. When the controller receives
+  // it in AccessibilityEventReceived, it will re-distill the tree.
+  model().AccessibilityEventReceived(tree_id_, updates, events, false);
+  ASSERT_FALSE(model().reset_draw_timer());
+}
+
+TEST_F(ReadAnythingAppModelTest, SetUkmSourceId_TreeExists) {
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id);
+  ui::AXNodeData node1;
+  static constexpr int kId = 1;
+  node1.id = kId;
+  update.root_id = node1.id;
+  update.nodes = {std::move(node1)};
+
+  ukm::SourceId source_id = ukm::AssignNewSourceId();
+
+  // The UKM source should be invalid before the tree is made active.
+  AccessibilityEventReceived({std::move(update)});
+  EXPECT_EQ(model().GetUkmSourceId(), ukm::kInvalidSourceId);
+
+  // After the tree is made active, the UKM source should be valid.
+  model().SetActiveTreeId(tree_id);
+  model().SetUkmSourceIdForTree(tree_id, source_id);
+  EXPECT_EQ(model().GetUkmSourceId(), source_id);
+}
+
+TEST_F(ReadAnythingAppModelTest, SetUkmSourceId_TreeDoesNotExistInitially) {
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id);
+  ui::AXNodeData node1;
+  static constexpr int kId = 1;
+  node1.id = kId;
+  update.root_id = node1.id;
+  update.nodes = {std::move(node1)};
+
+  ukm::SourceId source_id = ukm::AssignNewSourceId();
+
+  // The UKM source should be invalid when the tree is made active but before
+  // a representation of it is actually stored.
+  model().SetActiveTreeId(tree_id);
+  model().SetUkmSourceIdForTree(tree_id, source_id);
+  EXPECT_EQ(model().GetUkmSourceId(), ukm::kInvalidSourceId);
+
+  // The UKM source should be valid once an accessibility event is received for
+  // the active tree.
+  AccessibilityEventReceived({std::move(update)});
+  EXPECT_EQ(model().GetUkmSourceId(), source_id);
 }

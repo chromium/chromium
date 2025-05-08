@@ -3740,7 +3740,7 @@
           a cat playing a flying v while riding a unicorn, with a lightning bolt in the background
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_ANIMATED_FLOWERS" desc="An example prompt that can be used to generate an image">
-          a close up of several white and yellow flowers against a purple background, a still from an animated film, a delicate pale pink flower with long petals and a green stem placed between two large yellow tulips against a blue sky with no leaves or foliage in pastel colors, a cinematic still shot with high resolution and very detailed intricate details, octane render with beautiful lighting, volumetric light and moody light.
+          a close up of several white and yellow flowers, a still from an animated film, a delicate pale pink flower with long petals and a green stem placed between two large yellow tulips against a blue sky with no leaves or foliage, in pastel colors, a cinematic still shot with high resolution and very detailed intricate details, octane render with beautiful lighting, volumetric light and moody light.
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_LILY_IN_RAIN" desc="An example prompt that can be used to generate an image">
           a closeup of an intricate, dew-covered pond lily in the rain. The focus is on the delicate petals and light-reflecting water droplets, capturing their soft pastel colors against a blue background. Shot from eye level using natural light
@@ -7181,7 +7181,7 @@
         Your teacher has locked your screen
       </message>
       <message name="IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE" desc="Notification message telling students that their class session ended.">
-        You’ve been removed from this class
+        Class Tools session has ended for you
       </message>
       <message name="IDS_ON_TASK_URL_BLOCKED_NOTIFICATION_MESSAGE" desc="Toast message telling students that the url is blocked.">
         Access isn’t allowed for this link. Check with your teacher if you need access.
@@ -7222,6 +7222,12 @@
       <!-- Strings for Class Tools -->
       <message name="IDS_CLASS_TOOLS_TITLE" desc="Title of the Class Tools App">
         Class Tools
+      </message>
+      <message name="IDS_CLASS_TOOLS_HOME_PAGE" desc="Title of the Class Tools Home">
+        Class Tools Home
+      </message>
+      <message name="IDS_NOT_IN_CLASS_TOOLS" desc="Title to show when not in Class Tools">
+        Not in Class Tools
       </message>
 
       <!-- Strings for Class Hub notifications -->

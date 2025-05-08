@@ -130,6 +130,12 @@
   <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_SEE_HOW" desc="The right of two buttons that’s the user’s path learning more and turning on Autofill with AI. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
     See how
   </message>
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TURN_ON" desc="The right of two buttons that’s the user’s path learning more and turning on Autofill with AI. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
+    Turn on
+  </message>
+    <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TRY_IT" desc="The right of two buttons that’s the user’s path learning more and turning on Autofill with AI. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
+    Try it
+  </message>
   <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_MAYBE_LATER" desc="The left of two buttons that’s essentially the user’s path to not learning more or turning on Autofill with AI. “Maybe later” conveys that the user won’t do it now but that they’ll have the choice to do it later. Localizer has existing translations of this button label.">
     Maybe later
   </message>
@@ -168,10 +174,10 @@
     Fill more fields faster
   </message>
   <message name="IDS_AUTOFILL_AI_FFR_WHEN_ON_DESCRIPTION" desc="Body text beneath the “Fill more fields faster” sub title. This conveys the value of using ‘Autofill with AI’.">
-    Autofill with AI understands forms better and can autofill them faster for you.
+    Autofill with AI understands forms better and can autofill them faster for you
   </message>
   <message name="IDS_AUTOFILL_AI_FFR_CONSIDER_DESCRIPTION" desc="Body text beneath the “Things to consider” sub title. This describes to users things they might want to weigh before using this feature. Ideally, we lead with ‘To offer suggestions’, because it redefines the value of ‘Autofill with AI’ and offers a rationale for the data use that immediately follows. The data used includes 1) the URL of a page visited and 2) the content of that page. Both are shared from Chrome to a Google service that generates autofill suggestions. Inludes a placeholder for a learn more link, $1 = IDS_AUTOFILL_AI_FFR_CONSIDER_LEARN_MORE">
-    To offer suggestions, sites you visit and page content are shared with Google. Change your mind anytime and <ph name="LEARN_MORE">$1<ex>learn more about autofill with AI in settings</ex></ph>.
+    To offer suggestions and improve this feature, the page’s URL and content are shared with Google. Change your mind anytime and <ph name="LEARN_MORE">$1<ex>learn more about autofill with AI in settings</ex></ph>.
   </message>
   <message name="IDS_AUTOFILL_AI_FFR_CONSIDER_LEARN_MORE" desc="Link for the Autofill AI settings page to learn more about this feature.">
     learn more about autofill with AI in settings

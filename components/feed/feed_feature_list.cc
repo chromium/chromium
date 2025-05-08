@@ -85,10 +85,6 @@ BASE_FEATURE(kFeedSignedOutViewDemotion,
              "FeedSignedOutViewDemotion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFeedDynamicColors,
-             "FeedDynamicColors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedFollowUiUpdate,
              "FeedFollowUiUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_WEB_CONTENT_AREA_JAVA_SCRIPT_DIALOG_OVERLAY_UTILS_H_
 
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 namespace web {
 class WebState;
@@ -24,14 +26,8 @@ bool ShouldAddBlockDialogsButton(web::WebState* web_state);
 // dialogs.
 alert_overlays::ButtonConfig BlockDialogsButtonConfig();
 
-// Returns the dialog title for a JavaScript dialog with `config_message`.
-// `is_main_frame` is true iff the dialog is being presented by the main
-// frame.
-NSString* DialogTitle(bool is_main_frame, NSString* config_message);
-
-// Returns the dialog message for a JavaScript dialog with `config_message`.
-// `is_main_frame` is true iff the dialog is being presented by the main frame.
-NSString* DialogMessage(bool is_main_frame, NSString* config_message);
+// Returns the dialog title for a JavaScript dialog.
+NSString* DialogTitle(GURL main_frame_url, url::Origin alerting_frame_origin);
 
 }  // namespace java_script_dialog_overlay
 

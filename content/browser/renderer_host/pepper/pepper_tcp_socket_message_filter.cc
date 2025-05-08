@@ -805,12 +805,12 @@ void PepperTCPSocketMessageFilter::TryWrite() {
 
     DCHECK(write_watcher_);
 
-    auto view = base::cstring_view(pending_write_data_);
-    view.remove_prefix(pending_write_bytes_written_);
-    DCHECK_GT(view.size(), 0u);
+    auto span_to_write = base::as_byte_span(pending_write_data_);
+    span_to_write = span_to_write.subspan(pending_write_bytes_written_);
+    DCHECK_GT(span_to_write.size(), 0u);
     size_t bytes_written = 0;
     int mojo_result = send_stream_->WriteData(
-        base::as_byte_span(view), MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
+        span_to_write, MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
     if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
       write_watcher_->ArmOrNotify();
       break;

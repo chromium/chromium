@@ -19,8 +19,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "crypto/ec_private_key.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
+#include "crypto/keypair.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -151,6 +151,16 @@ void EnableChromeRootStoreIfOptional(CertVerifierServiceFactoryImpl* factory) {
   }
 #endif
 }
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+std::string Sha256AsByteString(std::string_view str) {
+  return std::string(base::as_string_view(crypto::hash::Sha256(str)));
+}
+
+std::string Sha256AsByteString(base::span<const uint8_t> str) {
+  return std::string(base::as_string_view(crypto::hash::Sha256(str)));
+}
+#endif
 
 }  // namespace
 
@@ -635,16 +645,12 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
   EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs.size(), 0u);
   EXPECT_FALSE(cv_service_factory_impl.get_impl_params().ct_policy_enforcer);
 
-  auto log1_private_key = crypto::ECPrivateKey::Create();
-  std::vector<uint8_t> log1_spki;
-  ASSERT_TRUE(log1_private_key->ExportPublicKey(&log1_spki));
-  const std::string log1_id =
-      crypto::SHA256HashString(std::string(log1_spki.begin(), log1_spki.end()));
-  auto log2_private_key = crypto::ECPrivateKey::Create();
-  std::vector<uint8_t> log2_spki;
-  ASSERT_TRUE(log2_private_key->ExportPublicKey(&log2_spki));
-  const std::string log2_id =
-      crypto::SHA256HashString(std::string(log2_spki.begin(), log2_spki.end()));
+  auto log1_spki =
+      crypto::keypair::PrivateKey::GenerateEcP256().ToSubjectPublicKeyInfo();
+  const auto log1_id = Sha256AsByteString(log1_spki);
+  auto log2_spki =
+      crypto::keypair::PrivateKey::GenerateEcP256().ToSubjectPublicKeyInfo();
+  const auto log2_id = Sha256AsByteString(log2_spki);
   const std::string kLog1Operator = "log operator";
   const std::string kLog2Operator = "log2 operator";
   const std::string kLog3Operator = "log3 operator";
@@ -654,7 +660,7 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
     std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
     {
       network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
-      log_info->public_key = std::string(log1_spki.begin(), log1_spki.end());
+      log_info->public_key = std::string(base::as_string_view(log1_spki));
       log_info->id = log1_id;
       log_info->name = "log name";
       log_info->current_operator = kLog1Operator;
@@ -662,7 +668,7 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
     }
     {
       network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
-      log_info->public_key = std::string(log2_spki.begin(), log2_spki.end());
+      log_info->public_key = std::string(base::as_string_view(log2_spki));
       log_info->id = log2_id;
       log_info->name = "log2 name";
       log_info->current_operator = kLog2Operator;
@@ -678,11 +684,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
 
     ASSERT_EQ(cv_service_factory_impl.get_impl_params().ct_logs.size(), 2u);
     EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs[0]->key_id(),
-              crypto::SHA256HashString(
-                  std::string(log1_spki.begin(), log1_spki.end())));
+              log1_id);
     EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs[1]->key_id(),
-              crypto::SHA256HashString(
-                  std::string(log2_spki.begin(), log2_spki.end())));
+              log2_id);
 
     net::CTPolicyEnforcer* request_enforcer =
         cv_service_factory_impl.get_impl_params().ct_policy_enforcer.get();
@@ -711,7 +715,7 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
       log_list_mojo.push_back(std::move(log_info));
     }
     const std::string log3_public_key = "bad public key";
-    const std::string log3_id = crypto::SHA256HashString(log3_public_key);
+    const std::string log3_id = Sha256AsByteString(log3_public_key);
     {
       network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
       log_info->public_key = log3_public_key;
@@ -731,8 +735,7 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
     // The log with the bad key should have been ignored.
     ASSERT_EQ(cv_service_factory_impl.get_impl_params().ct_logs.size(), 1u);
     EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs[0]->key_id(),
-              crypto::SHA256HashString(
-                  std::string(log1_spki.begin(), log1_spki.end())));
+              log1_id);
 
     net::CTPolicyEnforcer* request_enforcer =
         cv_service_factory_impl.get_impl_params().ct_policy_enforcer.get();
@@ -805,14 +808,13 @@ TEST(CertVerifierServiceFactoryTest, CTPolicyEnforcerConfig) {
       std::is_sorted(policy_enforcer->disqualified_logs_for_testing().begin(),
                      policy_enforcer->disqualified_logs_for_testing().end()));
 
-  EXPECT_THAT(policy_enforcer->disqualified_logs_for_testing(),
-              ::testing::UnorderedElementsAre(
-                  ::testing::Pair(crypto::SHA256HashString("AAAA"),
-                                  base::Time::FromTimeT(0)),
-                  ::testing::Pair(crypto::SHA256HashString("BBBB"),
-                                  base::Time::FromTimeT(1)),
-                  ::testing::Pair(crypto::SHA256HashString("CCCC"),
-                                  base::Time::FromTimeT(2))));
+  EXPECT_THAT(
+      policy_enforcer->disqualified_logs_for_testing(),
+      ::testing::UnorderedElementsAre(
+          ::testing::Pair(Sha256AsByteString("AAAA"), base::Time::FromTimeT(0)),
+          ::testing::Pair(Sha256AsByteString("BBBB"), base::Time::FromTimeT(1)),
+          ::testing::Pair(Sha256AsByteString("CCCC"),
+                          base::Time::FromTimeT(2))));
 
   std::map<std::string, certificate_transparency::LogInfo> log_info =
       policy_enforcer->log_info_for_testing();
@@ -875,16 +877,16 @@ TEST(CertVerifierServiceFactoryTest,
   std::map<std::string, certificate_transparency::LogInfo> log_info_map =
       policy_enforcer->log_info_for_testing();
 
-  EXPECT_EQ(log_info_map[crypto::SHA256HashString("0000")]
+  EXPECT_EQ(log_info_map[Sha256AsByteString("0000")]
                 .operator_history.current_operator,
             "Forever Operator");
-  EXPECT_TRUE(log_info_map[crypto::SHA256HashString("0000")]
+  EXPECT_TRUE(log_info_map[Sha256AsByteString("0000")]
                   .operator_history.previous_operators.empty());
 
-  EXPECT_EQ(log_info_map[crypto::SHA256HashString("AAAA")]
+  EXPECT_EQ(log_info_map[Sha256AsByteString("AAAA")]
                 .operator_history.current_operator,
             "Changed Operator");
-  EXPECT_THAT(log_info_map[crypto::SHA256HashString("AAAA")]
+  EXPECT_THAT(log_info_map[Sha256AsByteString("AAAA")]
                   .operator_history.previous_operators,
               ::testing::ElementsAre(
                   ::testing::Pair("Operator 0", base::Time::FromTimeT(0)),

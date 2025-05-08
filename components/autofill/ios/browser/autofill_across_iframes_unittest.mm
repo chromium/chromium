@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import <string>
-#include <variant>
+#import <variant>
 #import <vector>
 
 #import "base/containers/contains.h"
@@ -14,6 +14,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "base/types/id_type.h"
+#import "base/types/optional_ref.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_client.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -334,14 +335,15 @@ class TestAutofillManager : public BrowserAutofillManager {
     BrowserAutofillManager::OnFormSubmitted(form, source);
   }
 
-  void OnAskForValuesToFill(
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      const gfx::Rect& caret_bounds,
-      AutofillSuggestionTriggerSource trigger_source) override {
+  void OnAskForValuesToFill(const FormData& form,
+                            const FieldGlobalId& field_id,
+                            const gfx::Rect& caret_bounds,
+                            AutofillSuggestionTriggerSource trigger_source,
+                            base::optional_ref<const PasswordSuggestionRequest>
+                                password_request) override {
     ask_for_filldata_forms_.emplace_back(form);
-    BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
-                                                 trigger_source);
+    BrowserAutofillManager::OnAskForValuesToFill(
+        form, field_id, caret_bounds, trigger_source, password_request);
   }
 
   void OnTextFieldValueChanged(const FormData& form,
@@ -1842,7 +1844,7 @@ TEST_F(AutofillAcrossIframesTest, FrameAndFormIdsDontMatch) {
 
     // Change the frame ID provided by getFrameId() to simulate a different
     // frame receiving the forms extraction request.
-    std::u16string script = u"__gCrWeb.message.getFrameId = () => "
+    std::u16string script = u"__gCrWeb.getFrameId = () => "
                             "'1effd8f52a067c8d3a01762d3c41dfd8'; true";
     ASSERT_TRUE(ExecuteJavaScriptInFrame(main_frame, script));
   }

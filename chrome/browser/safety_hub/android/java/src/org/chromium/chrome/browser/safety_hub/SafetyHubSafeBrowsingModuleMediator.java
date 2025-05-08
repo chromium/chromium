@@ -8,6 +8,8 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -21,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * Mediator for the Safety Hub safe browsing module. Populates the {@link
  * SafetyHubExpandablePreference} with the browser's safe browsing state.
  */
+@NullMarked
 public class SafetyHubSafeBrowsingModuleMediator implements SafetyHubModuleMediator {
     private final Profile mProfile;
     private final SafetyHubExpandablePreference mPreference;
@@ -94,7 +97,7 @@ public class SafetyHubSafeBrowsingModuleMediator implements SafetyHubModuleMedia
         return SafetyHubUtils.getSafeBrowsingState(mProfile);
     }
 
-    private String getTitle() {
+    private @Nullable String getTitle() {
         switch (mSafeBrowsingState) {
             case SafeBrowsingState.STANDARD_PROTECTION:
                 return mPreference
@@ -114,7 +117,7 @@ public class SafetyHubSafeBrowsingModuleMediator implements SafetyHubModuleMedia
         }
     }
 
-    private String getSummary() {
+    private @Nullable String getSummary() {
         switch (mSafeBrowsingState) {
             case SafeBrowsingState.STANDARD_PROTECTION:
                 return mPreference
@@ -143,7 +146,7 @@ public class SafetyHubSafeBrowsingModuleMediator implements SafetyHubModuleMedia
         }
     }
 
-    private String getPrimaryButtonText() {
+    private @Nullable String getPrimaryButtonText() {
         if (mSafeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING && !isManaged()) {
             return mPreference.getContext().getString(R.string.safety_hub_turn_on_button);
         }
@@ -151,7 +154,7 @@ public class SafetyHubSafeBrowsingModuleMediator implements SafetyHubModuleMedia
         return null;
     }
 
-    private View.OnClickListener getPrimaryButtonListener() {
+    private View.@Nullable OnClickListener getPrimaryButtonListener() {
         if (mSafeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING && !isManaged()) {
             return v -> {
                 mDelegate.startSettingsForModule(SafeBrowsingSettingsFragment.class);
@@ -162,7 +165,7 @@ public class SafetyHubSafeBrowsingModuleMediator implements SafetyHubModuleMedia
         return null;
     }
 
-    private String getSecondaryButtonText() {
+    private @Nullable String getSecondaryButtonText() {
         if (mSafeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING && !isManaged()) {
             return null;
         }
@@ -172,7 +175,7 @@ public class SafetyHubSafeBrowsingModuleMediator implements SafetyHubModuleMedia
                 .getString(R.string.safety_hub_go_to_security_settings_button);
     }
 
-    private View.OnClickListener getSecondaryButtonListener() {
+    private View.@Nullable OnClickListener getSecondaryButtonListener() {
         if (mSafeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING && !isManaged()) {
             return null;
         }

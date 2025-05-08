@@ -8,7 +8,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/device_posture/device_posture_provider_automation.mojom.h"
+#include "third_party/blink/public/test/mojom/device_posture/device_posture_provider_automation.test-mojom.h"
 
 namespace content {
 

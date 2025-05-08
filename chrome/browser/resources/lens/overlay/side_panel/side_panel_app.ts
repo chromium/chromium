@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import './side_panel_ghost_loader.js';
+import './side_panel_error_page.js';
+import './feedback_toast.js';
 import '/strings.m.js';
 import '/lens/shared/searchbox_ghost_loader.js';
 import '/lens/shared/searchbox_shared_style.css.js';
@@ -12,7 +14,6 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
-import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
@@ -22,13 +23,18 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loader.js';
 
+import {SidePanelResultStatus} from '../lens_side_panel.mojom-webui.js';
 import type {LensSidePanelPageHandlerInterface} from '../lens_side_panel.mojom-webui.js';
 import {PageContentType} from '../page_content_type.mojom-webui.js';
 import {handleEscapeSearchbox} from '../searchbox_utils.js';
 
+import type {FeedbackToastElement} from './feedback_toast.js';
+
+import {PostMessageReceiver} from './post_message_communication.js';
 import {getTemplate} from './side_panel_app.html.js';
 import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';
 import type {SidePanelBrowserProxy} from './side_panel_browser_proxy.js';
+import type {SidePanelErrorPageElement} from './side_panel_error_page.js';
 import type {SidePanelGhostLoaderElement} from './side_panel_ghost_loader.js';
 
 // The url query parameter keys for the viewport size.
@@ -37,11 +43,10 @@ const VIEWPORT_WIDTH_KEY = 'biw';
 
 export interface LensSidePanelAppElement {
   $: {
-    closeFeedbackToastButton: CrButtonElement,
-    feedbackToast: CrToastElement,
+    feedbackToast: FeedbackToastElement,
     ghostLoader: SidePanelGhostLoaderElement,
     messageToast: CrToastElement,
-    networkErrorPage: HTMLElement,
+    errorPage: SidePanelErrorPageElement,
     results: HTMLIFrameElement,
     searchbox: SearchboxElement,
     searchboxContainer: HTMLElement,
@@ -193,6 +198,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   // increase, and one for the progress bar height decrease on results load.
   private progressBarAnimation: Animation|null = null;
   private progressBarHideAnimation: Animation|null = null;
+  // A helper object responsible for handling post messages received by the
+  // window.
+  private postMessageReceiver: PostMessageReceiver =
+      new PostMessageReceiver(SidePanelBrowserProxyImpl.getInstance());
 
   private browserProxy: SidePanelBrowserProxy =
       SidePanelBrowserProxyImpl.getInstance();
@@ -251,6 +260,9 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.eventTracker_.add(
         document, 'query-autocomplete',
         this.handleQueryAutocomplete.bind(this));
+
+    // Start listening to postMessages on the window.
+    this.postMessageReceiver.listen();
   }
 
   override disconnectedCallback() {
@@ -260,6 +272,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
     this.eventTracker_.removeAll();
+    this.postMessageReceiver.detach();
   }
 
   private onBackArrowClick() {
@@ -292,6 +305,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         this.uploadProgressPercentage = 0;
       };
 
+      // Show the feedback on every result load by showing it as soon as the
+      // result load animation is complete.
       this.showFeedbackToast();
     }
   }
@@ -370,7 +385,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     }
   }
 
-  private setShowErrorPage(shouldShowErrorPage: boolean) {
+  private setShowErrorPage(
+      shouldShowErrorPage: boolean, status: SidePanelResultStatus) {
+    this.$.errorPage.setIsProtectedError(
+        status === SidePanelResultStatus.kErrorPageShownProtected);
     this.isErrorPageVisible =
         shouldShowErrorPage && loadTimeData.getBoolean('enableErrorPage');
   }
@@ -450,11 +468,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     }
 
     await this.$.messageToast.hide();
-    await this.showToast(this.$.feedbackToast);
+    this.$.feedbackToast.show();
   }
 
   private async showMessageToast(message: string) {
-    await this.$.feedbackToast.hide();
+    this.$.feedbackToast.hide();
     await this.showToast(this.$.messageToast, message);
   }
 
@@ -472,14 +490,6 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
     this.toastMessage = message ?? this.toastMessage;
     toast.show();
-  }
-
-  private onSendFeedbackClick() {
-    // TODO(crbug.com/408057740): Clicking button should open form.
-  }
-
-  private onHideFeedbackToastClick() {
-    this.$.feedbackToast.hide();
   }
 
   private onHideMessageToastClick() {

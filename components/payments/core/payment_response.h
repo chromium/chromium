@@ -24,7 +24,6 @@ class PaymentResponse {
   ~PaymentResponse();
 
   bool operator==(const PaymentResponse& other) const;
-  bool operator!=(const PaymentResponse& other) const;
 
   // The same ID present in the original PaymentRequest.
   std::string payment_request_id;

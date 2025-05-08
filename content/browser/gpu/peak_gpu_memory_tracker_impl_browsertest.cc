@@ -72,7 +72,7 @@ class TestGpuService : public viz::mojom::GpuService {
       const gpu::GpuDiskCacheHandle& handle) override {}
   void CloseChannel(int32_t client_id) override {}
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   void CreateArcVideoDecodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
       override {}
@@ -87,7 +87,7 @@ class TestGpuService : public viz::mojom::GpuService {
   void CreateArcProtectedBufferManager(
       mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver)
       override {}
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   void CreateJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jda_receiver) override {}
@@ -111,26 +111,6 @@ class TestGpuService : public viz::mojom::GpuService {
       mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver,
       int32_t client_id) override {}
 
-  void CreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                             const gfx::Size& size,
-                             gfx::BufferFormat format,
-                             gfx::BufferUsage usage,
-                             int client_id,
-                             gpu::SurfaceHandle surface_handle,
-                             CreateGpuMemoryBufferCallback callback) override {
-    // While executing these tests on Linux, HostGpuMemoryBufferManager may
-    // invoke this method and wait synchronously on the result to determine
-    // whether NV12 GMBs are supported. It is thus necessary to invoke the
-    // callback here. Passing an empty GMB handle is fine as it will simply
-    // signify that NV12 GMBs are not supported, which is not information that
-    // is relevant to these tests one way or the other.
-    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-  }
-  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                              int client_id) override {}
-  void CopyGpuMemoryBuffer(::gfx::GpuMemoryBufferHandle buffer_handle,
-                           ::base::UnsafeSharedMemoryRegion shared_memory,
-                           CopyGpuMemoryBufferCallback callback) override {}
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override {}
 #if BUILDFLAG(IS_WIN)

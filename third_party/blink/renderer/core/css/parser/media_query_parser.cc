@@ -34,6 +34,8 @@ bool MediaQueryParser::MediaQueryFeatureSet::IsAllowed(
       feature == media_feature_names::kStuckMediaFeature ||
       feature == media_feature_names::kSnappedMediaFeature ||
       feature == media_feature_names::kScrollableMediaFeature ||
+      (feature == media_feature_names::kScrollDirectionMediaFeature &&
+       RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) ||
       CSSVariableParser::IsValidVariableName(feature)) {
     return false;
   }

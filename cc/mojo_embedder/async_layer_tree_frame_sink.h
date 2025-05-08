@@ -139,6 +139,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           FrameSkippedReason reason) override;
+  void ExportFrameTiming() override;
   std::unique_ptr<LayerContext> CreateLayerContext(
       LayerTreeHostImpl& host_impl) override;
 

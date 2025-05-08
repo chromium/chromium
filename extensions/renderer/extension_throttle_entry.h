@@ -53,7 +53,7 @@ class ExtensionThrottleEntry {
   // Time after which the entry is considered outdated.
   static const int kDefaultEntryLifetimeMs;
 
-  // |url_id| is a unique entry ID.
+  // `url_id` is a unique entry ID.
   explicit ExtensionThrottleEntry(const std::string& url_id);
 
   // The life span of instances created with this constructor is set to
@@ -80,7 +80,7 @@ class ExtensionThrottleEntry {
 
   // Calculates a recommended sending time for the next request and reserves it.
   // The sending time is not earlier than the current exponential back-off
-  // release time or |earliest_time|. Moreover, the previous results of
+  // release time or `earliest_time`. Moreover, the previous results of
   // the method are taken into account, in order to make sure they are spread
   // properly over time.
   // Returns the recommended delay before sending the next request, in

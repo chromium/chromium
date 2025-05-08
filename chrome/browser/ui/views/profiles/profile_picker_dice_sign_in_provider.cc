@@ -81,7 +81,7 @@ ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
   // called yet).
   if (callback_) {
     if (IsInitialized()) {
-      contents()->SetDelegate(nullptr);
+      ResetWebContentsDelegates();
     }
 
     ProfileMetrics::LogProfileAddSignInFlowOutcome(
@@ -306,7 +306,7 @@ void ProfilePickerDiceSignInProvider::FinishFlow(
     const CoreAccountInfo& account_info) {
   DCHECK(IsInitialized());
   host_->SetNativeToolbarVisible(false);
-  contents()->SetDelegate(nullptr);
+  ResetWebContentsDelegates();
   std::move(callback_).Run(profile_.get(), account_info, std::move(contents_));
 }
 
@@ -318,6 +318,12 @@ void ProfilePickerDiceSignInProvider::FinishFlowInPicker(
     const CoreAccountInfo& account_info) {
   CHECK_EQ(profile, profile_.get());
   FinishFlow(account_info);
+}
+
+void ProfilePickerDiceSignInProvider::ResetWebContentsDelegates() {
+  contents()->SetDelegate(nullptr);
+  web_modal::WebContentsModalDialogManager::FromWebContents(contents())
+      ->SetDelegate(nullptr);
 }
 
 GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {

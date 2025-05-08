@@ -35,11 +35,7 @@ class ChromeSignoutConfirmationPromptPixelTest
       public testing::WithParamInterface<
           ChromeSignoutConfirmationPromptVariant> {
  public:
-  ChromeSignoutConfirmationPromptPixelTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kImprovedSigninUIOnDesktop},
-        /*disabled_features=*/{});
-  }
+  ChromeSignoutConfirmationPromptPixelTest() = default;
 
   void ShowUi(const std::string& name) override {
     auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
@@ -82,9 +78,6 @@ class ChromeSignoutConfirmationPromptPixelTest
   ChromeSignoutConfirmationPromptVariant GetVariant() const {
     return GetParam();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeSignoutConfirmationPromptPixelTest,
@@ -110,11 +103,6 @@ class ChromeSignoutConfirmationPromptWithExtensionsPixelTest
     : public SigninBrowserTestBaseT<ChromeSignoutConfirmationPromptPixelTest> {
  public:
   ChromeSignoutConfirmationPromptWithExtensionsPixelTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kImprovedSigninUIOnDesktop,
-                              switches::kEnableExtensionsExplicitBrowserSignin},
-        /*disabled_features=*/{});
-
     base::FilePath test_data_dir;
     if (!base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir)) {
       ADD_FAILURE();
@@ -127,7 +115,8 @@ class ChromeSignoutConfirmationPromptWithExtensionsPixelTest
   base::FilePath extension_data_dir() { return extension_data_dir_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kEnableExtensionsExplicitBrowserSignin};
 
   // chrome/test/data/extensions/
   base::FilePath extension_data_dir_;

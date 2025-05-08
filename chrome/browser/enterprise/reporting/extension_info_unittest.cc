@@ -68,7 +68,7 @@ class ExtensionInfoTest : public extensions::ExtensionServiceTestBase {
       extensionBuilder.AddFlags(extensions::Extension::FROM_WEBSTORE);
     }
     auto extension = extensionBuilder.Build();
-    registrar()->AddExtension(extension.get());
+    registrar()->AddExtension(extension);
     return extension;
   }
 };
@@ -122,8 +122,8 @@ TEST_F(ExtensionInfoTest, MultipleExtensions) {
 
 TEST_F(ExtensionInfoTest, ExtensionDisabled) {
   auto extension = BuildExtension();
-  service()->DisableExtension(kId,
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      kId, {extensions::disable_reason::DISABLE_USER_ACTION});
 
   em::ChromeUserProfileInfo info;
   AppendExtensionInfoIntoProfileReport(profile(), &info);

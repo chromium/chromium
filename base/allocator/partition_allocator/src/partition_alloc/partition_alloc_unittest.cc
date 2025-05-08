@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "partition_alloc/bucket_lookup.h"
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 #include <algorithm>
@@ -21,7 +22,6 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
-#include "partition_alloc/freeslot_bitmap.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/lightweight_quarantine.h"
 #include "partition_alloc/memory_reclaimer.h"
@@ -87,8 +87,7 @@
 #elif PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
 #elif PA_BUILDFLAG(IS_APPLE)
-#include <mach/host_info.h>
-#include <mach/mach.h>
+#include <sys/sysctl.h>
 #elif PA_BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #endif
@@ -121,14 +120,11 @@ uint64_t AmountOfPhysicalMemory() {
   }
   return 0;
 #elif PA_BUILDFLAG(IS_APPLE)
-  struct host_basic_info host_basic_info;
-  mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
-  if (host_info(mach_host_self(), HOST_BASIC_INFO,
-                reinterpret_cast<host_info_t>(&host_basic_info),
-                &count) == KERN_SUCCESS) {
-    return host_basic_info.max_mem;
-  }
-  return 0;
+  uint64_t physical_memory;
+  size_t size = sizeof(physical_memory);
+  int rv = sysctlbyname("hw.memsize", &physical_memory, &size, nullptr, 0);
+  PA_CHECK(rv == 0) << "sysctlbyname(\"hw.memsize\")";
+  return physical_memory;
 #elif PA_BUILDFLAG(IS_POSIX)
   long pages = sysconf(_SC_PHYS_PAGES);
   long page_size = sysconf(_SC_PAGESIZE);
@@ -857,9 +853,7 @@ TEST_P(PartitionAllocTest, Basic) {
   EXPECT_TRUE(ptr);
   EXPECT_EQ(kPointerOffset, UntagPtr(ptr) & PartitionPageOffsetMask());
   // Check that the offset appears to include a guard page.
-  EXPECT_EQ(PartitionPageSize() +
-                partition_alloc::internal::ReservedFreeSlotBitmapSize() +
-                kPointerOffset,
+  EXPECT_EQ(PartitionPageSize() + kPointerOffset,
             UntagPtr(ptr) & kSuperPageOffsetMask);
 
   allocator.root()->Free(ptr);
@@ -1157,9 +1151,7 @@ TEST_P(PartitionAllocTest, MultiPageAllocs) {
   size_t num_pages_per_slot_span = GetNumPagesPerSlotSpan(kTestAllocSize);
   // 1 super page has 2 guard partition pages and a tag bitmap.
   size_t num_slot_spans_needed =
-      (NumPartitionPagesPerSuperPage() - 2 -
-       partition_alloc::internal::NumPartitionPagesPerFreeSlotBitmap()) /
-      num_pages_per_slot_span;
+      (NumPartitionPagesPerSuperPage() - 2) / num_pages_per_slot_span;
 
   // We need one more slot span in order to cross super page boundary.
   ++num_slot_spans_needed;
@@ -1181,9 +1173,7 @@ TEST_P(PartitionAllocTest, MultiPageAllocs) {
       EXPECT_FALSE(second_super_page_base == first_super_page_base);
       // Check that we allocated a guard page and the reserved tag bitmap for
       // the second page.
-      EXPECT_EQ(PartitionPageSize() +
-                    partition_alloc::internal::ReservedFreeSlotBitmapSize(),
-                second_super_page_offset);
+      EXPECT_EQ(PartitionPageSize(), second_super_page_offset);
     }
   }
   for (i = 0; i < num_slot_spans_needed; ++i) {
@@ -1197,7 +1187,8 @@ TEST_P(PartitionAllocTest, Alloc) {
   void* ptr = allocator.root()->Alloc(1, type_name);
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
-  ptr = allocator.root()->Alloc(kMaxBucketed + 1, type_name);
+  ptr =
+      allocator.root()->Alloc(BucketIndexLookup::kMaxBucketSize + 1, type_name);
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
 
@@ -1224,13 +1215,13 @@ TEST_P(PartitionAllocTest, Alloc) {
   PA_EXPECT_PTR_EQ(ptr, new_ptr);
   new_ptr = allocator.root()->Realloc(ptr, base_size + 1, type_name);
   PA_EXPECT_PTR_EQ(ptr, new_ptr);
-  new_ptr =
-      allocator.root()->Realloc(ptr, base_size + kSmallestBucket, type_name);
+  new_ptr = allocator.root()->Realloc(
+      ptr, base_size + BucketIndexLookup::kMinBucketSize, type_name);
   PA_EXPECT_PTR_EQ(ptr, new_ptr);
 
   // Change the size of the realloc, switching buckets.
-  new_ptr = allocator.root()->Realloc(ptr, base_size + kSmallestBucket + 1,
-                                      type_name);
+  new_ptr = allocator.root()->Realloc(
+      ptr, base_size + BucketIndexLookup::kMinBucketSize + 1, type_name);
   PA_EXPECT_PTR_NE(new_ptr, ptr);
   // Check that the realloc copied correctly.
   char* new_char_ptr = static_cast<char*>(new_ptr);
@@ -1240,7 +1231,8 @@ TEST_P(PartitionAllocTest, Alloc) {
   // source of the realloc. The condition can be detected by a trashing of
   // the uninitialized value in the space of the upsized allocation.
   EXPECT_EQ(kUninitializedByte,
-            static_cast<unsigned char>(*(new_char_ptr + kSmallestBucket)));
+            static_cast<unsigned char>(
+                *(new_char_ptr + BucketIndexLookup::kMinBucketSize)));
 #endif
   *new_char_ptr = 'B';
   // The realloc moved. To check that the old allocation was freed, we can
@@ -1260,7 +1252,8 @@ TEST_P(PartitionAllocTest, Alloc) {
 
   // Upsize the realloc to outside the partition.
   ptr = new_ptr;
-  new_ptr = allocator.root()->Realloc(ptr, kMaxBucketed + 1, type_name);
+  new_ptr = allocator.root()->Realloc(
+      ptr, BucketIndexLookup::kMaxBucketSize + 1, type_name);
   PA_EXPECT_PTR_NE(new_ptr, ptr);
   new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'C');
@@ -1268,12 +1261,14 @@ TEST_P(PartitionAllocTest, Alloc) {
 
   // Upsize and downsize the realloc, remaining outside the partition.
   ptr = new_ptr;
-  new_ptr = allocator.root()->Realloc(ptr, kMaxBucketed * 10, type_name);
+  new_ptr = allocator.root()->Realloc(
+      ptr, BucketIndexLookup::kMaxBucketSize * 10, type_name);
   new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'D');
   *new_char_ptr = 'E';
   ptr = new_ptr;
-  new_ptr = allocator.root()->Realloc(ptr, kMaxBucketed * 2, type_name);
+  new_ptr = allocator.root()->Realloc(
+      ptr, BucketIndexLookup::kMaxBucketSize * 2, type_name);
   new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'E');
   *new_char_ptr = 'F';
@@ -1377,7 +1372,7 @@ TEST_P(PartitionAllocTest, AllocSizes) {
     // Check a more reasonable, but still direct mapped, size.
     // Chop a system page and a byte off to test for rounding errors.
     size_t size = 20 * 1024 * 1024;
-    ASSERT_GT(size, kMaxBucketed);
+    ASSERT_GT(size, BucketIndexLookup::kMaxBucketSize);
     size -= SystemPageSize();
     size -= 1;
     void* ptr = allocator.root()->Alloc(size, type_name);
@@ -1477,7 +1472,8 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   allocator.root()->Free(ptr);
 
   // Allocate the maximum allowed bucketed size.
-  requested_size = kMaxBucketed - ExtraAllocSize(allocator);
+  requested_size =
+      BucketIndexLookup::kMaxBucketSize - ExtraAllocSize(allocator);
   predicted_capacity =
       allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
@@ -1588,19 +1584,20 @@ TEST_P(PartitionAllocTest, IsPtrWithinSameAlloc) {
       partition_alloc::internal::base::bits::AlignUp(
           ExtraAllocSize(allocator) + 1, kAlignment);
   ASSERT_GT(kMinReasonableTestSize, ExtraAllocSize(allocator));
-  const size_t kSizes[] = {kMinReasonableTestSize,
-                           256,
-                           SystemPageSize(),
-                           PartitionPageSize(),
-                           MaxRegularSlotSpanSize(),
-                           MaxRegularSlotSpanSize() + 1,
-                           MaxRegularSlotSpanSize() + SystemPageSize(),
-                           MaxRegularSlotSpanSize() + PartitionPageSize(),
-                           kMaxBucketed,
-                           kMaxBucketed + 1,
-                           kMaxBucketed + SystemPageSize(),
-                           kMaxBucketed + PartitionPageSize(),
-                           kSuperPageSize};
+  const size_t kSizes[] = {
+      kMinReasonableTestSize,
+      256,
+      SystemPageSize(),
+      PartitionPageSize(),
+      MaxRegularSlotSpanSize(),
+      MaxRegularSlotSpanSize() + 1,
+      MaxRegularSlotSpanSize() + SystemPageSize(),
+      MaxRegularSlotSpanSize() + PartitionPageSize(),
+      BucketIndexLookup::kMaxBucketSize,
+      BucketIndexLookup::kMaxBucketSize + 1,
+      BucketIndexLookup::kMaxBucketSize + SystemPageSize(),
+      BucketIndexLookup::kMaxBucketSize + PartitionPageSize(),
+      kSuperPageSize};
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   constexpr size_t kFarFarAwayDelta = 512 * kGiB;
 #else
@@ -1829,7 +1826,9 @@ TEST_P(PartitionAllocTest, Realloc) {
   // Test that growing an allocation with realloc() copies everything from the
   // old allocation.
   size = MaxRegularSlotSpanSize() + 1;
-  ASSERT_LE(2 * size, kMaxBucketed);  // should be in single-slot span range
+  ASSERT_LE(2 * size,
+            BucketIndexLookup::kMaxBucketSize);  // should be in single-slot
+                                                 // span range
   // Confirm size doesn't fill the entire slot.
   ASSERT_LT(size, allocator.root()->AllocationCapacityFromRequestedSize(size));
   ptr = allocator.root()->Alloc(size, type_name);
@@ -1867,7 +1866,7 @@ TEST_P(PartitionAllocTest, Realloc) {
   // downsize even if one less super page is used (due to high granularity on
   // 64-bit systems).
   size = 10 * kSuperPageSize + SystemPageSize() - 42;
-  ASSERT_GT(size - 32 * SystemPageSize(), kMaxBucketed);
+  ASSERT_GT(size - 32 * SystemPageSize(), BucketIndexLookup::kMaxBucketSize);
   ptr = allocator.root()->Alloc(size, type_name);
   uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
   size_t actual_capacity =
@@ -1922,7 +1921,7 @@ TEST_P(PartitionAllocTest, ReallocDirectMapAligned) {
     // downsize even if one less super page is used (due to high granularity on
     // 64-bit systems), even if the alignment padding is taken out.
     size_t size = 10 * kSuperPageSize + SystemPageSize() - 42;
-    ASSERT_GT(size, kMaxBucketed);
+    ASSERT_GT(size, BucketIndexLookup::kMaxBucketSize);
     void* ptr =
         allocator.root()->AllocInternalForTesting(size, alignment, type_name);
     uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
@@ -1970,7 +1969,7 @@ TEST_P(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
   // Pick size such that the alignment will put it cross the super page
   // boundary.
   size_t size = 2 * kSuperPageSize - kMaxSupportedAlignment + SystemPageSize();
-  ASSERT_GT(size, kMaxBucketed);
+  ASSERT_GT(size, BucketIndexLookup::kMaxBucketSize);
   void* ptr = allocator.root()->AllocInternalForTesting(
       size, kMaxSupportedAlignment, type_name);
   // Reallocating with the same size will actually relocate, because without a
@@ -1983,7 +1982,7 @@ TEST_P(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
   // boundary, but this time make it so large that Realloc doesn't fing it worth
   // shrinking.
   size = 10 * kSuperPageSize - kMaxSupportedAlignment + SystemPageSize();
-  ASSERT_GT(size, kMaxBucketed);
+  ASSERT_GT(size, BucketIndexLookup::kMaxBucketSize);
   ptr = allocator.root()->AllocInternalForTesting(size, kMaxSupportedAlignment,
                                                   type_name);
   ptr2 = allocator.root()->Realloc(ptr, size, type_name);
@@ -2273,9 +2272,7 @@ TEST_P(PartitionAllocTest, MappingCollision) {
   // The -2 is because the first and last partition pages in a super page are
   // guard pages. We also discount the partition pages used for the tag bitmap.
   size_t num_slot_span_needed =
-      (NumPartitionPagesPerSuperPage() - 2 -
-       partition_alloc::internal::NumPartitionPagesPerFreeSlotBitmap()) /
-      num_pages_per_slot_span;
+      (NumPartitionPagesPerSuperPage() - 2) / num_pages_per_slot_span;
   size_t num_partition_pages_needed =
       num_slot_span_needed * num_pages_per_slot_span;
 
@@ -2291,12 +2288,8 @@ TEST_P(PartitionAllocTest, MappingCollision) {
 
   uintptr_t slot_span_start =
       SlotSpan::ToSlotSpanStart(first_super_page_pages[0]);
-  EXPECT_EQ(PartitionPageSize() +
-                partition_alloc::internal::ReservedFreeSlotBitmapSize(),
-            slot_span_start & kSuperPageOffsetMask);
-  uintptr_t super_page =
-      slot_span_start - PartitionPageSize() -
-      partition_alloc::internal::ReservedFreeSlotBitmapSize();
+  EXPECT_EQ(PartitionPageSize(), slot_span_start & kSuperPageOffsetMask);
+  uintptr_t super_page = slot_span_start - PartitionPageSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   uintptr_t map1 =
@@ -2322,11 +2315,8 @@ TEST_P(PartitionAllocTest, MappingCollision) {
   FreePages(map2, PageAllocationGranularity());
 
   super_page = SlotSpan::ToSlotSpanStart(second_super_page_pages[0]);
-  EXPECT_EQ(PartitionPageSize() +
-                partition_alloc::internal::ReservedFreeSlotBitmapSize(),
-            super_page & kSuperPageOffsetMask);
-  super_page -= PartitionPageSize() +
-                partition_alloc::internal::ReservedFreeSlotBitmapSize();
+  EXPECT_EQ(PartitionPageSize(), super_page & kSuperPageOffsetMask);
+  super_page -= PartitionPageSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   map1 = AllocPages(super_page - PageAllocationGranularity(),
@@ -2539,7 +2529,7 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
 TEST_P(PartitionAllocDeathTest, MAYBE_RepeatedAllocReturnNullDirect) {
   // A direct-mapped allocation size.
   size_t direct_map_size = 32 * 1024 * 1024;
-  ASSERT_GT(direct_map_size, kMaxBucketed);
+  ASSERT_GT(direct_map_size, BucketIndexLookup::kMaxBucketSize);
   EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionAlloc),
                "Passed DoReturnNullTest");
 }
@@ -2547,7 +2537,7 @@ TEST_P(PartitionAllocDeathTest, MAYBE_RepeatedAllocReturnNullDirect) {
 // Repeating above test with Realloc
 TEST_P(PartitionAllocDeathTest, MAYBE_RepeatedReallocReturnNullDirect) {
   size_t direct_map_size = 32 * 1024 * 1024;
-  ASSERT_GT(direct_map_size, kMaxBucketed);
+  ASSERT_GT(direct_map_size, BucketIndexLookup::kMaxBucketSize);
   EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionRealloc),
                "Passed DoReturnNullTest");
 }
@@ -2561,7 +2551,7 @@ TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
   // A single-slot but non-direct-mapped allocation size.
   size_t single_slot_size = 512 * 1024;
   ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
-  ASSERT_LE(single_slot_size, kMaxBucketed);
+  ASSERT_LE(single_slot_size, BucketIndexLookup::kMaxBucketSize);
   EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionAlloc),
                "Passed DoReturnNullTest");
 }
@@ -2570,7 +2560,7 @@ TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
 TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNull) {
   size_t single_slot_size = 512 * 1024;
   ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
-  ASSERT_LE(single_slot_size, kMaxBucketed);
+  ASSERT_LE(single_slot_size, BucketIndexLookup::kMaxBucketSize);
   EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionRealloc),
                "Passed DoReturnNullTest");
 }
@@ -2726,15 +2716,16 @@ TEST_P(PartitionAllocDeathTest, NumAllocatedSlotsDoubleFree) {
 // Check that guard pages are present where expected.
 TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
   const size_t kSizes[] = {
-      kMaxBucketed + ExtraAllocSize(allocator) + 1,
-      kMaxBucketed + SystemPageSize(), kMaxBucketed + PartitionPageSize(),
+      BucketIndexLookup::kMaxBucketSize + ExtraAllocSize(allocator) + 1,
+      BucketIndexLookup::kMaxBucketSize + SystemPageSize(),
+      BucketIndexLookup::kMaxBucketSize + PartitionPageSize(),
       partition_alloc::internal::base::bits::AlignUp(
-          kMaxBucketed + kSuperPageSize, kSuperPageSize) -
+          BucketIndexLookup::kMaxBucketSize + kSuperPageSize, kSuperPageSize) -
           PartitionRoot::GetDirectMapMetadataAndGuardPagesSize()};
   for (size_t size : kSizes) {
-    ASSERT_GT(size, kMaxBucketed);
+    ASSERT_GT(size, BucketIndexLookup::kMaxBucketSize);
     size -= ExtraAllocSize(allocator);
-    EXPECT_GT(size, kMaxBucketed)
+    EXPECT_GT(size, BucketIndexLookup::kMaxBucketSize)
         << "allocation not large enough for direct allocation";
     void* ptr = allocator.root()->Alloc(size, type_name);
 
@@ -3017,8 +3008,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
 
   // This test checks for correct direct mapped accounting.
   {
-    size_t size_smaller = kMaxBucketed + 1;
-    size_t size_bigger = (kMaxBucketed * 2) + 1;
+    size_t size_smaller = BucketIndexLookup::kMaxBucketSize + 1;
+    size_t size_bigger = (BucketIndexLookup::kMaxBucketSize * 2) + 1;
     size_t real_size_smaller =
         (size_smaller + SystemPageOffsetMask()) & SystemPageBaseMask();
     size_t real_size_bigger =
@@ -3204,7 +3195,7 @@ TEST_P(PartitionAllocTest, Purge) {
   // A single-slot but non-direct-mapped allocation size.
   size_t single_slot_size = 512 * 1024;
   ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
-  ASSERT_LE(single_slot_size, kMaxBucketed);
+  ASSERT_LE(single_slot_size, BucketIndexLookup::kMaxBucketSize);
   char* big_ptr =
       static_cast<char*>(allocator.root()->Alloc(single_slot_size, type_name));
   allocator.root()->Free(big_ptr);
@@ -3445,7 +3436,8 @@ TEST_P(PartitionAllocTest, PurgeDiscardableManyPages) {
   const size_t kSecondAllocPages = kHasLargePages ? 31 : 61;
 
   // Detect case (1) from above.
-  PA_DCHECK(kFirstAllocPages * SystemPageSize() < (1UL << kMaxBucketedOrder));
+  PA_DCHECK(kFirstAllocPages * SystemPageSize() <=
+            BucketIndexLookup::kMaxBucketSize);
 
   const size_t kDeltaPages = kFirstAllocPages - kSecondAllocPages;
 
@@ -3838,7 +3830,7 @@ TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
     void* object = allocator.root()->Alloc(size);
     allocator.root()->Free<FreeFlags::kSchedulerLoopQuarantine>(object);
 
-    if (size <= kMaxBucketed) {
+    if (size <= BucketIndexLookup::kMaxBucketSize) {
       ASSERT_TRUE(
           branch.GetInternalBranchForTesting().IsQuarantinedForTesting(object));
     } else {
@@ -4082,8 +4074,8 @@ TEST_P(PartitionAllocTest, Bug_897585) {
   // test case in the indicated bug.
   size_t kInitialSize = 983050;
   size_t kDesiredSize = 983100;
-  ASSERT_GT(kInitialSize, kMaxBucketed);
-  ASSERT_GT(kDesiredSize, kMaxBucketed);
+  ASSERT_GT(kInitialSize, BucketIndexLookup::kMaxBucketSize);
+  ASSERT_GT(kDesiredSize, BucketIndexLookup::kMaxBucketSize);
   void* ptr = allocator.root()->Alloc<AllocFlags::kReturnNull>(kInitialSize);
   ASSERT_NE(nullptr, ptr);
   ptr = allocator.root()->Realloc<AllocFlags::kReturnNull>(ptr, kDesiredSize,
@@ -4240,10 +4232,10 @@ TEST_P(PartitionAllocTest, AlignedAllocations) {
                           130000,
                           500000,
                           900000,
-                          kMaxBucketed + 1,
-                          2 * kMaxBucketed,
+                          BucketIndexLookup::kMaxBucketSize + 1,
+                          2 * BucketIndexLookup::kMaxBucketSize,
                           kSuperPageSize - 2 * PartitionPageSize(),
-                          4 * kMaxBucketed};
+                          4 * BucketIndexLookup::kMaxBucketSize};
   for (size_t alloc_size : alloc_sizes) {
     for (size_t alignment = 1; alignment <= kMaxSupportedAlignment;
          alignment <<= 1) {
@@ -4255,7 +4247,7 @@ TEST_P(PartitionAllocTest, AlignedAllocations) {
 // Test that the optimized `GetSlotNumber` implementation produces valid
 // results.
 TEST_P(PartitionAllocTest, OptimizedGetSlotNumber) {
-  for (size_t i = 0; i < kNumBuckets; ++i) {
+  for (size_t i = 0; i < BucketIndexLookup::kNumBuckets; ++i) {
     auto& bucket = allocator.root()->buckets[i];
     if (SizeToIndex(bucket.slot_size) != i) {
       continue;
@@ -4399,11 +4391,13 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
   // When the system page size is larger than 4KiB, we don't necessarily have
   // enough space in the superpage to store two of the largest bucketed
   // allocations, particularly when we reserve extra space for e.g. bitmaps.
-  // To avoid this, we use something just below kMaxBucketed.
-  size_t big_size = kMaxBucketed * 4 / 5 - SystemPageSize();
+  // To avoid this, we use something just below
+  // BucketIndexLookup::kMaxBucketSize.
+  size_t big_size =
+      BucketIndexLookup::kMaxBucketSize * 4 / 5 - SystemPageSize();
 
   ASSERT_GT(big_size, MaxRegularSlotSpanSize());
-  ASSERT_LE(big_size, kMaxBucketed);
+  ASSERT_LE(big_size, BucketIndexLookup::kMaxBucketSize);
   bucket_index = SizeToIndex(big_size - ExtraAllocSize(allocator));
   bucket = &root.buckets[bucket_index];
   // Assert the allocation doesn't fill the entire span nor entire partition
@@ -4489,8 +4483,8 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
   EXPECT_EQ(0U, root.total_size_of_direct_mapped_pages);
 
   size_t huge_sizes[] = {
-      kMaxBucketed + SystemPageSize(),
-      kMaxBucketed + SystemPageSize() + 123,
+      BucketIndexLookup::kMaxBucketSize + SystemPageSize(),
+      BucketIndexLookup::kMaxBucketSize + SystemPageSize() + 123,
       kSuperPageSize - PageAllocationGranularity(),
       kSuperPageSize - SystemPageSize() - PartitionPageSize(),
       kSuperPageSize - PartitionPageSize(),
@@ -4509,7 +4503,7 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
       kMaxSupportedAlignment,
   };
   for (size_t huge_size : huge_sizes) {
-    ASSERT_GT(huge_size, kMaxBucketed);
+    ASSERT_GT(huge_size, BucketIndexLookup::kMaxBucketSize);
     for (size_t alignment : alignments) {
       // For direct map, we commit only as many pages as needed.
       size_t aligned_size = partition_alloc::internal::base::bits::AlignUp(
@@ -5330,7 +5324,7 @@ TEST_P(PartitionAllocTest, ReservationOffset) {
 
   // For direct-map,
   size_t large_size = kSuperPageSize * 5 + PartitionPageSize() * .5f;
-  ASSERT_GT(large_size, kMaxBucketed);
+  ASSERT_GT(large_size, BucketIndexLookup::kMaxBucketSize);
   ptr = allocator.root()->Alloc(large_size, type_name);
   EXPECT_TRUE(ptr);
   address = UntagPtr(ptr);
@@ -5368,7 +5362,7 @@ TEST_P(PartitionAllocTest, ReservationOffset) {
 
 TEST_P(PartitionAllocTest, GetReservationStart) {
   size_t large_size = kSuperPageSize * 3 + PartitionPageSize() * .5f;
-  ASSERT_GT(large_size, kMaxBucketed);
+  ASSERT_GT(large_size, BucketIndexLookup::kMaxBucketSize);
   void* ptr = allocator.root()->Alloc(large_size, type_name);
   EXPECT_TRUE(ptr);
   uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
@@ -5433,7 +5427,7 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
                                                             allocator.root()));
 
   size_t large_size = 2 * kSuperPageSize;
-  ASSERT_GT(large_size, kMaxBucketed);
+  ASSERT_GT(large_size, BucketIndexLookup::kMaxBucketSize);
   ptr = allocator.root()->Alloc(large_size, type_name);
   EXPECT_TRUE(ptr);
   address = UntagPtr(ptr);
@@ -5648,18 +5642,40 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
 
 // Checks the bucket index logic.
 TEST_P(PartitionAllocTest, GetIndex) {
-  BucketIndexLookup lookup{};
+  BucketDistribution distribution = allocator.root()->GetBucketDistribution();
 
-  for (size_t size = 0; size < kMaxBucketed; size++) {
-    size_t index = BucketIndexLookup::GetIndex(size);
-    ASSERT_GE(lookup.bucket_sizes()[index], size);
+  for (size_t size = 0; size <= BucketIndexLookup::kMaxBucketSize; size++) {
+    uint16_t index = PartitionRoot::SizeToBucketIndex(size, distribution);
+    ASSERT_LT(index, BucketIndexLookup::kNumBuckets);
+
+    size_t bucket_size = BucketIndexLookup::GetBucketSize(index);
+    ASSERT_LE(size, bucket_size);
+    ASSERT_EQ(bucket_size % kAlignment, 0u);
+
+    size_t minimum_required_size = size == 0 ? 1 : size;
+    minimum_required_size =
+        base::bits::AlignUp(minimum_required_size, kAlignment);
+    double waste_rate =
+        1 - static_cast<double>(minimum_required_size) / bucket_size;
+    ASSERT_LE(waste_rate, 1.0 / 4);
+    if (distribution == PartitionRoot::BucketDistribution::kDenser) {
+      ASSERT_LE(waste_rate, 1. / 8);
+    }
   }
 
+  // Beyond `kMaxBucketSize`.
+  ASSERT_EQ(PartitionRoot::SizeToBucketIndex(
+                BucketIndexLookup::kMaxBucketSize + 1, distribution),
+            BucketIndexLookup::kNumBuckets);
+  ASSERT_EQ(PartitionRoot::SizeToBucketIndex(std::numeric_limits<size_t>::max(),
+                                             distribution),
+            BucketIndexLookup::kNumBuckets);
+
   // Make sure that power-of-two have exactly matching buckets.
-  for (size_t size = (1 << (kMinBucketedOrder - 1)); size < kMaxBucketed;
-       size <<= 1) {
-    size_t index = BucketIndexLookup::GetIndex(size);
-    ASSERT_EQ(lookup.bucket_sizes()[index], size);
+  for (size_t size = BucketIndexLookup::kMinBucketSize;
+       size <= BucketIndexLookup::kMaxBucketSize; size <<= 1) {
+    uint16_t index = PartitionRoot::SizeToBucketIndex(size, distribution);
+    ASSERT_EQ(BucketIndexLookup::GetBucketSize(index), size);
   }
 }
 
@@ -6039,9 +6055,6 @@ TEST_P(PartitionAllocTest, OpenCL) {
 TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
   for (PartitionRoot::Bucket& bucket : allocator.root()->buckets) {
     const size_t slot_size = bucket.slot_size;
-    if (slot_size == kInvalidBucketSize) {
-      continue;
-    }
 
     size_t small_system_page_count =
         partition_alloc::internal::ComputeSystemPagesPerSlotSpan(
@@ -6188,56 +6201,6 @@ TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
   run_test(1);
 }
 
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
-TEST_P(PartitionAllocTest, FreeSlotBitmapMarkedAsUsedAfterAlloc) {
-  void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
-  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
-  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
-
-  allocator.root()->Free(ptr);
-}
-
-TEST_P(PartitionAllocTest, FreeSlotBitmapMarkedAsFreeAfterFree) {
-  void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
-  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
-  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
-
-  allocator.root()->Free(ptr);
-  EXPECT_FALSE(FreeSlotBitmapSlotIsUsed(slot_start));
-}
-
-TEST_P(PartitionAllocTest, FreeSlotBitmapResetAfterDecommit) {
-  void* ptr1 = allocator.root()->Alloc(
-      SystemPageSize() - ExtraAllocSize(allocator), type_name);
-  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr1);
-  allocator.root()->Free(ptr1);
-
-  EXPECT_FALSE(FreeSlotBitmapSlotIsUsed(slot_start));
-  // Decommit the slot span. Bitmap will be rewritten in Decommit().
-  allocator.root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans);
-  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
-}
-
-TEST_P(PartitionAllocTest, FreeSlotBitmapResetAfterPurge) {
-  void* ptr1 = allocator.root()->Alloc(
-      SystemPageSize() - ExtraAllocSize(allocator), type_name);
-  char* ptr2 = static_cast<char*>(allocator.root()->Alloc(
-      SystemPageSize() - ExtraAllocSize(allocator), type_name));
-  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr2);
-  allocator.root()->Free(ptr2);
-
-  CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, true);
-  EXPECT_FALSE(FreeSlotBitmapSlotIsUsed(slot_start));
-  // Bitmap will be rewritten in PartitionPurgeSlotSpan().
-  allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
-  CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, false);
-  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
-
-  allocator.root()->Free(ptr1);
-}
-
-#endif  // PA_BUILDFLAG(USE_FREESLOT_BITMAP)
-
 #if PA_BUILDFLAG(USE_LARGE_EMPTY_SLOT_SPAN_RING)
 TEST_P(PartitionAllocTest, GlobalEmptySlotSpanRingIndexResets) {
   // Switch to the larger slot span size, and set the
@@ -6346,6 +6309,43 @@ TEST_P(PartitionAllocTest, FastReclaimEventuallyLooksAtAllBuckets) {
             0u);
 
   allocator.root()->now_maybe_overridden_for_testing = base::TimeTicks::Now;
+}
+
+// This test makes sure it's safe to switch to the denser bucket distribution
+// at runtime. This is intended to happen once, near the start of Chrome,
+// once we have enabled features.
+TEST_P(PartitionAllocTest, SwitchBucketDistributionBeforeAlloc) {
+  PartitionRoot* root = allocator.root();
+
+  root->SwitchToDenserBucketDistribution();
+  constexpr size_t n = (1 << 12) * 15 / 8;
+  EXPECT_NE(BucketIndexLookup::GetIndexForDenserBuckets(n),
+            BucketIndexLookup::GetIndexForNeutralBuckets(n));
+
+  void* ptr = root->Alloc(n);
+
+  root->ResetBucketDistributionForTesting();
+
+  root->Free(ptr);
+}
+
+// This test makes sure it's safe to switch to the denser bucket distribution
+// at runtime. This is intended to happen once, near the start of Chrome,
+// once we have enabled features.
+TEST_P(PartitionAllocTest, SwitchBucketDistributionAfterAlloc) {
+  constexpr size_t n = (1 << 12) * 15 / 8;
+  EXPECT_NE(BucketIndexLookup::GetIndexForDenserBuckets(n),
+            BucketIndexLookup::GetIndexForNeutralBuckets(n));
+
+  PartitionRoot* root = allocator.root();
+  void* ptr = root->Alloc(n);
+
+  root->SwitchToDenserBucketDistribution();
+
+  void* ptr2 = root->Alloc(n);
+
+  root->Free(ptr2);
+  root->Free(ptr);
 }
 
 }  // namespace partition_alloc::internal

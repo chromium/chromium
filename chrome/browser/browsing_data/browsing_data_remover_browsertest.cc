@@ -161,10 +161,6 @@ class BrowsingDataRemoverBrowserTest
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
 #endif
-    // TODO(crbug.com/333756088): WebSQL is disabled everywhere by default as of
-    // M119 (crbug/695592) except on Android WebView. This is enabled for
-    // Android only to indirectly cover WebSQL deletions on WebView.
-    enabled_features.push_back(blink::features::kWebSQLAccess);
     InitFeatureLists(std::move(enabled_features), std::move(disabled_features));
   }
 
@@ -1063,10 +1059,10 @@ const char kImplHistogramPrefix[] = "History.ClearBrowsingData.Duration.Task.";
 // Add data types here that support filtering and only delete data that matches
 // the BrowsingDataFilterBuilder.
 const std::vector<std::string_view> kSupportsOriginFilteringImpl{
-    "AuthCache",           "EmbedderData",     "HttpCache",
-    "NetworkErrorLogging", "PreflightCache",   "ReportingCache",
-    "SharedDictionary",    "StoragePartition", "Synchronous",
-    "TrustTokens",
+    "AuthCache",           "EmbedderData",   "HttpCache",
+    "NetworkErrorLogging", "PrefetchCache",  "PreflightCache",
+    "PrerenderCache",      "ReportingCache", "SharedDictionary",
+    "StoragePartition",    "Synchronous",    "TrustTokens",
 };
 const std::vector<std::string_view> kSupportsOriginFilteringDelegate{
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
@@ -1313,42 +1309,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
                        EmptyFileSystemIncognitoDeletion) {
   UseIncognitoBrowser();
   TestEmptySiteData("FileSystem", GetParam());
-}
-
-// TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
-// WebView.
-#if !BUILDFLAG(IS_ANDROID)
-#define MAYBE_WebSqlDeletion DISABLED_WebSqlDeletion
-#else
-#define MAYBE_WebSqlDeletion WebSqlDeletion
-#endif
-IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MAYBE_WebSqlDeletion) {
-  TestSiteData("WebSql", GetParam());
-}
-
-// TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
-// WebView.
-#if !BUILDFLAG(IS_ANDROID)
-#define MAYBE_WebSqlIncognitoDeletion DISABLED_WebSqlIncognitoDeletion
-#else
-#define MAYBE_WebSqlIncognitoDeletion WebSqlIncognitoDeletion
-#endif
-IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
-                       MAYBE_WebSqlIncognitoDeletion) {
-  UseIncognitoBrowser();
-  TestSiteData("WebSql", GetParam());
-}
-
-// TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
-// WebView.
-#if !BUILDFLAG(IS_ANDROID)
-#define MAYBE_EmptyWebSqlDeletion DISABLED_EmptyWebSqlDeletion
-#else
-#define MAYBE_EmptyWebSqlDeletion EmptyWebSqlDeletion
-#endif
-IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
-                       MAYBE_EmptyWebSqlDeletion) {
-  TestEmptySiteData("WebSql", GetParam());
 }
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, IndexedDbDeletion) {

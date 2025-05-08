@@ -333,13 +333,6 @@ int AwBrowserMainParts::PreMainMessageLoopRun() {
   content::RenderFrameHost::AllowInjectingJavaScript();
   metrics_logger_ = std::make_unique<metrics::MemoryMetricsLogger>();
 
-  // Requesting the |OriginTrialsControllerDelegate| will initialize
-  // it if the feature is enabled.
-  //
-  // This should be done as soon as possible in the start-up process, in order
-  // to load the database from disk.
-  AwBrowserContext::GetDefault()->GetOriginTrialsControllerDelegate();
-
   Java_AwInterfaceRegistrar_registerMojoInterfaces(
       base::android::AttachCurrentThread());
 

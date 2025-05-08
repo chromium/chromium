@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/svg/svg_matrix_tear_off.h"
@@ -46,6 +47,26 @@ SVGGraphicsElement::~SVGGraphicsElement() = default;
 void SVGGraphicsElement::Trace(Visitor* visitor) const {
   SVGTransformableElement::Trace(visitor);
   SVGTests::Trace(visitor);
+}
+
+// TODO : This function performs an upward traversal of the layout tree to check
+// if the element is inside a `LayoutSVGHiddenContainer`, this is not very
+// efficient. Consider using a cache based system where each svg element (or its
+// corresponding layout object) has a flag that indicates if it is inside a
+// `LayoutSVGHiddenContainer`.
+bool SVGGraphicsElement::IsNonRendered(const LayoutObject* object) const {
+  for (; object; object = object->Parent()) {
+    // Check if the Element's LayoutObject or any ancestor is a
+    // LayoutSVGHiddenContainer
+    if (object->IsSVGHiddenContainer()) {
+      return true;
+    }
+
+    if (IsA<LayoutSVGRoot>(*object)) {
+      break;
+    }
+  }
+  return false;
 }
 
 static bool IsViewportElement(const Element& element) {

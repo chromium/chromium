@@ -45,9 +45,6 @@ const char kGoogleMapsFeature[] = "google_maps";
 const char kCalculatorFeature[] = "calculator";
 const char kTextEditorFeature[] = "text_editor";
 
-const char kBlockedDisableMode[] = "blocked";
-const char kHiddenDisableMode[] = "hidden";
-
 const char kSystemFeaturesDisableListHistogram[] =
     "Enterprise.SystemFeaturesDisableList";
 
@@ -57,13 +54,6 @@ SystemFeaturesDisableListPolicyHandler::SystemFeaturesDisableListPolicyHandler()
 
 SystemFeaturesDisableListPolicyHandler::
     ~SystemFeaturesDisableListPolicyHandler() = default;
-
-void SystemFeaturesDisableListPolicyHandler::RegisterPrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterListPref(policy_prefs::kSystemFeaturesDisableList);
-  registry->RegisterStringPref(policy_prefs::kSystemFeaturesDisableMode,
-                               kBlockedDisableMode);
-}
 
 SystemFeature SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
     const std::string& app_id) {

@@ -8,10 +8,6 @@
 
 #include <array>
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -3636,20 +3632,10 @@ INSTANTIATE_TEST_SUITE_P(ScrollingSchedulerStateMachineTest,
                          ScrollingSchedulerStateMachineTest,
                          testing::Bool());
 
-class WarmUpCompositorSchedulerStateMachineTest : public testing::Test {
- public:
-  WarmUpCompositorSchedulerStateMachineTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kWarmUpCompositor);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that `SetShouldWarmUp()` will start initial `LayerTreeFrameSink`
 // creation even if invisible.
-TEST_F(WarmUpCompositorSchedulerStateMachineTest,
-       SetShouldWarmUpWillStartLayerTreeFrameSinkCreation) {
+TEST(SchedulerStateMachineTest,
+     SetShouldWarmUpWillStartLayerTreeFrameSinkCreation) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
   state.SetVisible(false);

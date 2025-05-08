@@ -486,12 +486,10 @@ void ManagementUIHandlerChromeOS::RegisterMessages() {
           &ManagementUIHandlerChromeOS::HandleGetFilesUploadToCloudInfo,
           base::Unretained(this)));
 
-  capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(
-      Profile::FromWebUI(web_ui()),
-      base::BindOnce(
-          &ManagementUIHandlerChromeOS::
-              CheckGetAllScreensMediaAllowedForAnyOriginResultReceived,
-          weak_factory_.GetWeakPtr()));
+  capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(base::BindOnce(
+      &ManagementUIHandlerChromeOS::
+          CheckGetAllScreensMediaAllowedForAnyOriginResultReceived,
+      weak_factory_.GetWeakPtr()));
 }
 
 // static

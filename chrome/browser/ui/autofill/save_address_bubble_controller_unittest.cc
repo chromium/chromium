@@ -11,9 +11,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/autofill/address_bubble_controller_delegate.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -83,7 +85,9 @@ class SaveAddressBubbleControllerTest : public ::testing::Test {
   content::WebContents* web_contents() { return web_contents_.get(); }
 
   const std::string& app_locale() const {
-    return g_browser_process->GetApplicationLocale();
+    return g_browser_process->GetFeatures()
+        ->application_locale_storage()
+        ->Get();
   }
 
  private:

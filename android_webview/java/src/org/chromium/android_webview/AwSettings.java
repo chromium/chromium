@@ -161,7 +161,6 @@ public class AwSettings {
     private boolean mJavaScriptCanOpenWindowsAutomatically;
     private boolean mSupportMultipleWindows;
     private boolean mDomStorageEnabled;
-    private boolean mDatabaseEnabled;
     private boolean mUseWideViewport;
     private boolean mZeroLayoutHeightDisablesViewportQuirk;
     private boolean mForceZeroLayoutHeight;
@@ -220,6 +219,7 @@ public class AwSettings {
     private boolean mPaymentRequestEnabled;
     private boolean mHasEnrolledInstrumentEnabled = true;
     private final AwMediaIntegrityApiStatusConfig mIntegrityApiStatusConfig;
+    private boolean mIncludeCookiesOnIntercept;
 
     private @WebauthnMode int mWebauthnMode = WebauthnMode.NONE;
 
@@ -1590,30 +1590,6 @@ public class AwSettings {
         return mDomStorageEnabled;
     }
 
-    /** See {@link android.webkit.WebSettings#setDatabaseEnabled}. */
-    public void setDatabaseEnabled(boolean flag) {
-        if (TRACE) Log.i(TAG, "setDatabaseEnabled=" + flag);
-        synchronized (mAwSettingsLock) {
-            if (mDatabaseEnabled != flag) {
-                mDatabaseEnabled = flag;
-                mEventHandler.updateWebkitPreferencesLocked();
-            }
-        }
-    }
-
-    /** See {@link android.webkit.WebSettings#getDatabaseEnabled}. */
-    public boolean getDatabaseEnabled() {
-        synchronized (mAwSettingsLock) {
-            return mDatabaseEnabled;
-        }
-    }
-
-    @CalledByNative
-    private boolean getDatabaseEnabledLocked() {
-        assert Thread.holdsLock(mAwSettingsLock);
-        return mDatabaseEnabled;
-    }
-
     /** See {@link android.webkit.WebSettings#setDefaultTextEncodingName}. */
     public void setDefaultTextEncodingName(String encoding) {
         if (TRACE) Log.i(TAG, "setDefaultTextEncodingName=" + encoding);
@@ -2261,6 +2237,22 @@ public class AwSettings {
     public int getWebauthnSupport() {
         synchronized (mAwSettingsLock) {
             return getWebauthnSupportLocked();
+        }
+    }
+
+    /**
+     * Set whether the shouldInterceptRequest API should include request cookies and accept response
+     * cookies.
+     */
+    public void setIncludeCookiesOnIntercept(boolean includeCookiesOnIntercept) {
+        synchronized (mAwSettingsLock) {
+            this.mIncludeCookiesOnIntercept = includeCookiesOnIntercept;
+        }
+    }
+
+    public boolean getIncludeCookiesOnIntercept() {
+        synchronized (mAwSettingsLock) {
+            return mIncludeCookiesOnIntercept;
         }
     }
 

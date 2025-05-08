@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.readaloud.player;
+
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.BUFFERING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.ERROR;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
@@ -12,11 +14,13 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPP
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
+import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
+import org.chromium.chrome.modules.readaloud.Feedback.NegativeFeedbackReason;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
@@ -30,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /** Mediator class in charge of updating player UI property model. */
+@NullMarked
 class PlayerMediator implements InteractionHandler {
     private static final long SEEK_BACK_NANOS = -10 * 1_000_000_000L;
     private static final long SEEK_FORWARD_NANOS = 10 * 1_000_000_000L;
@@ -60,6 +65,12 @@ class PlayerMediator implements InteractionHandler {
             new PlaybackListener() {
                 @Override
                 public void onPlaybackDataChanged(PlaybackData data) {
+                  // Due to a race, sometimes a STOPPED state is received after the playback is null (e.g. if it was received in favor of creating a new playback).
+                  // In these cases, we don't propagate the state event.
+                  if (mPlayback == null) {
+                    return;
+                  }
+
                     if (!isHiddenAndPlaying()) {
                         mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
                         mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
@@ -147,7 +158,9 @@ class PlayerMediator implements InteractionHandler {
     private final Callback<PlaybackModeSelectionEnablementStatus>
             mPlaybackModeSelectionEnabledObserver = this::setPlaybackModeSelectionEnabled;
 
-    private Playback mPlayback;
+    private final Callback<FeedbackType> mFeedbackTypeObserver = this::setFeedbackType;
+
+    @Nullable private Playback mPlayback;
     @Nullable Playback mVoicePreviewPlayback;
 
     PlayerMediator(
@@ -162,6 +175,7 @@ class PlayerMediator implements InteractionHandler {
         mDelegate.getCurrentLanguageVoicesSupplier().addObserver(mVoiceListObserver);
         mDelegate.getVoiceIdSupplier().addObserver(mVoiceIdObserver);
         mDelegate.getPlaybackModeSelectionEnabled().addObserver(mPlaybackModeSelectionEnabledObserver);
+        mDelegate.getFeedbackTypeSupplier().addObserver(mFeedbackTypeObserver);
     }
 
     void destroy() {
@@ -180,17 +194,17 @@ class PlayerMediator implements InteractionHandler {
         mPlayback = playback;
         if (mPlayback != null) {
             mPlayback.addListener(mPlaybackListener);
-            mModel.set(PlayerProperties.TITLE, mPlayback.getMetadata().title());
-            mModel.set(PlayerProperties.PUBLISHER, mPlayback.getMetadata().publisher());
+            Playback.Metadata metadata = mPlayback.getMetadata();
+            assumeNonNull(metadata);
+            mModel.set(PlayerProperties.TITLE, metadata.title());
+            mModel.set(PlayerProperties.PUBLISHER, metadata.publisher());
             onSpeedChange(ReadAloudPrefs.getSpeed(mDelegate.getPrefService()));
             mModel.set(
                     PlayerProperties.HIGHLIGHTING_ENABLED,
-                    mDelegate.getHighlightingEnabledSupplier().get());
+                    assumeNonNull(mDelegate.getHighlightingEnabledSupplier().get()));
             mModel.set(
                     PlayerProperties.HIGHLIGHTING_SUPPORTED, mDelegate.isHighlightingSupported());
-            mModel.set(
-                PlayerProperties.PLAYBACK_MODE,
-                mPlayback.getMetadata().playbackMode().getValue());
+            mModel.set(PlayerProperties.PLAYBACK_MODE, metadata.playbackMode().getValue());
 
             mTotalTimeMillis = 0;
             mLastStartTimeMillis = mClock.currentTimeMillis();
@@ -333,6 +347,21 @@ class PlayerMediator implements InteractionHandler {
     @Override
     public void onHighlightingChange(boolean enabled) {
         mDelegate.getHighlightingEnabledSupplier().set(enabled);
+    }
+
+    @Override
+    public void setFeedbackType(FeedbackType feedbackType) {
+        mModel.set(PlayerProperties.FEEDBACK_TYPE, feedbackType.getValue());
+    }
+
+    @Override
+    public void onPositiveFeedback() {
+      mDelegate.onPositiveFeedback();
+    }
+
+    @Override
+    public void onNegativeFeedback(NegativeFeedbackReason reason) {
+      mDelegate.onNegativeFeedback(reason);
     }
 
     @Override

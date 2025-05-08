@@ -1,4 +1,5 @@
 caption: Enables auto-select for multi screen captures
+deprecated: true
 desc: |-
   The <ph name="GET_DISPLAY_MEDIA_SET_NAME">getDisplayMediaSet</ph> API allows web applications to capture multiple surfaces at once.
         This policy unlocks the <ph name="AUTO_SELECT_ALL_SCREENS_NAME">autoSelectAllScreens</ph> property for web applications at defined origins.
@@ -20,7 +21,7 @@ schema:
     type: string
   type: array
 supported_on:
-- chrome_os:102-
+- chrome_os:102-136
 - chrome.linux:111-123
 tags: []
 type: list

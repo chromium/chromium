@@ -35,6 +35,7 @@
 #include "content/public/browser/gpu_service_registry.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_switches.h"
+#include "media/gpu/buildflags.h"
 #include "mojo/core/configuration.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -193,13 +194,12 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
       mojo::PendingReceiver<mojom::VideoDecodeAccelerator> receiver,
       bool accelerated_video_decode_enabled) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
     if (!accelerated_video_decode_enabled) {
       LOG(WARNING) << "Video decode acceleration has been disabled due to the "
                       "GPU blocklist";
       return;
     }
-
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     if (base::FeatureList::IsEnabled(arc::kOutOfProcessVideoDecoding)) {
       // TODO(b/195769334): we should check if accelerated video decode is
       // disabled by means of a flag/switch or by GPU bug workarounds.
@@ -253,6 +253,7 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
       return;
     }
     content::BindInterfaceInGpuProcess(std::move(receiver));
+#endif
   }
 
   FailingVideoDecodeAccelerator failing_video_decode_accelerator_;

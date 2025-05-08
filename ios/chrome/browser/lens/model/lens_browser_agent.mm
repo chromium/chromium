@@ -18,7 +18,8 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-LensBrowserAgent::LensBrowserAgent(Browser* browser) : browser_(browser) {
+LensBrowserAgent::LensBrowserAgent(Browser* browser)
+    : BrowserUserData(browser), browser_(browser) {
   browser->AddObserver(this);
 }
 

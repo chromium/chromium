@@ -700,8 +700,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
     LONG state_value = STATE_INIT;
     std::wstring available_version;
-    ULONG bytes_downloaded = -1;
-    ULONG total_bytes_to_download = -1;
+    ULONG bytes_downloaded = 0;
+    ULONG total_bytes_to_download = 0;
     std::optional<base::TimeDelta> remaining_download_time;
     LONG install_progress_percentage = -1;
     std::optional<base::TimeDelta> remaining_install_time;

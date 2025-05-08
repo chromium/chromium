@@ -53,10 +53,10 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
         "captionEnabled",
         pref_service->GetBoolean(
             prefs::kClassManagementToolsCaptionEligibilitySetting));
-    source->AddBoolean(
-        "onTaskEnabled",
-        pref_service->GetBoolean(
-            prefs::kClassManagementToolsSendingContentEligibilitySetting));
+    if (features::IsBocaSpotlightEnabled()) {
+      source->AddString("spotlightUrlTemplate",
+                        features::kBocaSpotlightUrlTemplate.Get());
+    }
   }
 
  private:

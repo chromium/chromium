@@ -18,6 +18,20 @@ static_library("fetcher_config") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [ "supervised_user_sync_data_fake.h" ]
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/supervised_user/core/common:common",
+    "//components/sync_preferences:test_support",
+  ]
+}
+
 static_library("mocked") {
   testonly = true
   sources = [
@@ -180,6 +194,7 @@ source_set("unit_tests") {
     ":browser",
     ":fetcher",
     ":fetcher_config",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser:test_support",

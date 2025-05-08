@@ -284,6 +284,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         prefs::kGlicTabContextEnabled,
         base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
                             base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kGlicClosedCaptioningEnabled,
+        base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
+                            base::Unretained(this)));
     glic_service_->window_controller().AddStateObserver(this);
 
     focus_changed_subscription_ = glic_service_->AddFocusedTabChangedCallback(
@@ -325,12 +329,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
 
-#if BUILDFLAG(IS_MAC)
-    state->open_os_settings_api_is_allowed = true;
-#else
-    state->open_os_settings_api_is_allowed = false;
-#endif
-
     state->always_detached_mode = GlicWindowController::AlwaysDetached();
 
     state->enable_act_in_focused_tab =
@@ -348,12 +346,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::BindRepeating(&GlicWebClientHandler::OnLocalStatePrefChanged,
                             base::Unretained(this)));
     state->hotkey = GetHotkeyString();
+    state->enable_closed_captioning_feature =
+        base::FeatureList::IsEnabled(features::kGlicClosedCaptioning);
+    state->closed_captioning_setting_enabled =
+        pref_service_->GetBoolean(prefs::kGlicClosedCaptioningEnabled);
 
     std::move(callback).Run(std::move(state));
   }
 
   void WebClientInitializeFailed() override {
-    glic_service_->window_controller().WebClientInitializeFailed();
+    glic_service_->host().WebClientInitializeFailed(this);
   }
 
   void WebClientInitialized() override {
@@ -418,10 +420,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->ResizePanel(size, duration, std::move(callback));
   }
 
-  void EnableDragResize(bool enabled) override {
-    glic_service_->window_controller().EnableDragResize(enabled);
-  }
-
   void GetContextFromFocusedTab(
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
@@ -433,6 +431,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                        ActInFocusedTabCallback callback) override {
     glic_service_->ActInFocusedTab(action_proto, *options, std::move(callback));
   }
+
+  void StopActorTask() override { glic_service_->StopActorTask(); }
 
   void CaptureScreenshot(CaptureScreenshotCallback callback) override {
     glic_service_->CaptureScreenshot(std::move(callback));
@@ -509,6 +509,20 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     std::move(callback).Run();
   }
 
+  void SetClosedCaptioningSetting(
+      bool enabled,
+      SetClosedCaptioningSettingCallback callback) override {
+    pref_service_->SetBoolean(prefs::kGlicClosedCaptioningEnabled, enabled);
+    if (enabled) {
+      base::RecordAction(
+          base::UserMetricsAction("GlicClosedCaptioningEnabled"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("GlicClosedCaptioningDisabled"));
+    }
+    std::move(callback).Run();
+  }
+
   void ShouldAllowMediaPermissionRequest(
       ShouldAllowMediaPermissionRequestCallback callback) override {
     std::move(callback).Run(
@@ -550,7 +564,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::UTF16ToUTF8(entry->GetLocalProfileName());
     policy::ManagementService* management_service =
         policy::ManagementServiceFactory::GetForProfile(profile_);
-    result->is_managed = management_service && management_service->IsManaged();
+    result->is_managed =
+        management_service && management_service->IsAccountManaged();
     std::move(callback).Run(std::move(result));
   }
 
@@ -597,7 +612,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OpenOsPermissionSettingsMenu(ContentSettingsType type) override {
-#if BUILDFLAG(IS_MAC)
     if (type != ContentSettingsType::MEDIASTREAM_MIC &&
         type != ContentSettingsType::GEOLOCATION) {
       // This will terminate the render process.
@@ -608,10 +622,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
     system_permission_settings::OpenSystemSettings(
         page_handler_->webui_contents(), type);
-#else
-    mojo::ReportBadMessage(
-        "OpenOsPermissionSettingsMenu not supported on this platform.");
-#endif
   }
 
   void GetOsMicrophonePermissionStatus(
@@ -724,6 +734,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       web_client_->NotifyLocationPermissionStateChanged(is_enabled);
     } else if (pref_name == prefs::kGlicTabContextEnabled) {
       web_client_->NotifyTabContextPermissionStateChanged(is_enabled);
+    } else if (pref_name == prefs::kGlicClosedCaptioningEnabled) {
+      web_client_->NotifyClosedCaptioningSettingChanged(is_enabled);
     } else {
       DCHECK(false) << "Unknown Glic permission pref changed: " << pref_name;
     }
@@ -813,7 +825,7 @@ void GlicPageHandler::WebviewCommitted(const GURL& url) {
   // out.
   if (url.DomainIs("login.corp.google.com") ||
       url.DomainIs("accounts.google.com")) {
-    GetGlicService()->window_controller().LoginPageCommitted();
+    GetGlicService()->host().LoginPageCommitted(this);
   }
 }
 
@@ -848,8 +860,12 @@ void GlicPageHandler::ResizeWidget(const gfx::Size& size,
   GetGlicService()->ResizePanel(size, duration, std::move(callback));
 }
 
+void GlicPageHandler::EnableDragResize(bool enabled) {
+  GetGlicService()->window_controller().EnableDragResize(enabled);
+}
+
 void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
-  GetGlicService()->window_controller().WebUiStateChanged(new_state);
+  GetGlicService()->host().WebUiStateChanged(this, new_state);
 }
 
 void GlicPageHandler::AllowedChanged() {

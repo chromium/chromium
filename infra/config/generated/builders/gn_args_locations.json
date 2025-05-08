@@ -257,7 +257,8 @@
     "fuchsia-fyi-arm64-dbg": "ci/fuchsia-fyi-arm64-dbg/gn-args.json",
     "fuchsia-fyi-x64-asan": "ci/fuchsia-fyi-x64-asan/gn-args.json",
     "fuchsia-fyi-x64-dbg-persistent-emulator": "ci/fuchsia-fyi-x64-dbg-persistent-emulator/gn-args.json",
-    "fuchsia-netstack2-x64-cast-receiver-rel": "ci/fuchsia-netstack2-x64-cast-receiver-rel/gn-args.json"
+    "fuchsia-netstack2-x64-cast-receiver-rel": "ci/fuchsia-netstack2-x64-cast-receiver-rel/gn-args.json",
+    "fuchsia-x64-perf-cast-receiver-rel": "ci/fuchsia-x64-perf-cast-receiver-rel/gn-args.json"
   },
   "chromium.fuzz": {
     "ASAN Debug": "ci/ASAN Debug/gn-args.json",
@@ -345,6 +346,7 @@
     "mac13-wpt-chromium-rel": "ci/mac13-wpt-chromium-rel/gn-args.json",
     "win-annotator-rel": "ci/win-annotator-rel/gn-args.json",
     "win-fieldtrial-rel": "ci/win-fieldtrial-rel/gn-args.json",
+    "win-no-safe-browsing-rel": "ci/win-no-safe-browsing-rel/gn-args.json",
     "win-perfetto-rel": "ci/win-perfetto-rel/gn-args.json",
     "win-upload-perfetto": "ci/win-upload-perfetto/gn-args.json",
     "win10-rel-no-external-ip": "ci/win10-rel-no-external-ip/gn-args.json",
@@ -422,10 +424,10 @@
     "Linux TSan Builder": "ci/Linux TSan Builder/gn-args.json",
     "Linux UBSan Builder": "ci/Linux UBSan Builder/gn-args.json",
     "Mac ASan 64 Builder": "ci/Mac ASan 64 Builder/gn-args.json",
-    "WebKit Linux ASAN": "ci/WebKit Linux ASAN/gn-args.json",
-    "WebKit Linux Leak": "ci/WebKit Linux Leak/gn-args.json",
-    "WebKit Linux MSAN": "ci/WebKit Linux MSAN/gn-args.json",
     "ios-asan": "ci/ios-asan/gn-args.json",
+    "linux-blink-asan-rel": "ci/linux-blink-asan-rel/gn-args.json",
+    "linux-blink-leak-rel": "ci/linux-blink-leak-rel/gn-args.json",
+    "linux-blink-msan-rel": "ci/linux-blink-msan-rel/gn-args.json",
     "win-asan": "ci/win-asan/gn-args.json"
   },
   "chromium.memory.fyi": {
@@ -525,8 +527,7 @@
     "Windows deterministic": "ci/Windows deterministic/gn-args.json",
     "linux-win-cross-rel": "ci/linux-win-cross-rel/gn-args.json",
     "win-arm64-dbg": "ci/win-arm64-dbg/gn-args.json",
-    "win-arm64-rel": "ci/win-arm64-rel/gn-args.json",
-    "win-no-safe-browsing-rel": "ci/win-no-safe-browsing-rel/gn-args.json"
+    "win-arm64-rel": "ci/win-arm64-rel/gn-args.json"
   },
   "tryserver.blink": {
     "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
@@ -768,7 +769,8 @@
     "fuchsia-netstack2-x64-cast-receiver-rel": "try/fuchsia-netstack2-x64-cast-receiver-rel/gn-args.json",
     "fuchsia-x64-cast-receiver-dbg": "try/fuchsia-x64-cast-receiver-dbg/gn-args.json",
     "fuchsia-x64-cast-receiver-dbg-compile": "try/fuchsia-x64-cast-receiver-dbg-compile/gn-args.json",
-    "fuchsia-x64-cast-receiver-rel": "try/fuchsia-x64-cast-receiver-rel/gn-args.json"
+    "fuchsia-x64-cast-receiver-rel": "try/fuchsia-x64-cast-receiver-rel/gn-args.json",
+    "fuchsia-x64-perf-cast-receiver-rel": "try/fuchsia-x64-perf-cast-receiver-rel/gn-args.json"
   },
   "tryserver.chromium.fuzz": {
     "linux-asan-dbg": "try/linux-asan-dbg/gn-args.json",
@@ -809,12 +811,14 @@
     "gpu-fyi-try-linux-wayland-intel-rel": "try/gpu-fyi-try-linux-wayland-intel-rel/gn-args.json",
     "gpu-try-linux-nvidia-dbg": "try/gpu-try-linux-nvidia-dbg/gn-args.json",
     "gpu-try-linux-nvidia-rel": "try/gpu-try-linux-nvidia-rel/gn-args.json",
-    "layout_test_leak_detection": "try/layout_test_leak_detection/gn-args.json",
     "leak_detection_linux": "try/leak_detection_linux/gn-args.json",
     "linux-afl-asan-rel": "try/linux-afl-asan-rel/gn-args.json",
     "linux-annotator-rel": "try/linux-annotator-rel/gn-args.json",
     "linux-bfcache-rel": "try/linux-bfcache-rel/gn-args.json",
+    "linux-blink-asan-rel": "try/linux-blink-asan-rel/gn-args.json",
     "linux-blink-heap-verification-try": "try/linux-blink-heap-verification-try/gn-args.json",
+    "linux-blink-leak-rel": "try/linux-blink-leak-rel/gn-args.json",
+    "linux-blink-msan-rel": "try/linux-blink-msan-rel/gn-args.json",
     "linux-blink-wpt-3pcd-fyi-rel": "try/linux-blink-wpt-3pcd-fyi-rel/gn-args.json",
     "linux-cast-arm-rel": "try/linux-cast-arm-rel/gn-args.json",
     "linux-cast-arm64-rel": "try/linux-cast-arm64-rel/gn-args.json",
@@ -845,8 +849,6 @@
     "linux-viz-rel": "try/linux-viz-rel/gn-args.json",
     "linux-wayland-mutter-rel": "try/linux-wayland-mutter-rel/gn-args.json",
     "linux-wayland-rel": "try/linux-wayland-rel/gn-args.json",
-    "linux-webkit-asan-rel": "try/linux-webkit-asan-rel/gn-args.json",
-    "linux-webkit-msan-rel": "try/linux-webkit-msan-rel/gn-args.json",
     "linux_chromium_archive_rel_ng": "try/linux_chromium_archive_rel_ng/gn-args.json",
     "linux_chromium_asan_rel_ng": "try/linux_chromium_asan_rel_ng/gn-args.json",
     "linux_chromium_cfi_rel_ng": "try/linux_chromium_cfi_rel_ng/gn-args.json",
@@ -919,6 +921,8 @@
     "mac13-tests": "try/mac13-tests/gn-args.json",
     "mac14-arm64-rel": "try/mac14-arm64-rel/gn-args.json",
     "mac14-tests": "try/mac14-tests/gn-args.json",
+    "mac15-arm64-rel": "try/mac15-arm64-rel/gn-args.json",
+    "mac15-x64-rel-tests": "try/mac15-x64-rel-tests/gn-args.json",
     "mac_chromium_11.0_rel_ng": "try/mac_chromium_11.0_rel_ng/gn-args.json",
     "mac_chromium_asan_rel_ng": "try/mac_chromium_asan_rel_ng/gn-args.json",
     "mac_chromium_compile_dbg_ng": "try/mac_chromium_compile_dbg_ng/gn-args.json",

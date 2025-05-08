@@ -1797,7 +1797,7 @@ void FrameLoader::ModifyRequestForCSP(
 
   MixedContentChecker::UpgradeInsecureRequest(
       resource_request, fetch_client_settings_object, window_for_logging,
-      frame_type, frame_->GetContentSettingsClient());
+      frame_type, frame_->GetContentSettingsClient(), frame_);
 }
 
 void FrameLoader::WriteIntoTrace(perfetto::TracedValue context) const {

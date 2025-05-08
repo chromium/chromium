@@ -11,20 +11,23 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
-#import "components/dom_distiller/core/extraction_utils.h"
-#import "components/dom_distiller/ios/distiller_page_utils.h"
-#import "components/prefs/pref_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
-#import "third_party/dom_distiller_js/dom_distiller.pb.h"
-#import "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 
 namespace {
 
@@ -154,17 +157,63 @@ NSString* GenerateSnackbarMessage(ReaderModeHeuristicResult heuristic_result,
 
 }  // namespace
 
-ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {
+ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state,
+                                         DistillerService* distiller_service)
+    : web_state_(web_state), distiller_service_(distiller_service) {
   CHECK(web_state_);
   web_state_->AddObserver(this);
 }
 
 ReaderModeTabHelper::~ReaderModeTabHelper() = default;
 
+bool ReaderModeTabHelper::IsActive() const {
+  return active_;
+}
+
+void ReaderModeTabHelper::SetActive(bool active) {
+  if (active == active_) {
+    return;
+  }
+  active_ = active;
+  if (active_) {
+    // If Reader mode is being activated, create the secondary WebState where
+    // the content will be rendered and start distillation.
+    web::WebState::CreateParams create_params = web::WebState::CreateParams(
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
+            ->GetOffTheRecordProfile());
+    reader_mode_web_state_ = web::WebState::Create(create_params);
+    ReaderModeContentTabHelper::CreateForWebState(reader_mode_web_state_.get());
+    ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
+        ->SetDelegate(this);
+    reader_mode_web_state_->SetWebUsageEnabled(true);
+    // TODO(crbug.com/409940117): Decouple heuristic and distillation.
+    TriggerReaderModeHeuristic();
+  } else {
+    // If Reader mode is being deactivated, destroy the secondary WebState and
+    // ensure the Reader mode UI is dismissed.
+    // TODO(crbug.com/409940117): Ensure the UI gracefully handles the
+    // destruction of the Reader mode WebState while its view is inside the view
+    // hierarchy.
+    reader_mode_web_state_.reset();
+    // Cancel any ongoing distillation task.
+    distiller_viewer_.reset();
+    HideReaderMode();
+  }
+}
+
+UIView* ReaderModeTabHelper::GetReaderModeContentView() {
+  CHECK(reader_mode_web_state_);
+  return reader_mode_web_state_->GetView();
+}
+
 void ReaderModeTabHelper::SetSnackbarHandler(
     id<SnackbarCommands> snackbar_handler) {
   snackbar_handler_ = snackbar_handler;
+}
+
+void ReaderModeTabHelper::SetReaderModeHandler(
+    id<ReaderModeCommands> reader_mode_handler) {
+  reader_mode_handler_ = reader_mode_handler;
 }
 
 void ReaderModeTabHelper::PageLoaded(
@@ -201,10 +250,43 @@ void ReaderModeTabHelper::DidStartNavigation(
   }
 }
 
+void ReaderModeTabHelper::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (!navigation_context->IsSameDocument() ||
+      navigation_context->HasUserGesture()) {
+    HideReaderMode();
+  }
+}
+
 void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   CHECK_EQ(web_state_, web_state);
+  HideReaderMode();
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
+}
+
+void ReaderModeTabHelper::WasHidden(web::WebState* web_state) {
+  // Ensure the Reader mode UI is hidden when the tab is hidden.
+  HideReaderMode();
+}
+
+void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
+    ReaderModeContentTabHelper* reader_mode_content_tab_helper,
+    NSURLRequest* request,
+    web::WebStatePolicyDecider::RequestInfo request_info) {
+  // When the Reader mode content cancels a request to navigate, load the
+  // requested URL in the host WebState instead.
+  web::NavigationManager::WebLoadParams params(net::GURLWithNSURL(request.URL));
+  NSString* referrer_value = [request
+      valueForHTTPHeaderField:web::wk_navigation_util::kReferrerHeaderName];
+  if (referrer_value) {
+    NSURL* referrer_url = [NSURL URLWithString:referrer_value];
+    params.referrer.url = net::GURLWithNSURL(referrer_url);
+    params.referrer.policy = web::ReferrerPolicyDefault;
+  }
+  params.transition_type = request_info.transition_type;
+  web_state_->GetNavigationManager()->LoadURLWithParams(params);
 }
 
 void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
@@ -225,31 +307,14 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
     return;
   }
 
-  // Gets the instance of the WebFramesManager from `web_state_` that can
-  // execute the DOM distiller JavaScript in the isolated content world.
-  web::WebFramesManager* web_frames_manager =
-      web_state_->GetWebFramesManager(web::ContentWorld::kIsolatedWorld);
-  if (!web_frames_manager) {
-    return;
-  }
-  web::WebFrame* main_frame = web_frames_manager->GetMainWebFrame();
-  if (!main_frame) {
-    return;
-  }
-  // If the current WebState URL is not the same as the one processed by the
-  // heuristic then abort next steps.
-  if (url != web_state_->GetVisibleURL()) {
-    return;
-  }
-  // TODO(crbug.com/405309236): The distillation should be moved into the
-  // core DOM distiller logic. This extraction is for metrics collection
-  // purposes only.
-  dom_distiller::proto::DomDistillerOptions options;
-  main_frame->ExecuteJavaScript(
-      base::UTF8ToUTF16(dom_distiller::GetDistillerScriptWithOptions(options)),
-      base::BindOnce(&ReaderModeTabHelper::PageDistillationCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), result,
-                     base::TimeTicks::Now()));
+  std::unique_ptr<ReaderModeDistillerPage> distiller_page =
+      std::make_unique<ReaderModeDistillerPage>(web_state_);
+
+  distiller_viewer_.reset(new DistillerViewer(
+      distiller_service_, std::move(distiller_page), url,
+      base::BindRepeating(&ReaderModeTabHelper::PageDistillationCompleted,
+                          weak_ptr_factory_.GetWeakPtr(), result,
+                          base::TimeTicks::Now())));
 }
 
 void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
@@ -262,6 +327,12 @@ void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
     ukm::builders::IOS_ReaderMode_Heuristic_Latency(source_id)
         .SetLatency(delta.InMilliseconds())
         .Record(ukm::UkmRecorder::Get());
+  }
+}
+
+void ReaderModeTabHelper::HideReaderMode() {
+  if (IsReaderModeAvailable()) {
+    [reader_mode_handler_ hideReaderMode];
   }
 }
 
@@ -305,7 +376,11 @@ void ReaderModeTabHelper::TriggerReaderModeHeuristic() {
 void ReaderModeTabHelper::PageDistillationCompleted(
     ReaderModeHeuristicResult heuristic_result,
     base::TimeTicks start_time,
-    const base::Value* value) {
+    const GURL& page_url,
+    const std::string& html,
+    const std::vector<DistillerViewerInterface::ImageInfo>& images,
+    const std::string& title,
+    const std::string& csp_nonce) {
   // If ExecuteJavaScript completion is run after WebState is destroyed, do
   // not continue metrics collection.
   if (!web_state_ || web_state_->IsBeingDestroyed()) {
@@ -317,19 +392,7 @@ void ReaderModeTabHelper::PageDistillationCompleted(
       base::TimeTicks::Now() - start_time;
   RecordReaderModeDistillationLatency(distillation_latency, source_id);
 
-  std::unique_ptr<dom_distiller::proto::DomDistillerResult> distiller_result =
-      std::make_unique<dom_distiller::proto::DomDistillerResult>();
-  bool found_content = false;
-  base::Value result_as_value =
-      dom_distiller::ParseValueFromScriptResult(value);
-  if (!result_as_value.is_none()) {
-    found_content =
-        dom_distiller::proto::json::DomDistillerResult::ReadFromValue(
-            result_as_value, distiller_result.get());
-  }
-
-  bool is_distillable_page =
-      found_content && !distiller_result->distilled_content().html().empty();
+  bool is_distillable_page = !html.empty();
   RecordReaderModeDistillationResult(is_distillable_page, source_id);
   RecordReaderModeHeuristicClassification(is_distillable_page,
                                           heuristic_result);
@@ -346,9 +409,19 @@ void ReaderModeTabHelper::PageDistillationCompleted(
     [snackbar_handler_ showSnackbarMessage:message];
   }
 
-  if (IsReaderModeAvailable() && is_distillable_page) {
-    web_state_->LoadSimulatedRequest(
-        web_state_->GetVisibleURL(),
-        base::SysUTF8ToNSString(distiller_result->distilled_content().html()));
+  if (IsReaderModeAvailable()) {
+    if (is_distillable_page) {
+      // Load the Reader mode content in the Reader mode content WebState.
+      const GURL content_url = web_state_->GetLastCommittedURL();
+      NSData* content_data = [NSData dataWithBytes:html.data()
+                                            length:html.length()];
+      ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
+          ->LoadContent(content_url, content_data);
+      // Once the Reader mode content is ready, show the Reader mode UI.
+      [reader_mode_handler_ showReaderMode];
+    } else {
+      // If the page could not be distilled, ensure Reader mode UI is hidden.
+      HideReaderMode();
+    }
   }
 }

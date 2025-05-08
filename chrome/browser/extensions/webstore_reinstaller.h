@@ -14,7 +14,7 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace extensions {
 
 // Reinstalls an extension from the webstore. This will first prompt the user if
-// they want to reinstall (using the verbase "Repair", since this is our action
+// they want to reinstall (using the verbiage "Repair", since this is our action
 // for repairing corrupted extensions), and, if the user agrees, will uninstall
 // the extension and reinstall it directly from the webstore.
 class WebstoreReinstaller : public WebstoreStandaloneInstaller,
@@ -24,7 +24,7 @@ class WebstoreReinstaller : public WebstoreStandaloneInstaller,
                       const std::string& extension_id,
                       WebstoreStandaloneInstaller::Callback callback);
 
-  // Begin the reinstall process. |callback| (from the constructor) will be
+  // Begin the reinstall process. `callback` (from the constructor) will be
   // called upon completion.
   void BeginReinstall();
 

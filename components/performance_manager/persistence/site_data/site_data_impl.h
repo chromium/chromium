@@ -225,8 +225,7 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
 
   // Helper function to update a given |SiteDataFeatureProto| when a
   // feature gets used.
-  void NotifyFeatureUsage(SiteDataFeatureProto* feature_proto,
-                          const char* feature_name);
+  void NotifyFeatureUsage(SiteDataFeatureProto* feature_proto);
 
   bool IsLoaded() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

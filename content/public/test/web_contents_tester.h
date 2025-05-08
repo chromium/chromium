@@ -224,6 +224,9 @@ class WebContentsTester {
   virtual void SetMediaCaptureRawDeviceIdsOpened(
       blink::mojom::MediaStreamType type,
       std::vector<std::string> ids) = 0;
+
+  // Sets the return value for GetCurrentlyPlayingVideoCount().
+  virtual void SetCurrentlyPlayingVideoCount(int count) = 0;
 };
 
 }  // namespace content

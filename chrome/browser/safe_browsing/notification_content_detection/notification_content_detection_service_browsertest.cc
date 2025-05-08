@@ -5,8 +5,10 @@
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
 
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -24,15 +26,20 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/notification_database_data.h"
+#include "content/public/browser/platform_notification_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 
 namespace safe_browsing {
 
@@ -649,6 +656,232 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
       ukm::builders::PermissionUsage_NotificationShown::kEntryName);
   EXPECT_EQ(0u, ukm_entries.size());
   EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+}
+
+class NotificationContentDetectionLoggingEnabledBrowserTest
+    : public NotificationContentDetectionBrowserTest {
+ public:
+  NotificationContentDetectionLoggingEnabledBrowserTest() = default;
+
+  void SetUp() override {
+    // Disable the `kPreventLongRunningPredictionModels` feature to prevent
+    // flaky test failures, since these tests may prompt models and obtaining
+    // the result can take a long time.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{safe_browsing::kOnDeviceNotificationContentDetectionModel,
+          {{"OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
+            "100"}}},
+         {safe_browsing::kShowWarningsForSuspiciousNotifications,
+          {{"ShowWarningsForSuspiciousNotificationsScoreThreshold", "0"}}},
+         {safe_browsing::kReportNotificationContentDetectionData, {}}},
+        /*disabled_features=*/{
+            optimization_guide::features::kPreventLongRunningPredictionModels});
+
+    NotificationContentDetectionBrowserTestBase::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    // Mock the `ModelQualityLogsUploaderService`.
+    auto logs_uploader = std::make_unique<
+        optimization_guide::TestModelQualityLogsUploaderService>(
+        g_browser_process->local_state());
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->SetModelQualityLogsUploaderServiceForTesting(
+            std::move(logs_uploader));
+
+    NotificationContentDetectionBrowserTest::SetUpOnMainThread();
+  }
+
+  void DisplayPersistentNotification(bool is_allowlisted) {
+    blink::PlatformNotificationData data =
+        CreateNotificationData(base::UTF8ToUTF16(notification_title),
+                               base::UTF8ToUTF16(notification_message), {});
+    GURL origin =
+        (is_allowlisted ? GURL(kAllowlistedUrl) : GURL(kNonAllowlistedUrl));
+
+    // Store notification data in `NotificationDatabase`.
+    content::NotificationDatabaseData notification_database_data;
+    notification_database_data.notification_data.title =
+        base::UTF8ToUTF16(notification_title);
+    notification_database_data.notification_data.body =
+        base::UTF8ToUTF16(notification_message);
+    notification_database_data.origin = origin;
+    browser()
+        ->profile()
+        ->GetStoragePartitionForUrl(origin)
+        ->GetPlatformNotificationContext()
+        ->WriteNotificationData(notification_id,
+                                kFakeServiceWorkerRegistrationId, origin,
+                                notification_database_data, base::DoNothing());
+    base::RunLoop().RunUntilIdle();
+
+    service()->DisplayPersistentNotification(
+        GetNotificationId(/*is_allowlisted=*/true),
+        origin /* service_worker_scope */, origin, data,
+        blink::NotificationResources());
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester(),
+        "OptimizationGuide.ModelExecutor.ExecutionStatus."
+        "NotificationContentDetection",
+        1);
+  }
+
+  optimization_guide::TestModelQualityLogsUploaderService* logs_uploader() {
+    return static_cast<
+        optimization_guide::TestModelQualityLogsUploaderService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile())
+            ->GetModelQualityLogsUploaderService());
+  }
+
+  const std::vector<
+      std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>&
+  uploaded_logs() {
+    return logs_uploader()->uploaded_logs();
+  }
+
+  void VerifyUniqueQualityLog(
+      bool did_user_always_allow_url,
+      bool is_url_on_allowlist,
+      bool was_user_shown_warning,
+      bool did_user_unsubscribe,
+      optimization_guide::proto::SiteEngagementScore site_engagement_score) {
+    const auto& logs = uploaded_logs();
+    ASSERT_EQ(1u, logs.size());
+    auto* const notification_content_detection =
+        logs[0]->mutable_notification_content_detection();
+    ASSERT_TRUE(notification_content_detection->has_request());
+    ASSERT_TRUE(notification_content_detection->has_response());
+    ASSERT_TRUE(notification_content_detection->has_quality());
+    // Verify notification contents get logged.
+    EXPECT_EQ(notification_title, notification_content_detection->request()
+                                      .notification_contents()
+                                      .notification_title());
+    EXPECT_EQ(notification_message, notification_content_detection->request()
+                                        .notification_contents()
+                                        .notification_message());
+    EXPECT_EQ(((did_user_always_allow_url || is_url_on_allowlist)
+                   ? kAllowlistedUrl
+                   : kNonAllowlistedUrl),
+              notification_content_detection->request()
+                  .notification_contents()
+                  .url());
+    // Verify suspicious score between 0 and 100 gets logged.
+    EXPECT_GE(notification_content_detection->response().suspicious_score(), 0);
+    EXPECT_LE(notification_content_detection->response().suspicious_score(),
+              100);
+    // Verify metadata gets logged.
+    EXPECT_EQ(
+        did_user_always_allow_url,
+        notification_content_detection->quality().did_user_always_allow_url());
+    EXPECT_EQ(is_url_on_allowlist,
+              notification_content_detection->quality().is_url_on_allowlist());
+    EXPECT_EQ(
+        was_user_shown_warning,
+        notification_content_detection->quality().was_user_shown_warning());
+    EXPECT_EQ(did_user_unsubscribe,
+              notification_content_detection->quality().did_user_unsubscribe());
+    EXPECT_EQ(
+        site_engagement_score,
+        notification_content_detection->quality().site_engagement_score());
+  }
+
+  std::string GetNotificationId(bool is_allowlisted) {
+    return "p#" +
+           std::string(is_allowlisted ? kAllowlistedUrl : kNonAllowlistedUrl) +
+           "#0" + base::NumberToString(notification_id);
+  }
+
+ private:
+  std::string notification_title = "Title";
+  std::string notification_message = "Message";
+  const int64_t kFakeServiceWorkerRegistrationId = 42;
+  int notification_id = 1;
+};
+
+IN_PROC_BROWSER_TEST_F(NotificationContentDetectionLoggingEnabledBrowserTest,
+                       ReportUnwarnedNotificationAsSpam) {
+  // Display notification with no warning.
+  UpdateNotificationContentDetectionModel();
+  DisplayPersistentNotification(/*is_allowlisted=*/true);
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  bool did_show_warning =
+      IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]);
+  EXPECT_FALSE(did_show_warning);
+
+  // Report notification as spam and verify MQLS log.
+  bool did_user_unsubscribe = true;
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->ReportUnwarnedNotificationAsSpam(
+      GetNotificationId(/*is_allowlisted=*/true), GURL(kAllowlistedUrl),
+      browser()->profile());
+  ASSERT_TRUE(log_uploaded_signal.Wait());
+  VerifyUniqueQualityLog(
+      /*did_user_always_allow_url=*/false,
+      /*is_url_on_allowlist=*/true, did_show_warning, did_user_unsubscribe,
+      /*site_engagement_score=*/
+      optimization_guide::proto::SiteEngagementScore::
+          SITE_ENGAGEMENT_SCORE_NONE);
+}
+
+IN_PROC_BROWSER_TEST_F(NotificationContentDetectionLoggingEnabledBrowserTest,
+                       ReportWarnedNotificationAsSpam) {
+  // Display notification with warning.
+  UpdateNotificationContentDetectionModel();
+  DisplayPersistentNotification(/*is_allowlisted=*/false);
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  bool did_show_warning =
+      IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]);
+  EXPECT_TRUE(did_show_warning);
+
+  // Report notification as spam and verify MQLS log.
+  bool did_user_unsubscribe = true;
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->ReportWarnedNotificationAsSpam(
+      GetNotificationId(/*is_allowlisted=*/false), GURL(kNonAllowlistedUrl),
+      browser()->profile());
+  ASSERT_TRUE(log_uploaded_signal.Wait());
+  VerifyUniqueQualityLog(
+      /*did_user_always_allow_url=*/false,
+      /*is_url_on_allowlist=*/false, did_show_warning, did_user_unsubscribe,
+      /*site_engagement_score=*/
+      optimization_guide::proto::SiteEngagementScore::
+          SITE_ENGAGEMENT_SCORE_NONE);
+}
+
+IN_PROC_BROWSER_TEST_F(NotificationContentDetectionLoggingEnabledBrowserTest,
+                       ReportNotificationAsSafe) {
+  // Display notification with warning.
+  UpdateNotificationContentDetectionModel();
+  DisplayPersistentNotification(/*is_allowlisted=*/false);
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  bool did_show_warning =
+      IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]);
+  EXPECT_TRUE(did_show_warning);
+
+  // Report notification as safe and verify MQLS log.
+  bool did_user_unsubscribe = false;
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->ReportNotificationAsSafe(GetNotificationId(/*is_allowlisted=*/false),
+                                    GURL(kNonAllowlistedUrl),
+                                    browser()->profile());
+  ASSERT_TRUE(log_uploaded_signal.Wait());
+  VerifyUniqueQualityLog(
+      /*did_user_always_allow_url=*/false,
+      /*is_url_on_allowlist=*/false, did_show_warning, did_user_unsubscribe,
+      /*site_engagement_score=*/
+      optimization_guide::proto::SiteEngagementScore::
+          SITE_ENGAGEMENT_SCORE_NONE);
 }
 
 }  // namespace safe_browsing

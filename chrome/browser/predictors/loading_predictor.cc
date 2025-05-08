@@ -151,8 +151,7 @@ bool LoadingPredictor::PrepareForPageLoad(
     HintOrigin origin,
     bool preconnectable,
     std::optional<PreconnectPrediction> preconnect_prediction) {
-  if (shutdown_)
-    return true;
+  CHECK(!shutdown_);
 
   TRACE_EVENT("loading", "LoadingPredictor::PrepareForPageLoad");
 
@@ -290,14 +289,11 @@ void LoadingPredictor::Shutdown() {
   shutdown_ = true;
 }
 
-bool LoadingPredictor::OnNavigationStarted(
-    NavigationId navigation_id,
-    ukm::SourceId ukm_source_id,
-    const std::optional<url::Origin>& initiator_origin,
-    const GURL& main_frame_url,
-    base::TimeTicks creation_time) {
-  if (shutdown_)
-    return true;
+void LoadingPredictor::OnNavigationStarted(NavigationId navigation_id,
+                                           ukm::SourceId ukm_source_id,
+                                           const GURL& main_frame_url,
+                                           base::TimeTicks creation_time) {
+  CHECK(!shutdown_);
 
   TRACE_EVENT("loading", "LoadingPredictor::OnNavigationStarted");
 
@@ -307,8 +303,6 @@ bool LoadingPredictor::OnNavigationStarted(
   active_navigations_.emplace(navigation_id,
                               NavigationInfo{main_frame_url, creation_time});
   active_urls_to_navigations_[main_frame_url].insert(navigation_id);
-  return PrepareForPageLoad(initiator_origin, main_frame_url,
-                            HintOrigin::NAVIGATION);
 }
 
 void LoadingPredictor::OnNavigationFinished(NavigationId navigation_id,

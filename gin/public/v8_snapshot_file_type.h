@@ -6,7 +6,7 @@
 #define GIN_PUBLIC_V8_SNAPSHOT_FILE_TYPE_H_
 
 #if !defined(V8_USE_EXTERNAL_STARTUP_DATA)
-#error Don't include this header unless v8_external_startup_data is true.
+#error "Don't include this header unless v8_external_startup_data is true."
 #endif
 
 #include "gin/gin_export.h"

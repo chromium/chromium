@@ -11,7 +11,6 @@
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

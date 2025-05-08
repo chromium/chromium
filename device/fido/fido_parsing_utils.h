@@ -19,7 +19,6 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "components/cbor/values.h"
-#include "crypto/sha2.h"
 
 namespace device {
 namespace fido_parsing_utils {
@@ -110,10 +109,6 @@ bool ExtractArray(base::span<const uint8_t> span,
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::vector<base::span<const uint8_t>> SplitSpan(base::span<const uint8_t> span,
                                                  size_t max_chunk_size);
-
-COMPONENT_EXPORT(DEVICE_FIDO)
-std::array<uint8_t, crypto::kSHA256Length> CreateSHA256Hash(
-    std::string_view data);
 
 // Convert byte array into GUID formatted string as defined by RFC 4122.
 // As we are converting 128 bit UUID, |bytes| must be have length of 16.

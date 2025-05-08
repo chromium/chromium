@@ -346,8 +346,9 @@ void WebTestWebFrameWidgetImpl::AnimateNow() {
 
 void WebTestWebFrameWidgetImpl::RequestDecode(
     const cc::DrawImage& image,
-    base::OnceCallback<void(bool)> callback) {
-  WebFrameWidgetImpl::RequestDecode(image, std::move(callback));
+    base::OnceCallback<void(bool)> callback,
+    bool speculative) {
+  WebFrameWidgetImpl::RequestDecode(image, std::move(callback), speculative);
 
   // In web tests the request does not actually cause a commit, because the
   // compositor is scheduled by the test runner to avoid flakiness. So for this

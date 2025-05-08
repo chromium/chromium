@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageTy
 import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
@@ -71,7 +72,9 @@ import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
@@ -100,6 +103,7 @@ import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -236,6 +240,7 @@ public class TabGridDialogMediator
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     private final Runnable mScrimClickRunnable;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final BottomSheetObserver mBottomSheetObserver;
 
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
@@ -559,14 +564,17 @@ public class TabGridDialogMediator
                 TabGroupCreationDialogManager tabGroupCreationDialogManager =
                         new TabGroupCreationDialogManager(activity, modalDialogManager, null);
                 TabGroupCreationCallback tabGroupCreationCallback =
-                        groupId -> {
-                            tabGroupCreationDialogManager.showDialog(groupId, filter);
-                        };
+                        groupId -> tabGroupCreationDialogManager.showDialog(groupId, filter);
+
+                // Dismiss the dialog if open. The dialog should be open when the bottom sheet is
+                // visible.
+                TabMovedCallback tabMovedCallback = () -> hideDialog(true);
                 mTabGroupListBottomSheetCoordinator =
                         new TabGroupListBottomSheetCoordinator(
                                 activity,
                                 profile,
                                 tabGroupCreationCallback,
+                                tabMovedCallback,
                                 filter,
                                 bottomSheetController,
                                 true,
@@ -580,13 +588,14 @@ public class TabGridDialogMediator
                             TabListEditorController tabListEditorController =
                                     mTabListEditorControllerSupplier.get();
                             if (tabListEditorController != null) {
-                                tabListEditorController.selectTabs(Set.of(tabId));
+                                tabListEditorController.selectTabs(
+                                        Set.of(TabListEditorItemSelectionId.createTabId(tabId)));
                             }
                         };
                 mTabGridContextMenuCoordinator =
                         new TabGridContextMenuCoordinator(
                                 activity,
-                                tabBookmarkerSupplier.get(),
+                                tabBookmarkerSupplier,
                                 profile,
                                 filter,
                                 mTabGroupListBottomSheetCoordinator,
@@ -597,6 +606,29 @@ public class TabGridDialogMediator
                                 showTabListEditor);
             }
         }
+
+        mBottomSheetObserver =
+                new BottomSheetObserver() {
+                    @Override
+                    public void onSheetOpened(int reason) {
+                        mModel.set(TabGridDialogProperties.SUPPRESS_ACCESSIBILITY, true);
+                    }
+
+                    @Override
+                    public void onSheetClosed(int reason) {
+                        mModel.set(TabGridDialogProperties.SUPPRESS_ACCESSIBILITY, false);
+                    }
+
+                    @Override
+                    public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
+
+                    @Override
+                    public void onSheetStateChanged(int newState, int reason) {}
+
+                    @Override
+                    public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}
+                };
+        mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
     public void initWithNative(
@@ -740,6 +772,7 @@ public class TabGridDialogMediator
         if (mMessagingBackendService != null && mPersistentMessageObserver != null) {
             mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
         }
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
 
     boolean isVisible() {
@@ -1038,8 +1071,7 @@ public class TabGridDialogMediator
             RecordUserAction.record("TabGridDialogMenu.ManageSharing");
             mDataSharingTabManager.createOrManageFlow(
                     mActivity,
-                    /* syncId= */ null,
-                    new LocalTabGroupId(tabGroupId),
+                    EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId)),
                     CollaborationServiceShareOrManageEntryPoint.ANDROID_TAB_GRID_DIALOG_MANAGE,
                     /* createGroupFinishedCallback= */ null);
         } else if (menuId == R.id.recent_activity) {
@@ -1326,7 +1358,12 @@ public class TabGridDialogMediator
 
         List<Tab> tabs = getRelatedTabs(currentTabId);
         // Setup dialog selection editor.
-        mTabListEditorControllerSupplier.get().show(tabs, mRecyclerViewPositionSupplier.get());
+        mTabListEditorControllerSupplier
+                .get()
+                .show(
+                        tabs,
+                        /* tabGroupSyncIds= */ Collections.emptyList(),
+                        mRecyclerViewPositionSupplier.get());
         configureTabListEditorMenu();
         return true;
     }

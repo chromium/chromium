@@ -81,7 +81,7 @@ testSuite({
     googDispose(announcer);
   },
 
-  testAnnouncerTwiceSameMessage() {
+  testAnnouncerTwiceSameMessagePolite() {
     const text = 'test content';
     const repeatedText = text + googString.Unicode.NBSP;
     const announcer = new Announcer(googDom.getDomHelper());
@@ -99,6 +99,38 @@ testSuite({
     const announcer = new Announcer(googDom.getDomHelper());
     announcer.say(text, LivePriority.ASSERTIVE);
     checkLiveRegionContains(text, 'assertive');
+    googDispose(announcer);
+  },
+
+  testAnnouncerTwiceSameMessageAssertive() {
+    const text = 'test content';
+    const repeatedText = text + googString.Unicode.NBSP;
+    const announcer = new Announcer(googDom.getDomHelper());
+    announcer.say(text, LivePriority.ASSERTIVE);
+    const firstLiveRegion = getLiveRegion('assertive');
+    announcer.say(text, LivePriority.ASSERTIVE);
+    const secondLiveRegion = getLiveRegion('assertive');
+    assertEquals(firstLiveRegion, secondLiveRegion);
+    checkLiveRegionContains(repeatedText, 'assertive');
+    googDispose(announcer);
+  },
+
+  testAnnouncerMultipleMessagesDifferentPriorities() {
+    const text = 'test content';
+    const repeatedText = text + googString.Unicode.NBSP;
+    const announcer = new Announcer(googDom.getDomHelper());
+    announcer.say(text, LivePriority.POLITE);
+    announcer.say(text, LivePriority.ASSERTIVE);
+    // We should not have added an extra space to the message since they are
+    // for different priorities.
+    checkLiveRegionContains(text, 'assertive');
+    checkLiveRegionContains(text, 'polite');
+    // If we repeat the same message again for either POLITE or ASSERTIVE
+    // priority, we should see the extra space appended to the message.
+    announcer.say(text, LivePriority.POLITE);
+    announcer.say(text, LivePriority.ASSERTIVE);
+    checkLiveRegionContains(repeatedText, 'assertive');
+    checkLiveRegionContains(repeatedText, 'polite');
     googDispose(announcer);
   },
 

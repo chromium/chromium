@@ -17,7 +17,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.NotificationEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -177,15 +176,9 @@ import java.util.function.Function;
         AsyncTask.SERIAL_EXECUTOR.execute(
                 () -> {
                     try (TraceEvent te = TraceEvent.scoped(eventName)) {
-                        NotificationProxyUtils.recordNotificationEventHistogram(
-                                NotificationEvent.NO_CALLBACK_START);
                         runnable.run();
-                        NotificationProxyUtils.recordNotificationEventHistogram(
-                                NotificationEvent.NO_CALLBACK_SUCCESS);
                     } catch (Exception e) {
                         Log.e(TAG, "unable to run a runnable.", e);
-                        NotificationProxyUtils.recordNotificationEventHistogram(
-                                NotificationEvent.NO_CALLBACK_FAILED);
                     }
                 });
     }
@@ -202,8 +195,6 @@ import java.util.function.Function;
             @Override
             protected @Nullable T doInBackground() {
                 try (TraceEvent te = TraceEvent.scoped(eventName)) {
-                    NotificationProxyUtils.recordNotificationEventHistogram(
-                            NotificationEvent.HAS_CALLBACK_START);
                     return callable.call();
                 } catch (Exception e) {
                     Log.e(TAG, "Unable to call method.", e);
@@ -213,10 +204,6 @@ import java.util.function.Function;
 
             @Override
             protected void onPostExecute(@Nullable T result) {
-                NotificationProxyUtils.recordNotificationEventHistogram(
-                        result == null
-                                ? NotificationEvent.HAS_CALLBACK_FAILED
-                                : NotificationEvent.HAS_CALLBACK_SUCCESS);
                 callback.onResult(result);
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);

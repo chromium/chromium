@@ -10,10 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams.SuggestionViewType;
@@ -28,12 +28,13 @@ import java.lang.annotation.RetentionPolicy;
  * item is known ahead of time. This layout is highly optimized around view types, and bypasses
  * certain measurement calls, where the size of the view is known ahead of time.
  */
+@NullMarked
 class SuggestionLayout extends ViewGroup {
     @VisibleForTesting public final @Px int mDecorationIconWidthPx;
     @VisibleForTesting public final @Px int mLargeDecorationIconWidthPx;
     @VisibleForTesting public final @Px int mContentHeightPx;
     @VisibleForTesting public final @Px int mCompactContentHeightPx;
-    @VisibleForTesting public final @NonNull RoundedCornerOutlineProvider mOutlineProvider;
+    @VisibleForTesting public final RoundedCornerOutlineProvider mOutlineProvider;
     private final @Px int mActionButtonWidthPx;
     private final @Px int mContentPaddingPx;
     private final @Px int mMinimumContentPadding;
@@ -92,7 +93,7 @@ class SuggestionLayout extends ViewGroup {
 
         /// The role of the associated view in the SuggestionView.
         private final @SuggestionViewType int mSuggestionViewType;
-        private final @NonNull Rect mPlacement;
+        private final Rect mPlacement;
         private final boolean mIsLargeDecoration;
 
         private LayoutParams(
@@ -124,7 +125,7 @@ class SuggestionLayout extends ViewGroup {
         /**
          * @return The placement of the view, relative to Suggestion area start.
          */
-        private @NonNull Rect getPlacement() {
+        private Rect getPlacement() {
             return mPlacement;
         }
 

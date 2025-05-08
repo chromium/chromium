@@ -9,11 +9,14 @@
 #include <stdint.h>
 
 #include "base/bits.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "partition_alloc/page_allocator.h"
 
 namespace base::subtle {
@@ -95,11 +98,11 @@ HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
 }  // namespace
 
 // static
-PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
-    win::ScopedHandle handle,
-    Mode mode,
-    size_t size,
-    const UnguessableToken& guid) {
+expected<PlatformSharedMemoryRegion, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::TakeOrFail(win::ScopedHandle handle,
+                                       Mode mode,
+                                       size_t size,
+                                       const UnguessableToken& guid) {
   if (!handle.is_valid()) {
     return {};
   }
@@ -116,10 +119,11 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  CHECK(
-      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size));
-
-  return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
+  return CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode,
+                                                        size)
+      .transform([&] {
+        return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
+      });
 }
 
 HANDLE PlatformSharedMemoryRegion::GetPlatformHandle() const {
@@ -242,7 +246,8 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 }
 
 // static
-bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
+expected<void, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
@@ -261,13 +266,11 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    DLOG(ERROR) << "File mapping handle has wrong access rights: it is"
-                << (is_read_only ? " " : " not ") << "read-only but it should"
-                << (expected_read_only ? " " : " not ") << "be";
-    return false;
+    return unexpected(expected_read_only ? TakeError::kExpectedReadOnlyButNot
+                                         : TakeError::kExpectedWritableButNot);
   }
 
-  return true;
+  return ok();
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

@@ -51,6 +51,8 @@ void FakeLocalFrame::NotifyVirtualKeyboardOverlayRect(const gfx::Rect&) {}
 
 void FakeLocalFrame::NotifyContextMenuInsetsObservers(const gfx::Rect&) {}
 
+void FakeLocalFrame::ShowInterestInElement(int) {}
+
 void FakeLocalFrame::AddMessageToConsole(
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message,

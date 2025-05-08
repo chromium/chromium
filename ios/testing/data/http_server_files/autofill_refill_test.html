@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.5">
+    <title>Autofill Refill Test</title>
+    <style>
+        #address-fields { display: none; }
+    </style>
+    <script>
+        var FillFormPresident = function() {
+            var form = document.forms['profile_form'];
+            form['name'].value = 'George Washington';
+            form['address'].value = '1600 Pennsylvania Ave NW';
+            form['city'].value = 'Washington';
+            form['state'].value = 'DC';
+            form['zip'].value = '20500';
+        }
+    </script>
+</head>
+<body>
+    <h3>Refill Profile Autofill</h3>
+    <form name="profile_form" id="profile_form" action="destination.html" method="post">
+        Name: <input type="text" name="name" id="form_name" /><br />
+        <div id="address-fields">
+            Address: <input type="text" name="address" id="form_address" /><br />
+            City: <input type="text" name="city" id="form_city" /><br />
+            State: <select name="state" id="form_state">
+                <option value="CA">CA</option>
+                <option value="MA">MA</option>
+                <option value="NY">NY</option>
+                <option value="MD">MD</option>
+                <option value="OR">OR</option>
+                <option value="OH">OH</option>
+                <option value="IL">IL</option>
+                <option value="DC">DC</option>
+            </select> <br />
+	    Zip: <input name="zip" id="form_zip" /><br />
+        </div>
+        <input type="reset" value="Reset" />
+        <input id="submit_profile" type="submit" value="Submit Profile" />
+    </form>
+    <button type="button" onclick="FillFormPresident()" id="fill_profile_president">Fill Form (President)</button>
+    <br />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const zipInput = document.getElementById('form_name');
+            const addressFields = document.getElementById('address-fields');
+            zipInput.addEventListener('input', function() {
+                addressFields.style.display = this.value.trim() !== '' ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
+

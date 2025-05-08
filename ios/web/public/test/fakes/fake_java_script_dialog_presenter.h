@@ -18,7 +18,7 @@ struct FakeJavaScriptAlertDialog {
   FakeJavaScriptAlertDialog();
   ~FakeJavaScriptAlertDialog();
   raw_ptr<WebState> web_state = nullptr;
-  GURL origin_url;
+  url::Origin origin;
   NSString* message_text;
   base::OnceClosure callback;
 };
@@ -27,7 +27,7 @@ struct FakeJavaScriptConfirmDialog {
   FakeJavaScriptConfirmDialog();
   ~FakeJavaScriptConfirmDialog();
   raw_ptr<WebState> web_state = nullptr;
-  GURL origin_url;
+  url::Origin origin;
   NSString* message_text;
   base::OnceCallback<void(bool success)> callback;
 };
@@ -36,7 +36,7 @@ struct FakeJavaScriptPromptDialog {
   FakeJavaScriptPromptDialog();
   ~FakeJavaScriptPromptDialog();
   raw_ptr<WebState> web_state = nullptr;
-  GURL origin_url;
+  url::Origin origin;
   NSString* message_text;
   NSString* default_prompt_text;
   base::OnceCallback<void(NSString* user_input)> callback;
@@ -52,17 +52,17 @@ class FakeJavaScriptDialogPresenter : public JavaScriptDialogPresenter {
 
   // JavaScriptDialogPresenter overrides:
   void RunJavaScriptAlertDialog(WebState* web_state,
-                                const GURL& origin_url,
+                                const url::Origin& origin,
                                 NSString* message_text,
                                 base::OnceClosure callback) override;
   void RunJavaScriptConfirmDialog(
       WebState* web_state,
-      const GURL& origin_url,
+      const url::Origin& origin,
       NSString* message_text,
       base::OnceCallback<void(bool success)> callback) override;
   void RunJavaScriptPromptDialog(
       WebState* web_state,
-      const GURL& origin_url,
+      const url::Origin& origin,
       NSString* message_text,
       NSString* default_prompt_text,
       base::OnceCallback<void(NSString* user_input)> callback) override;

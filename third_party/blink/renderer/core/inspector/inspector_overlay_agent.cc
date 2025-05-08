@@ -495,7 +495,7 @@ void InspectorOverlayAgent::EnsureAXContext(Node* node) {
 
 void InspectorOverlayAgent::EnsureAXContext(Document& document) {
   if (!document_to_ax_context_.Contains(&document)) {
-    auto context = std::make_unique<AXContext>(document, ui::kAXModeComplete);
+    auto context = std::make_unique<AXContext>(document, ui::kAXModeInspector);
     document_to_ax_context_.Set(&document, std::move(context));
   }
 }

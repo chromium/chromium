@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.editurl;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
@@ -43,15 +46,15 @@ import java.util.Optional;
  */
 @NullMarked
 public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
-    private final Supplier<ShareDelegate> mShareDelegateSupplier;
-    private final Supplier<Tab> mTabSupplier;
+    private final @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
 
     public EditUrlSuggestionProcessor(
             Context context,
             SuggestionHost suggestionHost,
             Optional<OmniboxImageSupplier> imageSupplier,
-            Supplier<Tab> tabSupplier,
-            Supplier<ShareDelegate> shareDelegateSupplier) {
+            Supplier<@Nullable Tab> tabSupplier,
+            @Nullable Supplier<ShareDelegate> shareDelegateSupplier) {
         super(context, suggestionHost, imageSupplier);
 
         mTabSupplier = tabSupplier;
@@ -104,6 +107,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         super.populateModel(input, suggestion, model, position);
 
         var tab = mTabSupplier.get();
+        assumeNonNull(tab);
         var title = suggestion.getDescription();
         if (!tab.isLoading()) {
             title = tab.getTitle();
@@ -173,7 +177,8 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** Invoked when user interacts with Share action button. */
     private void onShareLink() {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Share");
-        var webContents = mTabSupplier.get().getWebContents();
+        Tab tab = assumeNonNull(mTabSupplier.get());
+        var webContents = tab.getWebContents();
         if (webContents != null) {
             // TODO(ender): find out if this is still captured anywhere.
             new UkmRecorder(webContents, "Omnibox.EditUrlSuggestion.Share")
@@ -182,13 +187,15 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         }
         mSuggestionHost.finishInteraction();
         // TODO(mdjones): This should only share the displayed URL instead of the background tab.
-        mShareDelegateSupplier.get().share(mTabSupplier.get(), false, ShareOrigin.EDIT_URL);
+        assumeNonNull(mShareDelegateSupplier);
+        mShareDelegateSupplier.get().share(tab, false, ShareOrigin.EDIT_URL);
     }
 
     /** Invoked when user interacts with Copy action button. */
     private void onCopyLink(AutocompleteMatch suggestion) {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Copy");
-        HistoryClustersTabHelper.onCurrentTabUrlCopied(mTabSupplier.get().getWebContents());
+        Tab tab = assumeNonNull(mTabSupplier.get());
+        HistoryClustersTabHelper.onCurrentTabUrlCopied(tab.getWebContents());
         Clipboard.getInstance().copyUrlToClipboard(suggestion.getUrl());
     }
 

@@ -6,13 +6,16 @@ package org.chromium.chrome.browser.ui.signin.signin_promo;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 final class SigninPromoProperties {
-    static final PropertyModel.WritableObjectPropertyKey<DisplayableProfileData> PROFILE_DATA =
-            new PropertyModel.WritableObjectPropertyKey<>("profile_data");
+    static final PropertyModel.WritableObjectPropertyKey<@Nullable DisplayableProfileData>
+            PROFILE_DATA = new PropertyModel.WritableObjectPropertyKey<>("profile_data");
 
     static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             ON_PRIMARY_BUTTON_CLICKED =
@@ -61,7 +64,7 @@ final class SigninPromoProperties {
     private SigninPromoProperties() {}
 
     static PropertyModel createModel(
-            DisplayableProfileData profileData,
+            @Nullable DisplayableProfileData profileData,
             Runnable onPrimaryButtonClicked,
             Runnable onSecondaryButtonClicked,
             Runnable onDismissButtonClicked,

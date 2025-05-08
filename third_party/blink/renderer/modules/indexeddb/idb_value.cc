@@ -20,14 +20,7 @@
 
 namespace blink {
 
-IDBValue::IDBValue(
-    Vector<char>&& data,
-    Vector<WebBlobInfo> blob_info,
-    Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>
-        file_system_access_tokens)
-    : data_(std::move(data)),
-      blob_info_(std::move(blob_info)),
-      file_system_access_tokens_(std::move(file_system_access_tokens)) {}
+IDBValue::IDBValue() = default;
 
 IDBValue::~IDBValue() {
   if (decompression_count_ > 0) {
@@ -42,21 +35,22 @@ IDBValue::~IDBValue() {
 scoped_refptr<SerializedScriptValue> IDBValue::CreateSerializedValue() const {
   if (base::FeatureList::IsEnabled(kIdbDecompressValuesInPlace)) {
     SerializedScriptValue::DataBufferPtr decompressed;
-    if (IDBValueUnwrapper::Decompress(data_, /*out_buffer=*/nullptr,
+    if (IDBValueUnwrapper::Decompress(Data(), /*out_buffer=*/nullptr,
                                       /*out_buffer_in_place=*/&decompressed)) {
       const_cast<IDBValue*>(this)->decompression_count_++;
       return SerializedScriptValue::Create(std::move(decompressed));
     }
   } else {
     Vector<char> decompressed;
-    if (IDBValueUnwrapper::Decompress(data_, /*out_buffer=*/&decompressed,
+    if (IDBValueUnwrapper::Decompress(Data(),
+                                      /*out_buffer=*/&decompressed,
                                       /*out_buffer_in_place=*/nullptr)) {
       const_cast<IDBValue*>(this)->decompression_count_++;
       const_cast<IDBValue*>(this)->SetData(std::move(decompressed));
     }
   }
 
-  return SerializedScriptValue::Create(base::as_byte_span(data_));
+  return SerializedScriptValue::Create(Data());
 }
 
 void IDBValue::SetIsolate(v8::Isolate* isolate) {
@@ -64,18 +58,36 @@ void IDBValue::SetIsolate(v8::Isolate* isolate) {
   DCHECK(!isolate_) << "SetIsolate must be called at most once";
 
   isolate_ = isolate;
-  size_t external_allocated_size = DataSize();
+  size_t external_allocated_size = Data().size();
   if (external_allocated_size) {
     external_memory_accounter_.Increase(isolate_.get(),
                                         external_allocated_size);
   }
 }
 
-void IDBValue::SetData(Vector<char>&& new_data) {
-  DCHECK(isolate_)
-      << "Value unwrapping should be done after an isolate has been associated";
+base::span<const uint8_t> IDBValue::Data() const {
+  if (!data_from_mojo_.empty()) {
+    return base::as_byte_span(data_from_mojo_);
+  }
+  return data_.as_span();
+}
 
-  external_memory_accounter_.Set(isolate_.get(), new_data.size());
+void IDBValue::SetBlobInfo(Vector<WebBlobInfo> blob_info) {
+  blob_info_ = std::move(blob_info);
+}
+
+void IDBValue::SetData(Vector<char> new_data) {
+  if (isolate_) {
+    external_memory_accounter_.Set(isolate_.get(), new_data.size());
+  }
+
+  data_from_mojo_ = std::move(new_data);
+}
+
+void IDBValue::SetData(SerializedScriptValue::DataBufferPtr new_data) {
+  if (isolate_) {
+    external_memory_accounter_.Set(isolate_.get(), new_data.size());
+  }
 
   data_ = std::move(new_data);
 }
@@ -95,7 +107,7 @@ scoped_refptr<BlobDataHandle> IDBValue::TakeLastBlob() {
 std::unique_ptr<IDBValue> IDBValue::ConvertReturnValue(
     const mojom::blink::IDBReturnValuePtr& input) {
   if (!input) {
-    return std::make_unique<IDBValue>(Vector<char>(), Vector<WebBlobInfo>());
+    return std::make_unique<IDBValue>();
   }
 
   std::unique_ptr<IDBValue> output = std::move(input->value);

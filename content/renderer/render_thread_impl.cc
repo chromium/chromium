@@ -1201,6 +1201,13 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
     return nullptr;
   }
 
+  if (base::FeatureList::IsEnabled(
+          ::features::kDisallowRasterInterfaceWithoutSkiaBackend) &&
+      gpu_channel_host->gpu_info().skia_backend_type ==
+          gpu::SkiaBackendType::kNone) {
+    return nullptr;
+  }
+
   bool support_locking = false;
   bool support_raster_interface = true;
   // TODO(zmo): today if Skia backend is set, Chrome either runs in GPU

@@ -11,6 +11,7 @@
 #include <Security/Security.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base_export.h"
@@ -133,14 +134,13 @@ TYPE_NAME_FOR_CF_TYPE_DECL(SecPolicy);
 
 #undef TYPE_NAME_FOR_CF_TYPE_DECL
 
-// Returns the base bundle ID, which can be set by SetBaseBundleID but
-// defaults to a reasonable string. This never returns NULL. BaseBundleID
-// returns a pointer to static storage that must not be freed.
-BASE_EXPORT const char* BaseBundleID();
+// Returns the base bundle ID, which can be set by SetBaseBundleIDOverride,
+// below, but defaults to a reasonable string.
+BASE_EXPORT std::string_view BaseBundleID();
 
-// Sets the base bundle ID to override the default. The implementation will
-// make its own copy of new_base_bundle_id.
-BASE_EXPORT void SetBaseBundleID(const char* new_base_bundle_id);
+// Sets a base bundle ID to override the default value returned by
+// BaseBundleID(), above.
+BASE_EXPORT void SetBaseBundleIDOverride(std::string_view new_base_bundle_id);
 
 // CFCast<>() and CFCastStrict<>() cast a basic CFTypeRef to a more specific
 // CoreFoundation type. The compatibility of the passed object is found by

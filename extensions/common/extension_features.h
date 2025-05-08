@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace extensions_features {
 
@@ -78,6 +79,15 @@ BASE_DECLARE_FEATURE(kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered);
 // requested host permissions by default.
 BASE_DECLARE_FEATURE(kAllowWithholdingExtensionPermissionsOnInstall);
 
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+// Blocks installing extensions on Desktop Android (experimental). This feature
+// is available only for Desktop Android builds.
+// This feature should not be added to fieldtrial_testing_config.json, even
+// though it may be enabled via Finch, since that would enable it on ToT for
+// bots, and we don't want that.
+BASE_DECLARE_FEATURE(kBlockInstallingExtensionsOnDesktopAndroid);
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+
 // When enabled, then bad_message::ReceivedBadMessage will be called when
 // browser receives an IPC from a content script and the IPC that unexpectedly
 // claims to act on behalf of a given extension id, (i.e. even if the browser
@@ -131,9 +141,6 @@ extern const base::FeatureParam<std::string>
 // This will be removed once the ExtensionManifestV2Availability enterprise
 // policy is no longer supported.
 BASE_DECLARE_FEATURE(kAllowLegacyMV2Extensions);
-
-// IsValidSourceUrl enforcement for ExtensionHostMsg_OpenChannelToExtension IPC.
-BASE_DECLARE_FEATURE(kExtensionSourceUrlEnforcement);
 
 // Controls whether server-side redirects are subject to extensions' web
 // accessible resource restrictions.

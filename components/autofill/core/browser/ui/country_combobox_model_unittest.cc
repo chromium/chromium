@@ -19,9 +19,7 @@ class CountryComboboxModelTest : public testing::Test {
  public:
   CountryComboboxModelTest() {
     model_ = std::make_unique<CountryComboboxModel>();
-    model_->SetCountries(GeoIpCountryCode("DE"),
-                         base::RepeatingCallback<bool(const std::string&)>(),
-                         "en-US");
+    model_->SetCountries(GeoIpCountryCode("DE"), "en-US");
   }
 
   CountryComboboxModel* model() { return model_.get(); }

@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
-#include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
+#include "chrome/browser/ash/login/signin/legacy_token_handle_fetcher.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/browser_process.h"
@@ -163,13 +163,13 @@ std::u16string GetMessageBodyForDeviceAccountErrors(
   }
 }
 
-std::unique_ptr<TokenHandleFetcher> CreateTokenHandleFetcher(
+std::unique_ptr<LegacyTokenHandleFetcher> CreateTokenHandleFetcher(
     Profile* profile,
     TokenHandleStore* token_handle_store) {
   const AccountId account_id =
       multi_user_util::GetAccountIdFromProfile(profile);
-  return std::make_unique<TokenHandleFetcher>(profile, token_handle_store,
-                                              account_id);
+  return std::make_unique<LegacyTokenHandleFetcher>(profile, token_handle_store,
+                                                    account_id);
 }
 
 }  // namespace
@@ -242,8 +242,14 @@ void SigninErrorNotifier::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void SigninErrorNotifier::Shutdown() {
-  error_controller_->RemoveObserver(this);
+  if (error_controller_) {
+    error_controller_->RemoveObserver(this);
+  }
   error_controller_ = nullptr;
+  if (token_handle_fetcher_) {
+    token_handle_fetcher_.reset();
+  }
+  token_handle_store_ = nullptr;
 }
 
 void SigninErrorNotifier::OnErrorChanged() {

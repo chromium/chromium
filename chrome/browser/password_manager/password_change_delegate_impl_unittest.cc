@@ -8,7 +8,7 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -48,24 +48,6 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~PasswordChangeDelegateImplTest() override = default;
 
-  std::unique_ptr<PasswordChangeDelegateImpl> CreateDelegate() {
-    auto delegate = std::make_unique<PasswordChangeDelegateImpl>(
-        GURL(kChangePasswordURL), kTestEmail, kPassword, web_contents());
-    delegate->SetNavigator(&navigator_);
-    delegate->OfferPasswordChangeUi();
-    return delegate;
-  }
-
-  std::unique_ptr<content::WebContents> CreateWebContents() {
-    auto contents = content::WebContentsTester::CreateTestWebContents(
-        web_contents()->GetBrowserContext(), nullptr);
-    // `ChromePasswordManagerClient` observes `AutofillManager`s, so
-    // `ChromeAutofillClient` needs to be set up, too.
-    autofill::ChromeAutofillClient::CreateForWebContents(contents.get());
-    ChromePasswordManagerClient::CreateForWebContents(contents.get());
-    return contents;
-  }
-
   void FastForwardBy(base::TimeDelta delta) {
     task_environment()->FastForwardBy(delta);
   }
@@ -93,12 +75,31 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
                       return std::make_unique<testing::NiceMock<
                           MockOptimizationGuideKeyedService>>();
                     })));
+    delegate_ = std::make_unique<PasswordChangeDelegateImpl>(
+        GURL(kChangePasswordURL), kTestEmail, kPassword, web_contents());
+    delegate_->SetNavigator(&navigator_);
+    delegate_->OfferPasswordChangeUi();
+
+    new_web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        web_contents()->GetBrowserContext(), nullptr);
+    // `ChromePasswordManagerClient` observes `AutofillManager`s, so
+    // `ChromeAutofillClient` needs to be set up, too.
+    autofill::ChromeAutofillClient::CreateForWebContents(
+        new_web_contents_.get());
+    ChromePasswordManagerClient::CreateForWebContents(new_web_contents_.get());
   }
 
   void TearDown() override {
+    delegate_.reset();
+    new_web_contents_.reset();
     mock_optimization_guide_keyed_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
+
+  PasswordChangeDelegate* delegate() { return delegate_.get(); }
+  content::WebContents* new_web_contents() { return new_web_contents_.get(); }
+
+  void ResetDelegate() { delegate_.reset(); }
 
  protected:
   raw_ptr<MockOptimizationGuideKeyedService>
@@ -106,14 +107,13 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
 
  private:
   MockPageNavigator navigator_;
+  std::unique_ptr<content::WebContents> new_web_contents_;
+  std::unique_ptr<PasswordChangeDelegateImpl> delegate_;
 };
 
 TEST_F(PasswordChangeDelegateImplTest, WaitingForAgreement) {
-  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
-  std::unique_ptr<PasswordChangeDelegate> delegate = CreateDelegate();
-
-  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(test_web_contents.get()));
-  delegate->StartPasswordChangeFlow();
+  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(new_web_contents()));
+  delegate()->StartPasswordChangeFlow();
 
   EXPECT_EQ(
       prefs()->GetInteger(optimization_guide::prefs::GetSettingEnabledPrefName(
@@ -123,9 +123,9 @@ TEST_F(PasswordChangeDelegateImplTest, WaitingForAgreement) {
           optimization_guide::prefs::FeatureOptInState::kNotInitialized));
 
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForAgreement,
-            delegate->GetCurrentState());
+            delegate()->GetCurrentState());
 
-  delegate->OnPrivacyNoticeAccepted();
+  delegate()->OnPrivacyNoticeAccepted();
   SetOptimizationFeatureEnabled(/*enabled=*/true);
   // Both pref and state reflect acceptance.
   EXPECT_EQ(
@@ -134,28 +134,25 @@ TEST_F(PasswordChangeDelegateImplTest, WaitingForAgreement) {
               kPasswordChangeSubmission)),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
-            delegate->GetCurrentState());
+            delegate()->GetCurrentState());
 }
 
 TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
   SetOptimizationFeatureEnabled(/*enabled=*/true);
   base::HistogramTester histogram_tester;
-  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
-  std::unique_ptr<PasswordChangeDelegate> delegate = CreateDelegate();
-  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(test_web_contents.get()));
-  delegate->StartPasswordChangeFlow();
+  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(new_web_contents()));
+  delegate()->StartPasswordChangeFlow();
 
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
-            delegate->GetCurrentState());
+            delegate()->GetCurrentState());
 
-  static_cast<PasswordChangeDelegateImpl*>(delegate.get())
-      ->form_waiter()
-      ->MarkPageFinishedLoading();
-  FastForwardBy(ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  static_cast<PasswordChangeDelegateImpl*>(delegate())
+      ->form_finder()
+      ->RespondWithFormNotFound();
 
   EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,
-            delegate->GetCurrentState());
-  delegate.reset();
+            delegate()->GetCurrentState());
+  ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
       PasswordChangeDelegate::State::kChangePasswordFormNotFound, 1);
@@ -163,33 +160,28 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
 
 TEST_F(PasswordChangeDelegateImplTest, RestartPasswordChange) {
   SetOptimizationFeatureEnabled(/*enabled=*/true);
-  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
-  std::unique_ptr<PasswordChangeDelegate> delegate = CreateDelegate();
-  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(test_web_contents.get()));
-  delegate->StartPasswordChangeFlow();
+  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(new_web_contents()));
+  delegate()->StartPasswordChangeFlow();
 
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
-            delegate->GetCurrentState());
+            delegate()->GetCurrentState());
 
-  static_cast<PasswordChangeDelegateImpl*>(delegate.get())
-      ->form_waiter()
-      ->MarkPageFinishedLoading();
-  FastForwardBy(ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  static_cast<PasswordChangeDelegateImpl*>(delegate())
+      ->form_finder()
+      ->RespondWithFormNotFound();
 
   EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,
-            delegate->GetCurrentState());
+            delegate()->GetCurrentState());
 
-  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(test_web_contents.get()));
-  delegate->Restart();
+  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(new_web_contents()));
+  delegate()->Restart();
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
-            delegate->GetCurrentState());
+            delegate()->GetCurrentState());
 }
 
 TEST_F(PasswordChangeDelegateImplTest, MetricsReportedFlowOffered) {
   base::HistogramTester histogram_tester;
-  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
-  std::unique_ptr<PasswordChangeDelegate> delegate = CreateDelegate();
-  delegate.reset();
+  ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
       PasswordChangeDelegate::State::kOfferingPasswordChange, 1);
@@ -199,11 +191,9 @@ TEST_F(PasswordChangeDelegateImplTest,
        MetricsReportedFlowCanceledInPrivacyNotice) {
   SetOptimizationFeatureEnabled(/*enabled=*/false);
   base::HistogramTester histogram_tester;
-  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
-  std::unique_ptr<PasswordChangeDelegate> delegate = CreateDelegate();
-  delegate->StartPasswordChangeFlow();
+  delegate()->StartPasswordChangeFlow();
 
-  delegate.reset();
+  ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
       PasswordChangeDelegate::State::kWaitingForAgreement, 1);
@@ -213,11 +203,10 @@ TEST_F(PasswordChangeDelegateImplTest,
        MetricsReportedFlowCanceledDuringSignInCheck) {
   SetOptimizationFeatureEnabled(/*enabled=*/true);
   base::HistogramTester histogram_tester;
-  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
-  std::unique_ptr<PasswordChangeDelegate> delegate = CreateDelegate();
-  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(test_web_contents.get()));
-  delegate->StartPasswordChangeFlow();
-  delegate.reset();
+  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(new_web_contents()));
+  delegate()->StartPasswordChangeFlow();
+
+  ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
       PasswordChangeDelegate::State::kWaitingForChangePasswordForm, 1);
@@ -227,14 +216,64 @@ TEST_F(PasswordChangeDelegateImplTest,
        MetricsReportedWasPasswordChangeNewTabFocused) {
   SetOptimizationFeatureEnabled(/*enabled=*/true);
   base::HistogramTester histogram_tester;
-  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
-  std::unique_ptr<PasswordChangeDelegateImpl> delegate = CreateDelegate();
-  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(test_web_contents.get()));
-  static_cast<PasswordChangeDelegate*>(delegate.get())
-      ->StartPasswordChangeFlow();
-  static_cast<content::WebContentsObserver*>(delegate.get())
+  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(new_web_contents()));
+  delegate()->StartPasswordChangeFlow();
+  static_cast<content::WebContentsObserver*>(
+      static_cast<PasswordChangeDelegateImpl*>(delegate()))
       ->OnVisibilityChanged(content::Visibility::VISIBLE);
-  delegate.reset();
+  ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kWasPasswordChangeNewTabFocused, true, 1);
+}
+
+TEST_F(PasswordChangeDelegateImplTest,
+       OtpDetectionIgnoredWhenFlowIsNotStarted) {
+  EXPECT_CALL(navigator(), OpenURL).Times(0);
+
+  ASSERT_EQ(PasswordChangeDelegate::State::kOfferingPasswordChange,
+            delegate()->GetCurrentState());
+
+  delegate()->OnOtpFieldDetected(web_contents());
+  EXPECT_EQ(PasswordChangeDelegate::State::kOfferingPasswordChange,
+            delegate()->GetCurrentState());
+}
+
+TEST_F(PasswordChangeDelegateImplTest,
+       OtpDetectionIgnoredWhenWaitingForAgreement) {
+  EXPECT_CALL(navigator(), OpenURL).Times(0);
+  delegate()->StartPasswordChangeFlow();
+
+  ASSERT_EQ(PasswordChangeDelegate::State::kWaitingForAgreement,
+            delegate()->GetCurrentState());
+
+  delegate()->OnOtpFieldDetected(new_web_contents());
+  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForAgreement,
+            delegate()->GetCurrentState());
+}
+
+TEST_F(PasswordChangeDelegateImplTest, OtpDetectionIgnoredOnOriginalTab) {
+  SetOptimizationFeatureEnabled(/*enabled=*/true);
+
+  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(new_web_contents()));
+  delegate()->StartPasswordChangeFlow();
+
+  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
+            delegate()->GetCurrentState());
+
+  delegate()->OnOtpFieldDetected(web_contents());
+  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
+            delegate()->GetCurrentState());
+}
+
+TEST_F(PasswordChangeDelegateImplTest, OtpDetectionProcessed) {
+  SetOptimizationFeatureEnabled(/*enabled=*/true);
+  EXPECT_CALL(navigator(), OpenURL).WillOnce(Return(new_web_contents()));
+  delegate()->StartPasswordChangeFlow();
+
+  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
+            delegate()->GetCurrentState());
+
+  delegate()->OnOtpFieldDetected(new_web_contents());
+  EXPECT_EQ(PasswordChangeDelegate::State::kOtpDetected,
+            delegate()->GetCurrentState());
 }

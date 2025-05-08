@@ -29,10 +29,6 @@ namespace {
 
 using ::testing::Values;
 
-constexpr auto kAutofillPredictionSettingsAllowWithoutLogging =
-    base::to_underlying(
-        optimization_guide::model_execution::prefs::
-            ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
 constexpr auto kAutofillPredictionSettingsDisable =
     base::to_underlying(optimization_guide::model_execution::prefs::
                             ModelExecutionEnterprisePolicyValue::kDisable);
@@ -165,20 +161,6 @@ TEST_P(AutofillAiMayPerformActionTest, OptInIphFeatureOff) {
 
   SetAutofillAiOptInStatus(client(), false);
   const bool is_allowed = GetParam() == AutofillAiAction::kOptIn;
-  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
-}
-
-// Tests that everything but logging is enabled if the AutofillAI enterprise
-// policy allows the feature without logging.
-TEST_P(AutofillAiMayPerformActionTest,
-       ActionsWhenAutofillAiEnterprisePolicyLoggingDisabled) {
-  client().GetPrefs()->SetInteger(
-      optimization_guide::prefs::
-          kAutofillPredictionImprovementsEnterprisePolicyAllowed,
-      kAutofillPredictionSettingsAllowWithoutLogging);
-
-  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn &&
-                          GetParam() != AutofillAiAction::kLogToMqls;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 

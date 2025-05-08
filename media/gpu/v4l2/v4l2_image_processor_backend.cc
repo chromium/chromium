@@ -58,7 +58,7 @@ void FillV4L2BufferByGpuMemoryBufferHandle(
   DCHECK_EQ(buffer->Memory(), V4L2_MEMORY_DMABUF);
   const size_t num_planes = GetNumPlanesOfV4L2PixFmt(fourcc.ToV4L2PixFmt());
   const std::vector<gfx::NativePixmapPlane>& planes =
-      gmb_handle.native_pixmap_handle.planes;
+      gmb_handle.native_pixmap_handle().planes;
 
   for (size_t i = 0; i < num_planes; ++i) {
     if (fourcc.IsMultiPlanar()) {
@@ -909,7 +909,7 @@ bool V4L2ImageProcessorBackend::EnqueueInputRecord(
       FillV4L2BufferByGpuMemoryBufferHandle(
           input_config_.fourcc, input_config_.size, *input_handle, &buffer);
       if (!std::move(buffer).QueueDMABuf(
-              input_handle->native_pixmap_handle.planes)) {
+              input_handle->native_pixmap_handle().planes)) {
         VPLOGF(1) << "Failed to queue a DMABUF buffer to input queue";
         NotifyError();
         return false;
@@ -948,7 +948,7 @@ bool V4L2ImageProcessorBackend::EnqueueOutputRecord(
       FillV4L2BufferByGpuMemoryBufferHandle(
           output_config_.fourcc, output_config_.size, *output_handle, &buffer);
       return std::move(buffer).QueueDMABuf(
-          output_handle->native_pixmap_handle.planes);
+          output_handle->native_pixmap_handle().planes);
     }
     default:
       NOTREACHED();

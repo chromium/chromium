@@ -143,6 +143,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Import with section union"/>
 </enum>
 
+<enum name="AutofillAiOptInFunnelEvents">
+  <int value="0" label="IPH was shown"/>
+  <int value="1" label="FFR was shown"/>
+  <int value="2" label="The FFR learn more button was clicked"/>
+  <int value="3" label="FFR was accepted"/>
+</enum>
+
 <enum name="AutofillAlternativeNameFieldValueCharacterSet">
   <int value="0" label="Katakana"/>
   <int value="1" label="Hiragana"/>
@@ -2999,6 +3006,16 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:BnplFormEvent) -->
 
+<!-- LINT.IfChange(BnplIssuerId) -->
+
+<enum name="BnplIssuerId">
+  <int value="0" label="Affirm"/>
+  <int value="1" label="Zip"/>
+  <int value="2" label="Afterpay"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/data_model/payments/bnpl_issuer.h:IssuerId) -->
+
 <!-- LINT.IfChange(BnplPopupWindowResult) -->
 
 <enum name="BnplPopupWindowResult">
@@ -3830,6 +3847,7 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="TimedOut"/>
   <int value="5" label="LinkCLicked"/>
   <int value="6" label="Ignored"/>
+  <int value="7" label="NotShown"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/ios/browser/credit_card_save_metrics_ios.h:SaveCreditCardPromptResultIOS) -->
@@ -3926,16 +3944,6 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_type.h:SuggestionType) -->
-
-<!-- LINT.IfChange(SupportedBnplIssuer) -->
-
-<enum name="SupportedBnplIssuer">
-  <int value="0" label="Affirm"/>
-  <int value="1" label="Afterpay"/>
-  <int value="2" label="Zip"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:SupportedBnplIssuer) -->
 
 <enum name="TouchToFill.CreditCard.Outcome">
   <int value="0"

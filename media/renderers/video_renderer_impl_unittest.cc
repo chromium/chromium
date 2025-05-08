@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -928,6 +929,50 @@ TEST_F(VideoRendererImplTest, RenderingStartedThenStopped) {
   Destroy();
 }
 
+// Ensures background rendering will try to signal underflow if no new decoded
+// frames arrive since the last Render() call.
+TEST_F(VideoRendererImplTest, BackgroundRenderingStillUnderflows) {
+  Initialize();
+  QueueFrames("0 30 60 90");
+
+  // Start the sink and wait for the first callback.
+  {
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(5);
+    EXPECT_CALL(mock_cb_, FrameReceived(HasTimestampMatcher(0)));
+    EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
+    EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
+    StartPlayingFrom(0);
+    event.RunAndWait();
+    Mock::VerifyAndClearExpectations(&mock_cb_);
+  }
+
+  renderer_->OnTimeProgressing();
+  time_source_.StartTicking();
+  EXPECT_CALL(mock_cb_, FrameReceived(_)).Times(testing::AnyNumber());
+
+  bool background_rendering = true;
+  null_video_sink_->set_render_cb(
+      base::BindRepeating(base::BindLambdaForTesting([&] {
+        null_video_sink_->set_background_render(background_rendering);
+        background_rendering = !background_rendering;
+      })));
+
+  // Advance enough that none of the queued frames are effective.
+  AdvanceWallclockTimeInMs(120);
+
+  {
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    event.RunAndWait();
+  }
+
+  Destroy();
+}
+
 // Tests the case where underflow evicts all frames before EOS.
 TEST_F(VideoRendererImplTest, UnderflowEvictionBeforeEOS) {
   Initialize();
@@ -967,6 +1012,63 @@ TEST_F(VideoRendererImplTest, UnderflowEvictionBeforeEOS) {
   SatisfyPendingDecodeWithEndOfStream();
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _));
   WaitForEnded();
+  Destroy();
+}
+
+// Tests the case where underflow evicts all frames then good frames come in.
+TEST_F(VideoRendererImplTest, UnderflowResume) {
+  Initialize();
+  QueueFrames("0 30 60 90 120");
+
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(_));
+
+  {
+    SCOPED_TRACE("Waiting for BUFFERING_HAVE_ENOUGH");
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    EXPECT_CALL(mock_cb_, FrameReceived(_)).Times(AnyNumber());
+    EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
+    EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
+    EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());
+    StartPlayingFrom(0);
+    event.RunAndWait();
+  }
+
+  {
+    SCOPED_TRACE("Waiting for BUFFERING_HAVE_NOTHING");
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    renderer_->OnTimeProgressing();
+    time_source_.StartTicking();
+    // Jump time far enough forward that no frames are valid.
+    AdvanceTimeInMs(1000);
+    event.RunAndWait();
+  }
+
+  WaitForPendingDecode();
+
+  renderer_->OnTimeStopped();
+  time_source_.StopTicking();
+  EXPECT_FALSE(null_video_sink_->is_started());
+
+  renderer_->OnTimeProgressing();
+  time_source_.StartTicking();
+  EXPECT_FALSE(null_video_sink_->is_started());
+
+  QueueFrames("1000 1030 1060 1090 1120 1150");
+  SatisfyPendingDecode();
+
+  // Providing the end of stream packet should remove all frames and exit.
+  {
+    SCOPED_TRACE("Waiting for BUFFERING_HAVE_ENOUGH");
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    event.RunAndWait();
+  }
+  EXPECT_TRUE(null_video_sink_->is_started());
   Destroy();
 }
 

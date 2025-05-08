@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_progress_bar.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/text_field_view_containing.h"
+#import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -101,6 +101,10 @@ const CGFloat kGrabberTopPadding = 5;
   /// When set, the omnibox tap target continues to "eat" the touches, but they
   /// are ignored, effectively preventing omnibox interaction.
   BOOL _ignoreOmniboxTaps;
+  /// The grabber indicator for the bottom sheet.
+  UIView* _bottomSheetGrabber;
+  /// Whether to show the bottom sheet grabber.
+  BOOL _bottomSheetGrabberVisible;
 }
 
 - (instancetype)init {
@@ -131,13 +135,15 @@ const CGFloat kGrabberTopPadding = 5;
   [self.view addSubview:self.webViewContainer];
 
   // Bottom sheet grabber.
-  UIView* grabber = [self createSheetGrabber];
-  [self.view addSubview:grabber];
-  AddSameCenterXConstraint(grabber, self.view);
+  _bottomSheetGrabber = [self createSheetGrabber];
+  [self.view addSubview:_bottomSheetGrabber];
+  [self setBottomSheetGrabberVisible:_bottomSheetGrabberVisible];
+  AddSameCenterXConstraint(_bottomSheetGrabber, self.view);
   AddSameConstraintsToSidesWithInsets(
-      grabber, self.view, LayoutSides::kTop,
+      _bottomSheetGrabber, self.view, LayoutSides::kTop,
       NSDirectionalEdgeInsetsMake(kGrabberTopPadding, 0, 0, 0));
-  AddSizeConstraints(grabber, CGSizeMake(kGrabberWidth, kGrabberHeight));
+  AddSizeConstraints(_bottomSheetGrabber,
+                     CGSizeMake(kGrabberWidth, kGrabberHeight));
 
   // Omnibox popup container.
   _omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -318,6 +324,11 @@ const CGFloat kGrabberTopPadding = 5;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
   [_omniboxContainer insertSubview:_editView belowSubview:_omniboxTapTarget];
   AddSameConstraints(_editView, _omniboxContainer);
+}
+
+- (void)setBottomSheetGrabberVisible:(BOOL)bottomSheetGrabberVisible {
+  _bottomSheetGrabberVisible = bottomSheetGrabberVisible;
+  _bottomSheetGrabber.hidden = !bottomSheetGrabberVisible;
 }
 
 - (void)setMutator:(id<LensResultPageMutator>)mutator {

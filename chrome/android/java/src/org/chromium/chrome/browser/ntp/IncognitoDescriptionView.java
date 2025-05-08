@@ -269,11 +269,34 @@ public class IncognitoDescriptionView extends LinearLayout {
             // Decide the bulletpoints orientation.
             bulletpointsArrangedHorizontally = false;
 
+            // Adjust the horizontal padding for |mContainer| and its children, |mHeader|,
+            // |mSubtitle| and |mBulletpointsContainer| to account for the horizontal offset, when
+            // layout width is small. There should be no additional horizontal padding for these
+            // views when layout width is large.
+            int horizontalOffset =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.md_incognito_ntp_view_horizontal_offset);
+            float pxToDp = 1.f / getContext().getResources().getDisplayMetrics().density;
+            float horizontalOffsetDp = horizontalOffset * pxToDp;
+            paddingHorizontalDp = (int) (paddingHorizontalDp - horizontalOffsetDp);
+
+            mHeader.setPadding(
+                    horizontalOffset,
+                    mHeader.getPaddingTop(),
+                    horizontalOffset,
+                    mHeader.getPaddingBottom());
+
             // The subtitle is sized automatically, but not wider than CONTENT_WIDTH_DP.
             mSubtitle.setLayoutParams(
                     new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT));
+            mSubtitle.setPadding(
+                    horizontalOffset,
+                    mSubtitle.getPaddingTop(),
+                    horizontalOffset,
+                    mSubtitle.getPaddingBottom());
             mSubtitle.setMaxWidth(dpToPx(getContext(), CONTENT_WIDTH_DP));
 
             // The bulletpoints container takes the same width as subtitle. Since the width can
@@ -282,6 +305,11 @@ public class IncognitoDescriptionView extends LinearLayout {
                     dpToPx(
                             getContext(),
                             Math.min(CONTENT_WIDTH_DP, mWidthDp - 2 * paddingHorizontalDp));
+            mBulletpointsContainer.setPadding(
+                    horizontalOffset,
+                    mBulletpointsContainer.getPaddingTop(),
+                    horizontalOffset,
+                    mBulletpointsContainer.getPaddingBottom());
         } else {
             // Large padding.
             paddingHorizontalDp = 0; // Should not be necessary on a screen this large.
@@ -294,10 +322,21 @@ public class IncognitoDescriptionView extends LinearLayout {
             bulletpointsArrangedHorizontally = true;
 
             int contentWidthPx = dpToPx(getContext(), CONTENT_WIDTH_DP);
+
+            // Reset any horizontal padding added to account for the horizontal offset, for
+            // |mHeader|, |mSubtitle| and |mBulletpointsContainer|. This padding should be applied
+            // only for a small-width layout.
+            mHeader.setPadding(0, mHeader.getPaddingTop(), 0, mHeader.getPaddingBottom());
             mSubtitle.setLayoutParams(
                     new LinearLayout.LayoutParams(
                             contentWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
+            mSubtitle.setPadding(0, mSubtitle.getPaddingTop(), 0, mSubtitle.getPaddingBottom());
             mBulletpointsContainer.getLayoutParams().width = contentWidthPx;
+            mBulletpointsContainer.setPadding(
+                    0,
+                    mBulletpointsContainer.getPaddingTop(),
+                    0,
+                    mBulletpointsContainer.getPaddingBottom());
         }
 
         // Apply the bulletpoints orientation.

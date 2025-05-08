@@ -1650,7 +1650,7 @@ INSTANTIATE_TEST_SUITE_P(
 // hasn't finished the find-in-page session to the new document.
 // TODO(crbug.com/40220234): Fix flakiness and reenable the test.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #define MAYBE_NavigateFrameDuringFind DISABLED_NavigateFrameDuringFind
 #else
 #define MAYBE_NavigateFrameDuringFind NavigateFrameDuringFind

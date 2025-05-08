@@ -53,11 +53,11 @@ class SchedulingEmbedder
       PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
+  void ReprioritizeTasks(PassagePriority priority,
+                         const std::set<TaskId>& tasks) override;
   bool TryCancel(TaskId task_id) override;
 
  private:
-  friend class SchedulingEmbedderPublic;
-
   // A job consists of multiple passages, and each passage must have its
   // embedding computed. When all are finished, the job is done and its
   // callback will be invoked. Multiple jobs may be batched together when
@@ -74,15 +74,13 @@ class SchedulingEmbedder
     Job(Job&&);
     Job& operator=(Job&&);
 
-    // Call the callback with status, etc. and record relevant histograms.
-    void Finish(ComputeEmbeddingsStatus status);
-
     // Data for the job is saved from calls to `ComputePassagesEmbeddings`.
     PassagePriority priority;
-    TaskId task_id = kInvalidTaskId;
-    bool in_progress = false;
+    TaskId task_id;
     std::vector<std::string> passages;
     ComputePassagesEmbeddingsCallback callback;
+
+    bool in_progress = false;
 
     // Completed embeddings; may be partial.
     std::vector<Embedding> embeddings;
@@ -116,6 +114,9 @@ class SchedulingEmbedder
 
   // Returns true if currently in a work ready performance scenario state.
   bool IsPerformanceScenarioReady();
+
+  // Call the callback with status, etc. and record relevant histograms.
+  static void FinishJob(Job job, ComputeEmbeddingsStatus status);
 
   // When this is non-empty, the embedder is working and its results will be
   // applied from front to back when `OnEmbeddingsComputed` is called. Not all

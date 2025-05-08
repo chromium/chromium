@@ -50,6 +50,11 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
     virtual void OnInvalidInputEventSource(
         const FrameSinkId& frame_sink_id,
         const base::UnguessableToken& grouping_id) = 0;
+    virtual void RendererInputResponsivenessChanged(
+        const FrameSinkId& frame_sink_id,
+        const base::UnguessableToken& grouping_id,
+        bool is_responsive,
+        std::optional<base::TimeTicks> ack_timeout_ts) = 0;
     virtual std::optional<bool> IsDelegatedInkHovering(
         const FrameSinkId& frame_sink_id) = 0;
     virtual void DidOverscroll(const FrameSinkId& frame_sink_id,
@@ -98,15 +103,17 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
   void OnInputIgnored(const blink::WebInputEvent& event) override {}
   input::StylusInterface* GetStylusInterface() override;
   bool IsHidden() const override;
-  bool IsRendererProcessBlocked() override;
-  void OnInputEventAckTimeout() override {}
-  void RendererIsResponsive() override {}
+  void OnInputEventAckTimeout(base::TimeTicks ack_timeout_ts) override;
+  void RendererIsResponsive() override;
   void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
 
-  void SetIsBlocked(bool blocked) { is_blocked_ = blocked; }
+  void SetIsHidden(bool is_hidden) { is_hidden_ = is_hidden; }
 
  private:
-  bool is_blocked_ = false;
+  // Indicates whether the RenderInputRouter associated with this RIRDelegate is
+  // hidden or not.
+  bool is_hidden_ = true;
+  bool is_responsive_ = true;
   scoped_refptr<input::RenderWidgetHostInputEventRouter> rwhier_;
   raw_ref<Delegate> delegate_;
   const FrameSinkId frame_sink_id_;

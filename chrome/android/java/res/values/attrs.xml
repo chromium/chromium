@@ -26,4 +26,8 @@ found in the LICENSE file.
     <declare-styleable name="HubToolbarView">
         <attr name="newTabButtonStyle" format="reference" />
     </declare-styleable>
+
+     <declare-styleable name="TabGroupColorPickerContainer">
+        <attr name="colorPickerButtonStyle" format="reference" />
+    </declare-styleable>
 </resources>

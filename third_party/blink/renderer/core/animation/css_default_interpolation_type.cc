@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 
 namespace blink {
@@ -39,6 +40,14 @@ InterpolationValue CSSDefaultInterpolationType::MaybeConvertSingle(
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(0),
       MakeGarbageCollected<CSSDefaultNonInterpolableValue>(css_value));
+}
+
+void CSSDefaultInterpolationType::Composite(
+    UnderlyingValueOwner& underlying_value_owner,
+    double underlying_fraction,
+    const InterpolationValue& value,
+    double interpolation_fraction) const {
+  underlying_value_owner.Set(this, value);
 }
 
 void CSSDefaultInterpolationType::Apply(

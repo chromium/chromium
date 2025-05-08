@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -90,7 +91,7 @@ RecentActivityAction GetRecentActivityActionFromCollaborationEvent(
 namespace tab_groups {
 
 class RecentActivityBubbleDialogViewInteractiveUiTest
-    : public InteractiveBrowserTest {
+    : public TabStripInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   RecentActivityBubbleDialogViewInteractiveUiTest() = default;
   ~RecentActivityBubbleDialogViewInteractiveUiTest() override = default;
@@ -131,20 +132,6 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
     http_response->set_code(net::HTTP_OK);
     http_response->set_content(CreateSerializedAvatar());
     return http_response;
-  }
-
-  MultiStep FinishTabstripAnimations() {
-    return Steps(WaitForShow(kTabStripElementId),
-                 WithView(kTabStripElementId, [](TabStrip* tab_strip) {
-                   tab_strip->StopAnimating(true);
-                 }).SetDescription("FinishTabstripAnimation"));
-  }
-
-  MultiStep HoverTabAt(int index) {
-    const char kTabToHover[] = "Tab to hover";
-    return Steps(NameDescendantViewByType<Tab>(kBrowserViewElementId,
-                                               kTabToHover, index),
-                 MoveMouseTo(kTabToHover));
   }
 
   MultiStep WaitForImages(int activity_log_index) {

@@ -127,6 +127,7 @@ static_library("common_lib") {
     "//chrome/common/win:eventlog_messages",
   ]
   sources = [
+    "actor/actor_logging.h",
     "all_messages.h",
     "chrome_content_client.cc",
     "chrome_content_client.h",
@@ -467,7 +468,6 @@ static_library("non_code_constants") {
     "chrome_constants.h",
     "chrome_switches.cc",
     "chrome_switches.h",
-    "env_vars.cc",
     "env_vars.h",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

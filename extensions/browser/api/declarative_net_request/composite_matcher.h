@@ -69,24 +69,24 @@ class CompositeMatcher {
     return host_permissions_always_required_;
   }
 
-  // Returns a pointer to RulesetMatcher with the given |id| if one is present.
+  // Returns a pointer to RulesetMatcher with the given `id` if one is present.
   const RulesetMatcher* GetMatcherWithID(RulesetID id) const;
 
-  // Inserts |matcher|, overwriting any existing RulesetMatcher with the same
+  // Inserts `matcher`, overwriting any existing RulesetMatcher with the same
   // RulesetID.
   void AddOrUpdateRuleset(std::unique_ptr<RulesetMatcher> matcher);
 
-  // Inserts |matchers| overwriting any matchers with the same RulesetID.
+  // Inserts `matchers` overwriting any matchers with the same RulesetID.
   void AddOrUpdateRulesets(CompositeMatcher::MatcherList matchers);
 
   // Erases RulesetMatchers with the given RulesetIDs.
   void RemoveRulesetsWithIDs(const std::set<RulesetID>& ids);
 
   // Computes and returns the set of static RulesetIDs corresponding to
-  // |matchers_|.
+  // `matchers_`.
   std::set<RulesetID> ComputeStaticRulesetIDs() const;
 
-  // Returns a RequestAction for the network request specified by |params|, or
+  // Returns a RequestAction for the network request specified by `params`, or
   // std::nullopt if there is no matching rule.
   ActionInfo GetAction(const RequestParams& params,
                        RulesetMatchingStage stage,
@@ -111,7 +111,7 @@ class CompositeMatcher {
   bool HasRulesets(RulesetMatchingStage stage) const;
 
  private:
-  // This must be called whenever |matchers_| are modified.
+  // This must be called whenever `matchers_` are modified.
   void OnMatchersModified();
 
   bool ComputeHasAnyExtraHeadersMatcher() const;
@@ -119,7 +119,7 @@ class CompositeMatcher {
   // The RulesetMatchers, in an arbitrary order.
   MatcherList matchers_;
 
-  // Denotes the cached return value for |HasAnyExtraHeadersMatcher|. Care must
+  // Denotes the cached return value for `HasAnyExtraHeadersMatcher`. Care must
   // be taken to reset this as this object is modified.
   mutable std::optional<bool> has_any_extra_headers_matcher_;
 

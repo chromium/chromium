@@ -192,8 +192,15 @@ std::u16string GetDisplayPassword(const password_manager::PasswordForm& form) {
 bool IsSyncingAutosignSetting(Profile* profile) {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  return (sync_service &&
-          sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES));
+  return (
+      sync_service &&
+      sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES) &&
+      // With `kSyncSupportAlwaysSyncingPriorityPreferences` feature enabled,
+      // PRIORITY_PREFERENCES will always be active (decoupled from sync user
+      // toggle). Thus, the preferences user toggle should be checked
+      // separately.
+      sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPreferences));
 }
 
 std::string GetGooglePasswordManagerSubPageURLStr() {

@@ -143,6 +143,7 @@ std::string IndexedDBKeyToDebugString(std::string_view key);
 // anyway).
 CONTENT_EXPORT PartitionedLockId
 GetDatabaseLockId(std::u16string database_name);
+// Note: this one is only to be used by the LevelDB backing store.
 CONTENT_EXPORT PartitionedLockId GetObjectStoreLockId(int64_t database_id,
                                                       int64_t object_store_id);
 
@@ -186,7 +187,7 @@ class KeyPrefix {
   static const int64_t kMaxIndexId =
       (1ULL << kMaxIndexIdBits) - 1;  // max signed int32_t
 
-  static const int64_t kInvalidId = -1;
+  CONTENT_EXPORT static const int64_t kInvalidId;
 
   KeyPrefix();
   explicit KeyPrefix(int64_t database_id);

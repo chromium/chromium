@@ -167,10 +167,8 @@ template <>
 struct MEDIA_GPU_EXPORT default_delete<media::ImageProcessorBackend> {
   constexpr default_delete() = default;
 
-  template <
-      typename U,
-      typename = typename std::enable_if<
-          std::is_convertible<U*, media::ImageProcessorBackend*>::value>::type>
+  template <typename U>
+    requires(std::is_convertible_v<U*, media::ImageProcessorBackend*>)
   default_delete(const default_delete<U>& d) {}
 
   void operator()(media::ImageProcessorBackend* ptr) const;

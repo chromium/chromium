@@ -4,6 +4,7 @@
 
 #include "net/base/features.h"
 
+#include <string>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -139,12 +140,6 @@ BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
              "PartitionConnectionsByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPostQuantumKyber,
-             "PostQuantumKyber",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kUseMLKEM, "UseMLKEM", base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSearchEnginePreconnectInterval,
              "SearchEnginePreconnectInterval",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -162,7 +157,7 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kShortSessionThreshold,
                    &kSearchEnginePreconnect2,
-                   "MaxShortSessionThreashold",
+                   "MaxShortSessionThreshold",
                    base::Seconds(30));
 
 extern const base::FeatureParam<int> kMaxPreconnectRetryInterval(
@@ -183,10 +178,6 @@ BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
 BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
              "SameSiteDefaultChecksMethodRigorously",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSchemefulSameSite,
-             "SchemefulSameSite",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLimitOpenUDPSockets,
              "LimitOpenUDPSockets",
@@ -362,10 +353,41 @@ const base::FeatureParam<std::string> kProbabilisticRevealTokenServerPath{
     /*name=*/"ProbabilisticRevealTokenServerPath",
     /*default_value=*/"/v1/issueprts"};
 
+const base::FeatureParam<bool> kBypassProbabilisticRevealTokenRegistry{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"BypassProbabilisticRevealTokenRegistry",
+    /*default_value=*/false};
+
+const base::FeatureParam<bool> kUseCustomProbabilisticRevealTokenRegistry{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"UseCustomProbabilisticRevealTokenRegistry",
+    /*default_value=*/false};
+
+const base::FeatureParam<std::string> kCustomProbabilisticRevealTokenRegistry{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"CustomProbabilisticRevealTokenRegistry",
+    /*default_value=*/""};
+
+const base::FeatureParam<bool> kProbabilisticRevealTokensOnlyInIncognito{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"ProbabilisticRevealTokensOnlyInIncognito",
+    /*default_value=*/false};
+
+const base::FeatureParam<bool> kProbabilisticRevealTokenFetchOnly{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"ProbabilisticRevealTokenFetchOnly",
+    /*default_value=*/false};
+
 const base::FeatureParam<bool>
-    kAttachProbabilisticRevealTokensOnAllProxiedRequests{
+    kEnableProbabilisticRevealTokensForNonProxiedRequests{
         &kEnableProbabilisticRevealTokens,
-        /*name=*/"AttachProbabilisticRevealTokensOnAllProxiedRequests",
+        /*name=*/"EnableProbabilisticRevealTokensForNonProxiedRequests",
+        /*default_value=*/false};
+
+const base::FeatureParam<bool>
+    kProbabilisticRevealTokensAddHeaderToProxiedRequests{
+        &kEnableProbabilisticRevealTokens,
+        /*name=*/"ProbabilisticRevealTokensAddHeaderToProxiedRequests",
         /*default_value=*/false};
 
 // IP protection experiment configuration settings
@@ -610,7 +632,7 @@ BASE_FEATURE(kDeviceBoundSessionsRefreshQuota,
 
 BASE_FEATURE(kPartitionProxyChains,
              "PartitionProxyChains",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              "SpdySessionForProxyAdditionalChecks",
@@ -738,5 +760,9 @@ BASE_FEATURE(kIncludeDeprecatedClientCertLookup,
              "IncludeDeprecatedClientCertLookup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+BASE_FEATURE(kRestrictAbusePorts,
+             "RestrictAbusePorts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace net::features

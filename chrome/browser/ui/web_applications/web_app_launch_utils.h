@@ -13,7 +13,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/stack_allocated.h"
-#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -119,8 +119,7 @@ Browser* CreateWebAppWindowMaybeWithHomeTab(
     const webapps::AppId& app_id,
     const Browser::CreateParams& params);
 
-content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
-                                                NavigateParams& nav_params);
+content::WebContents* NavigateWebAppUsingParams(NavigateParams& nav_params);
 
 // RecordLaunchMetrics methods report UMA metrics. It shouldn't have other
 // side-effects (e.g. updating app launch time).
@@ -149,7 +148,8 @@ void LaunchWebApp(apps::AppLaunchParams params,
 void EnqueueLaunchParams(content::WebContents* contents,
                          const webapps::AppId& app_id,
                          const GURL& url,
-                         bool wait_for_navigation_to_complete);
+                         bool wait_for_navigation_to_complete,
+                         base::TimeTicks time_navigation_started);
 
 // Focus the app container depending on whether the `browser` is an app window
 // or if it is a normal tabbed browser. `browser` shouldn't be a nullptr, and

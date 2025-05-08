@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -456,7 +457,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   }
 
   // Cancel action.
-  provider_->Stop(false, false);
+  provider_->Stop(AutocompleteStopReason::kInteraction);
 
   {
     // Resolve history service.

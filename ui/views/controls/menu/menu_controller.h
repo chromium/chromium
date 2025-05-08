@@ -107,6 +107,12 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
     kTrailing,
   };
 
+  enum class MenuType {
+    kNormal,               // Regular menu
+    kContextMenu,          // Context menu
+    kMenuItemContextMenu,  // Context menu for a menu item
+  };
+
   // Callback that is used to pass events to an "annotation" bubble or widget,
   // such as a help bubble, that floats alongside the menu and acts as part of
   // the menu for event-handling purposes. These require special handling
@@ -138,7 +144,7 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
       const gfx::Rect& anchor_bounds,
       MenuAnchorPosition position,
       ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kNone,
-      bool context_menu = false,
+      MenuType menu_type = MenuType::kNormal,
       bool is_nested_drag = false,
       gfx::NativeView native_view_for_gestures = gfx::NativeView());
 
@@ -375,8 +381,8 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
     // Bounds for the monitor we're showing on.
     gfx::Rect monitor_bounds;
 
-    // Is the current menu a context menu.
-    bool context_menu = false;
+    // Type of the current menu.
+    MenuType menu_type = MenuType::kNormal;
   };
 
   // Sets the selection to |menu_item|. A value of NULL unselects
@@ -407,7 +413,7 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
 
   void UpdateInitialLocation(const gfx::Rect& anchor_bounds,
                              MenuAnchorPosition position,
-                             bool context_menu);
+                             MenuType menu_type);
 
   // Returns the anchor position adjusted for RTL languages. For example,
   // in RTL MenuAnchorPosition::kBubbleLeft is mapped to kBubbleRight.

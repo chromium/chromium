@@ -222,6 +222,12 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP;
             case TabLaunchTypeAtCreation.FROM_BOOKMARK_BAR_BACKGROUND:
                 return TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND;
+            case TabLaunchTypeAtCreation.FROM_HISTORY_NAVIGATION_BACKGROUND:
+                return TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND;
+            case TabLaunchTypeAtCreation.FROM_HISTORY_NAVIGATION_FOREGROUND:
+                return TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND;
+            case TabLaunchTypeAtCreation.FROM_LONGPRESS_FOREGROUND_IN_GROUP:
+                return TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP;
             case TabLaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
             case TabLaunchTypeAtCreation.UNKNOWN:
@@ -294,6 +300,12 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchTypeAtCreation.FROM_BOOKMARK_BAR_BACKGROUND;
             case TabLaunchType.FROM_REPARENTING_BACKGROUND:
                 return TabLaunchTypeAtCreation.FROM_REPARENTING_BACKGROUND;
+            case TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND:
+                return TabLaunchTypeAtCreation.FROM_HISTORY_NAVIGATION_BACKGROUND;
+            case TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND:
+                return TabLaunchTypeAtCreation.FROM_HISTORY_NAVIGATION_FOREGROUND;
+            case TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP:
+                return TabLaunchTypeAtCreation.FROM_LONGPRESS_FOREGROUND_IN_GROUP;
             case TabLaunchType.SIZE:
                 return TabLaunchTypeAtCreation.SIZE;
             default:

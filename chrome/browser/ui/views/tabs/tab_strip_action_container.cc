@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
@@ -47,6 +48,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 namespace {
 
@@ -72,7 +74,11 @@ constexpr char kDeclutterTriggerBucketedCTRName[] =
     "Tab.Organization.Declutter.Trigger.BucketedCTR";
 
 #if BUILDFLAG(ENABLE_GLIC)
-constexpr int kLargeSpaceBetweenButtons = 4;
+constexpr int kLargeSpaceBetweenButtons = 6;
+#if !BUILDFLAG(IS_MAC)
+constexpr int kLargeSpaceBetweenSeparatorRight = 8;
+constexpr int kLargeSpaceBetweenSeparatorLeft = 2;
+#endif  // !BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace
@@ -274,8 +280,32 @@ TabStripActionContainer::TabStripActionContainer(
     glic_button_ = AddChildView(CreateGlicButton(tab_strip_controller));
 
     SetupButtonProperties(glic_button_);
+#if !BUILDFLAG(IS_MAC)
+    std::unique_ptr<views::Separator> separator =
+        std::make_unique<views::Separator>();
+    separator->SetBorderRadius(TabStyle::Get()->GetSeparatorMargins().right());
+    separator->SetPreferredSize(TabStyle::Get()->GetSeparatorSize());
+
+    separator->SetColorId(kColorTabDividerFrameActive);
+
+    gfx::Insets margin;
+    margin.set_left_right(kLargeSpaceBetweenSeparatorLeft,
+                          kLargeSpaceBetweenSeparatorRight);
+
+    separator->SetProperty(views::kMarginsKey, margin);
+
+    subscriptions_.push_back(browser_window_interface->RegisterDidBecomeActive(
+        base::BindRepeating(&TabStripActionContainer::DidBecomeActive,
+                            base::Unretained(this))));
+    subscriptions_.push_back(
+        browser_window_interface->RegisterDidBecomeInactive(
+            base::BindRepeating(&TabStripActionContainer::DidBecomeInactive,
+                                base::Unretained(this))));
+    separator_ = AddChildView(std::move(separator));
+#endif  // !BUILDFLAG(IS_MAC)
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
   auto* const layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->set_main_axis_alignment(
@@ -433,6 +463,7 @@ void TabStripActionContainer::OnGlicButtonClicked() {
   }
 
   ExecuteHideTabStripNudge(glic_button_);
+  glic_button_->SetText(std::u16string());
 }
 
 void TabStripActionContainer::OnGlicButtonDismissed() {
@@ -755,5 +786,30 @@ void TabStripActionContainer::UpdateButtonBorders(
     glic_button_->SetBorder(views::CreateEmptyBorder(glic_border));
   }
 }
+
+void TabStripActionContainer::SetGlicShowState(bool show) {
+  if (glic_button_) {
+    glic_button_->SetVisible(show);
+  }
+  if (separator_) {
+    separator_->SetVisible(show);
+  }
+}
+
+void TabStripActionContainer::SetGlicIcon(const gfx::VectorIcon& icon) {
+  if (glic_button_) {
+    glic_button_->SetVectorIcon(icon);
+  }
+}
+
+void TabStripActionContainer::DidBecomeActive(BrowserWindowInterface* browser) {
+  separator_->SetColorId(kColorTabDividerFrameActive);
+}
+
+void TabStripActionContainer::DidBecomeInactive(
+    BrowserWindowInterface* browser) {
+  separator_->SetColorId(kColorTabDividerFrameInactive);
+}
+
 BEGIN_METADATA(TabStripActionContainer)
 END_METADATA

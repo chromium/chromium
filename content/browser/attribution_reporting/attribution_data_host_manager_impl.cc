@@ -1461,7 +1461,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
 bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
     const blink::AttributionSrcToken& attribution_src_token,
     const net::HttpResponseHeaders* headers,
-    GURL reporting_url) {
+    const GURL& reporting_url) {
   auto reporting_origin = SuitableOrigin::Create(reporting_url);
   CHECK(reporting_origin);
 
@@ -1475,7 +1475,7 @@ bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
   CHECK(!it->registrations_complete());
 
   auto pending_registration_data = PendingRegistrationData::Get(
-      headers, *it, std::move(reporting_url), *std::move(reporting_origin));
+      headers, *it, reporting_url, *std::move(reporting_origin));
 
   if (!pending_registration_data.has_value()) {
     return false;

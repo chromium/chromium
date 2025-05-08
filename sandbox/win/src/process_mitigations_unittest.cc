@@ -517,6 +517,9 @@ SBOX_TESTS_COMMAND int CheckWin10FontLoad(int argc, wchar_t** argv) {
                   ->RevertedToSelf()) {
     // Need to warm up gdi32.dll for the test.
     CHECK(::LoadLibrary(L"gdi32.dll"));
+
+    // Need to warm up random for this test.
+    sandbox::WarmupRandomnessInfrastructure();
     return 0;
   }
 

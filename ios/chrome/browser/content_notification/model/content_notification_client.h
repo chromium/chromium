@@ -10,9 +10,15 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
+class ProfileIOS;
+
 // Client for handling content notifications.
 class ContentNotificationClient : public PushNotificationClient {
  public:
+  // Constructor for when multi-Profile push notification handling is enabled.
+  // Associates this client instance with a specific user `profile`. This should
+  // only be called when `kIOSPushNotificationMultiProfile` is true.
+  explicit ContentNotificationClient(ProfileIOS* profile);
   ContentNotificationClient();
   ~ContentNotificationClient() override;
 

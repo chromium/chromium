@@ -52,6 +52,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 @interface LensOverlayCoordinator ()
 - (BOOL)isUICreated;
+- (BOOL)isLensOverlayVisible;
 @end
 
 namespace {
@@ -100,6 +101,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     base_view_controller_ = [[UIViewController alloc] init];
 
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
 
     // LensOverlayCoordinator
     coordinator_ = [[LensOverlayCoordinator alloc]
@@ -280,7 +282,7 @@ TEST_F(LensOverlayCoordinatorTest, ShouldNotShowTheOverlayWhenUIIsNotCreated) {
   [HandlerForProtocol(dispatcher_, LensOverlayCommands) showLensUI:NO];
 
   // Then nothing should be presented.
-  EXPECT_TRUE(base_view_controller_.presentedViewController == nil);
+  EXPECT_FALSE(coordinator_.isLensOverlayVisible);
 }
 
 // Showing the overlay should present the container view controller.
@@ -289,7 +291,7 @@ TEST_F(LensOverlayCoordinatorTest, ShouldPresentVCOnShowCommandDispatched) {
   [coordinator_ start];
 
   // Before showing anything nothing should appear presented.
-  EXPECT_TRUE(base_view_controller_.presentedViewController == nil);
+  EXPECT_FALSE(coordinator_.isLensOverlayVisible);
 
   // Dispatch the create & show command.
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
@@ -301,7 +303,7 @@ TEST_F(LensOverlayCoordinatorTest, ShouldPresentVCOnShowCommandDispatched) {
   // appear presented.
   EXPECT_TRUE(
       WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
-        return base_view_controller_.presentedViewController != nil;
+        return coordinator_.isLensOverlayVisible;
       }));
 }
 
@@ -320,7 +322,7 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDismissVCOnHideCommandDispatched) {
   // appear presented.
   EXPECT_TRUE(
       WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
-        return base_view_controller_.presentedViewController != nil;
+        return coordinator_.isLensOverlayVisible;
       }));
 
   __block BOOL completion_called = NO;
@@ -332,7 +334,7 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDismissVCOnHideCommandDispatched) {
 
   // The presented view controller is set to `nil` when the dismiss is over.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
-    return base_view_controller_.presentedViewController == nil;
+    return !coordinator_.isLensOverlayVisible;
   }));
 
   // The completion is called.
@@ -360,7 +362,7 @@ TEST_F(LensOverlayCoordinatorTest,
 
   EXPECT_TRUE(
       WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
-        return base_view_controller_.presentedViewController != nil;
+        return coordinator_.isLensOverlayVisible;
       }));
 
   // Then the UI should appear created.
@@ -375,7 +377,7 @@ TEST_F(LensOverlayCoordinatorTest,
                                                               YES;
                                                         }];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
-    return base_view_controller_.presentedViewController == nil;
+    return !coordinator_.isLensOverlayVisible;
   }));
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
@@ -407,7 +409,7 @@ TEST_F(LensOverlayCoordinatorTest,
   run_loop_.Run();
   EXPECT_TRUE(
       WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
-        return base_view_controller_.presentedViewController != nil;
+        return coordinator_.isLensOverlayVisible;
       }));
 
   // Then the UI should appear created and shown to the user.
@@ -442,15 +444,15 @@ TEST_F(LensOverlayCoordinatorTest, ShouldPresentConsentDialog) {
 
   EXPECT_TRUE(
       WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
-        return base_view_controller_.presentedViewController != nil;
+        return coordinator_.isLensOverlayVisible;
       }));
 
   // After the overlay is displayed, wait once more for the constent dialog to
   // be presented.
-  UIViewController* containerVC = base_view_controller_.presentedViewController;
   EXPECT_TRUE(
       WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
-        return [containerVC.presentedViewController
+        return [base_view_controller_.childViewControllers.firstObject
+                    .presentedViewController
             isKindOfClass:[LensOverlayConsentViewController class]];
       }));
 }
@@ -475,7 +477,7 @@ TEST_F(LensOverlayCoordinatorTest, DoesntPromptForConsentWhenAlreadyReceived) {
 
   EXPECT_TRUE(
       WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
-        return base_view_controller_.presentedViewController != nil;
+        return coordinator_.isLensOverlayVisible;
       }));
 
   EXPECT_TRUE([coordinator_ isUICreated]);

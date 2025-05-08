@@ -19,7 +19,8 @@ namespace web {
 class FindInPageManagerImpl : public FindInPageManager,
                               public web::WebStateObserver {
  public:
-  explicit FindInPageManagerImpl(web::WebState* web_state);
+  FindInPageManagerImpl(web::WebState* web_state,
+                        base::TimeDelta poll_active_find_session_delay);
   ~FindInPageManagerImpl() override;
 
   // AbstractFindInPageManager:

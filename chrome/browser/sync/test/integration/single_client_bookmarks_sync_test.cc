@@ -117,21 +117,23 @@ using testing::SizeIs;
 // All tests in this file utilize a single profile.
 // TODO(pvalenzuela): Standardize this pattern by moving this constant to
 // SyncTest and using it in all single client tests.
-const int kSingleProfileIndex = 0;
+constexpr int kSingleProfileIndex = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
 // An arbitrary GUID, to be used for injecting the same bookmark entity to the
 // fake server across PRE_MyTest and MyTest.
-const char kBookmarkGuid[] = "e397ed62-9532-4dbf-ae55-200236eba15c";
+constexpr char kBookmarkGuid[] = "e397ed62-9532-4dbf-ae55-200236eba15c";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // A title and a URL which are used across PRE_MyTest and MyTest.
-const char16_t kBookmarkTitle[] = u"Title";
-const char kBookmarkPageUrl[] = "http://www.foo.com/";
+constexpr char16_t kBookmarkTitle[] = u"Title";
+constexpr char kBookmarkPageUrl[] = "http://www.foo.com/";
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-const char kPreviouslySyncingGaiaIdMetricName[] =
+constexpr char kPreviouslySyncingGaiaIdMetricName[] =
     "Sync.BookmarkModelMerger.PreviouslySyncingGaiaId";
+
+constexpr char kOtherEmail[] = "account2@gmail.com";
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 MATCHER(HasUniquePosition, "") {
@@ -2934,9 +2936,17 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
-                       PRE_PreviouslySyncingGaiaId) {
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, PRE_ComparisonMetrics) {
   base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(SetupClients());
+
+  // Create one URL bookmark under Bookmarks Bar to deal with non-empty
+  // datasets.
+  ASSERT_TRUE(AddURL(kSingleProfileIndex,
+                     GetBookmarkBarNode(kSingleProfileIndex), 0, u"Url1",
+                     GURL("http://www.url1.com")));
+
   ASSERT_TRUE(SetupSync());
   histogram_tester.ExpectUniqueSample(
       kPreviouslySyncingGaiaIdMetricName,
@@ -2946,6 +2956,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   // Turn Sync off by removing the primary account.
   GetClient(kSingleProfileIndex)->SignOutPrimaryAccount();
 
+  // Create a second bookmark, this time under Other Bookmarks.
+  ASSERT_TRUE(AddURL(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0,
+                     u"Url2", GURL("http://www.url2.com")));
+
   // Turn Sync on with the same account.
   ASSERT_TRUE(SetupSync());
   histogram_tester.ExpectBucketCount(
@@ -2953,10 +2967,31 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
       /*sample=*/3 /*kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn*/,
       /*expected_bucket_count=*/1);
 
+  // Sanity-check the existence of a few comparison metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrl",
+      /*sample=*/4 /*kLocalDataIsStrictSubsetOfAccountData*/,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndUuid",
+      /*sample=*/4 /*kLocalDataIsStrictSubsetOfAccountData*/,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndUuid",
+      /*sample=*/3 /*kExactMatchNonEmpty*/,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndUuid.Between1And19LocalUrlBookmarks",
+      /*sample=*/4 /*kLocalDataIsStrictSubsetOfAccountData*/,
+      /*expected_bucket_count=*/1);
+
   // Enable Sync with a different account.
   GetClient(kSingleProfileIndex)->SignOutPrimaryAccount();
-  GetClient(kSingleProfileIndex)
-      ->SetUsernameForFutureSignins("account2@gmail.com");
+  GetClient(kSingleProfileIndex)->SetUsernameForFutureSignins(kOtherEmail);
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->SetupSync());
   histogram_tester.ExpectBucketCount(
       kPreviouslySyncingGaiaIdMetricName,
@@ -2964,7 +2999,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
       /*expected_bucket_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, PreviouslySyncingGaiaId) {
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, ComparisonMetrics) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncSetupCompletion());
@@ -2981,13 +3016,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, PreviouslySyncingGaiaId) {
                          /*types=*/{syncer::UserSelectableType::kBookmarks});
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
 
-  // In this specific scenario, there is not enough information to know what
-  // the previously syncing gaia ID was, because the preference
-  // `prefs::kGoogleServicesLastSyncingGaiaId` was already updated to contain
-  // the current gaia ID upon browser startup.
-  histogram_tester.ExpectUniqueSample(
+  // No metric should be recorded, because this sync the feature was already on
+  // and toggling bookmark sync off and on shouldn't pollute metrics.
+  histogram_tester.ExpectTotalCount(kPreviouslySyncingGaiaIdMetricName, 0);
+
+  // Turn Sync off and on with the same account. Note that `kOtherEmail` needs
+  // to be specified again because it doesn't automatically carry over from the
+  // PRE_ test.
+  GetClient(kSingleProfileIndex)->SignOutPrimaryAccount();
+  GetClient(kSingleProfileIndex)->SetUsernameForFutureSignins(kOtherEmail);
+  ASSERT_TRUE(SetupSync());
+
+  // The histogram should be recorded once again.
+  histogram_tester.ExpectBucketCount(
       kPreviouslySyncingGaiaIdMetricName,
-      /*sample=*/1 /*kNotEnoughInformationToTell*/,
+      /*sample=*/3 /*kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn*/,
       /*expected_bucket_count=*/1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

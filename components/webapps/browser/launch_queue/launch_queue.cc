@@ -11,6 +11,8 @@
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/webapps/browser/launch_queue/launch_queue_delegate.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/navigation_handle.h"
@@ -150,6 +152,12 @@ void LaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
       Reset();
       return;
     }
+
+    // LaunchParams with the `time_navigation_started_for_enqueue` set will be
+    // resent, but the latency metrics should not be measured, so the time is
+    // cleared.
+    last_sent_queued_launch_params_->time_navigation_started_for_enqueue =
+        base::TimeTicks();
     SendLaunchParams(*last_sent_queued_launch_params_, handle->GetURL());
     return;
   }
@@ -197,7 +205,9 @@ void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
 
     launch_service->SetLaunchFiles(entries_builder.Build());
   } else {
-    launch_service->EnqueueLaunchParams(launch_params.target_url);
+    launch_service->EnqueueLaunchParams(
+        launch_params.target_url,
+        launch_params.time_navigation_started_for_enqueue);
   }
 }
 

@@ -480,7 +480,8 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
 
 // Returns a linked BNPL issuer with fake data.
 BnplIssuer GetTestLinkedBnplIssuer(
-    std::string_view issuer_id = kBnplAffirmIssuerId);
+    autofill::BnplIssuer::IssuerId issuer_id =
+        autofill::BnplIssuer::IssuerId::kBnplAffirm);
 
 // Returns an unlinked BNPL issuer with fake data.
 BnplIssuer GetTestUnlinkedBnplIssuer();

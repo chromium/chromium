@@ -148,6 +148,10 @@ class DesktopAndroidExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::WebContents* web_contents) override;
   ExtensionWebContentsObserver* GetExtensionWebContentsObserver(
       content::WebContents* web_contents) override;
+  scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
+      content::BrowserContext* context) override;
+  std::unique_ptr<ScopedExtensionUpdaterKeepAlive> CreateUpdaterKeepAlive(
+      content::BrowserContext* context) override;
   KioskDelegate* GetKioskDelegate() override;
   std::string GetApplicationLocale() override;
 

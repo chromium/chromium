@@ -16,6 +16,8 @@ const char kDatatypeStorageBucketPrefix[] = "\"storage:";
 const char kDatatypeStorageBucketSuffix[] = "\"";
 const char kDatatypeCache[] = "\"cache\"";
 const char kDatatypeClientHints[] = "\"clientHints\"";
+const char kDatatypePrefetchCache[] = "\"prefetchCache\"";
+const char kDatatypePrerenderCache[] = "\"prerenderCache\"";
 
 std::vector<std::string> ClearSiteDataHeaderContents(std::string header) {
   return base::SplitString(header, ",", base::TRIM_WHITESPACE,

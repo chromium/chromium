@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
@@ -11,16 +13,15 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
-#include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace policy {
 
@@ -177,7 +178,7 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   border_->layer()->SetFillsBoundsOpaquely(false);
   auto shadow_border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW);
-  shadow_border->SetCornerRadius(kBubbleCornerRadius);
+  shadow_border->set_rounded_corners(gfx::RoundedCornersF(kBubbleCornerRadius));
   shadow_border->SetColor(SK_ColorTRANSPARENT);
   shadow_border->set_insets(kBubbleBorderInsets);
   border_->SetSize({kBubbleWidth, INT_MAX});

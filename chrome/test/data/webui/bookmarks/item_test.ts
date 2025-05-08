@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 
 import type {BookmarkNode, BookmarksItemElement} from 'chrome://bookmarks/bookmarks.js';
-import {selectItem} from 'chrome://bookmarks/bookmarks.js';
-import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {BrowserProxyImpl, selectItem} from 'chrome://bookmarks/bookmarks.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-item>', function() {
   let item: BookmarksItemElement;
   let store: TestStore;
+  let testBrowserProxy: TestBookmarksBrowserProxy;
 
   setup(function() {
     const nodes = testTree(createFolder('1', [
@@ -24,6 +26,9 @@ suite('<bookmarks-item>', function() {
       folderOpenState: getAllFoldersOpenState(nodes),
     });
     store.replaceSingleton();
+
+    testBrowserProxy = new TestBookmarksBrowserProxy();
+    BrowserProxyImpl.setInstance(testBrowserProxy);
 
     item = document.createElement('bookmarks-item');
     item.itemId = '2';
@@ -87,4 +92,44 @@ suite('<bookmarks-item>', function() {
         document.createElement('bookmarks-command-manager'));
     testEventSelection('dblclick');
   });
+
+  // TODO(crbug.com/413637076): Add tests that icon is only visible when the
+  // bookmark is eligible for upload.
+  test('cloud icon for upload to account storage is visible', async function() {
+    assertFalse(isChildVisible(item, '#account-upload-button'));
+
+    testBrowserProxy.setCanUploadAsAccountBookmark(true);
+    testBrowserProxy.resetResolver('getCanUploadBookmarkToAccountStorage');
+
+    // This triggers an update of the icon's visibility.
+    item.itemId = '3';
+
+    const [idRequested] = await testBrowserProxy.whenCalled(
+        'getCanUploadBookmarkToAccountStorage');
+    assertEquals('3', idRequested);
+    await microtasksFinished();
+
+    assertTrue(isChildVisible(item, '#account-upload-button'));
+  });
+
+  test(
+      'cloud icon for upload to account storage click forwards call',
+      async function() {
+        // Show the cloud upload icon.
+        testBrowserProxy.setCanUploadAsAccountBookmark(true);
+        item.itemId = '3';
+        await microtasksFinished();
+        assertTrue(isChildVisible(item, '#account-upload-button'));
+
+        // Click on the upload icon.
+        const uploadIcon = item.shadowRoot.querySelector<HTMLElement>(
+            '#account-upload-button');
+        assertTrue(!!uploadIcon);
+        uploadIcon.click();
+
+        // The call should be forwarded with the correct id.
+        const [idRequested] =
+            await testBrowserProxy.whenCalled('onSingleBookmarkUploadClicked');
+        assertEquals('3', idRequested);
+      });
 });

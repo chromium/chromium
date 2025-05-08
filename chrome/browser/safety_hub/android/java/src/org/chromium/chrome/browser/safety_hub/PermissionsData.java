@@ -9,9 +9,11 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingsType;
 
 /** Container class needed to pass information from Native to Java and vice versa. */
+@NullMarked
 public class PermissionsData {
     private final String mOrigin;
     private final @ContentSettingsType.EnumType int[] mPermissions;

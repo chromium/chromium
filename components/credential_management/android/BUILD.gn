@@ -17,7 +17,10 @@ static_library("features") {
 
 generate_jni("jni_headers") {
   visibility = [ ":*" ]
-  sources = [ "java/src/org/chromium/components/credential_management/ThirdPartyCredentialManagerBridge.java" ]
+  sources = [
+    "java/src/org/chromium/components/credential_management/PasswordCredentialResponse.java",
+    "java/src/org/chromium/components/credential_management/ThirdPartyCredentialManagerBridge.java",
+  ]
 }
 
 android_library("java") {
@@ -30,7 +33,10 @@ android_library("java") {
   ]
 
   srcjar_deps = [ ":jni_headers" ]
-  sources = [ "java/src/org/chromium/components/credential_management/ThirdPartyCredentialManagerBridge.java" ]
+  sources = [
+    "java/src/org/chromium/components/credential_management/PasswordCredentialResponse.java",
+    "java/src/org/chromium/components/credential_management/ThirdPartyCredentialManagerBridge.java",
+  ]
 
   resources_package = "org.chromium.components.credential_management"
 }
@@ -48,11 +54,23 @@ static_library("browser_sources") {
     "//content/public/browser",
     "//content/public/common",
   ]
+
+  if (is_android) {
+    sources += [
+      "password_credential_response.cc",
+      "password_credential_response.h",
+    ]
+
+    deps += [ "//third_party/jni_zero" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "third_party_credential_manager_bridge_unittest.cc" ]
+  sources = [
+    "third_party_credential_manager_bridge_unittest.cc",
+    "third_party_credential_manager_impl_unittest.cc",
+  ]
   deps = [
     ":browser_sources",
     ":jni_headers",

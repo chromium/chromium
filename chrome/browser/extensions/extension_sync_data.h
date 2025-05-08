@@ -79,7 +79,7 @@ class ExtensionSyncData {
   const std::string& id() const { return id_; }
 
   // Version-independent properties (i.e., used even when the version of the
-  // currently-installed extension doesn't match |version|).
+  // currently-installed extension doesn't match `version`).
   bool uninstalled() const { return uninstalled_; }
   bool enabled() const { return enabled_; }
   void set_enabled(bool enabled) { enabled_ = enabled; }
@@ -91,7 +91,7 @@ class ExtensionSyncData {
   bool remote_install() const { return remote_install_; }
 
   // Version-dependent properties (i.e., should be used only when the
-  // version of the currently-installed extension matches |version|).
+  // version of the currently-installed extension matches `version`).
   const base::Version& version() const { return version_; }
   void set_version(const base::Version& version) { version_ = version; }
   const GURL& update_url() const { return update_url_; }

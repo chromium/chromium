@@ -24,7 +24,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/openscreen_platform/task_runner.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/media_switches.h"
@@ -34,10 +33,9 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/constants.h"
 #include "media/cast/encoding/video_encoder.h"
-#include "media/cast/test/fake_openscreen_clock.h"
 #include "media/cast/test/fake_video_encode_accelerator_factory.h"
-#include "media/cast/test/mock_openscreen_environment.h"
 #include "media/cast/test/mock_video_encoder.h"
+#include "media/cast/test/openscreen_test_helpers.h"
 #include "media/cast/test/test_with_cast_environment.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
@@ -45,11 +43,7 @@
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/openscreen/src/cast/streaming/public/capture_recommendations.h"
-#include "third_party/openscreen/src/cast/streaming/public/environment.h"
 #include "third_party/openscreen/src/cast/streaming/public/sender.h"
-#include "third_party/openscreen/src/cast/streaming/sender_packet_router.h"
-#include "third_party/openscreen/src/platform/api/time.h"
 
 using testing::Contains;
 
@@ -100,8 +94,6 @@ class VideoSenderTest : public ::testing::TestWithParam<bool>,
 
  protected:
   VideoSenderTest() {
-    openscreen_task_runner_ = std::make_unique<openscreen_platform::TaskRunner>(
-        GetMainThreadTaskRunner());
     accelerator_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
         {base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
@@ -111,12 +103,6 @@ class VideoSenderTest : public ::testing::TestWithParam<bool>,
     vea_factory_ = std::make_unique<FakeVideoEncodeAcceleratorFactory>(
         accelerator_task_runner_);
 
-    FakeOpenscreenClock::SetTickClock(GetMockTickClock());
-    mock_openscreen_environment_ = std::make_unique<MockOpenscreenEnvironment>(
-        &FakeOpenscreenClock::now, *openscreen_task_runner_);
-    openscreen_packet_router_ =
-        std::make_unique<openscreen::cast::SenderPacketRouter>(
-            *mock_openscreen_environment_);
     vea_factory_->SetAutoRespond(true);
     last_pixel_value_ = kPixelValue;
     feature_list_.InitWithFeatureState(kCastStreamingMediaVideoEncoder,
@@ -132,7 +118,6 @@ class VideoSenderTest : public ::testing::TestWithParam<bool>,
     // more complex encoder cases, such as VideoEncodeAcceleratorAdapters.
     RunTasksAndAdvanceClock();
     RunTasksAndAdvanceClock();
-    FakeOpenscreenClock::ClearTickClock();
   }
 
   void RunTasksAndAdvanceClock(base::TimeDelta clock_delta = {}) {
@@ -183,14 +168,13 @@ class VideoSenderTest : public ::testing::TestWithParam<bool>,
     FrameSenderConfig video_config = GetDefaultVideoSenderConfig();
     video_config.use_hardware_encoder = encoder_type == EncoderType::kHardware;
 
-    openscreen::cast::SessionConfig openscreen_video_config =
-        ToOpenscreenSessionConfig(video_config, /* is_pli_enabled= */ true);
-
     EXPECT_TRUE(status_changes_.empty());
 
-    auto openscreen_video_sender = std::make_unique<openscreen::cast::Sender>(
-        *mock_openscreen_environment_, *openscreen_packet_router_,
-        openscreen_video_config, openscreen::cast::RtpPayloadType::kVideoVp8);
+    test_senders_ =
+        std::make_unique<OpenscreenTestSenders>(OpenscreenTestSenders::Config(
+            GetMainThreadTaskRunner(), GetMockTickClock(), std::nullopt,
+            openscreen::cast::RtpPayloadType::kVideoVp8, std::nullopt,
+            video_config));
 
     if (encoder_type == EncoderType::kHardware) {
       sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
@@ -228,7 +212,7 @@ class VideoSenderTest : public ::testing::TestWithParam<bool>,
 
     video_sender_ = std::make_unique<VideoSender>(
         std::move(video_encoder), cast_environment(), video_config,
-        std::move(openscreen_video_sender),
+        std::move(test_senders_->video_sender),
         base::BindRepeating(&IgnorePlayoutDelayChanges),
         base::BindRepeating(&VideoSenderTest::HandleVideoCaptureFeedback,
                             base::Unretained(this)),
@@ -266,11 +250,7 @@ class VideoSenderTest : public ::testing::TestWithParam<bool>,
  private:
   scoped_refptr<base::SingleThreadTaskRunner> accelerator_task_runner_;
 
-  // openscreen::Sender related classes.
-  std::unique_ptr<openscreen_platform::TaskRunner> openscreen_task_runner_;
-  std::unique_ptr<MockOpenscreenEnvironment> mock_openscreen_environment_;
-  std::unique_ptr<openscreen::cast::SenderPacketRouter>
-      openscreen_packet_router_;
+  std::unique_ptr<OpenscreenTestSenders> test_senders_;
   std::vector<OperationalStatus> status_changes_;
   std::unique_ptr<FakeVideoEncodeAcceleratorFactory> vea_factory_;
   int last_pixel_value_;

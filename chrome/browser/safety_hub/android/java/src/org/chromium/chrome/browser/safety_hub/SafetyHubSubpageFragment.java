@@ -13,19 +13,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.ui.widget.ButtonCompat;
 
 /* Common ancestor for Safety Hub subpage fragments. */
+@NullMarked
 public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
     private static final String PREF_HEADER = "header";
     private static final String PREF_LIST = "preference_list";
@@ -53,10 +54,9 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
         return mPageTitle;
     }
 
-    @NonNull
     @Override
     public View onCreateView(
-            @NonNull LayoutInflater inflater,
+            LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         LinearLayout view =

@@ -75,6 +75,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 @property(nonatomic, copy) NSString* buttonText;
 @property(nonatomic, strong) UIImage* faviconImage;
 @property(nonatomic, strong) UIImage* iconImage;
+@property(nonatomic, strong) UIView* customView;
 @property(nonatomic, assign) BOOL presentsModal;
 @property(nonatomic, copy) NSString* titleText;
 @property(nonatomic, copy) NSString* subtitleText;
@@ -163,6 +164,9 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   }
   if (self.iconImage) {
     iconContainerView = [self configureIconImageContainer];
+  }
+  if (self.customView) {
+    iconContainerView = [self configureCustomViewContainer];
   }
 
   // Labels setup.
@@ -446,6 +450,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 // Configures and returns the UIView that contains the `faviconImage`.
 - (UIView*)configureFaviconImageContainer {
   DCHECK(!self.iconImage);
+  DCHECK(!self.customView);
 
   UIView* faviconContainerView = [[UIView alloc] init];
   faviconContainerView.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -487,6 +492,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 // Configures and returns the UIView that contains the `iconImage`.
 - (UIView*)configureIconImageContainer {
   DCHECK(!self.faviconImage);
+  DCHECK(!self.customView);
 
   // If the icon image requires a background tint, ignore the original color
   // information and draw the image as a template image.
@@ -530,6 +536,26 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   AddSameCenterConstraints(iconContainerView, iconImageView);
 
   return iconContainerView;
+}
+
+// Configures and returns the UIView that contains the `customView`.
+- (UIView*)configureCustomViewContainer {
+  DCHECK(!self.faviconImage);
+  DCHECK(!self.iconImage);
+
+  _customView.translatesAutoresizingMaskIntoConstraints = NO;
+  _customView.tintColor = self.iconImageTintColor;
+
+  UIView* customContainerView = [[UIView alloc] init];
+  [customContainerView addSubview:_customView];
+  customContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_customView.widthAnchor constraintEqualToConstant:kInfobarBannerIconSize],
+  ]];
+  AddSameCenterConstraints(customContainerView, _customView);
+
+  return customContainerView;
 }
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {

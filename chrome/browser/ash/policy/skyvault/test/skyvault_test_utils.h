@@ -14,7 +14,7 @@
 
 namespace policy::local_user_files {
 namespace {
-constexpr char kEmail[] = "stub-user@example.com";
+inline constexpr char kEmail[] = "stub-user@example.com";
 }
 
 // Matcher for `SetUserDataStorageWriteEnabledRequest`.

@@ -293,7 +293,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       const gfx::ColorSpace& dst_color_space,
       WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback);
 
-  sk_sp<SkData> PaintRenderingResultsToRGBADataArray(SourceDrawingBuffer);
+  scoped_refptr<StaticBitmapImage> GetRGBAUnacceleratedStaticBitmapImage(
+      SourceDrawingBuffer source_buffer);
 
   int SampleCount() const { return sample_count_; }
   bool ExplicitResolveOfMultisampleData() const {

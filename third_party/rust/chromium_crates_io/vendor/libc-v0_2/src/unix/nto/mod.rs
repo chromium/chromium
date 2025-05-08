@@ -114,7 +114,7 @@ s! {
         pub imr_interface: in_addr,
     }
 
-    #[repr(packed)]
+    #[cfg_attr(any(target_env = "nto71", target_env = "nto70"), repr(packed))]
     pub struct in_addr {
         pub s_addr: crate::in_addr_t,
     }
@@ -125,12 +125,22 @@ s! {
         pub sa_data: [c_char; 14],
     }
 
+    #[cfg(not(target_env = "nto71_iosock"))]
     pub struct sockaddr_in {
         pub sin_len: u8,
         pub sin_family: sa_family_t,
         pub sin_port: crate::in_port_t,
         pub sin_addr: crate::in_addr,
         pub sin_zero: [i8; 8],
+    }
+
+    #[cfg(target_env = "nto71_iosock")]
+    pub struct sockaddr_in {
+        pub sin_len: u8,
+        pub sin_family: sa_family_t,
+        pub sin_port: crate::in_port_t,
+        pub sin_addr: crate::in_addr,
+        pub sin_zero: [c_char; 8],
     }
 
     pub struct sockaddr_in6 {
@@ -234,6 +244,8 @@ s! {
         pub _Reserved: [*mut c_char; 8],
     }
 
+    // Does not exist in io-sock
+    #[cfg(not(target_env = "nto71_iosock"))]
     pub struct in_pktinfo {
         pub ipi_addr: crate::in_addr,
         pub ipi_ifindex: c_uint,
@@ -255,7 +267,7 @@ s! {
         pub arp_flags: c_int,
     }
 
-    #[repr(packed)]
+    #[cfg_attr(any(target_env = "nto71", target_env = "nto70"), repr(packed))]
     pub struct arphdr {
         pub ar_hrd: u16,
         pub ar_pro: u16,
@@ -264,9 +276,16 @@ s! {
         pub ar_op: u16,
     }
 
+    #[cfg(not(target_env = "nto71_iosock"))]
     pub struct mmsghdr {
         pub msg_hdr: crate::msghdr,
         pub msg_len: c_uint,
+    }
+
+    #[cfg(target_env = "nto71_iosock")]
+    pub struct mmsghdr {
+        pub msg_hdr: crate::msghdr,
+        pub msg_len: ssize_t,
     }
 
     #[repr(align(8))]
@@ -592,11 +611,18 @@ s! {
         pub bf_insns: *mut crate::bpf_insn,
     }
 
+    #[cfg(not(target_env = "nto71_iosock"))]
     pub struct bpf_stat {
         pub bs_recv: u64,
         pub bs_drop: u64,
         pub bs_capt: u64,
         bs_padding: [u64; 13],
+    }
+
+    #[cfg(target_env = "nto71_iosock")]
+    pub struct bpf_stat {
+        pub bs_recv: c_uint,
+        pub bs_drop: c_uint,
     }
 
     pub struct bpf_version {
@@ -623,6 +649,8 @@ s! {
         pub bfl_list: *mut c_uint,
     }
 
+    // Does not exist in io-sock
+    #[cfg(not(target_env = "nto71_iosock"))]
     pub struct unpcbid {
         pub unp_pid: crate::pid_t,
         pub unp_euid: crate::uid_t,
@@ -723,6 +751,7 @@ s_no_extra_traits! {
         msg_pad4: [c_long; 4],
     }
 
+    #[cfg(not(target_env = "nto71_iosock"))]
     pub struct sockaddr_dl {
         pub sdl_len: c_uchar,
         pub sdl_family: crate::sa_family_t,
@@ -732,6 +761,18 @@ s_no_extra_traits! {
         pub sdl_alen: c_uchar,
         pub sdl_slen: c_uchar,
         pub sdl_data: [c_char; 12],
+    }
+
+    #[cfg(target_env = "nto71_iosock")]
+    pub struct sockaddr_dl {
+        pub sdl_len: c_uchar,
+        pub sdl_family: c_uchar,
+        pub sdl_index: c_ushort,
+        pub sdl_type: c_uchar,
+        pub sdl_nlen: c_uchar,
+        pub sdl_alen: c_uchar,
+        pub sdl_slen: c_uchar,
+        pub sdl_data: [c_char; 46],
     }
 
     pub struct sync_t {
@@ -1232,7 +1273,122 @@ pub const MS_SYNC: c_int = 2;
 
 pub const SCM_RIGHTS: c_int = 0x01;
 pub const SCM_TIMESTAMP: c_int = 0x02;
-pub const SCM_CREDS: c_int = 0x04;
+cfg_if! {
+    if #[cfg(not(target_env = "nto71_iosock"))] {
+        pub const SCM_CREDS: c_int = 0x04;
+        pub const IFF_NOTRAILERS: c_int = 0x00000020;
+        pub const AF_INET6: c_int = 24;
+        pub const AF_BLUETOOTH: c_int = 31;
+        pub const pseudo_AF_KEY: c_int = 29;
+        pub const MSG_NOSIGNAL: c_int = 0x0800;
+        pub const MSG_WAITFORONE: c_int = 0x2000;
+        pub const IP_IPSEC_POLICY_COMPAT: c_int = 22;
+        pub const IP_PKTINFO: c_int = 25;
+        pub const IPPROTO_DIVERT: c_int = 259;
+        pub const IPV6_IPSEC_POLICY_COMPAT: c_int = 28;
+        pub const TCP_KEEPALIVE: c_int = 0x04;
+        pub const ARPHRD_ARCNET: u16 = 7;
+        pub const SO_BINDTODEVICE: c_int = 0x0800;
+        pub const EAI_NODATA: c_int = 7;
+        pub const IPTOS_ECN_NOT_ECT: u8 = 0x00;
+        pub const RTF_BROADCAST: u32 = 0x80000;
+        pub const UDP_ENCAP: c_int = 100;
+        pub const HW_IOSTATS: c_int = 9;
+        pub const HW_MACHINE_ARCH: c_int = 10;
+        pub const HW_ALIGNBYTES: c_int = 11;
+        pub const HW_CNMAGIC: c_int = 12;
+        pub const HW_PHYSMEM64: c_int = 13;
+        pub const HW_USERMEM64: c_int = 14;
+        pub const HW_IOSTATNAMES: c_int = 15;
+        pub const HW_MAXID: c_int = 15;
+        pub const CTL_UNSPEC: c_int = 0;
+        pub const CTL_QNX: c_int = 9;
+        pub const CTL_PROC: c_int = 10;
+        pub const CTL_VENDOR: c_int = 11;
+        pub const CTL_EMUL: c_int = 12;
+        pub const CTL_SECURITY: c_int = 13;
+        pub const CTL_MAXID: c_int = 14;
+        pub const AF_ARP: c_int = 28;
+        pub const AF_IEEE80211: c_int = 32;
+        pub const AF_NATM: c_int = 27;
+        pub const AF_NS: c_int = 6;
+        pub const BIOCGDLTLIST: c_int = -1072676233;
+        pub const BIOCGETIF: c_int = 1083196011;
+        pub const BIOCGSEESENT: c_int = 1074020984;
+        pub const BIOCGSTATS: c_int = 1082147439;
+        pub const BIOCSDLT: c_int = -2147204490;
+        pub const BIOCSETIF: c_int = -2138029460;
+        pub const BIOCSSEESENT: c_int = -2147204487;
+        pub const FIONSPACE: c_int = 1074030200;
+        pub const FIONWRITE: c_int = 1074030201;
+        pub const IFF_ACCEPTRTADV: c_int = 0x40000000;
+        pub const IFF_IP6FORWARDING: c_int = 0x20000000;
+        pub const IFF_SHIM: c_int = 0x80000000;
+        pub const KERN_ARND: c_int = 81;
+        pub const KERN_IOV_MAX: c_int = 38;
+        pub const KERN_LOGSIGEXIT: c_int = 46;
+        pub const KERN_MAXID: c_int = 83;
+        pub const KERN_PROC_ARGS: c_int = 48;
+        pub const KERN_PROC_ENV: c_int = 3;
+        pub const KERN_PROC_GID: c_int = 7;
+        pub const KERN_PROC_RGID: c_int = 8;
+        pub const LOCAL_CONNWAIT: c_int = 0x0002;
+        pub const LOCAL_CREDS: c_int = 0x0001;
+        pub const LOCAL_PEEREID: c_int = 0x0003;
+        pub const MSG_NOTIFICATION: c_int = 0x0400;
+        pub const NET_RT_IFLIST: c_int = 4;
+        pub const NI_NUMERICSCOPE: c_int = 0x00000040;
+        pub const PF_ARP: c_int = 28;
+        pub const PF_NATM: c_int = 27;
+        pub const pseudo_AF_HDRCMPLT: c_int = 30;
+        pub const SIOCGIFADDR: c_int = -1064277727;
+        pub const SO_FIB: c_int = 0x100a;
+        pub const SO_TXPRIO: c_int = 0x100b;
+        pub const SO_SETFIB: c_int = 0x100a;
+        pub const SO_VLANPRIO: c_int = 0x100c;
+        pub const USER_ATEXIT_MAX: c_int = 21;
+        pub const USER_MAXID: c_int = 22;
+        pub const SO_OVERFLOWED: c_int = 0x1009;
+    } else {
+        pub const SCM_CREDS: c_int = 0x03;
+        pub const AF_INET6: c_int = 28;
+        pub const AF_BLUETOOTH: c_int = 36;
+        pub const pseudo_AF_KEY: c_int = 27;
+        pub const MSG_NOSIGNAL: c_int = 0x20000;
+        pub const MSG_WAITFORONE: c_int = 0x00080000;
+        pub const IPPROTO_DIVERT: c_int = 258;
+        pub const RTF_BROADCAST: u32 = 0x400000;
+        pub const UDP_ENCAP: c_int = 1;
+        pub const HW_MACHINE_ARCH: c_int = 11;
+        pub const AF_ARP: c_int = 35;
+        pub const AF_IEEE80211: c_int = 37;
+        pub const AF_NATM: c_int = 29;
+        pub const BIOCGDLTLIST: c_ulong = 0xffffffffc0104279;
+        pub const BIOCGETIF: c_int = 0x4020426b;
+        pub const BIOCGSEESENT: c_int = 0x40044276;
+        pub const BIOCGSTATS: c_int = 0x4008426f;
+        pub const BIOCSDLT: c_int = 0x80044278;
+        pub const BIOCSETIF: c_int = 0x8020426c;
+        pub const BIOCSSEESENT: c_int = 0x80044277;
+        pub const KERN_ARND: c_int = 37;
+        pub const KERN_IOV_MAX: c_int = 35;
+        pub const KERN_LOGSIGEXIT: c_int = 34;
+        pub const KERN_PROC_ARGS: c_int = 7;
+        pub const KERN_PROC_ENV: c_int = 35;
+        pub const KERN_PROC_GID: c_int = 11;
+        pub const KERN_PROC_RGID: c_int = 10;
+        pub const LOCAL_CONNWAIT: c_int = 4;
+        pub const LOCAL_CREDS: c_int = 2;
+        pub const MSG_NOTIFICATION: c_int = 0x00002000;
+        pub const NET_RT_IFLIST: c_int = 3;
+        pub const NI_NUMERICSCOPE: c_int = 0x00000020;
+        pub const PF_ARP: c_int = AF_ARP;
+        pub const PF_NATM: c_int = AF_NATM;
+        pub const pseudo_AF_HDRCMPLT: c_int = 31;
+        pub const SIOCGIFADDR: c_int = 0xc0206921;
+        pub const SO_SETFIB: c_int = 0x1014;
+    }
+}
 
 pub const MAP_TYPE: c_int = 0x3;
 
@@ -1241,7 +1397,6 @@ pub const IFF_BROADCAST: c_int = 0x00000002;
 pub const IFF_DEBUG: c_int = 0x00000004;
 pub const IFF_LOOPBACK: c_int = 0x00000008;
 pub const IFF_POINTOPOINT: c_int = 0x00000010;
-pub const IFF_NOTRAILERS: c_int = 0x00000020;
 pub const IFF_RUNNING: c_int = 0x00000040;
 pub const IFF_NOARP: c_int = 0x00000080;
 pub const IFF_PROMISC: c_int = 0x00000100;
@@ -1254,10 +1409,9 @@ pub const AF_LOCAL: c_int = 1;
 pub const AF_INET: c_int = 2;
 pub const AF_IPX: c_int = 23;
 pub const AF_APPLETALK: c_int = 16;
-pub const AF_INET6: c_int = 24;
 pub const AF_ROUTE: c_int = 17;
 pub const AF_SNA: c_int = 11;
-pub const AF_BLUETOOTH: c_int = 31;
+
 pub const AF_ISDN: c_int = 26;
 
 pub const PF_UNSPEC: c_int = AF_UNSPEC;
@@ -1267,7 +1421,6 @@ pub const PF_INET: c_int = AF_INET;
 pub const PF_IPX: c_int = AF_IPX;
 pub const PF_APPLETALK: c_int = AF_APPLETALK;
 pub const PF_INET6: c_int = AF_INET6;
-pub const pseudo_AF_KEY: c_int = 29;
 pub const PF_KEY: c_int = pseudo_AF_KEY;
 pub const PF_ROUTE: c_int = AF_ROUTE;
 pub const PF_SNA: c_int = AF_SNA;
@@ -1285,8 +1438,6 @@ pub const MSG_TRUNC: c_int = 0x0010;
 pub const MSG_DONTWAIT: c_int = 0x0080;
 pub const MSG_EOR: c_int = 0x0008;
 pub const MSG_WAITALL: c_int = 0x0040;
-pub const MSG_NOSIGNAL: c_int = 0x0800;
-pub const MSG_WAITFORONE: c_int = 0x2000;
 
 pub const IP_TOS: c_int = 3;
 pub const IP_TTL: c_int = 4;
@@ -1294,8 +1445,6 @@ pub const IP_HDRINCL: c_int = 2;
 pub const IP_OPTIONS: c_int = 1;
 pub const IP_RECVOPTS: c_int = 5;
 pub const IP_RETOPTS: c_int = 8;
-pub const IP_PKTINFO: c_int = 25;
-pub const IP_IPSEC_POLICY_COMPAT: c_int = 22;
 pub const IP_MULTICAST_IF: c_int = 9;
 pub const IP_MULTICAST_TTL: c_int = 10;
 pub const IP_MULTICAST_LOOP: c_int = 11;
@@ -1325,7 +1474,6 @@ pub const IPPROTO_SCTP: c_int = 132;
 pub const IPPROTO_RAW: c_int = 255;
 pub const IPPROTO_MAX: c_int = 256;
 pub const IPPROTO_CARP: c_int = 112;
-pub const IPPROTO_DIVERT: c_int = 259;
 pub const IPPROTO_DONE: c_int = 257;
 pub const IPPROTO_EON: c_int = 80;
 pub const IPPROTO_ETHERIP: c_int = 97;
@@ -1343,7 +1491,6 @@ pub const IPV6_JOIN_GROUP: c_int = 12;
 pub const IPV6_LEAVE_GROUP: c_int = 13;
 pub const IPV6_CHECKSUM: c_int = 26;
 pub const IPV6_V6ONLY: c_int = 27;
-pub const IPV6_IPSEC_POLICY_COMPAT: c_int = 28;
 pub const IPV6_RTHDRDSTOPTS: c_int = 35;
 pub const IPV6_RECVPKTINFO: c_int = 36;
 pub const IPV6_RECVHOPLIMIT: c_int = 37;
@@ -1364,7 +1511,6 @@ pub const IPV6_DONTFRAG: c_int = 62;
 pub const TCP_NODELAY: c_int = 0x01;
 pub const TCP_MAXSEG: c_int = 0x02;
 pub const TCP_MD5SIG: c_int = 0x10;
-pub const TCP_KEEPALIVE: c_int = 0x04;
 
 pub const SHUT_RD: c_int = 0;
 pub const SHUT_WR: c_int = 1;
@@ -1514,7 +1660,6 @@ pub const MAXTTL: u8 = 255;
 
 pub const ARPHRD_ETHER: u16 = 1;
 pub const ARPHRD_IEEE802: u16 = 6;
-pub const ARPHRD_ARCNET: u16 = 7;
 pub const ARPHRD_IEEE1394: u16 = 24;
 
 pub const SOL_SOCKET: c_int = 0xffff;
@@ -1535,7 +1680,6 @@ pub const SO_RCVLOWAT: c_int = 0x1004;
 pub const SO_SNDLOWAT: c_int = 0x1003;
 pub const SO_RCVTIMEO: c_int = 0x1006;
 pub const SO_SNDTIMEO: c_int = 0x1005;
-pub const SO_BINDTODEVICE: c_int = 0x0800;
 pub const SO_TIMESTAMP: c_int = 0x0400;
 pub const SO_ACCEPTCONN: c_int = 0x0002;
 
@@ -1581,7 +1725,6 @@ pub const EAI_BADFLAGS: c_int = 3;
 pub const EAI_NONAME: c_int = 8;
 pub const EAI_AGAIN: c_int = 2;
 pub const EAI_FAIL: c_int = 4;
-pub const EAI_NODATA: c_int = 7;
 pub const EAI_FAMILY: c_int = 5;
 pub const EAI_SOCKTYPE: c_int = 10;
 pub const EAI_SERVICE: c_int = 9;
@@ -1616,8 +1759,6 @@ pub const POSIX_SPAWN_SETSIGMASK: c_int = 0x00000002;
 pub const POSIX_SPAWN_SETSCHEDPARAM: c_int = 0x00000400;
 pub const POSIX_SPAWN_SETSCHEDULER: c_int = 0x00000040;
 
-pub const IPTOS_ECN_NOT_ECT: u8 = 0x00;
-
 pub const RTF_UP: c_ushort = 0x0001;
 pub const RTF_GATEWAY: c_ushort = 0x0002;
 
@@ -1627,13 +1768,10 @@ pub const RTF_MODIFIED: c_ushort = 0x0020;
 pub const RTF_REJECT: c_ushort = 0x0008;
 pub const RTF_STATIC: c_ushort = 0x0800;
 pub const RTF_XRESOLVE: c_ushort = 0x0200;
-pub const RTF_BROADCAST: u32 = 0x80000;
 pub const RTM_NEWADDR: u16 = 0xc;
 pub const RTM_DELADDR: u16 = 0xd;
 pub const RTA_DST: c_ushort = 0x1;
 pub const RTA_GATEWAY: c_ushort = 0x2;
-
-pub const UDP_ENCAP: c_int = 100;
 
 pub const IN_ACCESS: u32 = 0x00000001;
 pub const IN_MODIFY: u32 = 0x00000002;
@@ -2268,16 +2406,6 @@ pub const HW_PHYSMEM: c_int = 5;
 pub const HW_USERMEM: c_int = 6;
 pub const HW_PAGESIZE: c_int = 7;
 pub const HW_DISKNAMES: c_int = 8;
-pub const HW_IOSTATS: c_int = 9;
-pub const HW_MACHINE_ARCH: c_int = 10;
-pub const HW_ALIGNBYTES: c_int = 11;
-pub const HW_CNMAGIC: c_int = 12;
-pub const HW_PHYSMEM64: c_int = 13;
-pub const HW_USERMEM64: c_int = 14;
-pub const HW_IOSTATNAMES: c_int = 15;
-pub const HW_MAXID: c_int = 15;
-
-pub const CTL_UNSPEC: c_int = 0;
 pub const CTL_KERN: c_int = 1;
 pub const CTL_VM: c_int = 2;
 pub const CTL_VFS: c_int = 3;
@@ -2286,12 +2414,6 @@ pub const CTL_DEBUG: c_int = 5;
 pub const CTL_HW: c_int = 6;
 pub const CTL_MACHDEP: c_int = 7;
 pub const CTL_USER: c_int = 8;
-pub const CTL_QNX: c_int = 9;
-pub const CTL_PROC: c_int = 10;
-pub const CTL_VENDOR: c_int = 11;
-pub const CTL_EMUL: c_int = 12;
-pub const CTL_SECURITY: c_int = 13;
-pub const CTL_MAXID: c_int = 14;
 
 pub const DAY_1: crate::nl_item = 8;
 pub const DAY_2: crate::nl_item = 9;
@@ -2335,7 +2457,6 @@ pub const ABMON_10: crate::nl_item = 43;
 pub const ABMON_11: crate::nl_item = 44;
 pub const ABMON_12: crate::nl_item = 45;
 
-pub const AF_ARP: c_int = 28;
 pub const AF_CCITT: c_int = 10;
 pub const AF_CHAOS: c_int = 5;
 pub const AF_CNT: c_int = 21;
@@ -2346,13 +2467,10 @@ pub const AF_DLI: c_int = 13;
 pub const AF_E164: c_int = 26;
 pub const AF_ECMA: c_int = 8;
 pub const AF_HYLINK: c_int = 15;
-pub const AF_IEEE80211: c_int = 32;
 pub const AF_IMPLINK: c_int = 3;
 pub const AF_ISO: c_int = 7;
 pub const AF_LAT: c_int = 14;
 pub const AF_LINK: c_int = 18;
-pub const AF_NATM: c_int = 27;
-pub const AF_NS: c_int = 6;
 pub const AF_OSI: c_int = 7;
 pub const AF_PUP: c_int = 4;
 pub const ALT_DIGITS: crate::nl_item = 50;
@@ -2362,21 +2480,14 @@ pub const B76800: crate::speed_t = 76800;
 pub const BIOCFLUSH: c_int = 17000;
 pub const BIOCGBLEN: c_int = 1074020966;
 pub const BIOCGDLT: c_int = 1074020970;
-pub const BIOCGDLTLIST: c_int = -1072676233;
-pub const BIOCGETIF: c_int = 1083196011;
 pub const BIOCGHDRCMPLT: c_int = 1074020980;
 pub const BIOCGRTIMEOUT: c_int = 1074807406;
-pub const BIOCGSEESENT: c_int = 1074020984;
-pub const BIOCGSTATS: c_int = 1082147439;
 pub const BIOCIMMEDIATE: c_int = -2147204496;
 pub const BIOCPROMISC: c_int = 17001;
 pub const BIOCSBLEN: c_int = -1073462682;
-pub const BIOCSDLT: c_int = -2147204490;
 pub const BIOCSETF: c_int = -2146418073;
-pub const BIOCSETIF: c_int = -2138029460;
 pub const BIOCSHDRCMPLT: c_int = -2147204491;
 pub const BIOCSRTIMEOUT: c_int = -2146418067;
-pub const BIOCSSEESENT: c_int = -2147204487;
 pub const BIOCVERSION: c_int = 1074020977;
 
 pub const BPF_ALIGNMENT: usize = mem::size_of::<c_long>();
@@ -2412,18 +2523,13 @@ pub const FIOCLEX: c_int = 26113;
 pub const FIOGETOWN: c_int = 1074030203;
 pub const FIONCLEX: c_int = 26114;
 pub const FIONREAD: c_int = 1074030207;
-pub const FIONSPACE: c_int = 1074030200;
-pub const FIONWRITE: c_int = 1074030201;
 pub const FIOSETOWN: c_int = -2147195268;
 
 pub const F_SETOWN: c_int = 36;
-pub const IFF_ACCEPTRTADV: c_int = 0x40000000;
-pub const IFF_IP6FORWARDING: c_int = 0x20000000;
 pub const IFF_LINK0: c_int = 0x00001000;
 pub const IFF_LINK1: c_int = 0x00002000;
 pub const IFF_LINK2: c_int = 0x00004000;
 pub const IFF_OACTIVE: c_int = 0x00000400;
-pub const IFF_SHIM: c_int = 0x80000000;
 pub const IFF_SIMPLEX: c_int = 0x00000800;
 pub const IHFLOW: tcflag_t = 0x00000001;
 pub const IIDLE: tcflag_t = 0x00000008;
@@ -2434,17 +2540,13 @@ pub const IUCLC: tcflag_t = 0x00000200;
 pub const IUTF8: tcflag_t = 0x0004000;
 
 pub const KERN_ARGMAX: c_int = 8;
-pub const KERN_ARND: c_int = 81;
 pub const KERN_BOOTTIME: c_int = 21;
 pub const KERN_CLOCKRATE: c_int = 12;
 pub const KERN_FILE: c_int = 15;
 pub const KERN_HOSTID: c_int = 11;
 pub const KERN_HOSTNAME: c_int = 10;
-pub const KERN_IOV_MAX: c_int = 38;
 pub const KERN_JOB_CONTROL: c_int = 19;
-pub const KERN_LOGSIGEXIT: c_int = 46;
 pub const KERN_MAXFILES: c_int = 7;
-pub const KERN_MAXID: c_int = 83;
 pub const KERN_MAXPROC: c_int = 6;
 pub const KERN_MAXVNODES: c_int = 5;
 pub const KERN_NGROUPS: c_int = 18;
@@ -2454,12 +2556,8 @@ pub const KERN_OSTYPE: c_int = 1;
 pub const KERN_POSIX1: c_int = 17;
 pub const KERN_PROC: c_int = 14;
 pub const KERN_PROC_ALL: c_int = 0;
-pub const KERN_PROC_ARGS: c_int = 48;
-pub const KERN_PROC_ENV: c_int = 3;
-pub const KERN_PROC_GID: c_int = 7;
 pub const KERN_PROC_PGRP: c_int = 2;
 pub const KERN_PROC_PID: c_int = 1;
-pub const KERN_PROC_RGID: c_int = 8;
 pub const KERN_PROC_RUID: c_int = 6;
 pub const KERN_PROC_SESSION: c_int = 3;
 pub const KERN_PROC_TTY: c_int = 4;
@@ -2478,25 +2576,16 @@ pub const LC_MONETARY: c_int = 4;
 pub const LC_NUMERIC: c_int = 8;
 pub const LC_TIME: c_int = 16;
 
-pub const LOCAL_CONNWAIT: c_int = 0x0002;
-pub const LOCAL_CREDS: c_int = 0x0001;
-pub const LOCAL_PEEREID: c_int = 0x0003;
-
 pub const MAP_STACK: c_int = 0x00001000;
 pub const MNT_NOEXEC: c_int = 0x02;
 pub const MNT_NOSUID: c_int = 0x04;
 pub const MNT_RDONLY: c_int = 0x01;
 
-pub const MSG_NOTIFICATION: c_int = 0x0400;
-
 pub const NET_RT_DUMP: c_int = 1;
 pub const NET_RT_FLAGS: c_int = 2;
-pub const NET_RT_IFLIST: c_int = 4;
-pub const NI_NUMERICSCOPE: c_int = 0x00000040;
 pub const OHFLOW: tcflag_t = 0x00000002;
 pub const P_ALL: idtype_t = 0;
 pub const PARSTK: tcflag_t = 0x00000004;
-pub const PF_ARP: c_int = 28;
 pub const PF_CCITT: c_int = 10;
 pub const PF_CHAOS: c_int = 5;
 pub const PF_CNT: c_int = 21;
@@ -2510,7 +2599,6 @@ pub const PF_IMPLINK: c_int = 3;
 pub const PF_ISO: c_int = 7;
 pub const PF_LAT: c_int = 14;
 pub const PF_LINK: c_int = 18;
-pub const PF_NATM: c_int = 27;
 pub const PF_OSI: c_int = 7;
 pub const PF_PIP: c_int = 25;
 pub const PF_PUP: c_int = 4;
@@ -2528,7 +2616,6 @@ pub const P_PID: idtype_t = 1;
 pub const PRIO_PGRP: c_int = 1;
 pub const PRIO_PROCESS: c_int = 0;
 pub const PRIO_USER: c_int = 2;
-pub const pseudo_AF_HDRCMPLT: c_int = 30;
 pub const pseudo_AF_PIP: c_int = 25;
 pub const pseudo_AF_RTIP: c_int = 22;
 pub const pseudo_AF_XTP: c_int = 19;
@@ -2573,13 +2660,7 @@ pub const SIGEMT: c_int = 7;
 pub const SIGEV_NONE: c_int = 0;
 pub const SIGEV_SIGNAL: c_int = 129;
 pub const SIGEV_THREAD: c_int = 135;
-pub const SIOCGIFADDR: c_int = -1064277727;
-pub const SO_FIB: c_int = 0x100a;
-pub const SO_OVERFLOWED: c_int = 0x1009;
-pub const SO_SETFIB: c_int = 0x100a;
-pub const SO_TXPRIO: c_int = 0x100b;
 pub const SO_USELOOPBACK: c_int = 0x0040;
-pub const SO_VLANPRIO: c_int = 0x100c;
 pub const _SS_ALIGNSIZE: usize = mem::size_of::<i64>();
 pub const _SS_MAXSIZE: usize = 128;
 pub const _SS_PAD1SIZE: usize = _SS_ALIGNSIZE - 2;
@@ -2649,8 +2730,6 @@ pub const USER_POSIX2_SW_DEV: c_int = 17;
 pub const USER_POSIX2_UPE: c_int = 18;
 pub const USER_STREAM_MAX: c_int = 19;
 pub const USER_TZNAME_MAX: c_int = 20;
-pub const USER_ATEXIT_MAX: c_int = 21;
-pub const USER_MAXID: c_int = 22;
 
 pub const VDOWN: usize = 31;
 pub const VINS: usize = 32;
@@ -2853,6 +2932,42 @@ safe_f! {
 
     pub {const} fn minor(dev: crate::dev_t) -> c_uint {
         (dev as c_uint) & 0x3ff
+    }
+}
+
+cfg_if! {
+    if #[cfg(not(target_env = "nto71_iosock"))] {
+        extern "C" {
+            pub fn sendmmsg(
+                sockfd: c_int,
+                msgvec: *mut crate::mmsghdr,
+                vlen: c_uint,
+                flags: c_uint,
+            ) -> c_int;
+            pub fn recvmmsg(
+                sockfd: c_int,
+                msgvec: *mut crate::mmsghdr,
+                vlen: c_uint,
+                flags: c_uint,
+                timeout: *mut crate::timespec,
+            ) -> c_int;
+        }
+    } else {
+        extern "C" {
+            pub fn sendmmsg(
+                sockfd: c_int,
+                msgvec: *mut crate::mmsghdr,
+                vlen: size_t,
+                flags: c_int,
+            ) -> ssize_t;
+            pub fn recvmmsg(
+                sockfd: c_int,
+                msgvec: *mut crate::mmsghdr,
+                vlen: size_t,
+                flags: c_int,
+                timeout: *const crate::timespec,
+            ) -> ssize_t;
+        }
     }
 }
 
@@ -3275,20 +3390,6 @@ extern "C" {
         serv: *mut c_char,
         servlen: crate::socklen_t,
         flags: c_int,
-    ) -> c_int;
-
-    pub fn sendmmsg(
-        sockfd: c_int,
-        msgvec: *mut crate::mmsghdr,
-        vlen: c_uint,
-        flags: c_uint,
-    ) -> c_int;
-    pub fn recvmmsg(
-        sockfd: c_int,
-        msgvec: *mut crate::mmsghdr,
-        vlen: c_uint,
-        flags: c_uint,
-        timeout: *mut crate::timespec,
     ) -> c_int;
 
     pub fn mallopt(param: c_int, value: i64) -> c_int;

@@ -136,7 +136,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   base::TimeDelta GetPreferredFrameInterval(
       mojom::CompositorFrameSinkType* type) const;
   void InitializeCompositorFrameSinkType(mojom::CompositorFrameSinkType type);
-  void BindLayerContext(mojom::PendingLayerContext& context);
+  void BindLayerContext(mojom::PendingLayerContext& context,
+                        bool draw_mode_is_gpu);
   void SetThreads(bool from_untrusted_client,
                   std::vector<Thread> unverified_threads);
 

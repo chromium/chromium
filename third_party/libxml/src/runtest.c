@@ -52,8 +52,11 @@
 #endif
 #endif
 
-#ifdef LIBXML_SCHEMAS_ENABLED
+#ifdef LIBXML_RELAXNG_ENABLED
 #include <libxml/relaxng.h>
+#endif
+
+#ifdef LIBXML_SCHEMAS_ENABLED
 #include <libxml/xmlschemas.h>
 #include <libxml/xmlschemastypes.h>
 #endif
@@ -313,9 +316,11 @@ initializeLibxml2(void) {
 #endif
     xmlInitializeCatalog();
 #endif
+#ifdef LIBXML_RELAXNG_ENABLED
+    xmlRelaxNGInitTypes();
+#endif
 #ifdef LIBXML_SCHEMAS_ENABLED
     xmlSchemaInitTypes();
-    xmlRelaxNGInitTypes();
 #endif
 }
 
@@ -1797,6 +1802,8 @@ htmlTokenizerTest(const char *filename, const char *result,
         config.startTag = BAD_CAST startTag;
         config.inCharacters = 0;
         ctxt->_private = &config;
+        /* Skip charset auto-detection */
+        ctxt->instate = XML_PARSER_XML_DECL;
         htmlCtxtUseOptions(ctxt, options | HTML_PARSE_HTML5);
         htmlParseChunk(ctxt, data, size, 1);
         htmlFreeParserCtxt(ctxt);
@@ -2254,9 +2261,13 @@ pushBoundaryTest(const char *filename, const char *result,
                 if ((options & XML_PARSE_HTML) &&
                     (ctxt->endCheckState)) {
                     max = strlen((const char *) ctxt->name) + 2;
+                } else if (c == '&') {
+                    max = (options & XML_PARSE_HTML) ? 32 : 1;
+                } else if (c == '<') {
+                    max = 1;
                 } else {
                     /* 3 bytes for partial UTF-8 */
-                    max = ((c == '<') || (c == '&')) ? 1 : 3;
+                    max = 3;
                 }
             } else if (ctxt->instate == XML_PARSER_CDATA_SECTION) {
                 /* 2 bytes for terminator, 3 bytes for UTF-8 */
@@ -2726,7 +2737,7 @@ streamProcessTest(const char *filename, const char *result, const char *err,
 	    return(-1);
 	}
     }
-#ifdef LIBXML_SCHEMAS_ENABLED
+#ifdef LIBXML_RELAXNG_ENABLED
     if (rng != NULL) {
 	ret = xmlTextReaderRelaxNGValidate(reader, rng);
 	if (ret < 0) {
@@ -3521,12 +3532,13 @@ uriPathTest(const char *filename ATTRIBUTE_UNUSED,
     return(failures);
 }
 
-#ifdef LIBXML_SCHEMAS_ENABLED
 /************************************************************************
  *									*
  *			Schemas tests					*
  *									*
  ************************************************************************/
+
+#ifdef LIBXML_SCHEMAS_ENABLED
 static int
 schemasOneTest(const char *sch,
                const char *filename,
@@ -3681,12 +3693,15 @@ schemasTest(const char *filename,
 
     return(res);
 }
+#endif /* LIBXML_SCHEMAS_ENABLED */
 
 /************************************************************************
  *									*
- *			Schemas tests					*
+ *			RELAX NG tests					*
  *									*
  ************************************************************************/
+
+#ifdef LIBXML_RELAXNG_ENABLED
 static int
 rngOneTest(const char *sch,
                const char *filename,
@@ -3909,7 +3924,7 @@ rngStreamTest(const char *filename,
 }
 #endif /* READER */
 
-#endif
+#endif /* LIBXML_RELAX_ENABLED */
 
 /************************************************************************
  *									*
@@ -5266,6 +5281,8 @@ testDesc testDescriptions[] = {
     { "Schemas regression tests" ,
       schemasTest, "./test/schemas/*_*.xsd", NULL, NULL, NULL,
       0 },
+#endif
+#ifdef LIBXML_RELAXNG_ENABLED
     { "Relax-NG regression tests" ,
       rngTest, "./test/relaxng/*.rng", NULL, NULL, NULL,
       XML_PARSE_DTDATTR | XML_PARSE_NOENT },

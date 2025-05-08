@@ -15,11 +15,7 @@
 #endif  // defined(KEYED_SERVICE_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(KEYED_SERVICE_IMPLEMENTATION)
 #define KEYED_SERVICE_EXPORT __attribute__((visibility("default")))
-#else
-#define KEYED_SERVICE_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

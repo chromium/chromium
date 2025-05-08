@@ -81,6 +81,7 @@ action("remoting_me2me_host_deb_installer") {
     "$root_out_dir/remote_assistance_host",
     "$root_out_dir/remote_open_url",
     "$root_out_dir/remote_webauthn",
+    "$root_out_dir/remoting_crashpad_handler",
     "$root_out_dir/remoting_me2me_host",
     "$root_out_dir/remoting_native_messaging_host",
     "$root_out_dir/remoting_start_host",
@@ -92,12 +93,6 @@ action("remoting_me2me_host_deb_installer") {
     "$root_out_dir/remoting/com.google.chrome.remote_webauthn.json",
     "$root_out_dir/remoting/crd-url-forwarder.desktop",
   ]
-
-  if (enable_chromoting_crashpad) {
-    inputs += [ "$root_out_dir/remoting_crashpad_handler" ]
-  } else {
-    inputs += [ "$root_out_dir/remoting_crash_uploader" ]
-  }
 
   inputs += process_file_template(
           remoting_locales,
@@ -111,12 +106,6 @@ action("remoting_me2me_host_deb_installer") {
     "-o",
     ".",
   ]
-  if (enable_chromoting_crashpad) {
-    args += [
-      "-O",
-      "enable_chromoting_crashpad",
-    ]
-  }
   inputs += [ "//remoting/host/installer/linux/chrome-remote-desktop@.service" ]
 
   deps = [

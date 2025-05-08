@@ -13,7 +13,12 @@ import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy
 export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
     LensSidePanelPageHandlerInterface {
   constructor() {
-    super(['popAndLoadQueryFromHistory', 'getIsContextualSearchbox']);
+    super([
+      'popAndLoadQueryFromHistory',
+      'getIsContextualSearchbox',
+      'onScrollToMessage',
+      'requestSendFeedback',
+    ]);
   }
 
   popAndLoadQueryFromHistory() {
@@ -23,6 +28,18 @@ export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
   getIsContextualSearchbox(): Promise<{isContextualSearchbox: boolean}> {
     this.methodCalled('getIsContextualSearchbox');
     return Promise.resolve({isContextualSearchbox: false});
+  }
+
+  onScrollToMessage(textFragments: string[], pdfPageNumber: number) {
+    this.methodCalled(
+        'onScrollToMessage',
+        textFragments,
+        pdfPageNumber,
+    );
+  }
+
+  requestSendFeedback() {
+    this.methodCalled('requestSendFeedback');
   }
 }
 

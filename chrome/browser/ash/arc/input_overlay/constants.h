@@ -10,15 +10,15 @@
 namespace arc::input_overlay {
 
 // About Json strings.
-constexpr char kMouseAction[] = "mouse_action";
-constexpr char kPrimaryClick[] = "primary_click";
-constexpr char kSecondaryClick[] = "secondary_click";
-constexpr char kHoverMove[] = "hover_move";
-constexpr char kPrimaryDragMove[] = "primary_drag_move";
-constexpr char kSecondaryDragMove[] = "secondary_drag_move";
+inline constexpr char kMouseAction[] = "mouse_action";
+inline constexpr char kPrimaryClick[] = "primary_click";
+inline constexpr char kSecondaryClick[] = "secondary_click";
+inline constexpr char kHoverMove[] = "hover_move";
+inline constexpr char kPrimaryDragMove[] = "primary_drag_move";
+inline constexpr char kSecondaryDragMove[] = "secondary_drag_move";
 
 // System version for AlphaV2+.
-constexpr char kSystemVersionAlphaV2Plus[] = "0.2";
+inline constexpr char kSystemVersionAlphaV2Plus[] = "0.2";
 
 // The coordinates number, including Axis x and y.
 constexpr int kAxisSize = 2;
@@ -29,7 +29,7 @@ constexpr size_t kActionMoveKeysSize = 4;
 // Maximum of actions size.
 inline constexpr size_t kMaxActionCount = 50;
 
-constexpr char16_t kUnknownBind[] = u"?";
+inline constexpr char16_t kUnknownBind[] = u"?";
 
 // Directions from up, left, down, right.
 constexpr int kDirection[kActionMoveKeysSize][kAxisSize] = {{0, -1},

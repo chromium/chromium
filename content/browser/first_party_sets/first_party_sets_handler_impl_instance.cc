@@ -124,7 +124,7 @@ FirstPartySetsHandlerImplInstance::CreateForTesting(
 }
 
 void FirstPartySetsHandlerImplInstance::GetContextConfigForPolicy(
-    const base::Value::Dict* policy,
+    base::optional_ref<const base::Value::Dict> policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!policy) {

@@ -4,6 +4,7 @@
 
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -153,6 +154,14 @@ SupervisedUserURLFilter::ResultCallback WrapCallbackWithMetrics(
     std::optional<ui::PageTransition> transition_type) {
   return base::BindOnce(&WrappedCallbackWithMetrics, std::move(callback),
                         context, transition_type);
+}
+
+// Returns true when two OrderedContainers have the same values.
+template <typename OrderedContainer>
+bool ContainersAreEqual(const OrderedContainer& lhs,
+                        const OrderedContainer& rhs) {
+  return lhs.size() == rhs.size() &&
+         std::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 }  // namespace
 
@@ -640,29 +649,46 @@ SupervisedUserURLFilter::GetDefaultFilteringBehavior() const {
   return default_behavior_;
 }
 
-void SupervisedUserURLFilter::SetManualHosts(
+bool SupervisedUserURLFilter::SetManualHosts(
     std::map<std::string, bool> host_map) {
   // TODO(b/305229682): Update this method to received the two
   // parental lists.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  blocked_host_list_.clear();
-  allowed_host_list_.clear();
+
+  std::set<std::string> new_blocked_host_list;
+  std::set<std::string> new_allowed_host_list;
+
   for (const auto& host_entry : host_map) {
     if (host_entry.second) {
-      allowed_host_list_.emplace(host_entry.first);
+      new_allowed_host_list.emplace(host_entry.first);
     } else {
-      blocked_host_list_.emplace(host_entry.first);
+      new_blocked_host_list.emplace(host_entry.first);
     }
   }
+
+  if (ContainersAreEqual(blocked_host_list_, new_blocked_host_list) &&
+      ContainersAreEqual(allowed_host_list_, new_allowed_host_list)) {
+    return false;
+  }
+
+  blocked_host_list_ = std::move(new_blocked_host_list);
+  allowed_host_list_ = std::move(new_allowed_host_list);
+  return true;
 }
 
 bool SupervisedUserURLFilter::IsManualHostsEmpty() const {
   return allowed_host_list_.empty() && blocked_host_list_.empty();
 }
 
-void SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
+bool SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (ContainersAreEqual(url_map_, url_map)) {
+    return false;
+  }
+
   url_map_ = std::move(url_map);
+  return true;
 }
 
 void SupervisedUserURLFilter::Clear() {

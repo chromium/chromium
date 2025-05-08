@@ -849,10 +849,17 @@ class AutofillMetrics {
   static void LogVerificationStatusOfAddressTokensOnProfileUsage(
       const AutofillProfile& profile);
 
-  // Logs the image fetching result for one image in AutofillImageFetcher.
-  static void LogImageFetchResult(bool succeeded);
-  // Logs the roundtrip latency for fetching an image in AutofillImageFetcher.
-  static void LogImageFetcherRequestLatency(base::TimeDelta latency);
+  // Logs the image fetching result for one `image_type` in
+  // AutofillImageFetcher.
+  static void LogImageFetchResult(
+      AutofillImageFetcherBase::ImageType image_type,
+      bool succeeded);
+  // Logs the overall image fetching result for a `image_type` in
+  // AutofillImageFetcher after a maximum preset number of attempts during
+  // browser startup.
+  static void LogImageFetchOverallResult(
+      AutofillImageFetcherBase::ImageType image_type,
+      bool succeeded);
 
   // Logs a field's (PredictionState, AutocompleteState) pair on form submit.
   static void LogAutocompletePredictionCollisionState(
@@ -890,9 +897,6 @@ class AutofillMetrics {
   static void LogDeleteAddressProfileFromKeyboardAccessory();
 
   static void LogAutocompleteEvent(AutocompleteEvent event);
-
-  static void LogAutofillPopupVisibleDuration(FillingProduct filling_product,
-                                              base::TimeDelta duration);
 
   // TODO(crbug.com/316143236): Remove all datalist related metrics once
   // debugging is complete.

@@ -2590,13 +2590,13 @@ bool PropertyTrees::GetFromTarget(int transform_id,
 
 DrawTransformData& PropertyTrees::FetchDrawTransformsDataFromCache(
     int transform_id,
-    int dest_id) const {
+    int effect_id) const {
   for (auto& transform_data : cached_data_.draw_transforms[transform_id]) {
     // We initialize draw_transforms with 1 element vectors when
     // ResetCachedData, so if we hit an invalid target id, it means it's the
     // first time we compute draw transforms after reset.
-    if (transform_data.target_id == dest_id ||
-        transform_data.target_id == kInvalidPropertyNodeId) {
+    if (transform_data.effect_id == effect_id ||
+        transform_data.effect_id == kInvalidPropertyNodeId) {
       return transform_data;
     }
   }
@@ -2604,7 +2604,7 @@ DrawTransformData& PropertyTrees::FetchDrawTransformsDataFromCache(
   cached_data_.draw_transforms[transform_id].push_back(DrawTransformData());
   DrawTransformData& data = cached_data_.draw_transforms[transform_id].back();
   data.update_number = kInvalidUpdateNumber;
-  data.target_id = dest_id;
+  data.effect_id = effect_id;
   return data;
 }
 
@@ -2636,10 +2636,10 @@ DrawTransforms& PropertyTrees::GetDrawTransforms(int transform_id,
   int dest_id = effect_node->transform_id;
 
   DrawTransformData& data =
-      FetchDrawTransformsDataFromCache(transform_id, dest_id);
+      FetchDrawTransformsDataFromCache(transform_id, effect_id);
 
   DCHECK(data.update_number != cached_data_.transform_tree_update_number ||
-         data.target_id != kInvalidPropertyNodeId);
+         data.effect_id != kInvalidPropertyNodeId);
   if (data.update_number == cached_data_.transform_tree_update_number)
     return data.transforms;
 
@@ -2679,7 +2679,7 @@ DrawTransforms& PropertyTrees::GetDrawTransforms(int transform_id,
   if (!already_computed_inverse)
     data.transforms.to_valid = true;
   data.update_number = cached_data_.transform_tree_update_number;
-  data.target_id = dest_id;
+  data.effect_id = effect_id;
   data.transforms.from_target = from_target;
   data.transforms.to_target = target_space_transform;
   return data.transforms;
@@ -2697,7 +2697,7 @@ void PropertyTrees::ResetCachedData() {
   for (auto& draw_transforms_for_id : cached_data_.draw_transforms) {
     draw_transforms_for_id.resize(1);
     draw_transforms_for_id[0].update_number = kInvalidUpdateNumber;
-    draw_transforms_for_id[0].target_id = kInvalidPropertyNodeId;
+    draw_transforms_for_id[0].effect_id = kInvalidPropertyNodeId;
   }
 }
 

@@ -30,13 +30,11 @@
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 
 namespace blink {
 
 class HTMLAreaElement;
 class HTMLMapElement;
-class SVGImage;
 
 // LayoutImage is used to display any image type.
 //
@@ -123,7 +121,6 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   }
 
  protected:
-  SVGImage* EmbeddedSVGImage() const;
   PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
@@ -168,9 +165,10 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
                    const PhysicalOffset& accumulated_offset,
                    HitTestPhase) final;
 
-  void InvalidatePaintAndMarkForLayoutIfNeeded(CanDeferInvalidation);
+  void InvalidatePaintWithoutLayoutChange(CanDeferInvalidation);
   bool UpdateNaturalSizeIfNeeded();
   bool NeedsLayoutOnNaturalSizeChange() const;
+  bool InvalidateLayoutOnNaturalSizeChange();
 
   // The natural dimensions for the image.
   PhysicalNaturalSizingInfo natural_dimensions_;

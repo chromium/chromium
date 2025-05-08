@@ -31,6 +31,11 @@ class ProbabilisticRevealTokenRegistry {
 
  private:
   base::flat_set<std::string> domains_;
+
+  // This set of domains will be used instead of `domains_` if the
+  // `UseCustomProbabilisticRevealTokenRegistry` feature param is true.
+  // See `kCustomProbabilisticRevealTokenRegistry` in net/base/features.h.
+  base::flat_set<std::string> custom_domains_;
 };
 
 }  // namespace ip_protection

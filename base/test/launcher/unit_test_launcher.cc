@@ -282,7 +282,7 @@ void InitGoogleTestChar(int* argc, char** argv) {
 
 #if BUILDFLAG(IS_WIN)
 
-// Safety: as is normal in command lines, argc and argv must correspond
+// PRECONDITIONS: As is normal in command lines, argc and argv must correspond
 // to one another. Otherwise there will be out-of-bounds accesses.
 UNSAFE_BUFFER_USAGE void InitGoogleTestWChar(int* argc, wchar_t** argv) {
   testing::InitGoogleTest(argc, argv);

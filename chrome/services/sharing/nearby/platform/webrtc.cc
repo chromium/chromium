@@ -23,7 +23,7 @@
 #include "third_party/webrtc/api/async_dns_resolver.h"
 #include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
-#include "third_party/webrtc_overrides/task_queue_factory.h"
+#include "third_party/webrtc_overrides/environment.h"
 #include "unicode/locid.h"
 
 namespace nearby::chrome {
@@ -439,7 +439,7 @@ void WebRtcMedium::InitPeerConnectionFactory() {
   DCHECK(rtc_worker_thread_);
 
   webrtc::PeerConnectionFactoryDependencies factory_dependencies;
-  factory_dependencies.task_queue_factory = CreateWebRtcTaskQueueFactory();
+  factory_dependencies.env = WebRtcEnvironment();
   factory_dependencies.network_thread = rtc_network_thread_;
   factory_dependencies.worker_thread = rtc_worker_thread_;
   factory_dependencies.signaling_thread = rtc_signaling_thread_;

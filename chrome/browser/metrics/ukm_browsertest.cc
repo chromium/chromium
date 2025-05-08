@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MAYBE_ConsentAddedButNoSyncCheck) {
 
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
   ClosePlatformBrowser(browser);

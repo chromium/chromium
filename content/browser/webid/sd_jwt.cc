@@ -32,11 +32,11 @@ std::optional<std::string> Base64UrlDecode(const std::string_view& base64) {
   return str;
 }
 
-base64_t Base64UrlEncode(const std::string_view& str) {
-  base64_t base64;
+Base64String Base64UrlEncode(const std::string_view& str) {
+  std::string base64;
   base::Base64UrlEncode(str, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &base64);
-  return base64;
+  return Base64String(base64);
 }
 
 }  // namespace
@@ -82,7 +82,7 @@ std::optional<Jwk> Jwk::From(const base::Value::Dict& dict) {
   return result;
 }
 
-std::optional<json_t> Jwk::Serialize() const {
+std::optional<std::string> Jwk::Serialize() const {
   base::Value::Dict result;
 
   result.Set("kty", kty);
@@ -122,43 +122,49 @@ std::optional<Disclosure> Disclosure::From(const base::Value::List& list) {
   }
 
   Disclosure result;
-  result.salt = list[0].GetString();
+  result.salt = Base64String(list[0].GetString());
   result.name = list[1].GetString();
   result.value = list[2].GetString();
   return result;
 }
 
-std::optional<json_t> Disclosure::ToJson() const {
+std::optional<JSONString> Disclosure::ToJson() const {
   base::Value::List list;
 
-  list.Append(salt);
+  list.Append(salt.value());
   list.Append(name);
   list.Append(value);
 
-  return base::WriteJson(list);
+  auto result = base::WriteJson(list);
+
+  if (!result) {
+    return std::nullopt;
+  }
+
+  return JSONString(*result);
 }
 
-base64_t Disclosure::Serialize() const {
-  return Base64UrlEncode(*ToJson());
+Base64String Disclosure::Serialize() const {
+  return Base64UrlEncode(ToJson()->value());
 }
 
-std::optional<base64_t> Disclosure::Digest(Hasher hasher) const {
-  auto disclosure_base64 = Serialize();
+std::optional<Base64String> Disclosure::Digest(Hasher hasher) const {
+  Base64String disclosure = Serialize();
   std::string result;
-  base::Base64UrlEncode(hasher.Run(disclosure_base64),
+  base::Base64UrlEncode(hasher.Run(disclosure.value()),
                         base::Base64UrlEncodePolicy::OMIT_PADDING, &result);
-  return result;
+  return Base64String(result);
 }
 
 // static
-base64_t Disclosure::CreateSalt() {
+Base64String Disclosure::CreateSalt() {
   const size_t salt_size = 32;
   std::array<uint8_t, salt_size> salt_bytes;
   crypto::RandBytes(salt_bytes);
-  base64_t salt_base64;
+  std::string salt;
   base::Base64UrlEncode(salt_bytes, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &salt_base64);
-  return salt_base64;
+                        &salt);
+  return Base64String(salt);
 }
 
 std::optional<SdJwt> SdJwt::From(const base::Value::List& list) {
@@ -175,13 +181,13 @@ std::optional<SdJwt> SdJwt::From(const base::Value::List& list) {
     return std::nullopt;
   }
 
-  std::vector<json_t> disclosures;
+  std::vector<JSONString> disclosures;
 
   for (auto& disclosure : list[1].GetList()) {
     if (!disclosure.is_string()) {
       return std::nullopt;
     }
-    disclosures.push_back(disclosure.GetString());
+    disclosures.push_back(JSONString(disclosure.GetString()));
   }
 
   SdJwt result;
@@ -263,21 +269,27 @@ std::optional<Header> Header::From(const base::Value::Dict& json) {
   return result;
 }
 
-std::optional<json_t> Header::ToJson() const {
+std::optional<JSONString> Header::ToJson() const {
   base::Value::Dict header_dict;
 
   header_dict.Set("typ", typ);
   header_dict.Set("alg", alg);
 
-  return base::WriteJson(header_dict);
+  auto result = base::WriteJson(header_dict);
+
+  if (!result) {
+    return std::nullopt;
+  }
+
+  return JSONString(*result);
 }
 
-std::optional<base64_t> Header::Serialize() const {
+std::optional<Base64String> Header::Serialize() const {
   auto header_json = ToJson();
   if (!header_json) {
     return std::nullopt;
   }
-  return Base64UrlEncode(*header_json);
+  return Base64UrlEncode(header_json->value());
 }
 
 ConfirmationKey::ConfirmationKey() = default;
@@ -341,7 +353,7 @@ std::optional<Payload> Payload::From(const base::Value::Dict& json) {
 
   auto* sd_hash = json.FindString("sd_hash");
   if (sd_hash) {
-    result.sd_hash = *sd_hash;
+    result.sd_hash = Base64String(*sd_hash);
   }
 
   auto* _sd_alg = json.FindString("_sd_alg");
@@ -354,14 +366,14 @@ std::optional<Payload> Payload::From(const base::Value::Dict& json) {
       if (!el.is_string()) {
         return std::nullopt;
       }
-      result._sd.push_back(el.GetString());
+      result._sd.push_back(Base64String(el.GetString()));
     }
   }
 
   return result;
 }
 
-std::optional<json_t> Payload::ToJson() const {
+std::optional<JSONString> Payload::ToJson() const {
   base::Value::Dict payload_dict;
 
   if (!iss.empty()) {
@@ -406,14 +418,14 @@ std::optional<json_t> Payload::ToJson() const {
     payload_dict.Set("exp", (int)exp->ToTimeT());
   }
 
-  if (!sd_hash.empty()) {
-    payload_dict.Set("sd_hash", sd_hash);
+  if (!sd_hash.value().empty()) {
+    payload_dict.Set("sd_hash", sd_hash.value());
   }
 
   if (_sd.size() > 0) {
     base::Value::List list;
     for (auto disclosure : _sd) {
-      list.Append(disclosure);
+      list.Append(disclosure.value());
     }
     payload_dict.Set("_sd", std::move(list));
   }
@@ -422,29 +434,35 @@ std::optional<json_t> Payload::ToJson() const {
     payload_dict.Set("_sd_alg", _sd_alg);
   }
 
-  return base::WriteJson(payload_dict);
+  auto result = base::WriteJson(payload_dict);
+
+  if (!result) {
+    return std::nullopt;
+  }
+
+  return JSONString(*result);
 }
 
-std::optional<base64_t> Payload::Serialize() const {
+std::optional<Base64String> Payload::Serialize() const {
   auto payload_json = ToJson();
   if (!payload_json) {
     return std::nullopt;
   }
-  return Base64UrlEncode(*payload_json);
+  return Base64UrlEncode(payload_json->value());
 }
 
 Jwt::Jwt() = default;
 Jwt::~Jwt() = default;
 Jwt::Jwt(const Jwt& other) = default;
 
-std::string Jwt::Serialize() const {
+JSONString Jwt::Serialize() const {
   std::string result;
-  result += Base64UrlEncode(header);
+  result += Base64UrlEncode(header.value()).value();
   result += ".";
-  result += Base64UrlEncode(payload);
+  result += Base64UrlEncode(payload.value()).value();
   result += ".";
-  result += signature;
-  return result;
+  result += signature.value();
+  return JSONString(result);
 }
 
 // static
@@ -458,9 +476,9 @@ std::optional<Jwt> Jwt::From(const base::Value::List& list) {
   }
 
   Jwt result;
-  result.header = list[0].GetString();
-  result.payload = list[1].GetString();
-  result.signature = list[2].GetString();
+  result.header = JSONString(list[0].GetString());
+  result.payload = JSONString(list[1].GetString());
+  result.signature = Base64String(list[2].GetString());
 
   return result;
 }
@@ -498,8 +516,8 @@ std::optional<base::Value::List> Jwt::Parse(const std::string_view& jwt) {
 }
 
 bool Jwt::Sign(Signer signer) {
-  std::string message =
-      Base64UrlEncode(header) + "." + Base64UrlEncode(payload);
+  std::string message = Base64UrlEncode(header.value()).value() + "." +
+                        Base64UrlEncode(payload.value()).value();
 
   auto sig = std::move(signer).Run(message);
   if (!sig) {
@@ -507,7 +525,7 @@ bool Jwt::Sign(Signer signer) {
   }
 
   base::Base64UrlEncode(*sig, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &signature);
+                        &signature.value());
 
   return true;
 }
@@ -518,12 +536,12 @@ SdJwt::SdJwt(const SdJwt& other) = default;
 
 std::string SdJwt::Serialize() const {
   std::string result;
-  result += jwt.Serialize();
+  result += jwt.Serialize().value();
 
   result += "~";
 
-  for (const json_t& disclosure : disclosures) {
-    result += Base64UrlEncode(disclosure);
+  for (const JSONString& disclosure : disclosures) {
+    result += Base64UrlEncode(disclosure.value()).value();
     result += "~";
   }
 
@@ -533,7 +551,7 @@ std::string SdJwt::Serialize() const {
 std::string SdJwtKb::Serialize() const {
   std::string result;
   result += sd_jwt.Serialize();
-  result += kb_jwt.Serialize();
+  result += kb_jwt.Serialize().value();
 
   return result;
 }
@@ -543,18 +561,18 @@ SdJwtKb::~SdJwtKb() = default;
 SdJwtKb::SdJwtKb(const SdJwtKb& other) = default;
 
 // static
-std::optional<std::vector<json_t>> SdJwt::Disclose(
-    const std::vector<std::pair<std::string, json_t>>& disclosures,
+std::optional<std::vector<JSONString>> SdJwt::Disclose(
+    const std::vector<std::pair<std::string, JSONString>>& disclosures,
     const std::vector<std::string>& selector) {
   // Implements the selective disclosure:
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#name-disclosing-to-a-verifier
 
-  std::map<std::string, json_t> disclosures_by_name;
-  for (const std::pair<std::string, json_t>& disclosure : disclosures) {
+  std::map<std::string, JSONString> disclosures_by_name;
+  for (const std::pair<std::string, JSONString>& disclosure : disclosures) {
     disclosures_by_name[disclosure.first] = disclosure.second;
   }
 
-  std::vector<json_t> result;
+  std::vector<JSONString> result;
   for (const std::string& name : selector) {
     if (disclosures_by_name.count(name)) {
       result.push_back(disclosures_by_name[name]);
@@ -587,7 +605,7 @@ std::optional<SdJwtKb> SdJwtKb::Create(const SdJwt& presentation,
   payload.aud = aud;
   payload.nonce = nonce;
   payload.iat = iat;
-  payload.sd_hash = hash;
+  payload.sd_hash = Base64String(hash);
 
   Jwt kb_jwt;
   auto header_json = header.ToJson();

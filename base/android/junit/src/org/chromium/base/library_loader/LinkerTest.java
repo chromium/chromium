@@ -164,14 +164,12 @@ public class LinkerTest {
         // Create the bundle following the _internal_ format of the Linker. Not great, but shorter
         // than factoring out this logic from the Linker only for testing.
         Bundle relros = libInfo.toBundle();
-        Bundle b = new Bundle();
-        b.putBundle(Linker.SHARED_RELROS, relros);
 
         // Exercise.
         linker.ensureInitialized(
                 /* asRelroProducer= */ false, PreferAddress.RESERVE_HINT, someAddress);
         linker.pretendLibraryIsLoadedForTesting();
-        linker.takeSharedRelrosFromBundle(b);
+        linker.takeSharedRelrosFromBundle(relros);
 
         // Verify.
         Assert.assertEquals(

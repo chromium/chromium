@@ -23,7 +23,8 @@ public class ExternalIntentsFeatures extends Features {
     public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
     public static final String BLOCK_FRAME_RENAVIGATIONS_NAME = "BlockFrameRenavigations3";
     public static final String BLOCK_INTENTS_TO_SELF_NAME = "BlockIntentsToSelf";
-    public static final String LOWER_CASE_INTENT_SCHEMES_NAME = "LowerCaseIntentSchemes";
+    public static final String NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME =
+            "NavigationCaptureRefactorAndroid";
 
     public static final ExternalIntentsFeatures EXTERNAL_NAVIGATION_DEBUG_LOGS =
             new ExternalIntentsFeatures(0, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
@@ -34,8 +35,8 @@ public class ExternalIntentsFeatures extends Features {
     public static final ExternalIntentsFeatures BLOCK_INTENTS_TO_SELF =
             new ExternalIntentsFeatures(2, BLOCK_INTENTS_TO_SELF_NAME);
 
-    public static final ExternalIntentsFeatures LOWER_CASE_INTENT_SCHEMES =
-            new ExternalIntentsFeatures(3, LOWER_CASE_INTENT_SCHEMES_NAME);
+    public static final ExternalIntentsFeatures NAVIGATION_CAPTURE_REFACTOR_ANDROID =
+            new ExternalIntentsFeatures(3, NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME);
 
     private final int mOrdinal;
 

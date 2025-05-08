@@ -16,6 +16,7 @@
 
 @protocol AuthenticationFlowRequestHelper;
 class Browser;
+enum class ChangeProfileReason;
 @protocol ChangeProfileCommands;
 class ProfileIOS;
 @class SceneState;
@@ -94,12 +95,14 @@ using OnProfileSwitchCompletion =
 // argument instead.
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
                          sceneState:(SceneState*)sceneState
+                             reason:(ChangeProfileReason)reason
                       requestHelper:
                           (id<AuthenticationFlowRequestHelper>)requestHelper;
 
 // Switches to the profile with `profileName`, for `sceneIdentifier`.
 - (void)switchToProfileWithName:(const std::string&)profileName
                      sceneState:(SceneState*)sceneState
+                         reason:(ChangeProfileReason)reason
       changeProfileContinuation:(ChangeProfileContinuation)continuation;
 
 // Converts the personal profile to a managed one and attaches `identity` to it.
@@ -147,8 +150,27 @@ using OnProfileSwitchCompletion =
      userAffiliationIDs:(NSArray<NSString*>*)userAffiliationIDs
                identity:(id<SystemIdentity>)identity;
 
+- (void)fetchAccountCapabilities:(ProfileIOS*)profile;
+
 @property(nonatomic, weak, readonly) id<AuthenticationFlowPerformerDelegate>
     delegate;
+
+@end
+
+@interface AuthenticationFlowPerformer (ForTesting)
+
+// If `useFakeResponses` is true, policy requests will be immediately answered,
+// with a default "no policy" response, instead of via a network request to the
+// policy server. If a non-default response is required, use
+// `forcePolicyResponseForNextRequestForTesting` instead.
+// Any test that uses this should reset it to `false` at the end of the test.
++ (void)setUseFakePolicyResponsesForTesting:(BOOL)useFakeResponses;
+
+// Forces the ProfileSeparationDataMigrationSettings value for the next request
+// made to fetch ProfileSeparationPolicies.
++ (void)forcePolicyResponseForNextRequestForTesting:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profileSeparationDataMigrationSettings;
 
 @end
 

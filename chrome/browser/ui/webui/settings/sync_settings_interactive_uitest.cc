@@ -57,11 +57,9 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                                      "cr-icon-button#dropdown-arrow"};
 
   std::unique_ptr<content::TestNavigationObserver> observer;
-  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-    auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
-    observer = std::make_unique<content::TestNavigationObserver>(url);
-    observer->StartWatchingNewWebContents();
-  }
+  auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
+  observer = std::make_unique<content::TestNavigationObserver>(url);
+  observer->StartWatchingNewWebContents();
 
   RunTestSequence(
       Do([&]() {

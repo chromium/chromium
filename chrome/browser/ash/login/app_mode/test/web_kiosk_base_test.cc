@@ -19,8 +19,8 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"  // IWYU pragma: keep
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

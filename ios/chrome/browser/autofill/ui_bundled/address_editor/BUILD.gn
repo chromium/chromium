@@ -14,8 +14,8 @@ source_set("autofill_shared_ui") {
   sources = [
     "autofill_country_selection_table_view_controller.h",
     "autofill_country_selection_table_view_controller.mm",
-    "autofill_profile_address_field.h",
-    "autofill_profile_address_field.mm",
+    "autofill_edit_profile_field.h",
+    "autofill_edit_profile_field.mm",
     "autofill_profile_edit_consumer.h",
     "autofill_profile_edit_handler.h",
     "autofill_profile_edit_mediator.h",

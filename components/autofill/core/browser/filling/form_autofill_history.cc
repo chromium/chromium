@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/filling/form_autofill_history.h"
 
+#include <algorithm>
+
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -37,23 +39,11 @@ FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
 FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(FieldFillingEntry&&) =
     default;
 
-const FormAutofillHistory::FieldFillingEntry&
-FormAutofillHistory::FillOperation::GetFieldFillingEntry(
-    FieldGlobalId field_id) const {
-  auto it = iterator_->field_filling_entries.find(field_id);
-  CHECK(it != iterator_->field_filling_entries.end());
-  return it->second;
-}
-
-FormAutofillHistory::FormFillingEntry::FormFillingEntry() = default;
-
-FormAutofillHistory::FormFillingEntry::~FormFillingEntry() = default;
-
 FormAutofillHistory::FormAutofillHistory() = default;
 
 FormAutofillHistory::~FormAutofillHistory() = default;
 
-void FormAutofillHistory::AddFormFillEntry(
+void FormAutofillHistory::AddFormFillingEntry(
     base::span<const FormFieldData* const> filled_fields,
     base::span<const AutofillField* const> filled_autofill_fields,
     FillingProduct filling_product,
@@ -63,12 +53,10 @@ void FormAutofillHistory::AddFormFillEntry(
   // - If the original fill had `filled_fields.size() >
   //   kMaxStorableFieldFillHistory`, then `history_` might be empty.
   // - If a previous fill had `filled_fields.empty()`, we could save memory.
-  if (history_.empty() ||
-      (!is_refill && !history_.front().field_filling_entries.empty())) {
+  if (history_.empty() || (!is_refill && !history_.front().empty())) {
     history_.emplace_front();
   }
 
-  history_.front().filling_product = filling_product;
   for (const auto [field, autofill_field] :
        base::zip(filled_fields, filled_autofill_fields)) {
     // During refills, a field that was previously filled in the original
@@ -78,7 +66,6 @@ void FormAutofillHistory::AddFormFillEntry(
     // this is what happened from a user's perspective.
     size_ +=
         history_.front()
-            .field_filling_entries
             .emplace(field->global_id(),
                      FieldFillingEntry(
                          field->value(), field->is_autofilled(),
@@ -96,26 +83,35 @@ void FormAutofillHistory::AddFormFillEntry(
   }
   // Drop the last history entry while the history size exceeds the limit.
   while (size_ > kMaxStorableFieldFillHistory) {
-    EraseFormFillEntry(FillOperation(--history_.end()));
+    EraseFormFillEntry(--history_.end());
   }
 }
 
-void FormAutofillHistory::EraseFormFillEntry(FillOperation fill_operation) {
-  size_ -= fill_operation.iterator_->field_filling_entries.size();
-  history_.erase(fill_operation.iterator_);
+void FormAutofillHistory::EraseFieldFillingEntry(
+    std::list<FormFillingEntry>::iterator fill_operation,
+    FieldGlobalId field_id) {
+  fill_operation->erase(field_id);
+  if (fill_operation->empty()) {
+    EraseFormFillEntry(fill_operation);
+  }
 }
 
-FormAutofillHistory::FillOperation
-FormAutofillHistory::GetLastFillingOperationForField(
-    FieldGlobalId field_id) const {
-  return FillOperation(std::ranges::find_if(
-      history_, [&field_id](const FormFillingEntry& operation) {
-        return operation.field_filling_entries.contains(field_id);
-      }));
+void FormAutofillHistory::EraseFormFillEntry(
+    std::list<FormFillingEntry>::iterator filling_entry) {
+  size_ -= filling_entry->size();
+  history_.erase(filling_entry);
+}
+
+std::list<FormAutofillHistory::FormFillingEntry>::iterator
+FormAutofillHistory::GetLastFormFillingEntryForField(FieldGlobalId field_id) {
+  return std::ranges::find_if(history_,
+                              [&field_id](const FormFillingEntry& operation) {
+                                return operation.contains(field_id);
+                              });
 }
 
 bool FormAutofillHistory::HasHistory(FieldGlobalId field_id) const {
-  return GetLastFillingOperationForField(field_id).iterator_ != history_.end();
+  return GetLastFormFillingEntryForField(field_id) != history_.end();
 }
 
 void FormAutofillHistory::Reset() {

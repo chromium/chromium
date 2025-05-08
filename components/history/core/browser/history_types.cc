@@ -49,26 +49,6 @@ VisitRow::~VisitRow() = default;
 
 VisitRow::VisitRow(const VisitRow&) = default;
 
-// VisitedLinkRow --------------------------------------------------------------
-
-bool operator==(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs) {
-  return std::tie(lhs.id, lhs.link_url_id, lhs.top_level_url, lhs.frame_url,
-                  lhs.visit_count) == std::tie(rhs.id, rhs.link_url_id,
-                                               rhs.top_level_url, rhs.frame_url,
-                                               rhs.visit_count);
-}
-
-bool operator!=(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator<(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs) {
-  return std::tie(lhs.id, lhs.link_url_id, lhs.top_level_url, lhs.frame_url,
-                  lhs.visit_count) < std::tie(rhs.id, rhs.link_url_id,
-                                              rhs.top_level_url, rhs.frame_url,
-                                              rhs.visit_count);
-}
-
 // QueryResults ----------------------------------------------------------------
 
 QueryResults::QueryResults() = default;
@@ -502,39 +482,6 @@ VisitContextAnnotations::VisitContextAnnotations(
     const VisitContextAnnotations& other) = default;
 
 VisitContextAnnotations::~VisitContextAnnotations() = default;
-
-bool VisitContextAnnotations::operator==(
-    const VisitContextAnnotations& other) const {
-  return on_visit == other.on_visit &&
-         omnibox_url_copied == other.omnibox_url_copied &&
-         is_existing_part_of_tab_group == other.is_existing_part_of_tab_group &&
-         is_placed_in_tab_group == other.is_placed_in_tab_group &&
-         is_existing_bookmark == other.is_existing_bookmark &&
-         is_new_bookmark == other.is_new_bookmark &&
-         is_ntp_custom_link == other.is_ntp_custom_link &&
-         duration_since_last_visit == other.duration_since_last_visit &&
-         page_end_reason == other.page_end_reason &&
-         total_foreground_duration == other.total_foreground_duration;
-}
-
-bool VisitContextAnnotations::operator!=(
-    const VisitContextAnnotations& other) const {
-  return !(*this == other);
-}
-
-bool VisitContextAnnotations::OnVisitFields::operator==(
-    const VisitContextAnnotations::OnVisitFields& other) const {
-  return browser_type == other.browser_type && window_id == other.window_id &&
-         tab_id == other.tab_id && task_id == other.task_id &&
-         root_task_id == other.root_task_id &&
-         parent_task_id == other.parent_task_id &&
-         response_code == other.response_code;
-}
-
-bool VisitContextAnnotations::OnVisitFields::operator!=(
-    const VisitContextAnnotations::OnVisitFields& other) const {
-  return !(*this == other);
-}
 
 AnnotatedVisit::AnnotatedVisit() = default;
 AnnotatedVisit::AnnotatedVisit(URLRow url_row,

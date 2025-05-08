@@ -45,6 +45,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
@@ -712,6 +713,7 @@ public class WarmupManager {
                     WebContentsFactory.createWebContentsWithWarmRenderer(
                             profile,
                             /* initiallyHidden= */ true,
+                            AutofillClientProviderUtils.isAutofillEnabledForCct(profile),
                             /* targetNetwork= */ NetId.INVALID);
             mObserver = new RenderProcessGoneObserver();
             mObserver.observe(mSpareWebContents);

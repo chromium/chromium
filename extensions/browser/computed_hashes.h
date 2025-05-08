@@ -52,7 +52,7 @@ class ComputedHashes {
       std::vector<std::string> hashes;
       // The relative unix style path.
       // Note that we use canonicalized paths as keys to HashInfo's container
-      // |items_|.
+      // `items_`.
       //
       // TODO(http://crbug.com/796395#c28): Consider removing this once
       // ContentVerifier::ShouldVerifyAnyPaths works with canonicalized relative
@@ -78,17 +78,17 @@ class ComputedHashes {
     Data(Data&&);
     Data& operator=(Data&&);
 
-    // For |relative_path|, adds hash information with |block_size| and
-    // |hashes|.
-    // Note that |relative_path| will be canonicalized.
+    // For `relative_path`, adds hash information with `block_size` and
+    // `hashes`.
+    // Note that `relative_path` will be canonicalized.
     void Add(const base::FilePath& relative_path,
              int block_size,
              std::vector<std::string> hashes);
 
-    // Removes the item that corresponds to |relative_path|.
+    // Removes the item that corresponds to `relative_path`.
     void Remove(const base::FilePath& relative_path);
 
-    // Returns HashInfo* for |relative_path| or nullptr if not found.
+    // Returns HashInfo* for `relative_path` or nullptr if not found.
     const HashInfo* GetItem(const base::FilePath& relative_path) const;
 
     const Items& items() const;
@@ -106,18 +106,18 @@ class ComputedHashes {
   ~ComputedHashes();
 
   // Reads computed hashes from the computed_hashes.json file, stores read
-  // success/failure status to |status|. Returns nullopt upon any failure (i.e.
-  // |status| != Status::SUCCESS).
+  // success/failure status to `status`. Returns nullopt upon any failure (i.e.
+  // `status` != Status::SUCCESS).
   static std::optional<ComputedHashes> CreateFromFile(
       const base::FilePath& path,
       Status* status);
 
-  // Computes hashes for files in |extension_root|. Returns nullopt upon any
-  // failure. Callback |should_compute_hashes_for| is used to determine whether
+  // Computes hashes for files in `extension_root`. Returns nullopt upon any
+  // failure. Callback `should_compute_hashes_for` is used to determine whether
   // we need hashes for a resource or not.
   // TODO(https://crbug.com/796395#c24) To support per-file block size instead
-  // of passing |block_size| as an argument make callback
-  // |should_compute_hashes_for| return optional<int>: nullopt if hashes are not
+  // of passing `block_size` as an argument make callback
+  // `should_compute_hashes_for` return optional<int>: nullopt if hashes are not
   // needed for this file, block size for this file otherwise.
   static std::optional<ComputedHashes::Data> Compute(
       const base::FilePath& extension_root,
@@ -129,14 +129,14 @@ class ComputedHashes {
   // true on success).
   bool WriteToFile(const base::FilePath& path) const;
 
-  // Gets hash info for |relative_path|. The block size and hashes for
-  // |relative_path| will be copied into the out parameters. Returns false if
+  // Gets hash info for `relative_path`. The block size and hashes for
+  // `relative_path` will be copied into the out parameters. Returns false if
   // resource was not found (and true on success).
   bool GetHashes(const base::FilePath& relative_path,
                  int* block_size,
                  std::vector<std::string>* hashes) const;
 
-  // Returns the SHA256 hash of each |block_size| chunk in |contents|.
+  // Returns the SHA256 hash of each `block_size` chunk in `contents`.
   static std::vector<std::string> GetHashesForContent(
       const std::string& contents,
       size_t block_size);

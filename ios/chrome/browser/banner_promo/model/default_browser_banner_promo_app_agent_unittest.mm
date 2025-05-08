@@ -6,7 +6,6 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/google/core/common/google_util.h"
@@ -25,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
 
@@ -116,7 +116,7 @@ class DefaultBrowserBannerPromoAppAgentTest : public PlatformTest {
     return scene_state;
   }
 
-  base::test::TaskEnvironment task_env_;
+  web::WebTaskEnvironment task_env_;
   base::test::ScopedFeatureList scoped_feature_list_{
       kDefaultBrowserBannerPromo};
 

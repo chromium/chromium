@@ -112,7 +112,6 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -509,15 +508,9 @@ ProfileSubMenuModel::ProfileSubMenuModel(
     }
   }
 
-  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-    BuildManageGoogleAccountRow(profile);
-    BuildCustomizeProfileRow(profile);
-    BuildCloseProfileRow(profile);
-  } else {
-    BuildCustomizeProfileRow(profile);
-    BuildCloseProfileRow(profile);
-    BuildManageGoogleAccountRow(profile);
-  }
+  BuildManageGoogleAccountRow(profile);
+  BuildCustomizeProfileRow(profile);
+  BuildCloseProfileRow(profile);
 
   bool needs_separator = false;
   const bool is_guest_mode_enabled = profiles::IsGuestModeEnabled(*profile);
@@ -546,11 +539,6 @@ ProfileSubMenuModel::ProfileSubMenuModel(
       other_profiles_.insert({menu_id, profile_entry->GetPath()});
     }
 
-    if (is_guest_mode_enabled &&
-        !switches::IsImprovedSigninUIOnDesktopEnabled()) {
-      needs_separator = true;
-      BuildGuestProfileRow(profile);
-    }
     if (needs_separator) {
       AddSeparator(ui::NORMAL_SEPARATOR);
     }
@@ -560,8 +548,7 @@ ProfileSubMenuModel::ProfileSubMenuModel(
                                        IDS_ADD_NEW_PROFILE,
                                        kAccountAddChromeRefreshIcon);
     }
-    if (switches::IsImprovedSigninUIOnDesktopEnabled() &&
-        is_guest_mode_enabled) {
+    if (is_guest_mode_enabled) {
       BuildGuestProfileRow(profile);
     }
 
@@ -657,11 +644,8 @@ bool ProfileSubMenuModel::BuildSyncSection() {
 }
 
 void ProfileSubMenuModel::BuildGuestProfileRow(Profile* profile) {
-  AddItemWithStringIdAndVectorIcon(
-      this, IDC_OPEN_GUEST_PROFILE, IDS_OPEN_GUEST_PROFILE,
-      switches::IsImprovedSigninUIOnDesktopEnabled()
-          ? kAccountBoxIcon
-          : vector_icons::kAccountCircleChromeRefreshIcon);
+  AddItemWithStringIdAndVectorIcon(this, IDC_OPEN_GUEST_PROFILE,
+                                   IDS_OPEN_GUEST_PROFILE, kAccountBoxIcon);
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_OPEN_GUEST_PROFILE).value(),
                          AppMenuModel::kProfileOpenGuestItem);
 }
@@ -1937,7 +1921,7 @@ void AppMenuModel::Build() {
   AddItemWithStringIdAndVectorIcon(this, IDC_PRINT, IDS_PRINT, kPrintMenuIcon);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (glic::GlicEnabling::IsProfileEligible(browser_->profile())) {
+  if (glic::GlicEnabling::IsEnabledForProfile(browser_->profile())) {
     AddItemWithStringIdAndVectorIcon(this, IDC_OPEN_GLIC,
                                      IDS_GLIC_THREE_DOT_MENU_ITEM,
                                      glic::GlicVectorIconManager::GetVectorIcon(
@@ -2103,7 +2087,7 @@ bool AppMenuModel::AddDefaultBrowserMenuItems() {
   if ((app_menu_icon_controller_ &&
        app_menu_icon_controller_->GetTypeAndSeverity().type ==
            AppMenuIconController::IconType::DEFAULT_BROWSER_PROMPT) ||
-      (DefaultBrowserPromptManager::GetInstance()->get_show_app_menu_item())) {
+      (DefaultBrowserPromptManager::GetInstance()->show_app_menu_item())) {
     AddItemWithIcon(
         IDC_SET_BROWSER_AS_DEFAULT,
         l10n_util::GetStringUTF16(IDS_SET_BROWSER_AS_DEFAULT_MENU_ITEM),

@@ -732,8 +732,18 @@ try_.builder(
         "ci/android-cronet-x64-dbg",
         "ci/android-cronet-x64-dbg-15-tests",
     ],
-    # Replicates "ci/android-cronet-x64-dbg", with code coverage related
-    # arguments appended.
+    gn_args = "ci/android-cronet-x64-dbg",
+    contact_team_email = "cronet-team@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-x64-dbg-16-tests",
+    description_html = "Tests Cronet against Android 16",
+    mirrors = [
+        "ci/android-cronet-x64-dbg",
+        "ci/android-cronet-x64-dbg-16-tests",
+    ],
     gn_args = gn_args.config(
         configs = [
             "ci/android-cronet-x64-dbg",
@@ -756,18 +766,6 @@ try_.builder(
     ),
     use_clang_coverage = True,
     use_java_coverage = True,
-)
-
-try_.builder(
-    name = "android-cronet-x64-dbg-16-tests",
-    description_html = "Tests Cronet against Android 16",
-    mirrors = [
-        "ci/android-cronet-x64-dbg",
-        "ci/android-cronet-x64-dbg-16-tests",
-    ],
-    gn_args = "ci/android-cronet-x64-dbg",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -1638,8 +1636,13 @@ try_.gpu.optional_tests_builder(
         os_type = targets.os_type.ANDROID,
         use_android_merge_script_by_default = False,
     ),
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    ssd = None,
+    free_space = None,
     contact_team_email = "chrome-gpu-infra@google.com",
     main_list_view = "try",
+    max_concurrent_builds = 10,
     tryjob = try_.job(
         location_filters = [
             # Inclusion filters.
@@ -1687,8 +1690,13 @@ try_.gpu.optional_tests_builder(
         retry_failed_shards = False,
     ),
     gn_args = "ci/GPU FYI Android arm64 Builder",
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    ssd = None,
+    free_space = None,
     contact_team_email = "chrome-gpu-infra@google.com",
     main_list_view = "try",
+    max_concurrent_builds = 10,
     tryjob = try_.job(
         location_filters = [
             # Inclusion filters.

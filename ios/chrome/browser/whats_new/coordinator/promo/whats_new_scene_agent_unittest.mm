@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/whats_new/coordinator/promo/whats_new_scene_agent.h"
 
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
@@ -18,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 #import "ios/chrome/browser/whats_new/public/constants.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -55,7 +55,7 @@ class WhatsNewSceneAgentTest : public PlatformTest {
   AppState* app_state_;
   base::test::ScopedFeatureList feature_list_;
   SceneState* scene_state_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<MockPromosManager> promos_manager_;
 };
 

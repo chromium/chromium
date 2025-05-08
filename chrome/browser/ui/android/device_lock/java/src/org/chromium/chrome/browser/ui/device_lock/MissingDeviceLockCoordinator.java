@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -27,6 +28,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The coordinator handles the creation, update, and interaction of the missing device lock UI. */
+@NullMarked
 public class MissingDeviceLockCoordinator {
     /** The {@link ModalDialogManager} which launches the Missing Device Lock dialog. */
     private final @NonNull ModalDialogManager mModalDialogManager;

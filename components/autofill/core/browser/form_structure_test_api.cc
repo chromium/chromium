@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_structure_test_api.h"
 
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,13 +29,12 @@ void FormStructureTestApi::SetFieldTypes(
               Each(Contains(Pair(GetActiveHeuristicSource(), _))))
       << "There must be a default heuristic prediction for every field.";
 
-  for (size_t i = 0; i < form_structure_->field_count(); ++i) {
-    AutofillField* form_field = form_structure_->field(i);
-    ASSERT_TRUE(form_field);
-
-    for (const auto& [source, type] : heuristic_types[i])
-      form_field->set_heuristic_type(source, type);
-    form_field->set_server_predictions({server_types[i]});
+  for (auto [field, heuristic_type, server_type] :
+       base::zip(form_structure_->fields(), heuristic_types, server_types)) {
+    for (const auto& [source, type] : heuristic_type) {
+      field->set_heuristic_type(source, type);
+    }
+    field->set_server_predictions({server_type});
   }
 }
 
@@ -58,20 +58,6 @@ void FormStructureTestApi::SetFieldTypes(
     all_heuristic_types.push_back({{GetActiveHeuristicSource(), type}});
   }
   SetFieldTypes(all_heuristic_types, server_types);
-}
-
-AutofillUploadContents::Field::VoteType
-FormStructureTestApi::get_username_vote_type() {
-  for (size_t i = 0; i < form_structure_->field_count(); ++i) {
-    AutofillField* field = form_structure_->field(i);
-    AutofillUploadContents::Field::VoteType vote_type = field->vote_type();
-    if (vote_type == AutofillUploadContents::Field::USERNAME_OVERWRITTEN ||
-        vote_type == AutofillUploadContents::Field::USERNAME_EDITED ||
-        vote_type == AutofillUploadContents::Field::CREDENTIALS_REUSED) {
-      return vote_type;
-    }
-  }
-  return AutofillUploadContents::Field::NO_INFORMATION;
 }
 
 }  // namespace autofill

@@ -46,6 +46,9 @@ class SpotlightSessionManager : public boca::BocaSessionManager::Observer {
   void RegisterStudentScreen(const std::string& connection_code);
   void OnRegisterScreenRequestSent(
       base::expected<bool, google_apis::ApiErrorCode> result);
+  // Handles showing the persistent notification after the Spotlight warning
+  // countdown has ended.
+  void OnCountdownEnded();
 
   bool in_session_ = false;
   bool request_in_progress_ = false;

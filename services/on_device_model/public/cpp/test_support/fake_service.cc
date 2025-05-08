@@ -5,6 +5,7 @@
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 
 #include <string>
+#include <variant>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -13,6 +14,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
+#include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-shared.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -28,19 +31,41 @@ std::string ReadFile(base::File& file) {
   return std::string(base::as_string_view(base::as_chars(map.bytes())));
 }
 
+std::string Placeholder(ml::Token token) {
+  switch (token) {
+    case ml::Token::kEnd:
+      return "E";
+    case ml::Token::kModel:
+      return "M";
+    case ml::Token::kSystem:
+      return "S";
+    case ml::Token::kUser:
+      return "U";
+  }
+}
+
 std::string OnDeviceInputToString(const mojom::Input& input,
                                   const Capabilities& capabilities) {
   std::ostringstream oss;
   for (const auto& piece : input.pieces) {
-    if (std::holds_alternative<std::string>(piece)) {
+    if (std::holds_alternative<ml::Token>(piece)) {
+      oss << Placeholder(std::get<ml::Token>(piece));
+    } else if (std::holds_alternative<std::string>(piece)) {
       oss << std::get<std::string>(piece);
-    }
-    if (std::holds_alternative<SkBitmap>(piece)) {
+    } else if (std::holds_alternative<SkBitmap>(piece)) {
       if (capabilities.Has(CapabilityFlags::kImageInput)) {
         oss << "<image>";
       } else {
         oss << "<unsupported>";
       }
+    } else if (std::holds_alternative<ml::AudioBuffer>(piece)) {
+      if (capabilities.Has(CapabilityFlags::kAudioInput)) {
+        oss << "<audio>";
+      } else {
+        oss << "<unsupported>";
+      }
+    } else {
+      oss << "<unknown>";
     }
   }
   return oss.str();
@@ -50,10 +75,6 @@ std::string CtxToString(const mojom::AppendOptions& input,
                         const Capabilities& capabilities) {
   std::string suffix;
   std::string context = OnDeviceInputToString(*input.input, capabilities);
-  if (input.token_offset > 0) {
-    context.erase(context.begin(), context.begin() + input.token_offset);
-  }
-  suffix += " off:" + base::NumberToString(input.token_offset);
   if (input.max_tokens > 0) {
     if (input.max_tokens < context.size()) {
       context.resize(input.max_tokens);
@@ -180,10 +201,26 @@ void FakeOnDeviceSession::GenerateImpl(
     remote->OnResponse(std::move(chunk));
   }
 
+  if (options->constraint) {
+    const auto& constraint = *options->constraint;
+    auto chunk = mojom::ResponseChunk::New();
+    if (constraint.is_json_schema()) {
+      chunk->text = "Constraint: json " + constraint.get_json_schema() + "\n";
+    } else if (constraint.is_regex()) {
+      chunk->text = "Constraint: regex " + constraint.get_regex() + "\n";
+    } else {
+      chunk->text = "Constraint: unknown\n";
+    }
+    remote->OnResponse(std::move(chunk));
+  }
+
+  int output_token_count = 0;
   if (settings_->model_execute_result.empty()) {
     for (const auto& context : context_) {
+      std::string text = CtxToString(*context, capabilities_);
+      output_token_count += text.size();
       auto chunk = mojom::ResponseChunk::New();
-      chunk->text = "Context: " + CtxToString(*context, capabilities_) + "\n";
+      chunk->text = "Context: " + text + "\n";
       remote->OnResponse(std::move(chunk));
     }
     if (options->top_k > 1) {
@@ -195,12 +232,14 @@ void FakeOnDeviceSession::GenerateImpl(
     }
   } else {
     for (const auto& text : settings_->model_execute_result) {
+      output_token_count += text.size();
       auto chunk = mojom::ResponseChunk::New();
       chunk->text = text;
       remote->OnResponse(std::move(chunk));
     }
   }
   auto summary = mojom::ResponseSummary::New();
+  summary->output_token_count = output_token_count;
   remote->OnComplete(std::move(summary));
 }
 
@@ -215,8 +254,7 @@ void FakeOnDeviceSession::AppendImpl(
       OnDeviceInputToString(*options->input, capabilities_).size());
   uint32_t max_tokens =
       options->max_tokens > 0 ? options->max_tokens : input_tokens;
-  uint32_t token_offset = options->token_offset;
-  uint32_t tokens_processed = std::min(input_tokens - token_offset, max_tokens);
+  uint32_t tokens_processed = std::min(input_tokens, max_tokens);
   context_.emplace_back(std::move(options));
   if (client) {
     client->OnComplete(tokens_processed);

@@ -99,9 +99,10 @@ struct OmniboxPopupSelection {
                                  size_t action_index = 0)
       : line(line), state(state), action_index(action_index) {}
 
-  bool operator==(const OmniboxPopupSelection&) const;
-  bool operator!=(const OmniboxPopupSelection&) const;
-  bool operator<(const OmniboxPopupSelection&) const;
+  friend bool operator==(const OmniboxPopupSelection&,
+                         const OmniboxPopupSelection&) = default;
+  friend auto operator<=>(const OmniboxPopupSelection&,
+                          const OmniboxPopupSelection&) = default;
 
   // Returns true if going to this selection from given `from` selection
   // results in activation of keyword state when it wasn't active before.

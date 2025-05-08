@@ -273,8 +273,10 @@ class MockWebFrameWidgetImpl : public frame_test_helpers::TestWebFrameWidget {
                     const cc::OverscrollBehavior& overscroll_behavior,
                     bool event_processed));
 
-  MOCK_METHOD2(RequestDecode,
-               void(const cc::DrawImage&, base::OnceCallback<void(bool)>));
+  MOCK_METHOD3(RequestDecode,
+               void(const cc::DrawImage&,
+                    base::OnceCallback<void(bool)>,
+                    bool));
 };
 
 class WebFrameWidgetImplSimTest : public SimTest {
@@ -568,7 +570,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeSimple) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest doc_request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
-  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(1);
+  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, _)).Times(1);
   doc_request.Complete(
       R"HTML(
 <!DOCTYPE html>
@@ -590,7 +592,7 @@ TEST_F(WebFrameWidgetImplSimTest, NoSpeculativeDecodeOutsideViewport) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest doc_request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
-  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(0);
+  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, _)).Times(0);
   doc_request.Complete(
       R"HTML(
 <!DOCTYPE html>
@@ -614,7 +616,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeIgnoresBackgroundImage) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest doc_request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
-  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(0);
+  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, _)).Times(0);
   doc_request.Complete(
       R"HTML(
 <!DOCTYPE html>
@@ -643,7 +645,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeNoSizeWaitsForLayout) {
   LoadURL("https://example.com/test.html");
 
   {
-    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(0);
+    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, _)).Times(0);
     doc_request.Complete(
         R"HTML(<!DOCTYPE html>
         <img id="i1" src="image.png">
@@ -656,7 +658,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeNoSizeWaitsForLayout) {
   }
 
   {
-    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(1);
+    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, _)).Times(1);
     widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   }
 }
@@ -677,7 +679,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeWithExtrinsicSize) {
   LoadURL("https://example.com/test.html");
 
   {
-    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(1);
+    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, _)).Times(1);
     doc_request.Complete(
         R"HTML(<!DOCTYPE html>
         <img style="width: 100px" src="image.png">

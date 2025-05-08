@@ -26,6 +26,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -717,6 +718,11 @@ const enterprise_connectors::AnalysisSettings& DeepScanningRequest::settings()
   return analysis_settings_;
 }
 
+signin::IdentityManager* DeepScanningRequest::identity_manager() const {
+  return IdentityManagerFactory::GetForProfile(
+      Profile::FromBrowserContext(metadata_->GetBrowserContext()));
+}
+
 int DeepScanningRequest::user_action_requests_count() const {
   if (!save_package_files_.empty()) {
     return save_package_files_.size();
@@ -754,6 +760,12 @@ const GURL& DeepScanningRequest::tab_url() const {
 enterprise_connectors::ContentAnalysisRequest::Reason
 DeepScanningRequest::reason() const {
   return reason_;
+}
+
+google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+DeepScanningRequest::referrer_chain() const {
+  return google::protobuf::RepeatedPtrField<
+      ::safe_browsing::ReferrerChainEntry>();
 }
 
 void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {

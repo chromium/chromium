@@ -29,7 +29,8 @@
 WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
     Browser* browser,
     SessionMetrics* session_metrics)
-    : web_state_list_(browser->GetWebStateList()),
+    : BrowserUserData(browser),
+      web_state_list_(browser->GetWebStateList()),
       session_metrics_(session_metrics) {
   DCHECK(web_state_list_);
   DCHECK(session_metrics_);

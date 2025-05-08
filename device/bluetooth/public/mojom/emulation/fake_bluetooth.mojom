@@ -52,6 +52,20 @@ enum GATTOperationType {
   kDiscovery,
 };
 
+// Characteristic operation type
+enum CharacteristicOperationType {
+  kRead,
+  kWrite,
+  kSubscribeToNotifications,
+  kUnsubscribeFromNotifications,
+};
+
+// Descriptor operation type
+enum DescriptorOperationType {
+  kRead,
+  kWrite,
+};
+
 // Stores the external appearance description of the device.
 struct Appearance {
   bool has_value;
@@ -223,6 +237,30 @@ interface FakeCentral {
   // attributes. Consequently, this simulate method should include the full
   // range of all the peripheral's attribute handle values.
   SimulateGATTServicesChanged(string address) => (bool success);
+
+  // Simulates the response |code| and |data| from the fake GATT Characteristic
+  // with |characteristic_id| in the fake service with |service_id| in
+  // |peripheral_address| peripheral for a characteristic operation of |type|.
+  SimulateCharacteristicOperationResponse(
+    CharacteristicOperationType type,
+    string characteristic_id,
+    string service_id,
+    string peripheral_address,
+    uint16 code,
+    array<uint8>? data) => (bool success);
+
+  // Simulates the response |code| and |data| from the fake GATT Descriptor
+  // with |descriptor_id| in the fake characteristic with |characteristic_id| in
+  // the fake service with |service_id| in |peripheral_address| peripheral for a
+  // descriptor operation of |type|.
+  SimulateDescriptorOperationResponse(
+    DescriptorOperationType type,
+    string descriptor_id,
+    string characteristic_id,
+    string service_id,
+    string peripheral_address,
+    uint16 code,
+    array<uint8>? data) => (bool success);
 
   // Adds a fake GATT Service with |service_uuid| to |peripheral_address|
   // peripheral. The service will be found found when discovering the
@@ -404,4 +442,18 @@ interface FakeCentralClient {
   // Called when the peripheral with |peripheral_address| receives a request of
   // GATT operation |type|.
   DispatchGATTOperationEvent(GATTOperationType type, string peripheral_address);
+  // Called when the characteristic with |characteristic_id| receives a request
+  // of characteristic operation |type| along with |data|. |write_type| will
+  // exist when |type| is CharacteristicOperationType::kWrite.
+  DispatchCharacteristicOperationEvent(
+      CharacteristicOperationType type,
+      array<uint8>? data,
+      WriteType? write_type,
+      string characteristic_id);
+  // Called when the descriptor with |descriptor_id| receives a request
+  // of descriptor operation |type| along with |data|.
+  DispatchDescriptorOperationEvent(
+    DescriptorOperationType type,
+    array<uint8>? data,
+    string descriptor_id);
 };

@@ -39,7 +39,6 @@ namespace gpu {
 class ClientSharedImageInterface;
 struct SyncToken;
 class GpuChannelHost;
-class GpuMemoryBufferManager;
 
 using GpuChannelEstablishedCallback =
     base::OnceCallback<void(scoped_refptr<GpuChannelHost>)>;
@@ -50,7 +49,6 @@ class GPU_EXPORT GpuChannelEstablishFactory {
 
   virtual void EstablishGpuChannel(GpuChannelEstablishedCallback callback) = 0;
   virtual scoped_refptr<GpuChannelHost> EstablishGpuChannelSync() = 0;
-  virtual GpuMemoryBufferManager* GetGpuMemoryBufferManager() = 0;
 };
 
 // Encapsulates an IPC channel between the client and one GPU process.

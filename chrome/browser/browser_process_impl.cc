@@ -499,6 +499,7 @@ void BrowserProcessImpl::StartTearDown() {
   DCHECK(IsShuttingDown());
 
   features_->Shutdown();
+  metrics_services_manager_client_ = nullptr;
   metrics_services_manager_.reset();
   intranet_redirect_detector_.reset();
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

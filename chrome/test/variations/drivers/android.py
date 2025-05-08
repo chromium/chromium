@@ -5,6 +5,7 @@
 import os
 import logging
 import posixpath
+import time
 
 from contextlib import contextmanager
 from typing import List, Optional
@@ -20,6 +21,9 @@ from devil.android import device_temp_file
 from devil.android import device_utils
 from devil.android.sdk import intent
 
+# Wait time after loading a page to allow the scrollbar to disappear before
+# taking a screenshot.
+SCREENSHOT_WAIT_TIME_SECONDS = 5
 
 @attr.attrs()
 class AndroidDriverFactory(DriverFactory):
@@ -75,6 +79,10 @@ class AndroidDriverFactory(DriverFactory):
     self.device.RunShellCommand(
       ['chown', uid, local_seed_file], as_root=True)
     return local_seed_file
+
+  #override
+  def wait_for_screenshot(self):
+    time.sleep(SCREENSHOT_WAIT_TIME_SECONDS)
 
   #override
   @contextmanager

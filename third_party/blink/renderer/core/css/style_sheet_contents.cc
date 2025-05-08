@@ -628,7 +628,8 @@ CSSStyleSheet* StyleSheetContents::ClientInTreeScope(
   auto is_in_tree_scope = [&](CSSStyleSheet* sheet,
                               const TreeScope& tree_scope) -> bool {
     return sheet->IsAdoptedByTreeScope(tree_scope) ||
-           sheet->ownerNode()->GetTreeScope() == tree_scope;
+           (sheet->ownerNode() != nullptr &&
+            sheet->ownerNode()->GetTreeScope() == tree_scope);
   };
 
   StyleSheetContents* root = RootStyleSheet();

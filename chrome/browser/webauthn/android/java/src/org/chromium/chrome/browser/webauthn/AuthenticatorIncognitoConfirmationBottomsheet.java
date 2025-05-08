@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.webauthn;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -12,10 +14,13 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -34,12 +39,13 @@ import org.chromium.ui.base.WindowAndroid;
  * <p>If the user clicks "Continue" the `positiveCallback` is run. If the user closes the
  * bottomsheet in any other way, the `negativeCallback` is run.
  */
+@NullMarked
 class AuthenticatorIncognitoConfirmationBottomsheet {
     private final WebContents mWebContents;
-    private BottomSheetController mController;
-    private Runnable mPositiveCallback;
-    private Runnable mNegativeCallback;
-    private ScrollView mScrollView;
+    private @Nullable BottomSheetController mController;
+    private @MonotonicNonNull Runnable mPositiveCallback;
+    private @MonotonicNonNull Runnable mNegativeCallback;
+    private @Nullable ScrollView mScrollView;
     @VisibleForTesting RelativeLayout mContentView;
     @VisibleForTesting boolean mIsShowing;
 
@@ -61,7 +67,7 @@ class AuthenticatorIncognitoConfirmationBottomsheet {
                 }
 
                 @Override
-                public View getToolbarView() {
+                public @Nullable View getToolbarView() {
                     return null;
                 }
 
@@ -103,7 +109,7 @@ class AuthenticatorIncognitoConfirmationBottomsheet {
                 }
 
                 @Override
-                public @NonNull String getSheetContentDescription(Context context) {
+                public String getSheetContentDescription(Context context) {
                     return context.getString(
                             R.string.webauthn_incognito_confirmation_sheet_description);
                 }
@@ -132,17 +138,19 @@ class AuthenticatorIncognitoConfirmationBottomsheet {
     public void close(boolean success) {
         if (!mIsShowing) return;
 
+        assumeNonNull(mController);
         mController.removeObserver(mBottomSheetObserver);
         mController.hideContent(/* content= */ mBottomSheetContent, /* animate= */ true);
         mIsShowing = false;
 
         if (success) {
-            mPositiveCallback.run();
+            assumeNonNull(mPositiveCallback).run();
         } else {
-            mNegativeCallback.run();
+            assumeNonNull(mNegativeCallback).run();
         }
     }
 
+    @Initializer
     public boolean show(Runnable positiveCallback, Runnable negativeCallback) {
         assert positiveCallback != null;
         assert negativeCallback != null;

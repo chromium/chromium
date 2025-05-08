@@ -60,6 +60,12 @@
     "smoke_file": "TestLists/skia-vulkan-swiftshader"
   },
   {
+    "name": "trees-in-viz",
+    "args": [
+          "--enable-features=TreesInViz"
+    ]
+  },
+  {
     "name": "webgpu",
     "args": [
           "--enable-unsafe-webgpu",

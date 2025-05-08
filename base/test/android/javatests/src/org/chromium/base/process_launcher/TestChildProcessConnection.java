@@ -30,7 +30,9 @@ public class TestChildProcessConnection extends ChildProcessConnection {
         }
 
         @Override
-        public void updateGroupImportance(int group, int importanceInGroup) {}
+        public boolean updateGroupImportance(int group, int importanceInGroup) {
+            return true;
+        }
 
         @Override
         public void retire() {}

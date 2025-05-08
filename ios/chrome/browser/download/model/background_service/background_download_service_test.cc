@@ -16,6 +16,7 @@
 #include "components/download/public/background_service/test/mock_client.h"
 #include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -154,6 +155,7 @@ class BackgroundDownloadServiceTest
   }
 
  private:
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ProfileIOS> profile_;
   raw_ptr<download::BackgroundDownloadService> service_;
   raw_ptr<FakeClient> fake_client_ = nullptr;

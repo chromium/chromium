@@ -70,7 +70,7 @@ class MockAttributionDataHostManager final : public AttributionDataHostManager {
               NotifyNavigationRegistrationData,
               (const blink::AttributionSrcToken& attribution_src_token,
                const net::HttpResponseHeaders* headers,
-               GURL reporting_url),
+               const GURL& reporting_url),
               (override));
 
   MOCK_METHOD(void,

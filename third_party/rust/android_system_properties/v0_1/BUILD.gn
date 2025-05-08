@@ -29,7 +29,10 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
-  deps = [ "//third_party/rust/libc/v0_2:lib" ]
+  deps = []
+  if (is_android) {
+    deps += [ "//third_party/rust/libc/v0_2:lib" ]
+  }
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

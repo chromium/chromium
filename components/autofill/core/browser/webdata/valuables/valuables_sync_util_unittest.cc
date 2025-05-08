@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 
+#include "base/types/zip.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,9 +82,10 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
             specifics.loyalty_card().loyalty_card_number());
   ASSERT_EQ(card.merchant_domains().size(),
             (size_t)specifics.loyalty_card().merchant_domains().size());
-  for (size_t i = 0; i < card.merchant_domains().size(); i++) {
-    EXPECT_EQ(card.merchant_domains()[i],
-              specifics.loyalty_card().merchant_domains(i));
+  for (auto [merchant_domain, loyalty_card_domain] :
+       base::zip(card.merchant_domains(),
+                 specifics.loyalty_card().merchant_domains())) {
+    EXPECT_EQ(merchant_domain, loyalty_card_domain);
   }
 }
 

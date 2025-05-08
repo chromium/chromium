@@ -72,6 +72,11 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/browser_commands_mac.h"
+#include "chrome/browser/ui/fullscreen_util_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabPageElementId);
 }  // namespace
@@ -182,6 +187,19 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest,
       SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
       EnsurePresent(AppMenuModel::kCastTitleItem));
 }
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest,
+                       ShowAppMenuInImmersiveFullscreen) {
+  chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), false);
+  ASSERT_TRUE(!fullscreen_utils::IsAlwaysShowToolbarEnabled(browser()));
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  chrome::RevealToolbarForTesting(browser());
+  RunTestSequence(WaitForShow(kToolbarAppMenuButtonElementId),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  WaitForShow(AppMenuModel::kMoreToolsMenuItem));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 

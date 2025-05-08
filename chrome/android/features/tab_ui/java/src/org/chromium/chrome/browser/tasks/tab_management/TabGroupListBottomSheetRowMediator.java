@@ -11,6 +11,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetMediator.TabGroupListBottomSheetRowMergeOperation;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -28,10 +30,11 @@ import java.util.Objects;
  * TabGroupSyncService} as its primary source of truth.
  */
 @NullMarked
-class TabGroupListBottomSheetRowMediator {
+class TabGroupListBottomSheetRowMediator implements TabGroupListBottomSheetRowMergeOperation {
     private final SavedTabGroup mSavedTabGroup;
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
+    private final @Nullable TabMovedCallback mTabMovedCallback;
     private final PropertyModel mPropertyModel;
 
     /**
@@ -40,6 +43,7 @@ class TabGroupListBottomSheetRowMediator {
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param onClickRunnable To be run on clicking the row.
+     * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
      * @param tabs The tabs to be added to a tab group.
      */
     public TabGroupListBottomSheetRowMediator(
@@ -48,10 +52,12 @@ class TabGroupListBottomSheetRowMediator {
             FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
             Runnable onClickRunnable,
+            @Nullable TabMovedCallback tabMovedCallback,
             List<Tab> tabs) {
         mSavedTabGroup = savedTabGroup;
         mTabGroupModelFilter = tabGroupModelFilter;
         mTabGroupSyncService = tabGroupSyncService;
+        mTabMovedCallback = tabMovedCallback;
 
         int numTabs = mSavedTabGroup.savedTabs.size();
         List<GURL> urlList = TabGroupFaviconCluster.buildUrlListFromSyncGroup(mSavedTabGroup);
@@ -66,7 +72,7 @@ class TabGroupListBottomSheetRowMediator {
                 new TabGroupRowViewTitleData(
                         mSavedTabGroup.title,
                         numTabs,
-                        R.string.tab_group_bottom_sheet_row_accessibility_text);
+                        R.plurals.tab_group_bottom_sheet_row_accessibility_text);
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
 
         builder.with(
@@ -111,12 +117,7 @@ class TabGroupListBottomSheetRowMediator {
             return;
         }
 
-        Tab destTab = mTabGroupModelFilter.getTabModel().getTabById(localId);
-        if (destTab == null) {
-            return;
-        }
-
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, destTab, true);
+        mergeTabsToDest(tabs, localId, mTabGroupModelFilter, mTabMovedCallback);
     }
 
     private boolean areTabsAlreadyInGroup(List<Tab> tabsToBeMoved) {

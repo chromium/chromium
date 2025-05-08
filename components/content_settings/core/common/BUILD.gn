@@ -29,6 +29,7 @@ static_library("common") {
     "content_settings_utils.h",
     "cookie_blocking_3pcd_status.h",
     "cookie_controls_enforcement.h",
+    "cookie_controls_state.h",
     "cookie_settings_base.cc",
     "cookie_settings_base.h",
     "host_indexed_content_settings.cc",

@@ -164,7 +164,6 @@ bool IsFromUserInteraction(feedback::FeedbackSource source) {
     case feedback::kFeedbackSourceCookieControls:
     case feedback::kFeedbackSourceNetworkHealthPage:
     case feedback::kFeedbackSourceMdSettingsAboutPage:
-    case feedback::kFeedbackSourceOldSettingsAboutPage:
     case feedback::kFeedbackSourceOsSettingsSearch:
     case feedback::kFeedbackSourcePriceInsights:
     case feedback::kFeedbackSourceQuickAnswers:
@@ -235,9 +234,7 @@ void RequestFeedbackFlow(const GURL& page_url,
       description_template, description_placeholder_text, category_tag,
       extra_diagnostics, page_url, flow,
       source == feedback::kFeedbackSourceAssistant, include_bluetooth_logs,
-      show_questionnaire,
-      source == feedback::kFeedbackSourceChromeLabs ||
-          source == feedback::kFeedbackSourceKaleidoscope,
+      show_questionnaire, source == feedback::kFeedbackSourceChromeLabs,
       source == feedback::kFeedbackSourceAutofillContextMenu, autofill_metadata,
       ai_metadata);
 

@@ -89,17 +89,17 @@ class ExtensionAPI {
   void RegisterDependencyProvider(const std::string& name,
                                   const FeatureProvider* provider);
 
-  // Returns true if the API item called |api_full_name| and all of its
-  // dependencies are available in |context|.
+  // Returns true if the API item called `api_full_name` and all of its
+  // dependencies are available in `context`.
   //
-  // |api_full_name| can be either a namespace name (like "bookmarks") or a
+  // `api_full_name` can be either a namespace name (like "bookmarks") or a
   // member name (like "bookmarks.create").
   //
-  // Depending on the configuration of |api| (in _api_features.json), either
-  // |extension| or |url| (or both) may determine its availability, but this is
+  // Depending on the configuration of `api` (in _api_features.json), either
+  // `extension` or `url` (or both) may determine its availability, but this is
   // up to the configuration of the individual feature.
   //
-  // |check_alias| determines whether it should be tested whether the API
+  // `check_alias` determines whether it should be tested whether the API
   // is available through an alias.
   //
   // TODO(kalman): This is just an unnecessary combination of finding a Feature
@@ -114,9 +114,9 @@ class ExtensionAPI {
                                     const ContextData& context_data);
 
   // Determines whether an API, or any parts of that API, can be exposed to
-  // |context|.
+  // `context`.
   //
-  // |check_alias| determines whether it should be tested whether the API
+  // `check_alias` determines whether it should be tested whether the API
   // is available through an alias.
   //
   bool IsAnyFeatureAvailableToContext(const Feature& api,
@@ -127,10 +127,10 @@ class ExtensionAPI {
                                       int context_id,
                                       const ContextData& context_data);
 
-  // Gets the string_view for the schema specified by |api_name|.
+  // Gets the string_view for the schema specified by `api_name`.
   std::string_view GetSchemaStringPiece(const std::string& api_name);
 
-  // Gets the schema for the extension API with namespace |full_name|.
+  // Gets the schema for the extension API with namespace `full_name`.
   // Ownership remains with this object.
   // TODO(devlin): Now that we use GetSchemaStringPiece() in the renderer, we
   // may not really need this anymore.
@@ -144,7 +144,7 @@ class ExtensionAPI {
   // "storage.sync.set" -> ("storage", "sync.get")
   // "<unknown-api>.monkey" -> ("", "")
   //
-  // The |child_name| parameter can be be NULL if you don't need that part.
+  // The `child_name` parameter can be be NULL if you don't need that part.
   std::string GetAPINameFromFullName(const std::string& full_name,
                                      std::string* child_name);
 
@@ -158,11 +158,11 @@ class ExtensionAPI {
 
   void InitDefaultConfiguration();
 
-  // Returns true if there exists an API with |name|. Declared virtual for
+  // Returns true if there exists an API with `name`. Declared virtual for
   // testing purposes.
   virtual bool IsKnownAPI(const std::string& name, ExtensionsClient* client);
 
-  // Checks if |full_name| is available to provided context and extension under
+  // Checks if `full_name` is available to provided context and extension under
   // associated API's alias name.
   Feature::Availability IsAliasAvailable(const std::string& full_name,
                                          const Feature& feature,
@@ -175,10 +175,10 @@ class ExtensionAPI {
   // Loads a schema.
   void LoadSchema(const std::string& name, std::string_view schema);
 
-  // Same as GetSchemaStringPiece() but doesn't acquire |lock_|.
+  // Same as GetSchemaStringPiece() but doesn't acquire `lock_`.
   std::string_view GetSchemaStringPieceUnsafe(const std::string& api_name);
 
-  // Same as GetAPINameFromFullName() but doesn't acquire |lock_|.
+  // Same as GetAPINameFromFullName() but doesn't acquire `lock_`.
   std::string GetAPINameFromFullNameUnsafe(const std::string& full_name,
                                            std::string* child_name);
 

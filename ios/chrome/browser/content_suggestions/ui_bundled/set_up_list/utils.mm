@@ -48,7 +48,7 @@ bool ShouldShowCompactedSetUpListModule() {
       set_up_list::FirstRunVariationType::kDisabled) {
     return true;
   }
-  return !IsFirstRunRecent(base::Days(TimeUntilShowingCompactedSetUpList()));
+  return !IsFirstRun();
 }
 
 }  // namespace set_up_list_utils

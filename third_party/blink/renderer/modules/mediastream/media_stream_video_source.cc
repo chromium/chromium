@@ -60,13 +60,7 @@ MediaStreamVideoSource::~MediaStreamVideoSource() {
 void MediaStreamVideoSource::AddTrack(
     MediaStreamVideoTrack* track,
     const VideoTrackAdapterSettings& track_adapter_settings,
-    const VideoCaptureDeliverFrameCB& frame_callback,
-    const VideoCaptureNotifyFrameDroppedCB& notify_frame_dropped_callback,
-    const EncodedVideoFrameCB& encoded_frame_callback,
-    const VideoCaptureSubCaptureTargetVersionCB&
-        sub_capture_target_version_callback,
-    const VideoTrackSettingsCallback& settings_callback,
-    const VideoTrackFormatCallback& format_callback,
+    MediaStreamVideoSourceCallbacks media_stream_callbacks,
     ConstraintsOnceCallback callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(!base::Contains(tracks_, track));
@@ -74,9 +68,7 @@ void MediaStreamVideoSource::AddTrack(
   secure_tracker_.Add(track, true);
 
   pending_tracks_.push_back(PendingTrackInfo{
-      track, frame_callback, notify_frame_dropped_callback,
-      encoded_frame_callback, sub_capture_target_version_callback,
-      settings_callback, format_callback,
+      track, std::move(media_stream_callbacks),
       std::make_unique<VideoTrackAdapterSettings>(track_adapter_settings),
       std::move(callback)});
 
@@ -99,29 +91,36 @@ void MediaStreamVideoSource::AddTrack(
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::OnFrameDroppedOnVideoTaskRunner,
               GetTrackAdapter()));
+
+      MediaStreamVideoSourceCallbacks new_media_stream_callbacks;
+
       // Callbacks are invoked from the IO thread. With
       // UseThreadPoolForMediaStreamVideoTaskRunner disabled, the video task
       // runner is the same as the IO thread and there is no need to post frames
       // to the video task runner.
       if (base::FeatureList::IsEnabled(
               features::kUseThreadPoolForMediaStreamVideoTaskRunner)) {
-        StartSourceImpl(
-            base::BindPostTask(video_task_runner(),
-                               std::move(deliver_frame_on_video_callback)),
+        new_media_stream_callbacks.deliver_frame_cb = base::BindPostTask(
+            video_task_runner(), std::move(deliver_frame_on_video_callback));
+        new_media_stream_callbacks.sub_capture_target_version_cb =
             base::BindPostTask(
                 video_task_runner(),
-                std::move(deliver_encoded_frame_on_video_callback)),
-            base::BindPostTask(
-                video_task_runner(),
-                std::move(new_sub_capture_target_version_on_video_callback)),
-            base::BindPostTask(video_task_runner(),
-                               std::move(frame_dropped_callback)));
+                std::move(new_sub_capture_target_version_on_video_callback));
+        new_media_stream_callbacks.frame_dropped_cb = base::BindPostTask(
+            video_task_runner(), std::move(frame_dropped_callback));
+        new_media_stream_callbacks.encoded_frame_cb = base::BindPostTask(
+            video_task_runner(),
+            std::move(deliver_encoded_frame_on_video_callback));
+        StartSourceImpl(std::move(new_media_stream_callbacks));
       } else {
-        StartSourceImpl(
-            std::move(deliver_frame_on_video_callback),
-            std::move(deliver_encoded_frame_on_video_callback),
-            std::move(new_sub_capture_target_version_on_video_callback),
-            std::move(frame_dropped_callback));
+        new_media_stream_callbacks.deliver_frame_cb =
+            deliver_frame_on_video_callback;
+        new_media_stream_callbacks.sub_capture_target_version_cb =
+            new_sub_capture_target_version_on_video_callback;
+        new_media_stream_callbacks.frame_dropped_cb = frame_dropped_callback;
+        new_media_stream_callbacks.encoded_frame_cb =
+            deliver_encoded_frame_on_video_callback;
+        StartSourceImpl(std::move(new_media_stream_callbacks));
       }
       break;
     }
@@ -487,13 +486,9 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks(
   pending_track_descriptors.swap(pending_tracks_);
   for (auto& track_info : pending_track_descriptors) {
     if (result == mojom::blink::MediaStreamRequestResult::OK) {
-      GetTrackAdapter()->AddTrack(
-          track_info.track, track_info.frame_callback,
-          track_info.notify_frame_dropped_callback,
-          track_info.encoded_frame_callback,
-          track_info.sub_capture_target_version_callback,
-          track_info.settings_callback, track_info.format_callback,
-          *track_info.adapter_settings);
+      GetTrackAdapter()->AddTrack(track_info.track,
+                                  track_info.media_stream_callbacks,
+                                  *track_info.adapter_settings);
       UpdateTrackSettings(track_info.track, *track_info.adapter_settings);
     }
 

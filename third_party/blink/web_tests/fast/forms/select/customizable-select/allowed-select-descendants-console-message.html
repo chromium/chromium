@@ -96,6 +96,40 @@
     </span>
   </select>
 
+  <!-- Custom element -->
+  <script>
+    class CustomElement extends HTMLElement {
+        constructor() {
+            super();
+        }
+    }
+    customElements.define('custom-element', CustomElement);
+  </script>
+
+  <select>
+    <custom-element></custom-element>
+  </select>
+
+  <!-- Custom element with <option> children -->
+  <select>
+    <custom-element>
+      <option>..</option>
+      <option>..</option>
+    </custom-element>
+  </select>
+
+  <!-- Nested custom elements -->
+  <select>
+    <custom-element>
+      <custom-element>
+        <custom-element>
+          <option>..</option>
+          <option>..</option>
+        </custom-element>
+      </custom-element>
+    </custom-element>
+  </select>
+
   <!-- <noscript> -->
   <select>
     <noscript>
@@ -141,7 +175,7 @@
     <option>..</option>
   </select>
 
-  <!-- <selectedcontent> as descendant of <div>, <span> -->
+  <!-- <selectedcontent> as descendant of <div>, <span>, custom element -->
   <select>
     <button>
       <div>
@@ -155,6 +189,14 @@
       <span>
         <selectedcontent></selectedcontent>
       </span>
+    </button>
+  </select>
+
+  <select>
+    <button>
+      <custom-element>
+        <selectedcontent></selectedcontent>
+      </custom-element>
     </button>
   </select>
 
@@ -259,6 +301,30 @@
     </optgroup>
   </select>
 
+  <!-- Custom element -->
+  <select>
+    <optgroup>
+      <custom-element>
+        <option>..</option>
+        <option>..</option>
+      </custom-element>
+    </optgroup>
+  </select>
+  
+  <!-- Nested custom elements -->
+  <select>
+    <optgroup>
+      <custom-element>
+        <custom-element>
+          <custom-element>
+            <option>..</option>
+            <option>..</option>
+          </custom-element>
+        </custom-element>
+      </custom-element>
+    </optgroup>
+  </select>
+
   <!-- <noscript> -->
   <select>
     <optgroup>
@@ -360,6 +426,25 @@
       </span>
     </option>
   </select>
+
+  <!-- Custom element -->
+    <select>
+      <option>
+        <custom-element></custom-element>
+      </option>
+      <option>
+        <custom-element></custom-element>
+      </option>
+    </select>
+  
+    <!-- Nested custom elements -->
+    <select>
+      <option>
+        <custom-element>
+          <custom-element></custom-element>
+        </custom-element>
+      </option>
+    </select>
 
   <!-- <noscript> -->
   <select>

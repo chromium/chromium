@@ -17,6 +17,7 @@ class AuthenticationService;
 @protocol FeedTopSectionConsumer;
 @protocol NewTabPageDelegate;
 class PrefService;
+class ProvisionalPushNotificationService;
 @class SigninPromoViewMediator;
 
 namespace signin {
@@ -42,10 +43,12 @@ enum class ContentNotificationPromoProvisionalEntrypoint {
                 SigninPromoViewConsumer>
 
 - (instancetype)initWithConsumer:(id<FeedTopSectionConsumer>)consumer
-                 identityManager:(signin::IdentityManager*)identityManager
-                     authService:(AuthenticationService*)authService
-                       incognito:(BOOL)incognito
-                     prefService:(PrefService*)prefService
+                       identityManager:(signin::IdentityManager*)identityManager
+                           authService:(AuthenticationService*)authService
+    provisionalPushNotificationService:
+        (ProvisionalPushNotificationService*)provisionalPushNotificationService
+                             incognito:(BOOL)incognito
+                           prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

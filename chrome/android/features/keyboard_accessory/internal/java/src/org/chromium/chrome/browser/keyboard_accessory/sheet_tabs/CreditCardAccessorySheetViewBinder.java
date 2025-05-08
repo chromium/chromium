@@ -32,6 +32,12 @@ class CreditCardAccessorySheetViewBinder {
          * appropriate drawable.
          */
         public Function<KeyboardAccessoryData.UserInfo, Drawable> cardDrawableFunction;
+
+        /**
+         * Converts an {@link KeyboardAccessoryData.LoyaltyCardInfo} to the appropriate drawable.
+         */
+        public Function<KeyboardAccessoryData.LoyaltyCardInfo, Drawable>
+                loyaltyCardDrawableFunction;
     }
 
     static ElementViewHolder create(
@@ -48,6 +54,9 @@ class CreditCardAccessorySheetViewBinder {
                 return new PromoCodeInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.IBAN_INFO:
                 return new IbanInfoViewHolder(parent);
+            case AccessorySheetDataPiece.Type.LOYALTY_CARD_INFO:
+                return new LoyaltyCardInfoViewHolder(
+                        parent, uiConfiguration.loyaltyCardDrawableFunction);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
@@ -132,6 +141,28 @@ class CreditCardAccessorySheetViewBinder {
             bindChipView(view.getValue(), info.getValue());
 
             view.setIcon(AppCompatResources.getDrawable(view.getContext(), R.drawable.iban_icon));
+        }
+    }
+
+    /** View which represents a single Google Wallet loyalty card and its fields. */
+    static class LoyaltyCardInfoViewHolder
+            extends ElementViewHolder<KeyboardAccessoryData.LoyaltyCardInfo, LoyaltyCardInfoView> {
+        private Function<KeyboardAccessoryData.LoyaltyCardInfo, Drawable>
+                mLoyaltyCardDrawableFunction;
+
+        LoyaltyCardInfoViewHolder(
+                ViewGroup parent,
+                Function<KeyboardAccessoryData.LoyaltyCardInfo, Drawable>
+                        loyaltyCardDrawableFunction) {
+            super(parent, R.layout.keyboard_accessory_sheet_tab_loyalty_card_info);
+            mLoyaltyCardDrawableFunction = loyaltyCardDrawableFunction;
+        }
+
+        @Override
+        protected void bind(KeyboardAccessoryData.LoyaltyCardInfo info, LoyaltyCardInfoView view) {
+            view.getMerchantName().setText(info.getMerchantName());
+            bindChipView(view.getLoyaltyCardNumber(), info.getLoyaltyCardNumber());
+            view.setIcon(mLoyaltyCardDrawableFunction.apply(info));
         }
     }
 

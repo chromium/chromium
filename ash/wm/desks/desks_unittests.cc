@@ -3916,35 +3916,6 @@ TEST_P(DesksTest, DragAllOverviewWindowsToOtherDesksNotEndClamshellSplitView) {
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 }
 
-TEST_P(DesksTest, DeskTraversalNonTouchpadMetrics) {
-  NewDesk();
-  NewDesk();
-  NewDesk();
-  ASSERT_EQ(4u, DesksController::Get()->desks().size());
-
-  constexpr char kDeskTraversalsHistogramName[] =
-      "Ash.Desks.NumberOfDeskTraversals";
-
-  base::HistogramTester histogram_tester;
-  auto* controller = DesksController::Get();
-  const auto& desks = controller->desks();
-  ASSERT_EQ(controller->active_desk(), desks[0].get());
-
-  // Move 5 desks. There is nothing recorded at the end since the timer is still
-  // running.
-  ActivateDesk(desks[1].get());
-  ActivateDesk(desks[0].get());
-  ActivateDesk(desks[1].get());
-  ActivateDesk(desks[2].get());
-  ActivateDesk(desks[3].get());
-  histogram_tester.ExpectBucketCount(kDeskTraversalsHistogramName, 5, 0);
-
-  // Simulate advancing the time to end the timer. There should be 5 desks
-  // recorded.
-  controller->FireMetricsTimerForTesting();
-  histogram_tester.ExpectBucketCount(kDeskTraversalsHistogramName, 5, 1);
-}
-
 // Tests that clipping is unchanged when removing a desk in overview. Regression
 // test for https://crbug.com/1166300.
 TEST_P(DesksTest, RemoveDeskPreservesOverviewClipping) {

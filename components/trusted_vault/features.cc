@@ -15,4 +15,10 @@ BASE_FEATURE(kSetClientEncryptionKeysJsApi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kEnableICloudKeychainRecoveryFactor,
+             "EnableICloudKeychainRecoveryFactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace trusted_vault

@@ -405,9 +405,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenCrossSite) {
   RenderFrameHostImplWrapper rfh_b(popup_root->current_frame_host());
   EXPECT_EQ(2u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
   EXPECT_EQ(2u, rfh_b->GetSiteInstance()->GetRelatedActiveContentsCount());
-  // A and B use different SiteInstances if site isolation is turned on, and
-  // shares the same SiteInstance otherwise.
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  // A and B use different SiteInstances if site isolation or default
+  // SiteInstanceGroups are turned on, and share the same SiteInstance
+  // otherwise.
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_NE(rfh_a->GetSiteInstance(), rfh_b->GetSiteInstance());
   } else {
     EXPECT_EQ(rfh_a->GetSiteInstance(), rfh_b->GetSiteInstance());
@@ -423,8 +424,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenCrossSite) {
   // BackForwardCache, because of the opener.
   ASSERT_TRUE(NavigateToURLFromRenderer(rfh_b.get(), url_c));
 
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
-      ShouldCreateNewHostForAllFrames()) {
+  if (AreStrictSiteInstancesEnabled() || ShouldCreateNewHostForAllFrames()) {
     ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
   } else {
     ASSERT_FALSE(rfh_b->IsInBackForwardCache());
@@ -479,9 +479,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameHostImplWrapper rfh_b1(popup_root->current_frame_host());
   EXPECT_EQ(2u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
   EXPECT_EQ(2u, rfh_b1->GetSiteInstance()->GetRelatedActiveContentsCount());
-  // A and B use different SiteInstances if site isolation is turned on, and
-  // shares the same SiteInstance otherwise.
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  // A and B use different SiteInstances if site isolation or default
+  // SiteInstanceGroups are turned on, and share the same SiteInstance
+  // otherwise.
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_NE(rfh_a->GetSiteInstance(), rfh_b1->GetSiteInstance());
   } else {
     EXPECT_EQ(rfh_a->GetSiteInstance(), rfh_b1->GetSiteInstance());
@@ -559,12 +560,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(2u, rfh_b->GetSiteInstance()->GetRelatedActiveContentsCount());
 
   // The opener A and the iframe A uses the same SiteInstance. Meanwhile, A and
-  // B use different SiteInstances if site isolation is turned on, and shares
-  // the same SiteInstance otherwise.
+  // B use different SiteInstances if site isolation or default
+  // SiteInstanceGroups are turned on, and share the same SiteInstance
+  // otherwise.
   RenderFrameHostImplWrapper rfh_a_iframe(
       rfh_b->child_at(0)->current_frame_host());
   EXPECT_EQ(rfh_a->GetSiteInstance(), rfh_a_iframe->GetSiteInstance());
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_NE(rfh_a->GetSiteInstance(), rfh_b->GetSiteInstance());
   } else {
     EXPECT_EQ(rfh_a->GetSiteInstance(), rfh_b->GetSiteInstance());
@@ -582,8 +584,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // BackForwardCache, because of the opener.
   ASSERT_TRUE(NavigateToURLFromRenderer(rfh_b.get(), url_c));
 
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
-      ShouldCreateNewHostForAllFrames()) {
+  if (AreStrictSiteInstancesEnabled() || ShouldCreateNewHostForAllFrames()) {
     ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
   } else {
     ASSERT_FALSE(rfh_b->IsInBackForwardCache());
@@ -851,8 +852,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 2) Navigate to B in the opener.  A1 can't enter the BackForwardCache,
   // because of the popup.
   ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a1.get(), url_b));
-  if (ShouldCreateNewHostForAllFrames() ||
-      SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  if (ShouldCreateNewHostForAllFrames() || AreStrictSiteInstancesEnabled()) {
     ASSERT_TRUE(rfh_a1.WaitUntilRenderFrameDeleted());
   } else {
     ASSERT_FALSE(rfh_a1->IsInBackForwardCache());
@@ -945,7 +945,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(1u, rfh_a2->GetSiteInstance()->GetRelatedActiveContentsCount());
   EXPECT_FALSE(rfh_a2->GetSiteInstance()->IsRelatedSiteInstance(
       rfh_a1->GetSiteInstance()));
-  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  if (!AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(rfh_a1->GetProcess(), rfh_a2->GetProcess());
   }
 
@@ -980,8 +980,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 5) Navigate to B again from A1, now A1 can't enter BackForwardCache because
   // it has related active contents.
   ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a1.get(), url_b));
-  if (ShouldCreateNewHostForAllFrames() ||
-      SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  if (ShouldCreateNewHostForAllFrames() || AreStrictSiteInstancesEnabled()) {
     ASSERT_TRUE(rfh_a1.WaitUntilRenderFrameDeleted());
   } else {
     ASSERT_FALSE(rfh_a1->IsInBackForwardCache());

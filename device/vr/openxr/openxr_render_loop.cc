@@ -175,6 +175,12 @@ void OpenXrRenderLoop::GetFrameData(
     return;
   }
 
+  // The browser overlay won't send |options| and as such, it should not control
+  // whether depth is active or not.
+  if (auto* depth = openxr_->GetDepthSensor(); depth && options) {
+    // Function should no-op if no change is needed.
+    depth->SetDepthActive(options->depth_active);
+  }
   StartPendingFrame();
   webxr_has_pose_ = true;
   pending_frame_->webxr_has_pose_ = true;
@@ -730,6 +736,9 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
             mojo_from_viewer.ToTransform(), frame_data->input_state.value());
   }
 
+  // If we don't have a depth_sensor, depth wasn't enabled.
+  // We don't need to worry about whether depth is actually active or not, as
+  // it'll simply no-op if it's inactive.
   OpenXrDepthSensor* depth_sensor = openxr_->GetDepthSensor();
   if (depth_sensor) {
     depth_sensor->PopulateDepthData(frame_time, frame_data->render_info->views);

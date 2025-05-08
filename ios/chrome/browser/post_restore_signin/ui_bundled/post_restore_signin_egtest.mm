@@ -38,15 +38,11 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
 
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
 
-  // Create the config to relaunch Chrome.
+  // Create the config to relaunch Chrome without `kPrimaryIdentity` to simulate
+  // the restore.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-  // Add the switch to make sure that fakeIdentity1 is known at startup to avoid
-  // automatic sign out.
-  config.additional_args.push_back(
-      std::string("-") + test_switches::kAddFakeIdentitiesAtStartup + "=" +
-      [FakeSystemIdentity encodeIdentitiesToBase64:@[ kPrimaryIdentity ]]);
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kSimulatePostDeviceRestore);
   // The post-restore signin alert is a promo, and promo are implemented as IPH.
@@ -77,10 +73,8 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
               IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION_SHORT))]
       performAction:grey_tap()];
 
-  // fakeIdentity1 is already added in the fake system identity manager, and the
-  // fake one check-fail if an existing identity is added again.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity2];
-  [SigninEarlGreyUI addFakeAccountInFakeAddAccountMenu:fakeIdentity];
+  // Add back `kPrimaryIdentity`.
+  [SigninEarlGreyUI addFakeAccountInFakeAddAccountMenu:kPrimaryIdentity];
 
   // Decline History Sync.
   [[[EarlGrey selectElementWithMatcher:chrome_test_util::

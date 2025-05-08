@@ -92,7 +92,7 @@ def _EnsureBuildbucketAuth() -> None:
   # This is taken from //testing/unexpected_passes_common/builders.py, so this
   # may be able to be deduplicated with some refactoring.
   try:
-    with open(os.devnull, 'w') as devnull:
+    with open(os.devnull, 'w', encoding='utf-8') as devnull:
       subprocess.check_call(['bb', 'auth-info'], stdout=devnull, stderr=devnull)
   except subprocess.CalledProcessError as e:
     raise RuntimeError(

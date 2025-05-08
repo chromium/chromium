@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_WEBRTC_UMA_HISTOGRAMS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_WEBRTC_UMA_HISTOGRAMS_H_
 
+#include <array>
+
 #include "base/memory/singleton.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -72,7 +74,7 @@ class PLATFORM_EXPORT PerSessionWebRTCAPIMetrics {
   void ResetUsage();
 
   int num_streams_;
-  bool has_used_api_[static_cast<int>(RTCAPIName::kInvalidName)];
+  std::array<bool, static_cast<int>(RTCAPIName::kInvalidName)> has_used_api_;
 
   THREAD_CHECKER(thread_checker_);
 };

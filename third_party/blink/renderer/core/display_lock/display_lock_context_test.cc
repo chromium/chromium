@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 
@@ -3231,8 +3227,8 @@ TEST_F(DisplayLockContextTest, PrintingUnlocksAutoLocks) {
 
   {
     // Create a paint preview scope.
-    Document::PaintPreviewScope scope(GetDocument(),
-                                      Document::kPaintingPreview);
+    Document::PaintPreviewScope scope(GetDocument(), Document::kPaintingPreview,
+                                      /*allow_scrollbars=*/false);
     UpdateAllLifecyclePhasesForTest();
 
     EXPECT_FALSE(target->GetDisplayLockContext()->IsLocked());

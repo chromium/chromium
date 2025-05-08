@@ -115,6 +115,7 @@ void TestPaymentsAutofillClient::ShowAutofillErrorDialog(
 }
 
 void TestPaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
+    CreditCard::RecordType card_type,
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
   show_otp_input_dialog_ = true;
@@ -209,7 +210,7 @@ bool TestPaymentsAutofillClient::ShowTouchToFillCreditCard(
   return false;
 }
 
-bool TestPaymentsAutofillClient::IsTabModalPopup() const {
+bool TestPaymentsAutofillClient::IsTabModalPopupDeprecated() const {
   return is_tab_model_popup_;
 }
 

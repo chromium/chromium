@@ -20,7 +20,7 @@ dictionary SummarizerCreateCoreOptions {
 
 dictionary SummarizerCreateOptions : SummarizerCreateCoreOptions {
   AbortSignal signal;
-  AICreateMonitorCallback monitor;
+  CreateMonitorCallback monitor;
   DOMString sharedContext;
 };
 
@@ -30,7 +30,7 @@ dictionary SummarizerSummarizeOptions {
 };
 
 [
-  Exposed=(Window,Worker),
+  Exposed(Window AISummarizationAPI, Worker AISummarizationAPIForWorkers),
   RuntimeEnabled=AISummarizationAPI,
   SecureContext
 ]

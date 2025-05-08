@@ -29,6 +29,9 @@ enum class OmniboxActionId {
   CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE,
   CONTEXTUAL_SEARCH_SELECT_REGION,
 
+  // An action to open lens with contextual search side panel ready.
+  CONTEXTUAL_SEARCH_OPEN_LENS,
+
   // Keep as a last item in the list, with ID one larger than the last valid
   // Action Id.
   LAST

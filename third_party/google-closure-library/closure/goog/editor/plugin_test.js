@@ -125,6 +125,8 @@ testSuite({
     assertTrue(passedArg);
 
     plugin.isSilentCommand = functions.constant(true);
+    mockField.stopChangeEvents(true, true);
+    mockField.startChangeEvents(false, false);
     mockField.$replay();
     plugin.execCommand('+outdent', false);
     // Verify that execCommand on a silent plugin dispatched no events.

@@ -14,6 +14,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -45,8 +46,8 @@ public class InternalAuthenticator {
             long nativeInternalAuthenticatorAndroid,
             @Nullable Context context,
             @Nullable WebContents webContents,
-            FidoIntentSender intentSender,
-            RenderFrameHost renderFrameHost,
+            @Nullable FidoIntentSender intentSender,
+            @Nullable RenderFrameHost renderFrameHost,
             @Nullable Origin topOrigin) {
         mNativeInternalAuthenticatorAndroid = nativeInternalAuthenticatorAndroid;
         WebauthnModeProvider.getInstance().setGlobalWebauthnMode(WebauthnMode.CHROME);
@@ -85,6 +86,17 @@ public class InternalAuthenticator {
                 new AuthenticatorImpl.WindowIntentSender(window),
                 renderFrameHost,
                 topOrigin);
+    }
+
+    @CalledByNative
+    public static InternalAuthenticator create(long nativeInternalAuthenticatorAndroid) {
+        return new InternalAuthenticator(
+                nativeInternalAuthenticatorAndroid,
+                ContextUtils.getApplicationContext(),
+                /* webContents= */ null,
+                /* intentSender= */ null,
+                /* renderFrameHost= */ null,
+                /* topOrigin= */ null);
     }
 
     @CalledByNative

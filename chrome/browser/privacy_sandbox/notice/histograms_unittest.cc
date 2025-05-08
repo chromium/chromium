@@ -16,7 +16,8 @@
 namespace privacy_sandbox {
 namespace {
 
-using notice::mojom::PrivacySandboxNoticeEvent;
+using Event = notice::mojom::PrivacySandboxNoticeEvent;
+using enum Event;
 
 TEST(PrivacySandboxNoticeHistogramsTest, CheckPSNoticeHistograms) {
   std::optional<base::HistogramVariantsEntryMap> notices;
@@ -26,9 +27,8 @@ TEST(PrivacySandboxNoticeHistogramsTest, CheckPSNoticeHistograms) {
     ASSERT_TRUE(notices.has_value());
   }
   NoticeCatalogImpl catalog;
-  const auto& notice_map = catalog.GetNoticeMap();
-  EXPECT_EQ(catalog.GetNoticeMap().size(), notices->size());
-  for (const auto& [_, notice] : notice_map) {
+  EXPECT_EQ(catalog.GetNotices().size(), notices->size());
+  for (const Notice* notice : catalog.GetNotices()) {
     // TODO(crbug.com/333406690): Implement something to clean up notices that
     // don't exist.
     if (!base::Contains(*notices, notice->GetStorageName())) {
@@ -51,12 +51,14 @@ TEST(PrivacySandboxNoticeHistogramsTest, CheckPSNoticeActionHistograms) {
     ASSERT_TRUE(actions.has_value());
   }
 
-  for (int i = static_cast<int>(PrivacySandboxNoticeEvent::kMinValue);
-       i <= static_cast<int>(PrivacySandboxNoticeEvent::kMaxValue); ++i) {
-    std::string notice_name =
-        PrivacySandboxNoticeStorage::GetNoticeActionStringFromEvent(
-            static_cast<PrivacySandboxNoticeEvent>(i));
-    if (!notice_name.empty() && !base::Contains(*actions, notice_name)) {
+  for (int i = static_cast<int>(kMinValue); i <= static_cast<int>(kMaxValue);
+       ++i) {
+    Event event = static_cast<Event>(i);
+    if (event == kShown) {
+      continue;
+    }
+    if (std::string notice_name = GetNoticeActionStringFromEvent(event);
+        !base::Contains(*actions, notice_name)) {
       missing_actions.emplace_back(notice_name);
     }
   }

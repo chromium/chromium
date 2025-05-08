@@ -12,7 +12,6 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -25,6 +24,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
@@ -175,8 +175,8 @@ class AutocompleteMediator
             PropertyModel listPropertyModel,
             Handler handler,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Supplier<Tab> activityTabSupplier,
-            @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<@Nullable Tab> activityTabSupplier,
+            Supplier<ShareDelegate> shareDelegateSupplier,
             LocationBarDataProvider locationBarDataProvider,
             Callback<Tab> bringTabToFrontCallback,
             Supplier<TabWindowManager> tabWindowManagerSupplier,

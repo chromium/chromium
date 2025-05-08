@@ -16,12 +16,14 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/grit/components_resources.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#include "ios/components/webui/web_ui_url_constants.h"
 #include "ios/web/public/webui/url_data_source_ios.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -84,6 +86,25 @@ void AppendFooter(std::string* output) {
   output->append("</body>\n</html>\n");
 }
 
+void AppendHost(std::string* output, std::string_view host, bool can_follow) {
+  const std::string chrome_url = base::StrCat({kChromeUIScheme, "://", host});
+  output->append("<li>");
+  if (can_follow) {
+    output->append(base::StrCat({
+        "<a href='",
+        chrome_url,
+        "' id='",
+        host,
+        "'>",
+        chrome_url,
+        "</a>",
+    }));
+  } else {
+    output->append(chrome_url);
+  }
+  output->append("</li>\n");
+}
+
 std::string ChromeURLs() {
   std::string html;
   AppendHeader(&html, 0, "Chrome URLs");
@@ -92,10 +113,8 @@ std::string ChromeURLs() {
   std::vector<std::string> hosts(kChromeHostURLs,
                                  kChromeHostURLs + kNumberOfChromeHostURLs);
   std::sort(hosts.begin(), hosts.end());
-  for (std::vector<std::string>::const_iterator i = hosts.begin();
-       i != hosts.end(); ++i) {
-    html += "<li><a href='chrome://" + *i + "/' id='" + *i + "'>chrome://" +
-            *i + "</a></li>\n";
+  for (const auto& host : hosts) {
+    AppendHost(&html, host, host != kChromeUINewTabHost);
   }
   html += "</ul>\n";
   AppendFooter(&html);

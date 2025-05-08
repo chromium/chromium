@@ -5,26 +5,18 @@
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h"
 
 #import "base/ios/ns_range.h"
-#import "components/content_settings/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
-#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/navigation/referrer.h"
-#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "url/gurl.h"
 
 namespace {
 

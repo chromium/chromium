@@ -36,9 +36,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+// These includes are used for non-ChromeOS platforms as well.
+// TODO(crbug.com/414455717): Consider renaming them.
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif
 
 namespace media::test {
 
@@ -173,12 +175,11 @@ std::unique_ptr<EncodedDataHelper> EncodedDataHelper::Create(
 }
 
 // static
-bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
-                                      size_t size,
+bool EncodedDataHelper::HasConfigInfo(base::span<const uint8_t> data,
                                       VideoCodec codec) {
   CHECK(codec == media::VideoCodec::kH264 || codec == media::VideoCodec::kHEVC)
       << "Unsupported codec " << GetCodecName(codec);
-  return EncodedDataHelperH26x::HasConfigInfo(data, size, codec);
+  return EncodedDataHelperH26x::HasConfigInfo(data, codec);
 }
 
 EncodedDataHelper::EncodedDataHelper(base::span<const uint8_t> stream,
@@ -204,22 +205,23 @@ EncodedDataHelperH26x::EncodedDataHelperH26x(base::span<const uint8_t> stream,
     : EncodedDataHelper(std::move(stream), codec) {}
 
 // static
-bool EncodedDataHelperH26x::HasConfigInfo(const uint8_t* data,
-                                          size_t size,
+bool EncodedDataHelperH26x::HasConfigInfo(base::span<const uint8_t> data,
                                           VideoCodec codec) {
   // Check if this is an H264 SPS NALU w/ a kNALUReducedHeaderSize or
   // kNALUHeaderSize byte start code.
   if (codec == media::VideoCodec::kH264) {
-    return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
-            data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x1f) == 0x7) ||
-           (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+    return (data.size() > kNALUReducedHeaderSize && data[0] == 0x0 &&
+            data[1] == 0x0 && data[2] == 0x1 &&
+            (data[kNALUReducedHeaderSize] & 0x1f) == 0x7) ||
+           (data.size() > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
             data[2] == 0x0 && data[3] == 0x1 &&
             (data[kNALUHeaderSize] & 0x1f) == 0x7);
   }
   CHECK_EQ(codec, media::VideoCodec::kHEVC);
-  return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
-          data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x7e) == 0x42) ||
-         (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+  return (data.size() > kNALUReducedHeaderSize && data[0] == 0x0 &&
+          data[1] == 0x0 && data[2] == 0x1 &&
+          (data[kNALUReducedHeaderSize] & 0x7e) == 0x42) ||
+         (data.size() > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
           data[2] == 0x0 && data[3] == 0x1 &&
           (data[kNALUHeaderSize] & 0x7e) == 0x42);
 }
@@ -618,11 +620,12 @@ AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
   UpdateFrameRate(frame_rate);
 
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     layout_ = GetPlatformVideoFrameLayout(
         video_->PixelFormat(), aligned_coded_size,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   } else {
     layout_ = CreateVideoFrameLayout(video_->PixelFormat(), aligned_coded_size,
                                      kPlatformBufferAlignment);
@@ -762,7 +765,8 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
   const VideoPixelFormat pixel_format = src_layout.format();
   const gfx::Size& resolution = src_layout.coded_size();
   if (storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     // First write into on-memory frame.
     auto memory_frame =
         VideoFrame::CreateFrame(pixel_format, resolution, gfx::Rect(resolution),
@@ -788,7 +792,7 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
     return VideoFrameData(std::move(gmb_handle));
 #else
     NOTREACHED();
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   } else {
     const size_t dst_video_frame_size =
         dst_layout.planes().back().offset + dst_layout.planes().back().size;

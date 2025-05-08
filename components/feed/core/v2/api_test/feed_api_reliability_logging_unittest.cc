@@ -269,7 +269,6 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_ZeroCards) {
       "LogResponseReceived id=1 receive_timestamp=123456000 send_timestamp=0\n"
       "LogRequestFinished result=200 id=1\n"
 
-      "LogLoadingIndicatorShown\n"
       "LogLaunchFinishedAfterStreamUpdate "
       "result=NO_CARDS_RESPONSE_ERROR_ZERO_CARDS\n"
 

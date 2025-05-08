@@ -78,6 +78,7 @@ export declare interface HostRequestTypes {
       actInFocusedTabResult: ActInFocusedTabResultPrivate,
     },
   };
+  glicBrowserStopActorTask: {};
   glicBrowserCaptureScreenshot: {
     response: {
       screenshot: Screenshot,
@@ -123,6 +124,11 @@ export declare interface HostRequestTypes {
     },
   };
   glicBrowserSetTabContextPermissionState: {
+    request: {
+      enabled: boolean,
+    },
+  };
+  glicBrowserSetClosedCaptioningSetting: {
     request: {
       enabled: boolean,
     },
@@ -229,6 +235,11 @@ export declare interface WebClientRequestTypes {
       enabled: boolean,
     },
   };
+  glicWebClientNotifyClosedCaptioningSettingChanged: {
+    request: {
+      enabled: boolean,
+    },
+  };
   glicWebClientNotifyFocusedTabChanged: {
     request: {
       focusedTabDataPrivate: FocusedTabDataPrivate,
@@ -277,6 +288,7 @@ type HostRequestEnumNamesType = {
     ShowProfilePicker: 0,
     GetContextFromFocusedTab: 0,
     ActInFocusedTab: 0,
+    StopActorTask: 0,
     CaptureScreenshot: 0,
     ResizeWindow: 0,
     EnableDragResize: 0,
@@ -301,6 +313,7 @@ type HostRequestEnumNamesType = {
     OpenOsPermissionSettingsMenu: 0,
     GetOsMicrophonePermissionStatus: 0,
     GetZeroStateSuggestionsForFocusedTab: 0,
+    SetClosedCaptioningSetting: 0,
   };
   return apiRequestTypes;
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)

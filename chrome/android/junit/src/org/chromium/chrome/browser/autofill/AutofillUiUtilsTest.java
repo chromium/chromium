@@ -22,7 +22,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.ImageType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.url.GURL;
 
@@ -310,9 +312,11 @@ public class AutofillUiUtilsTest {
     @SmallTest
     public void testResizeAndAddRoundedCornersAndGreyBorder() {
         Bitmap testImage = Bitmap.createBitmap(400, 300, Bitmap.Config.ARGB_8888);
-        AutofillUiUtils.CardIconSpecs testSpecs =
-                AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
+        IconSpecs testSpecs =
+                IconSpecs.create(
+                        ContextUtils.getApplicationContext(),
+                        ImageType.CREDIT_CARD_ART_IMAGE,
+                        ImageSize.LARGE);
 
         Bitmap resizedTestImage =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
@@ -323,6 +327,43 @@ public class AutofillUiUtilsTest {
         // image.
         Assert.assertEquals(resizedTestImage.getWidth(), testSpecs.getWidth());
         Assert.assertEquals(resizedTestImage.getHeight(), testSpecs.getHeight());
+    }
+
+    @Test
+    @SmallTest
+    public void testCreditCardIconSpec() {
+        Context context = ContextUtils.getApplicationContext();
+        IconSpecs specs =
+                IconSpecs.create(context, ImageType.CREDIT_CARD_ART_IMAGE, ImageSize.LARGE);
+
+        Assert.assertEquals(
+                context.getResources().getDimensionPixelSize(R.dimen.large_card_icon_width),
+                specs.getWidth());
+        Assert.assertEquals(
+                context.getResources().getDimensionPixelSize(R.dimen.large_card_icon_height),
+                specs.getHeight());
+        Assert.assertEquals(
+                context.getResources().getDimensionPixelSize(R.dimen.large_card_icon_corner_radius),
+                specs.getCornerRadius());
+        Assert.assertEquals(
+                context.getResources().getDimensionPixelSize(R.dimen.card_icon_border_width),
+                specs.getBorderWidth());
+    }
+
+    @Test
+    @SmallTest
+    public void testValuableIconSpec() {
+        Context context = ContextUtils.getApplicationContext();
+        IconSpecs specs = IconSpecs.create(context, ImageType.VALUABLE_IMAGE, ImageSize.LARGE);
+
+        Assert.assertEquals(
+                specs.getWidth(),
+                context.getResources().getDimensionPixelSize(R.dimen.large_valuable_icon_size));
+        Assert.assertEquals(
+                specs.getHeight(),
+                context.getResources().getDimensionPixelSize(R.dimen.large_valuable_icon_size));
+        Assert.assertEquals(0, specs.getCornerRadius());
+        Assert.assertEquals(0, specs.getBorderWidth());
     }
 
     @Test

@@ -47,7 +47,7 @@ namespace chromeos::platform_keys {
 //   }
 //
 // Do not change this constant as clients will lose their existing state.
-const char kStateStorePlatformKeys[] = "PlatformKeys";
+inline constexpr char kStateStorePlatformKeys[] = "PlatformKeys";
 
 using ExtensionKeyPermissionQueryCallback =
     base::OnceCallback<void(bool allowed)>;

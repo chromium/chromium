@@ -68,7 +68,7 @@ class CC_EXPORT PictureLayerImpl
   void AppendQuads(const AppendQuadsContext& context,
                    viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
-  void NotifyTileStateChanged(const Tile* tile) override;
+  void NotifyTileStateChanged(const Tile* tile, bool update_damage) override;
   gfx::Rect GetDamageRect() const override;
   void ResetChangeTracking() override;
   void ResetRasterScale();
@@ -275,6 +275,9 @@ class CC_EXPORT PictureLayerImpl
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
   RAW_PTR_EXCLUSION PictureLayerImpl* twin_layer_ = nullptr;
 
+  // Tracks tiles changed since the last call to TakeUpdatedTiles().
+  TileUpdateSet updated_tiles_;
+
   std::unique_ptr<PictureLayerTilingSet> tilings_ =
       CreatePictureLayerTilingSet();
   scoped_refptr<RasterSource> raster_source_;
@@ -372,9 +375,6 @@ class CC_EXPORT PictureLayerImpl
   // Denotes an area that is damaged and needs redraw. This is in the layer's
   // space.
   gfx::Rect damage_rect_;
-
-  // Tracks tiles changed since the last call to TakeUpdatedTiles().
-  TileUpdateSet updated_tiles_;
 };
 
 }  // namespace cc

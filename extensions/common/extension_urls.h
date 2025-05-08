@@ -19,7 +19,7 @@ class Origin;
 
 namespace extensions {
 
-// Determine whether or not a source came from an extension. |source| can link
+// Determine whether or not a source came from an extension. `source` can link
 // to a page or a script, and can be external (e.g., "http://www.google.com"),
 // extension-related (e.g., "chrome-extension://<extension_id>/background.js"),
 // or internal (e.g., "event_bindings" or "schemaUtils").
@@ -81,8 +81,8 @@ GURL GetDefaultWebstoreUpdateUrl();
 // have been overridden by a command line flag for testing purposes.
 GURL GetWebstoreUpdateUrl();
 
-// Returns the url to visit to report abuse for the given |extension_id|
-// and |referrer_id|.
+// Returns the url to visit to report abuse for the given `extension_id`
+// and `referrer_id`.
 GURL GetWebstoreReportAbuseUrl(const extensions::ExtensionId& extension_id,
                                const std::string& referrer_id);
 

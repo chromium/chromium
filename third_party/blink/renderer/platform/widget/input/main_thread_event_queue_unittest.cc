@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
-#include "base/test/scoped_feature_list.h"
-#include "cc/base/features.h"
-#include "third_party/blink/public/common/features.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
 
+#include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
+
 #include <stddef.h>
 
+#include <array>
 #include <new>
 #include <tuple>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -27,14 +27,15 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/platform/scheduler/test/web_mock_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_widget_scheduler.h"
-#include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -144,8 +145,11 @@ enum class CallbackReceivedState {
 };
 
 void PrintTo(CallbackReceivedState state, std::ostream* os) {
-  const char* kCallbackReceivedStateToString[] = {
-      "Pending", "CalledWhileHandlingEvent", "CalledAfterHandleEvent"};
+  auto kCallbackReceivedStateToString = std::to_array<const char*>({
+      "Pending",
+      "CalledWhileHandlingEvent",
+      "CalledAfterHandleEvent",
+  });
   *os << kCallbackReceivedStateToString[static_cast<int>(state)];
 }
 

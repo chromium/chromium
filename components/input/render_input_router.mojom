@@ -76,6 +76,17 @@ interface RenderInputRouterDelegate {
 
   // Stops any ongoing flings for |frame_sink_id| on VizCompositorThread.
   StopFlingingOnViz(viz.mojom.FrameSinkId frame_sink_id);
+
+  // Notifies RenderInputRouter on the VizCompositor thread (corresponding to
+  // |frame_sink_id|) to restart its input event ack timer. This might be called
+  // when the user has decided to wait in case of an unresponsive renderer or if
+  // the renderer becomes visible again.
+  RestartInputEventAckTimeoutIfNecessary(
+    viz.mojom.FrameSinkId frame_sink_id);
+
+  // Notifies RenderInputRouter on the VizCompositor thread (corresponding to
+  // |frame_sink_id|) of any visibility changes to its corresponding page.
+  NotifyVisibilityChanged(viz.mojom.FrameSinkId frame_sink_id, bool is_hidden);
 };
 
 // Implemented by the browser, this interface defines methods that will be
@@ -103,4 +114,13 @@ interface RenderInputRouterDelegateClient {
   StateOnOverscrollTransfer(
     viz.mojom.FrameSinkId frame_sink_id,
     blink.mojom.DidOverscrollParams? overscroll);
+
+  // Notifies browser that the renderer (corresponding to |frame_sink_id|) is
+  // responsive after being unresponsive or has turned unresonsive to input
+  // events. For the latter, it also passes over the timestamp when an input
+  // event timed out without getting an ack from the renderer.
+  RendererInputResponsivenessChanged(
+    viz.mojom.FrameSinkId frame_sink_id,
+    bool is_responsive,
+    mojo_base.mojom.TimeTicks? ack_timeout_ts);
 };

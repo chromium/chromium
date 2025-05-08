@@ -154,7 +154,6 @@ void CreateSharedGroupAndOpenMenu() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kTabGroupIndicator);
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);

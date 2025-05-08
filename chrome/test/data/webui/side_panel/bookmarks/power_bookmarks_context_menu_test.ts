@@ -101,6 +101,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
       menuOpenIncognitoWithCount: 'Open all in Incognito window',
       menuOpenNewTabGroup: 'Open in new tab group',
       menuOpenNewTabGroupWithCount: 'Open all in new tab group',
+      menuOpenSplitView: 'Open all in split view',
       menuEdit: 'Edit…',
       menuMoveToBookmarksBar: 'Move to Bookmarks Bar folder',
       menuTrackPrice: 'Track price',
@@ -108,6 +109,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
       menuRename: 'Rename',
       tooltipDelete: 'Delete',
       tooltipMove: 'Move',
+      splitViewEnabled: true,
     });
 
     powerBookmarksContextMenu =
@@ -126,7 +128,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
-    assertEquals(menuItems.length, 6);
+    assertEquals(menuItems.length, 7);
     assertEquals(
         menuItems[0]!.textContent!.includes(
             loadTimeData.getString('menuOpenNewTab')),
@@ -140,14 +142,18 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
             loadTimeData.getString('menuOpenIncognito')),
         true);
     assertEquals(
-        menuItems[3]!.textContent!.includes(loadTimeData.getString('menuEdit')),
+        menuItems[3]!.textContent!.includes(
+            loadTimeData.getString('menuOpenSplitView')),
         true);
     assertEquals(
-        menuItems[4]!.textContent!.includes(
-            loadTimeData.getString('menuMoveToBookmarksBar')),
+        menuItems[4]!.textContent!.includes(loadTimeData.getString('menuEdit')),
         true);
     assertEquals(
         menuItems[5]!.textContent!.includes(
+            loadTimeData.getString('menuMoveToBookmarksBar')),
+        true);
+    assertEquals(
+        menuItems[6]!.textContent!.includes(
             loadTimeData.getString('tooltipDelete')),
         true);
   });
@@ -238,7 +244,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
-    assertEquals(menuItems.length, 7);
+    assertEquals(menuItems.length, 8);
     assertEquals(
         menuItems[0]!.textContent!.includes(
             loadTimeData.getString('menuOpenNewTab')),
@@ -252,18 +258,22 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
             loadTimeData.getString('menuOpenIncognito')),
         true);
     assertEquals(
-        menuItems[3]!.textContent!.includes(loadTimeData.getString('menuEdit')),
+        menuItems[3]!.textContent!.includes(
+            loadTimeData.getString('menuOpenSplitView')),
         true);
     assertEquals(
-        menuItems[4]!.textContent!.includes(
-            loadTimeData.getString('menuMoveToBookmarksBar')),
+        menuItems[4]!.textContent!.includes(loadTimeData.getString('menuEdit')),
         true);
     assertEquals(
         menuItems[5]!.textContent!.includes(
-            loadTimeData.getString('menuUntrackPrice')),
+            loadTimeData.getString('menuMoveToBookmarksBar')),
         true);
     assertEquals(
         menuItems[6]!.textContent!.includes(
+            loadTimeData.getString('menuUntrackPrice')),
+        true);
+    assertEquals(
+        menuItems[7]!.textContent!.includes(
             loadTimeData.getString('tooltipDelete')),
         true);
   });
@@ -301,6 +311,46 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     assertEquals(
         menuItems[4]!.textContent!.includes(
             loadTimeData.getString('menuRename')),
+        true);
+    assertEquals(
+        menuItems[5]!.textContent!.includes(
+            loadTimeData.getString('tooltipDelete')),
+        true);
+  });
+
+  test('ShowsMenuItemsForUserWithSplitViewDisabled', async () => {
+    loadTimeData.overrideValues({
+      splitViewEnabled: false,
+      isIncognitoModeAvailable: true,
+    });
+
+    const selection = [service.findBookmarkWithId('3')!];
+    powerBookmarksContextMenu.showAtPosition(
+        new MouseEvent('click'), selection, false, false);
+
+    await waitAfterNextRender(powerBookmarksContextMenu);
+
+    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
+        '.dropdown-item');
+    assertEquals(menuItems.length, 6);
+    assertEquals(
+        menuItems[0]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewTab')),
+        true);
+    assertEquals(
+        menuItems[1]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewWindow')),
+        true);
+    assertEquals(
+        menuItems[2]!.textContent!.includes(
+            loadTimeData.getString('menuOpenIncognito')),
+        true);
+    assertEquals(
+        menuItems[3]!.textContent!.includes(loadTimeData.getString('menuEdit')),
+        true);
+    assertEquals(
+        menuItems[4]!.textContent!.includes(
+            loadTimeData.getString('menuMoveToBookmarksBar')),
         true);
     assertEquals(
         menuItems[5]!.textContent!.includes(

@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptExtensionBrowserTest, TestBasicInjection) {
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
 
-  extension_registrar()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension);
 
   // Wait for the scripts to load, if they haven't already.
   UserScriptManager* user_script_manager =

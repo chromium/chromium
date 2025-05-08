@@ -17,7 +17,8 @@
 #include <libxml/parserInternals.h>
 #include <libxml/tree.h>
 #include <libxml/uri.h>
-#if defined(LIBXML_SCHEMAS_ENABLED) && defined(LIBXML_XPATH_ENABLED)
+#if (defined(LIBXML_RELAXNG_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)) && \
+    defined(LIBXML_XPATH_ENABLED)
 #include <libxml/xmlreader.h>
 
 #include <libxml/xpath.h>
@@ -55,16 +56,6 @@ static int checkTestFile(const char *filename) {
     return(1);
 }
 
-static xmlChar *composeDir(const xmlChar *dir, const xmlChar *path) {
-    char buf[500];
-
-    if (dir == NULL) return(xmlStrdup(path));
-    if (path == NULL) return(NULL);
-
-    snprintf(buf, 500, "%s/%s", (const char *) dir, (const char *) path);
-    return(xmlStrdup((const xmlChar *) buf));
-}
-
 /************************************************************************
  *									*
  *		Libxml2 specific routines				*
@@ -77,60 +68,6 @@ static int nb_internals = 0;
 static int nb_schematas = 0;
 static int nb_unimplemented = 0;
 static int nb_leaks = 0;
-
-static int
-fatalError(void) {
-    fprintf(stderr, "Exitting tests on fatal error\n");
-    exit(1);
-}
-
-/*
- * that's needed to implement <resource>
- */
-#define MAX_ENTITIES 20
-static char *testEntitiesName[MAX_ENTITIES];
-static char *testEntitiesValue[MAX_ENTITIES];
-static int nb_entities = 0;
-static void resetEntities(void) {
-    int i;
-
-    for (i = 0;i < nb_entities;i++) {
-        if (testEntitiesName[i] != NULL)
-	    xmlFree(testEntitiesName[i]);
-        if (testEntitiesValue[i] != NULL)
-	    xmlFree(testEntitiesValue[i]);
-    }
-    nb_entities = 0;
-}
-static int addEntity(char *name, char *content) {
-    if (nb_entities >= MAX_ENTITIES) {
-	fprintf(stderr, "Too many entities defined\n");
-	return(-1);
-    }
-    testEntitiesName[nb_entities] = name;
-    testEntitiesValue[nb_entities] = content;
-    nb_entities++;
-    return(0);
-}
-
-static int
-testResourceLoader(void *vctxt ATTRIBUTE_UNUSED, const char *URL,
-                   const char *ID ATTRIBUTE_UNUSED,
-                   xmlResourceType type ATTRIBUTE_UNUSED,
-                   int flags ATTRIBUTE_UNUSED, xmlParserInputPtr *out) {
-    int i;
-
-    for (i = 0; i < nb_entities; i++) {
-        if (!strcmp(testEntitiesName[i], URL)) {
-	    *out = xmlNewInputFromString(testEntitiesName[i],
-                                        testEntitiesValue[i],
-                                        XML_INPUT_BUF_STATIC);
-	    return(XML_ERR_OK);
-	}
-    }
-
-    return(xmlNewInputFromUrl(URL, 0, out));
-}
 
 /*
  * Trapping the error messages at the generic level to grab the equivalent of
@@ -206,6 +143,8 @@ initializeLibxml2(void) {
 #endif
 #ifdef LIBXML_SCHEMAS_ENABLED
     xmlSchemaInitTypes();
+#endif
+#ifdef LIBXML_RELAXNG_ENABLED
     xmlRelaxNGInitTypes();
 #endif
 }
@@ -271,6 +210,63 @@ getString(xmlNodePtr cur, const char *xpath) {
  *									*
  ************************************************************************/
 
+#ifdef LIBXML_RELAXNG_ENABLED
+
+/*
+ * that's needed to implement <resource>
+ */
+#define MAX_ENTITIES 20
+static char *testEntitiesName[MAX_ENTITIES];
+static char *testEntitiesValue[MAX_ENTITIES];
+static int nb_entities = 0;
+static void resetEntities(void) {
+    int i;
+
+    for (i = 0;i < nb_entities;i++) {
+        if (testEntitiesName[i] != NULL)
+	    xmlFree(testEntitiesName[i]);
+        if (testEntitiesValue[i] != NULL)
+	    xmlFree(testEntitiesValue[i]);
+    }
+    nb_entities = 0;
+}
+static int addEntity(char *name, char *content) {
+    if (nb_entities >= MAX_ENTITIES) {
+	fprintf(stderr, "Too many entities defined\n");
+	return(-1);
+    }
+    testEntitiesName[nb_entities] = name;
+    testEntitiesValue[nb_entities] = content;
+    nb_entities++;
+    return(0);
+}
+
+static xmlParserErrors
+testResourceLoader(void *vctxt ATTRIBUTE_UNUSED, const char *URL,
+                   const char *ID ATTRIBUTE_UNUSED,
+                   xmlResourceType type ATTRIBUTE_UNUSED,
+                   xmlParserInputFlags flags ATTRIBUTE_UNUSED,
+                   xmlParserInputPtr *out) {
+    int i;
+
+    for (i = 0; i < nb_entities; i++) {
+        if (!strcmp(testEntitiesName[i], URL)) {
+	    *out = xmlNewInputFromString(testEntitiesName[i],
+                                        testEntitiesValue[i],
+                                        XML_INPUT_BUF_STATIC);
+	    return(XML_ERR_OK);
+	}
+    }
+
+    return(xmlNewInputFromUrl(URL, 0, out));
+}
+
+static int
+fatalError(void) {
+    fprintf(stderr, "Exitting tests on fatal error\n");
+    exit(1);
+}
+
 static int
 xsdIncorrectTestCase(xmlNodePtr cur) {
     xmlNodePtr test;
@@ -328,6 +324,16 @@ done:
 	nb_leaks++;
     }
     return(ret);
+}
+
+static xmlChar *composeDir(const xmlChar *dir, const xmlChar *path) {
+    char buf[500];
+
+    if (dir == NULL) return(xmlStrdup(path));
+    if (path == NULL) return(NULL);
+
+    snprintf(buf, 500, "%s/%s", (const char *) dir, (const char *) path);
+    return(xmlStrdup((const xmlChar *) buf));
 }
 
 static void
@@ -732,6 +738,7 @@ done:
 	xmlFreeDoc(doc);
     return(ret);
 }
+#endif /* LIBXML_RELAXNG_ENABLED */
 
 /************************************************************************
  *									*
@@ -739,6 +746,7 @@ done:
  *									*
  ************************************************************************/
 
+#ifdef LIBXML_SCHEMAS_ENABLED
 static int
 xstcTestInstance(xmlNodePtr cur, xmlSchemaPtr schemas,
                  const xmlChar *spath, const char *base) {
@@ -998,6 +1006,7 @@ done:
     xmlFreeDoc(doc);
     return(ret);
 }
+#endif /* LIBXML_SCHEMAS_ENABLED */
 
 /************************************************************************
  *									*
@@ -1008,7 +1017,10 @@ done:
 int
 main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     int ret = 0;
-    int old_errors, old_tests, old_leaks, expected_errors;
+    int old_errors, old_tests, old_leaks;
+#ifdef LIBXML_RELAXNG_ENABLED
+    int expected_errors;
+#endif
 
     logfile = fopen(LOGFILE, "wb");
     if (logfile == NULL) {
@@ -1021,7 +1033,7 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     if ((argc >= 2) && (!strcmp(argv[1], "-v")))
         verbose = 1;
 
-
+#ifdef LIBXML_RELAXNG_ENABLED
     old_errors = nb_errors;
     old_tests = nb_tests;
     old_leaks = nb_leaks;
@@ -1063,7 +1075,9 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
 	       nb_tests - old_tests,
 	       nb_errors - old_errors,
 	       nb_leaks - old_leaks);
+#endif /* LIBXML_RELAXNG_ENABLED */
 
+#ifdef LIBXML_SCHEMAS_ENABLED
     old_errors = nb_errors;
     old_tests = nb_tests;
     old_leaks = nb_leaks;
@@ -1123,6 +1137,7 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
         printf("Some errors were expected.\n");
         nb_errors = old_errors;
     }
+#endif /* LIBXML_SCHEMAS_ENABLED */
 
     if ((nb_errors == 0) && (nb_leaks == 0)) {
         ret = 0;
@@ -1140,7 +1155,7 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
         fclose(logfile);
     return(ret);
 }
-#else /* !SCHEMAS */
+#else /* !RELAXNG && !SCHEMAS */
 int
 main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     fprintf(stderr, "runsuite requires support for schemas and xpath in libxml2\n");

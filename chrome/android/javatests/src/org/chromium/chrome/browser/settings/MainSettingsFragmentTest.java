@@ -785,77 +785,44 @@ public class MainSettingsFragmentTest {
         intended(IntentMatchers.hasData("https://test.plusaddresses.google.com"));
     }
 
+    /**
+     * Verifies that when the feature flag is enabled, the PREF_HOME_MODULES_CONFIG is removed from
+     * the settings page.
+     */
     @Test
     @SmallTest
-    public void testHomeModulesConfigSettingsWithCustomizableModule() {
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION)
+    public void testHomeModulesConfigSettingsWithCustomizableModuleWhileFeatureTurnOn() {
+        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
+        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
+        startSettings();
+        assertSettingsNotExists(MainSettings.PREF_HOME_MODULES_CONFIG);
+    }
+
+    /**
+     * Verifies that when the feature flag is disabled by default, the PREF_HOME_MODULES_CONFIG is
+     * removed from the settings page, only if hasModuleShownInSettings returns false.
+     */
+    @Test
+    @SmallTest
+    public void testHomeModulesConfigSettingsWithCustomizableModuleWhileFeatureTurnOff() {
         when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
         HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
         startSettings();
         assertSettingsExists(
                 MainSettings.PREF_HOME_MODULES_CONFIG, HomeModulesConfigSettings.class);
-    }
 
-    @Test
-    @SmallTest
-    public void testHomeModulesConfigSettingsWithoutCustomizableModule() {
         when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(false);
         HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
         startSettings();
-        Assert.assertNull(
-                "Home modules config setting should not be shown on automotive",
-                mMainSettings.findPreference(MainSettings.PREF_HOME_MODULES_CONFIG));
+        assertSettingsNotExists(MainSettings.PREF_HOME_MODULES_CONFIG);
     }
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-        ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
-    })
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
-    public void testTabsSettingsOn_GroupSync_KillSwitchInactive() {
+    public void testTabsSettingsOn() {
         startSettings();
         assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_TAB_DECLUTTER,
-        ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
-    })
-    public void testTabsSettingsOn_GroupSync_KillSwitchActive() {
-        startSettings();
-        Assert.assertNull(
-                "Tabs settings should not be shown",
-                mMainSettings.findPreference(MainSettings.PREF_TABS));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-        ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
-    })
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
-    public void testTabsSettingsOn_Declutter() {
-        startSettings();
-        assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_TAB_DECLUTTER,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
-    })
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
-    public void testTabsSettingsOff() {
-        startSettings();
-        Assert.assertNull(
-                "Tabs settings should not be shown",
-                mMainSettings.findPreference(MainSettings.PREF_TABS));
     }
 
     @Test
@@ -1085,6 +1052,11 @@ public class MainSettingsFragmentTest {
             throw new AssertionError("Pref fragment <" + pref.getFragment() + "> is not found.");
         }
         return pref;
+    }
+
+    private void assertSettingsNotExists(String prefKey) {
+        Preference pref = mMainSettings.findPreference(prefKey);
+        Assert.assertNull(pref);
     }
 
     private boolean supportAddressBarSettings() {

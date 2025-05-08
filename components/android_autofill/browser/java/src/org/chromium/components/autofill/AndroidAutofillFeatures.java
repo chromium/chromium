@@ -19,14 +19,28 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("autofill::features")
 @NullMarked
 public class AndroidAutofillFeatures extends Features {
-    public static final String ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME =
-            "AndroidAutofillBottomSheetWorkaround";
     public static final String ANDROID_AUTOFILL_DEPRECATE_ACCESSIBILITY_API_NAME =
             "AndroidAutofillDeprecateAccessibilityApi";
-    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND =
-            new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME);
+    public static final String ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME =
+            "AndroidAutofillLazyFrameworkWrapper";
+    public static final String ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME =
+            "AutofillVirtualViewStructureAndroidInCct";
+    public static final String ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME =
+            "AutofillVirtualViewStructureAndroidPasskeyLongPress";
+
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_DEPRECATE_ACCESSIBILITY_API =
-            new AndroidAutofillFeatures(1, ANDROID_AUTOFILL_DEPRECATE_ACCESSIBILITY_API_NAME);
+            new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_DEPRECATE_ACCESSIBILITY_API_NAME);
+    public static final AndroidAutofillFeatures
+            ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT =
+                    new AndroidAutofillFeatures(
+                            1, ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME);
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER =
+            new AndroidAutofillFeatures(2, ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME);
+    public static final AndroidAutofillFeatures
+            ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS =
+                    new AndroidAutofillFeatures(
+                            3, ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME);
+
     private final int mOrdinal;
 
     private AndroidAutofillFeatures(int ordinal, String name) {

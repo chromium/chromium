@@ -183,16 +183,12 @@ void LoadingPredictorPreconnectTest::SetPreference() {
 
 TEST_F(LoadingPredictorTest, TestOnNavigationStarted) {
   // Should return true if there are predictions.
-  auto navigation_id = GetNextId();
-  EXPECT_TRUE(predictor_->OnNavigationStarted(
-      navigation_id, ukm::SourceId(), /*initiator_origin=*/std::nullopt,
-      GURL(kUrl), base::TimeTicks::Now()));
+  EXPECT_TRUE(predictor_->PrepareForPageLoad(
+      /*initiator_origin=*/std::nullopt, GURL(kUrl), HintOrigin::NAVIGATION));
 
   // Should return false since there are no predictions.
-  auto navigation_id2 = GetNextId();
-  EXPECT_FALSE(predictor_->OnNavigationStarted(
-      navigation_id2, ukm::SourceId(), /*initiator_origin=*/std::nullopt,
-      GURL(kUrl3), base::TimeTicks::Now()));
+  EXPECT_FALSE(predictor_->PrepareForPageLoad(
+      /*initiator_origin=*/std::nullopt, GURL(kUrl3), HintOrigin::NAVIGATION));
 }
 
 TEST_F(LoadingPredictorTest, TestMainFrameResponseCancelsHint) {
@@ -216,9 +212,10 @@ TEST_F(LoadingPredictorTest, TestMainFrameResponseClearsNavigations) {
 
   auto navigation_id = GetNextId();
 
-  predictor_->OnNavigationStarted(navigation_id, ukm::SourceId(),
-                                  /*initiator_origin=*/std::nullopt, url,
+  predictor_->OnNavigationStarted(navigation_id, ukm::SourceId(), url,
                                   base::TimeTicks::Now());
+  predictor_->PrepareForPageLoad(/*initiator_origin=*/std::nullopt, url,
+                                 HintOrigin::EXTERNAL);
   EXPECT_NE(active_navigations.find(navigation_id), active_navigations.end());
   EXPECT_FALSE(active_hints.empty());
   EXPECT_NE(active_urls_to_navigations.find(url),
@@ -230,9 +227,10 @@ TEST_F(LoadingPredictorTest, TestMainFrameResponseClearsNavigations) {
   EXPECT_TRUE(active_urls_to_navigations.empty());
 
   // With redirects.
-  predictor_->OnNavigationStarted(navigation_id, ukm::SourceId(),
-                                  /*initiator_origin=*/std::nullopt, url,
+  predictor_->OnNavigationStarted(navigation_id, ukm::SourceId(), url,
                                   base::TimeTicks::Now());
+  predictor_->PrepareForPageLoad(/*initiator_origin=*/std::nullopt, url,
+                                 HintOrigin::EXTERNAL);
   EXPECT_NE(active_navigations.find(navigation_id), active_navigations.end());
   EXPECT_FALSE(active_hints.empty());
   EXPECT_NE(active_urls_to_navigations.find(url),
@@ -263,7 +261,6 @@ TEST_F(LoadingPredictorTest, TestMainFrameRequestDoesntCancelExternalHint) {
   auto navigation_id = GetNextId();
 
   predictor_->OnNavigationStarted(navigation_id, ukm::SourceId(),
-                                  /*initiator_origin=*/std::nullopt,
                                   GURL(url.spec()), base::TimeTicks::Now());
   EXPECT_NE(active_navigations.find(navigation_id), active_navigations.end());
   it = active_hints.find(url);

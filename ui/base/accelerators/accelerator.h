@@ -6,7 +6,6 @@
 // Keyboard accelerators are registered with the FocusManager.
 // It has a copy constructor and assignment operator so that it can be copied.
 // It also defines the < operator so that it can be used as a key in a std::map.
-//
 
 #ifndef UI_BASE_ACCELERATORS_ACCELERATOR_H_
 #define UI_BASE_ACCELERATORS_ACCELERATOR_H_
@@ -16,6 +15,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/time/time.h"
@@ -172,6 +172,10 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   // Returns a string with the localized shortcut if any.
   std::u16string GetShortcutText() const;
 
+  // Returns a vector representation of the localized shortcut. For example, for
+  // a shortcut "Control + Shift + A", this would return ["Ctrl", "Shift", "A"].
+  std::vector<std::u16string> GetShortcutVectorRepresentation() const;
+
 #if BUILDFLAG(IS_MAC)
   std::u16string KeyCodeToMacSymbol() const;
 #endif
@@ -187,8 +191,9 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
 
  private:
   friend class AcceleratorTestMac;
-  std::u16string ApplyLongFormModifiers(const std::u16string& shortcut) const;
-  std::u16string ApplyShortFormModifiers(const std::u16string& shortcut) const;
+  std::vector<std::u16string> GetLongFormModifiers() const;
+  std::vector<std::u16string> GetShortFormModifiers() const;
+  std::u16string GetKeyCodeStringForShortcut() const;
 
   // The keycode (VK_...).
   KeyboardCode key_code_;

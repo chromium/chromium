@@ -275,6 +275,7 @@ goog.messaging.PortChannel.prototype.send = function(serviceName, payload) {
  */
 goog.messaging.PortChannel.prototype.deliver_ = function(e) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const browserEvent = e.getBrowserEvent();
   let data = browserEvent.data;
 
@@ -406,7 +407,10 @@ goog.messaging.PortChannel.prototype.injectPorts_ = function(ports, message) {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.messaging.PortChannel.prototype.disposeInternal = function() {
   'use strict';
   goog.events.unlistenByKey(this.listenerKey_);

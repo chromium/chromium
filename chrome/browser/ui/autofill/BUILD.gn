@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
-import("//build/util/branding.gni")
 import("//components/signin/features.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
@@ -30,10 +30,12 @@ source_set("autofill") {
   public_deps = [
     "//base",
     "//base:i18n",
+    "//chrome/browser:global_features",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/page_action:icon_type",
+    "//components/application_locale_storage:application_locale_storage",
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -126,6 +128,7 @@ source_set("impl") {
     ":autofill",
     "//chrome/browser:browser_process",
     "//chrome/browser/autofill",
+    "//chrome/browser/plus_addresses",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_element_identifiers",
@@ -237,6 +240,7 @@ source_set("unit_tests") {
     "//chrome/browser/accessibility:utils",
     "//chrome/browser/autofill",
     "//chrome/browser/autofill:test_support",
+    "//chrome/browser/plus_addresses",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
@@ -444,6 +448,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:test_support",
+      "//chrome/browser/plus_addresses",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/test:test_support",

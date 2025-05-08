@@ -15,8 +15,8 @@ features:
   per_profile: true
   cloud_only: true
   user_only: true
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:137-
 owners:
 - seblalancette@chromium.org
 - cbe-device-trust-eng@google.com

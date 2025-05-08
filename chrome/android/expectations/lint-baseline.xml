@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.11.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha03">
+<issues format="6" by="lint 8.11.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha09">
 
     <issue
         id="WrongCommentType"
@@ -8,7 +8,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContentsClient.java"
-            line="81"
+            line="100"
             column="16"/>
     </issue>
 
@@ -19,7 +19,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwGeolocationPermissions.java"
-            line="28"
+            line="30"
             column="16"/>
     </issue>
 
@@ -63,7 +63,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/back_press/android/java/src/org/chromium/chrome/browser/back_press/BackPressManager.java"
-            line="269"
+            line="334"
             column="8"/>
     </issue>
 
@@ -74,7 +74,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java"
-            line="387"
+            line="393"
             column="8"/>
     </issue>
 
@@ -118,7 +118,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java"
-            line="350"
+            line="338"
             column="8"/>
     </issue>
 
@@ -195,18 +195,18 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../media/base/android/java/src/org/chromium/media/MediaDrmBridge.java"
-            line="1557"
+            line="1545"
             column="8"/>
     </issue>
 
     <issue
         id="WrongCommentType"
         message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* Returns the {@link WebContentns} for which the message is intended to be shown. */"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    /* Returns the {@link WebContents} for which the message is intended to be shown. */"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/commerce/merchant_viewer/android/java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageContext.java"
-            line="47"
+            line="45"
             column="20"/>
     </issue>
 
@@ -228,7 +228,7 @@
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java"
-            line="1333"
+            line="1344"
             column="43"/>
     </issue>
 
@@ -261,7 +261,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/paint_preview/player/android/java/src/org/chromium/components/paintpreview/player/PlayerSwipeRefreshHandler.java"
-            line="36"
+            line="35"
             column="8"/>
     </issue>
 
@@ -734,7 +734,7 @@
         errorLine2="                                                     ~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java"
-            line="153"
+            line="152"
             column="54"/>
     </issue>
 
@@ -855,7 +855,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java"
-            line="531"
+            line="534"
             column="72"/>
     </issue>
 
@@ -932,7 +932,7 @@
         errorLine2="                                                                                 ~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedSystemUiCoordinator.java"
-            line="118"
+            line="116"
             column="82"/>
     </issue>
 
@@ -1108,7 +1108,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="570"
+            line="568"
             column="27"/>
     </issue>
 
@@ -1119,7 +1119,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="571"
+            line="569"
             column="27"/>
     </issue>
 
@@ -1130,7 +1130,7 @@
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java"
-            line="291"
+            line="300"
             column="53"/>
     </issue>
 
@@ -1147,18 +1147,7 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: DialogDismissalCause.UNKNOWN, DialogDismissalCause.POSITIVE_BUTTON_CLICKED, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED, DialogDismissalCause.ACTION_ON_CONTENT, DialogDismissalCause.DISMISSED_BY_NATIVE, DialogDismissalCause.NAVIGATE_BACK, DialogDismissalCause.TOUCH_OUTSIDE, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE, DialogDismissalCause.TAB_SWITCHED, DialogDismissalCause.TAB_DESTROYED, DialogDismissalCause.ACTIVITY_DESTROYED, DialogDismissalCause.NOT_ATTACHED_TO_WINDOW, DialogDismissalCause.NAVIGATE, DialogDismissalCause.WEB_CONTENTS_DESTROYED, DialogDismissalCause.DIALOG_INTERACTION_DEFERRED, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED, DialogDismissalCause.ACTION_ON_DIALOG_NOT_POSSIBLE, DialogDismissalCause.CLIENT_TIMEOUT, but could be ButtonType.POSITIVE, ButtonType.NEGATIVE, ButtonType.TITLE_ICON, ButtonType.POSITIVE_EPHEMERAL"
-        errorLine1="                        mManager.dismissDialog(model, buttonType);"
-        errorLine2="                                                      ~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/ContactView.java"
-            line="121"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP"
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP, SigninAccessPoint.COLLABORATION_LEAVE_OR_DELETE_TAB_GROUP, SigninAccessPoint.HISTORY_SYNC_EDUCATIONAL_TIP"
         errorLine1="                                mActivity, mProfile, config, signinAccessPoint);"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
@@ -1169,7 +1158,7 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP"
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP, SigninAccessPoint.COLLABORATION_LEAVE_OR_DELETE_TAB_GROUP, SigninAccessPoint.HISTORY_SYNC_EDUCATIONAL_TIP"
         errorLine1="                                mActivity, mProfile, config, signinAccessPoint);"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
@@ -1213,7 +1202,7 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP"
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP, SigninAccessPoint.COLLABORATION_LEAVE_OR_DELETE_TAB_GROUP, SigninAccessPoint.HISTORY_SYNC_EDUCATIONAL_TIP"
         errorLine1="                                mActivity, mProfile, config, signinAccessPoint);"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
@@ -1224,35 +1213,13 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP"
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP, SigninAccessPoint.COLLABORATION_LEAVE_OR_DELETE_TAB_GROUP, SigninAccessPoint.HISTORY_SYNC_EDUCATIONAL_TIP"
         errorLine1="                                mActivity, mProfile, config, signinAccessPoint);"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java"
             line="224"
             column="62"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: StreamTabId.DEFAULT, StreamTabId.FOR_YOU, StreamTabId.FOLLOWING"
-        errorLine1="        if (mTabToStreamMap.size() &lt;= tabId) tabId = 0;"
-        errorLine2="                                                     ~">
-        <location
-            file="../../chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java"
-            line="594"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: StreamTabId.DEFAULT, StreamTabId.FOR_YOU, StreamTabId.FOLLOWING"
-        errorLine1="        mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, tabId);"
-        errorLine2="                                                                                   ~~~~~">
-        <location
-            file="../../chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java"
-            line="595"
-            column="84"/>
     </issue>
 
     <issue
@@ -1350,7 +1317,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/FindAddress.java"
-            line="15"
+            line="18"
             column="1"/>
     </issue>
 
@@ -1471,7 +1438,7 @@
         errorLine2="                        ^">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="414"
+            line="417"
             column="25"/>
     </issue>
 
@@ -1564,6 +1531,314 @@
     </issue>
 
     <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;কাইলৈ ম্যাদ উকলিব&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-as/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;আগামীকাল মেয়াদ শেষ হবে&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-bn/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;فردا منقضی می‌شود&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fa/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expire demain&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fr-rCA/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expire demain&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fr/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;આવતીકાલે સમયસીમા સમાપ્ત થાય છે&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-gu/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Գործողության ժամկետը սպառվում է վաղը&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hy/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ਮਿਆਦ ਕੱਲ੍ਹ ਨੂੰ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pa/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;හෙට කල් ඉකුත් වෙයි&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-si/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Kuphelelwa yisikhathi kusasa&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-zu/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0~3, 5, 7, 8, 10~13, 15, 17, 18, 20, 21, 100, 1000, 10000, 100000, 1000000, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Mag-e-expire bukas&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-tl/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 101, 201, 301, 401, 501, 601, 701, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Poteče jutri&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-sl/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Тэрмін дзеяння заканчваецца заўтра&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-be/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Ističe sutra&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-bs/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Rennur út á morgun&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-is/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Истекува утре&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-mk/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Срок действия истекает завтра&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-ru/components_strings.xml"
+            line="357"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ነገ ጊዜው ያበቃል&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-am/components_strings.xml"
+            line="358"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;समयसीमा कल खत्म हो जाएगी&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hi/components_strings.xml"
+            line="358"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ನಾಳೆ ಅವಧಿ ಮುಕ್ತಾಯವಾಗುತ್ತದೆ&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-kn/components_strings.xml"
+            line="358"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expira amanhã&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pt-rBR/components_strings.xml"
+            line="358"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expira amanhã&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pt-rPT/components_strings.xml"
+            line="358"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Ističe sutra&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-b+sr+Latn/components_strings.xml"
+            line="358"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Istječe sutra&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hr/components_strings.xml"
+            line="358"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Galiojimo laikas baigsis rytoj&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-lt/components_strings.xml"
+            line="358"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Derīguma termiņš beigsies rīt&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-lv/components_strings.xml"
+            line="358"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Истиче сутра&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-sr/components_strings.xml"
+            line="358"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Строк дії закінчується завтра&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-uk/components_strings.xml"
+            line="358"
+            column="3"/>
+    </issue>
+
+    <issue
         id="DataExtractionRules"
         message="The attribute `android:allowBackup` is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute `android:dataExtractionRules` specifying an `@xml` resource which configures cloud backups and device transfers on Android 12 and higher."
         errorLine1="  &lt;application android:name=&quot;org.chromium.chrome.browser.base.SplitMonochromeApplication&quot; android:icon=&quot;@drawable/ic_launcher&quot; android:roundIcon=&quot;@drawable/ic_launcher_round&quot; android:label=&quot;@string/app_name&quot; android:memtagMode=&quot;async&quot; android:largeHeap=&quot;false&quot; android:manageSpaceActivity=&quot;@string/manage_space_activity&quot; android:supportsRtl=&quot;true&quot; android:zygotePreloadName=&quot;org.chromium.content_public.app.ZygotePreload&quot; android:allowBackup=&quot;false&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:allowAudioPlaybackCapture=&quot;false&quot; android:appComponentFactory=&quot;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:multiArch=&quot;true&quot; android:extractNativeLibs=&quot;false&quot;>"
@@ -1581,7 +1856,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/ContentLanguagesPreference.java"
-            line="127"
+            line="131"
             column="29"/>
     </issue>
 
@@ -1658,7 +1933,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunActivity.java"
-            line="289"
+            line="291"
             column="13"/>
     </issue>
 
@@ -1680,7 +1955,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="144"
+            line="146"
             column="13"/>
     </issue>
 
@@ -1691,7 +1966,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="201"
+            line="203"
             column="9"/>
     </issue>
 
@@ -1856,7 +2131,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/storage/StorageSummaryProvider.java"
-            line="91"
+            line="97"
             column="52"/>
     </issue>
 
@@ -1911,7 +2186,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java"
-            line="672"
+            line="689"
             column="20"/>
     </issue>
 
@@ -1988,7 +2263,7 @@
         errorLine2="        ^">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="172"
+            line="174"
             column="9"/>
     </issue>
 
@@ -1999,7 +2274,7 @@
         errorLine2="                ^">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="173"
+            line="175"
             column="17"/>
     </issue>
 
@@ -2010,7 +2285,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButton.java"
-            line="79"
+            line="85"
             column="9"/>
     </issue>
 
@@ -2021,7 +2296,7 @@
         errorLine2="                ^">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="354"
+            line="351"
             column="17"/>
     </issue>
 
@@ -2087,7 +2362,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java"
-            line="738"
+            line="787"
             column="20"/>
     </issue>
 
@@ -2098,7 +2373,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="562"
+            line="542"
             column="20"/>
     </issue>
 
@@ -2142,7 +2417,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabSideSheetStrategy.java"
-            line="240"
+            line="261"
             column="13"/>
     </issue>
 

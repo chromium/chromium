@@ -59,6 +59,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_utils.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -272,9 +273,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   self.webContentAreaOverlayPresenter = nullptr;
 
-  if (_engagementTracker) {
+  if (self.engagementTracker) {
     if (self.readingListDestination.badge != BadgeTypeNone) {
-      _engagementTracker->Dismissed(
+      self.engagementTracker->Dismissed(
           feature_engagement::kIPHBadgedReadingListFeature);
     }
 
@@ -282,21 +283,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       // Check if this is the last active menu with WhatsNew badge and dismiss
       // the FET if so.
       WhatsNewActiveMenusData* data = static_cast<WhatsNewActiveMenusData*>(
-          _engagementTracker->GetUserData(WhatsNewActiveMenusData::key));
+          self.engagementTracker->GetUserData(WhatsNewActiveMenusData::key));
       if (data) {
         data->activeMenus--;
         if (data->activeMenus <= 0) {
-          _engagementTracker->Dismissed(
+          self.engagementTracker->Dismissed(
               feature_engagement::kIPHWhatsNewUpdatedFeature);
-          _engagementTracker->RemoveUserData(WhatsNewActiveMenusData::key);
+          self.engagementTracker->RemoveUserData(WhatsNewActiveMenusData::key);
         }
       } else {
-        _engagementTracker->Dismissed(
+        self.engagementTracker->Dismissed(
             feature_engagement::kIPHWhatsNewUpdatedFeature);
       }
     }
 
-    _engagementTracker = nullptr;
+    self.engagementTracker = nullptr;
   }
 
   self.followBrowserAgent = nullptr;
@@ -342,8 +343,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self updateModel];
 }
 
-- (void)setIsIncognito:(BOOL)isIncognito {
-  _isIncognito = isIncognito;
+- (void)setIncognito:(BOOL)incognito {
+  _incognito = incognito;
   [self updateModel];
 }
 
@@ -699,7 +700,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 
   if (IsReaderModeAvailable()) {
-    self.readerModeAction = [self openReaderModeAction];
+    self.readerModeAction = [self toggleReaderModeAction];
   }
 
   if (send_tab_to_self::
@@ -742,18 +743,24 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   ];
 }
 
-- (OverflowMenuAction*)openReaderModeAction {
+- (OverflowMenuAction*)toggleReaderModeAction {
+  ReaderModeTabHelper* tabHelper =
+      ReaderModeTabHelper::FromWebState(self.webState);
+  BOOL isReaderModeActive = tabHelper->IsActive();
+  int nameID = isReaderModeActive ? IDS_IOS_TOOLS_MENU_HIDE_READER_MODE
+                                  : IDS_IOS_TOOLS_MENU_READER_MODE;
   __weak __typeof(self) weakSelf = self;
   return [self
-      createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_READER_MODE
+      createOverflowMenuActionWithNameID:nameID
                               actionType:overflow_menu::ActionType::ReaderMode
                               symbolName:kReaderModeSymbol
                             systemSymbol:YES
                         monochromeSymbol:NO
-                         accessibilityID:kToolsMenuOpenReaderMode
+                         accessibilityID:kToolsMenuReaderMode
                             hideItemText:nil
                                  handler:^{
-                                   [weakSelf startReaderMode];
+                                   [weakSelf setReaderModeVisibility:
+                                                 !isReaderModeActive];
                                  }];
 }
 
@@ -862,13 +869,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                    [weakSelf notifySetTabReminderActionTapped];
                                  }];
 
-  if (_engagementTracker &&
-      _engagementTracker->ShouldTriggerHelpUI(
+  if (self.engagementTracker &&
+      self.engagementTracker->ShouldTriggerHelpUI(
           feature_engagement::
               kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature)) {
     action.displayNewLabelIcon = YES;
 
-    _engagementTracker->Dismissed(
+    self.engagementTracker->Dismissed(
         feature_engagement::
             kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature);
   }
@@ -881,8 +888,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   CHECK(
       send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
 
-  if (_engagementTracker) {
-    _engagementTracker->NotifyEvent(
+  if (self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
         feature_engagement::events::kIOSOverflowMenuSetTabReminderTapped);
   }
 
@@ -1882,7 +1889,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::Destination::Bookmarks:
       return self.bookmarksDestination;
     case overflow_menu::Destination::History:
-      return (self.isIncognito) ? nil : self.historyDestination;
+      return (self.incognito) ? nil : self.historyDestination;
     case overflow_menu::Destination::ReadingList:
       // Set badges if necessary.
       if (self.engagementTracker &&
@@ -1897,7 +1904,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::Destination::Downloads:
       return self.downloadsDestination;
     case overflow_menu::Destination::RecentTabs:
-      return self.isIncognito ? nil : self.recentTabsDestination;
+      return self.incognito ? nil : self.recentTabsDestination;
     case overflow_menu::Destination::SiteInfo:
       return ([self currentWebPageSupportsSiteInfo]) ? self.siteInfoDestination
                                                      : nil;
@@ -2054,7 +2061,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.readLaterAction;
     case overflow_menu::ActionType::ClearBrowsingData:
       // Showing the Clear Browsing Data Action would be confusing in incognito.
-      return (self.isIncognito) ? nil : self.clearBrowsingDataAction;
+      return (self.incognito) ? nil : self.clearBrowsingDataAction;
     case overflow_menu::ActionType::Translate:
       return self.translateAction;
     case overflow_menu::ActionType::DesktopSite:
@@ -2127,7 +2134,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::SetTabReminder:
       return [self newSetTabReminderAction];
     case overflow_menu::ActionType::ReaderMode:
-      return [self openReaderModeAction];
+      return [self toggleReaderModeAction];
   }
 }
 
@@ -2358,10 +2365,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       showSetTabReminderUI:SetTabReminderEntryPoint::kOverflowMenu];
 }
 
-// Opens the Reader mode UI.
-- (void)startReaderMode {
+// Sets the Reader mode UI visibility.
+- (void)setReaderModeVisibility:(BOOL)visible {
   [self dismissMenu];
-  [self.readerModeHandler showReaderMode];
+  if (visible) {
+    [self.readerModeHandler showReaderMode];
+  } else {
+    [self.readerModeHandler hideReaderMode];
+  }
 }
 
 #pragma mark - Destinations Handlers
@@ -2382,8 +2393,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)openHistory {
   if (base::FeatureList::IsEnabled(
           feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature) &&
-      _engagementTracker) {
-    _engagementTracker->NotifyEvent(
+      self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
         feature_engagement::events::kHistoryOnOverflowMenuUsed);
   }
   [IntentDonationHelper donateIntent:IntentType::kViewHistory];
@@ -2410,8 +2421,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and opens price notifications list.
 - (void)openPriceNotifications {
   RecordAction(UserMetricsAction("MobileMenuPriceNotifications"));
-  _engagementTracker->NotifyEvent(
-      feature_engagement::events::kPriceNotificationsUsed);
+  if (self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kPriceNotificationsUsed);
+  }
   [self dismissMenu];
   [self.priceNotificationHandler showPriceTrackedItemsWithCurrentPage];
 }
@@ -2420,8 +2433,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)openDownloads {
   [self dismissMenu];
   profile_metrics::BrowserProfileType type =
-      self.isIncognito ? profile_metrics::BrowserProfileType::kIncognito
-                       : profile_metrics::BrowserProfileType::kRegular;
+      self.incognito ? profile_metrics::BrowserProfileType::kIncognito
+                     : profile_metrics::BrowserProfileType::kRegular;
   UmaHistogramEnumeration("Download.OpenDownloadsFromMenu.PerProfileType",
                           type);
   [self.browserCoordinatorHandler showDownloadsFolder];
@@ -2447,22 +2460,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Dismisses the menu and opens settings.
 - (void)openSettings {
-  if (!IsBlueDotOnToolsMenuButtoneEnabled() &&
-      self.settingsDestination.badge == BadgeTypePromo &&
-      self.engagementTracker) {
-    self.engagementTracker->NotifyEvent(
-        feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
-    [self.popupMenuHandler updateToolsMenuBlueDotVisibility];
-  }
   if (self.engagementTracker) {
+    if (!IsBlueDotOnToolsMenuButtoneEnabled() &&
+        self.settingsDestination.badge == BadgeTypePromo) {
+      self.engagementTracker->NotifyEvent(
+          feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
+      [self.popupMenuHandler updateToolsMenuBlueDotVisibility];
+    }
     self.engagementTracker->NotifyEvent(
         feature_engagement::events::kSettingsOnOverflowMenuUsed);
   }
 
   [self dismissMenu];
   profile_metrics::BrowserProfileType type =
-      self.isIncognito ? profile_metrics::BrowserProfileType::kIncognito
-                       : profile_metrics::BrowserProfileType::kRegular;
+      self.incognito ? profile_metrics::BrowserProfileType::kIncognito
+                     : profile_metrics::BrowserProfileType::kRegular;
   UmaHistogramEnumeration("Settings.OpenSettingsFromMenu.PerProfileType", type);
   [self.applicationHandler
       showSettingsFromViewController:self.baseViewController

@@ -11,18 +11,21 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
+#include "ash/style/system_shadow.h"
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
-#include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -48,10 +51,18 @@ std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
 }  // namespace
 
 OnTaskPodView::OnTaskPodView(OnTaskPodController* pod_controller)
-    : pod_controller_(pod_controller) {
+    : pod_controller_(pod_controller),
+      // Since this view has fully circular rounded corners, we can't use a
+      // nine patch layer for the shadow. We have to use the
+      // `ShadowOnTextureLayer`. For more info, see https://crbug.com/1308800.
+      shadow_(SystemShadow::CreateShadowOnTextureLayer(
+          SystemShadow::Type::kElevation4)) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  shadow_->SetRoundedCornerRadius(kPodBorderRadius);
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, kPodBorderRadius));
   SetInsideBorderInsets(
@@ -122,6 +133,28 @@ void OnTaskPodView::AddShortcutButtons() {
       /*is_togglable=*/true));
   pin_tab_strip_button_->SetVisible(
       pod_controller_->CanToggleTabStripVisibility());
+}
+
+void OnTaskPodView::AddedToWidget() {
+  views::BoxLayoutView::AddedToWidget();
+
+  // Since the layer of the shadow has to be added as a sibling to
+  // `on_task_pod_view` layer, we need to wait until the view is added to the
+  // widget.
+  auto* const parent = layer()->parent();
+  ui::Layer* const shadow_layer = shadow_->GetLayer();
+  parent->Add(shadow_layer);
+  parent->StackAtBottom(shadow_layer);
+
+  // Make the shadow observe the color provider source change to update the
+  // colors.
+  shadow_->ObserveColorProviderSource(GetWidget());
+}
+
+void OnTaskPodView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  // The shadow layer is a sibling of `on_task_pod_view` layer, and should have
+  // the same bounds.
+  shadow_->SetContentBounds(layer()->bounds());
 }
 
 void OnTaskPodView::UpdatePinTabStripButton(bool user_action) {

@@ -40,7 +40,6 @@
 #include "build/chromecast_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
-#include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1699,11 +1698,7 @@ void GpuDataManagerImplPrivate::RecordCompositingMode() {
 
 #if BUILDFLAG(IS_LINUX)
 bool GpuDataManagerImplPrivate::IsGpuMemoryBufferNV12Supported() {
-  return is_gpu_memory_buffer_NV12_supported_;
-}
-void GpuDataManagerImplPrivate::SetGpuMemoryBufferNV12Supported(
-    bool supported) {
-  is_gpu_memory_buffer_NV12_supported_ = supported;
+  return gpu_extra_info_.is_gmb_nv12_supported;
 }
 #endif  // BUILDFLAG(IS_LINUX)
 

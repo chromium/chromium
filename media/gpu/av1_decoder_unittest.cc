@@ -266,13 +266,11 @@ std::vector<scoped_refptr<DecoderBuffer>> AV1DecoderTest::ReadIVF(
 
 std::vector<scoped_refptr<DecoderBuffer>> AV1DecoderTest::ReadWebm(
     const std::string& fname) {
-  std::string webm_data;
   auto input_file = GetTestFilePath(fname);
-  EXPECT_TRUE(base::ReadFileToString(input_file, &webm_data));
+  auto webm_data = base::ReadFileToBytes(input_file);
+  EXPECT_TRUE(webm_data.has_value());
 
-  InMemoryUrlProtocol protocol(
-      reinterpret_cast<const uint8_t*>(webm_data.data()), webm_data.size(),
-      false);
+  InMemoryUrlProtocol protocol(*webm_data, false);
   FFmpegGlue glue(&protocol);
   LOG_ASSERT(glue.OpenContext());
   int stream_index = -1;

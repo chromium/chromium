@@ -26,7 +26,7 @@ IOSChromeAffiliationServiceFactory::GetInstance() {
 // static
 affiliations::AffiliationService*
 IOSChromeAffiliationServiceFactory::GetForProfile(ProfileIOS* profile) {
-  CHECK(profile, base::NotFatalUntil::M123);
+  CHECK(profile);
 
   return static_cast<affiliations::AffiliationService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

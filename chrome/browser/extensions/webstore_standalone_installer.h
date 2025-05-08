@@ -50,7 +50,7 @@ class WebstoreStandaloneInstaller
       public ProfileObserver {
  public:
   // A callback for when the install process completes, successfully or not. If
-  // there was a failure, |success| will be false and |error| may contain a
+  // there was a failure, `success` will be false and `error` may contain a
   // developer-readable error message about why it failed.
   using Callback = base::OnceCallback<void(bool success,
                                            const std::string& error,
@@ -110,7 +110,7 @@ class WebstoreStandaloneInstaller
   // by some calls even when no prompt or other UI is shown). A non-dummy
   // WebContents is required if the prompt returned by CreateInstallPromt()
   // contains a navigable link(s). Returned WebContents should correspond
-  // to |profile| passed into the constructor.
+  // to `profile` passed into the constructor.
   virtual content::WebContents* GetWebContents() const = 0;
 
   // Should return an installation prompt with desired properties or NULL if

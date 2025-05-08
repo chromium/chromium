@@ -16,15 +16,18 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/mahi/web_contents/test_support/fake_mahi_web_contents_manager.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +35,15 @@
 #include "ui/views/view_utils.h"
 
 namespace chromeos::mahi {
+
+namespace {
+const std::string& GetApplicationLocale() {
+  return TestingBrowserProcess::GetGlobal()
+      ->GetFeatures()
+      ->application_locale_storage()
+      ->Get();
+}
+}  // namespace
 
 using ::testing::IsNull;
 using ::testing::Mock;
@@ -146,6 +158,7 @@ TEST_F(MahiMenuControllerTest, BoundsChanged) {
 
   EXPECT_EQ(
       editor_menu::GetEditorMenuBounds(anchor_bounds, widget->GetContentsView(),
+                                       GetApplicationLocale(),
                                        editor_menu::CardType::kMahiDefaultMenu),
       widget->GetRestoredBounds());
 
@@ -155,6 +168,7 @@ TEST_F(MahiMenuControllerTest, BoundsChanged) {
   menu_controller()->OnAnchorBoundsChanged(anchor_bounds);
   EXPECT_EQ(
       editor_menu::GetEditorMenuBounds(anchor_bounds, widget->GetContentsView(),
+                                       GetApplicationLocale(),
                                        editor_menu::CardType::kMahiDefaultMenu),
       widget->GetRestoredBounds());
 }

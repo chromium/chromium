@@ -33,14 +33,13 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_controller_impl.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -52,7 +51,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/tabs/glic_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/common/chrome_features.h"
@@ -64,12 +63,17 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/saved_tab_groups/public/features.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
+#endif
+
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #endif
+
 namespace {
 
 // This is the generic entry point for test code to stub out browser window
@@ -164,8 +168,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   tab_strip_model_ = browser->GetTabStripModel();
 
   if (base::FeatureList::IsEnabled(features::kTabStripBrowserApi)) {
-    tab_strip_controller_ =
-        std::make_unique<TabStripControllerImpl>(browser, tab_strip_model_);
+    tab_strip_service_ =
+        std::make_unique<TabStripServiceImpl>(browser, tab_strip_model_);
   }
 
   memory_saver_bubble_controller_ =
@@ -176,6 +180,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   cookie_controls_bubble_coordinator_ =
       std::make_unique<CookieControlsBubbleCoordinator>();
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
+    pdf_infobar_controller_ = std::make_unique<PdfInfoBarController>(browser);
+  }
+#endif
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
@@ -228,15 +238,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
     toast_service_ = std::make_unique<ToastService>(browser);
   }
-
-  collaboration::CollaborationService* service =
-      collaboration::CollaborationServiceFactory::GetForProfile(
-          browser->profile());
-  if (service && service->GetServiceStatus().IsAllowedToJoin() &&
-      tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    data_sharing_open_group_helper_ =
-        std::make_unique<DataSharingOpenGroupHelper>(browser);
-  }
 }
 
 void BrowserWindowFeatures::InitPostBrowserViewConstruction(
@@ -275,7 +276,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
             browser_view->browser()->profile())) {
       glic_button_controller_ = std::make_unique<glic::GlicButtonController>(
           browser_view->GetProfile(),
-          browser_view->tab_strip_region_view()->GetGlicButton(),
+          browser_view->tab_strip_region_view()->GetTabStripActionContainer(),
           glic::GlicKeyedServiceFactory::GetGlicKeyedService(
               browser_view->GetProfile()));
     }
@@ -320,6 +321,10 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
 #if BUILDFLAG(ENABLE_GLIC)
   glic_button_controller_.reset();
 #endif
+
+  if (download_toolbar_ui_controller_) {
+    download_toolbar_ui_controller_->TearDownPreBrowserViewDestruction();
+  }
 
   // TODO(crbug.com/346148093): This logic should not be gated behind a
   // conditional.

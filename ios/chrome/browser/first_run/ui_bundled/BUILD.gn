@@ -56,7 +56,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator",
     "//ios/chrome/browser/docking_promo/coordinator",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/ui_bundled/best_features/coordinator",

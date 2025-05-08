@@ -13,8 +13,7 @@
 #define AX_BASE_EXPORT __declspec(dllexport)
 #elif defined(COMPONENT_BUILD) && defined(WIN32)
 #define AX_BASE_EXPORT __declspec(dllimport)
-#elif defined(COMPONENT_BUILD) && !defined(WIN32) && \
-    defined(AX_BASE_IMPLEMENTATION)
+#elif defined(COMPONENT_BUILD)
 #define AX_BASE_EXPORT __attribute__((visibility("default")))
 #else
 #define AX_BASE_EXPORT

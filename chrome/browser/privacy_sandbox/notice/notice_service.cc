@@ -30,6 +30,12 @@ PrivacySandboxNoticeService::PrivacySandboxNoticeService(
   CHECK(desktop_view_manager_);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  // Refresh fulfillment status for all notices at service initialization.
+  for (Notice* notice : catalog_->GetNotices()) {
+    CHECK(notice);
+    notice->RefreshFulfillmentStatus(*notice_storage_);
+  }
+
   EmitStartupHistograms();
 }
 
@@ -44,13 +50,14 @@ void PrivacySandboxNoticeService::Shutdown() {
 void PrivacySandboxNoticeService::EventOccurred(
     NoticeId notice_id,
     PrivacySandboxNoticeEvent event) {
-  GetNoticeStorage()->RecordEvent(notice_id, event);
+  notice_storage()->RecordEvent(notice_id, event);
 
-  auto notice_ptr = catalog_->GetNoticeMap().find(notice_id);
-  CHECK(notice_ptr != catalog_->GetNoticeMap().end());
-  CHECK(notice_ptr->second != nullptr);
+  Notice* notice = catalog_->GetNotice(notice_id);
+  CHECK(notice);
 
-  notice_ptr->second->UpdateTargetApiResults(event);
+  // Refresh fulfillment status after an event has occurred.
+  notice->RefreshFulfillmentStatus(*notice_storage());
+  notice->UpdateTargetApiResults(event);
 }
 
 // TODO(crbug.com/392612108): Implement this function.
@@ -60,24 +67,13 @@ PrivacySandboxNoticeService::GetRequiredNotices(SurfaceType surface) {
   return required_notices;
 }
 
-NoticeStorage* PrivacySandboxNoticeService::GetNoticeStorage() {
-  return notice_storage_.get();
-}
-
-PrefService* PrivacySandboxNoticeService::GetPrefService() {
-  return profile_->GetPrefs();
-}
-
-NoticeCatalog* PrivacySandboxNoticeService::GetCatalog() {
-  return catalog_.get();
-}
-
 void PrivacySandboxNoticeService::EmitStartupHistograms() {
-  GetNoticeStorage()->RecordStartupHistograms();
+  notice_storage()->RecordStartupHistograms();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-DesktopViewManager* PrivacySandboxNoticeService::GetDesktopViewManager() {
+DesktopViewManagerInterface*
+PrivacySandboxNoticeService::GetDesktopViewManager() {
   return desktop_view_manager_.get();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -184,6 +184,16 @@ chromium-metrics-reviews@google.com.
              memory"/>
 </enum>
 
+<enum name="EarlyNavFailureReason">
+  <int value="0" label="Success"/>
+  <int value="1" label="No session"/>
+  <int value="2" label="No speculation"/>
+  <int value="3" label="Wrong URL, valid session"/>
+  <int value="4" label="Wrong URL, invalid session"/>
+  <int value="5" label="Wrong referrer, valid session"/>
+  <int value="6" label="Wrong referrer, invalid session"/>
+</enum>
+
 <enum name="GoogleBottomBarButtonEvent">
   <int value="0" label="Unknown button"/>
   <int value="1" label="Chrome Page Insights button"/>
@@ -255,6 +265,25 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Low-end and Pip"/>
   <int value="2" label="High-end and no Pip"/>
   <int value="3" label="High-end and Pip"/>
+</enum>
+
+<enum name="TwaLaunchHandlerClientMode">
+  <int value="0" label="Initial intent (client mode is ignored)"/>
+  <int value="1" label="Client mode navigate_existing"/>
+  <int value="2" label="Client mode navigate_new"/>
+  <int value="3" label="Client mode focus_existing"/>
+  <int value="4" label="Client mode auto"/>
+</enum>
+
+<enum name="TwaLaunchHandlerFailureReason">
+  <int value="0" label="Target URL verification failed"/>
+  <int value="1" label="Current page URL verification failed"/>
+</enum>
+
+<enum name="TwaLaunchHandlerFileHandling">
+  <int value="0" label="No files"/>
+  <int value="1" label="Single file"/>
+  <int value="2" label="Multiple files"/>
 </enum>
 
 <enum name="VisibleTab">

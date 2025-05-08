@@ -44,6 +44,7 @@ static_library("accessibility") {
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions/api/braille_display_private:controller",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/aura/accessibility",
     "//chrome/common",

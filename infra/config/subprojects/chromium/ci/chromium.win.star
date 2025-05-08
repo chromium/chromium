@@ -124,6 +124,7 @@ ci.builder(
             "chromium_win_scripts",
         ],
         additional_compile_targets = [
+            "ipc_fuzzer",
             "pdf_fuzzers",
         ],
     ),
@@ -365,6 +366,7 @@ ci.builder(
             "blink_platform_nocompile_tests",
             "blink_probes_nocompile_tests",
             "content_nocompile_tests",
+            "ipc_fuzzer",
             "pdf_fuzzers",
         ],
     ),
@@ -478,6 +480,48 @@ ci.builder(
         short_name = "w10",
     ),
     cq_mirrors_console_view = "mirrors",
+)
+
+ci.thin_tester(
+    name = "Win10 Tests x86",
+    description_html = "Windows x86 release build running on x64 testing bots.",
+    triggered_by = ["ci/Win Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-win-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "win_x86_specific_smoke_tests",
+        ],
+        mixins = [
+            "x86-64",
+            "win10",
+            "isolate_profile_data",
+        ],
+    ),
+    builderless = True,
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "misc",
+        short_name = "x86",
+    ),
 )
 
 ci.thin_tester(
@@ -981,57 +1025,4 @@ ci.builder(
         short_name = "lxw",
     ),
     contact_team_email = "chrome-build-team@google.com",
-)
-
-ci.builder(
-    name = "win-no-safe-browsing-rel",
-    description_html = "Builds for Windows with `safe_browsing_mode = 0`.",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "win",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.WIN,
-        ),
-        build_gs_bucket = "chromium-win-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "no_safe_browsing",
-            "release_builder",
-            "remoteexec",
-            "x86",
-            "no_symbols",
-            "win",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "browser_tests",
-            "components_unittests",
-            "unit_tests",
-        ],
-        additional_compile_targets = [
-            "chrome",
-        ],
-        mixins = [
-            "win10",
-            "x86-64",
-        ],
-    ),
-    gardener_rotations = args.ignore_default(None),
-    # TODO(crbug.com/405140662): Promote when stable.
-    tree_closing = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "misc",
-        short_name = "nosb",
-    ),
-    contact_team_email = "chrome-counter-abuse-core@google.com",
 )

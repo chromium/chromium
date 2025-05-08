@@ -30,7 +30,6 @@ goog.require('goog.dom.TagName');
 goog.require('goog.dom.safe');
 goog.require('goog.json');
 goog.require('goog.testing.TestCase');
-goog.require('goog.userAgent');
 
 
 
@@ -94,10 +93,6 @@ goog.testing.TestRunner = function() {
    */
   this.uniqueId_ = ((Math.random() * 1e9) >>> 0) + '-' +
       window.location.pathname.replace(/.*\//, '').replace(/\.html.*$/, '');
-
-  if (goog.userAgent.IE && !goog.userAgent.isVersionOrHigher(11)) {
-    return;
-  }
 
   var self = this;
   function onPageHide() {
@@ -427,7 +422,7 @@ goog.testing.TestRunner.prototype.writeLog = function(log) {
     if (line == '') {
       line = '\n';
     }
-    if (line.substr(0, 2) == '> ') {
+    if (line.slice(0, 2) == '> ') {
       // The stack trace may contain links so it has to be interpreted as HTML.
       div.innerHTML = line;
     } else {
@@ -450,8 +445,8 @@ goog.testing.TestRunner.prototype.writeLog = function(log) {
       if (search) {
         var oldTests = /runTests=([^&]*)/.exec(search);
         if (oldTests) {
-          newSearch = search.substr(0, oldTests.index) + newSearch +
-              search.substr(oldTests.index + oldTests[0].length);
+          newSearch = search.slice(0, oldTests.index) + newSearch +
+              search.slice(oldTests.index + oldTests[0].length);
         } else {
           newSearch = search + '&' + newSearch;
         }

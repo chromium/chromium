@@ -182,7 +182,8 @@ public class TabGroupRowMediatorUnitTest {
                         mModalDialogManager,
                         mActionConfirmationManager,
                         mFaviconResolver,
-                        mFetchGroupState);
+                        mFetchGroupState,
+                        /* enableContainment= */ true);
         return mediator.getModel();
     }
 

@@ -618,8 +618,7 @@ void BucketContext::Open(
   Database* database_ptr = nullptr;
   auto it = databases_.find(name);
   if (it == databases_.end()) {
-    auto database = std::make_unique<Database>(
-        name, *this, Database::Identifier(bucket_locator(), name));
+    auto database = std::make_unique<Database>(name, *this);
     // The database must be added before the schedule call, as the
     // CreateDatabaseDeleteClosure can be called synchronously.
     database_ptr = database.get();
@@ -706,8 +705,7 @@ void BucketContext::DeleteDatabase(
 
   // If it exists but does not already have an `Database` object,
   // create it and initiate deletion.
-  auto database = std::make_unique<Database>(
-      name, *this, Database::Identifier(bucket_locator(), name));
+  auto database = std::make_unique<Database>(name, *this);
   Database* database_ptr = AddDatabase(name, std::move(database));
   database_ptr->ScheduleDeleteDatabase(
       std::make_unique<FactoryClient>(std::move(factory_client)),

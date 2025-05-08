@@ -8,8 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #include "base/supports_user_data.h"
+#include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
-class Browser;
 @class ChromeBroadcaster;
 class FullscreenControllerObserver;
 @class ToolbarsSize;
@@ -19,14 +19,8 @@ enum class FullscreenExitReason;
 // calculates how much of the toolbar should be visible as a result.  When the
 // user scrolls down the screen, the toolbar should be hidden to allow more of
 // the page's content to be visible.
-class FullscreenController : public base::SupportsUserData::Data {
+class FullscreenController : public BrowserUserData<FullscreenController> {
  public:
-  explicit FullscreenController() = default;
-
-  // Retrieves the FullscreenController for `browser`. This should only be
-  // called with the kFullscreenControllerBrowserScoped turned on.
-  static FullscreenController* FromBrowser(Browser* browser);
-
   // The ChromeBroadcaster through the FullscreenController receives UI
   // information necessary to calculate fullscreen progress.
   // TODO(crbug.com/41358770): Once FullscreenController is a BrowserUserData,
@@ -105,9 +99,15 @@ class FullscreenController : public base::SupportsUserData::Data {
   virtual void ResizeHorizontalViewport() = 0;
 
  protected:
-  // Returns the key used to store the UserData. Protected so it can be used in
-  // tests.
-  static const void* UserDataKey();
+  FullscreenController() = default;
+
+ private:
+  friend class BrowserUserData<FullscreenController>;
+
+  // Overload BrowserUserData<FullscreenController>::Create() since
+  // FullscreenController is an abstract class and the factory needs
+  // to create an instance of a sub-class.
+  static std::unique_ptr<FullscreenController> Create(Browser* browser);
 };
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_CONTROLLER_H_

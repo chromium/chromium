@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 
@@ -148,9 +149,7 @@ void FCMHandler::DidRetrieveToken(base::TimeTicks fetch_time_for_metrics,
                                   instance_id::InstanceID::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!is_validation) {
-    // TODO(b/366316261):Add metrics for token retrival status.
-  }
+  boca::RecordTokenRetrievalIsValidation(is_validation);
 
   if (!IsListening()) {
     // After we requested the token, |StopListening| has been called. Thus,

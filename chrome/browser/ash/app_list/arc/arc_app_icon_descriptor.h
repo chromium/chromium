@@ -21,9 +21,10 @@ struct ArcAppIconDescriptor {
   // Used as a file name to store the background icon on the disk.
   std::string GetBackgroundIconName() const;
 
-  bool operator==(const ArcAppIconDescriptor& other) const;
-  bool operator!=(const ArcAppIconDescriptor& other) const;
-  bool operator<(const ArcAppIconDescriptor& other) const;
+  friend bool operator==(const ArcAppIconDescriptor&,
+                         const ArcAppIconDescriptor&) = default;
+  friend auto operator<=>(const ArcAppIconDescriptor&,
+                          const ArcAppIconDescriptor&) = default;
 
   int dip_size;
   ui::ResourceScaleFactor scale_factor;

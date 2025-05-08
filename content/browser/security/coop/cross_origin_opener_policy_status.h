@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "content/browser/security/coop/coop_swap_result.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
@@ -33,9 +32,8 @@ struct ChildProcessTerminationInfo;
 // Helper function that returns whether the BrowsingInstance should change
 // following COOP rules defined in:
 //
-// https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e#changes-to-navigation
-CONTENT_EXPORT CoopSwapResult
-ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
+// https://html.spec.whatwg.org/#browsing-context-group-switches-due-to-cross-origin-opener-policy
+CONTENT_EXPORT bool ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
     network::mojom::CrossOriginOpenerPolicyValue initiator_coop,
     const url::Origin& initiator_origin,
     bool is_navigation_from_initial_empty_document,
@@ -66,13 +64,9 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
   // Calling this function is safe because it can only tighten security.
   // This is used by _unfencedTop in fenced frames to ensure that navigations
   // leaving the fenced context create a new browsing instance.
-  void ForceBrowsingInstanceSwap() {
-    browsing_instance_swap_result_ = CoopSwapResult::kSwap;
-  }
+  void ForceBrowsingInstanceSwap() { browsing_instance_swap_ = true; }
 
-  CoopSwapResult browsing_instance_swap_result() const {
-    return browsing_instance_swap_result_;
-  }
+  bool browsing_instance_swap() const { return browsing_instance_swap_; }
 
   // The virtual browsing context group of the document to commit. Initially,
   // the navigation inherits the virtual browsing context group of the current
@@ -144,7 +138,7 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
   // Tracks whether the new document created by the navigation needs to be
   // created in a different BrowsingContext group. This is updated after every
   // redirect, and after receiving the final response.
-  CoopSwapResult browsing_instance_swap_result_ = CoopSwapResult::kNoSwap;
+  bool browsing_instance_swap_ = false;
 
   int virtual_browsing_context_group_;
 

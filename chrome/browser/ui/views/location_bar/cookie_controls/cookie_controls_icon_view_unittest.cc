@@ -157,9 +157,9 @@ TEST_P(CookieControlsIconViewUnitTest, DefaultNotVisible) {
 
 TEST_P(CookieControlsIconViewUnitTest,
        IconAnimatesWhenShouldHighlightIsTrueAndProtectionsAreOn) {
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/true, GetParam(),
-                                           /*should_highlight=*/true);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsBlocked, GetParam(),
+      /*should_highlight=*/true);
   FlushEvents();
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());
@@ -180,9 +180,9 @@ TEST_P(CookieControlsIconViewUnitTest,
 
 TEST_P(CookieControlsIconViewUnitTest,
        IconAnimatesOnPageReloadWithChangedSettings) {
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/true, GetParam(),
-                                           /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsBlocked, GetParam(),
+      /*should_highlight=*/false);
   FlushEvents();
   ExecuteIcon();
   // Force the icon to animate and set the label again
@@ -199,42 +199,42 @@ TEST_P(CookieControlsIconViewUnitTest,
 
 TEST_P(CookieControlsIconViewUnitTest,
        IconAnimationTextDoesNotResetWhenProtectionsDoNotChange) {
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/true, GetParam(),
-                                           /*should_highlight=*/true);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsBlocked, GetParam(),
+      /*should_highlight=*/true);
   FlushEvents();
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());
   EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
 
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/true, GetParam(),
-                                           /*should_highlight=*/true);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsBlocked, GetParam(),
+      /*should_highlight=*/true);
   FlushEvents();
   EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
 }
 
 TEST_P(CookieControlsIconViewUnitTest,
        IconAnimationTextUpdatesWhenProtectionsChange) {
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/true, GetParam(),
-                                           /*should_highlight=*/true);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsBlocked, GetParam(),
+      /*should_highlight=*/true);
   FlushEvents();
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());
   EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
 
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/false, GetParam(),
-                                           /*should_highlight=*/true);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsAllowed, GetParam(),
+      /*should_highlight=*/true);
   FlushEvents();
   EXPECT_EQ(LabelText(), AllowedLabel());
 }
 
 TEST_P(CookieControlsIconViewUnitTest, IconAnimationIsResetOnWebContentChange) {
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/true, GetParam(),
-                                           /*should_highlight=*/true);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsBlocked, GetParam(),
+      /*should_highlight=*/true);
   FlushEvents();
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());
@@ -245,9 +245,9 @@ TEST_P(CookieControlsIconViewUnitTest, IconAnimationIsResetOnWebContentChange) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMAIconOpened), 0);
   // Simulate a change in web content.
   view_->UpdateImpl();
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/true, GetParam(),
-                                           /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsBlocked, GetParam(),
+      /*should_highlight=*/false);
   FlushEvents();
   ExecuteIcon();
   EXPECT_TRUE(Visible());
@@ -260,9 +260,9 @@ TEST_P(CookieControlsIconViewUnitTest, IconAnimationIsResetOnWebContentChange) {
 }
 
 TEST_P(CookieControlsIconViewUnitTest, HidingIconDoesNotRetriggerA11yReadOut) {
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/true, GetParam(),
-                                           /*should_highlight=*/true);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsBlocked, GetParam(),
+      /*should_highlight=*/true);
   FlushEvents();
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());
@@ -276,9 +276,9 @@ TEST_P(CookieControlsIconViewUnitTest, HidingIconDoesNotRetriggerA11yReadOut) {
 
   EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimated), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 0);
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/false,
-                                           /*protections_on=*/true, GetParam(),
-                                           /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/false, CookieControlsState::k3pcsBlocked, GetParam(),
+      /*should_highlight=*/false);
   FlushEvents();
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
@@ -296,9 +296,9 @@ TEST_P(CookieControlsIconViewUnitTest, HidingIconDoesNotRetriggerA11yReadOut) {
 
 TEST_P(CookieControlsIconViewUnitTest,
        IconDoesNotAnimateWhenShouldHighlightIsFalse) {
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/true, GetParam(),
-                                           /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsBlocked, GetParam(),
+      /*should_highlight=*/false);
   FlushEvents();
   EXPECT_TRUE(Visible());
   EXPECT_FALSE(LabelShown());
@@ -308,9 +308,9 @@ TEST_P(CookieControlsIconViewUnitTest,
 }
 
 TEST_P(CookieControlsIconViewUnitTest, IconHiddenWhenIconVisibleIsFalse) {
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/false,
-                                           /*protections_on=*/false, GetParam(),
-                                           /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/false, CookieControlsState::k3pcsAllowed, GetParam(),
+      /*should_highlight=*/false);
   FlushEvents();
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
@@ -325,9 +325,9 @@ TEST_P(CookieControlsIconViewUnitTest, IconHiddenWhenIconVisibleIsFalse) {
 
 TEST_P(CookieControlsIconViewUnitTest,
        RecordsIconOpenMetricWhenProtectionsAreOff) {
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/false, GetParam(),
-                                           /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsAllowed, GetParam(),
+      /*should_highlight=*/false);
   FlushEvents();
   EXPECT_TRUE(Visible());
   EXPECT_EQ(TooltipText(), AllowedLabel());
@@ -340,9 +340,9 @@ TEST_P(CookieControlsIconViewUnitTest,
 
 TEST_P(CookieControlsIconViewUnitTest,
        RecordsIconOpenMetricWhenProtectionsAreOn) {
-  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
-                                           /*protections_on=*/true, GetParam(),
-                                           /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::k3pcsBlocked, GetParam(),
+      /*should_highlight=*/false);
   FlushEvents();
   EXPECT_EQ(TooltipText(),
             In3pcd() ? TrackingProtectionLabel() : BlockedLabel());

@@ -615,9 +615,9 @@ bool PermissionUtil::HasUserGesture(PermissionPrompt::Delegate* delegate) {
 }
 
 bool PermissionUtil::CanPermissionRequestIgnoreStatus(
-    const PermissionRequestData& request,
+    const std::unique_ptr<PermissionRequestData>& request,
     content::PermissionStatusSource source) {
-  if (!request.embedded_permission_element_initiated) {
+  if (!request->embedded_permission_element_initiated) {
     return false;
   }
 

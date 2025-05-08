@@ -5153,23 +5153,19 @@ enum TestAuthenticatorBehavior {
   kStallRequest,
 };
 
-// An implementation of blink::mojom::Authenticator that stalls all requests.
+// An implementation of blink::mojom::Authenticator that errors all requests,
+// this can be modified to stall all requests through SetBehavior.
 class TestAuthenticator : public blink::mojom::Authenticator {
  public:
-  explicit TestAuthenticator(TestAuthenticatorBehavior behavior)
-      : behavior_(behavior) {
-    OverrideAuthenticatorBinderForTesting(base::BindRepeating(
-        &TestAuthenticator::BindAuthenticator, base::Unretained(this)));
-  }
-
-  ~TestAuthenticator() override {
-    OverrideVibrationManagerBinderForTesting(base::NullCallback());
-  }
+  TestAuthenticator() = default;
+  ~TestAuthenticator() override = default;
 
   void BindAuthenticator(
       mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
     receiver_.Bind(std::move(receiver));
   }
+
+  void SetBehavior(TestAuthenticatorBehavior behavior) { behavior_ = behavior; }
 
  private:
   // blink::mojom::Authenticator:
@@ -5208,15 +5204,70 @@ class TestAuthenticator : public blink::mojom::Authenticator {
 
   MakeCredentialCallback pending_make_credential_callback_;
   GetCredentialCallback pending_get_credential_callback_;
-  TestAuthenticatorBehavior behavior_;
+  TestAuthenticatorBehavior behavior_ = TestAuthenticatorBehavior::kErrorOut;
   mojo::Receiver<blink::mojom::Authenticator> receiver_{this};
 };
 
+class TestAuthenticatorContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  TestAuthenticatorContentBrowserClient() = default;
+  ~TestAuthenticatorContentBrowserClient() override = default;
+
+  void RegisterBrowserInterfaceBindersForFrame(
+      content::RenderFrameHost* render_frame_host,
+      mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
+    ContentBrowserTestContentBrowserClient::
+        RegisterBrowserInterfaceBindersForFrame(render_frame_host, map);
+    // Override binding for blink::mojom::Authenticator.
+    map->Add<blink::mojom::Authenticator>(
+        base::BindRepeating(&TestAuthenticatorContentBrowserClient::Bind,
+                            weak_factory_.GetWeakPtr()));
+  }
+
+  void Bind(content::RenderFrameHost* render_frame_host,
+            mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
+    authenticator_.BindAuthenticator(std::move(receiver));
+  }
+
+  void SetBehavior(TestAuthenticatorBehavior behavior) {
+    authenticator_.SetBehavior(behavior);
+  }
+
+ private:
+  TestAuthenticator authenticator_;
+  base::WeakPtrFactory<TestAuthenticatorContentBrowserClient> weak_factory_{
+      this};
+};
+
+class BackForwardCacheWebAuthnBrowserTest : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    BackForwardCacheBrowserTest::SetUpOnMainThread();
+    browser_client_ = std::make_unique<TestAuthenticatorContentBrowserClient>();
+    ASSERT_TRUE(CreateHttpsServer()->Start());
+
+    // The default test shell() is created and bound in SetUp.  The
+    // ContentBrowserTestContentBrowserClient requires that
+    // GetShellContentBrowserClientInstances().size() > 1.  Therefore, the only
+    // work around is to either perform an initial navigation or create a new
+    // window.
+    GURL initial_url(https_server()->GetURL("initial.com", "/title1.html"));
+    ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  }
+
+  void SetBehavior(TestAuthenticatorBehavior behavior) {
+    browser_client_->SetBehavior(behavior);
+  }
+
+ private:
+  std::unique_ptr<TestAuthenticatorContentBrowserClient> browser_client_;
+};
+
 // Tests that an ongoing WebAuthn get assertion request disables BFcache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       WebAuthnGetAssertion_NoCachingDuringRequest) {
-  TestAuthenticator test_authenticator(kStallRequest);
-  ASSERT_TRUE(CreateHttpsServer()->Start());
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWebAuthnBrowserTest,
+                       GetAssertion_NoCachingDuringRequest) {
+  SetBehavior(kStallRequest);
   GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
@@ -5250,10 +5301,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Tests that after a WebAuthn get assertion request completes, BFcache is not
 // disabled.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       WebAuthnGetAssertion_CacheAfterRequest) {
-  TestAuthenticator test_authenticator(kErrorOut);
-  ASSERT_TRUE(CreateHttpsServer()->Start());
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWebAuthnBrowserTest,
+                       GetAssertion_CacheAfterRequest) {
   GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
@@ -5279,10 +5328,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 }
 
 // Tests that an ongoing WebAuthn make credential request disables BFcache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       WebAuthnMakeCredential_NoCachingDuringRequest) {
-  TestAuthenticator test_authenticator(kStallRequest);
-  ASSERT_TRUE(CreateHttpsServer()->Start());
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWebAuthnBrowserTest,
+                       MakeCredential_NoCachingDuringRequest) {
+  SetBehavior(kStallRequest);
   GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
@@ -5322,10 +5370,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Tests that after a WebAuthn make credential request completes, BFcache is not
 // disabled.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       WebAuthnMakeCredential_CacheAfterRequest) {
-  TestAuthenticator test_authenticator(kErrorOut);
-  ASSERT_TRUE(CreateHttpsServer()->Start());
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWebAuthnBrowserTest,
+                       MakeCredential_CacheAfterRequest) {
   GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
@@ -5771,26 +5817,8 @@ class BackForwardCacheBrowserTestWithMediaSession
   }
 };
 
-class BackForwardCacheBrowserTestWithMediaSessionNoTestingConfig
-    : public BackForwardCacheBrowserTestWithMediaSession {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DisableFeature(features::kBackForwardCacheMediaSessionService);
-
-    // The MediaSessionEnterPictureInPicture feature depends on the
-    // BackForwardCacheMediaSessionService feature, so we need to also disable
-    // it here.
-    // TODO(crbug.com/41483582): Remove these tests since the
-    // BackForwardCacheMediaSessionService feature has been launched.
-    DisableFeature(blink::features::kMediaSessionEnterPictureInPicture);
-
-    BackForwardCacheBrowserTestWithMediaSession::SetUpCommandLine(command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithMediaSessionNoTestingConfig,
-    CacheWhenMediaSessionPlaybackStateIsChanged) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaSession,
+                       CacheWhenMediaSessionPlaybackStateIsChanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page.
@@ -5833,30 +5861,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaSession,
 
   // The page is restored since a MediaSession service is not used.
   ExpectRestored(FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithMediaSessionNoTestingConfig,
-    DontCacheWhenMediaSessionServiceIsUsed) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Navigate to a page using MediaSession.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL(
-                   "a.test", "/media/session/media-session.html")));
-  RenderFrameHostWrapper rfh_a(current_frame_host());
-  // Register a callback explicitly to use a MediaSession service.
-  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
-    navigator.mediaSession.setActionHandler('play', () => {});
-  )"));
-
-  PlayVideoNavigateAndGoBack();
-
-  // The page is not restored since a MediaSession service is used.
-  auto reason = BackForwardCacheDisable::DisabledReason(
-      BackForwardCacheDisable::DisabledReasonId::kMediaSessionService);
-  ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
-                    {}, {reason}, {}, FROM_HERE);
 }
 
 #if BUILDFLAG(ENABLE_VR)

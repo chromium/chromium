@@ -5,9 +5,11 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_ENTRY_SCREENSHOT_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_ENTRY_SCREENSHOT_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/supports_user_data.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_client.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/common/content_export.h"
 
@@ -45,7 +47,8 @@ class NavigationEntryScreenshotCache;
 // `NavigationEntryScreenshot`.
 class CONTENT_EXPORT NavigationEntryScreenshot
     : public cc::UIResourceClient,
-      public base::SupportsUserData::Data {
+      public base::SupportsUserData::Data,
+      public performance_scenarios::MatchingScenarioObserver {
  public:
   const static void* const kUserDataKey;
 
@@ -70,6 +73,9 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   // Returns the memory occupied by the bitmap in bytes.
   size_t SetCache(NavigationEntryScreenshotCache* cache);
 
+  void OnScenarioMatchChanged(performance_scenarios::ScenarioScope scope,
+                              bool matches_pattern) override;
+
   // Returns true if the screenshot is being managed by a cache. This is not the
   // case when it's being displayed in the UI.
   bool is_cached() const { return cache_ != nullptr; }
@@ -87,8 +93,10 @@ class CONTENT_EXPORT NavigationEntryScreenshot
  private:
   void OnCompressionFinished(sk_sp<SkPixelRef> compressed_bitmap);
 
-  void StartCompression(const SkBitmap& bitmap,
-                        bool supports_etc_non_power_of_two);
+  base::OnceClosure CompressionTask(const SkBitmap& bitmap,
+                                    bool supports_etc_non_power_of_two);
+  void StartCompression();
+
   const cc::UIResourceBitmap& GetBitmap() const;
 
   // The uncompressed bitmap cached when navigating away from this navigation
@@ -113,6 +121,8 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   const NavigationTransitionData::UniqueId unique_id_;
 
   const gfx::Size dimensions_without_compression_;
+
+  base::OnceClosure compression_task_;
 
   base::WeakPtrFactory<NavigationEntryScreenshot> weak_factory_{this};
 };

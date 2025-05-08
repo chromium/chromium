@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
+#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -46,7 +47,6 @@
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/api/webrtc_audio_private/webrtc_audio_private_api.h"
-#include "chrome/browser/extensions/commands/command_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "extensions/browser/api/bluetooth_low_energy/bluetooth_low_energy_api.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
@@ -81,6 +81,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::CookiesAPI::GetFactoryInstance();
   extensions::ExtensionNotificationDisplayHelperFactory::GetInstance();
   extensions::DeveloperPrivateAPI::GetFactoryInstance();
+  extensions::CommandService::GetFactoryInstance();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ActivityLogAPI::GetFactoryInstance();
@@ -90,7 +91,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::BookmarksApiWatcher::EnsureFactoryBuilt();
   extensions::BookmarkManagerPrivateAPI::GetFactoryInstance();
   extensions::BrailleDisplayPrivateAPI::GetFactoryInstance();
-  extensions::CommandService::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   extensions::DocumentScanAPIHandler::GetFactoryInstance();
 #endif

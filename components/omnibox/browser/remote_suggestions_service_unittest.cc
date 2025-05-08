@@ -324,6 +324,10 @@ TEST_F(RemoteSuggestionsServiceTest, ResponseTimeHistograms) {
   histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent", 1);
   histogram_tester.ExpectBucketCount("Omnibox.SuggestRequestsSent", 3, 1);
 
+  // Verify slicing by INVALID_SPEC is not recorded.
+  histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent.INVALID_SPEC",
+                                    0);
+
   // Verify response histograms were recorded.
   histogram_tester.ExpectTotalCount(
       "Omnibox.SuggestRequestsSent.HttpResponseCode", 1);
@@ -345,6 +349,11 @@ TEST_F(RemoteSuggestionsServiceTest, ResponseTimeHistograms) {
       "Omnibox.SuggestRequestsSent.ResponseTime.INVALID_SPEC.ZeroSuggest."
       "Successful",
       0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.HttpResponseCode.INVALID_SPEC", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.HttpResponseCode.INVALID_SPEC.ZeroSuggest",
+      0);
 
   // Try a new request with a different response code and a page classification.
   test_url_loader_factory_.ClearResponses();
@@ -365,6 +374,10 @@ TEST_F(RemoteSuggestionsServiceTest, ResponseTimeHistograms) {
   // Verify request histogram was recorded.
   histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent", 2);
   histogram_tester.ExpectBucketCount("Omnibox.SuggestRequestsSent", 3, 2);
+
+  // Verify slicing by page classification is recorded.
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.SuggestRequestsSent.CONTEXTUAL_SEARCHBOX", 3, 1);
 
   // Verify response histograms were recorded.
   histogram_tester.ExpectTotalCount(
@@ -391,6 +404,12 @@ TEST_F(RemoteSuggestionsServiceTest, ResponseTimeHistograms) {
       "Omnibox.SuggestRequestsSent.ResponseTime.CONTEXTUAL_SEARCHBOX."
       "ZeroSuggest."
       "Failed",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.HttpResponseCode.CONTEXTUAL_SEARCHBOX", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.HttpResponseCode.CONTEXTUAL_SEARCHBOX."
+      "ZeroSuggest",
       1);
 }
 

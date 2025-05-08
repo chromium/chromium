@@ -102,17 +102,7 @@ class SSLPolicyTest : public PolicyTest {
   net::EmbeddedTestServer https_server_;
 };
 
-class PostQuantumPolicyTest : public SSLPolicyTest {
- public:
-  PostQuantumPolicyTest() {
-    scoped_feature_list_.InitAndEnableFeature(net::features::kPostQuantumKyber);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, PostQuantumEnabledPolicy) {
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PostQuantumEnabledPolicy) {
   net::SSLServerConfig ssl_config;
   ssl_config.curves_for_testing = {NID_X25519MLKEM768};
   ASSERT_TRUE(StartTestServer(ssl_config));
@@ -154,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, PostQuantumEnabledPolicy) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, DevicePostQuantumEnabledPolicy) {
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest, DevicePostQuantumEnabledPolicy) {
   net::SSLServerConfig ssl_config;
   ssl_config.curves_for_testing = {NID_X25519MLKEM768};
   ASSERT_TRUE(StartTestServer(ssl_config));

@@ -153,7 +153,7 @@ const base::Value::Dict* TestDevToolsProtocolClient::error() const {
 }
 
 void TestDevToolsProtocolClient::RunLoopUpdatingQuitClosure() {
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   run_loop_quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
 }

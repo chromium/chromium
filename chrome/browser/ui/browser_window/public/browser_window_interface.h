@@ -18,6 +18,10 @@
 // your feature needs. This comment will be deleted after there are 10+ features
 // in BrowserWindowFeatures.
 
+namespace new_tab_footer {
+class NewTabFooterWebView;
+}  // namespace new_tab_footer
+
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -74,7 +78,7 @@ class BrowserWindowInterface : public content::PageNavigator {
                         WindowOpenDisposition disposition) = 0;
 
   // Returns a session-unique ID.
-  virtual const SessionID& GetSessionID() = 0;
+  virtual const SessionID& GetSessionID() const = 0;
 
   virtual TabStripModel* GetTabStripModel() = 0;
 
@@ -102,10 +106,19 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns true if the window is minimized.
   virtual bool IsMinimized() const = 0;
 
+  // Returns true if the browser window is visible on the screen.
+  virtual bool IsVisibleOnScreen() const = 0;
+
+  // Returns true if the window is visible.
+  virtual bool IsVisible() const = 0;
+
   virtual base::WeakPtr<BrowserWindowInterface> GetWeakPtr() = 0;
 
   // Returns the view that houses the Lens overlay.
   virtual views::View* LensOverlayView() = 0;
+
+  // Returns the view that houses the New Tab Footer.
+  virtual new_tab_footer::NewTabFooterWebView* NewTabFooterWebView() = 0;
 
   using ActiveTabChangeCallback =
       base::RepeatingCallback<void(BrowserWindowInterface*)>;
@@ -221,6 +234,10 @@ class BrowserWindowInterface : public content::PageNavigator {
   // incremental migration.
   virtual Browser* GetBrowserForMigrationOnly() = 0;
 
+  // Activates (brings to front) the window. Restores the window from minimized
+  // state if necessary.
+  virtual void ActivateWindow() = 0;
+
   // Changes the blocked state of |web_contents|. WebContentses are considered
   // blocked while displaying a web contents modal dialog. During that time
   // renderer host will ignore any UI interaction within WebContents outside of
@@ -233,7 +250,7 @@ class BrowserWindowInterface : public content::PageNavigator {
                                      bool blocked) = 0;
 
   // Checks if the browser popup is tab modal dialog.
-  virtual bool IsTabModalPopup() const = 0;
+  virtual bool IsTabModalPopupDeprecated() const = 0;
 
   // Features that want to show a window level call to action UI can be mutually
   // exclusive. Before gating on call to action UI first check

@@ -34,6 +34,7 @@
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
@@ -68,6 +69,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_identity_credential_delegate.h"
@@ -80,7 +82,7 @@
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
+#include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/logging/log_router.h"
@@ -371,7 +373,7 @@ base::WeakPtr<AutofillClient> ChromeAutofillClient::GetWeakPtr() {
 }
 
 const std::string& ChromeAutofillClient::GetAppLocale() const {
-  return g_browser_process->GetApplicationLocale();
+  return g_browser_process->GetFeatures()->application_locale_storage()->Get();
 }
 
 version_info::Channel ChromeAutofillClient::GetChannel() const {
@@ -529,7 +531,8 @@ AutofillAiModelExecutor* ChromeAutofillClient::GetAutofillAiModelExecutor() {
 
 IdentityCredentialDelegate*
 ChromeAutofillClient::GetIdentityCredentialDelegate() {
-  if (!base::FeatureList::IsEnabled(::features::kFedCmDelegation)) {
+  if (!(base::FeatureList::IsEnabled(::features::kFedCmDelegation) ||
+        base::FeatureList::IsEnabled(::features::kFedCmAutofill))) {
     return nullptr;
   }
 

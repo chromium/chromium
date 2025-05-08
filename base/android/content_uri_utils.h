@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -28,10 +29,22 @@ BASE_EXPORT bool ContentUriExists(const FilePath& content_uri);
 BASE_EXPORT std::optional<std::string> TranslateOpenFlagsToJavaMode(
     uint32_t open_flags);
 
-// Opens a content URI and returns the file descriptor to the caller.
+// Opens a content URI and returns the Java ParcelFileDescriptor to the caller
+// which will own the object.  Callers should call ContentUriGetFd() to get the
+// platform file descriptor, and call ContentUriClose() when the file is closed.
 // `open_flags` is a bitmap of File::FLAG_* values.
-// Returns -1 if the URI is invalid.
-int OpenContentUri(const FilePath& content_uri, uint32_t open_flags);
+// Returns null if the URI is invalid.
+base::android::ScopedJavaLocalRef<jobject> OpenContentUri(
+    const FilePath& content_uri,
+    uint32_t open_flags);
+
+// Returns the platform FD or -1 if `java_parcel_file_descriptor` is invalid.
+int ContentUriGetFd(
+    const base::android::JavaRef<jobject>& java_parcel_file_descriptor);
+
+// Closes `java_parcel_file_descriptor`.
+void ContentUriClose(
+    const base::android::JavaRef<jobject>& java_parcel_file_descriptor);
 
 // Returns true if file exists and results are populated, else returns false.
 bool ContentUriGetFileInfo(const FilePath& content_uri,

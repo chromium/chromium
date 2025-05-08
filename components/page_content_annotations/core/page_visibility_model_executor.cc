@@ -57,8 +57,7 @@ PageVisibilityModelExecutor::Execute(
 
 base::expected<std::unique_ptr<PageVisibilityModelExecutor::ModelExecutionTask>,
                optimization_guide::ExecutionStatus>
-PageVisibilityModelExecutor::BuildModelExecutionTask(
-    const base::File& model_file) {
+PageVisibilityModelExecutor::BuildModelExecutionTask(base::File& model_file) {
   tflite::task::text::NLClassifierOptions options;
   auto* mutable_file_descriptor_meta = options.mutable_base_options()
                                            ->mutable_model_file()

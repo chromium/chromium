@@ -19,9 +19,6 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
                  blink::IndexedDBDatabaseMetadata> {
-  static int64_t id(const blink::IndexedDBDatabaseMetadata& metadata) {
-    return metadata.id;
-  }
   static const std::u16string& name(
       const blink::IndexedDBDatabaseMetadata& metadata) {
     return metadata.name;

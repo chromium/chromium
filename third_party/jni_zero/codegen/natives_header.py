@@ -164,7 +164,7 @@ def entry_point_method(sb,
       return
 
     with sb.statement():
-      sb('jobject converted_ret = ')
+      sb('auto converted_ret = ')
       if native.needs_implicit_array_element_class_param:
         clazz_snippet = f'static_cast<jclass>({native.proxy_params[-1].name})'
       else:
@@ -173,7 +173,8 @@ def entry_point_method(sb,
                                      '_ret',
                                      return_type,
                                      clazz_snippet=clazz_snippet)
-      sb('.Release()')
+      if not return_type.is_primitive():
+        sb('.Release()')
 
     with sb.statement():
       sb('return ')

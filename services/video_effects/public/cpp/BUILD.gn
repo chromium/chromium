@@ -2,16 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("video_effects_service_host") {
-  sources = [
-    "video_effects_service_host.cc",
-    "video_effects_service_host.h",
-  ]
+import("//services/video_effects/args.gni")
 
-  public_deps = [ "//services/video_effects/public/mojom:mojom" ]
+if (enable_video_effects) {
+  source_set("video_effects_service_host") {
+    sources = [
+      "video_effects_service_host.cc",
+      "video_effects_service_host.h",
+    ]
 
-  deps = [
-    "//content/public/browser",
-    "//services/on_device_model/ml:ml_holder_no_internal",
-  ]
+    public_deps = [ "//services/video_effects/public/mojom:mojom" ]
+
+    deps = [
+      "//content/public/browser",
+      "//services/on_device_model/ml:ml_holder_no_internal",
+    ]
+  }
 }

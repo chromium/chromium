@@ -50,7 +50,7 @@ class LazyBackgroundTaskQueue : public KeyedService,
   ~LazyBackgroundTaskQueue() override;
 
   // Convenience method to return the LazyBackgroundTaskQueue for a given
-  // |context|.
+  // `context`.
   static LazyBackgroundTaskQueue* Get(content::BrowserContext* context);
 
   // Returns true if the task should be added to the queue (that is, if the
@@ -71,7 +71,7 @@ class LazyBackgroundTaskQueue : public KeyedService,
   // task added for the extension, its lazy background page will be loaded.
   // The task will be called either when the page is loaded, or when the
   // page fails to load for some reason (e.g. a crash or browser
-  // shutdown). In the latter case, |task| will be called with an empty
+  // shutdown). In the latter case, `task` will be called with an empty
   // std::unique_ptr<ContextItem> parameter.
   void AddPendingTask(const LazyContextId& context_id,
                       PendingTask task) override;
@@ -100,7 +100,7 @@ class LazyBackgroundTaskQueue : public KeyedService,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  // If there are pending tasks for |extension| in |browser_context|, try to
+  // If there are pending tasks for `extension` in `browser_context`, try to
   // create the background host. If the background host cannot be created, the
   // pending tasks are invoked with nullptr.
   void CreateLazyBackgroundHostOnExtensionLoaded(

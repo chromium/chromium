@@ -49,8 +49,8 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
     SharedElement(SharedElement&&);
     SharedElement& operator=(SharedElement&&);
 
-    bool operator==(const SharedElement& other) const;
-    bool operator!=(const SharedElement& other) const;
+    friend bool operator==(const SharedElement&,
+                           const SharedElement&) = default;
 
     // The render pass corresponding to a DOM element. The id is scoped to the
     // same frame that the directive corresponds to.

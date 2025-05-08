@@ -51,6 +51,7 @@ source_set("coordinator") {
     "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/web/common",
+    "//ios/web/public/js_image_transcoder",
     "//ui/base",
     "//url",
   ]
@@ -107,6 +108,7 @@ source_set("unit_tests") {
     "//components/url_formatter",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/photos/model:photos_service_factory",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -120,6 +122,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/web/common",
     "//ios/web/public",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//net",
     "//testing/gtest",

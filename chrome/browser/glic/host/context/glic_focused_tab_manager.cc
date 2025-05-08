@@ -145,6 +145,17 @@ void GlicFocusedTabManager::OnWidgetShowStateChanged(views::Widget* widget) {
   MaybeUpdateFocusedTab();
 }
 
+void GlicFocusedTabManager::OnWidgetVisibilityChanged(views::Widget* widget,
+                                                      bool visible) {
+  MaybeUpdateFocusedTab();
+}
+
+void GlicFocusedTabManager::OnWidgetVisibilityOnScreenChanged(
+    views::Widget* widget,
+    bool visible) {
+  MaybeUpdateFocusedTab();
+}
+
 void GlicFocusedTabManager::OnWidgetDestroyed(views::Widget* widget) {
   widget_observation_.Reset();
 }
@@ -352,6 +363,14 @@ bool GlicFocusedTabManager::IsBrowserStateValid(
   }
 
   if (browser_interface->IsMinimized()) {
+    return false;
+  }
+
+  if (!browser_interface->IsVisible()) {
+    return false;
+  }
+
+  if (!browser_interface->IsVisibleOnScreen()) {
     return false;
   }
 

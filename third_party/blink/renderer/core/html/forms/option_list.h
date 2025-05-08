@@ -100,6 +100,11 @@ class OptionList final {
     return FindFocusableOption(option, /*forward*/ false, inclusive);
   }
 
+  // This method calls IsKeyboardFocusableSlow with
+  // Element::UpdateBehavior::kAssertNoLayoutUpdates on each option until it
+  // finds a focusable one, then returns it.
+  HTMLOptionElement* FirstKeyboardFocusableOption();
+
  private:
   HTMLOptionElement* FindFocusableOption(HTMLOptionElement& option,
                                          bool forward,

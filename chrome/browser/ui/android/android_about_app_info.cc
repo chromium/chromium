@@ -26,14 +26,3 @@ std::string AndroidAboutAppInfo::GetOsInfo() {
              embedder_support::IncludeAndroidBuildNumber::Include,
              embedder_support::IncludeAndroidModel::Include);
 }
-
-std::string AndroidAboutAppInfo::GetTargetsUInfo() {
-  std::string targets_u_info =
-      base::android::BuildInfo::GetInstance()->is_at_least_u() ? "true"
-                                                               : "false";
-  targets_u_info += "/";
-  targets_u_info +=
-      base::android::BuildInfo::GetInstance()->targets_at_least_u() ? "true"
-                                                                    : "false";
-  return targets_u_info;
-}

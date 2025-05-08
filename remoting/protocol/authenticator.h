@@ -99,6 +99,9 @@ class Authenticator {
     // host and the client.
     NO_COMMON_AUTH_METHOD,
 
+    // A local network issue has prevented the remote connection.
+    NETWORK_FAILURE,
+
     // The authenticator is not in a valid state.
     INVALID_STATE,
 

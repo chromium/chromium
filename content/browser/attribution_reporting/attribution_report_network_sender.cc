@@ -45,20 +45,6 @@ namespace content {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(Status)
-enum class Status {
-  kOk = 0,
-  // Corresponds to a non-zero NET_ERROR.
-  kInternalError = 1,
-  // Corresponds to a non-200 HTTP response code from the reporting endpoint.
-  kExternalError = 2,
-  kMaxValue = kExternalError
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionReportStatus)
-
 template <typename T>
 void NetworkHistogram(std::string_view suffix,
                       void (*hist_func)(std::string_view, T value),
@@ -244,30 +230,34 @@ void AttributionReportNetworkSender::SendReport(GURL url,
 
 void AttributionReportNetworkSender::OnReportSent(
     const AttributionReport& report,
-    bool is_debug_report,
+    const bool is_debug_report,
     ReportSentCallback sent_callback,
     UrlLoaderList::iterator it,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   network::SimpleURLLoader* loader = it->get();
 
-  // Consider a non-200 HTTP code as a non-internal error.
-  int net_error = loader->NetError();
-  bool internal_ok =
+  const int net_error = loader->NetError();
+  const bool net_ok =
       net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE;
 
-  int response_code = headers ? headers->response_code() : -1;
-  bool external_ok = response_code >= 200 && response_code <= 299;
+  // Use the analogous net error if headers are absent; previously this used -1
+  // as the value, but that is a legitimate net error value
+  // (`net::ERR_IO_PENDING`), which would be misleading/erroneous if ever
+  // stringified, either in the internals UI or in metrics.
+  const int response_code =
+      headers ? headers->response_code() : net::ERR_INVALID_HTTP_RESPONSE;
+  const bool http_ok = response_code >= 200 && response_code <= 299;
 
-  Status status = internal_ok && external_ok ? Status::kOk
-                  : !internal_ok             ? Status::kInternalError
-                                             : Status::kExternalError;
+  const bool net_ok_and_http_ok = net_ok && http_ok;
+
   // Since net errors are always negative and HTTP errors are always positive,
   // it is fine to combine these in a single histogram.
-  int response_or_net_error = internal_ok ? response_code : net_error;
+  const int response_or_net_error = net_ok ? response_code : net_error;
+
   std::optional<bool> retry_succeed =
-      loader->GetNumRetries() > 0
-          ? std::make_optional<bool>(status == Status::kOk)
-          : std::nullopt;
+      loader->GetNumRetries() > 0 ? std::make_optional<bool>(net_ok_and_http_ok)
+                                  : std::nullopt;
+
   if (in_first_batch_) {
     base::UmaHistogramSparse(
         "Conversions.FirstBatch.HttpResponseOrNetErrorCode",
@@ -298,47 +288,35 @@ void AttributionReportNetworkSender::OnReportSent(
       response_or_net_error);
 #endif
 
-  std::optional<bool> has_trigger_context_id;
-
   std::visit(
       base::Overloaded{
           [&](const AttributionReport::EventLevelData&) {
-            NetworkHistogram("ReportStatusEventLevel",
-                             &base::UmaHistogramEnumeration, is_debug_report,
-                             has_trigger_context_id, status);
             NetworkHistogram("HttpResponseOrNetErrorCodeEventLevel",
                              &base::UmaHistogramSparse, is_debug_report,
-                             has_trigger_context_id, response_or_net_error);
+                             /*has_trigger_context_id=*/std::nullopt,
+                             response_or_net_error);
+
             if (retry_succeed.has_value()) {
               NetworkHistogram("ReportRetrySucceedEventLevel",
                                &base::UmaHistogramBoolean, is_debug_report,
-                               has_trigger_context_id, *retry_succeed);
+                               /*has_trigger_context_id=*/std::nullopt,
+                               *retry_succeed);
             }
           },
           [&](const AttributionReport::AggregatableData& data) {
-            has_trigger_context_id = data.aggregatable_trigger_config()
-                                         .trigger_context_id()
-                                         .has_value();
+            const bool has_trigger_context_id =
+                data.aggregatable_trigger_config()
+                    .trigger_context_id()
+                    .has_value();
 
-            if (data.is_null()) {
-              NetworkHistogram("ReportStatusAggregatableNull",
-                               &base::UmaHistogramEnumeration, is_debug_report,
-                               has_trigger_context_id, status);
-              NetworkHistogram("HttpResponseOrNetErrorCodeAggregatableNull",
-                               &base::UmaHistogramSparse, is_debug_report,
-                               has_trigger_context_id, response_or_net_error);
-            } else {
-              NetworkHistogram("ReportStatusAggregatable",
-                               &base::UmaHistogramEnumeration, is_debug_report,
-                               has_trigger_context_id, status);
-              NetworkHistogram("HttpResponseOrNetErrorCodeAggregatable",
-                               &base::UmaHistogramSparse, is_debug_report,
-                               has_trigger_context_id, response_or_net_error);
-              if (retry_succeed.has_value()) {
-                NetworkHistogram("ReportRetrySucceedAggregatable",
-                                 &base::UmaHistogramBoolean, is_debug_report,
-                                 has_trigger_context_id, *retry_succeed);
-              }
+            NetworkHistogram("HttpResponseOrNetErrorCodeAggregatable2",
+                             &base::UmaHistogramSparse, is_debug_report,
+                             has_trigger_context_id, response_or_net_error);
+
+            if (retry_succeed.has_value()) {
+              NetworkHistogram("ReportRetrySucceedAggregatable2",
+                               &base::UmaHistogramBoolean, is_debug_report,
+                               has_trigger_context_id, *retry_succeed);
             }
           },
       },
@@ -346,7 +324,7 @@ void AttributionReportNetworkSender::OnReportSent(
 
   loaders_in_progress_.erase(it);
 
-  if (status == Status::kOk) {
+  if (net_ok_and_http_ok) {
     std::move(sent_callback)
         .Run(report,
              SendResult::Sent(SendResult::Sent::Result::kSent, response_code));
@@ -367,7 +345,7 @@ void AttributionReportNetworkSender::OnReportSent(
              SendResult::Sent(should_retry
                                   ? SendResult::Sent::Result::kTransientFailure
                                   : SendResult::Sent::Result::kFailure,
-                              net_error));
+                              response_or_net_error));
   }
 }
 

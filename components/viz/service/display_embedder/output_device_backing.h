@@ -43,7 +43,7 @@ class VIZ_SERVICE_EXPORT OutputDeviceBacking {
   OutputDeviceBacking(const OutputDeviceBacking&) = delete;
   OutputDeviceBacking& operator=(const OutputDeviceBacking&) = delete;
 
-  ~OutputDeviceBacking();
+  virtual ~OutputDeviceBacking();
 
   void RegisterClient(Client* client);
   void UnregisterClient(Client* client);
@@ -64,13 +64,13 @@ class VIZ_SERVICE_EXPORT OutputDeviceBacking {
   size_t GetMaxViewportBytes();
 
   // Retrieve the ID3D11Device and IDCompositionDevice to use for presentation.
-  HRESULT GetOrCreateDXObjects(
+  virtual HRESULT GetOrCreateDXObjects(
       Microsoft::WRL::ComPtr<ID3D11Device>* d3d11_device,
       Microsoft::WRL::ComPtr<IDXGIFactory2>* dxgi_factory,
       Microsoft::WRL::ComPtr<IDCompositionDevice>* dcomp_device);
 
   // Returns the D3D11 staging texture or creates one if it doesn't exist.
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> GetOrCreateStagingTexture();
+  virtual Microsoft::WRL::ComPtr<ID3D11Texture2D> GetOrCreateStagingTexture();
 
   // Returns the size needed for the largest viewport from registered clients,
   // in pixels.

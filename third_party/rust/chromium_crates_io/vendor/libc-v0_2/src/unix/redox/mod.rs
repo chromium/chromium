@@ -131,6 +131,22 @@ s! {
         pub thousands_sep: *const c_char,
     }
 
+    pub struct msghdr {
+        pub msg_name: *mut c_void,
+        pub msg_namelen: crate::socklen_t,
+        pub msg_iov: *mut crate::iovec,
+        pub msg_iovlen: size_t,
+        pub msg_control: *mut c_void,
+        pub msg_controllen: size_t,
+        pub msg_flags: c_int,
+    }
+
+    pub struct cmsghdr {
+        pub cmsg_len: size_t,
+        pub cmsg_level: c_int,
+        pub cmsg_type: c_int,
+    }
+
     pub struct passwd {
         pub pw_name: *mut c_char,
         pub pw_passwd: *mut c_char,
@@ -1212,6 +1228,12 @@ extern "C" {
     pub fn setrlimit(resource: c_int, rlim: *const crate::rlimit) -> c_int;
 
     // sys/socket.h
+    pub fn CMSG_ALIGN(len: size_t) -> size_t;
+    pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar;
+    pub fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr;
+    pub fn CMSG_LEN(len: c_uint) -> c_uint;
+    pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr;
+    pub fn CMSG_SPACE(len: c_uint) -> c_uint;
     pub fn bind(
         socket: c_int,
         address: *const crate::sockaddr,
@@ -1225,11 +1247,33 @@ extern "C" {
         addr: *mut crate::sockaddr,
         addrlen: *mut crate::socklen_t,
     ) -> ssize_t;
+    pub fn recvmsg(socket: c_int, msg: *mut msghdr, flags: c_int) -> ssize_t;
+    pub fn sendmsg(socket: c_int, msg: *const msghdr, flags: c_int) -> ssize_t;
+    pub fn sendto(
+        socket: c_int,
+        buf: *const c_void,
+        len: size_t,
+        flags: c_int,
+        addr: *const crate::sockaddr,
+        addrlen: crate::socklen_t,
+    ) -> ssize_t;
 
     // sys/stat.h
     pub fn futimens(fd: c_int, times: *const crate::timespec) -> c_int;
 
     // sys/uio.h
+    pub fn preadv(
+        fd: c_int,
+        iov: *const crate::iovec,
+        iovcnt: c_int,
+        offset: off_t,
+    ) -> ssize_t;
+    pub fn pwritev(
+        fd: c_int,
+        iov: *const crate::iovec,
+        iovcnt: c_int,
+        offset: off_t,
+    ) -> ssize_t;
     pub fn readv(fd: c_int, iov: *const crate::iovec, iovcnt: c_int) -> ssize_t;
     pub fn writev(fd: c_int, iov: *const crate::iovec, iovcnt: c_int) -> ssize_t;
 

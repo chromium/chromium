@@ -14,11 +14,11 @@
 namespace parent_access {
 
 // Title bases used in histogram title generation.
-constexpr char kParentAccessWidgetShowDialogErrorHistogramBase[] =
+inline constexpr char kParentAccessWidgetShowDialogErrorHistogramBase[] =
     "ChromeOS.FamilyLinkUser.ParentAccessWidgetShowDialogError";
-constexpr char kParentAccessFlowResultHistogramBase[] =
+inline constexpr char kParentAccessFlowResultHistogramBase[] =
     "ChromeOS.FamilyLinkUser.ParentAccess.FlowResult";
-constexpr char kParentAccessWidgetErrorHistogramBase[] =
+inline constexpr char kParentAccessWidgetErrorHistogramBase[] =
     "ChromeOS.FamilyLinkUser.ParentAccessWidgetError";
 
 // Returns the title string for a histogram given a title base and flow

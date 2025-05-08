@@ -4,12 +4,12 @@
 
 #import "components/autofill/ios/browser/form_fetch_batcher.h"
 
-#include <algorithm>
+#import <algorithm>
 
-#include "base/functional/bind.h"
+#import "base/functional/bind.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
+#import "base/not_fatal_until.h"
 #import "base/task/task_runner.h"
 #import "base/time/time.h"
 #import "components/autofill/core/common/form_data.h"

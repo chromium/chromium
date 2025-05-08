@@ -85,7 +85,6 @@ class BaseSearchProvider : public AutocompleteProvider {
   static AutocompleteMatch CreateShortcutSearchSuggestion(
       const std::u16string& suggestion,
       AutocompleteMatchType::Type type,
-      bool from_keyword_provider,
       const TemplateURL* template_url,
       const SearchTermsData& search_terms_data);
 

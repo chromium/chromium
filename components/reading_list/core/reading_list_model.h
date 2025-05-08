@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
-#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class GURL;
 class ReadingListModelObserver;
@@ -103,7 +103,7 @@ class ReadingListModel : public KeyedService {
   // If an account exists that syncs the entry which has the given `url`, that
   // account will be returned. Otherwise, the entry may be saved locally on the
   // device or may not exist, in that case an empty account will be returned.
-  virtual CoreAccountId GetAccountWhereEntryIsSavedTo(const GURL& url) = 0;
+  virtual GaiaId GetAccountWhereEntryIsSavedTo(const GURL& url) = 0;
 
   // Returns true if the entry with `url` requires explicit user action to
   // upload to sync servers.

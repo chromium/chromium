@@ -31,6 +31,7 @@ class StagingBufferPool;
 class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
  public:
   OneCopyRasterBufferProvider(
+      scoped_refptr<gpu::SharedImageInterface> sii,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       viz::RasterContextProvider* compositor_context_provider,
       viz::RasterContextProvider* worker_context_provider,
@@ -133,6 +134,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
                                     bool mailbox_texture_is_overlay_candidate,
                                     const gpu::SyncToken& sync_token);
 
+  const scoped_refptr<gpu::SharedImageInterface> sii_;
   const raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
   const int max_bytes_per_copy_operation_;

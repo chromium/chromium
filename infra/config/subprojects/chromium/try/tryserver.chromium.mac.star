@@ -348,6 +348,46 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+try_.orchestrator_builder(
+    name = "mac15-arm64-rel",
+    branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Compiles and runs MacOS 15 tests on ARM machines",
+    mirrors = [
+        "ci/mac-arm64-rel",
+        "ci/mac15-arm64-rel-tests",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "release_try_builder",
+            "remoteexec",
+            "no_symbols",
+            "mac",
+        ],
+    ),
+    compilator = "mac15-arm64-rel-compilator",
+    contact_team_email = "bling-engprod@google.com",
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO (crbug.com/415099984): change to 100,
+        # then move out of experimental CQ after,
+        # mac15-arm64-rel replaces mac14-arm64-rel on CQ.
+        experiment_percentage = 1,
+    ),
+)
+
+try_.compilator_builder(
+    name = "mac15-arm64-rel-compilator",
+    branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "compilator for mac15-arm64-rel",
+    cpu = cpu.ARM64,
+    contact_team_email = "bling-engprod@google.com",
+    # TODO (crbug.com/1245171): Revert when root issue is fixed
+    grace_period = 4 * time.minute,
+    main_list_view = "try",
+)
+
 # NOTE: the following trybots aren't sensitive to Mac version on which
 # they are built, hence no additional dimension is specified.
 # The 10.xx version translates to which bots will run isolated tests.
@@ -411,6 +451,25 @@ try_.builder(
     mirrors = [
         "ci/Mac Builder",
         "ci/mac14-tests",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Mac Builder",
+            "release_try_builder",
+            "remoteexec",
+        ],
+    ),
+    cpu = cpu.ARM64,
+    contact_team_email = "bling-engprod@google.com",
+)
+
+try_.builder(
+    name = "mac15-x64-rel-tests",
+    branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Runs default MacOS 15 tests on try.",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/mac15-x64-rel-tests",
     ],
     gn_args = gn_args.config(
         configs = [
@@ -814,10 +873,14 @@ try_.gpu.optional_tests_builder(
         browser_config = targets.browser_config.RELEASE,
         os_type = targets.os_type.MAC,
     ),
-    cpu = cpu.ARM64,
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    cpu = None,
     ssd = None,
+    free_space = None,
     contact_team_email = "chrome-gpu-infra@google.com",
     main_list_view = "try",
+    max_concurrent_builds = 7,
     tryjob = try_.job(
         location_filters = [
             # Inclusion filters.

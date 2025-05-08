@@ -10,8 +10,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 
 namespace metrics {
@@ -38,7 +40,13 @@ bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
   // information to the client. In its absence, demographics info is unavailable
   // thus cannot be uploaded.
   if (!IsValidUploadState(syncer::GetUploadToGoogleState(
-          sync_service, syncer::PRIORITY_PREFERENCES))) {
+          sync_service, syncer::PRIORITY_PREFERENCES)) ||
+      // With `kSyncSupportAlwaysSyncingPriorityPreferences` feature enabled,
+      // PRIORITY_PREFERENCES will always be active (decoupled from sync user
+      // toggle). Thus, the preferences user toggle should be checked
+      // separately.
+      !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPreferences)) {
     return false;
   }
 

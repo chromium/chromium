@@ -12,8 +12,6 @@
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 
-class Browser;
-
 namespace web_app {
 struct WebAppInstallInfo;
 class WebAppProvider;
@@ -33,8 +31,8 @@ class OSFeedbackAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldAllowResize() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearchAndShelf() const override;
-  gfx::Rect GetDefaultBounds(Browser*) const override;
-  Browser* LaunchAndNavigateSystemWebApp(
+  gfx::Rect GetDefaultBounds(ash::BrowserDelegate*) const override;
+  ash::BrowserDelegate* LaunchAndNavigateSystemWebApp(
       Profile* profile,
       web_app::WebAppProvider* provider,
       const GURL& url,

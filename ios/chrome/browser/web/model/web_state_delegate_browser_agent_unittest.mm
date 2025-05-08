@@ -180,8 +180,8 @@ TEST_F(WebStateDelegateBrowserAgentTest, GetJavaScriptDialogPresenter) {
 
   // Present a JavaScript alert.
   GURL kOriginUrl("http://chromium.test");
-  presenter->RunJavaScriptAlertDialog(web_state, kOriginUrl, @"",
-                                      base::DoNothing());
+  presenter->RunJavaScriptAlertDialog(
+      web_state, url::Origin::Create(kOriginUrl), @"", base::DoNothing());
 
   // Verify that JavaScript alert OverlayRequest has been added to the
   // WebState's queue.

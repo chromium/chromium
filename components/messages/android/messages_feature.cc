@@ -17,9 +17,8 @@ namespace messages {
 namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &kMessagesForAndroidFullyVisibleCallback,
-    &kMessagesAndroidExtraHistograms,
-};
+    &kMessagesForAndroidFullyVisibleCallback, &kMessagesAndroidExtraHistograms,
+    &kMessagesCloseButton};
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
@@ -38,6 +37,10 @@ BASE_FEATURE(kMessagesForAndroidFullyVisibleCallback,
 // Feature that enables extra histogram recordings.
 BASE_FEATURE(kMessagesAndroidExtraHistograms,
              "MessagesAndroidExtraHistograms",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMessagesCloseButton,
+             "MessagesCloseButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 static jlong JNI_MessageFeatureMap_GetNativeMap(JNIEnv* env) {

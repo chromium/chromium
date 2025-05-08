@@ -89,6 +89,10 @@ void InfoBarContainer::RemoveInfoBar(InfoBar* infobar) {
   infobars_.erase(i);
 }
 
+bool InfoBarContainer::ShouldHideInFullscreen() const {
+  return infobar_manager_->ShouldHideInFullscreen();
+}
+
 void InfoBarContainer::RemoveAllInfoBarsForDestruction() {
   // Before we remove any children, we reset |delegate_|, so that no removals
   // will result in us trying to call

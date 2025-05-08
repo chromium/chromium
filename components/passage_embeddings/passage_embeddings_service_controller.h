@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/observer_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
@@ -87,14 +88,18 @@ class PassageEmbeddingsServiceController : public EmbedderMetadataProvider {
   // the service.
   void LoadModelsToService(
       mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
+      base::ElapsedTimer service_launch_timer,
       mojom::PassageEmbeddingsLoadModelsParamsPtr params);
 
   // Called when an attempt to load models to service finishes.
-  void OnLoadModelsResult(bool success);
+  void OnLoadModelsResult(base::ElapsedTimer service_launch_timer,
+                          bool success);
 
   // Called when an attempt to generate embeddings finishes.
   void OnGotEmbeddings(RequestId request_id,
                        GetEmbeddingsResultCallback callback,
+                       base::ElapsedTimer generate_embeddings_timer,
+                       PassagePriority priority,
                        std::vector<mojom::PassageEmbeddingsResultPtr> results);
 
   // Version of the embeddings model.

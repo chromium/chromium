@@ -10,6 +10,8 @@ component("settings") {
     "//ash/constants",
     "//base",
     "//base:i18n",
+    "//components/policy/proto",
+    "//components/prefs",
     "//components/user_manager:common",
     "//google_apis",
     "//third_party/icu",
@@ -20,6 +22,8 @@ component("settings") {
     "cros_settings_names.h",
     "cros_settings_provider.cc",
     "cros_settings_provider.h",
+    "device_settings_cache.cc",
+    "device_settings_cache.h",
     "scoped_timezone_settings.cc",
     "scoped_timezone_settings.h",
     "system_settings_provider.cc",
@@ -40,9 +44,11 @@ static_library("test_support") {
   deps = [
     ":settings",
     "//base",
+    "//components/policy/proto",
     "//components/prefs",
   ]
   sources = [
+    "device_settings_cache_test_support.h",
     "fake_cros_settings_provider.cc",
     "fake_cros_settings_provider.h",
   ]
@@ -56,11 +62,14 @@ source_set("unit_tests") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//components/policy/proto",
+    "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/icu",
   ]
   sources = [
+    "device_settings_cache_unittest.cc",
     "scoped_timezone_settings_unittest.cc",
     "timezone_settings_unittest.cc",
   ]

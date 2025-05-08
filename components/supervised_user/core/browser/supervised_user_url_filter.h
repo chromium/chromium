@@ -206,13 +206,19 @@ class SupervisedUserURLFilter {
 
   FilteringBehavior GetDefaultFilteringBehavior() const;
 
-  // Sets the set of manually allowed or blocked hosts.
-  void SetManualHosts(std::map<std::string, bool> host_map);
+  // Sets the set of manually allowed or blocked hosts. Returns true if new
+  // value held different value from existing values.
+  // TODO(crbug.com/413654322): change name to reflect that the operation is
+  // no-op if new value is equal to current one.
+  bool SetManualHosts(std::map<std::string, bool> host_map);
 
   bool IsManualHostsEmpty() const;
 
-  // Sets the set of manually allowed or blocked URLs.
-  void SetManualURLs(std::map<GURL, bool> url_map);
+  // Sets the set of manually allowed or blocked URLs. Returns true if new value
+  // held different value from existing values.
+  // TODO(crbug.com/413654322): change name to reflect that the operation is
+  // no-op if new value is equal to current one.
+  bool SetManualURLs(std::map<GURL, bool> url_map);
 
   // Removes all filter entries, clears the async checker if present, and resets
   // the default behavior to "allow".

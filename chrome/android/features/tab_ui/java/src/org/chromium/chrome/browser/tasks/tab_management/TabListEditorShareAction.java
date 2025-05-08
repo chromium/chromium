@@ -115,7 +115,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
     }
 
     @Override
-    public void onSelectionStateChange(List<Integer> tabIds) {
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
         boolean enableShare = false;
         List<Tab> selectedTabs = getTabsOrTabsAndRelatedTabsFromSelection();
 
@@ -126,12 +126,12 @@ public class TabListEditorShareAction extends TabListEditorAction {
             }
         }
 
-        int size = editorSupportsActionOnRelatedTabs() ? selectedTabs.size() : tabIds.size();
+        int size = editorSupportsActionOnRelatedTabs() ? selectedTabs.size() : itemIds.size();
         setEnabledAndItemCount(enableShare, size);
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
         assert !tabs.isEmpty() : "Share action should not be enabled for no tabs.";
 
         TabList tabList = getTabGroupModelFilter().getTabModel();

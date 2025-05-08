@@ -347,7 +347,8 @@ message PrivacyScreenInfo {
 }
 
 // Information about the displays.
-// Collected once per boot.
+// Collected either once per boot or whenever an external display is
+// connected/disconnected.
 // Policy: ReportDeviceGraphicsStatus
 // Policy default: false
 message DisplayInfo {
@@ -617,6 +618,8 @@ enum MetricEventType {
   URL_OPENED = 18;
   URL_CLOSED = 19;
   KIOSK_HEARTBEAT = 20;
+  EXTERNAL_DISPLAY_CONNECTED = 21;
+  EXTERNAL_DISPLAY_DISCONNECTED = 22;
 
   reserved 2, 3, 10, 11, 12;
 }

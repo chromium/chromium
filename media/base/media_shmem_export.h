@@ -18,11 +18,7 @@
 #endif  // defined(MEDIA_SHMEM_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(MEDIA_SHMEM_IMPLEMENTATION)
 #define MEDIA_SHMEM_EXPORT __attribute__((visibility("default")))
-#else
-#define MEDIA_SHMEM_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

@@ -6,6 +6,8 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_PROTO_UTIL_H_
 
 #include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 
 namespace optimization_guide::proto {
 class Any;
@@ -20,6 +22,9 @@ namespace optimization_guide {
 
 // Constructs an Any proto containing the given message.
 proto::Any AnyWrapProto(const google::protobuf::MessageLite& m);
+
+// Convert the enum role to the equivalent proto.
+optimization_guide::proto::AXRole AXRoleToProto(ax::mojom::Role role);
 
 // Populate the AXTreeUpdate proto structure from the ui structure.
 void PopulateAXTreeUpdateProto(

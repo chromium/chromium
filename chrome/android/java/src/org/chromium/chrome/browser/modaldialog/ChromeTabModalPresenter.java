@@ -251,7 +251,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
 
             mToolbarManagerSupplier.get().setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
 
-            menuButton.setEnabled(false);
+            if (menuButton != null) menuButton.setEnabled(false);
         } else {
             // Show the action bar back if it was dismissed when the dialogs were showing.
             WebContents webContents = mActiveTab.getWebContents();
@@ -260,7 +260,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
             }
 
             onTabModalDialogStateChanged(false);
-            menuButton.setEnabled(true);
+            if (menuButton != null) menuButton.setEnabled(true);
             mActiveTab = null;
         }
     }

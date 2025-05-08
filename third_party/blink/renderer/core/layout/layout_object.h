@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
 #include "third_party/blink/renderer/platform/graphics/visual_rect_flags.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -993,6 +994,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return false;
   }
+  virtual bool IsTextControlInnerEditor() const {
+    NOT_DESTROYED();
+    return false;
+  }
   virtual bool IsTextField() const {
     NOT_DESTROYED();
     return false;
@@ -1067,7 +1072,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool IsCheckContent() const;
   inline bool IsBeforeContent() const;
   inline bool IsAfterContent() const;
-  inline bool IsPickerIconContent() const;
   inline bool IsMarkerContent() const;
   inline bool IsScrollButtonContent() const;
   inline bool IsScrollMarkerContent() const;
@@ -1075,9 +1079,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool IsBeforeOrAfterContent() const;
   static inline bool IsAfterContent(const LayoutObject* obj) {
     return obj && obj->IsAfterContent();
-  }
-  static inline bool IsPickerIconContent(const LayoutObject* obj) {
-    return obj && obj->IsPickerIconContent();
   }
 
   // Returns true if the text is generated (from, e.g., list marker,
@@ -1329,8 +1330,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return bitfields_.IsAnonymous();
   }
-  bool IsAnonymousBlock() const {
+  bool IsAnonymousBlockFlow() const {
     NOT_DESTROYED();
+    if (RuntimeEnabledFeatures::LayoutIsAnonymousBlockFixEnabled()) {
+      return IsAnonymous() && IsLayoutBlockFlow() &&
+             StyleRef().Display() == EDisplay::kBlock &&
+             !IsLayoutFlowThread() && !IsLayoutMultiColumnSet();
+    }
     // This function is kept in sync with anonymous block creation conditions in
     // LayoutBlock::createAnonymousBlock(). This includes creating an anonymous
     // LayoutBlock having a BLOCK or BOX display. Other classes such as
@@ -2552,6 +2558,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // to a point in the containing coordinate space.
   virtual PhysicalOffset ColumnOffset(const PhysicalOffset&) const {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
     return PhysicalOffset();
   }
 
@@ -4205,11 +4212,6 @@ inline bool LayoutObject::IsBeforeContent() const {
 inline bool LayoutObject::IsAfterContent() const {
   NOT_DESTROYED();
   return IsPseudoElementContent(kPseudoIdAfter);
-}
-
-inline bool LayoutObject::IsPickerIconContent() const {
-  NOT_DESTROYED();
-  return IsPseudoElementContent(kPseudoIdPickerIcon);
 }
 
 inline bool LayoutObject::IsMarkerContent() const {

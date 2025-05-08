@@ -202,6 +202,7 @@ goog.labs.events.NonDisposableEventTarget.prototype.fireListeners = function(
       if (listener.callOnce) {
         this.unlistenByKey(listener);
       }
+      /** @suppress {missingProperties} */
       rv = listenerFn.call(listenerHandler, eventObject) !== false && rv;
     }
   }

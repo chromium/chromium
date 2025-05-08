@@ -59,11 +59,11 @@ group("remoting_all") {
     }
   }
 
-  if (enable_remoting_cli_client) {
-    deps += [
-      "//remoting/client/cli:remoting_client_main",
-      "//remoting/client/common",
-    ]
+  if (enable_remoting_client) {
+    deps += [ "//remoting/client/common" ]
+    if (is_linux) {
+      deps += [ "//remoting/client/cli:remoting_client_main" ]
+    }
   }
 }
 

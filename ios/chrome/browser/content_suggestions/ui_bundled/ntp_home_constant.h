@@ -44,6 +44,9 @@ extern const CGFloat kIdentityAvatarPadding;
 extern const CGFloat kSignedOutIdentityIconSize;
 // Dimension of the customization menu button's icon.
 extern const CGFloat kCustomizationMenuIconSize;
+// Customization Menu icon size used when the sign-in button is shown without an
+// avatar.
+extern const CGFloat kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar;
 // Dimension of the customization menu button.
 extern const CGFloat kCustomizationMenuButtonDimension;
 // The corner radius of the customization menu button.

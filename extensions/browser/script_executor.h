@@ -109,12 +109,12 @@ class ScriptExecutor {
   // Executes a script. The arguments match mojom::ExecuteCodeParams in
   // frame.mojom (request_id is populated automatically).
   //
-  // The script will be executed in the frames identified by |frame_ids| (which
-  // are extension API frame IDs). If |frame_scope| is INCLUDE_SUB_FRAMES,
+  // The script will be executed in the frames identified by `frame_ids` (which
+  // are extension API frame IDs). If `frame_scope` is INCLUDE_SUB_FRAMES,
   // then the script will also be executed in all descendants of the specified
   // frames.
   //
-  // |callback| will always be called even if the IPC'd renderer is destroyed
+  // `callback` will always be called even if the IPC'd renderer is destroyed
   // before a response is received (in this case the callback will be with a
   // failure and appropriate error message).
   void ExecuteScript(

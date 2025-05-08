@@ -210,9 +210,8 @@ void ArcScreenCaptureSession::SetOutputBuffer(
     return;
   }
 
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::NATIVE_PIXMAP;
-  handle.native_pixmap_handle.modifier = buffer_format_modifier;
+  gfx::NativePixmapHandle native_pixmap_handle;
+  native_pixmap_handle.modifier = buffer_format_modifier;
   base::ScopedPlatformFile platform_file;
   MojoResult mojo_result =
       mojo::UnwrapPlatformFile(std::move(graphics_buffer), &platform_file);
@@ -221,7 +220,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
     std::move(callback).Run();
     return;
   }
-  handle.native_pixmap_handle.planes.emplace_back(
+  native_pixmap_handle.planes.emplace_back(
       stride * kBytesPerPixel, 0, stride * kBytesPerPixel * size_.height(),
       std::move(platform_file));
 
@@ -235,7 +234,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
        // RasterImplementation (and not RasterImplementationGLES) as its
        // implementation, GLES2_WRITE usage is not needed.
        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE, "ArcScreenCapture"},
-      std::move(handle));
+      gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle)));
   CHECK(client_shared_image);
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 

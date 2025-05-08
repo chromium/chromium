@@ -8,7 +8,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/renderer/platform/fonts/win/dwrite_font_format_support.h"
@@ -109,24 +108,6 @@ TEST(WebFontTypefaceFactoryTest, FontationsSelectedAlwaysCbdtCblc) {
   WebFontTypefaceFactory::CreateTypeface(SkData::MakeEmpty(), out_typeface,
                                          mock_font_format_check,
                                          g_expect_fontations);
-}
-
-TEST(WebFontTypefaceFactoryTest, COLRV0FontationsNonWin) {
-  ScopedFontationsFontBackendForTest scoped_fontations(false);
-  sk_sp<SkData> data = SkData::MakeEmpty();
-  MockFontFormatCheck mock_font_format_check(data);
-  EXPECT_CALL(mock_font_format_check, IsColrCpalColorFontV0())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(true));
-  sk_sp<SkTypeface> out_typeface;
-  WebFontTypefaceFactory::CreateTypeface(SkData::MakeEmpty(), out_typeface,
-                                         mock_font_format_check,
-#if BUILDFLAG(IS_WIN)
-                                         g_expect_system
-#else
-                                         g_expect_fontations
-#endif
-  );
 }
 
 TEST(WebFontTypefaceFactoryTest, FontationsSelectedVariableSystem) {

@@ -21,8 +21,6 @@ namespace headless {
 
 class HeadlessModeBrowserTest : public InProcessBrowserTest {
  public:
-  static constexpr char kHeadlessSwitchValue[] = "new";
-
   HeadlessModeBrowserTest();
 
   HeadlessModeBrowserTest(const HeadlessModeBrowserTest&) = delete;
@@ -44,14 +42,6 @@ class HeadlessModeBrowserTest : public InProcessBrowserTest {
 
  private:
   bool headful_mode_ = false;
-};
-
-class HeadlessModeBrowserTestWithUserDataDir : public HeadlessModeBrowserTest {
- public:
-  HeadlessModeBrowserTestWithUserDataDir() = default;
-  ~HeadlessModeBrowserTestWithUserDataDir() override = default;
-
-  base::FilePath GetUserDataDir() const;
 };
 
 enum StartWindowMode {

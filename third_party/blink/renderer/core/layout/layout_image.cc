@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
-#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
@@ -167,7 +166,10 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   // The replaced content transform depends on the intrinsic size (see:
   // FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform).
   SetNeedsPaintPropertyUpdate();
-  InvalidatePaintAndMarkForLayoutIfNeeded(defer);
+
+  if (!UpdateNaturalSizeIfNeeded() || !InvalidateLayoutOnNaturalSizeChange()) {
+    InvalidatePaintWithoutLayoutChange(defer);
+  }
 
   if (!did_increment_visually_non_empty_pixel_count_) {
     PhysicalSize default_object_size{LayoutUnit(kDefaultWidth),
@@ -215,28 +217,20 @@ bool LayoutImage::NeedsLayoutOnNaturalSizeChange() const {
   return !is_fixed_sized;
 }
 
-void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
+bool LayoutImage::InvalidateLayoutOnNaturalSizeChange() {
+  SetIntrinsicLogicalWidthsDirty();
+
+  if (!NeedsLayoutOnNaturalSizeChange()) {
+    return false;
+  }
+  SetNeedsLayoutAndFullPaintInvalidation(
+      layout_invalidation_reason::kSizeChanged);
+  return true;
+}
+
+void LayoutImage::InvalidatePaintWithoutLayoutChange(
     CanDeferInvalidation defer) {
   NOT_DESTROYED();
-  const bool dimensions_changed = UpdateNaturalSizeIfNeeded();
-
-  // In the case of generated image content using :before/:after/content, we
-  // might not be in the layout tree yet. In that case, we just need to update
-  // our natural size. layout() will be called after we are inserted in the
-  // tree which will take care of what we are doing here.
-  if (!ContainingBlock())
-    return;
-
-  if (dimensions_changed) {
-    SetIntrinsicLogicalWidthsDirty();
-
-    if (NeedsLayoutOnNaturalSizeChange()) {
-      SetNeedsLayoutAndFullPaintInvalidation(
-          layout_invalidation_reason::kSizeChanged);
-      return;
-    }
-  }
-
   SetShouldDoFullPaintInvalidationWithoutLayoutChange(
       PaintInvalidationReason::kImage);
 
@@ -265,7 +259,7 @@ void LayoutImage::AreaElementFocusChanged(HTMLAreaElement* area_element) {
   if (area_element->GetPath(this).IsEmpty())
     return;
 
-  InvalidatePaintAndMarkForLayoutIfNeeded(CanDeferInvalidation::kYes);
+  InvalidatePaintWithoutLayoutChange(CanDeferInvalidation::kYes);
 }
 
 bool LayoutImage::ForegroundIsKnownToBeOpaqueInRect(
@@ -345,30 +339,7 @@ bool LayoutImage::NodeAtPoint(HitTestResult& result,
 
 PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  PhysicalNaturalSizingInfo natural_dimensions = natural_dimensions_;
-  if (RuntimeEnabledFeatures::
-          LayoutImageRevalidationCheckForSvgImagesEnabled() &&
-      EmbeddedSVGImage()) {
-    // The value returned by LayoutImageResource will be in zoomed CSS
-    // pixels, but for the 'scale-down' object-fit value we want "zoomed
-    // device pixels", so undo the DPR part here.
-    if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
-      natural_dimensions.size.Scale(1 / ImageDevicePixelRatio());
-    }
-  }
-  return natural_dimensions;
-}
-
-SVGImage* LayoutImage::EmbeddedSVGImage() const {
-  NOT_DESTROYED();
-  if (!image_resource_)
-    return nullptr;
-  ImageResourceContent* cached_image = image_resource_->CachedImage();
-  // TODO(japhet): This shouldn't need to worry about cache validation.
-  // https://crbug.com/761026
-  if (!cached_image || cached_image->IsCacheValidator())
-    return nullptr;
-  return DynamicTo<SVGImage>(cached_image->GetImage());
+  return natural_dimensions_;
 }
 
 bool LayoutImage::IsUnsizedImage() const {

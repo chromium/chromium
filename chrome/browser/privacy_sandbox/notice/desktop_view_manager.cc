@@ -8,12 +8,15 @@
 
 #include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 namespace privacy_sandbox {
 
 using notice::mojom::PrivacySandboxNotice;
 using notice::mojom::PrivacySandboxNoticeEvent;
 using enum notice::mojom::PrivacySandboxNoticeEvent;
+
+DesktopViewManagerInterface::~DesktopViewManagerInterface() = default;
 
 DesktopViewManager::DesktopViewManager(
     PrivacySandboxNoticeServiceInterface* notice_service)
@@ -36,10 +39,8 @@ void DesktopViewManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void DesktopViewManager::MaybeCreateView(
-    BrowserWindowInterface* browser,
-    base::OnceCallback<void(BrowserWindowInterface*, PrivacySandboxNotice)>
-        show) {
+void DesktopViewManager::MaybeCreateView(BrowserWindowInterface* browser,
+                                         ShowViewCallback show) {
   std::vector<PrivacySandboxNotice> required_notices =
       notice_service_->GetRequiredNotices(SurfaceType::kDesktopNewTab);
 
@@ -47,8 +48,10 @@ void DesktopViewManager::MaybeCreateView(
     CloseAllOpenViews();
   }
 
-  pending_notices_to_show_ = required_notices;
-  std::move(show).Run(browser, pending_notices_to_show_[0]);
+  SetPendingNoticesToShow(required_notices);
+  if (!pending_notices_to_show_.empty()) {
+    std::move(show).Run(browser, pending_notices_to_show_[0]);
+  }
 }
 
 void DesktopViewManager::CloseAllOpenViews() {
@@ -98,11 +101,17 @@ DesktopViewManager::GetPendingNoticesToShow() {
   return pending_notices_to_show_;
 }
 
+void DesktopViewManager::SetPendingNoticesToShow(
+    std::vector<PrivacySandboxNotice> notices) {
+  pending_notices_to_show_ = std::move(notices);
+}
+
 NavigationHandler* DesktopViewManager::GetNavigationHandler() {
   return navigation_handler_.get();
 }
 
-void DesktopViewManager::HandleChromeOwnedPageNavigation() {
+void DesktopViewManager::HandleChromeOwnedPageNavigation(
+    BrowserWindowInterface* browser_interface) {
   // TODO(crbug.com/408016824): Call MaybeShowView.
 }
 

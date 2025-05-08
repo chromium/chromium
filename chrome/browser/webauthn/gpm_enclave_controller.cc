@@ -13,8 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -76,12 +74,14 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/common/chrome_version.h"
-#include "device/fido/enclave/icloud_recovery_key_mac.h"
+#include "components/trusted_vault/icloud_recovery_key_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 using Step = AuthenticatorRequestDialogModel::Step;
@@ -684,7 +684,7 @@ void GPMEnclaveController::OnDeviceAdded(bool success) {
 void GPMEnclaveController::RecoverSecurityDomain() {
 #if BUILDFLAG(IS_MAC)
   model_->DisableUiOrShowLoadingDialog();
-  device::enclave::ICloudRecoveryKey::Retrieve(
+  trusted_vault::ICloudRecoveryKey::Retrieve(
       base::BindOnce(&GPMEnclaveController::OnICloudKeysRetrievedForRecovery,
                      weak_ptr_factory_.GetWeakPtr()),
       trusted_vault::SecurityDomainId::kPasskeys,
@@ -697,7 +697,7 @@ void GPMEnclaveController::RecoverSecurityDomain() {
 #if BUILDFLAG(IS_MAC)
 
 void GPMEnclaveController::MaybeAddICloudRecoveryKey() {
-  device::enclave::ICloudRecoveryKey::Retrieve(
+  trusted_vault::ICloudRecoveryKey::Retrieve(
       base::BindOnce(&GPMEnclaveController::OnICloudKeysRetrievedForEnrollment,
                      weak_ptr_factory_.GetWeakPtr()),
       trusted_vault::SecurityDomainId::kPasskeys,
@@ -705,7 +705,7 @@ void GPMEnclaveController::MaybeAddICloudRecoveryKey() {
 }
 
 void GPMEnclaveController::OnICloudKeysRetrievedForEnrollment(
-    std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+    std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
         local_icloud_keys) {
   for (const trusted_vault::VaultMember& recovery_icloud_key :
        security_domain_icloud_recovery_keys_) {
@@ -729,7 +729,7 @@ void GPMEnclaveController::OnICloudKeysRetrievedForEnrollment(
   // security domains. We would need to loop through all vault members across
   // all security domains.
   FIDO_LOG(EVENT) << "Creating new iCloud recovery key";
-  device::enclave::ICloudRecoveryKey::Create(
+  trusted_vault::ICloudRecoveryKey::Create(
       base::BindOnce(&GPMEnclaveController::EnrollICloudRecoveryKey,
                      weak_ptr_factory_.GetWeakPtr()),
       trusted_vault::SecurityDomainId::kPasskeys,
@@ -737,7 +737,7 @@ void GPMEnclaveController::OnICloudKeysRetrievedForEnrollment(
 }
 
 void GPMEnclaveController::EnrollICloudRecoveryKey(
-    std::unique_ptr<device::enclave::ICloudRecoveryKey> key) {
+    std::unique_ptr<trusted_vault::ICloudRecoveryKey> key) {
   if (!key) {
     FIDO_LOG(ERROR) << "Could not create iCloud recovery key";
     OnEnclaveAccountSetUpComplete();
@@ -750,7 +750,7 @@ void GPMEnclaveController::EnrollICloudRecoveryKey(
 }
 
 void GPMEnclaveController::OnICloudKeysRetrievedForRecovery(
-    std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+    std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
         local_icloud_keys) {
   // Find the matching pair of local iCloud private key and the SDS recovery
   // member.

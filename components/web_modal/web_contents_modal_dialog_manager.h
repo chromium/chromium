@@ -127,8 +127,7 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   void WebContentsDestroyed() override;
 
   // Delegate for notifying our owner about stuff. Not owned by us.
-  raw_ptr<WebContentsModalDialogManagerDelegate, AcrossTasksDanglingUntriaged>
-      delegate_ = nullptr;
+  raw_ptr<WebContentsModalDialogManagerDelegate> delegate_ = nullptr;
 
   // All active dialogs.
   base::circular_deque<DialogState> child_dialogs_;

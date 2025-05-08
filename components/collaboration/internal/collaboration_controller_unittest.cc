@@ -739,6 +739,11 @@ TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
       metrics::CollaborationServiceShareOrManageEvent::kShareDialogShown, 1);
   histogram_tester.ExpectBucketCount(
       "CollaborationService.ShareOrManageFlow",
+      metrics::CollaborationServiceShareOrManageEvent::
+          kCollaborationGroupCreated,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.ShareOrManageFlow",
       metrics::CollaborationServiceShareOrManageEvent::kTabGroupShared, 1);
   histogram_tester.ExpectBucketCount(
       "CollaborationService.ShareOrManageFlow",

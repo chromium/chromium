@@ -45,6 +45,11 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     @Mock private Profile mProfile;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private AuxiliarySearchBridge.Natives mMockAuxiliarySearchBridgeJni;
+
+    @Mock
+    private AuxiliarySearchTopSiteProviderBridge.Natives
+            mMockAuxiliarySearchTopSiteProviderBridgeJni;
+
     @Mock private FaviconHelper.Natives mMockFaviconHelperJni;
     @Mock private AuxiliarySearchHooks mHooks;
 
@@ -56,6 +61,8 @@ public class AuxiliarySearchControllerFactoryUnitTest {
         when(mContext.getResources()).thenReturn(mResources);
 
         AuxiliarySearchBridgeJni.setInstanceForTesting(mMockAuxiliarySearchBridgeJni);
+        AuxiliarySearchTopSiteProviderBridgeJni.setInstanceForTesting(
+                mMockAuxiliarySearchTopSiteProviderBridgeJni);
         when(mMockFaviconHelperJni.init()).thenReturn(1L);
         FaviconHelperJni.setInstanceForTesting(mMockFaviconHelperJni);
         AuxiliarySearchDonor.setSkipInitializationForTesting(true);
@@ -97,6 +104,13 @@ public class AuxiliarySearchControllerFactoryUnitTest {
                 mFactory.createAuxiliarySearchController(
                         mContext, mProfile, mTabModelSelector, AuxiliarySearchHostType.CTA);
         assertTrue(controller instanceof AuxiliarySearchControllerImpl);
+
+        // Enables donating multiple data sources.
+        mFactory.setSupportMultiDataSourceForTesting(true);
+        controller =
+                mFactory.createAuxiliarySearchController(
+                        mContext, mProfile, mTabModelSelector, AuxiliarySearchHostType.CTA);
+        assertTrue(controller instanceof AuxiliarySearchMultiDataControllerImpl);
     }
 
     @Test

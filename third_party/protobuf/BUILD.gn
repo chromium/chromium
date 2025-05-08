@@ -321,19 +321,18 @@ source_set("utf8_range") {
   deps = [ "${protobuf_abseil_dir}:absl" ]
 }
 
-google_python_dir = "$root_out_dir/pyproto/google"
-
 copy("copy_google_protobuf") {
   # See README.chromium for how this file is generated.
   sources = pyproto_sources + [ "python/google/protobuf/descriptor_pb2.py" ]
-  outputs = [ "$google_python_dir/protobuf/{{source_file_part}}" ]
+  outputs = [ "$proto_python_root/google/protobuf/{{source_file_part}}" ]
 }
 
 copy("copy_google_protobuf_internal") {
   # See README.chromium for how this file is generated.
   sources = pyproto_internal_sources +
             [ "python/google/protobuf/internal/python_edition_defaults.py" ]
-  outputs = [ "$google_python_dir/protobuf/internal/{{source_file_part}}" ]
+  outputs =
+      [ "$proto_python_root/google/protobuf/internal/{{source_file_part}}" ]
 }
 
 # Build time dependency for action rules.
@@ -359,6 +358,8 @@ if (enable_js_protobuf) {
     sources = [
       "//third_party/google-closure-library/closure/goog/array/array.js",
       "//third_party/google-closure-library/closure/goog/asserts/asserts.js",
+      "//third_party/google-closure-library/closure/goog/asserts/dom.js",
+      "//third_party/google-closure-library/closure/goog/async/throwexception.js",
       "//third_party/google-closure-library/closure/goog/base.js",
       "//third_party/google-closure-library/closure/goog/crypt/base64.js",
       "//third_party/google-closure-library/closure/goog/crypt/crypt.js",
@@ -366,11 +367,13 @@ if (enable_js_protobuf) {
       "//third_party/google-closure-library/closure/goog/dom/asserts.js",
       "//third_party/google-closure-library/closure/goog/dom/browserfeature.js",
       "//third_party/google-closure-library/closure/goog/dom/dom.js",
+      "//third_party/google-closure-library/closure/goog/dom/element.js",
       "//third_party/google-closure-library/closure/goog/dom/htmlelement.js",
       "//third_party/google-closure-library/closure/goog/dom/nodetype.js",
       "//third_party/google-closure-library/closure/goog/dom/safe.js",
       "//third_party/google-closure-library/closure/goog/dom/tagname.js",
       "//third_party/google-closure-library/closure/goog/dom/tags.js",
+      "//third_party/google-closure-library/closure/goog/flags/flags.js",
       "//third_party/google-closure-library/closure/goog/fs/blob.js",
       "//third_party/google-closure-library/closure/goog/fs/url.js",
       "//third_party/google-closure-library/closure/goog/functions/functions.js",
@@ -386,6 +389,8 @@ if (enable_js_protobuf) {
       "//third_party/google-closure-library/closure/goog/i18n/bidi.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/browser.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/engine.js",
+      "//third_party/google-closure-library/closure/goog/labs/useragent/highentropy/highentropydata.js",
+      "//third_party/google-closure-library/closure/goog/labs/useragent/highentropy/highentropyvalue.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/platform.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/useragent.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/util.js",

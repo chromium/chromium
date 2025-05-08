@@ -93,8 +93,6 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
   OneTimePermissionInteractiveUiTest()
       : geolocation_overrider_(
             std::make_unique<device::ScopedGeolocationOverrider>(6.66, 9.99)) {
-    feature_list_.InitWithFeatures({permissions::features::kOneTimePermission},
-                                   {});
   }
 
   OneTimePermissionInteractiveUiTest(
@@ -265,8 +263,6 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
   // The render frame host where JS calls will be executed.
   raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged>
       render_frame_host_ = nullptr;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,

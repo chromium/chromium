@@ -207,6 +207,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
     // True if the contents should be initially hidden.
     bool initially_hidden = false;
 
+    // True if newly created WebContents should defer all autofill to the
+    // platform.
+    bool initially_use_platform_autofill = false;
+
     // If non-null then this WebContents will be hosted by a BrowserPlugin.
     raw_ptr<BrowserPluginGuestDelegate> guest_delegate = nullptr;
 
@@ -1401,7 +1405,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Sets whether the WebContents is for overlaying content on a page.
   virtual void SetIsOverlayContent(bool is_overlay_content) = 0;
 
-  virtual int GetCurrentlyPlayingVideoCount() = 0;
+  virtual int GetCurrentlyPlayingVideoCount() const = 0;
 
   virtual std::optional<gfx::Size> GetFullscreenVideoSize() = 0;
 
@@ -1689,6 +1693,16 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   virtual GURL GetPartitionedPopinEmbedderOrigin(
       base::PassKey<StorageAccessGrantPermissionContext>) const = 0;
+
+  // Returns the window open disposition that was originally requested
+  // when this WebContents was created.
+  // This method provides the disposition specified by the opener of this
+  // WebContents, indicating how the content was initially intended to be
+  // displayed (e.g., as a new foreground tab, a background tab, a new window,
+  // a popup, etc.). This value is determined at the point of
+  // creation, such as during a navigation that results in a new WebContents
+  // (e.g., from a link click with `target="_blank"`, `window.open()`).
+  virtual WindowOpenDisposition GetOriginalWindowOpenDisposition() const = 0;
 
  private:
   // This interface should only be implemented inside content.

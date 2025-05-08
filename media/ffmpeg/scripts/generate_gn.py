@@ -317,6 +317,8 @@ class SourceSet(object):
                 arch_condition = 'current_cpu == "arm" && arm_use_neon'
             elif condition.ARCHITECTURE == 'ia32':
                 arch_condition = 'current_cpu == "x86"'
+            elif condition.ARCHITECTURE == 'arm64':
+                arch_condition = '(current_cpu == "arm64" || current_cpu == "arm64e")'
             else:
                 arch_condition = 'current_cpu == "%s"' % condition.ARCHITECTURE
 

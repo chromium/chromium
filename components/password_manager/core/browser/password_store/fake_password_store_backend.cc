@@ -86,6 +86,11 @@ void FakePasswordStoreBackend::TriggerOnLoginsRetainedForAndroid(
       FROM_HERE, base::BindOnce(remote_form_changes_received_, std::nullopt));
 }
 
+void FakePasswordStoreBackend::ReturnErrorOnRequest(
+    PasswordStoreBackendError password_store_backend_error) {
+  password_store_backend_error_ = password_store_backend_error;
+}
+
 void FakePasswordStoreBackend::InitBackend(
     AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
@@ -110,11 +115,17 @@ bool FakePasswordStoreBackend::IsAbleToSavePasswords() {
 }
 
 void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
-  GetTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&FakePasswordStoreBackend::GetAllLoginsInternal,
-                     base::Unretained(this)),
-      std::move(callback));
+  if (password_store_backend_error_.has_value()) {
+    GetTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  password_store_backend_error_.value()));
+  } else {
+    GetTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&FakePasswordStoreBackend::GetAllLoginsInternal,
+                       base::Unretained(this)),
+        std::move(callback));
+  }
 }
 
 void FakePasswordStoreBackend::GetAllLoginsWithAffiliationAndBrandingAsync(

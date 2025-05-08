@@ -373,7 +373,7 @@ void ExtensionUpdater::AddToDownloader(
   bool kiosk_crx_manifest_update_url_ignored = false;
 #if BUILDFLAG(IS_CHROMEOS)
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (user_manager && user_manager->IsLoggedInAsKioskApp()) {
+  if (user_manager && user_manager->IsLoggedInAsKioskChromeApp()) {
     ash::CrosSettings::Get()->GetBoolean(
         ash::kKioskCRXManifestUpdateURLIgnored,
         &kiosk_crx_manifest_update_url_ignored);

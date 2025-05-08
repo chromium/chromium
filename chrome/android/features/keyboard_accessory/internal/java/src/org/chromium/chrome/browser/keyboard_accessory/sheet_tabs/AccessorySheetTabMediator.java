@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecord
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.IbanInfo;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.LoyaltyCardInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressInfo;
@@ -133,6 +134,9 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         }
         for (IbanInfo ibanInfo : accessorySheetData.getIbanInfoList()) {
             items.add(new AccessorySheetDataPiece(ibanInfo, Type.IBAN_INFO));
+        }
+        for (LoyaltyCardInfo loyaltyCardInfo : accessorySheetData.getLoyaltyCardInfoList()) {
+            items.add(new AccessorySheetDataPiece(loyaltyCardInfo, Type.LOYALTY_CARD_INFO));
         }
         for (FooterCommand command : accessorySheetData.getFooterCommands()) {
             items.add(new AccessorySheetDataPiece(command, Type.FOOTER_COMMAND));

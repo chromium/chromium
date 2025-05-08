@@ -24,6 +24,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
@@ -81,12 +82,15 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
@@ -2847,16 +2851,17 @@ public class SiteSettingsTest {
                     Assert.assertEquals(
                             context.getString(R.string.automatically_blocked),
                             notificationPreference.getSummary());
-
                     websitePreferences.launchOsChannelSettingsFromPreference(
                             notificationPreference);
-
-                    // Ensure that a proper separate channel has indeed been created to allow the
-                    // user to alter the setting.
-                    Assert.assertNotEquals(
-                            ChromeChannelDefinitions.ChannelId.SITES,
-                            SiteChannelsManager.getInstance()
-                                    .getChannelIdForOrigin(Origin.createOrThrow(url).toString()));
+                });
+        // There are lots of native posted tasks since start up. So we need to wait for
+        // all tasks to settle.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Channel was not found",
+                            getChannelId(url),
+                            not(ChromeChannelDefinitions.ChannelId.SITES));
                 });
         // Close the OS notification settings UI.
         UiAutomatorUtils.getInstance().pressBack();
@@ -3305,6 +3310,95 @@ public class SiteSettingsTest {
                 settingsActivity, "site_settings_rws_grouped_website_settings_delete_dialog");
     }
 
+    @Test
+    @SmallTest
+    public void deleteSingleSiteDataRemovesRowSingleWebsiteSettings() throws Exception {
+        final String currentSiteUrl = "one-test.com";
+        final String rwsMemberUrl = "two-test.com";
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(
+                        getRwsOwnerSiteForUrls(currentSiteUrl, rwsMemberUrl));
+
+        onView(
+                        allOf(
+                                withText(currentSiteUrl),
+                                isDescendantOfA(withId(SingleWebsiteSettings.RWS_ROW_ID))))
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                withText(rwsMemberUrl),
+                                isDescendantOfA(withId(SingleWebsiteSettings.RWS_ROW_ID))))
+                .check(matches(isDisplayed()));
+
+        onView(
+                        allOf(
+                                withId(R.id.image_view_widget),
+                                isDescendantOfA(withId(SingleWebsiteSettings.RWS_ROW_ID)),
+                                withContentDescription(containsString(rwsMemberUrl))))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        onView(withText(R.string.website_reset_confirmation)).check(matches(isDisplayed()));
+        onView(withText(R.string.website_reset))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(click());
+        onView(
+                        allOf(
+                                withText(rwsMemberUrl),
+                                isDescendantOfA(withId(SingleWebsiteSettings.RWS_ROW_ID))))
+                .check(doesNotExist());
+        onView(
+                        allOf(
+                                withText(currentSiteUrl),
+                                isDescendantOfA(withId(SingleWebsiteSettings.RWS_ROW_ID))))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void deleteSingleSiteDataRemovesRowGroupedWebsiteSettings() throws Exception {
+        final String currentSiteUrl = "one-test.com";
+        final String rwsMemberUrl = "two-test.com";
+
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startGroupedWebsitesPreferences(
+                        getRwsSiteGroupForUrls(currentSiteUrl, rwsMemberUrl));
+
+        onView(
+                        allOf(
+                                withText(currentSiteUrl),
+                                isDescendantOfA(withId(GroupedWebsitesSettings.RWS_ROW_ID))))
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                withText(rwsMemberUrl),
+                                isDescendantOfA(withId(GroupedWebsitesSettings.RWS_ROW_ID))))
+                .check(matches(isDisplayed()));
+
+        onView(
+                        allOf(
+                                withId(R.id.image_view_widget),
+                                isDescendantOfA(withId(GroupedWebsitesSettings.RWS_ROW_ID)),
+                                withContentDescription(containsString(rwsMemberUrl))))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        onView(withText(R.string.website_reset_confirmation)).check(matches(isDisplayed()));
+        onView(withText(R.string.website_reset))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(click());
+        onView(
+                        allOf(
+                                withText(rwsMemberUrl),
+                                isDescendantOfA(withId(GroupedWebsitesSettings.RWS_ROW_ID))))
+                .check(doesNotExist());
+        onView(
+                        allOf(
+                                withText(currentSiteUrl),
+                                isDescendantOfA(withId(GroupedWebsitesSettings.RWS_ROW_ID))))
+                .check(matches(isDisplayed()));
+    }
+
     // TODO(crbug.com/396463421): Remove once RWS UI V2 launched.
     @Test
     @SmallTest
@@ -3670,5 +3764,13 @@ public class SiteSettingsTest {
                         summary);
             }
         }
+    }
+
+    private static String getChannelId(String url) {
+        PayloadCallbackHelper<String> helper = new PayloadCallbackHelper();
+        SiteChannelsManager.getInstance()
+                .getChannelIdForOriginAsync(
+                        Origin.createOrThrow(url).toString(), helper::notifyCalled);
+        return helper.getOnlyPayloadBlocking();
     }
 }

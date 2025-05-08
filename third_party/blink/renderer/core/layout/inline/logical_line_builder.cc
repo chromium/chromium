@@ -219,12 +219,14 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       // An inline-level OOF child positions itself based on its direction, a
       // block-level OOF child positions itself based on the direction of its
       // block-level container.
-      TextDirection direction =
+      WritingDirectionMode writing_direction =
           item.GetLayoutObject()->StyleRef().IsOriginalDisplayInlineType()
-              ? item.Direction()
-              : constraint_space_.Direction();
+              ? WritingDirectionMode(constraint_space_.GetWritingMode(),
+                                     item.Direction())
+              : constraint_space_.GetWritingDirection();
 
-      line_box->AddChild(item.GetLayoutObject(), item.BidiLevel(), direction);
+      line_box->AddChild(item.GetLayoutObject(), item.BidiLevel(),
+                         writing_direction);
       has_out_of_flow_positioned_items_ = true;
     } else if (item.Type() == InlineItem::kFloating) {
       if (item_result.positioned_float) {

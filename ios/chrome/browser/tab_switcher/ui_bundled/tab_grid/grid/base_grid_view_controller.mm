@@ -1682,13 +1682,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.activityLabelData =
       [self.gridProvider activityLabelDataForItem:groupItemIdentifier];
 
-  [item fetchGroupTabInfos:^(TabGroupItem* innerItem,
-                             NSArray<GroupTabInfo*>* groupTabInfos) {
+  auto completionBlock = ^(TabGroupItem* innerItem,
+                           NSArray<GroupTabInfo*>* groupTabInfos) {
     if ([cell.itemIdentifier.tabGroupItem isEqual:innerItem]) {
       [cell configureWithGroupTabInfos:groupTabInfos
                         totalTabsCount:innerItem.numberOfTabsInGroup];
     }
-  }];
+  };
+  [self.gridProvider fetchTabGroupItemInfo:item completion:completionBlock];
 }
 
 // Configures `cell`'s identifier and title synchronously, and favicon and

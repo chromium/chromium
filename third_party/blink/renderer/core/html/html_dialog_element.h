@@ -68,6 +68,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
 
   bool IsModal() const { return is_modal_; }
   bool IsOpen() const { return FastHasAttribute(html_names::kOpenAttr); }
+  bool IsOpenAndActive() const { return IsOpen() && InActiveDocument(); }
 
   String returnValue() const { return return_value_; }
   void setReturnValue(const String& return_value) {

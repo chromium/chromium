@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/scoped_observation.h"
-#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "base/scoped_observation.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 @protocol SavedPasswordsPresenterObserver
 

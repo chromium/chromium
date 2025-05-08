@@ -253,8 +253,7 @@ class ChromeHidTestHelper {
             extensions::ExtensionSystem::Get(profile_));
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    extensions::ExtensionRegistrar::Get(profile_)->AddExtension(
-        extension.get());
+    extensions::ExtensionRegistrar::Get(profile_)->AddExtension(extension);
     return extension;
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

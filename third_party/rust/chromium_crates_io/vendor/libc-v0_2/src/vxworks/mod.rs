@@ -410,6 +410,7 @@ s_no_extra_traits! {
     pub struct dirent {
         pub d_ino: crate::ino_t,
         pub d_name: [c_char; _PARM_NAME_MAX as usize + 1],
+        pub d_type: c_uchar,
     }
 
     pub struct sockaddr_un {
@@ -458,6 +459,7 @@ cfg_if! {
                 f.debug_struct("dirent")
                     .field("d_ino", &self.d_ino)
                     .field("d_name", &&self.d_name[..])
+                    .field("d_type", &self.d_type)
                     .finish()
             }
         }
@@ -620,6 +622,9 @@ pub const ENODEV: c_int = 19;
 pub const ENOTDIR: c_int = 20;
 pub const EISDIR: c_int = 21;
 pub const EINVAL: c_int = 22;
+pub const ENFILE: c_int = 23;
+pub const EMFILE: c_int = 24;
+pub const ENOTTY: c_int = 25;
 pub const ENAMETOOLONG: c_int = 26;
 pub const EFBIG: c_int = 27;
 pub const ENOSPC: c_int = 28;
@@ -628,7 +633,12 @@ pub const EROFS: c_int = 30;
 pub const EMLINK: c_int = 31;
 pub const EPIPE: c_int = 32;
 pub const EDEADLK: c_int = 33;
+pub const ENOLCK: c_int = 34;
+pub const ENOTSUP: c_int = 35;
+pub const EMSGSIZE: c_int = 36;
+pub const EDOM: c_int = 37;
 pub const ERANGE: c_int = 38;
+pub const EDOOM: c_int = 39;
 pub const EDESTADDRREQ: c_int = 40;
 pub const EPROTOTYPE: c_int = 41;
 pub const ENOPROTOOPT: c_int = 42;
@@ -655,12 +665,30 @@ pub const ENETDOWN: c_int = 62;
 pub const ETXTBSY: c_int = 63;
 pub const ELOOP: c_int = 64;
 pub const EHOSTUNREACH: c_int = 65;
+pub const ENOTBLK: c_int = 66;
+pub const EHOSTDOWN: c_int = 67;
 pub const EINPROGRESS: c_int = 68;
 pub const EALREADY: c_int = 69;
 pub const EWOULDBLOCK: c_int = 70;
 pub const ENOSYS: c_int = 71;
+pub const ECANCELED: c_int = 72;
+pub const ENOSR: c_int = 74;
+pub const ENOSTR: c_int = 75;
+pub const EPROTO: c_int = 76;
+pub const EBADMSG: c_int = 77;
+pub const ENODATA: c_int = 78;
+pub const ETIME: c_int = 79;
+pub const ENOMSG: c_int = 80;
+pub const EFPOS: c_int = 81;
+pub const EILSEQ: c_int = 82;
 pub const EDQUOT: c_int = 83;
+pub const EIDRM: c_int = 84;
+pub const EOVERFLOW: c_int = 85;
+pub const EMULTIHOP: c_int = 86;
+pub const ENOLINK: c_int = 87;
 pub const ESTALE: c_int = 88;
+pub const EOWNERDEAD: c_int = 89;
+pub const ENOTRECOVERABLE: c_int = 90;
 
 // NFS errnos: Refer to pkgs_v2/storage/fs/nfs/h/nfs/nfsCommon.h
 const M_nfsStat: c_int = 48 << 16;
@@ -941,10 +969,33 @@ pub const SIGCONT: c_int = 19;
 pub const SIGCHLD: c_int = 20;
 pub const SIGTTIN: c_int = 21;
 pub const SIGTTOU: c_int = 22;
+pub const SIGUSR1: c_int = 30;
+pub const SIGUSR2: c_int = 31;
+pub const SIGPOLL: c_int = 32;
+pub const SIGPROF: c_int = 33;
+pub const SIGSYS: c_int = 34;
+pub const SIGURG: c_int = 35;
+pub const SIGVTALRM: c_int = 36;
+pub const SIGXCPU: c_int = 37;
+pub const SIGXFSZ: c_int = 38;
+pub const SIGRTMIN: c_int = 48;
+
+pub const SIGIO: c_int = SIGRTMIN;
+pub const SIGWINCH: c_int = SIGRTMIN + 5;
+pub const SIGLOST: c_int = SIGRTMIN + 6;
 
 pub const SIG_BLOCK: c_int = 1;
 pub const SIG_UNBLOCK: c_int = 2;
 pub const SIG_SETMASK: c_int = 3;
+
+pub const SA_NOCLDSTOP: c_int = 0x0001;
+pub const SA_SIGINFO: c_int = 0x0002;
+pub const SA_ONSTACK: c_int = 0x0004;
+pub const SA_INTERRUPT: c_int = 0x0008;
+pub const SA_RESETHAND: c_int = 0x0010;
+pub const SA_RESTART: c_int = 0x0020;
+pub const SA_NODEFER: c_int = 0x0040;
+pub const SA_NOCLDWAIT: c_int = 0x0080;
 
 pub const SI_SYNC: c_int = 0;
 pub const SI_USER: c_int = -1;
@@ -1231,6 +1282,7 @@ extern "C" {
     pub fn umask(mask: mode_t) -> mode_t;
     pub fn mlock(addr: *const c_void, len: size_t) -> c_int;
     pub fn mlockall(flags: c_int) -> c_int;
+    pub fn munlock(addr: *const c_void, len: size_t) -> c_int;
     pub fn munlockall() -> c_int;
 
     pub fn mmap(
@@ -1242,6 +1294,10 @@ extern "C" {
         offset: off_t,
     ) -> *mut c_void;
     pub fn munmap(addr: *mut c_void, len: size_t) -> c_int;
+
+    pub fn mprotect(addr: *mut c_void, len: size_t, prot: c_int) -> c_int;
+    pub fn msync(addr: *mut c_void, len: size_t, flags: c_int) -> c_int;
+
     pub fn truncate(path: *const c_char, length: off_t) -> c_int;
     pub fn shm_open(name: *const c_char, oflag: c_int, mode: crate::mode_t) -> c_int;
     pub fn shm_unlink(name: *const c_char) -> c_int;
@@ -1257,6 +1313,8 @@ extern "C" {
     pub fn sigaction(signum: c_int, act: *const sigaction, oldact: *mut sigaction) -> c_int;
 
     pub fn utimes(filename: *const c_char, times: *const crate::timeval) -> c_int;
+
+    pub fn futimens(fd: c_int, times: *const crate::timespec) -> c_int;
 
     #[link_name = "_rtld_dlopen"]
     pub fn dlopen(filename: *const c_char, flag: c_int) -> *mut c_void;
@@ -1714,7 +1772,7 @@ extern "C" {
     pub fn getppid() -> pid_t;
 
     // wait.h
-    pub fn waitpid(pid: pid_t, status: *mut c_int, optons: c_int) -> pid_t;
+    pub fn waitpid(pid: pid_t, status: *mut c_int, options: c_int) -> pid_t;
 
     // unistd.h
     pub fn sysconf(attr: c_int) -> c_long;

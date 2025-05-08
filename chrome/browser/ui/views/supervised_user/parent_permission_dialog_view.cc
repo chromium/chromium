@@ -159,11 +159,7 @@ class ParentPermissionInputSection : public views::TextfieldController {
 
     bool has_more_than_one_parent =
         parent_permission_email_addresses.size() > 1;
-    if (is_extension_permission_dialog &&
-        supervised_user::
-            IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
-        base::FeatureList::IsEnabled(
-            supervised_user::kUpdatedSupervisedUserExtensionApprovalStrings)) {
+    if (is_extension_permission_dialog) {
       AddExtensionParentPermissionLabels(
           view.get(), is_extension_permission_dialog, child_name);
     } else {
@@ -296,11 +292,7 @@ class ParentPermissionInputSection : public views::TextfieldController {
   void AddExtensionParentPermissionLabels(views::View* view,
                                           bool is_extension_permission_dialog,
                                           const std::string& child_name) {
-    CHECK(is_extension_permission_dialog &&
-          supervised_user::
-              IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
-          base::FeatureList::IsEnabled(
-              supervised_user::kUpdatedSupervisedUserExtensionApprovalStrings));
+    CHECK(is_extension_permission_dialog);
 
     auto parent_account_label = std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(

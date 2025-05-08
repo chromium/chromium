@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -320,15 +321,16 @@ void KeywordProvider::Start(const AutocompleteInput& input,
   }
 }
 
-void KeywordProvider::Stop(bool clear_cached_results,
-                           bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+void KeywordProvider::Stop(AutocompleteStopReason stop_reason) {
+  AutocompleteProvider::Stop(stop_reason);
 
   // Only end an extension's request if the user did something to explicitly
   // cancel it; mere inactivity shouldn't terminate long-running extension
   // operations since the user likely explicitly requested them.
-  if (extensions_delegate_ && !due_to_user_inactivity)
+  if (extensions_delegate_ &&
+      stop_reason != AutocompleteStopReason::kInactivity) {
     extensions_delegate_->MaybeEndExtensionKeywordMode();
+  }
 }
 
 KeywordProvider::~KeywordProvider() = default;

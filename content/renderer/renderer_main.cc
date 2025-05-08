@@ -105,15 +105,6 @@ void HandleRendererErrorTestParameters(const base::CommandLine& command_line) {
     WaitForDebugger("Renderer");
 }
 
-BASE_FEATURE(kBusyLoopOnRendererMain,
-             "BusyLoopOnMainThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kBusyLoopTime,
-                   &kBusyLoopOnRendererMain,
-                   "busy_loop_for",
-                   base::Milliseconds(2));
-
 std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
   std::unique_ptr<base::MessagePump> message_pump;
 #if BUILDFLAG(IS_FUCHSIA)
@@ -122,10 +113,6 @@ std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
 #else
   message_pump = base::MessagePump::Create(base::MessagePumpType::DEFAULT);
 #endif
-  if (base::FeatureList::IsEnabled(kBusyLoopOnRendererMain)) {
-    message_pump->SetBusyLoop(kBusyLoopTime.Get());
-  }
-
   return message_pump;
 }
 

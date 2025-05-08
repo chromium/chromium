@@ -59,7 +59,7 @@ export class PrintPreviewScalingSettingsElement extends
   }
 
   accessor disabled: boolean;
-  accessor isPdf: boolean;
+  accessor isPdf: boolean = false;
   protected accessor currentValue_: string;
   protected accessor customSelected_: boolean;
   protected accessor dropdownDisabled_: boolean = false;
@@ -238,6 +238,10 @@ export class PrintPreviewScalingSettingsElement extends
 
   protected onInputValidChanged_(e: CustomEvent<{value: boolean}>) {
     this.inputValid_ = e.detail.value;
+  }
+
+  protected isSelected_(value: ScalingType): boolean {
+    return this.selectedValue === value.toString();
   }
 }
 

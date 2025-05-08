@@ -12,7 +12,7 @@
 #include "base/base64.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_split.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -61,21 +61,18 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
                                      const net::NetLogWithSource& net_log) {
   SPKIHashSet spki_fingerprints;
   std::string_view cert_spki;
-  SHA256HashValue hash;
   if (net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(
               params.certificate()->cert_buffer()),
           &cert_spki)) {
-    crypto::SHA256HashString(cert_spki, &hash, sizeof(SHA256HashValue));
-    spki_fingerprints.insert(hash);
+    spki_fingerprints.insert(crypto::hash::Sha256(cert_spki));
   }
   for (const auto& intermediate :
        params.certificate()->intermediate_buffers()) {
     if (net::asn1::ExtractSPKIFromDERCert(
             net::x509_util::CryptoBufferAsStringPiece(intermediate.get()),
             &cert_spki)) {
-      crypto::SHA256HashString(cert_spki, &hash, sizeof(SHA256HashValue));
-      spki_fingerprints.insert(hash);
+      spki_fingerprints.insert(crypto::hash::Sha256(cert_spki));
     }
   }
 

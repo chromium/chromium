@@ -91,7 +91,7 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
   return Create(visible_rect, natural_size, timestamp, buffer_usage,
                 base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
                     coded_size, *buffer_format,
-                    std::move(gmb_handle.native_pixmap_handle)));
+                    std::move(gmb_handle).native_pixmap_handle()));
 }
 
 scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
@@ -310,12 +310,10 @@ NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
     return gfx::GpuMemoryBufferHandle();  // Invalid
   }
 
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
+  gfx::GpuMemoryBufferHandle gmb_handle(std::move(native_pixmap_handle));
   // |gmb_handle.id| is set to the GenericSharedMemoryId from |this|. This
   // allows for more predictable caching when converting to a VideoFrame.
   gmb_handle.id = id_;
-  gmb_handle.native_pixmap_handle = std::move(native_pixmap_handle);
   return gmb_handle;
 }
 
@@ -471,17 +469,6 @@ NativePixmapFrameResource::GetGpuMemoryBufferHandleForTesting() const {
   return gfx::GpuMemoryBufferHandle();
 }
 
-scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateVideoFrame(
-    VideoFrame::StorageType storage_type) const {
-  CHECK(VideoFrame::STORAGE_DMABUFS == storage_type ||
-        VideoFrame::STORAGE_GPU_MEMORY_BUFFER == storage_type);
-
-  if (VideoFrame::STORAGE_DMABUFS == storage_type) {
-    return CreateDmabufVideoFrame();
-  }
-  return CreateGmbVideoFrame();
-}
-
 scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateDmabufVideoFrame()
     const {
   std::vector<base::ScopedFD> duped_fds;
@@ -518,15 +505,15 @@ scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateDmabufVideoFrame()
   return video_frame;
 }
 
-scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateGmbVideoFrame()
-    const {
+scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateMappableVideoFrame(
+    gpu::SharedImageInterface* sii) const {
   LOG_ASSERT(buffer_usage_.has_value())
       << "Unsupported conversion from wrapped DMA buffers to GpuMemoryBuffer "
          "VideoFrame.";
   // Creates a GMB-backed frame with using duplicated file descriptors.
   auto video_frame = CreateVideoFrameFromGpuMemoryBufferHandle(
       CreateGpuMemoryBufferHandle(), format(), coded_size(), visible_rect(),
-      natural_size(), timestamp(), *buffer_usage_);
+      natural_size(), timestamp(), *buffer_usage_, sii);
   if (!video_frame) {
     DLOGF(ERROR) << "Unable to create a VideoFrame";
     return nullptr;

@@ -38,7 +38,7 @@ class GURL;
 // The suggestion action uri.
 @property(nonatomic, assign, readonly) GURL actionURI;
 // The suggestion action title.
-@property(nonatomic, assign, readonly) NSString* title;
+@property(nonatomic, copy, readonly) NSString* title;
 // The suggestion action type.
 @property(nonatomic, assign, readonly) omnibox::ActionInfo::ActionType type;
 

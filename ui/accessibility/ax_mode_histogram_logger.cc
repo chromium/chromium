@@ -55,8 +55,9 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
     }
 
     if (new_mode_flags & AXMode::kExtendedProperties) {
-      RecordModeFlag(prefix,
-                     AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER);
+      RecordModeFlag(
+          prefix,
+          AXMode::ModeFlagHistogramValue::UMA_AX_MODE_EXTENDED_PROPERTIES);
     }
 
     if (new_mode_flags & AXMode::kHTML) {
@@ -85,6 +86,12 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
 
     // ui::AXMode::kFromPlatform is unconditionally filtered out and is
     // therefore never present in `mode`.
+    CHECK(!mode.has_mode(ui::AXMode::kFromPlatform));
+
+    if (new_mode_flags & AXMode::kScreenReader) {
+      RecordModeFlag(prefix,
+                     AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER);
+    }
   }
 
   // Record forms control flag transitioning from unset to set.

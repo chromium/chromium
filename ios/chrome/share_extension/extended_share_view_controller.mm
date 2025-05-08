@@ -26,6 +26,9 @@ namespace {
 
 const CGFloat kShareSheetCornerRadius = 20;
 
+const CGFloat kShareImageTargetHeight = 1024;
+const CGFloat kShareImageTargetWidth = 1024;
+
 // Character limit for the text search.
 const NSUInteger kSearchCharacterLimit = 1000;
 
@@ -55,6 +58,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 // The image to share.
 @property(nonatomic, strong) UIImage* shareImage;
+@property(nonatomic, strong) NSData* shareImageData;
 
 // The text to share.
 @property(nonatomic, copy) NSString* shareText;
@@ -197,16 +201,13 @@ const NSUInteger kSearchCharacterLimit = 1000;
     return;
   }
 
-  if (self.shareImage) {
-    [command prepareToSearchImage:self.shareImage];
-    [command executeInApp];
-    [self queueActionItemURL:_shareURL
-                       title:_shareTitle
-                      action:app_group::IMAGE_SEARCH_ITEM
-                      cancel:NO
-                  completion:^{
-                    [weakSelf dismissAndShowShareItem];
-                  }];
+  if (self.shareImageData) {
+    [command prepareToSearchImageData:self.shareImageData
+                           completion:^{
+                             [weakSelf handleImageSharingForCommand:command
+                                                          incognito:NO];
+                           }];
+
     return;
   }
 }
@@ -235,16 +236,13 @@ const NSUInteger kSearchCharacterLimit = 1000;
     return;
   }
 
-  if (self.shareImage) {
-    [command prepareToIncognitoSearchImage:self.shareImage];
-    [command executeInApp];
-    [self queueActionItemURL:_shareURL
-                       title:_shareTitle
-                      action:app_group::INCOGNITO_IMAGE_SEARCH_ITEM
-                      cancel:NO
-                  completion:^{
-                    [weakSelf dismissAndShowShareItem];
-                  }];
+  if (self.shareImageData) {
+    [command prepareToIncognitoSearchImageData:self.shareImageData
+                                    completion:^{
+                                      [weakSelf
+                                          handleImageSharingForCommand:command
+                                                             incognito:YES];
+                                    }];
     return;
   }
 }
@@ -269,6 +267,22 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 #pragma mark - Private methods
+
+- (void)handleImageSharingForCommand:(AppGroupCommand*)command
+                           incognito:(BOOL)incognito {
+  __weak ExtendedShareViewController* weakSelf = self;
+  app_group::ShareExtensionItemType action =
+      (incognito) ? app_group::INCOGNITO_IMAGE_SEARCH_ITEM
+                  : app_group::IMAGE_SEARCH_ITEM;
+  [command executeInApp];
+  [self queueActionItemURL:_shareURL
+                     title:_shareTitle
+                    action:action
+                    cancel:NO
+                completion:^{
+                  [weakSelf dismissAndShowShareItem];
+                }];
+}
 
 - (void)displayShareSheet {
   if (_shareURL) {
@@ -321,7 +335,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
                     [NSError errorWithDomain:NSURLErrorDomain
                                         code:NSURLErrorUnsupportedURL
                                     userInfo:nil];
-                [weakSelf dismissAndReturnItem:nil error:unsupportedURLError];
+                [weakSelf handleSheetDismissalForItem:nil
+                                                error:unsupportedURLError];
               }];
   [alert addAction:defaultAction];
   [self presentViewController:alert animated:YES completion:nil];
@@ -376,12 +391,43 @@ const NSUInteger kSearchCharacterLimit = 1000;
                           dataWithContentsOfURL:base::apple::ObjCCast<NSURL>(
                                                     idImage)]];
   }
+
+  [self resizeAndScaleShareImage];
+
   self.shareItem = item;
   if (self.shareImage) {
     [self displayShareSheet];
   } else {
     [self displayErrorView];
   }
+}
+
+- (void)resizeAndScaleShareImage {
+  CHECK(self.shareImage);
+  CGSize originalSize = self.shareImage.size;
+  if ((originalSize.width > 0 && originalSize.height > 0) &&
+      (originalSize.width > kShareImageTargetWidth ||
+       originalSize.height > kShareImageTargetHeight)) {
+    CGSize targetSize =
+        CGSizeMake(kShareImageTargetWidth, kShareImageTargetHeight);
+    CGSize scaledSize;
+
+    CGFloat widthRatio = targetSize.width / originalSize.width;
+    CGFloat heightRatio = targetSize.height / originalSize.height;
+
+    if (heightRatio < widthRatio) {
+      scaledSize =
+          CGSizeMake(originalSize.width * heightRatio, targetSize.height);
+    } else {
+      scaledSize =
+          CGSizeMake(targetSize.width, originalSize.height * widthRatio);
+    }
+
+    self.shareImage =
+        [self.shareImage imageByPreparingThumbnailOfSize:scaledSize];
+  }
+
+  self.shareImageData = UIImageJPEGRepresentation(self.shareImage, 1.0);
 }
 
 - (void)handleText:(id)idText

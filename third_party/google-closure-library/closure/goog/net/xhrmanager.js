@@ -250,6 +250,20 @@ goog.net.XhrManager.prototype.abort = function(id, opt_force) {
 
 
 /**
+ * Overrides the XhrIoPool for testing, to be used with
+ * goog.testing.net.XhrIoPool.
+ * @param {!goog.net.XhrIoPool} testingPool
+ */
+goog.net.XhrManager.prototype.setXhrPoolForTesting = function(testingPool) {
+  if (goog.DISALLOW_TEST_ONLY_CODE) {
+    throw new Error(
+        'Importing test-only code into non-debug environment: setXhrPoolForTesting');
+  }
+  this.xhrPool_ = testingPool;
+};
+
+
+/**
  * Handles when an XhrIo object becomes available. Sets up the events, fires
  * the READY event, and starts the process to send the request.
  * @param {string} id The id of the request the XhrIo is for.

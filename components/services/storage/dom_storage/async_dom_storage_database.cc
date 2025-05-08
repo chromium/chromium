@@ -12,11 +12,13 @@
 #include <string>
 #include <utility>
 
+#include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -80,8 +82,37 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                       [](std::vector<BatchDatabaseTask> tasks,
                          const DomStorageDatabase& db) {
                         leveldb::WriteBatch batch;
-                        for (auto& task : tasks)
+                        // TODO(crbug.com/40245293): Remove this after debugging
+                        // is complete.
+                        size_t batch_task_count = tasks.size();
+                        size_t iteration_count = 0;
+                        size_t current_batch_size = 0;
+                        base::debug::Alias(&batch_task_count);
+                        base::debug::Alias(&iteration_count);
+                        base::debug::Alias(&current_batch_size);
+                        for (auto& task : tasks) {
+                          iteration_count++;
                           std::move(task).Run(&batch, db);
+                          size_t growth =
+                              batch.ApproximateSize() - current_batch_size;
+                          base::UmaHistogramCustomCounts(
+                              "Storage.DomStorage."
+                              "BatchTaskGrowthSizeBytes",
+                              growth, 1, 100 * 1024 * 1024, 50);
+                          const size_t kTargetBatchSizesMB[] = {20, 100, 500};
+                          for (size_t batch_size_mb : kTargetBatchSizesMB) {
+                            size_t target_batch_size =
+                                batch_size_mb * 1024 * 1024;
+                            if (current_batch_size < target_batch_size &&
+                                batch.ApproximateSize() >= target_batch_size) {
+                              base::UmaHistogramCounts10000(
+                                  base::StringPrintf("Storage.DomStorage."
+                                                     "IterationsToReach%zuMB",
+                                                     batch_size_mb),
+                                  iteration_count);
+                            }
+                          }
+                        }
                         return db.Commit(&batch);
                       },
                       std::move(tasks)),

@@ -2,63 +2,86 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './icons.html.js';
-import './print_preview_vars.css.js';
 import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Destination} from '../data/destination.js';
 import {PrinterType} from '../data/destination.js';
 import {Error, State} from '../data/state.js';
 
-import {getTemplate} from './header.html.js';
-import {SettingsMixin} from './settings_mixin.js';
+import {getCss} from './header.css.js';
+import {getHtml} from './header.html.js';
+import {SettingsMixinLit} from './settings_mixin_lit.js';
 
 
-const PrintPreviewHeaderElementBase = SettingsMixin(PolymerElement);
+const PrintPreviewHeaderElementBase = SettingsMixinLit(CrLitElement);
 
 export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   static get is() {
     return 'print-preview-header';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      destination: Object,
-
-      error: Number,
-
-      state: Number,
-
-      managed: Boolean,
-
-      sheetCount: Number,
-
-      summary_: String,
+      destination: {type: Object},
+      error: {type: Number},
+      state: {type: Number},
+      managed: {type: Boolean},
+      sheetCount_: {type: Number},
+      summary_: {type: String},
     };
   }
 
-  static get observers() {
-    return [
-      'updateSummary_(sheetCount, state, destination.id)',
-    ];
+  accessor destination: Destination;
+  accessor error: Error;
+  accessor state: State;
+  accessor managed: boolean;
+  private accessor sheetCount_: number = 0;
+  protected accessor summary_: string|null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addSettingObserver('pages.*', this.updateSheetCount_.bind(this));
+    this.addSettingObserver('duplex.*', this.updateSheetCount_.bind(this));
+    this.addSettingObserver('copies.*', this.updateSheetCount_.bind(this));
+    this.updateSheetCount_();
   }
 
-  declare destination: Destination;
-  declare error: Error;
-  declare state: State;
-  declare managed: boolean;
-  declare sheetCount: number;
-  declare private summary_: string|null;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('sheetCount_') ||
+        changedProperties.has('state') ||
+        changedProperties.has('destination')) {
+      this.updateSummary_();
+    }
+  }
+
+  private updateSheetCount_() {
+    let sheets = (this.getSettingValue('pages') as number[]).length;
+    if (this.getSettingValue('duplex')) {
+      sheets = Math.ceil(sheets / 2);
+    }
+    this.sheetCount_ = sheets * (this.getSettingValue('copies') as number);
+  }
 
   private isPdf_(): boolean {
     return this.destination &&
@@ -96,7 +119,7 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   }
 
   private updateSheetsSummary_() {
-    if (this.sheetCount === 0) {
+    if (this.sheetCount_ === 0) {
       this.summary_ = '';
       return;
     }
@@ -104,12 +127,14 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
     const pageOrSheet = this.isPdf_() ? 'Page' : 'Sheet';
     PluralStringProxyImpl.getInstance()
         .getPluralString(
-            `printPreview${pageOrSheet}SummaryLabel`, this.sheetCount)
+            `printPreview${pageOrSheet}SummaryLabel`, this.sheetCount_)
         .then(label => {
           this.summary_ = label;
         });
   }
 }
+
+export type HeaderElement = PrintPreviewHeaderElement;
 
 declare global {
   interface HTMLElementTagNameMap {

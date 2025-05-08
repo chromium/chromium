@@ -1130,7 +1130,8 @@ Element* TreeScope::CreateElementForBinding(const AtomicString& name,
   if (!IsValidElementName(&document, name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        "The tag name provided ('" + name + "') is not a valid name.");
+        WTF::StrCat(
+            {"The tag name provided ('", name, "') is not a valid name."}));
     return nullptr;
   }
 
@@ -1196,7 +1197,8 @@ Element* TreeScope::CreateElementForBinding(
   if (!IsValidElementName(&document, local_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        "The tag name provided ('" + local_name + "') is not a valid name.");
+        WTF::StrCat({"The tag name provided ('", local_name,
+                     "') is not a valid name."}));
     return nullptr;
   }
 
@@ -1231,9 +1233,9 @@ static inline QualifiedName CreateQualifiedName(
   if (!Document::HasValidNamespaceForElements(q_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNamespaceError,
-        "The namespace URI provided ('" + namespace_uri +
-            "') is not valid for the qualified name provided ('" +
-            qualified_name + "').");
+        WTF::StrCat({"The namespace URI provided ('", namespace_uri,
+                     "') is not valid for the qualified name provided ('",
+                     qualified_name, "')."}));
     return QualifiedName::Null();
   }
 
@@ -1282,10 +1284,10 @@ Element* TreeScope::createElementNS(
   const AtomicString& is = GetTypeExtension(&document, string_or_options);
 
   if (!IsValidElementName(&document, qualified_name)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidCharacterError,
-                                      "The tag name provided ('" +
-                                          qualified_name +
-                                          "') is not a valid name.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidCharacterError,
+        WTF::StrCat({"The tag name provided ('", qualified_name,
+                     "') is not a valid name."}));
     return nullptr;
   }
 
@@ -1617,7 +1619,8 @@ void Document::setXMLVersion(const String& version,
   if (!XMLDocumentParser::SupportsXMLVersion(version)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "This document does not support the XML version '" + version + "'.");
+        WTF::StrCat({"This document does not support the XML version '",
+                     version, "'."}));
     return;
   }
 
@@ -4811,8 +4814,9 @@ void Document::ProcessBaseElement() {
       UseCounter::Count(*this, WebFeature::kBaseWithDataHref);
       AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
-          "'" + base_element_url.Protocol() +
-              "' URLs may not be used as base URLs for a document."));
+          WTF::StrCat(
+              {"'", base_element_url.Protocol(),
+               "' URLs may not be used as base URLs for a document."})));
     }
     if (GetExecutionContext() &&
         !GetExecutionContext()->GetSecurityOrigin()->CanRequest(
@@ -7322,9 +7326,10 @@ Agent& Document::GetAgent() const {
 Attr* Document::createAttribute(const AtomicString& name,
                                 ExceptionState& exception_state) {
   if (!IsValidName(name)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidCharacterError,
-                                      "The localName provided ('" + name +
-                                          "') contains an invalid character.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidCharacterError,
+        WTF::StrCat({"The localName provided ('", name,
+                     "') contains an invalid character."}));
     return nullptr;
   }
   return MakeGarbageCollected<Attr>(
@@ -7343,9 +7348,9 @@ Attr* Document::createAttributeNS(const AtomicString& namespace_uri,
   if (!HasValidNamespaceForAttributes(q_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNamespaceError,
-        "The namespace URI provided ('" + namespace_uri +
-            "') is not valid for the qualified name provided ('" +
-            qualified_name + "').");
+        WTF::StrCat({"The namespace URI provided ('", namespace_uri,
+                     "') is not valid for the qualified name provided ('",
+                     qualified_name, "')."}));
     return nullptr;
   }
 
@@ -8050,11 +8055,11 @@ void Document::AddToTopLayer(Element* element, const Element* before) {
     }
   }
 
-  DCHECK(!IsScheduledForTopLayerRemoval(element));
-  DCHECK(!before || top_layer_elements_.Contains(before));
+  CHECK(!IsScheduledForTopLayerRemoval(element));
+  CHECK(!before || top_layer_elements_.Contains(before));
 
   if (before) {
-    DCHECK(element->IsBackdropPseudoElement())
+    CHECK(element->IsBackdropPseudoElement())
         << "If this invariant changes, we might need to revisit Container "
            "Queries for top layer elements.";
     wtf_size_t before_position = top_layer_elements_.Find(before);
@@ -8634,9 +8639,9 @@ void Document::FlushAutofocusCandidates() {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kRendering,
         mojom::ConsoleMessageLevel::kInfo,
-        "Autofocus processing was blocked because a "
-        "document's URL has a fragment '#" +
-            Url().FragmentIdentifier() + "'."));
+        WTF::StrCat({"Autofocus processing was blocked because a document's "
+                     "URL has a fragment '#",
+                     Url().FragmentIdentifier(), "'."})));
     return;
   }
 
@@ -8692,9 +8697,9 @@ void Document::FlushAutofocusCandidates() {
         AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kRendering,
             mojom::ConsoleMessageLevel::kInfo,
-            "Autofocus processing was blocked because a "
-            "document's URL has a fragment '#" +
-                doc->Url().FragmentIdentifier() + "'."));
+            WTF::StrCat({"Autofocus processing was blocked because a "
+                         "document's URL has a fragment '#",
+                         doc->Url().FragmentIdentifier(), "'."})));
         continue;
       }
       DCHECK_EQ(doc, this);
@@ -9405,14 +9410,17 @@ bool Document::DeferredCompositorCommitIsAllowed() const {
 }
 
 Document::PaintPreviewScope::PaintPreviewScope(Document& document,
-                                               PaintPreviewState state)
+                                               PaintPreviewState state,
+                                               bool allow_scrollbars)
     : document_(document) {
   document_.paint_preview_ = state;
+  document_.allow_scrollbars_in_paint_preview_ = allow_scrollbars;
   document_.GetDisplayLockDocumentState().NotifyPrintingOrPreviewChanged();
 }
 
 Document::PaintPreviewScope::~PaintPreviewScope() {
   document_.paint_preview_ = kNotPaintingPreview;
+  document_.allow_scrollbars_in_paint_preview_ = false;
   document_.GetDisplayLockDocumentState().NotifyPrintingOrPreviewChanged();
 }
 
@@ -9590,7 +9598,7 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
   UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
   Document* doc = parseHTMLInternal(context, html, exception_state);
-  SanitizerAPI::SanitizeUnsafeInternal(doc->body(), options, exception_state);
+  SanitizerAPI::SanitizeUnsafeInternal(doc, options, exception_state);
   return doc;
 }
 
@@ -9601,7 +9609,7 @@ Document* Document::parseHTML(ExecutionContext* context,
                               ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
   Document* doc = parseHTMLInternal(context, html, exception_state);
-  SanitizerAPI::SanitizeSafeInternal(doc->body(), options, exception_state);
+  SanitizerAPI::SanitizeSafeInternal(doc, options, exception_state);
   return doc;
 }
 

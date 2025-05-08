@@ -718,22 +718,6 @@ void BindVibrationManager(
   }
 }
 
-AuthenticatorBinder& GetAuthenticatorBinderOverride() {
-  static base::NoDestructor<AuthenticatorBinder> binder;
-  return *binder;
-}
-
-void BindAuthenticator(
-    RenderFrameHostImpl* frame,
-    mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
-  const auto& binder = GetAuthenticatorBinderOverride();
-  if (binder) {
-    binder.Run(std::move(receiver));
-  } else {
-    frame->GetWebAuthenticationService(std::move(receiver));
-  }
-}
-
 void BindMediaPlayerObserverClientHandler(
     RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::MediaPlayerObserverClient> receiver) {
@@ -966,9 +950,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::WebTransportConnector>(
       base::BindRepeating(&RenderFrameHostImpl::CreateWebTransportConnector,
                           base::Unretained(host)));
-
-  map->Add<blink::mojom::Authenticator>(
-      base::BindRepeating(&BindAuthenticator, base::Unretained(host)));
 
   map->Add<payments::mojom::SecurePaymentConfirmationService>(
       base::BindRepeating(
@@ -1290,14 +1271,18 @@ void PopulateBinderMapWithContext(
       &EmptyBinderForFrame<blink::mojom::TextSuggestionHost>));
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  map->Add<blink::mojom::Authenticator>(base::BindRepeating(
+      [](RenderFrameHost* host,
+         mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
+        static_cast<RenderFrameHostImpl*>(host)->GetWebAuthenticationService(
+            std::move(receiver));
+      }));
   map->Add<blink::mojom::ClipboardHost>(
       base::BindRepeating(&ClipboardHostImpl::Create));
   map->Add<blink::mojom::SpeculationHost>(
       base::BindRepeating(&SpeculationHostImpl::Bind));
   map->Add<blink::mojom::AnchorElementInteractionHost>(
       base::BindRepeating(&AnchorElementInteractionHostImpl::Create));
-  GetContentClient()->browser()->RegisterBrowserInterfaceBindersForFrame(host,
-                                                                         map);
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kWebLockScreenApi)) {
@@ -1322,6 +1307,10 @@ void PopulateBinderMapWithContext(
     map->Add<blink::mojom::AIManager>(
         base::BindRepeating(&EmptyBinderForFrame<blink::mojom::AIManager>));
   }
+
+  // This should be last to allow overrides of any interface.
+  GetContentClient()->browser()->RegisterBrowserInterfaceBindersForFrame(host,
+                                                                         map);
 }
 
 void PopulateBinderMap(RenderFrameHostImpl* host, mojo::BinderMap* map) {
@@ -1860,10 +1849,6 @@ void OverrideBatteryMonitorBinderForTesting(BatteryMonitorBinder binder) {
 
 void OverrideVibrationManagerBinderForTesting(VibrationManagerBinder binder) {
   internal::GetVibrationManagerBinderOverride() = std::move(binder);
-}
-
-void OverrideAuthenticatorBinderForTesting(AuthenticatorBinder binder) {
-  internal::GetAuthenticatorBinderOverride() = std::move(binder);
 }
 
 }  // namespace content

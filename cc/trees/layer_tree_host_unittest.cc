@@ -4,10 +4,6 @@
 
 #include <array>
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "cc/trees/layer_tree_host.h"
 
@@ -7358,7 +7354,15 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
   }
 
   void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
-                                      const Tile* tile) override {
+                                      const Tile* tile,
+                                      bool update_damage) override {
+    // NotifyTileStateChangedOnThread() is also triggered when a Tile is being
+    // destroyed. We do not want to trigger any test expectation for those
+    // cases. Since |update_damage| is false when a Tile is destroyed, we can
+    // skip the test here based on that.
+    if (!update_damage) {
+      return;
+    }
     if (frame_ == 3) {
       // On frame 3, we will have a lower res tile complete for the pinch-out
       // gesture even though it's not displayed. We wait for it here to prevent
@@ -7586,7 +7590,15 @@ class LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles
   }
 
   void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
-                                      const Tile* tile) override {
+                                      const Tile* tile,
+                                      bool update_damage) override {
+    // NotifyTileStateChangedOnThread() is also triggered when a Tile is being
+    // destroyed. We do not want to trigger any test expectation for those
+    // cases. Since |update_damage| is false when a Tile is destroyed, we can
+    // skip the test here based on that.
+    if (!update_damage) {
+      return;
+    }
     // On step_ == 2, we are preventing texture uploads from completing,
     // so this verifies they are not completing before step_ == 3.
     // Flaky failures here indicate we're failing to prevent uploads from
@@ -8289,8 +8301,10 @@ class LayerTreeHostTestQueueImageDecode : public LayerTreeHostTest {
         &LayerTreeHostTestQueueImageDecode::ImageDecodeFinished,
         base::Unretained(this));
     // Schedule the decode twice for the same image.
-    layer_tree_host()->QueueImageDecode(image_, callback);
-    layer_tree_host()->QueueImageDecode(image_, callback);
+    layer_tree_host()->QueueImageDecode(image_, callback,
+                                        /*speculative*/ false);
+    layer_tree_host()->QueueImageDecode(image_, callback,
+                                        /*speculative*/ false);
   }
 
   void ReadyToCommitOnThread(LayerTreeHostImpl* impl) override {
@@ -8348,7 +8362,7 @@ class LayerTreeHostTestQueueImageDecodeNonLazy : public LayerTreeHostTest {
                   /*use_dark_mode=*/false,
                   SkIRect::MakeWH(image.width(), image.height()),
                   PaintFlags::FilterQuality::kNone, SkM44()),
-        std::move(callback));
+        std::move(callback), /*speculative*/ false);
   }
 
   void ImageDecodeFinished(bool decode_succeeded) {
@@ -9718,6 +9732,7 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
       host_impl->dropped_frame_counter()->OnFirstContentfulPaintReceived();
       fcp_sent_ = true;
     }
+    host_impl->frame_sorter_for_testing()->AddNewFrame(last_args_);
   }
 
   void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) override {
@@ -9730,7 +9745,8 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
     }
 
     // Mark every frame as a dropped frame affecting smoothness.
-    host_impl->dropped_frame_counter()->OnEndFrame(
+    // Delegates to DFC::AddSortedFrame, which calls DFC::OnEndFrame.
+    host_impl->frame_sorter_for_testing()->AddFrameResult(
         last_args_, CreateFakeImplDroppedFrameInfo());
     host_impl->SetNeedsRedraw();
     --frames_counter_;
@@ -9787,7 +9803,8 @@ class LayerTreeHostUkmSmoothnessMemoryOwnership : public LayerTreeTest {
     // Mark every frame as a dropped frame affecting smoothness. This happens
     // entirely on the compositor thread, so mark it as not including
     // main-thread update.
-    host_impl->dropped_frame_counter()->OnEndFrame(
+    // Delegates to DFC::AddSortedFrame, which calls DFC::OnEndFrame.
+    host_impl->frame_sorter_for_testing()->AddFrameResult(
         last_args_, CreateFakeImplDroppedFrameInfo());
     host_impl->SetNeedsRedraw();
     --frames_counter_;
@@ -10056,7 +10073,15 @@ class LayerTreeHostTestOccludedTileReleased
   }
 
   void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
-                                      const Tile* tile) override {
+                                      const Tile* tile,
+                                      bool update_damage) override {
+    // |update_damage| is false when a Tile is being destroyed. This can happen
+    // on PictureLayerImpl::ReleaseResources() in which case calling
+    // |picture_layer_impl->GetNumberOfTilesWithResources()| is not safe and can
+    // result in crash as its underlying tilings are already being destroyed.
+    if (!update_damage) {
+      return;
+    }
     FakePictureLayerImpl* picture_layer_impl =
         static_cast<FakePictureLayerImpl*>(
             host_impl->sync_tree()->LayerById(picture_layer_->id()));

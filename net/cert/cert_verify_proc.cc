@@ -598,6 +598,17 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   return rv;
 }
 
+int CertVerifyProc::Verify2Qwac(X509Certificate* cert,
+                                const std::string& hostname,
+                                CertVerifyResult* verify_result,
+                                const NetLogWithSource& net_log) {
+  // Default implementation of Verify2QwacInternal that always fails.
+  // Subclasses that actually implement 2-QWAC verification should override
+  // this.
+  verify_result->cert_status |= CERT_STATUS_INVALID;
+  return ERR_CERT_INVALID;
+}
+
 // static
 void CertVerifyProc::LogNameNormalizationResult(
     const std::string& histogram_suffix,

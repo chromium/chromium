@@ -21,10 +21,12 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsFactory_CreateWebContents(
     Profile* profile,
     jboolean initially_hidden,
     jboolean initialize_renderer,
+    jboolean uses_platform_autofill,
     jlong j_target_network,
     const JavaParamRef<jthrowable>& j_creator_location) {
   content::WebContents::CreateParams params(profile);
   params.initially_hidden = static_cast<bool>(initially_hidden);
+  params.initially_use_platform_autofill = uses_platform_autofill;
   params.desired_renderer_state =
       static_cast<bool>(initialize_renderer)
           ? content::WebContents::CreateParams::

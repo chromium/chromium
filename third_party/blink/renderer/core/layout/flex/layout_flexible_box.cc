@@ -71,11 +71,13 @@ void MergeAnonymousFlexItems(LayoutObject* remove_child) {
   // are text nodes wrapped in anonymous flex items, the adjacent text nodes
   // need to be merged into the same flex item.
   LayoutObject* prev = remove_child->PreviousSibling();
-  if (!prev || !prev->IsAnonymousBlock())
+  if (!prev || !prev->IsAnonymousBlockFlow()) {
     return;
+  }
   LayoutObject* next = remove_child->NextSibling();
-  if (!next || !next->IsAnonymousBlock())
+  if (!next || !next->IsAnonymousBlockFlow()) {
     return;
+  }
   To<LayoutBoxModelObject>(next)->MoveAllChildrenTo(
       To<LayoutBoxModelObject>(prev));
   next->Destroy();
@@ -87,7 +89,7 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
                                        const ComputedStyle& style) const {
   const auto* select = DynamicTo<HTMLSelectElement>(GetNode());
   if (select && select->UsesMenuList()) [[unlikely]] {
-    if (select->IsAppearanceBaseButton()) {
+    if (select->IsAppearanceBase()) {
       CHECK(HTMLSelectElement::CustomizableSelectEnabled(select));
       if (IsA<HTMLOptionElement>(object->GetNode()) ||
           IsA<HTMLOptGroupElement>(object->GetNode()) ||
@@ -129,9 +131,7 @@ const DevtoolsFlexInfo* LayoutFlexibleBox::FlexLayoutData() const {
 }
 
 void LayoutFlexibleBox::RemoveChild(LayoutObject* child) {
-  if (!DocumentBeingDestroyed() &&
-      (RuntimeEnabledFeatures::LayoutWebkitBoxTreeFixEnabled() ||
-       !StyleRef().IsDeprecatedFlexbox())) {
+  if (!DocumentBeingDestroyed()) {
     MergeAnonymousFlexItems(child);
   }
 

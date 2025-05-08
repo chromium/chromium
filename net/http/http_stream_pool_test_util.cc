@@ -9,6 +9,7 @@
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_attempt_manager.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_job.h"
 #include "net/log/net_log_with_source.h"
@@ -97,12 +98,14 @@ FakeServiceEndpointResolver::FakeServiceEndpointResolver() = default;
 
 FakeServiceEndpointResolver::~FakeServiceEndpointResolver() = default;
 
-FakeServiceEndpointRequest* FakeServiceEndpointResolver::AddFakeRequest() {
+base::WeakPtr<FakeServiceEndpointRequest>
+FakeServiceEndpointResolver::AddFakeRequest() {
   std::unique_ptr<FakeServiceEndpointRequest> request =
       std::make_unique<FakeServiceEndpointRequest>();
-  FakeServiceEndpointRequest* raw_request = request.get();
+  base::WeakPtr<FakeServiceEndpointRequest> weak_request =
+      request->weak_ptr_factory_.GetWeakPtr();
   requests_.emplace_back(std::move(request));
-  return raw_request;
+  return weak_request;
 }
 
 void FakeServiceEndpointResolver::OnShutdown() {}
@@ -224,8 +227,11 @@ bool FakeStreamSocket::IsConnected() const {
   if (is_connected_override_.has_value()) {
     return *is_connected_override_;
   }
-  if (disconnect_after_is_connected_call_) {
-    is_connected_override_ = false;
+  if (disconnect_after_is_connected_call_count_ > 0) {
+    --disconnect_after_is_connected_call_count_;
+    if (disconnect_after_is_connected_call_count_ == 0) {
+      is_connected_override_ = false;
+    }
   }
   return connected_;
 }
@@ -247,10 +253,10 @@ bool FakeStreamSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return false;
 }
 
-void FakeStreamSocket::DisconnectAfterIsConnectedCall() {
+void FakeStreamSocket::DisconnectAfterIsConnectedCall(int count) {
   connected_ = true;
   is_connected_override_ = std::nullopt;
-  disconnect_after_is_connected_call_ = true;
+  disconnect_after_is_connected_call_count_ = count;
 }
 
 StreamKeyBuilder& StreamKeyBuilder::from_key(const HttpStreamKey& key) {
@@ -275,9 +281,10 @@ HttpStreamKey GroupIdToHttpStreamKey(
                        group_id.disable_cert_network_fetches());
 }
 
-void WaitForAttemptManagerComplete(HttpStreamPool::Group& group) {
+void WaitForAttemptManagerComplete(
+    HttpStreamPool::AttemptManager* attempt_manager) {
   base::RunLoop run_loop;
-  group.SetOnAttemptManagerCompleteCallbackForTesting(run_loop.QuitClosure());
+  attempt_manager->SetOnCompleteCallbackForTesting(run_loop.QuitClosure());
   run_loop.Run();
 }
 

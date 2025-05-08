@@ -71,6 +71,10 @@ InterpolationValue CSSFontPaletteInterpolationType::MaybeConvertValue(
     ConversionCheckers& conversion_checkers) const {
   // TODO(40946458): Don't resolve anything here, rewrite to
   // interpolate unresolved palettes.
+  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
+  // and sibling-count() if necessary.
+  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
+  // if necessary.
   return ConvertFontPalette(StyleBuilderConverterBase::ConvertFontPalette(
       state.CssToLengthConversionData(), value));
 }

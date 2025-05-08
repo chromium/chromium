@@ -263,8 +263,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
                 (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
 
-        int tabId = simpleViewHolder.model.get(TabProperties.TAB_ID);
-        mRecentlySwipedTabIdSupplier.set(tabId);
+        if (simpleViewHolder.model.containsKey(TabProperties.TAB_ID)) {
+            int tabId = simpleViewHolder.model.get(TabProperties.TAB_ID);
+            mRecentlySwipedTabIdSupplier.set(tabId);
+        }
 
         if (simpleViewHolder.model.get(CARD_TYPE) == TAB) {
             mTabClosedListener.run(
@@ -522,9 +524,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             }
         } else if (actionState == ItemTouchHelper.ACTION_STATE_DRAG
                 && mTabGridDialogHandler != null) {
+            int itemMiddle =
+                    Math.floorDiv(
+                            viewHolder.itemView.getBottom() + viewHolder.itemView.getTop(), 2);
             boolean isHoveredOnUngroupBar =
-                    viewHolder.itemView.getBottom() + dY
-                            > recyclerView.getBottom() - mUngroupThreshold;
+                    itemMiddle + dY > recyclerView.getBottom() - mUngroupThreshold;
             if (mSelectedTabIndex == TabModel.INVALID_TAB_INDEX) return;
             mUnGroupTabIndex =
                     isHoveredOnUngroupBar

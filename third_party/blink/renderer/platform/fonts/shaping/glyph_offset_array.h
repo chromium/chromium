@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_GLYPH_OFFSET_ARRAY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_GLYPH_OFFSET_ARRAY_H_
 
@@ -59,7 +54,7 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
     }
     if (other2.HasStorage()) {
       AllocateStorageIfNeeded(size);
-      std::ranges::copy(other2.storage_, GetStorage() + size1);
+      std::ranges::copy(other2.storage_, UNSAFE_TODO(GetStorage() + size1));
     }
   }
 

@@ -200,7 +200,7 @@ std::optional<std::vector<liburlpattern::Part>> ParsePatternInitField(
       utf8.AsStringView(),
       [](std::string_view input) { return std::string(input); });
 
-  if (parse_result.ok()) {
+  if (parse_result.has_value()) {
     std::vector<liburlpattern::Part> part_list;
     for (auto& part : parse_result.value().PartList()) {
       // We don't allow custom regex for security reasons as this will be
@@ -1786,7 +1786,7 @@ ManifestParser::ParseScopeExtension(const JSONObject* object) {
     const std::optional<String> origin_string =
         ParseString(object, kScopeExtensionsOriginKey, Trim(true));
     if (!origin_string.has_value()) {
-      AddErrorInfo("Scope extension 'value' invalid.");
+      AddErrorInfo("Scope extension 'origin' invalid.");
       return std::nullopt;
     }
     return ParseScopeExtensionOrigin(*origin_string);

@@ -200,9 +200,10 @@ class PolicyStorage {
   const InitialEnrollmentState* GetInitialEnrollmentState(
       const std::string& brand_serial_id) const;
 
-  // Returns hashes for brand serial IDs whose initial enrollment state is
-  // registered on the server. Only hashes, which, when divied by |modulus|,
-  // result in the specified |remainder|, are returned.
+  // Returns truncated hashes (the first 8 bytes only) for brand serial IDs
+  // whose initial enrollment state is registered on the server. Only hashes,
+  // which, when divied by |modulus|, result in the specified |remainder|, are
+  // returned.
   std::vector<std::string> GetMatchingSerialHashes(uint64_t modulus,
                                                    uint64_t remainder) const;
 

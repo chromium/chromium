@@ -99,29 +99,22 @@ const oneGoogleBarApi = (() => {
         return bar;
       }, {} as Bar);
 
-
-  let foregroundLight: boolean;
-  if (!abp) {
-    foregroundLight = false;
-  }
-
   async function updateDarkMode(): Promise<void> {
-    const isDarkTheme: boolean =
-        window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (foregroundLight !== isDarkTheme) {
-      foregroundLight = isDarkTheme;
-      if (abp) {
-        await asyncBar.setDarkMode(isDarkTheme);
-      } else {
-        await api.bar.setDarkMode(isDarkTheme);
-        // |setDarkMode(toggle)| updates the background color and foreground
-        // style. The background color should always be 'transparent'.
-        api.bar.setBackgroundColor('transparent');
-        // The foreground style is set based on NTP theme and not dark mode.
-        api.bar.setForegroundStyle(foregroundLight ? 1 : 0);
-      }
+    if (abp) {
+      await asyncBar.setDarkMode(
+          window.matchMedia('(prefers-color-scheme: dark)').matches);
+    } else {
+      await api.bar.setDarkMode(
+          window.matchMedia('(prefers-color-scheme: dark)').matches);
+      // |setDarkMode(toggle)| updates the background color and foreground
+      // style. The background color should always be 'transparent'.
+      api.bar.setBackgroundColor('transparent');
+      // The foreground style is set based on NTP theme and not dark mode.
+      api.bar.setForegroundStyle(foregroundLight ? 1 : 0);
     }
   }
+
+  let foregroundLight: boolean = false;
 
   return {
     /**
@@ -129,13 +122,11 @@ const oneGoogleBarApi = (() => {
      * the background.
      */
     setForegroundLight: (enabled: boolean) => {
-      if (foregroundLight !== enabled) {
+      if (abp) {
+        asyncBar.setDarkMode(enabled);
+      } else if (foregroundLight !== enabled) {
         foregroundLight = enabled;
-        if (abp) {
-          asyncBar.setDarkMode(foregroundLight);
-        } else {
-          api.bar.setForegroundStyle(foregroundLight ? 1 : 0);
-        }
+        api.bar.setForegroundStyle(foregroundLight ? 1 : 0);
       }
     },
 

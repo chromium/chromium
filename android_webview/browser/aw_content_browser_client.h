@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "storage/browser/quota/quota_settings.h"
 
@@ -148,9 +149,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       content::WebContents* web_contents,
       content::SiteInstance& main_frame_site,
       blink::web_pref::WebPreferences* web_prefs) override;
-  std::vector<std::unique_ptr<content::NavigationThrottle>>
-  CreateThrottlesForNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void CreateThrottlesForNavigation(
+      content::NavigationThrottleRegistry& registry) override;
   std::unique_ptr<content::PrefetchServiceDelegate>
   CreatePrefetchServiceDelegate(
       content::BrowserContext* browser_context) override;
@@ -308,10 +308,12 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   network::mojom::IpProtectionProxyBypassPolicy
   GetIpProtectionProxyBypassPolicy() override;
   bool WillProvidePublicFirstPartySets() override;
-  bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
-                                 content::WebContents* web_contents,
-                                 const GURL& url,
-                                 const blink::StorageKey& storage_key) override;
+  bool IsFullCookieAccessAllowed(
+      content::BrowserContext* browser_context,
+      content::WebContents* web_contents,
+      const GURL& url,
+      const blink::StorageKey& storage_key,
+      net::CookieSettingOverrides overrides) override;
   bool AllowNonActivatedCrossOriginPaintHolding() override;
   bool IsSharedStorageAllowed(
       content::BrowserContext* browser_context,

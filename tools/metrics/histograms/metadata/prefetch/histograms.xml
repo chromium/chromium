@@ -27,14 +27,14 @@ chromium-metrics-reviews@google.com.
   <variant name="TLS" summary="TLS canary check"/>
 </variants>
 
-<variants name="SpeculationEagerness">
-  <variant name="Conservative" summary="Conservative"/>
-  <variant name="Eager" summary="Eager"/>
-  <variant name="Moderate" summary="Moderate"/>
-</variants>
+<!-- LINT.IfChange(TriggerTypeAndEagerness) -->
 
 <variants name="TriggerTypeAndEagerness">
-  <variant name="Embedder" summary="Embedder trigger"/>
+  <variant name="Embedder_ChromeCustomTabs"
+      summary="Embedder trigger, ChromeCustomTabs"/>
+  <variant name="Embedder_DefaultSearchEngine"
+      summary="Embedder trigger, DefaultSearchEngine"/>
+  <variant name="Embedder_WebView" summary="Embedder trigger, WebView"/>
   <variant name="SpeculationRule_Conservative"
       summary="SpeculationRules trigger, Conservative"/>
   <variant name="SpeculationRule_Eager"
@@ -55,13 +55,44 @@ chromium-metrics-reviews@google.com.
       summary="SpeculationRulesFromIsolatedWorld trigger, Moderate"/>
 </variants>
 
+<!-- LINT.ThenChange(//content/browser/preloading/prefetch/prefetch_params.cc:GetMetricsSuffixTriggerTypeAndEagerness) -->
+
 <variants name="WasServed">
   <variant name="NotServed" summary="not served"/>
   <variant name="Served" summary="served"/>
 </variants>
 
 <histogram
-    name="Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully.{TriggerTypeAndEagerness}.NoEmbedderSuffix"
+    name="Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{WasServed}.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2025-10-18">
+  <owner>kenoss@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    When a navigation started, `PrefetchMatchResolver` collects potentially
+    matching prefetches for it. Judging a prefetch actually matches or not needs
+    non-redirect header. If a prefetch has non-redirect header and actually
+    matched, then this process ends synchronously. If not, it waits non-redirect
+    headers until it finds a matched and servable one or there is no more
+    candidates.
+
+    This histogram records that duration navigation was blocked by the prefetch
+    matching, when the matching is settled. Zero is recorded when the navigation
+    is not blocked.
+
+    This histogram is recorded per potentially matching candidate, with its
+    TriggerType and Eagerness as {TriggerTypeAndEagerness}, and whether its
+    candidate was eventually served or not as {WasServed}.
+
+    Before 2025-04-25, this histogram was recorded as
+    `PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.*`.
+  </summary>
+  <token key="WasServed" variants="WasServed"/>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2025-10-01">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -78,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Prefetch.PrefetchContainer.AddedToInitialEligibility.{TriggerTypeAndEagerness}.NoEmbedderSuffix"
+    name="Prefetch.PrefetchContainer.AddedToInitialEligibility.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2025-10-01">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -95,7 +126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Prefetch.PrefetchContainer.AddedToPrefetchCompletedSuccessfully.{TriggerTypeAndEagerness}.NoEmbedderSuffix"
+    name="Prefetch.PrefetchContainer.AddedToPrefetchCompletedSuccessfully.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2025-10-01">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -112,7 +143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Prefetch.PrefetchContainer.AddedToPrefetchStarted.{TriggerTypeAndEagerness}.NoEmbedderSuffix"
+    name="Prefetch.PrefetchContainer.AddedToPrefetchStarted.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2025-10-01">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -129,57 +160,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PrefetchProxy.AfterClick.BlockUntilHeadDuration2.{WasServed}.{SpeculationEagerness}"
-    units="ms" expires_after="2025-10-12">
+    name="Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.{TriggerTypeAndEagerness}"
+    enum="Boolean" expires_after="2025-10-12">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
     When a navigation started, `PrefetchMatchResolver` collects potentially
-    matching prefetches for it. Judging a prefetch accutally matches or not
-    needs non-redirect header. If a prefetch has non-redirect header and
-    actually matched, then this process ends synchronously. If not, it waits
-    non-redirect headers until it finds a matched and servable one or there is
-    no more candidates.
+    matching prefetches for it. Judging a prefetch actually matches or not needs
+    non-redirect header. If a prefetch has non-redirect header and actually
+    matched, then this process ends synchronously. If not, it waits non-redirect
+    headers until it finds a matched and servable one or there is no more
+    candidates.
 
-    This histogram is recorded iff the matching process didn't end synchronously
-    and when the judge for a prefetch is determined. The value is the blocked
-    duration (for each tuple (navigation, candidate prefetch)).
+    This histogram records whether this process ends synchronously (i.e. whether
+    prefetch matching blocked the navigation), when the above prefetch matching
+    is settled.
 
-    This histogram is only recorded for prefetches that are {WasServed} and with
-    an Eagerness of {SpeculationEagerness}.
+    This histogram is recorded per potentially matching candidates, with its
+    TriggerType and Eagerness as {TriggerTypeAndEagerness}.
+
+    Before 2025-04-25, this histogram was recorded as
+    `PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch.*`
   </summary>
-  <token key="WasServed" variants="WasServed"/>
-  <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
-</histogram>
-
-<histogram
-    name="PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.{WasServed}.{SpeculationEagerness}"
-    units="ms" expires_after="2025-03-23">
-  <owner>kenoss@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    When a navigation started, `PrefetchMatchResolver` collects potentially
-    matching prefetches for it. Judging a prefetch accutally matches or not
-    needs non-redirect header. If a prefetch has non-redirect header and
-    actually matched, then this process ends synchronously. If not, it waits
-    non-redirect headers until it finds a matched and servable one or there is
-    no more candidates.
-
-    This histogram is recorded iff a judge for a prefetch is determined. The
-    value is the blocked duration (for each tuple (navigation, candidate
-    prefetch)).
-
-    This histogram is only recorded for prefetches that are {WasServed} and with
-    an Eagerness of {SpeculationEagerness}.
-
-    The difference from
-    PrefetchProxy.AfterClick.BlockUntilHeadDuration2.{WasServed}.{SpeculationEagerness}
-    is that this is also recorded for non-blocked case (i.e. the blocked
-    duration is zero).
-  </summary>
-  <token key="WasServed" variants="WasServed"/>
-  <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
 </histogram>
 
 <histogram
@@ -270,29 +275,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
     be missing.
   </summary>
-</histogram>
-
-<histogram
-    name="PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch.{SpeculationEagerness}"
-    enum="Boolean" expires_after="2025-10-12">
-  <owner>kouhei@chromium.org</owner>
-  <owner>kenoss@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    When a navigation started, `PrefetchMatchResolver` collects potentially
-    matching prefetches for it. Judging a prefetch accutally matches or not
-    needs non-redirect header. If a prefetch has non-redirect header and
-    actually matched, then this process ends synchronously. If not, it waits
-    non-redirect headers until it finds a matched and servable one or there is
-    no more candidates.
-
-    This histogram is recorded when this process ends, for each tuple
-    (navigation, candidate prefetch), true iff didn't end synchronously.
-
-    This histogram is only for prefetches with an eagerness of
-    {SpeculationEagerness}.
-  </summary>
-  <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.RedirectChainSize" units="count"
@@ -439,9 +421,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL"
     enum="Boolean" expires_after="2024-01-14">
-  <owner>liviutinta@chromium.org</owner>
-  <owner>jbroman@chromium.org</owner>
-  <owner>curranmax@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
   <summary>
     Records whether or not there was an existing prefetch with a matching URL
     from a different referring document when a new prefetch is requested. This
@@ -466,9 +447,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.ConnectTime" units="ms"
     expires_after="2025-09-07">
-  <owner>liviutinta@chromium.org</owner>
-  <owner>jbroman@chromium.org</owner>
-  <owner>curranmax@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
   <summary>
     Records the time taken to establish a socket connection when prefetching a
     mainframe HTML resource. Recorded for non-network error prefetches only.
@@ -600,9 +580,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchProxy.Prefetch.RedirectChainSize" units="count"
     expires_after="2025-09-14">
-  <owner>liviutinta@chromium.org</owner>
-  <owner>jbroman@chromium.org</owner>
-  <owner>curranmax@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
   <summary>
     The redirect chain size of a prefetch. This histogram is recorded once for
     each prefetch.
@@ -638,7 +617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Proxy.RespCode" enum="HttpResponseCode"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

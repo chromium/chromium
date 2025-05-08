@@ -138,4 +138,7 @@ class TestTabGroupSyncService implements TabGroupSyncService {
 
     @Override
     public void updateArchivalStatus(String syncTabGroupId, boolean archivalStatus) {}
+
+    @Override
+    public void setCollaborationAvailableInFinderForTesting(String collaborationId) {}
 }

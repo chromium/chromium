@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
@@ -32,6 +33,7 @@ class ChromeComponentUpdaterConfiguratorTest : public testing::Test {
   TestingPrefServiceSimple* pref_service() { return pref_service_.get(); }
 
  private:
+  base::test::TaskEnvironment environment_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
 

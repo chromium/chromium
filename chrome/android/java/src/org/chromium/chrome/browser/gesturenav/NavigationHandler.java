@@ -29,7 +29,6 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -181,7 +180,7 @@ class NavigationHandler implements TouchEventObserver {
 
     void setTab(Tab tab) {
         if (mTab != null) mTab.removeObserver(mTabObserver);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
+        if (GestureNavigationUtils.areBackForwardTransitionsEnabled()) {
             onGestureEnd(GestureEndState.RESET);
         } else {
             mBackGestureForTabHistoryInProgress = false;
@@ -265,25 +264,19 @@ class NavigationHandler implements TouchEventObserver {
         if (!isValidState()) return false;
 
         if (mTriggerUiCallSource != TriggerUiCallSource.NO_TRIGGER) {
-            assert false
-                    : "triggerUi has been already called. mInitiatingEdge: "
-                            + String.valueOf(mInitiatingEdge)
-                            + ". initiatingEdge passed to the function: "
-                            + String.valueOf(initiatingEdge)
-                            + ". Previous triggerUi call source: "
-                            + String.valueOf(mTriggerUiCallSource)
-                            + ". Current triggerUi call source: "
-                            + String.valueOf(triggerUiCallSource);
-            Log.i(
-                    NavigationHandler.class.getSimpleName(),
-                    "triggerUi has been already called. mInitiatingEdge: "
-                            + String.valueOf(mInitiatingEdge)
-                            + ". initiatingEdge passed to the function: "
-                            + String.valueOf(initiatingEdge)
-                            + ". Previous triggerUi call source: "
-                            + String.valueOf(mTriggerUiCallSource)
-                            + ". Current triggerUi call source: "
-                            + String.valueOf(triggerUiCallSource));
+            StringBuilder assertMsgBuilder = new StringBuilder(256);
+            assertMsgBuilder
+                    .append("triggerUi has been already called. mInitiatingEdge: ")
+                    .append(String.valueOf(mInitiatingEdge))
+                    .append(". initiatingEdge passed to the function: ")
+                    .append(String.valueOf(initiatingEdge))
+                    .append(". Previous triggerUi call source: ")
+                    .append(String.valueOf(mTriggerUiCallSource))
+                    .append(". Current triggerUi call source: ")
+                    .append(String.valueOf(triggerUiCallSource));
+
+            assert false : assertMsgBuilder.toString();
+            Log.i(NavigationHandler.class.getSimpleName(), assertMsgBuilder.toString());
         }
         mTriggerUiCallSource = triggerUiCallSource;
 
@@ -405,7 +398,7 @@ class NavigationHandler implements TouchEventObserver {
      * @see {@link HistoryNavigationCoordinator#reset()}
      */
     void reset() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
+        if (GestureNavigationUtils.areBackForwardTransitionsEnabled()) {
             onGestureEnd(GestureEndState.RESET);
         } else {
             if (mState == GestureState.DRAGGED) {

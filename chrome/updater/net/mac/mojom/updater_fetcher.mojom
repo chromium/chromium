@@ -28,6 +28,7 @@ interface PostRequestObserver {
         int32 net_error,
         string header_etag,
         string header_x_cup_server_proof,
+        string header_cookie,
         uint64? xheader_retry_after_sec);
 };
 

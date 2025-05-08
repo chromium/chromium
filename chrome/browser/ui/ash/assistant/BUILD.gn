@@ -36,6 +36,7 @@ static_library("assistant") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
@@ -47,13 +48,11 @@ static_library("assistant") {
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
-    "//chromeos/ash/services/assistant:lib",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/assistant/public/proto",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
-    "//chromeos/services/assistant/public/shared:new_entry_point_constants",
     "//components/language/core/browser",
     "//components/session_manager/core",
     "//content/public/browser",
@@ -88,7 +87,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/arc:arc_test_support",
-    "//chromeos/ash/services/assistant:lib",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/shared",
     "//components/language/core/browser",
@@ -96,71 +94,4 @@ source_set("unit_tests") {
     "//components/user_manager",
     "//testing/gtest",
   ]
-}
-
-if (enable_assistant_integration_tests) {
-  static_library("browser_test_support") {
-    testonly = true
-
-    sources = [
-      "assistant_test_mixin.cc",
-      "assistant_test_mixin.h",
-    ]
-
-    deps = [
-      "//ash:test_support",
-      "//ash/assistant/model",
-      "//ash/assistant/ui",
-      "//ash/assistant/ui:constants",
-      "//ash/constants",
-      "//ash/public/cpp",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser/ash/login/test:test_support",
-      "//chrome/browser/ui",
-      "//chrome/browser/ui/ash/assistant/test_support",
-      "//chrome/test:test_support_ui",
-      "//chromeos/ash/components/login/auth/public:authpublic",
-      "//components/account_id",
-      "//components/language/core/browser",
-      "//google_apis",
-      "//net:test_support",
-      "//ui/events:test_support",
-      "//ui/views",
-    ]
-  }
-
-  source_set("browser_tests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    sources = [
-      "assistant_browsertest.cc",
-      "assistant_timers_browsertest.cc",
-    ]
-
-    deps = [
-      ":assistant",
-      ":browser_test_support",
-      "//ash/assistant/model",
-      "//ash/assistant/ui",
-      "//ash/assistant/ui",
-      "//ash/assistant/ui:constants",
-      "//ash/public/cpp:test_support",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser/ui/ash/assistant/test_support",
-      "//chrome/test:test_support",
-      "//chromeos/ash/components/assistant/test_support",
-      "//chromeos/ash/components/audio",
-      "//chromeos/ash/services/assistant:lib",
-      "//chromeos/ash/services/assistant/public/cpp",
-      "//chromeos/dbus/power:power_manager_proto",
-      "//components/language/core/browser",
-      "//content/test:test_support",
-      "//ui/events:test_support",
-    ]
-  }
 }

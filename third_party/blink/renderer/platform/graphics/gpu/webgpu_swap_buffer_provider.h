@@ -147,9 +147,11 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     ~SwapBuffer() override;
   };
 
-  void MailboxReleased(scoped_refptr<SwapBuffer> swap_buffer,
-                       const gpu::SyncToken& sync_token,
-                       bool lost_resource);
+  static void MailboxReleased(base::WeakPtr<WebGPUSwapBufferProvider> provider,
+                              base::PlatformThreadRef thread_ref,
+                              scoped_refptr<SwapBuffer> swap_buffer,
+                              const gpu::SyncToken& sync_token,
+                              bool lost_resource);
 
   // This method will dissociate current Dawn Texture (produced by
   // GetNewTexture()) from the mailbox so that the mailbox can be used by other
@@ -178,6 +180,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
   scoped_refptr<gpu::ClientSharedImage> front_buffer_shared_image_;
   gpu::SyncToken front_buffer_sync_token_;
+
+  base::WeakPtrFactory<WebGPUSwapBufferProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

@@ -9,6 +9,7 @@
 
 [
   Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  RuntimeEnabled=AIPromptAPI,
   SecureContext
 ]
 interface LanguageModelFactory {

@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
@@ -159,6 +160,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
 
     WebUsageEnablerBrowserAgent::FromBrowser(browser_.get())
         ->SetWebUsageEnabled(true);
@@ -208,6 +210,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     id mock_help_handler = OCMProtocolMock(@protocol(HelpCommands));
     [dispatcher startDispatchingToTarget:mock_help_handler
                              forProtocol:@protocol(HelpCommands)];
+
+    id page_action_menu_handler =
+        OCMProtocolMock(@protocol(PageActionMenuCommands));
+    [dispatcher startDispatchingToTarget:page_action_menu_handler
+                             forProtocol:@protocol(PageActionMenuCommands)];
 
     // Set up Applicationhander and SettingsHandler mocks.
     mock_application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));

@@ -102,7 +102,7 @@ class AuthService::IdentityManagerObserver
     : public signin::IdentityManager::Observer {
  public:
   explicit IdentityManagerObserver(AuthService* service) : service_(service) {
-    manager_observation_.Observe(service->identity_manager_.get());
+    identity_manager_observation_.Observe(service->identity_manager_.get());
   }
   ~IdentityManagerObserver() override = default;
 
@@ -117,11 +117,16 @@ class AuthService::IdentityManagerObserver
     service_->OnHandleRefreshToken(account_id, false);
   }
 
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override {
+    identity_manager_observation_.Reset();
+  }
+
  private:
   raw_ptr<AuthService> service_ = nullptr;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
-      manager_observation_{this};
+      identity_manager_observation_{this};
 };
 
 AuthService::AuthService(

@@ -33,7 +33,10 @@ public class TestAccounts {
                     .accountImage(createAvatar())
                     .build();
 
-    /* Use ACCOUNT2 when signing in or adding a default adult user to the device as a secondary user.*/
+    /*
+     * Use ACCOUNT2 when signing in or adding a default adult user to the device as a secondary
+     * user.
+     */
     public static final AccountInfo ACCOUNT2 =
             new AccountInfo.Builder(
                             "test2@gmail.com", FakeAccountManagerFacade.toGaiaId("test2@gmail.com"))
@@ -42,7 +45,7 @@ public class TestAccounts {
                     .accountImage(createAvatar())
                     .build();
 
-    /* Use CHILD_ACCOUNT when you need a supervised user signed in */
+    /* Use CHILD_ACCOUNT when you need a supervised user signed in. */
     public static final AccountInfo CHILD_ACCOUNT =
             new AccountInfo.Builder(
                             FakeAccountManagerFacade.generateChildEmail(ACCOUNT1.getEmail()),

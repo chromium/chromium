@@ -58,7 +58,9 @@ enum class TrustedVaultUserActionTriggerForUMA {
   kPasswordManagerErrorMessage = 4,
   // Used on iOS only, from the account menu.
   kAccountMenu = 5,
-  kMaxValue = kAccountMenu
+  // From the Password Manager Settings (currently used only on iOS).
+  kPasswordManagerSettings = 6,
+  kMaxValue = kPasswordManagerSettings
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultUserActionTrigger)
 

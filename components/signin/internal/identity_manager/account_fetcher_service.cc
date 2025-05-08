@@ -27,7 +27,6 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_client.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "net/http/http_status_code.h"
@@ -36,12 +35,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
-#include "components/signin/public/identity_manager/tribool.h"
-#endif
-
 namespace {
 
 const base::TimeDelta kRefreshFromTokenServiceDelay = base::Hours(24);
@@ -59,11 +52,6 @@ AccountFetcherService::AccountFetcherService() = default;
 
 AccountFetcherService::~AccountFetcherService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(IS_ANDROID)
-  // child_info_request_ is an invalidation handler and needs to be
-  // unregistered during the lifetime of the invalidation service.
-  child_info_request_.reset();
-#endif
 }
 
 // static
@@ -124,9 +112,6 @@ bool AccountFetcherService::AreAllAccountCapabilitiesFetched() const {
 void AccountFetcherService::OnNetworkInitialized() {
   DCHECK(!network_initialized_);
   DCHECK(!network_fetches_enabled_);
-#if BUILDFLAG(IS_ANDROID)
-  DCHECK(!child_info_request_);
-#endif
   network_initialized_ = true;
   MaybeEnableNetworkFetches();
 }
@@ -167,34 +152,6 @@ void AccountFetcherService::RefreshAccountInfoIfStale(
   DCHECK(network_fetches_enabled_);
   RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/true);
 }
-
-void AccountFetcherService::UpdateChildInfo() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Do not override child account information derived from capabilities if the
-  // experiment is enabled.
-  if (base::FeatureList::IsEnabled(
-          switches::kForceSupervisedSigninWithCapabilities)) {
-    return;
-  }
-  std::vector<CoreAccountId> accounts = token_service_->GetAccounts();
-  if (accounts.size() >= 1) {
-    // If a child account is present then there can be only one child account,
-    // and it must be the first account on the device.
-    //
-    // TODO(crbug.com/40803816): consider removing this assumption.
-    const CoreAccountId& candidate = accounts[0];
-    if (candidate == child_request_account_id_) {
-      return;
-    }
-    if (!child_request_account_id_.empty()) {
-      ResetChildInfo();
-    }
-    child_request_account_id_ = candidate;
-    StartFetchingChildInfo(candidate);
-  } else {
-    ResetChildInfo();
-  }
-}
 #endif
 
 void AccountFetcherService::MaybeEnableNetworkFetches() {
@@ -207,9 +164,6 @@ void AccountFetcherService::MaybeEnableNetworkFetches() {
     repeating_timer_->Start();
   }
   RefreshAllAccountInfo(/*only_fetch_if_invalid=*/true);
-#if BUILDFLAG(IS_ANDROID)
-  UpdateChildInfo();
-#endif
 }
 
 // Starts fetching user information. This is called periodically to refresh.
@@ -231,36 +185,6 @@ void AccountFetcherService::StartFetchingUserInfo(
     request->Start();
   }
 }
-
-#if BUILDFLAG(IS_ANDROID)
-// Starts fetching whether this is a child account. Handles refresh internally.
-void AccountFetcherService::StartFetchingChildInfo(
-    const CoreAccountId& account_id) {
-  child_info_request_ =
-      ChildAccountInfoFetcherAndroid::Create(this, child_request_account_id_);
-}
-
-void AccountFetcherService::ResetChildInfo() {
-  if (!child_request_account_id_.empty()) {
-    AccountInfo account_info =
-        account_tracker_service_->GetAccountInfo(child_request_account_id_);
-    // TODO(crbug.com/40776452): Reset the status to kUnknown, rather
-    // than kFalse.
-    if (account_info.is_child_account != signin::Tribool::kUnknown) {
-      SetIsChildAccount(child_request_account_id_, false);
-    }
-  }
-  child_request_account_id_ = CoreAccountId();
-  child_info_request_.reset();
-}
-
-void AccountFetcherService::SetIsChildAccount(const CoreAccountId& account_id,
-                                              bool is_child_account) {
-  if (child_request_account_id_ == account_id) {
-    account_tracker_service_->SetIsChildAccount(account_id, is_child_account);
-  }
-}
-#endif
 
 void AccountFetcherService::DestroyFetchers(const CoreAccountId& account_id) {
   user_info_requests_.erase(account_id);
@@ -446,9 +370,6 @@ void AccountFetcherService::OnRefreshTokenAvailable(
     return;
   }
   RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/true);
-#if BUILDFLAG(IS_ANDROID)
-  UpdateChildInfo();
-#endif
 }
 
 void AccountFetcherService::OnRefreshTokenRevoked(
@@ -467,9 +388,6 @@ void AccountFetcherService::OnRefreshTokenRevoked(
   }
 
   DestroyFetchers(account_id);
-#if BUILDFLAG(IS_ANDROID)
-  UpdateChildInfo();
-#endif
   account_tracker_service_->StopTrackingAccount(account_id);
 }
 

@@ -451,10 +451,6 @@ BASE_FEATURE(kIOSManageAccountStorage,
              "IOSManageAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableWebChannels,
-             "EnableWebChannels",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeprecateFeedHeader,
              "DeprecateFeedHeader",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -469,10 +465,6 @@ BASE_FEATURE(kCreateDiscoverFeedServiceEarly,
 
 BASE_FEATURE(kEnableFeedAblation,
              "EnableFeedAblation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableFollowUIUpdate,
-             "EnableFollowUIUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kContentPushNotificationsExperimentType[] =
@@ -509,12 +501,10 @@ BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGroupsIPad, "TabGroupsIPad", base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsTabGroupInGridEnabled() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (@available(iOS 17, *)) {
-      return base::FeatureList::IsEnabled(kTabGroupsIPad);
+      return true;
     }
     return false;
   }
@@ -637,15 +627,7 @@ int HoursInactiveForOldUsersUntilShowingDockingPromo() {
 }
 
 bool IsWebChannelsEnabled() {
-  if (ShouldDeprecateFeedHeader()) {
-    return false;
-  }
-  std::string launched_countries[6] = {"AU", "CA", "GB", "NZ", "US", "ZA"};
-  if (base::Contains(launched_countries,
-                     country_codes::GetCurrentCountryID().CountryCode())) {
-    return true;
-  }
-  return base::FeatureList::IsEnabled(kEnableWebChannels);
+  return false;
 }
 
 bool IsDiscoverFeedServiceCreatedEarly() {
@@ -735,12 +717,7 @@ bool IsFeedAblationEnabled() {
 }
 
 bool IsFollowUIUpdateEnabled() {
-  std::string launched_countries[1] = {"US"};
-  if (base::Contains(launched_countries,
-                     country_codes::GetCurrentCountryID().CountryCode())) {
-    return true;
-  }
-  return base::FeatureList::IsEnabled(kEnableFollowUIUpdate);
+  return false;
 }
 
 bool IsContentPushNotificationsEnabled() {
@@ -803,16 +780,6 @@ BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabResumption, "TabResumption", base::FEATURE_ENABLED_BY_DEFAULT);
 
-
-const char kMagicStackMostVisitedModuleParam[] = "MagicStackMostVisitedModule";
-
-const char kReducedSpaceParam[] = "ReducedNTPTopSpace";
-
-const char kHideIrrelevantModulesParam[] = "HideIrrelevantModules";
-
-const char kSetUpListCompactedTimeThresholdDays[] =
-    "SetUpListCompactedTimeThresholdDays";
-
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
@@ -860,72 +827,9 @@ bool IsTabResumptionImagesThumbnailsEnabled() {
   return image_type == kTabResumptionImagesTypesThumbnails || image_type == "";
 }
 
-bool ShouldPutMostVisitedSitesInMagicStack(
-    FeedActivityBucket feed_activity_bucket) {
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          kMagicStack, kMagicStackMostVisitedModuleParam, false)) {
-    return true;
-  }
-  if (base::FeatureList::IsEnabled(kNewFeedPositioning)) {
-    std::string mvt_state_param_name;
-    switch (feed_activity_bucket) {
-      case FeedActivityBucket::kNoActivity:
-        mvt_state_param_name = kNewFeedPositioningCombinedMVTForLowEngaged;
-        break;
-      case FeedActivityBucket::kLowActivity:
-        mvt_state_param_name = kNewFeedPositioningCombinedMVTForMidEngaged;
-        break;
-      case FeedActivityBucket::kMediumActivity:
-      case FeedActivityBucket::kHighActivity:
-        mvt_state_param_name = kNewFeedPositioningCombinedMVTForHighEngaged;
-        break;
-      default:
-        NOTREACHED() << "Should not reach engagement level: "
-                     << static_cast<int>(feed_activity_bucket);
-    }
-    return base::GetFieldTrialParamByFeatureAsBool(
-        kNewFeedPositioning, mvt_state_param_name, /*default_value=*/true);
-  }
-  return false;
-}
-
-double ReducedNTPTopMarginSpaceForMagicStack() {
-  return base::GetFieldTrialParamByFeatureAsDouble(kMagicStack,
-                                                   kReducedSpaceParam, 20);
-}
-
-bool ShouldHideIrrelevantModules() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kMagicStack, kHideIrrelevantModulesParam, false);
-}
-
-int TimeUntilShowingCompactedSetUpList() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kMagicStack, kSetUpListCompactedTimeThresholdDays, 0);
-}
-
 BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
              "kInactiveNavigationAfterAppLaunchKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIOSTipsNotifications,
-             "IOSTipsNotifications",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const char kIOSTipsNotificationsUnknownTriggerTimeParam[] =
-    "unknown_trigger_time";
-const char kIOSTipsNotificationsActiveSeekerTriggerTimeParam[] =
-    "active_seeker_trigger_time";
-const char kIOSTipsNotificationsLessEngagedTriggerTimeParam[] =
-    "less_engaged_trigger_time";
-const char kIOSTipsNotificationsEnabledParam[] = "enabled";
-const char kIOSTipsNotificationsOrderParam[] = "tips_notifications_order";
-const char kIOSTipsNotificationsDismissLimitParam[] =
-    "tips_notifications_dismiss_limit";
-
-bool IsIOSTipsNotificationsEnabled() {
-  return base::FeatureList::IsEnabled(kIOSTipsNotifications);
-}
 
 bool IsPinnedTabsEnabled() {
   return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
@@ -1101,6 +1005,15 @@ bool IsIOSReactivationNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSReactivationNotifications);
 }
 
+BASE_FEATURE(kIOSExpandedTips,
+             "IOSExpandedTips",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kIOSExpandedTipsOrderParam[] = "expanded_tips_order";
+
+bool IsIOSExpandedTipsEnabled() {
+  return base::FeatureList::IsEnabled(kIOSExpandedTips);
+}
+
 BASE_FEATURE(kProvisionalNotificationAlert,
              "ProvisionalNotificationAlert",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1108,16 +1021,6 @@ BASE_FEATURE(kProvisionalNotificationAlert,
 bool IsProvisionalNotificationAlertEnabled() {
   return base::FeatureList::IsEnabled(kProvisionalNotificationAlert);
 }
-
-BASE_FEATURE(kNewFeedPositioning,
-             "IOSNewFeedPositioning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const char kNewFeedPositioningCombinedMVTForHighEngaged[] =
-    "high_engagement_combined_mvt";
-const char kNewFeedPositioningCombinedMVTForMidEngaged[] =
-    "medium_engagement_combined_mvt";
-const char kNewFeedPositioningCombinedMVTForLowEngaged[] =
-    "low_engagement_combined_mvt";
 
 BASE_FEATURE(kDefaultBrowserBannerPromo,
              "DefaultBrowserBannerPromo",
@@ -1141,15 +1044,13 @@ const std::string_view kFRESignInSecondaryActionLabelUpdateParamStaySignedOut =
 
 BASE_FEATURE(kFRESignInSecondaryActionLabelUpdate,
              "FRESignInSecondaryActionLabelUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool FRESignInSecondaryActionLabelUpdate() {
   return base::FeatureList::IsEnabled(kFRESignInSecondaryActionLabelUpdate);
 }
 
-BASE_FEATURE(kIOSPasskeysM2,
-             "IOSPasskeysM2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSPasskeysM2, "IOSPasskeysM2", base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IOSPasskeysM2Enabled() {
   return base::FeatureList::IsEnabled(kIOSPasskeysM2);
@@ -1157,7 +1058,7 @@ bool IOSPasskeysM2Enabled() {
 
 BASE_FEATURE(kIOSPushNotificationMultiProfile,
              "IOSPushNotificationMultiProfile",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsIOSMultiProfilePushNotificationHandlingEnabled() {
   return base::FeatureList::IsEnabled(kIOSPushNotificationMultiProfile);
@@ -1366,4 +1267,9 @@ BASE_FEATURE(kBestOfAppFRE, "BestOfAppFRE", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsBestOfAppFREEnabled() {
   return base::FeatureList::IsEnabled(kBestOfAppFRE);
+}
+
+bool IsBestOfAppGuidedTourEnabled() {
+  return base::GetFieldTrialParamValueByFeature(kBestOfAppFRE, "variant") ==
+         "4";
 }

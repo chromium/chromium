@@ -64,6 +64,12 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     RunTypedTest<kFormControls>(file_path, ui::kAXModeFormControls);
   }
 
+  void RunNoScreenReaderDisplayLockingTest(
+      const base::FilePath::CharType* file_path) {
+    RunTypedTest<kDisplayLocking>(file_path, ui::kAXModeComplete,
+                                  FILE_PATH_LITERAL("no-screen-reader"));
+  }
+
   void RunOnScreenTest(const base::FilePath::CharType* file_path) {
     RunTypedTest<kHtml>(file_path, ui::kAXModeOnScreen);
   }

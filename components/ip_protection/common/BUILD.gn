@@ -320,6 +320,7 @@ source_set("ip_protection_proxy_delegate") {
     ":ip_protection_proxy_config_manager_impl",
     ":ip_protection_telemetry",
     ":ip_protection_token_manager_impl",
+    ":probabilistic_reveal_token_registry",
   ]
 }
 
@@ -329,11 +330,16 @@ source_set("ip_protection_proxy_delegate_unittest") {
   deps = [
     ":ip_protection_core",
     ":ip_protection_data_types",
+    ":ip_protection_probabilistic_reveal_token_direct_fetcher",
+    ":ip_protection_probabilistic_reveal_token_manager",
     ":ip_protection_proxy_config_manager",
     ":ip_protection_proxy_delegate",
     ":ip_protection_telemetry",
     ":ip_protection_token_manager",
     ":masked_domain_list_manager",
+    ":probabilistic_reveal_token_registry",
+    ":probabilistic_reveal_token_test_consumer",
+    ":probabilistic_reveal_token_test_issuer",
     "//base",
     "//base/test:test_support",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
@@ -341,6 +347,7 @@ source_set("ip_protection_proxy_delegate_unittest") {
     "//net:gtest_util",
     "//net:test_support",
     "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gmock",
@@ -603,6 +610,7 @@ source_set("ip_protection_probabilistic_reveal_token_direct_fetcher_unittest") {
   deps = [
     ":ip_protection_probabilistic_reveal_token_crypter",
     ":ip_protection_probabilistic_reveal_token_direct_fetcher",
+    ":probabilistic_reveal_token_test_issuer",
     "//base",
     "//base/test:test_support",
     "//base/version_info:channel",
@@ -671,11 +679,12 @@ source_set("ip_protection_probabilistic_reveal_token_crypter_unittest") {
   sources = [ "ip_protection_probabilistic_reveal_token_crypter_unittest.cc" ]
   deps = [
     ":ip_protection_probabilistic_reveal_token_crypter",
+    ":probabilistic_reveal_token_test_issuer",
     "//base",
     "//base/test:test_support",
+    "//components/ip_protection:get_probabilistic_reveal_token_proto",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
   ]
 }
 
@@ -788,6 +797,7 @@ source_set("probabilistic_reveal_token_registry_unittest") {
     ":probabilistic_reveal_token_registry",
     "//base",
     "//base/test:test_support",
+    "//net",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

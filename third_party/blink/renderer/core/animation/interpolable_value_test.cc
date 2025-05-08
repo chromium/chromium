@@ -30,7 +30,8 @@ class AnimationInterpolableValueTest : public testing::Test {
     // suffices for this, and also means we can ignore the AnimatableValues for
     // the compositor (as z-index isn't compositor-compatible).
     PropertyHandle property_handle(GetCSSPropertyZIndex());
-    CSSNumberInterpolationType interpolation_type(property_handle);
+    CSSNumberInterpolationType* interpolation_type(
+        MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
     InterpolationValue start(MakeGarbageCollected<InterpolableNumber>(a));
     InterpolationValue end(MakeGarbageCollected<InterpolableNumber>(b));
     TransitionInterpolation* i = MakeGarbageCollected<TransitionInterpolation>(

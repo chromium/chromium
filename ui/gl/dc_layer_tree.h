@@ -19,6 +19,7 @@
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/delegated_ink_point_renderer_gpu.h"
 #include "ui/gl/gl_export.h"
@@ -215,38 +216,23 @@ class GL_EXPORT DCLayerTree {
     return no_downscaled_overlay_promotion_;
   }
 
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> GetLayerSwapChainForTesting(
-      size_t index) const;
+  IDXGISwapChain1* GetLayerSwapChainForTesting(
+      const gfx::OverlayLayerId& layer_id) const;
 
-  void GetSwapChainVisualInfoForTesting(size_t index,
-                                        gfx::Transform* transform,
-                                        gfx::Point* offset,
-                                        gfx::Rect* clip_rect) const;
-
-  size_t GetSwapChainPresenterCountForTesting() const {
-    CHECK_IS_TEST();
-    return video_swap_chains_.size();
-  }
-
-  size_t GetDcompLayerCountForTesting() const {
-    CHECK_IS_TEST();
-    return visual_tree_ ? visual_tree_->GetDcompLayerCountForTesting() : 0;
-  }
-  IDCompositionVisual2* GetContentVisualForTesting(size_t index) const {
-    CHECK_IS_TEST();
-    return visual_tree_ ? visual_tree_->GetContentVisualForTesting(index)
-                        : nullptr;
-  }
+  void GetSwapChainVisualInfoForTesting(const gfx::OverlayLayerId& layer_id,
+                                        gfx::Transform* out_transform,
+                                        gfx::Point* out_offset,
+                                        gfx::Rect* out_clip_rect) const;
+  size_t GetSwapChainPresenterCountForTesting() const;
+  size_t GetDcompLayerCountForTesting() const;
+  IDCompositionVisual2* GetContentVisualForTesting(
+      const gfx::OverlayLayerId& layer_id) const;
   IDCompositionSurface* GetBackgroundColorSurfaceForTesting(
-      size_t index) const {
-    CHECK_IS_TEST();
-    return visual_tree_
-               ? visual_tree_->GetBackgroundColorSurfaceForTesting(index)
-               : nullptr;
-  }
+      const gfx::OverlayLayerId& layer_id) const;
   size_t GetNumSurfacesInPoolForTesting() const;
 #if DCHECK_IS_ON()
-  bool GetAttachedToRootFromPreviousFrameForTesting(size_t index) const;
+  bool DcompVisualContentChangedFromPreviousFrameForTesting(
+      const gfx::OverlayLayerId& layer_id) const;
 #endif  // DCHECK_IS_ON()
 
   const std::unique_ptr<HDRMetadataHelperWin>& GetHDRMetadataHelper() {
@@ -284,29 +270,18 @@ class GL_EXPORT DCLayerTree {
     base::expected<void, CommitError> BuildTree(
         const std::vector<DCLayerOverlayParams>& overlays);
 
-    void GetSwapChainVisualInfoForTesting(size_t index,
-                                          gfx::Transform* transform,
-                                          gfx::Point* offset,
-                                          gfx::Rect* clip_rect) const;
-    size_t GetDcompLayerCountForTesting() const {
-      CHECK_IS_TEST();
-      return visual_subtrees_.size();
-    }
-    IDCompositionVisual2* GetContentVisualForTesting(size_t index) const {
-      CHECK_IS_TEST();
-      return visual_subtrees_[index]->content_visual();
-    }
+    void GetSwapChainVisualInfoForTesting(const gfx::OverlayLayerId& layer_id,
+                                          gfx::Transform* out_transform,
+                                          gfx::Point* out_offset,
+                                          gfx::Rect* out_clip_rect) const;
+    size_t GetDcompLayerCountForTesting() const;
+    IDCompositionVisual2* GetContentVisualForTesting(
+        const gfx::OverlayLayerId& layer_id) const;
     IDCompositionSurface* GetBackgroundColorSurfaceForTesting(
-        size_t index) const {
-      CHECK_IS_TEST();
-      return visual_subtrees_[index]->background_color_surface_for_testing();
-    }
+        const gfx::OverlayLayerId& layer_id) const;
 #if DCHECK_IS_ON()
-    bool GetAttachedToRootFromPreviousFrameForTesting(size_t index) const {
-      CHECK_IS_TEST();
-      return visual_subtrees_[index]
-          ->GetAttachedToRootFromPreviousFrameForTesting();
-    }
+    bool DcompVisualContentChangedFromPreviousFrameForTesting(
+        const gfx::OverlayLayerId& layer_id) const;
 #endif  // DCHECK_IS_ON()
     // Maps the visual content to its corresponding subtree index.
     // This is used to find matching subtrees from the previous frame
@@ -357,13 +332,13 @@ class GL_EXPORT DCLayerTree {
         CHECK_IS_TEST();
         return background_color_surface_.Get();
       }
-      void GetSwapChainVisualInfoForTesting(gfx::Transform* transform,
-                                            gfx::Point* offset,
-                                            gfx::Rect* clip_rect) const;
+      void GetSwapChainVisualInfoForTesting(gfx::Transform* out_transform,
+                                            gfx::Point* out_offset,
+                                            gfx::Rect* out_clip_rect) const;
 #if DCHECK_IS_ON()
-      bool GetAttachedToRootFromPreviousFrameForTesting() const {
+      bool DcompVisualContentChangedFromPreviousFrameForTesting() const {
         CHECK_IS_TEST();
-        return attached_to_root_from_previous_frame_;
+        return dcomp_visual_content_changed_from_previous_frame_;
       }
 #endif  // DCHECK_IS_ON()
 
@@ -453,9 +428,9 @@ class GL_EXPORT DCLayerTree {
       int z_order_ = 0;
 
 #if DCHECK_IS_ON()
-      // True if the subtree is reused from the previous frame and keeps its
-      // attachment to the root from the previous frame. Used for testing.
-      bool attached_to_root_from_previous_frame_ = false;
+      // True if the content of the dcomp visual changed from the previous
+      // frame. Used for testing.
+      bool dcomp_visual_content_changed_from_previous_frame_ = false;
 #endif  // DCHECK_IS_ON()
     };
 
@@ -520,6 +495,12 @@ class GL_EXPORT DCLayerTree {
     // List of DCOMP visual subtrees for previous frame.
     std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees_;
     VisualSubtreeMap subtree_map_;
+
+    // List of layer IDs in the frame, parallel to `visual_subtrees_`.
+    std::vector<gfx::OverlayLayerId> layer_ids_for_testing_;
+    // Get the first subtree in `visual_subtrees_` matching `layer_id`.
+    const VisualSubtree* GetSubtreeFromLayerIdForTesting(
+        const gfx::OverlayLayerId& layer_id) const;
   };
 
  private:
@@ -552,8 +533,9 @@ class GL_EXPORT DCLayerTree {
   // Root direct composition visual for window dcomp target.
   Microsoft::WRL::ComPtr<IDCompositionVisual2> dcomp_root_visual_;
 
-  // List of swap chain presenters for previous frame.
-  std::vector<std::unique_ptr<SwapChainPresenter>> video_swap_chains_;
+  // Map of layer ID to swap chain presenters for previous frame.
+  base::flat_map<gfx::OverlayLayerId, std::unique_ptr<SwapChainPresenter>>
+      video_swap_chains_;
 
   // A tree that owns all DCOMP visuals for overlays along with attributes
   // required to build DCOMP tree. It's updated for each frame.

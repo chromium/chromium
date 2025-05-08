@@ -17,27 +17,27 @@ class BrowserContext;
 namespace extensions {
 
 // Returns which extension (if any) is overriding the homepage in a given
-// |browser_context|.
+// `browser_context`.
 const Extension* GetExtensionOverridingHomepage(
     content::BrowserContext* browser_context);
 
 // Returns which extension (if any) is overriding the New Tab page in a given
-// |browser_context|.
+// `browser_context`.
 const Extension* GetExtensionOverridingNewTabPage(
     content::BrowserContext* browser_context);
 
 // Returns which extension (if any) is overriding the homepage in a given
-// |browser_context|.
+// `browser_context`.
 const Extension* GetExtensionOverridingStartupPages(
     content::BrowserContext* browser_context);
 
 // Returns which extension (if any) is overriding the search engine in a given
-// |browser_context|.
+// `browser_context`.
 const Extension* GetExtensionOverridingSearchEngine(
     content::BrowserContext* browser_context);
 
 // Returns which extension (if any) is overriding the proxy in a given
-// |browser_context|.
+// `browser_context`.
 const Extension* GetExtensionOverridingProxy(
     content::BrowserContext* browser_context);
 

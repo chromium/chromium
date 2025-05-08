@@ -67,7 +67,7 @@ void ReadableStreamDefaultControllerWithScriptScope::Enqueue(
       isolate, ToMicrotaskQueue(script_state_),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
   ReadableStreamDefaultController::Enqueue(script_state_, controller_, js_chunk,
-                                           IgnoreException(isolate));
+                                           IGNORE_EXCEPTION);
 }
 
 void ReadableStreamDefaultControllerWithScriptScope::Error(

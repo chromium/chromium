@@ -22,6 +22,7 @@
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #import "components/component_updater/component_updater_service.h"
@@ -100,11 +101,13 @@ ApplicationContextImpl::ApplicationContextImpl(
     const base::CommandLine& command_line,
     const std::string& locale,
     const std::string& country)
-    : local_state_task_runner_(local_state_task_runner) {
+    : application_locale_storage_(std::make_unique<ApplicationLocaleStorage>()),
+      local_state_task_runner_(local_state_task_runner) {
   DCHECK(!GetApplicationContext());
   SetApplicationContext(this);
 
   SetApplicationLocale(locale);
+  application_locale_storage_->Set(locale);
   application_country_ = country;
 
   update_client::UpdateQueryParams::SetDelegate(
@@ -306,6 +309,13 @@ const std::string& ApplicationContextImpl::GetApplicationLocale() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!application_locale_.empty());
   return application_locale_;
+}
+
+ApplicationLocaleStorage*
+ApplicationContextImpl::GetApplicationLocaleStorage() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(application_locale_storage_);
+  return application_locale_storage_.get();
 }
 
 const std::string& ApplicationContextImpl::GetApplicationCountry() {

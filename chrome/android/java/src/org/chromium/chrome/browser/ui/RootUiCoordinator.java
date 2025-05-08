@@ -499,7 +499,8 @@ public class RootUiCoordinator
                         activityThemeColorSupplier,
                         isTablet,
                         shouldAllowThemingInNightMode(),
-                        shouldAllowBrightThemeColors());
+                        shouldAllowBrightThemeColors(),
+                        shouldAllowThemingOnTablets());
 
         mStatusBarColorController =
                 new StatusBarColorController(
@@ -1147,8 +1148,8 @@ public class RootUiCoordinator
 
     /**
      * @return Whether the {@link MerchantTrustSignalsCoordinator} should be initialized in the
-     * context of this coordinator's UI.
-     **/
+     *     context of this coordinator's UI.
+     */
     protected boolean shouldInitializeMerchantTrustSignals() {
         return false;
     }
@@ -1268,6 +1269,19 @@ public class RootUiCoordinator
                         .show();
             }
             return true;
+        } else if (id == R.id.esc_key) {
+            // Unlike Back presses, which are plumbed through an OnBackPressedCallback provided
+            // by View.java, Escape key presses do not have an equivalent callback and must be
+            // handled manually. However, in most cases we want Escape key presses to behave the
+            // same as Back presses, so we intercept them here and send them to the
+            // BackPressManager, but Views can override this for custom behavior. Escape key
+            // presses that include modifier keys (e.g. Ctrl), are not sent to BackPressManager.
+            if (ChromeFeatureList.sKeyboardEscBackNavigation.isEnabled()) {
+                if (mBackPressManager != null) {
+                    Boolean result = mBackPressManager.processEscapeKeyEvent();
+                    return result != null && result;
+                }
+            }
         }
 
         return false;
@@ -1711,6 +1725,14 @@ public class RootUiCoordinator
     }
 
     /**
+     * Whether the top toolbar theme color provider should allow using a web page theme on large
+     * form-factors.
+     */
+    protected boolean shouldAllowThemingOnTablets() {
+        return false;
+    }
+
+    /**
      * Initialize the {@link BottomSheetController}. The view for this component is not created
      * until content is requested in the sheet.
      */
@@ -1795,6 +1817,9 @@ public class RootUiCoordinator
                 "EdgeToEdgeChinEligibility", eligible ? "Eligible" : "Not Eligible");
 
         if (supportsEdgeToEdge() && EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
+            assert eligible
+                    : "The edge-to-edge controller is being initialized, though it should not be"
+                            + " eligible!";
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(
                             mActivity,

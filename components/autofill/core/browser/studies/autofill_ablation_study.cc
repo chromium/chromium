@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -183,37 +184,39 @@ AblationGroup AutofillAblationStudy::GetAblationGroup(
       break;
   }
 
-  std::array<const base::FeatureParam<int>*, 6> ablation_list_params = {
-      &kAutofillAblationStudyAblationWeightPerMilleList1Param,
-      &kAutofillAblationStudyAblationWeightPerMilleList2Param,
-      &kAutofillAblationStudyAblationWeightPerMilleList3Param,
-      &kAutofillAblationStudyAblationWeightPerMilleList4Param,
-      &kAutofillAblationStudyAblationWeightPerMilleList5Param,
-      &kAutofillAblationStudyAblationWeightPerMilleList6Param,
-  };
+  const auto ablation_list_params =
+      std::to_array<const base::FeatureParam<int>*>(
+          {&kAutofillAblationStudyAblationWeightPerMilleList1Param,
+           &kAutofillAblationStudyAblationWeightPerMilleList2Param,
+           &kAutofillAblationStudyAblationWeightPerMilleList3Param,
+           &kAutofillAblationStudyAblationWeightPerMilleList4Param,
+           &kAutofillAblationStudyAblationWeightPerMilleList5Param,
+           &kAutofillAblationStudyAblationWeightPerMilleList6Param});
   using OptimizationType = optimization_guide::proto::OptimizationType;
-  constexpr std::array<OptimizationType, 6> ablation_optimization_types = {
-      OptimizationType::AUTOFILL_ABLATION_SITES_LIST1,
-      OptimizationType::AUTOFILL_ABLATION_SITES_LIST2,
-      OptimizationType::AUTOFILL_ABLATION_SITES_LIST3,
-      OptimizationType::AUTOFILL_ABLATION_SITES_LIST4,
-      OptimizationType::AUTOFILL_ABLATION_SITES_LIST5,
-      OptimizationType::AUTOFILL_ABLATION_SITES_LIST6};
+  static constexpr auto ablation_optimization_types =
+      std::to_array<OptimizationType>(
+          {OptimizationType::AUTOFILL_ABLATION_SITES_LIST1,
+           OptimizationType::AUTOFILL_ABLATION_SITES_LIST2,
+           OptimizationType::AUTOFILL_ABLATION_SITES_LIST3,
+           OptimizationType::AUTOFILL_ABLATION_SITES_LIST4,
+           OptimizationType::AUTOFILL_ABLATION_SITES_LIST5,
+           OptimizationType::AUTOFILL_ABLATION_SITES_LIST6});
 
   base::Time now = AutofillClock::Now();
-  for (size_t i = 0; i < ablation_list_params.size(); ++i) {
+  for (auto [param, optimization_type] :
+       base::zip(ablation_list_params, ablation_optimization_types)) {
     // Do some basic checks for plausibility. Note that for testing purposes
     // we allow that ablation_weight == 1000. In this case 100% of forms are
     // in the ablation case. In practice ablation_weight * 2 <= total_weight
     // should be true to get meaningful results (have an equally sized
     // ablation and control group).
-    int ablation_weight = ablation_list_params[i]->Get();
+    const int ablation_weight = param->Get();
     if (ablation_weight <= 0 || ablation_weight > 1000) {
       continue;
     }
     if (!autofill_optimization_guide ||
         !autofill_optimization_guide->IsEligibleForAblation(
-            url, ablation_optimization_types[i])) {
+            url, optimization_type)) {
       continue;
     }
     return GetAblationGroupImpl(url, now, ablation_weight);

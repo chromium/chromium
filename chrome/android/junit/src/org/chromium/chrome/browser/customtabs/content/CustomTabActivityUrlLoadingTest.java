@@ -6,24 +6,20 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.CONTENT_URI;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.INITIAL_URL;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.OTHER_URL;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.SPECULATED_URL;
 
 import android.content.Intent;
 import android.net.Uri;
-
-import androidx.browser.trusted.FileHandlingData;
-import androidx.browser.trusted.LaunchHandlerClientMode;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,24 +34,19 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.content.WebContentsFactory;
-import org.chromium.chrome.browser.content.WebContentsFactoryJni;
-import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
-import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristicsJni;
+import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
+import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preloading.PreloadingDataBridge;
-import org.chromium.chrome.browser.preloading.PreloadingDataBridgeJni;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Integration tests involving several classes in Custom Tabs content layer, checking that urls are
@@ -67,9 +58,9 @@ import java.util.Arrays;
         shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
 @Features.EnableFeatures({
     ChromeFeatureList.CCT_EARLY_NAV,
-    ChromeFeatureList.CCT_PREDICTIVE_BACK_GESTURE,
     ChromeFeatureList.CCT_PREWARM_TAB,
-    ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER
+    ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME
 })
 public class CustomTabActivityUrlLoadingTest {
     @Implements(Origin.class)
@@ -86,31 +77,22 @@ public class CustomTabActivityUrlLoadingTest {
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
-    @Mock private Profile mProfile;
-    @Mock private Profile mIncognitoProfile;
-
     private CustomTabActivityTabController mTabController;
     private CustomTabActivityNavigationController mNavigationController;
     private CustomTabIntentHandler mIntentHandler;
 
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
-    @Mock CustomTabAuthUrlHeuristics.Natives mCustomTabAuthUrlHeuristicsJniMock;
-    @Mock WebContentsFactory.Natives mWebContentsFactoryJni;
-    @Mock PreloadingDataBridge.Natives mPreloadingDataBridgeMock;
-
-    @Mock WebAppLaunchHandler.Natives mWebAppLaunchHandlerJniMock;
+    @Mock private UserPrefsJni mMockUserPrefsJni;
 
     @Before
     public void setUp() {
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
-        CustomTabAuthUrlHeuristicsJni.setInstanceForTesting(mCustomTabAuthUrlHeuristicsJniMock);
-        WebContentsFactoryJni.setInstanceForTesting(mWebContentsFactoryJni);
-        PreloadingDataBridgeJni.setInstanceForTesting(mPreloadingDataBridgeMock);
-        WebAppLaunchHandlerJni.setInstanceForTesting(mWebAppLaunchHandlerJniMock);
+        UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
+        doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());
 
-        when(env.profileProvider.getOriginalProfile()).thenReturn(mProfile);
-        when(env.profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);
-        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        // Ensure the test can read the Autofill pref. Assume it's turned off by default.
+        AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
 
         mTabController = env.createTabController();
         mNavigationController = env.createNavigationController(mTabController);
@@ -200,13 +182,13 @@ public class CustomTabActivityUrlLoadingTest {
         mTabController.finishNativeInitialization();
         clearInvocations(env.tabFromFactory);
 
-        mIntentHandler.onNewIntent(createDataProviderForNewIntent(OTHER_URL));
+        mIntentHandler.onNewIntent(createDataProviderForNewIntent());
         verify(env.tabFromFactory).loadUrl(argThat(params -> OTHER_URL.equals(params.getUrl())));
     }
 
     @Test
     public void loadsUrlFromTheLastIntent_IfTwoIntentsArriveBeforeNativeInit() {
-        mIntentHandler.onNewIntent(createDataProviderForNewIntent(OTHER_URL));
+        mIntentHandler.onNewIntent(createDataProviderForNewIntent());
         mTabController.setUpInitialTab(null);
         mTabController.finishNativeInitialization();
 
@@ -214,134 +196,14 @@ public class CustomTabActivityUrlLoadingTest {
         verify(env.tabFromFactory).loadUrl(argThat(params -> OTHER_URL.equals(params.getUrl())));
     }
 
-    private void checkLaunchHandler(
-            CustomTabIntentDataProvider intentDataProvider,
-            int expectedLoadUrlNumber,
-            boolean expectedStartNewNavigation) {
-        mIntentHandler.onNewIntent(intentDataProvider);
-        verify(env.tabFromFactory, times(expectedLoadUrlNumber))
-                .loadUrl(argThat(params -> OTHER_URL.equals(params.getUrl())));
-        verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(any(), eq(true), eq(INITIAL_URL), eq(null), eq(new String[0]));
-        verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(
-                        any(),
-                        eq(expectedStartNewNavigation),
-                        eq(OTHER_URL),
-                        eq(null),
-                        eq(new String[0]));
-    }
-
-    @Test
-    public void navigateExistingClientMode() {
-        mTabController.setUpInitialTab(null);
-        mTabController.finishNativeInitialization();
-        clearInvocations(env.tabFromFactory);
-        CustomTabIntentDataProvider intentDataProvider =
-                createDataProviderForNewIntent(
-                        OTHER_URL, LaunchHandlerClientMode.NAVIGATE_EXISTING);
-
-        checkLaunchHandler(intentDataProvider, 1, true);
-    }
-
-    @Test
-    public void focusExistingClientMode() {
-        mTabController.setUpInitialTab(null);
-        mTabController.finishNativeInitialization();
-        clearInvocations(env.tabFromFactory);
-        CustomTabIntentDataProvider intentDataProvider =
-                createDataProviderForNewIntent(OTHER_URL, LaunchHandlerClientMode.FOCUS_EXISTING);
-
-        checkLaunchHandler(intentDataProvider, 0, false);
-    }
-
-    @Test
-    public void autoClientMode() {
-        mTabController.setUpInitialTab(null);
-        mTabController.finishNativeInitialization();
-        clearInvocations(env.tabFromFactory);
-        CustomTabIntentDataProvider intentDataProvider =
-                createDataProviderForNewIntent(OTHER_URL, LaunchHandlerClientMode.AUTO);
-
-        // The user agent(browser) decides what works best for the platform. Currently it's
-        // navigate-existing.
-        checkLaunchHandler(intentDataProvider, 1, true);
-    }
-
-    @Test
-    public void wrongClientMode() {
-        mTabController.setUpInitialTab(null);
-        mTabController.finishNativeInitialization();
-        clearInvocations(env.tabFromFactory);
-        CustomTabIntentDataProvider intentDataProvider =
-                createDataProviderForNewIntent(OTHER_URL, 98);
-
-        // Fallback to auto mode as described in the specification.
-        checkLaunchHandler(intentDataProvider, 1, true);
-    }
-
-    @Test
-    public void navigateNewClientMode() {
-        mTabController.setUpInitialTab(null);
-        mTabController.finishNativeInitialization();
-        clearInvocations(env.tabFromFactory);
-        CustomTabIntentDataProvider intentDataProvider =
-                createDataProviderForNewIntent(OTHER_URL, LaunchHandlerClientMode.NAVIGATE_NEW);
-
-        // Treated by IntentHandler as a wrong mode because this mode should be handled earlier by
-        // LaunchIntentDispatcher because it require launching of a new task.
-        checkLaunchHandler(intentDataProvider, 1, true);
-    }
-
-    @Test
-    public void noClientMode() {
-        mTabController.setUpInitialTab(null);
-        mTabController.finishNativeInitialization();
-        clearInvocations(env.tabFromFactory);
-        CustomTabIntentDataProvider intentDataProvider = createDataProviderForNewIntent(OTHER_URL);
-
-        // According to the specification if not specified, the default client_mode value is auto.
-        checkLaunchHandler(intentDataProvider, 1, true);
-    }
-
-    private FileHandlingData createFileHandlingData() {
-        ArrayList<Uri> sampleList = new ArrayList<>(Arrays.asList(Uri.parse(CONTENT_URI)));
-        return new FileHandlingData(sampleList);
-    }
-
-    @Test
-    public void checkFileHandling() {
-        mTabController.setUpInitialTab(null);
-        mTabController.finishNativeInitialization();
-        clearInvocations(env.tabFromFactory);
-        CustomTabIntentDataProvider intentDataProvider = createDataProviderForNewIntent(OTHER_URL);
-        when(intentDataProvider.getFileHandlingData()).thenReturn(createFileHandlingData());
-
-        mIntentHandler.onNewIntent(intentDataProvider);
-        verify(env.tabFromFactory, times(1))
-                .loadUrl(argThat(params -> OTHER_URL.equals(params.getUrl())));
-        verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(any(), eq(true), eq(INITIAL_URL), eq(null), eq(new String[0]));
-        verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(
-                        any(), eq(true), eq(OTHER_URL), eq(null), eq(new String[] {CONTENT_URI}));
-    }
-
-    private CustomTabIntentDataProvider createDataProviderForNewIntent(
-            String url, @LaunchHandlerClientMode.ClientMode int clientMode) {
+    private CustomTabIntentDataProvider createDataProviderForNewIntent() {
         CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
-        when(dataProvider.getUrlToLoad()).thenReturn(url);
+        when(dataProvider.getUrlToLoad()).thenReturn(OTHER_URL);
         when(dataProvider.getSession()).thenReturn(env.session);
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(url));
-
-        when(dataProvider.getLaunchHandlerClientMode()).thenReturn(clientMode);
+        intent.setData(Uri.parse(OTHER_URL));
 
         when(dataProvider.getIntent()).thenReturn(intent);
         return dataProvider;
-    }
-
-    private CustomTabIntentDataProvider createDataProviderForNewIntent(String url) {
-        return createDataProviderForNewIntent(url, LaunchHandlerClientMode.AUTO);
     }
 }

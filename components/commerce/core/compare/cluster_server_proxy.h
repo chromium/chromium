@@ -46,14 +46,14 @@ class ClusterServerProxy {
       GetComparableProductsCallback callback);
 
  protected:
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const GURL& url,
-      const std::string& post_data);
+  virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+  CreateEndpointFetcher(const GURL& url, const std::string& post_data);
 
  private:
-  void HandleCompareResponse(GetComparableProductsCallback callback,
-                             std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-                             std::unique_ptr<EndpointResponse> response);
+  void HandleCompareResponse(
+      GetComparableProductsCallback callback,
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   void OnResponseJsonParsed(GetComparableProductsCallback callback,
                             data_decoder::DataDecoder::ValueOrError result);

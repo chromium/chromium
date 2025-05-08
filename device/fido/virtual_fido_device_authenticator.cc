@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "device/fido/virtual_fido_device_authenticator.h"
+
+#include "crypto/hash.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device_authenticator.h"
@@ -28,7 +30,7 @@ void VirtualFidoDeviceAuthenticator::GetPlatformCredentialInfoForRequest(
   VirtualFidoDevice* virtual_device = static_cast<VirtualFidoDevice*>(device());
   std::vector<DiscoverableCredentialMetadata> credentials;
   std::array<uint8_t, kRpIdHashLength> rp_id_hash =
-      fido_parsing_utils::CreateSHA256Hash(request.rp_id);
+      crypto::hash::Sha256(request.rp_id);
   for (const auto& registration :
        virtual_device->mutable_state()->registrations) {
     if (rp_id_hash == registration.second.application_parameter &&

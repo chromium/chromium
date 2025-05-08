@@ -56,9 +56,8 @@ bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host);
 
 // Validates that the metadata stored in |any_metadata_| is of the same type
 // and is parseable as |T|. Will return metadata if all checks pass.
-template <class T,
-          class = typename std::enable_if<
-              std::is_convertible<T*, google::protobuf::MessageLite*>{}>::type>
+template <class T>
+  requires(std::is_convertible_v<T*, google::protobuf::MessageLite*>)
 std::optional<T> ParsedAnyMetadata(const proto::Any& any_metadata) {
   // Verify type is the same - the Any type URL should be wrapped as:
   // "type.googleapis.com/com.foo.Name".

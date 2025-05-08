@@ -50,6 +50,13 @@ bool CandidatesAreValid(
       return false;
     }
 
+    // Speculation rules tags must contain at least one tag. When no tags are
+    // specified in rules, this should contain std::nullopt that represents a
+    // null tag.
+    if (candidate->tags.empty()) {
+      mojo::ReportBadMessage("SH_EMPTY_TAGS");
+      return false;
+    }
     // All speculation rules tags must be valid tokens and std::nullopt is valid
     // by definition.
     for (auto& tag : candidate->tags) {

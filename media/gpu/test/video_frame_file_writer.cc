@@ -171,7 +171,7 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   // Copies to |frame| in this function so that |video_frame| stays alive until
   // in the end of function.
   auto frame = video_frame;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
     // creates ClientNativePixmapOpaque for SCANOUT_VDA_WRITE buffers which
@@ -194,7 +194,7 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
         frame->format(), frame->storage_type());
     ASSERT_TRUE(video_frame_mapper_) << "Failed to create VideoFrameMapper";
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   switch (output_format_) {
     case OutputFormat::kPNG:
       WriteVideoFramePNG(frame, file_path);
@@ -215,12 +215,12 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
   auto mapped_frame = video_frame;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
     CHECK(video_frame_mapper_);
     mapped_frame = video_frame_mapper_->Map(std::move(video_frame), PROT_READ);
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
   if (!mapped_frame) {
     LOG(ERROR) << "Failed to map video frame";
@@ -252,12 +252,12 @@ void VideoFrameFileWriter::WriteVideoFrameYUV(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
   auto mapped_frame = video_frame;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
     CHECK(video_frame_mapper_);
     mapped_frame = video_frame_mapper_->Map(std::move(video_frame), PROT_READ);
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
   if (!mapped_frame) {
     LOG(ERROR) << "Failed to map video frame";

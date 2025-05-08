@@ -11,10 +11,10 @@
 
 @interface FakeLocationBarSteadyViewConsumer
     : NSObject <LocationBarSteadyViewConsumer>
-@property(nonatomic, strong, readonly) NSString* locationText;
+@property(nonatomic, copy, readonly) NSString* locationText;
 @property(nonatomic, assign, readonly) BOOL clipTail;
 @property(nonatomic, strong, readonly) UIImage* icon;
-@property(nonatomic, strong, readonly) NSString* statusText;
+@property(nonatomic, copy, readonly) NSString* statusText;
 @property(nonatomic, assign, readonly, getter=isLocationShareable)
     BOOL locationShareable;
 @end

@@ -14,7 +14,7 @@ namespace content {
 class NavigationHandle;
 }
 
-constexpr char kBlockTabUnderFormatMessage[] =
+inline constexpr char kBlockTabUnderFormatMessage[] =
     "Chrome stopped this site from navigating to %s, see "
     "https://www.chromestatus.com/feature/5675755719622656 for more details.";
 

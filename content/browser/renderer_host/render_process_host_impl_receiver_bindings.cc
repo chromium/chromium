@@ -31,6 +31,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
+#include "media/gpu/buildflags.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/video_encoder_metrics_provider.mojom.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
@@ -53,6 +54,9 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck
 #include "content/browser/font_service.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "content/browser/media/video_encode_accelerator_provider_launcher.h"
 #endif
 
@@ -337,7 +341,9 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
     ConnectToFontService(std::move(font_receiver));
     return;
   }
+#endif
 
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   if (base::FeatureList::IsEnabled(media::kUseOutOfProcessVideoEncoding)) {
     if (auto r = receiver.As<media::mojom::VideoEncodeAcceleratorProvider>()) {
       if (!video_encode_accelerator_factory_remote_.is_bound()) {
@@ -356,12 +362,14 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
       return;
     }
   }
+#endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (auto r = receiver.As<mojom::ThreadTypeSwitcher>()) {
     child_thread_type_switcher_.Bind(std::move(r));
     return;
   }
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#endif
 
 #if BUILDFLAG(IS_WIN)
   if (auto r = receiver.As<mojom::FontCacheWin>()) {

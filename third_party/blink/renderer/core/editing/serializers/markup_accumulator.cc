@@ -49,6 +49,41 @@
 
 namespace blink {
 
+namespace {
+
+enum class DefaultNsDeclarationMatchType {
+  kLocalName,
+  kNamespaceUri,
+  kBoth,
+};
+
+// Check if the attribute matches a default namespace declaration (xmlns="...").
+//
+// We allow just matching on the local name here because xmlns attributes in
+// HTML documents don't a have namespace URI. Some web tests serialize HTML
+// documents with XMLSerializer, and Firefox has the same behavior.
+bool MatchesDefaultNsDeclaration(const Attribute& attribute,
+                                 DefaultNsDeclarationMatchType match_type) {
+  if (!attribute.Prefix().empty()) {
+    return false;
+  }
+  if (RuntimeEnabledFeatures::
+          XMLSerializerConsistentDefaultNsDeclMatchingEnabled()) {
+    match_type = DefaultNsDeclarationMatchType::kBoth;
+  }
+  if (match_type != DefaultNsDeclarationMatchType::kNamespaceUri &&
+      attribute.LocalName() == g_xmlns_atom) {
+    return true;
+  }
+  if (match_type != DefaultNsDeclarationMatchType::kLocalName &&
+      attribute.NamespaceURI() == xmlns_names::kNamespaceURI) {
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
+
 class MarkupAccumulator::NamespaceContext final {
   USING_FAST_MALLOC(MarkupAccumulator::NamespaceContext);
 
@@ -81,10 +116,8 @@ class MarkupAccumulator::NamespaceContext final {
     // 2. For each attribute attr in element's attributes, in the order they are
     // specified in the element's attribute list:
     for (const auto& attr : element.Attributes()) {
-      // We don't check xmlns namespace of attr here because xmlns attributes in
-      // HTML documents don't have namespace URI. Some web tests serialize
-      // HTML documents with XMLSerializer, and Firefox has the same behavior.
-      if (attr.Prefix().empty() && attr.LocalName() == g_xmlns_atom) {
+      if (MatchesDefaultNsDeclaration(
+              attr, DefaultNsDeclarationMatchType::kLocalName)) {
         // 3.1. If attribute prefix is null, then attr is a default namespace
         // declaration. Set the default namespace attr value to attr's value
         // and stop running these steps, returning to Main to visit the next
@@ -226,8 +259,8 @@ AtomicString MarkupAccumulator::AppendElement(const Element& element) {
 
     for (const auto& attribute : attributes) {
       if (data.ignore_namespace_definition_attribute_ &&
-          attribute.NamespaceURI() == xmlns_names::kNamespaceURI &&
-          attribute.Prefix().empty()) {
+          MatchesDefaultNsDeclaration(
+              attribute, DefaultNsDeclarationMatchType::kNamespaceUri)) {
         // Drop xmlns= only if it's inconsistent with element's namespace.
         // https://github.com/w3c/DOM-Parsing/issues/47
         if (!EqualIgnoringNullity(attribute.Value(), element.namespaceURI()))

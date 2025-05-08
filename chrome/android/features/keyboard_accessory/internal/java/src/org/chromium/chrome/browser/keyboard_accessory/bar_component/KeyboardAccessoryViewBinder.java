@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.StyleRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.TraceEvent;
@@ -61,8 +62,12 @@ class KeyboardAccessoryViewBinder {
             @BarItem.Type int viewType) {
         switch (viewType) {
             case BarItem.Type.SUGGESTION:
+            case BarItem.Type.LOYALTY_CARD_SUGGESTION:
                 return new BarItemChipViewHolder(
-                        parent, keyboarAccessory, uiConfiguration.suggestionDrawableFunction);
+                        parent,
+                        keyboarAccessory,
+                        uiConfiguration.suggestionDrawableFunction,
+                        viewType);
             case BarItem.Type.TAB_LAYOUT:
                 return new SheetOpenerViewHolder(parent);
             case BarItem.Type.ACTION_BUTTON:
@@ -82,8 +87,13 @@ class KeyboardAccessoryViewBinder {
 
     abstract static class BarItemViewHolder<T extends BarItem, V extends View>
             extends RecyclerView.ViewHolder {
+
         BarItemViewHolder(ViewGroup parent, @LayoutRes int layout) {
-            super(LayoutInflater.from(parent.getContext()).inflate(layout, parent, false));
+            this(LayoutInflater.from(parent.getContext()).inflate(layout, parent, false));
+        }
+
+        BarItemViewHolder(View barItem) {
+            super(barItem);
         }
 
         @SuppressWarnings("unchecked")
@@ -114,8 +124,14 @@ class KeyboardAccessoryViewBinder {
         BarItemChipViewHolder(
                 ViewGroup parent,
                 KeyboardAccessoryView keyboardAccessory,
-                Function<AutofillSuggestion, Drawable> suggestionDrawableFunction) {
-            super(parent, selectLayoutForScale(parent.getContext()));
+                Function<AutofillSuggestion, Drawable> suggestionDrawableFunction,
+                @BarItem.Type int barItemType) {
+            super(
+                    new ChipView(
+                            parent.getContext(),
+                            null,
+                            0,
+                            selectStyleForSuggestion(parent.getContext(), barItemType)));
             mRootViewForIPH = parent.getRootView();
             mKeyboardAccessory = keyboardAccessory;
             mSuggestionDrawableFunction = suggestionDrawableFunction;
@@ -243,14 +259,30 @@ class KeyboardAccessoryViewBinder {
             TraceEvent.end("BarItemChipViewHolder#bind");
         }
 
-        @LayoutRes
-        private static int selectLayoutForScale(Context context) {
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)) {
-                return R.layout.keyboard_accessory_suggestion;
+        @StyleRes
+        private static int selectStyleForSuggestion(
+                Context context, @BarItem.Type int barItemType) {
+            final boolean useLargeChips =
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
+                            && context.getResources().getConfiguration().fontScale
+                                    >= LARGE_FONT_THRESHOLD;
+            switch (barItemType) {
+                case BarItem.Type.LOYALTY_CARD_SUGGESTION:
+                    // Loyalty cards suggestions have round icons.
+                    return useLargeChips
+                            ? R.style.KeyboardAccessoryLoyaltyCardLargeChip
+                            : R.style.KeyboardAccessoryLoyaltyCardChip;
+                case BarItem.Type.SUGGESTION:
+                    return useLargeChips
+                            ? R.style.KeyboardAccessoryLargeChip
+                            : R.style.KeyboardAccessoryChip;
+                case BarItem.Type.ACTION_CHIP:
+                case BarItem.Type.TAB_LAYOUT:
+                case BarItem.Type.ACTION_BUTTON:
+                default:
+                    assert false : "Only suggestion chips have custom styles";
+                    return 0;
             }
-            return context.getResources().getConfiguration().fontScale >= LARGE_FONT_THRESHOLD
-                    ? R.layout.keyboard_accessory_suggestion_large
-                    : R.layout.keyboard_accessory_suggestion;
         }
     }
 
@@ -270,7 +302,7 @@ class KeyboardAccessoryViewBinder {
 
     static class BarItemActionChipViewHolder extends BarItemViewHolder<BarItem, ChipView> {
         BarItemActionChipViewHolder(ViewGroup parent) {
-            super(parent, R.layout.keyboard_accessory_suggestion);
+            super(new ChipView(parent.getContext(), null, 0, R.style.KeyboardAccessoryChip));
         }
 
         @Override

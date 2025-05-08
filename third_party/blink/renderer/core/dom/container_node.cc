@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -297,9 +298,9 @@ bool ContainerNode::EnsurePreInsertionValidity(
     if (!ChildTypeAllowed(child->getNodeType())) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kHierarchyRequestError,
-          "Nodes of type '" + child->nodeName() +
-              "' may not be inserted inside nodes of type '" + nodeName() +
-              "'.");
+          WTF::StrCat({"Nodes of type '", child->nodeName(),
+                       "' may not be inserted inside nodes of type '",
+                       nodeName(), "'."}));
       return false;
     }
     return true;
@@ -919,9 +920,10 @@ static bool ShouldMergeCombinedTextAfterRemoval(const Node& old_child) {
 
   // Request to merge combined texts in anonymous block.
   // See http://crbug.com/1233432
-  if (!previous_sibling->IsAnonymousBlock() ||
-      !next_sibling->IsAnonymousBlock())
+  if (!previous_sibling->IsAnonymousBlockFlow() ||
+      !next_sibling->IsAnonymousBlockFlow()) {
     return false;
+  }
 
   if (IsA<LayoutTextCombine>(previous_sibling->SlowLastChild()) &&
       IsA<LayoutTextCombine>(next_sibling->SlowFirstChild())) [[unlikely]] {

@@ -97,6 +97,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // navigation URL. This is an optimization that avoids hopping to the UI
   // thread before starting a request.
   static void SetXrwResultForNavigation(
+      content::OriginTrialsControllerDelegate* delegate,
       const GURL& url,
       blink::mojom::ResourceType resource_type,
       content::FrameTreeNodeId frame_tree_node_id,

@@ -24,6 +24,7 @@ class ProfileContextDelegate : public ContextDelegate {
   std::string GetIdentityName() override;
   std::string GetTemporaryIdentityName() override;
   std::string GetPolicyPref() override;
+  std::string GetLoggingContext() override;
 
  private:
   const raw_ptr<Profile> profile_;

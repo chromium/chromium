@@ -19,6 +19,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "media/base/media_content_type.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,7 +67,8 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
       RequestVisibilityCallback request_visibility_callback) override {}
   void OnAutoPictureInPictureInfoChanged(
       int player_id,
-      std::string_view auto_picture_in_picture_info) override {}
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) override {}
 
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {

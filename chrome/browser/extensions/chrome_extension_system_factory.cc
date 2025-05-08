@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_host_registry.h"
@@ -20,6 +19,10 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#endif
 
 namespace extensions {
 
@@ -56,7 +59,10 @@ ChromeExtensionSystemSharedFactory::ChromeExtensionSystemSharedFactory()
   DependsOn(ExtensionManagementFactory::GetInstance());
   // This depends on ExtensionService, which depends on ExtensionRegistry.
   DependsOn(ExtensionRegistryFactory::GetInstance());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // GlobalErrorService is only used on Win/Mac/Linux.
   DependsOn(GlobalErrorServiceFactory::GetInstance());
+#endif
   DependsOn(InstallVerifierFactory::GetInstance());
   DependsOn(ProcessManagerFactory::GetInstance());
   DependsOn(RendererStartupHelperFactory::GetInstance());

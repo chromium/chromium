@@ -71,12 +71,14 @@ class PageActionModelInterface {
   virtual const std::u16string& GetTooltipText() const = 0;
   virtual const std::u16string& GetAccessibleName() const = 0;
   virtual bool GetActionItemIsShowingBubble() const = 0;
+
+  virtual bool IsEphemeral() const = 0;
 };
 
 // PageActionModel represents the page action's state, scoped to a single tab.
 class PageActionModel : public PageActionModelInterface {
  public:
-  PageActionModel();
+  explicit PageActionModel(bool is_ephemeral = false);
   PageActionModel(const PageActionModel&) = delete;
   PageActionModel& operator=(const PageActionModel&) = delete;
   ~PageActionModel() override;
@@ -130,9 +132,14 @@ class PageActionModel : public PageActionModelInterface {
   const std::u16string& GetTooltipText() const override;
   bool GetActionItemIsShowingBubble() const override;
 
+  bool IsEphemeral() const override;
+
  private:
   // Notifies observers of a model change.
   void NotifyChange();
+
+  // Represents whether this page action will be always visible or not.
+  const bool is_ephemeral_ = false;
 
   // Represents whether the tab this model belongs to is active.
   bool is_tab_active_ = false;
@@ -188,7 +195,9 @@ class PageActionModelFactory {
  public:
   virtual ~PageActionModelFactory() = default;
 
-  virtual std::unique_ptr<PageActionModelInterface> Create(int action_id) = 0;
+  virtual std::unique_ptr<PageActionModelInterface> Create(
+      int action_id,
+      bool is_ephemeral) = 0;
 };
 
 }  // namespace page_actions

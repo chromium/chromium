@@ -153,9 +153,12 @@ public class DownloadUtils {
         if (isTablet) {
             // Download Home shows up as a tab on tablets.
             LoadUrlParams params = new LoadUrlParams(UrlConstants.DOWNLOADS_URL);
-            if (tab == null || !tab.isInitialized()) {
+            if ((ChromeFeatureList.sAndroidNativePagesInNewTab.isEnabled()
+                    && ChromeFeatureList.sAndroidNativePagesInNewTabDownloadsEnabled.getValue())
+                    || tab == null || !tab.isInitialized()) {
                 // Open a new tab, which pops Chrome into the foreground.
-                ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(false);
+                ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(
+                        /* incognito= */ OtrProfileId.isOffTheRecord(otrProfileId));
                 delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
             } else {
                 // Download Home shows up inside an existing tab, but only if the last Activity was

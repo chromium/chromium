@@ -372,8 +372,11 @@ goog.fx.DragListGroup.prototype.addDragList = function(
   'use strict';
   goog.asserts.assert(!this.isInitialized_);
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   dragListElement.dlgGrowthDirection_ = growthDirection;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   dragListElement.dlgDragHoverClass_ = opt_dragHoverClass;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   dragListElement.dlgDragPermission =
       opt_dragListPermission || goog.fx.DragListPermission.DRAG_OUT_AND_DROP;
   this.dragLists_.push(dragListElement);
@@ -510,7 +513,9 @@ goog.fx.DragListGroup.prototype.disposeInternal = function() {
     var dragList = this.dragLists_[i];
     // Note: IE doesn't allow 'delete' for fields on HTML elements (because
     // they're not real JS objects in IE), so we just set them to undefined.
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     dragList.dlgGrowthDirection_ = undefined;
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     dragList.dlgDragHoverClass_ = undefined;
   }
 
@@ -548,12 +553,16 @@ goog.fx.DragListGroup.prototype.recacheListAndItemBounds_ = function(
   'use strict';
   for (var i = 0, n = this.dragLists_.length; i < n; i++) {
     var dragList = this.dragLists_[i];
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     dragList.dlgBounds_ = goog.style.getBounds(dragList);
   }
 
   for (var i = 0, n = this.dragItems_.length; i < n; i++) {
     var dragItem = this.dragItems_[i];
     if (dragItem != currDragItem) {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       dragItem.dlgBounds_ = goog.style.getBounds(dragItem);
     }
   }
@@ -603,6 +612,7 @@ goog.fx.DragListGroup.prototype.listenForDragEvents = function(dragItem) {
  * Handles mouse and touch events which may start a drag action.
  * @param {!goog.events.BrowserEvent} e MOUSEDOWN or TOUCHSTART event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.fx.DragListGroup.prototype.handlePotentialDragStart_ = function(e) {
   'use strict';
@@ -731,7 +741,9 @@ goog.fx.DragListGroup.prototype.handleDragStart_ = function(e) {
 
   // Precompute distances from top-left corner to center for efficiency.
   var draggerElSize = goog.style.getSize(this.draggerEl_);
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.draggerEl_.halfWidth = draggerElSize.width / 2;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.draggerEl_.halfHeight = draggerElSize.height / 2;
 
   this.maybeUpdateDraggerDeltaToPlaceElUnderCursor_(e);
@@ -806,11 +818,13 @@ goog.fx.DragListGroup.prototype.maybeUpdateDraggerDeltaToPlaceElUnderCursor_ =
  * @param {goog.fx.DragEvent} dragEvent Event object fired by the dragger.
  * @return {boolean} The return value for the event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.fx.DragListGroup.prototype.handleDragMove_ = function(dragEvent) {
   'use strict';
   // Compute the center of the dragger element (i.e. the cloned drag item).
   var draggerElPos = goog.style.getPageOffset(this.draggerEl_);
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var draggerElCenter = new goog.math.Coordinate(
       draggerElPos.x + this.draggerEl_.halfWidth,
       draggerElPos.y + this.draggerEl_.halfHeight);
@@ -902,9 +916,11 @@ goog.fx.DragListGroup.prototype.cleanup_ = function(opt_e) {
   // Note: IE doesn't allow 'delete' for fields on HTML elements (because
   // they're not real JS objects in IE), so we just set them to null.
   for (var i = 0, n = this.dragLists_.length; i < n; i++) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.dragLists_[i].dlgBounds_ = null;
   }
   for (var i = 0, n = this.dragItems_.length; i < n; i++) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.dragItems_[i].dlgBounds_ = null;
   }
 };
@@ -952,6 +968,7 @@ goog.fx.DragListGroup.prototype.handleDragEnd_ = function(dragEvent) {
 /**
  * Cleans up DOM changes that are made by the {@code handleDrag*} methods.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.fx.DragListGroup.prototype.cleanupDragDom_ = function() {
   'use strict';
@@ -1070,6 +1087,7 @@ goog.fx.DragListGroup.prototype.handleDragItemHandleMouseout_ = function(e) {
  * @return {Element} If currently hovering over a drag list, returns the drag
  *     list element. Else returns null.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.fx.DragListGroup.prototype.getHoverDragList_ = function(draggerElCenter) {
   'use strict';
@@ -1170,6 +1188,8 @@ goog.fx.DragListGroup.prototype.insertCurrHoverItem = function() {
  *     after the current position of the dragger element. If all items in the
  *     list should come before the current drag item, then returns null.
  * @private
+ * @suppress {strictMissingProperties, strictPrimitiveOperators} Added to
+ * tighten compiler checks
  */
 goog.fx.DragListGroup.prototype.getHoverNextItem_ = function(
     hoverList, draggerElCenter) {
@@ -1287,6 +1307,7 @@ goog.fx.DragListGroup.prototype.getHoverNextItem_ = function(
  */
 goog.fx.DragListGroup.verticalDistanceFromItem_ = function(item, target) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var itemBounds = item.dlgBounds_;
   var itemCenterY = itemBounds.top + (itemBounds.height - 1) / 2;
   return Math.abs(target.y - itemCenterY);

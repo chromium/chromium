@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -29,8 +28,9 @@ import java.util.Set;
  * icon fetching, reader mode url redirecting, etc. This class should serve as the single class for
  * the UI to acquire data from the backend.
  */
+@NullMarked
 public class BookmarkModel extends BookmarkBridge {
-    private static BookmarkModel sInstanceForTesting;
+    private static @Nullable BookmarkModel sInstanceForTesting;
 
     /** Set an instance for testing. */
     public static void setInstanceForTesting(BookmarkModel bookmarkModel) {
@@ -40,7 +40,7 @@ public class BookmarkModel extends BookmarkBridge {
 
     /** Sets a pre-configured runnable which loads the parter bookmarks shim. */
     public static void setPartnerBookmarkIteratorProvider(
-            @NonNull PartnerBookmarkIteratorProvider provider) {
+            PartnerBookmarkIteratorProvider provider) {
         BookmarkBridge.setPartnerBookmarkIteratorProvider(provider);
     }
 
@@ -74,7 +74,7 @@ public class BookmarkModel extends BookmarkBridge {
      * @param profile A profile for which the bookmark model is provided.
      * @return An instance of the bookmark model.
      */
-    public static final BookmarkModel getForProfile(@NonNull Profile profile) {
+    public static final BookmarkModel getForProfile(Profile profile) {
         assert profile != null;
         if (sInstanceForTesting != null) {
             return sInstanceForTesting;
@@ -162,7 +162,7 @@ public class BookmarkModel extends BookmarkBridge {
     /**
      * @return The id of the default folder to view bookmarks.
      */
-    public BookmarkId getDefaultFolderViewLocation() {
+    public @Nullable BookmarkId getDefaultFolderViewLocation() {
         return getRootFolderId();
     }
 
@@ -186,7 +186,7 @@ public class BookmarkModel extends BookmarkBridge {
     }
 
     /** Returns whether the given folder is a reading list folder. */
-    public boolean isReadingListFolder(BookmarkId folderId) {
+    public boolean isReadingListFolder(@Nullable BookmarkId folderId) {
         if (folderId == null) {
             return false;
         }

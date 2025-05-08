@@ -247,7 +247,7 @@ BASE_FEATURE(kNtpMostRelevantTabResumptionAllowFaviconServerFallback,
 // favicon if there are none locally available.
 BASE_FEATURE(kNtpMostRelevantTabResumptionModuleFallbackToHost,
              "NtpMostRelevantTabResumptionModuleFallbackToHost",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNtpTabResumptionModuleCategories,
              "NtpTabResumptionModuleCategories",

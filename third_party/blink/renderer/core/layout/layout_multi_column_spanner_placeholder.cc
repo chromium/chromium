@@ -102,10 +102,10 @@ void LayoutMultiColumnSpannerPlaceholder::WillBeRemovedFromTree() {
   LayoutBox::WillBeRemovedFromTree();
 }
 
-DeprecatedLayoutPoint LayoutMultiColumnSpannerPlaceholder::LocationInternal()
-    const {
+DeprecatedLayoutPoint
+LayoutMultiColumnSpannerPlaceholder::DeprecatedLocationInternal() const {
   NOT_DESTROYED();
-  return layout_object_in_flow_thread_->LocationInternal();
+  return layout_object_in_flow_thread_->DeprecatedLocationInternal();
 }
 
 PhysicalSize LayoutMultiColumnSpannerPlaceholder::Size() const {

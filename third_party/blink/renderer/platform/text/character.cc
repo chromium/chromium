@@ -107,10 +107,18 @@ bool Character::IsHangulSlow(UChar32 character) {
   return GetProperty(character, CharacterProperty::kIsHangul);
 }
 
+// static
 HanKerningCharType Character::GetHanKerningCharType(UChar32 character) {
   return static_cast<HanKerningCharType>(
       GetProperty(character, CharacterProperty::kHanKerningShiftedMask) >>
       static_cast<unsigned>(CharacterProperty::kHanKerningShift));
+}
+
+// static
+EastAsianSpacingType Character::GetEastAsianSpacingType(UChar32 character) {
+  return static_cast<EastAsianSpacingType>(
+      GetProperty(character, CharacterProperty::kEastAsianSpacingShiftedMask) >>
+      static_cast<unsigned>(CharacterProperty::kEastAsianSpacingShift));
 }
 
 bool Character::MaybeHanKerningOpenSlow(UChar32 ch) {

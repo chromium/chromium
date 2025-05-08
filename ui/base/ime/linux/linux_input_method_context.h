@@ -16,6 +16,7 @@
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
 
 namespace gfx {
@@ -85,6 +86,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
 class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextDelegate {
  public:
   virtual ~LinuxInputMethodContextDelegate() {}
+
+  // Returns the key for the window containing the input method.
+  virtual gfx::AcceleratedWidget GetClientWindowKey() const = 0;
 
   // Commits the |text| to the text input client.
   virtual void OnCommit(const std::u16string& text) = 0;

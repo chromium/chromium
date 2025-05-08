@@ -1,5 +1,5 @@
-use crate::{regex_to_lark, HashMap};
-use anyhow::{anyhow, bail, Result};
+use crate::{regex_to_lark, HashMap, JsonCompileOptions};
+use anyhow::{anyhow, bail, ensure, Result};
 use derivre::RegexAst;
 use indexmap::{IndexMap, IndexSet};
 use serde_json::Value;
@@ -8,12 +8,12 @@ use std::mem;
 use super::context::{Context, Draft, PreContext, ResourceRef};
 use super::formats::lookup_format;
 use super::numeric::Decimal;
-use super::RetrieveWrapper;
+use super::shared_context::BuiltSchema;
 
 const TYPES: [&str; 6] = ["null", "boolean", "number", "string", "array", "object"];
 
 // Keywords that are implemented in this module
-pub(crate) const IMPLEMENTED: [&str; 24] = [
+pub(crate) const IMPLEMENTED: [&str; 27] = [
     // Core
     "anyOf",
     "oneOf",
@@ -31,7 +31,10 @@ pub(crate) const IMPLEMENTED: [&str; 24] = [
     // Object
     "properties",
     "additionalProperties",
+    "patternProperties",
     "required",
+    "minProperties",
+    "maxProperties",
     // String
     "minLength",
     "maxLength",
@@ -78,60 +81,127 @@ fn limited_str(node: &Value) -> String {
 #[derive(Debug, Clone)]
 pub enum Schema {
     Any,
-    Unsatisfiable {
-        reason: String,
-    },
+    Unsatisfiable(String),
     Null,
-    Boolean,
-    Number {
-        minimum: Option<f64>,
-        maximum: Option<f64>,
-        exclusive_minimum: Option<f64>,
-        exclusive_maximum: Option<f64>,
-        multiple_of: Option<Decimal>,
-        integer: bool,
-    },
-    String {
-        min_length: u64,
-        max_length: Option<u64>,
-        regex: Option<RegexAst>,
-    },
-    Array {
-        min_items: u64,
-        max_items: Option<u64>,
-        prefix_items: Vec<Schema>,
-        items: Option<Box<Schema>>,
-    },
-    Object {
-        properties: IndexMap<String, Schema>,
-        additional_properties: Option<Box<Schema>>,
-        required: IndexSet<String>,
-    },
-    LiteralBool {
-        value: bool,
-    },
-    AnyOf {
-        options: Vec<Schema>,
-    },
-    OneOf {
-        options: Vec<Schema>,
-    },
-    Ref {
-        uri: String,
-    },
+    Number(NumberSchema),
+    String(StringSchema),
+    Array(ArraySchema),
+    Object(ObjectSchema),
+    Boolean(Option<bool>),
+    AnyOf(Vec<Schema>),
+    OneOf(Vec<Schema>),
+    Ref(String),
 }
 
-impl Schema {
-    pub fn false_schema() -> Schema {
-        Schema::Unsatisfiable {
-            reason: "schema is false".to_string(),
+#[derive(Debug, Clone, Default)]
+pub struct NumberSchema {
+    pub minimum: Option<f64>,
+    pub maximum: Option<f64>,
+    pub exclusive_minimum: Option<f64>,
+    pub exclusive_maximum: Option<f64>,
+    pub integer: bool,
+    pub multiple_of: Option<Decimal>,
+}
+
+impl NumberSchema {
+    pub fn get_minimum(&self) -> (Option<f64>, bool) {
+        match (self.minimum, self.exclusive_minimum) {
+            (Some(min), Some(xmin)) => {
+                if xmin >= min {
+                    (Some(xmin), true)
+                } else {
+                    (Some(min), false)
+                }
+            }
+            (Some(min), None) => (Some(min), false),
+            (None, Some(xmin)) => (Some(xmin), true),
+            (None, None) => (None, false),
         }
     }
 
-    /// Shallowly normalize the schema, removing any unnecessary nesting or empty options.
-    fn normalize(self) -> Schema {
+    pub fn get_maximum(&self) -> (Option<f64>, bool) {
+        match (self.maximum, self.exclusive_maximum) {
+            (Some(max), Some(xmax)) => {
+                if xmax <= max {
+                    (Some(xmax), true)
+                } else {
+                    (Some(max), false)
+                }
+            }
+            (Some(max), None) => (Some(max), false),
+            (None, Some(xmax)) => (Some(xmax), true),
+            (None, None) => (None, false),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct StringSchema {
+    pub min_length: usize,
+    pub max_length: Option<usize>,
+    pub regex: Option<RegexAst>,
+}
+
+#[derive(Debug, Clone)]
+pub struct ArraySchema {
+    pub min_items: usize,
+    pub max_items: Option<usize>,
+    pub prefix_items: Vec<Schema>,
+    pub items: Option<Box<Schema>>,
+}
+
+#[derive(Debug, Clone)]
+pub struct ObjectSchema {
+    pub properties: IndexMap<String, Schema>,
+    pub pattern_properties: IndexMap<String, Schema>,
+    pub additional_properties: Option<Box<Schema>>,
+    pub required: IndexSet<String>,
+    pub min_properties: usize,
+    pub max_properties: Option<usize>,
+}
+
+pub trait OptSchemaExt {
+    fn schema(&self) -> Schema;
+    fn schema_ref(&self) -> &Schema;
+}
+
+impl OptSchemaExt for Option<Box<Schema>> {
+    fn schema(&self) -> Schema {
         match self {
-            Schema::AnyOf { options } => {
+            Some(schema) => schema.as_ref().clone(),
+            None => Schema::Any,
+        }
+    }
+
+    fn schema_ref(&self) -> &Schema {
+        match self {
+            Some(schema) => schema.as_ref(),
+            None => &Schema::Any,
+        }
+    }
+}
+
+impl Schema {
+    pub fn unsat(reason: &str) -> Schema {
+        Schema::Unsatisfiable(reason.to_string())
+    }
+
+    pub fn false_schema() -> Schema {
+        Self::unsat("schema is false")
+    }
+
+    pub fn any_box() -> Option<Box<Schema>> {
+        Some(Box::new(Schema::Any))
+    }
+
+    pub fn is_unsat(&self) -> bool {
+        matches!(self, Schema::Unsatisfiable(_))
+    }
+
+    /// Shallowly normalize the schema, removing any unnecessary nesting or empty options.
+    fn normalize(self, ctx: &Context) -> Schema {
+        match self {
+            Schema::AnyOf(options) => {
                 let mut unsats = Vec::new();
                 let mut valid = Vec::new();
                 for option in options.into_iter() {
@@ -139,10 +209,8 @@ impl Schema {
                         Schema::Any => {
                             return Schema::Any;
                         }
-                        Schema::Unsatisfiable { reason } => {
-                            unsats.push(Schema::Unsatisfiable { reason })
-                        }
-                        Schema::AnyOf { options: nested } => valid.extend(nested),
+                        Schema::Unsatisfiable(reason) => unsats.push(Schema::Unsatisfiable(reason)),
+                        Schema::AnyOf(nested) => valid.extend(nested),
                         other => valid.push(other),
                     }
                 }
@@ -152,26 +220,22 @@ impl Schema {
                         return unsat;
                     }
                     // We must not have had any schemas to begin with
-                    return Schema::Unsatisfiable {
-                        reason: "anyOf is empty".to_string(),
-                    };
+                    return Schema::unsat("anyOf is empty");
                 }
                 if valid.len() == 1 {
                     // Unwrap singleton
                     return valid.swap_remove(0);
                 }
-                Schema::AnyOf { options: valid }
+                Schema::AnyOf(valid)
             }
-            Schema::OneOf { options } => {
+            Schema::OneOf(options) => {
                 let mut unsats = Vec::new();
                 let mut valid = Vec::new();
                 for option in options.into_iter() {
                     match option {
-                        Schema::Unsatisfiable { reason } => {
-                            unsats.push(Schema::Unsatisfiable { reason })
-                        }
+                        Schema::Unsatisfiable(reason) => unsats.push(Schema::Unsatisfiable(reason)),
                         // Flatten nested oneOfs: (A⊕B)⊕(C⊕D) = A⊕B⊕C⊕D
-                        Schema::OneOf { options: nested } => valid.extend(nested),
+                        Schema::OneOf(nested) => valid.extend(nested),
                         other => valid.push(other),
                     }
                 }
@@ -181,9 +245,7 @@ impl Schema {
                         return unsat;
                     }
                     // We must not have had any schemas to begin with
-                    return Schema::Unsatisfiable {
-                        reason: "oneOf is empty".to_string(),
-                    };
+                    return Schema::unsat("oneOf is empty");
                 }
                 if valid.len() == 1 {
                     // Unwrap singleton
@@ -193,11 +255,11 @@ impl Schema {
                     valid
                         .iter()
                         .skip(i + 1) // "upper diagonal"
-                        .all(|y| x.is_verifiably_disjoint_from(y))
+                        .all(|y| x.is_verifiably_disjoint_from(y, ctx))
                 }) {
-                    Schema::AnyOf { options: valid }
+                    Schema::AnyOf(valid)
                 } else {
-                    Schema::OneOf { options: valid }
+                    Schema::OneOf(valid)
                 }
             }
             other_schema => other_schema,
@@ -214,242 +276,204 @@ impl Schema {
         let merged = match (self, other) {
             (Schema::Any, schema1) => schema1,
             (schema0, Schema::Any) => schema0,
-            (Schema::Unsatisfiable { reason }, _) => Schema::Unsatisfiable { reason },
-            (_, Schema::Unsatisfiable { reason }) => Schema::Unsatisfiable { reason },
-            (Schema::Ref { uri }, schema1) => {
+            (Schema::Unsatisfiable(reason), _) => Schema::Unsatisfiable(reason),
+            (_, Schema::Unsatisfiable(reason)) => Schema::Unsatisfiable(reason),
+            (Schema::Ref(uri), schema1) => {
                 intersect_ref(ctx, &uri, schema1, true, stack_level + 1)?
             }
-            (schema0, Schema::Ref { uri }) => {
+            (schema0, Schema::Ref(uri)) => {
                 intersect_ref(ctx, &uri, schema0, false, stack_level + 1)?
             }
-            (Schema::OneOf { options }, schema1) => Schema::OneOf {
-                options: options
+            (Schema::OneOf(options), schema1) => Schema::OneOf(
+                options
                     .into_iter()
                     .map(|opt| opt.intersect(schema1.clone(), ctx, stack_level + 1))
                     .collect::<Result<Vec<_>>>()?,
-            },
-            (schema0, Schema::OneOf { options }) => Schema::OneOf {
-                options: options
+            ),
+
+            (schema0, Schema::OneOf(options)) => Schema::OneOf(
+                options
                     .into_iter()
                     .map(|opt| schema0.clone().intersect(opt, ctx, stack_level + 1))
                     .collect::<Result<Vec<_>>>()?,
-            },
-            (Schema::AnyOf { options }, schema1) => Schema::AnyOf {
-                options: options
+            ),
+            (Schema::AnyOf(options), schema1) => Schema::AnyOf(
+                options
                     .into_iter()
                     .map(|opt| opt.intersect(schema1.clone(), ctx, stack_level + 1))
                     .collect::<Result<Vec<_>>>()?,
-            },
-            (schema0, Schema::AnyOf { options }) => Schema::AnyOf {
-                options: options
+            ),
+            (schema0, Schema::AnyOf(options)) => Schema::AnyOf(
+                options
                     .into_iter()
                     .map(|opt| schema0.clone().intersect(opt, ctx, stack_level + 1))
                     .collect::<Result<Vec<_>>>()?,
-            },
+            ),
             (Schema::Null, Schema::Null) => Schema::Null,
-            (Schema::Boolean, Schema::Boolean) => Schema::Boolean,
-            (Schema::Boolean, Schema::LiteralBool { value }) => Schema::LiteralBool { value },
-            (Schema::LiteralBool { value }, Schema::Boolean) => Schema::LiteralBool { value },
-            (Schema::LiteralBool { value: value1 }, Schema::LiteralBool { value: value2 }) => {
-                if value1 == value2 {
-                    Schema::LiteralBool { value: value1 }
+            (Schema::Boolean(value1), Schema::Boolean(value2)) => {
+                if value1 == value2 || value2.is_none() {
+                    Schema::Boolean(value1)
+                } else if value1.is_none() {
+                    Schema::Boolean(value2)
                 } else {
-                    Schema::Unsatisfiable {
-                        reason: "incompatible boolean values".to_string(),
-                    }
+                    Schema::unsat("incompatible boolean values")
                 }
             }
-            (
-                Schema::Number {
-                    minimum: min1,
-                    maximum: max1,
-                    exclusive_minimum: emin1,
-                    exclusive_maximum: emax1,
-                    integer: int1,
-                    multiple_of: mult1,
-                },
-                Schema::Number {
-                    minimum: min2,
-                    maximum: max2,
-                    exclusive_minimum: emin2,
-                    exclusive_maximum: emax2,
-                    integer: int2,
-                    multiple_of: mult2,
-                },
-            ) => Schema::Number {
-                minimum: opt_max(min1, min2),
-                maximum: opt_min(max1, max2),
-                exclusive_minimum: opt_max(emin1, emin2),
-                exclusive_maximum: opt_min(emax1, emax2),
-                integer: int1 || int2,
-                multiple_of: match (mult1, mult2) {
+
+            (Schema::Number(n1), Schema::Number(n2)) => Schema::Number(NumberSchema {
+                minimum: opt_max(n1.minimum, n2.minimum),
+                maximum: opt_min(n1.maximum, n2.maximum),
+                exclusive_minimum: opt_max(n1.exclusive_minimum, n2.exclusive_minimum),
+                exclusive_maximum: opt_min(n1.exclusive_maximum, n2.exclusive_maximum),
+                integer: n1.integer || n2.integer,
+                multiple_of: match (n1.multiple_of, n2.multiple_of) {
                     (None, None) => None,
-                    (None, Some(mult)) => Some(mult),
-                    (Some(mult), None) => Some(mult),
-                    (Some(mult1), Some(mult2)) => Some(mult1.lcm(&mult2)),
+                    (None, Some(m)) | (Some(m), None) => Some(m),
+                    (Some(m1), Some(m2)) => Some(m1.lcm(&m2)),
                 },
-            },
-            (
-                Schema::String {
-                    min_length: min1,
-                    max_length: max1,
-                    regex: r1,
-                },
-                Schema::String {
-                    min_length: min2,
-                    max_length: max2,
-                    regex: r2,
-                },
-            ) => Schema::String {
-                min_length: min1.max(min2),
-                max_length: opt_min(max1, max2),
-                regex: match (r1, r2) {
+            }),
+
+            (Schema::String(s1), Schema::String(s2)) => Schema::String(StringSchema {
+                min_length: s1.min_length.max(s2.min_length),
+                max_length: opt_min(s1.max_length, s2.max_length),
+                regex: match (s1.regex, s2.regex) {
                     (None, None) => None,
-                    (None, Some(r)) => Some(r),
-                    (Some(r), None) => Some(r),
+                    (None, Some(r)) | (Some(r), None) => Some(r),
                     (Some(r1), Some(r2)) => Some(RegexAst::And(vec![r1, r2])),
                 },
-            },
-            (
-                Schema::Array {
-                    min_items: min1,
-                    max_items: max1,
-                    prefix_items: mut prefix1,
-                    items: items1,
-                },
-                Schema::Array {
-                    min_items: min2,
-                    max_items: max2,
-                    prefix_items: mut prefix2,
-                    items: items2,
-                },
-            ) => Schema::Array {
-                min_items: min1.max(min2),
-                max_items: opt_min(max1, max2),
+            }),
+
+            (Schema::Array(mut a1), Schema::Array(mut a2)) => Schema::Array(ArraySchema {
+                min_items: a1.min_items.max(a2.min_items),
+                max_items: opt_min(a1.max_items, a2.max_items),
                 prefix_items: {
-                    let len = prefix1.len().max(prefix2.len());
-                    prefix1.resize_with(len, || items1.as_deref().cloned().unwrap_or(Schema::Any));
-                    prefix2.resize_with(len, || items2.as_deref().cloned().unwrap_or(Schema::Any));
-                    prefix1
+                    let len = a1.prefix_items.len().max(a2.prefix_items.len());
+                    a1.prefix_items.resize_with(len, || a1.items.schema());
+                    a2.prefix_items.resize_with(len, || a2.items.schema());
+                    a1.prefix_items
                         .into_iter()
-                        .zip(prefix2.into_iter())
+                        .zip(a2.prefix_items.into_iter())
                         .map(|(item1, item2)| item1.intersect(item2, ctx, stack_level + 1))
                         .collect::<Result<Vec<_>>>()?
                 },
-                items: match (items1, items2) {
+                items: match (a1.items, a2.items) {
                     (None, None) => None,
-                    (None, Some(item)) => Some(item),
-                    (Some(item), None) => Some(item),
-                    (Some(item1), Some(item2)) => Some(Box::new((*item1).intersect(
-                        *item2,
-                        ctx,
-                        stack_level + 1,
-                    )?)),
+                    (None, Some(item)) | (Some(item), None) => Some(item),
+                    (Some(item1), Some(item2)) => {
+                        Some(Box::new(item1.intersect(*item2, ctx, stack_level + 1)?))
+                    }
                 },
-            },
-            (
-                Schema::Object {
-                    properties: props1,
-                    additional_properties: add1,
-                    required: req1,
-                },
-                Schema::Object {
-                    properties: mut props2,
-                    additional_properties: add2,
-                    required: req2,
-                },
-            ) => {
-                let mut new_props = IndexMap::new();
-                for (key, prop1) in props1.into_iter() {
-                    let prop2 = props2
-                        .shift_remove(&key)
-                        .or_else(|| add2.as_deref().cloned())
-                        .unwrap_or(Schema::Any);
-                    new_props.insert(key, prop1.intersect(prop2, ctx, stack_level + 1)?);
+            }),
+
+            (Schema::Object(mut o1), Schema::Object(mut o2)) => {
+                let mut properties = IndexMap::new();
+                for (key, prop1) in std::mem::take(&mut o1.properties).into_iter() {
+                    let prop2 = ctx.property_schema(&o2, &key)?;
+                    properties.insert(key, prop1.intersect(prop2.clone(), ctx, stack_level + 1)?);
                 }
-                for (key, prop2) in props2.into_iter() {
-                    let prop1 = add1.as_deref().cloned().unwrap_or(Schema::Any);
-                    new_props.insert(key, prop1.intersect(prop2, ctx, stack_level + 1)?);
+                for (key, prop2) in o2.properties.into_iter() {
+                    if properties.contains_key(&key) {
+                        continue;
+                    }
+                    let prop1 = ctx.property_schema(&o1, &key)?;
+                    properties.insert(key, prop1.clone().intersect(prop2, ctx, stack_level + 1)?);
                 }
-                let mut required = req1;
-                required.extend(req2);
-                Schema::Object {
-                    properties: new_props,
-                    additional_properties: match (add1, add2) {
+                let mut required = o1.required;
+                required.extend(o2.required);
+
+                let mut pattern_properties = IndexMap::new();
+                for (key, prop1) in o1.pattern_properties.into_iter() {
+                    if let Some(prop2) = o2.pattern_properties.get_mut(&key) {
+                        let prop2 = std::mem::replace(prop2, Schema::Null);
+                        pattern_properties.insert(
+                            key.clone(),
+                            prop1.intersect(prop2.clone(), ctx, stack_level + 1)?,
+                        );
+                    } else {
+                        pattern_properties.insert(key.clone(), prop1);
+                    }
+                }
+                for (key, prop2) in o2.pattern_properties.into_iter() {
+                    if pattern_properties.contains_key(&key) {
+                        continue;
+                    }
+                    pattern_properties.insert(key.clone(), prop2);
+                }
+
+                let keys = pattern_properties.keys().collect::<Vec<_>>();
+                if !keys.is_empty() {
+                    ctx.check_disjoint_pattern_properties(&keys)?;
+                }
+
+                let additional_properties =
+                    match (o1.additional_properties, o2.additional_properties) {
                         (None, None) => None,
-                        (None, Some(add2)) => Some(add2),
-                        (Some(add1), None) => Some(add1),
-                        (Some(add1), Some(add2)) => {
-                            Some(Box::new((*add1).intersect(*add2, ctx, stack_level + 1)?))
+                        (None, Some(p)) | (Some(p), None) => Some(p),
+                        (Some(p1), Some(p2)) => {
+                            Some(Box::new((*p1).intersect(*p2, ctx, stack_level + 1)?))
                         }
-                    },
+                    };
+
+                let min_properties = o1.min_properties.max(o2.min_properties);
+                let max_properties = opt_min(o1.max_properties, o2.max_properties);
+
+                mk_object_schema(ObjectSchema {
+                    properties,
+                    pattern_properties,
+                    additional_properties,
                     required,
-                }
+                    min_properties,
+                    max_properties,
+                })
             }
+
             //TODO: get types for error message
-            _ => Schema::Unsatisfiable {
-                reason: "incompatible types".to_string(),
-            },
+            _ => Schema::unsat("incompatible types"),
         };
-        Ok(merged.normalize())
+        Ok(merged.normalize(ctx))
     }
 
-    fn is_verifiably_disjoint_from(&self, other: &Schema) -> bool {
+    fn is_verifiably_disjoint_from(&self, other: &Schema, ctx: &Context) -> bool {
         match (self, other) {
-            (Schema::Unsatisfiable { .. }, _) => true,
-            (_, Schema::Unsatisfiable { .. }) => true,
+            (Schema::Unsatisfiable(_), _) => true,
+            (_, Schema::Unsatisfiable(_)) => true,
             (Schema::Any, _) => false,
             (_, Schema::Any) => false,
-            (Schema::Boolean, Schema::LiteralBool { .. }) => false,
-            (Schema::LiteralBool { .. }, Schema::Boolean) => false,
-            (Schema::Ref { .. }, _) => false, // TODO: could resolve
-            (_, Schema::Ref { .. }) => false, // TODO: could resolve
-            (Schema::LiteralBool { value: value1 }, Schema::LiteralBool { value: value2 }) => {
-                value1 != value2
+            (Schema::Ref(_), _) => false, // TODO: could resolve
+            (_, Schema::Ref(_)) => false, // TODO: could resolve
+            (Schema::Boolean(value1), Schema::Boolean(value2)) => {
+                value1.is_some() && value2.is_some() && value1 != value2
             }
-            (Schema::AnyOf { options }, _) => options
+            (Schema::AnyOf(options), _) => options
                 .iter()
-                .all(|opt| opt.is_verifiably_disjoint_from(other)),
-            (_, Schema::AnyOf { options }) => options
+                .all(|opt| opt.is_verifiably_disjoint_from(other, ctx)),
+            (_, Schema::AnyOf(options)) => options
                 .iter()
-                .all(|opt| self.is_verifiably_disjoint_from(opt)),
-            (Schema::OneOf { options }, _) => options
+                .all(|opt| self.is_verifiably_disjoint_from(opt, ctx)),
+            (Schema::OneOf(options), _) => options
                 .iter()
-                .all(|opt| opt.is_verifiably_disjoint_from(other)),
-            (_, Schema::OneOf { options }) => options
+                .all(|opt| opt.is_verifiably_disjoint_from(other, ctx)),
+            (_, Schema::OneOf(options)) => options
                 .iter()
-                .all(|opt| self.is_verifiably_disjoint_from(opt)),
+                .all(|opt| self.is_verifiably_disjoint_from(opt, ctx)),
             // TODO: could actually compile the regexes and check for overlap
             (
-                Schema::String {
+                Schema::String(StringSchema {
                     regex: Some(RegexAst::Literal(lit1)),
                     ..
-                },
-                Schema::String {
+                }),
+                Schema::String(StringSchema {
                     regex: Some(RegexAst::Literal(lit2)),
                     ..
-                },
+                }),
             ) => lit1 != lit2,
-            (
-                Schema::Object {
-                    properties: props1,
-                    required: req1,
-                    additional_properties: add1,
-                },
-                Schema::Object {
-                    properties: props2,
-                    required: req2,
-                    additional_properties: add2,
-                },
-            ) => req1.union(req2).any(|key| {
-                let prop1 = props1
-                    .get(key)
-                    .unwrap_or(add1.as_deref().unwrap_or(&Schema::Any));
-                let prop2 = props2
-                    .get(key)
-                    .unwrap_or(add2.as_deref().unwrap_or(&Schema::Any));
-                prop1.is_verifiably_disjoint_from(prop2)
-            }),
+            (Schema::Object(o1), Schema::Object(o2)) => {
+                o1.required.union(&o2.required).any(|key| {
+                    let prop1 = ctx.property_schema(o1, key).unwrap_or(&Schema::Any);
+                    let prop2 = ctx.property_schema(o2, key).unwrap_or(&Schema::Any);
+                    prop1.is_verifiably_disjoint_from(prop2, ctx)
+                })
+            }
             _ => {
                 // Except for in the cases above, it should suffice to check that the types are different
                 mem::discriminant(self) != mem::discriminant(other)
@@ -474,7 +498,7 @@ impl Schema {
                     .iter()
                     .map(compile_const)
                     .collect::<Result<Vec<_>>>()?;
-                result = result.intersect(Schema::AnyOf { options }, ctx, 0)?;
+                result = result.intersect(Schema::AnyOf(options), ctx, 0)?;
             }
             "allOf" => {
                 let all_of = v
@@ -493,7 +517,7 @@ impl Schema {
                     .iter()
                     .map(|value| compile_resource(ctx, ctx.as_resource_ref(value)))
                     .collect::<Result<Vec<_>>>()?;
-                result = result.intersect(Schema::AnyOf { options }, ctx, 0)?;
+                result = result.intersect(Schema::AnyOf(options), ctx, 0)?;
             }
             "oneOf" => {
                 let one_of = v
@@ -503,7 +527,7 @@ impl Schema {
                     .iter()
                     .map(|value| compile_resource(ctx, ctx.as_resource_ref(value)))
                     .collect::<Result<Vec<_>>>()?;
-                result = result.intersect(Schema::OneOf { options }, ctx, 0)?;
+                result = result.intersect(Schema::OneOf(options), ctx, 0)?;
             }
             "$ref" => {
                 let reference = v
@@ -513,7 +537,7 @@ impl Schema {
                 let uri: String = ctx.normalize_ref(&reference)?;
                 if matches!(result, Schema::Any) {
                     define_ref(ctx, &uri)?;
-                    result = Schema::Ref { uri };
+                    result = Schema::Ref(uri);
                 } else {
                     result = intersect_ref(ctx, &uri, result, false, 0)?;
                 }
@@ -528,6 +552,7 @@ impl Schema {
 pub struct SchemaBuilderOptions {
     pub max_size: usize,
     pub max_stack_level: usize,
+    pub lenient: bool,
 }
 
 impl Default for SchemaBuilderOptions {
@@ -535,28 +560,29 @@ impl Default for SchemaBuilderOptions {
         SchemaBuilderOptions {
             max_size: 50_000,
             max_stack_level: 128, // consumes ~2.5k of stack per level
+            lenient: false,
         }
     }
 }
 
-pub fn build_schema(
-    contents: Value,
-    retriever: Option<RetrieveWrapper>,
-) -> Result<(Schema, HashMap<String, Schema>)> {
+pub fn build_schema(contents: Value, options: &JsonCompileOptions) -> Result<BuiltSchema> {
     if let Some(b) = contents.as_bool() {
-        if b {
-            return Ok((Schema::Any, HashMap::default()));
+        let s = if b {
+            Schema::Any
         } else {
-            return Ok((Schema::false_schema(), HashMap::default()));
-        }
+            Schema::false_schema()
+        };
+        return Ok(BuiltSchema::simple(s));
     }
 
-    let pre_ctx = PreContext::new(contents, retriever)?;
-    let ctx = Context::new(&pre_ctx)?;
+    let pre_ctx = PreContext::new(contents, options.retriever.clone())?;
+    let mut ctx = Context::new(&pre_ctx)?;
+
+    ctx.options.lenient = options.lenient;
 
     let root_resource = ctx.lookup_resource(&pre_ctx.base_uri)?;
     let schema = compile_resource(&ctx, root_resource)?;
-    Ok((schema, ctx.take_defs()))
+    Ok(ctx.into_result(schema))
 }
 
 fn compile_resource(ctx: &Context, resource: ResourceRef) -> Result<Schema> {
@@ -565,7 +591,7 @@ fn compile_resource(ctx: &Context, resource: ResourceRef) -> Result<Schema> {
 }
 
 fn compile_contents(ctx: &Context, contents: &Value) -> Result<Schema> {
-    compile_contents_inner(ctx, contents).map(|schema| schema.normalize())
+    compile_contents_inner(ctx, contents).map(|schema| schema.normalize(ctx))
 }
 
 fn compile_contents_inner(ctx: &Context, contents: &Value) -> Result<Schema> {
@@ -611,7 +637,12 @@ fn compile_contents_map(ctx: &Context, schemadict: IndexMap<&str, &Value>) -> Re
     if !unimplemented_keys.is_empty() {
         // ensure consistent order for tests
         unimplemented_keys.sort();
-        bail!("Unimplemented keys: {:?}", unimplemented_keys);
+        let msg = format!("Unimplemented keys: {:?}", unimplemented_keys);
+        if ctx.options.lenient {
+            ctx.record_warning(msg);
+        } else {
+            bail!(msg);
+        }
     }
 
     // Some dummy values to use for properties and prefixItems if we need to apply additionalProperties or items
@@ -754,7 +785,7 @@ fn intersect_ref(
 fn compile_const(instance: &Value) -> Result<Schema> {
     match instance {
         Value::Null => Ok(Schema::Null),
-        Value::Bool(b) => Ok(Schema::LiteralBool { value: *b }),
+        Value::Bool(b) => Ok(Schema::Boolean(Some(*b))),
         Value::Number(n) => {
             let value = n.as_f64().ok_or_else(|| {
                 anyhow!(
@@ -762,31 +793,31 @@ fn compile_const(instance: &Value) -> Result<Schema> {
                     limited_str(instance)
                 )
             })?;
-            Ok(Schema::Number {
+            Ok(Schema::Number(NumberSchema {
                 minimum: Some(value),
                 maximum: Some(value),
                 exclusive_minimum: None,
                 exclusive_maximum: None,
                 integer: n.is_i64(),
                 multiple_of: None,
-            })
+            }))
         }
-        Value::String(s) => Ok(Schema::String {
+        Value::String(s) => Ok(Schema::String(StringSchema {
             min_length: 0,
             max_length: None,
             regex: Some(RegexAst::Literal(s.to_string())),
-        }),
+        })),
         Value::Array(items) => {
             let prefix_items = items
                 .iter()
                 .map(compile_const)
                 .collect::<Result<Vec<Schema>>>()?;
-            Ok(Schema::Array {
-                min_items: prefix_items.len() as u64,
-                max_items: Some(prefix_items.len() as u64),
+            Ok(Schema::Array(ArraySchema {
+                min_items: prefix_items.len(),
+                max_items: Some(prefix_items.len()),
                 prefix_items,
                 items: Some(Box::new(Schema::false_schema())),
-            })
+            }))
         }
         Value::Object(mapping) => {
             let properties = mapping
@@ -794,11 +825,14 @@ fn compile_const(instance: &Value) -> Result<Schema> {
                 .map(|(k, v)| Ok((k.clone(), compile_const(v)?)))
                 .collect::<Result<IndexMap<String, Schema>>>()?;
             let required = properties.keys().cloned().collect();
-            Ok(Schema::Object {
+            Ok(Schema::Object(ObjectSchema {
                 properties,
+                pattern_properties: IndexMap::default(),
                 additional_properties: Some(Box::new(Schema::false_schema())),
                 required,
-            })
+                min_properties: 0,
+                max_properties: None,
+            }))
         }
     }
 }
@@ -816,58 +850,31 @@ fn compile_types(
     if options.len() == 1 {
         Ok(options.swap_remove(0))
     } else {
-        Ok(Schema::AnyOf { options })
+        Ok(Schema::AnyOf(options))
     }
 }
 
 fn compile_type(ctx: &Context, tp: &str, schema: &HashMap<&str, &Value>) -> Result<Schema> {
     ctx.increment()?;
 
-    let get = |key: &str| schema.get(key).copied();
-
     match tp {
         "null" => Ok(Schema::Null),
-        "boolean" => Ok(Schema::Boolean),
-        "number" | "integer" => compile_numeric(
-            get("minimum"),
-            get("maximum"),
-            get("exclusiveMinimum"),
-            get("exclusiveMaximum"),
-            tp == "integer",
-            get("multipleOf"),
-        ),
-        "string" => compile_string(
-            get("minLength"),
-            get("maxLength"),
-            get("pattern"),
-            get("format"),
-        ),
-        "array" => compile_array(
-            ctx,
-            get("minItems"),
-            get("maxItems"),
-            get("prefixItems"),
-            get("items"),
-            get("additionalItems"),
-        ),
-        "object" => compile_object(
-            ctx,
-            get("properties"),
-            get("additionalProperties"),
-            get("required"),
-        ),
+        "boolean" => Ok(Schema::Boolean(None)),
+        "number" | "integer" => compile_numeric(schema, tp == "integer"),
+        "string" => compile_string(ctx, schema),
+        "array" => compile_array(ctx, schema),
+        "object" => compile_object(ctx, schema),
         _ => bail!("Invalid type: {}", tp),
     }
 }
 
-fn compile_numeric(
-    minimum: Option<&Value>,
-    maximum: Option<&Value>,
-    exclusive_minimum: Option<&Value>,
-    exclusive_maximum: Option<&Value>,
-    integer: bool,
-    multiple_of: Option<&Value>,
-) -> Result<Schema> {
+fn compile_numeric(schema: &HashMap<&str, &Value>, integer: bool) -> Result<Schema> {
+    let minimum = schema.get("minimum").copied();
+    let maximum = schema.get("maximum").copied();
+    let exclusive_minimum = schema.get("exclusiveMinimum").copied();
+    let exclusive_maximum = schema.get("exclusiveMaximum").copied();
+    let multiple_of = schema.get("multipleOf").copied();
+
     let minimum = match minimum {
         None => None,
         Some(val) => Some(
@@ -917,35 +924,23 @@ fn compile_numeric(
             Some(Decimal::try_from(f.abs())?)
         }
     };
-    Ok(Schema::Number {
+    Ok(Schema::Number(NumberSchema {
         minimum,
         maximum,
         exclusive_minimum,
         exclusive_maximum,
         integer,
         multiple_of,
-    })
+    }))
 }
 
-fn compile_string(
-    min_length: Option<&Value>,
-    max_length: Option<&Value>,
-    pattern: Option<&Value>,
-    format: Option<&Value>,
-) -> Result<Schema> {
-    let min_length = match min_length {
-        None => 0,
-        Some(val) => val
-            .as_u64()
-            .ok_or_else(|| anyhow!("Expected u64 for 'minLength', got {}", limited_str(val)))?,
-    };
-    let max_length = match max_length {
-        None => None,
-        Some(val) => Some(
-            val.as_u64()
-                .ok_or_else(|| anyhow!("Expected u64 for 'maxLength', got {}", limited_str(val)))?,
-        ),
-    };
+fn compile_string(ctx: &Context, schema: &HashMap<&str, &Value>) -> Result<Schema> {
+    let pattern = schema.get("pattern").copied();
+    let format = schema.get("format").copied();
+
+    let min_length = get_usize(schema, "minLength")?.unwrap_or(0);
+    let max_length = get_usize(schema, "maxLength")?;
+
     let pattern_rx = match pattern {
         None => None,
         Some(val) => Some({
@@ -958,14 +953,24 @@ fn compile_string(
     };
     let format_rx = match format {
         None => None,
-        Some(val) => Some({
+        Some(val) => {
             let key = val
                 .as_str()
                 .ok_or_else(|| anyhow!("Expected string for 'format', got {}", limited_str(val)))?
                 .to_string();
-            let fmt = lookup_format(&key).ok_or_else(|| anyhow!("Unknown format: {}", key))?;
-            RegexAst::Regex(fmt.to_string())
-        }),
+
+            if let Some(fmt) = lookup_format(&key) {
+                Some(RegexAst::Regex(fmt.to_string()))
+            } else {
+                let msg = format!("Unknown format: {}", key);
+                if ctx.options.lenient {
+                    ctx.record_warning(msg);
+                    None
+                } else {
+                    bail!(msg);
+                }
+            }
+        }
     };
     let regex = match (pattern_rx, format_rx) {
         (None, None) => None,
@@ -973,21 +978,20 @@ fn compile_string(
         (Some(pat), None) => Some(pat),
         (Some(pat), Some(fmt)) => Some(RegexAst::And(vec![pat, fmt])),
     };
-    Ok(Schema::String {
+    Ok(Schema::String(StringSchema {
         min_length,
         max_length,
         regex,
-    })
+    }))
 }
 
-fn compile_array(
-    ctx: &Context,
-    min_items: Option<&Value>,
-    max_items: Option<&Value>,
-    prefix_items: Option<&Value>,
-    items: Option<&Value>,
-    additional_items: Option<&Value>,
-) -> Result<Schema> {
+fn compile_array(ctx: &Context, schema: &HashMap<&str, &Value>) -> Result<Schema> {
+    let min_items = get_usize(schema, "minItems")?.unwrap_or(0);
+    let max_items = get_usize(schema, "maxItems")?;
+    let prefix_items = schema.get("prefixItems").copied();
+    let items = schema.get("items").copied();
+    let additional_items = schema.get("additionalItems").copied();
+
     let (prefix_items, items) = {
         // Note that draft detection falls back to Draft202012 if the draft is unknown, so let's relax the draft constraint a bit
         // and assume we're in an old draft if additionalItems is present or items is an array
@@ -1005,19 +1009,6 @@ fn compile_array(
             (prefix_items, items)
         }
     };
-    let min_items = match min_items {
-        None => 0,
-        Some(val) => val
-            .as_u64()
-            .ok_or_else(|| anyhow!("Expected u64 for 'minItems', got {}", limited_str(val)))?,
-    };
-    let max_items = match max_items {
-        None => None,
-        Some(val) => Some(
-            val.as_u64()
-                .ok_or_else(|| anyhow!("Expected u64 for 'maxItems', got {}", limited_str(val)))?,
-        ),
-    };
     let prefix_items = match prefix_items {
         None => vec![],
         Some(val) => val
@@ -1031,29 +1022,60 @@ fn compile_array(
         None => None,
         Some(val) => Some(Box::new(compile_resource(ctx, ctx.as_resource_ref(val))?)),
     };
-    Ok(Schema::Array {
+    Ok(Schema::Array(ArraySchema {
         min_items,
         max_items,
         prefix_items,
         items,
-    })
+    }))
 }
 
-fn compile_object(
+fn compile_prop_map(
     ctx: &Context,
-    properties: Option<&Value>,
-    additional_properties: Option<&Value>,
-    required: Option<&Value>,
-) -> Result<Schema> {
-    let properties = match properties {
-        None => IndexMap::new(),
+    lbl: &str,
+    prop_map: Option<&Value>,
+) -> Result<IndexMap<String, Schema>> {
+    match prop_map {
+        None => Ok(IndexMap::new()),
         Some(val) => val
             .as_object()
-            .ok_or_else(|| anyhow!("Expected object for 'properties', got {}", limited_str(val)))?
+            .ok_or_else(|| anyhow!("Expected object for '{lbl}', got {}", limited_str(val)))?
             .iter()
             .map(|(k, v)| compile_resource(ctx, ctx.as_resource_ref(v)).map(|v| (k.clone(), v)))
-            .collect::<Result<IndexMap<String, Schema>>>()?,
-    };
+            .collect(),
+    }
+}
+
+fn get_usize(schema: &HashMap<&str, &Value>, name: &str) -> Result<Option<usize>> {
+    if let Some(val) = schema.get(name) {
+        if let Some(val) = val.as_u64() {
+            ensure!(
+                val <= usize::MAX as u64,
+                "Value {val} for '{name}' is too large"
+            );
+            Ok(Some(val as usize))
+        } else {
+            bail!(
+                "Expected positive integer for '{name}', got {}",
+                limited_str(val)
+            )
+        }
+    } else {
+        Ok(None)
+    }
+}
+
+fn compile_object(ctx: &Context, schema: &HashMap<&str, &Value>) -> Result<Schema> {
+    let properties = schema.get("properties").copied();
+    let pattern_properties = schema.get("patternProperties").copied();
+    let additional_properties = schema.get("additionalProperties").copied();
+    let required = schema.get("required").copied();
+    let min_properties = get_usize(schema, "minProperties")?.unwrap_or(0);
+    let max_properties = get_usize(schema, "maxProperties")?;
+
+    let properties = compile_prop_map(ctx, "properties", properties)?;
+    let pattern_properties = compile_prop_map(ctx, "patternProperties", pattern_properties)?;
+    ctx.check_disjoint_pattern_properties(&pattern_properties.keys().collect::<Vec<_>>())?;
     let additional_properties = match additional_properties {
         None => None,
         Some(val) => Some(Box::new(compile_resource(ctx, ctx.as_resource_ref(val))?)),
@@ -1076,11 +1098,28 @@ fn compile_object(
             })
             .collect::<Result<IndexSet<String>>>()?,
     };
-    Ok(Schema::Object {
+
+    Ok(mk_object_schema(ObjectSchema {
         properties,
+        pattern_properties,
         additional_properties,
         required,
-    })
+        min_properties,
+        max_properties,
+    }))
+}
+
+fn mk_object_schema(obj: ObjectSchema) -> Schema {
+    if let Some(max) = obj.max_properties {
+        if obj.min_properties > max {
+            return Schema::unsat("minProperties > maxProperties");
+        }
+    }
+    if obj.required.len() > obj.max_properties.unwrap_or(usize::MAX) {
+        return Schema::unsat("required > maxProperties");
+    }
+
+    Schema::Object(obj)
 }
 
 fn opt_max<T: PartialOrd>(a: Option<T>, b: Option<T>) -> Option<T> {
@@ -1116,8 +1155,9 @@ fn opt_min<T: PartialOrd>(a: Option<T>, b: Option<T>) -> Option<T> {
 #[cfg(all(test, feature = "referencing"))]
 mod test_retriever {
     use crate::json::{Retrieve, RetrieveWrapper};
+    use crate::JsonCompileOptions;
 
-    use super::{build_schema, Schema};
+    use super::{build_schema, Schema, StringSchema};
     use serde_json::{json, Value};
     use std::{fmt, sync::Arc};
 
@@ -1161,9 +1201,15 @@ mod test_retriever {
             .collect(),
         };
         let wrapper = RetrieveWrapper::new(Arc::new(retriever));
-        let (schema, defs) = build_schema(schema, Some(wrapper)).unwrap();
+        let options = JsonCompileOptions {
+            retriever: Some(wrapper.clone()),
+            ..Default::default()
+        };
+        let r = build_schema(schema, &options).unwrap();
+        let schema = r.schema;
+        let defs = r.definitions;
         match schema {
-            Schema::Ref { uri } => {
+            Schema::Ref(uri) => {
                 assert_eq!(uri, key);
             }
             _ => panic!("Unexpected schema: {:?}", schema),
@@ -1172,11 +1218,11 @@ mod test_retriever {
         let val = defs.get(key).unwrap();
         // poor-man's partial_eq
         match val {
-            Schema::String {
+            Schema::String(StringSchema {
                 min_length: 0,
                 max_length: None,
                 regex: None,
-            } => {}
+            }) => {}
             _ => panic!("Unexpected schema: {:?}", val),
         }
     }
@@ -1214,6 +1260,7 @@ mod tests {
             }
         });
         // Test failure amounts to this resulting in a stack overflow
-        let _ = build_schema(schema, None);
+        let options = JsonCompileOptions::default();
+        let _ = build_schema(schema, &options);
     }
 }

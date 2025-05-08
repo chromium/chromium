@@ -42,6 +42,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions::declarative_net_request {
 
 namespace dnr_api = api::declarative_net_request;

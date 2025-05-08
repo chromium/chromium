@@ -10,10 +10,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/search/app_search_provider_test_base.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -116,7 +116,7 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
                  kDefaultRecommendedWebAppNames[i],
                  ManifestLocation::kExternalPrefDownload,
                  extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
-    service_->EnableExtension(kDefaultRecommendedWebAppIds[i]);
+    registrar()->EnableExtension(kDefaultRecommendedWebAppIds[i]);
   }
 
   // Install the default ARC app (Play Store). This is marked here as sticky so
@@ -189,14 +189,14 @@ TEST_F(AppZeroStateProviderTest, HideNotShownInLauncher) {
   AddExtension(shown_app_id, kNormalAppName, ManifestLocation::kComponent,
                extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
                /*display_in_launcher=*/true);
-  service_->EnableExtension(shown_app_id);
+  registrar()->EnableExtension(shown_app_id);
 
   const std::string hidden_app_id =
       crx_file::id_util::GenerateId(kHiddenAppName);
   AddExtension(hidden_app_id, kHiddenAppName, ManifestLocation::kComponent,
                extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
                /*display_in_launcher=*/false);
-  service_->EnableExtension(hidden_app_id);
+  registrar()->EnableExtension(hidden_app_id);
 
   base::RunLoop().RunUntilIdle();
 

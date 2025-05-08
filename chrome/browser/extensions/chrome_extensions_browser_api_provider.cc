@@ -7,10 +7,7 @@
 #include "chrome/browser/extensions/api/generated_api_registration.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/buildflags/buildflags.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/commands/commands.h"
-#endif
 
 namespace extensions {
 
@@ -21,10 +18,8 @@ ChromeExtensionsBrowserAPIProvider::~ChromeExtensionsBrowserAPIProvider() =
 
 void ChromeExtensionsBrowserAPIProvider::RegisterExtensionFunctions(
     ExtensionFunctionRegistry* registry) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Commands
   registry->RegisterFunction<GetAllCommandsFunction>();
-#endif
 
   // Generated APIs from Chrome.
   api::ChromeGeneratedFunctionRegistry::RegisterAll(registry);

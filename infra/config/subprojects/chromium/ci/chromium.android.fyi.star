@@ -241,13 +241,12 @@ ci.builder(
             "strip_debug_info",
             "android_fastbuild",
             "webview_trichrome",
-            "webview_monochrome",
             "webview_shell",
         ],
     ),
     targets = targets.bundle(
         targets = [
-            "system_webview_wpt_suite",
+            "android_webview_wpt_tests",
         ],
         mixins = [
             "15-x64-emulator",
@@ -257,10 +256,13 @@ ci.builder(
             "x86-64",
         ],
         per_test_modifications = {
-            "system_webview_wpt": targets.mixin(
+            "android_webview_wpt_tests": targets.mixin(
                 args = [
                     "--use-upstream-wpt",
                 ],
+                swarming = targets.swarming(
+                    shards = 36,
+                ),
             ),
         },
     ),

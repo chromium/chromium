@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_ENUMERATION_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_ENUMERATION_BASE_H_
 
+#include <concepts>
 #include <type_traits>
 
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -67,79 +68,37 @@ class PLATFORM_EXPORT EnumerationBase {
 }  // namespace bindings
 
 template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator==(const EnumTypeClass& lhs, const EnumTypeClass& rhs) {
+  requires(std::derived_from<EnumTypeClass, bindings::EnumerationBase>)
+bool operator==(const EnumTypeClass& lhs, const EnumTypeClass& rhs) {
   DCHECK(!lhs.IsEmpty() && !rhs.IsEmpty());
   return lhs.AsEnum() == rhs.AsEnum();
 }
 
 template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator!=(const EnumTypeClass& lhs, const EnumTypeClass& rhs) {
-  return !(lhs == rhs);
-}
-
-template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator==(const EnumTypeClass& lhs, typename EnumTypeClass::Enum rhs) {
+  requires(std::derived_from<EnumTypeClass, bindings::EnumerationBase>)
+bool operator==(const EnumTypeClass& lhs, typename EnumTypeClass::Enum rhs) {
   DCHECK(!lhs.IsEmpty());
   return lhs.AsEnum() == rhs;
 }
 
 template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator==(typename EnumTypeClass::Enum lhs, const EnumTypeClass& rhs) {
+  requires(std::derived_from<EnumTypeClass, bindings::EnumerationBase>)
+bool operator==(typename EnumTypeClass::Enum lhs, const EnumTypeClass& rhs) {
   DCHECK(!rhs.IsEmpty());
   return lhs == rhs.AsEnum();
 }
 
-template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator!=(const EnumTypeClass& lhs, typename EnumTypeClass::Enum rhs) {
-  return !(lhs == rhs);
-}
-
-template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator!=(typename EnumTypeClass::Enum lhs, const EnumTypeClass& rhs) {
-  return !(lhs == rhs);
-}
-
 // Migration adapters
 template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator==(const EnumTypeClass& lhs, const String& rhs) {
+  requires(std::derived_from<EnumTypeClass, bindings::EnumerationBase>)
+bool operator==(const EnumTypeClass& lhs, const String& rhs) {
   DCHECK(!lhs.IsEmpty());
   return lhs.AsString() == rhs;
 }
 
 template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator!=(const EnumTypeClass& lhs, const String& rhs) {
-  return !(lhs == rhs);
-}
-
-template <typename EnumTypeClass>
-typename std::enable_if_t<
-    std::is_base_of<bindings::EnumerationBase, EnumTypeClass>::value,
-    bool>
-operator==(const EnumTypeClass& lhs, const AtomicString& rhs) {
+  requires(std::derived_from<EnumTypeClass, bindings::EnumerationBase>)
+bool operator==(const EnumTypeClass& lhs, const AtomicString& rhs) {
   DCHECK(!lhs.IsEmpty());
   return lhs.AsString() == rhs;
 }

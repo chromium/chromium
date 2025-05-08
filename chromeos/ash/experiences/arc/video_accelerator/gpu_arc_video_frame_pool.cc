@@ -23,9 +23,9 @@
 #include "media/media_buildflags.h"
 #include "ui/gfx/buffer_format_util.h"
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 namespace arc {
 
@@ -197,13 +197,13 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
   // If this is the first video frame added after requesting new video frames we
   // may need to notify the VdaVideoFramePool that the layout changed.
   if (notify_layout_changed_cb_) {
-    const uint64_t layout_modifier =
-        (gmb_handle.type == gfx::NATIVE_PIXMAP)
-            ? gmb_handle.native_pixmap_handle.modifier
-            : gfx::NativePixmapHandle::kNoModifier;
+    uint64_t layout_modifier = gfx::NativePixmapHandle::kNoModifier;
     std::vector<media::ColorPlaneLayout> color_planes;
-    for (const auto& plane : gmb_handle.native_pixmap_handle.planes) {
-      color_planes.emplace_back(plane.stride, plane.offset, plane.size);
+    if (gmb_handle.type == gfx::NATIVE_PIXMAP) {
+      layout_modifier = gmb_handle.native_pixmap_handle().modifier;
+      for (const auto& plane : gmb_handle.native_pixmap_handle().planes) {
+        color_planes.emplace_back(plane.stride, plane.offset, plane.size);
+      }
     }
     auto fourcc = media::Fourcc::FromVideoPixelFormat(pixel_format);
     if (!fourcc) {
@@ -468,8 +468,7 @@ gfx::GpuMemoryBufferHandle GpuArcVideoFramePool::CreateGpuMemoryHandle(
       VLOGF(1) << "No protected native pixmap found for handle";
       return gfx::GpuMemoryBufferHandle();
     }
-    gmb_handle.type = gfx::NATIVE_PIXMAP;
-    gmb_handle.native_pixmap_handle = std::move(protected_native_pixmap);
+    gmb_handle = gfx::GpuMemoryBufferHandle(std::move(protected_native_pixmap));
 
     // Explicitly verify the GPU Memory Buffer Handle here. Note that we do not
     // do this for non-protected content because the verification happens on
@@ -517,7 +516,7 @@ scoped_refptr<media::FrameResource> GpuArcVideoFramePool::CreateFrame(
           gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
           base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
               coded_size_, *buffer_format,
-              std::move(gmb_handle.native_pixmap_handle)));
+              std::move(gmb_handle).native_pixmap_handle()));
 
   // Ensures that the tracking token is unique for frames in the frame pool.
   frame_tracking_token_helper_.SetUniqueTrackingToken(frame->metadata());

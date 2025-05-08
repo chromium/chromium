@@ -8,27 +8,7 @@
 #import "base/feature_list.h"
 #import "base/time/time.h"
 
-// Feature flag to enable follow IPH experiment parameters.
-BASE_DECLARE_FEATURE(kEnableFollowIPHExpParams);
-
-// The feature parameter that indicates the minimum number of visiting the
-// website during a day.
-extern const char kDailyVisitMin[];
-
-// The feature parameter that indicates the minimum number of visiting the
-// website in the history.
-extern const char kNumVisitMin[];
-
-// The feature parameter that indicates the duration that used to query the
-// visit history.
-extern const char kVisitHistoryDuration[];
-
-// The feature parameter that indicates the duration that should be excluded
-// when query the visit history.
-extern const char kVisitHistoryExclusiveDuration[];
-
-// The feature parameter that indicates the delay between two IPHs.
-extern const char kShowFollowIPHAfterLoaded[];
+// TODO(crbug.com/380460820): Clean up the these methods.
 
 // Returns the minimum number of visiting the website during a day.
 double GetDailyVisitMin();

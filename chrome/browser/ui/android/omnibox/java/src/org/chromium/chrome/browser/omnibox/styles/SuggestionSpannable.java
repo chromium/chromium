@@ -12,6 +12,9 @@ import android.text.style.StyleSpan;
 import android.text.style.TextAppearanceSpan;
 import android.text.style.UpdateAppearance;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * SpannableString that supplies .equals method for content comparison. This code assumes the use of
  * a limited subset of span types in suggestion text and may need revisiting if/when the scope of
@@ -19,6 +22,7 @@ import android.text.style.UpdateAppearance;
  * we use this code is working well. When this is done, consider sharing this with
  * UrlBarMediator#isNewTextEquivalentToExistingText.
  */
+@NullMarked
 public class SuggestionSpannable extends SpannableString {
     public SuggestionSpannable(CharSequence text) {
         super(text);
@@ -38,7 +42,7 @@ public class SuggestionSpannable extends SpannableString {
      * not come paired with hashCode() call. hashCode() is correctly supplied by SpannableString.
      */
     @Override
-    public final boolean equals(Object obj) {
+    public final boolean equals(@Nullable Object obj) {
         if (!(obj instanceof SuggestionSpannable)) return false;
 
         final SuggestionSpannable other = (SuggestionSpannable) obj;

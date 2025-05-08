@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -32,6 +33,7 @@
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -118,9 +120,6 @@ void LogOmniboxZeroSuggestRequest(const RemoteRequestEvent request_event,
       request_event);
 }
 
-// Relevance value to use if it was not set explicitly by the server.
-const int kDefaultZeroSuggestRelevance = 100;
-
 // Called in StoreRemoteResponse() and ReadStoredResponse() to determine if the
 // zero suggest cache is being used to store ZPS responses received from the
 // remote Suggest service for the given |result_type|.
@@ -167,7 +166,8 @@ bool StoreRemoteResponse(const std::string& response_json,
 
   if (!SearchSuggestionParser::ParseSuggestResults(
           *response_data, input, client->GetSchemeClassifier(),
-          /*default_result_relevance=*/kDefaultZeroSuggestRelevance,
+          /*default_result_relevance=*/
+          omnibox::kDefaultRemoteZeroSuggestRelevance,
           /*is_keyword_result=*/false, results)) {
     return false;
   }
@@ -224,7 +224,8 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
 
   if (!SearchSuggestionParser::ParseSuggestResults(
           *response_data, input, client->GetSchemeClassifier(),
-          /*default_result_relevance=*/kDefaultZeroSuggestRelevance,
+          /*default_result_relevance=*/
+          omnibox::kDefaultRemoteZeroSuggestRelevance,
           /*is_keyword_result=*/false, results)) {
     return false;
   }
@@ -327,13 +328,15 @@ AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
   match.contents = url_formatter::FormatUrl(navigation.url(), format_types,
                                             base::UnescapeRule::SPACES, nullptr,
                                             nullptr, nullptr);
-  match.contents_class = ClassifyTermMatches({}, match.contents.length(), 0,
+  match.contents_class = ClassifyTermMatches({}, match.contents.length(),
+                                             ACMatchClassification::NONE,
                                              ACMatchClassification::URL);
 
   match.description =
       AutocompleteMatch::SanitizeString(navigation.description());
   match.description_class = ClassifyTermMatches({}, match.description.length(),
-                                                0, ACMatchClassification::NONE);
+                                                ACMatchClassification::NONE,
+                                                ACMatchClassification::NONE);
   match.suggest_type = navigation.suggest_type();
   for (const int subtype : navigation.subtypes()) {
     match.subtypes.insert(SuggestSubtypeForNumber(subtype));
@@ -471,7 +474,7 @@ void ZeroSuggestProvider::RunZeroSuggestPrefetch(const AutocompleteInput& input,
 void ZeroSuggestProvider::Start(const AutocompleteInput& input,
                                 bool minimal_changes) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::Start");
-  Stop(true, false);
+  Stop(AutocompleteStopReason::kClobbered);
 
   auto [result_type, eligible] = GetResultTypeAndEligibility(client(), input);
   LogOmniboxZeroSuggestEligibility(result_type, eligible);
@@ -532,9 +535,8 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
                                /*is_prefetch=*/false);
 }
 
-void ZeroSuggestProvider::Stop(bool clear_cached_results,
-                               bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+void ZeroSuggestProvider::Stop(AutocompleteStopReason stop_reason) {
+  AutocompleteProvider::Stop(stop_reason);
 
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchDebouncing)) {
     debouncer_->CancelRequest();
@@ -548,7 +550,7 @@ void ZeroSuggestProvider::Stop(bool clear_cached_results,
   }
   result_type_running_ = ResultType::kNone;
 
-  if (clear_cached_results) {
+  if (stop_reason == AutocompleteStopReason::kClobbered) {
     experiment_stats_v2s_.clear();
     gws_event_id_hashes_.clear();
   }

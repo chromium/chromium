@@ -9,6 +9,9 @@ import static androidx.browser.customtabs.CustomTabsIntent.NO_TITLE;
 
 import static org.chromium.base.MathUtils.interpolate;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CLICK_LISTENER;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.DESCRIPTION;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.ICON;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.animation.Animator;
@@ -54,7 +57,6 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -69,7 +71,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
@@ -77,6 +78,7 @@ import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingO
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayProperties;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -97,6 +99,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
@@ -132,6 +135,8 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -192,9 +197,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private int mToolbarWidth;
     private BrowserServicesIntentDataProvider mIntentDataProvider;
     private CustomTabMinimizeDelegate mMinimizeDelegate;
-    private Callback<CustomButtonParams> mCustomButtonClickCallback;
-    private Boolean mEnableMinimizeButton;
     private FrameLayout mCustomButtonsParent;
+    private PropertyListModel<PropertyModel, PropertyKey> mCustomActionButtonsListModel;
+    private boolean mIsInMultiWindowMode;
 
     private final int mDefaultButtonWidth =
             getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
@@ -261,14 +266,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private HandleStrategy mHandleStrategy;
     private @CloseButtonPosition int mCloseButtonPosition;
 
-    /** Callback used to notify the maximize button on side sheet PCCT click event. */
-    public interface MaximizeButtonCallback {
-        /**
-         * @return {@code true} if the PCCT gets maximized. {@code false} if restored.
-         */
-        boolean onClick();
-    }
-
     /** Constructor for getting this class inflated from an xml layout file. */
     public CustomTabToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -279,7 +276,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        final int backgroundColor = ChromeColors.getDefaultThemeColor(getContext(), false);
+        final int backgroundColor =
+                SurfaceColorUpdateUtils.getDefaultThemeColor(
+                        getContext(), /* isIncognito= */ false);
         setBackground(new ColorDrawable(backgroundColor));
         mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
 
@@ -317,15 +316,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      *     feature overrides.
      * @param minimizeDelegate {@link CustomTabMinimizeDelegate} for minimizing the tab.
      * @param omniboxParams {@link OmniboxParams}, null if omnibox isn't enabled.
-     * @param customButtonCallback Callback for custom action button clicks.
      */
     public void initializeToolbar(
             Activity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabFeatureOverridesManager featureOverridesManager,
             CustomTabMinimizeDelegate minimizeDelegate,
-            OmniboxParams omniboxParams,
-            Callback<CustomButtonParams> customButtonClickCallback) {
+            OmniboxParams omniboxParams) {
         assert ChromeFeatureList.sCctToolbarRefactor.isEnabled();
 
         mIntentDataProvider = intentDataProvider;
@@ -334,8 +331,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (omniboxParams != null) {
             setOmniboxParams(omniboxParams);
         }
-        mCustomButtonClickCallback = customButtonClickCallback;
         calculateToolbarWidthBeforeMeasure(activity);
+        inflateAndPositionToolbarElements(mToolbarWidth);
+    }
+
+    /**
+     * Inflates and positions the buttons and the location bar within the toolbar based on the
+     * current toolbar width and the current button model. If there isn't enough space for all
+     * buttons, some buttons may be omitted based on their priority.
+     */
+    void reinflateAndRepositionToolbarElements() {
         inflateAndPositionToolbarElements(mToolbarWidth);
     }
 
@@ -345,7 +350,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mToolbarWidth = CustomTabDimensionUtils.getDisplayWidth(activity);
     }
 
-    private void inflateAndPositionToolbarElements(final int availableWidth) {
+    /**
+     * Inflates and positions the buttons and the location bar within the toolbar based on the
+     * provided available width and the current button model. If there isn't enough space for all
+     * buttons, some buttons may be omitted based on their priority.
+     *
+     * <p>This method should be called every time the toolbar width changes.
+     *
+     * @param availableWidth The available width of the toolbar in pixels.
+     */
+    private void inflateAndPositionToolbarElements(@Px final int availableWidth) {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         int locationBarMinWidth = getLocationBarMinWidth();
         var posParams = new ButtonPositioningParams();
@@ -386,21 +400,33 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         // Check if we have space for the minimize button.
-        if (posParams.availableWidth > mDefaultButtonWidth) {
+        if (posParams.availableWidth >= mDefaultButtonWidth) {
             prepareMinimizeButton();
 
             if (mMinimizeButton != null && mMinimizeButton.getVisibility() == VISIBLE) {
-                boolean isEndPosition = mCloseButtonPosition == CLOSE_BUTTON_POSITION_END;
-                positionButton(mMinimizeButton, posParams, mDefaultIconWidth, isEndPosition);
+                // The minimize button is always start aligned.
+                positionButton(mMinimizeButton, posParams, mDefaultIconWidth, false);
             }
+        }
+
+        View sideSheetMaximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
+        // Check if we have space for the side-sheet maximize button.
+        if (sideSheetMaximizeButton != null
+                && sideSheetMaximizeButton.getVisibility() == VISIBLE
+                && posParams.availableWidth >= mDefaultButtonWidth) {
+            positionButton(sideSheetMaximizeButton, posParams, mDefaultIconWidth, true);
         }
 
         // TODO(crbug.com/402213312): We need to think about how this should work with MTB.
         mCustomButtonsParent = findViewById(R.id.action_buttons);
+        // TODO(crbug.com/402213312): Think of how we can optimize this so we don't reinflate all
+        // buttons any time if we add/remove one.
         mCustomButtonsParent.removeAllViews();
 
-        for (var buttonParams : mIntentDataProvider.getCustomButtonsOnToolbar()) {
-            if (!maybeInflateAndPositionCustomButton(buttonParams, posParams)) break;
+        if (mCustomActionButtonsListModel != null) {
+            for (var model : mCustomActionButtonsListModel) {
+                if (!maybeInflateAndPositionCustomButton(model, posParams)) break;
+            }
         }
 
         positionLocationBar(posParams);
@@ -515,8 +541,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private boolean maybeInflateAndPositionCustomButton(
-            CustomButtonParams buttonParams, ButtonPositioningParams posParams) {
-        Drawable drawable = buttonParams.getIcon(getContext());
+            PropertyModel model, ButtonPositioningParams posParams) {
+        Drawable drawable = model.get(ICON);
         // The height will be scaled to match spec while keeping the aspect ratio, so get the scaled
         // width through that.
         int sourceHeight = drawable.getIntrinsicHeight();
@@ -542,9 +568,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                         mCustomButtonsParent,
                                         false);
         button.setOnLongClickListener(this);
-        button.setOnClickListener(v -> mCustomButtonClickCallback.onResult(buttonParams));
+        button.setOnClickListener(model.get(CLICK_LISTENER));
 
-        updateCustomActionButtonVisuals(button, drawable, buttonParams.getDescription());
+        updateCustomActionButtonVisuals(button, drawable, model.get(DESCRIPTION));
 
         // Add the view at the beginning of the list. This isn't reflected in how the button is
         // positioned; it's only for keeping the index aligned with the params list.
@@ -561,6 +587,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (drawable != null) {
             updateButtonTint(mCloseButton);
         }
+    }
+
+    // TODO(crbug.com/402213312): Don't expose the model to this view once we MVC-ify things better.
+    void setCustomActionButtonsListModel(PropertyListModel<PropertyModel, PropertyKey> listModel) {
+        mCustomActionButtonsListModel = listModel;
+        inflateAndPositionToolbarElements(mToolbarWidth);
     }
 
     @Override
@@ -639,6 +671,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      */
     public void initSideSheetMaximizeButton(
             boolean maximizedOnInit, MaximizeButtonCallback callback) {
+        assert !ChromeFeatureList.sCctToolbarRefactor.isEnabled();
         ImageButton maximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
         if (maximizeButton == null) {
             ViewStub maximizeButtonStub = findViewById(R.id.maximize_button_stub);
@@ -687,6 +720,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void setMaximizeButtonVisibility() {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
+
         ImageButton maximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
         if (!mMaximizeButtonEnabled || maximizeButton == null) {
             if (maximizeButton != null) maximizeButton.setVisibility(View.GONE);
@@ -743,6 +778,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     /** Remove maximize button from side sheet CCT toolbar. */
     public void removeSideSheetMaximizeButton() {
+        assert !ChromeFeatureList.sCctToolbarRefactor.isEnabled();
         ImageButton maximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
         mMaximizeButtonEnabled = false;
         if (maximizeButton == null) return; // Toolbar could be already destroyed.
@@ -754,10 +790,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     /**
      * Inflates and prepares the minimize button if it should be enabled.
      *
-     * This is only used when CCTToolbarRefactor is enabled.
+     * <p>This is only used when CCTToolbarRefactor is enabled.
      */
     private void prepareMinimizeButton() {
-        if (!isMinimizeButtonEnabled()) return;
+        if (!mMinimizeButtonEnabled) return;
 
         if (isInMultiWindowMode()) {
             if (mMinimizeButton != null) {
@@ -781,24 +817,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mMinimizeButton.setImageDrawable(d);
         updateButtonTint(mMinimizeButton);
         mMinimizeButton.setOnLongClickListener(this);
-    }
-
-    /**
-     * Whether the minimize button should be enabled. A true return value doesn't mean the minimize
-     * button will be visible on the toolbar. The minimize button will be hidden if there isn't
-     * enough space on the toolbar or if the CCT is in multi-window mode.
-     *
-     * This is only used when CCTToolbarRefactor is enabled.
-     */
-    private boolean isMinimizeButtonEnabled() {
-        if (mEnableMinimizeButton != null) return mEnableMinimizeButton;
-
-        mEnableMinimizeButton =
-                MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
-                        getContext(), mFeatureOverridesManager)
-                        && MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(
-                        mIntentDataProvider);
-        return mEnableMinimizeButton;
     }
 
     /**
@@ -1242,6 +1260,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLocationBarModel.notifyTitleChanged();
         mLocationBarModel.notifyUrlChanged();
         mLocationBarModel.notifyPrimaryColorChanged();
+
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            if (mIsInMultiWindowMode != isInMultiWindowMode()) {
+                mIsInMultiWindowMode = isInMultiWindowMode();
+                inflateAndPositionToolbarElements(mToolbarWidth);
+            }
+        }
     }
 
     @Override
@@ -1530,11 +1555,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (optionalButtonStub == null) return;
             optionalButtonStub.setLayoutResource(R.layout.optional_button_layout);
             View optionalButton = optionalButtonStub.inflate();
-            if (mCustomActionButtons.getChildCount() >= 2) {
-                // Place the optional button at the leftmost position.
-                mCustomActionButtons.removeView(optionalButton);
-                mCustomActionButtons.addView(optionalButton, 0);
-            }
             mOptionalButtonCoordinator =
                     new OptionalButtonCoordinator(
                             optionalButton,
@@ -2408,7 +2428,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             getContext(), R.drawable.custom_tabs_url_bar_omnibox_bg);
             mOmniboxBackground.mutate();
             mOmniboxBackground.setTint(
-                    ContextCompat.getColor(getContext(), R.color.toolbar_text_box_bg_color));
+                    SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
+                            getContext(), /* isIncognito= */ false));
             mLocationBarFrameLayout.setBackground(mOmniboxBackground);
             var lp = mLocationBarFrameLayout.getLayoutParams();
             lp.height =

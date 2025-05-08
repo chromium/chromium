@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Започнете нешто ново или добијте помош во текот на работата.</translation>
 <translation id="1054048317165655285">Завршето го поставувањето на телефонот</translation>
 <translation id="1054153489933238809">Отвори оригинална &amp;слика во нова картичка</translation>
-<translation id="1054187194995068149">Здраво. Ова е преглед</translation>
 <translation id="1054502481659725522">Апликациите, веб-сајтовите системските услуги може да ја користат локацијата</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од 1 седмица}one{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од {NUM_WEEKS} седмица}other{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од {NUM_WEEKS} седмици}}</translation>
 <translation id="1055606969515662982">Користете далечинско за да сопрете со емитување</translation>

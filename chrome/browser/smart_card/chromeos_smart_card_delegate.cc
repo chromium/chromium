@@ -32,9 +32,19 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 // The check whether the window has focus is enough here, as this is for IWAs
 // only, which appear in standalone windows dedicated to only them.
 bool WindowHasFocus(content::RenderFrameHost& render_frame_host) {
-  return tabs::TabInterface::GetFromContents(
-             content::WebContents::FromRenderFrameHost(&render_frame_host)
-                 ->GetOutermostWebContents())
+  content::WebContents* tab_web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host)
+          ->GetOutermostWebContents();
+  CHECK(tab_web_contents);
+  // For the case when this is called in permission revoke handler called after
+  // closing the last windows of the origin (and thus expiring the one-time
+  // permission). Calling `tabs::TabInterface::GetFromContents` when the tab is
+  // closing will crash.
+  if (tab_web_contents->IsBeingDestroyed()) {
+    return false;
+  }
+
+  return tabs::TabInterface::GetFromContents(tab_web_contents)
       ->GetBrowserWindowInterface()
       ->IsActive();
 }
@@ -97,6 +107,12 @@ void ChromeOsSmartCardDelegate::RequestReaderPermission(
     content::RenderFrameHost& render_frame_host,
     const std::string& reader_name,
     RequestReaderPermissionCallback callback) {
+  // Never allow requesting permissions from the background.
+  if (!WindowHasFocus(render_frame_host)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   auto& profile = CHECK_DEREF(
       Profile::FromBrowserContext(render_frame_host.GetBrowserContext()));
 

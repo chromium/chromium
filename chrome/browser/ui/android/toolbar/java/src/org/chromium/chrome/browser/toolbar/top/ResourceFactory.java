@@ -9,8 +9,11 @@ import android.graphics.Rect;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Utility class for creating native resources. */
 @JNINamespace("android")
+@NullMarked
 public class ResourceFactory {
     public static long createToolbarContainerResource(
             Rect toolbarPosition, Rect locationBarPosition, int shadowHeight) {

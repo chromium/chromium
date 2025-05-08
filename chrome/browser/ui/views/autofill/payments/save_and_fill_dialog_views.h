@@ -24,7 +24,14 @@ class SaveAndFillDialogViews : public SaveAndFillDialogView,
   // SaveAndFillDialogView:
   base::WeakPtr<SaveAndFillDialogView> GetWeakPtr() override;
 
+  // DialogDelegateView:
+  void AddedToWidget() override;
+  std::u16string GetWindowTitle() const override;
+
  private:
+  // Initialize the dialog's contents.
+  void InitViews();
+
   base::WeakPtr<SaveAndFillDialogController> controller_;
 
   base::WeakPtrFactory<SaveAndFillDialogViews> weak_ptr_factory_{this};

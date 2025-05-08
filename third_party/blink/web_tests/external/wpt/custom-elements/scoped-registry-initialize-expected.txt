@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+[FAIL] Document: customElementRegistry of an upgrade candidate after calling CustomElementRegistry.prototype.initialize should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] Document: customElementRegistry of an upgrade candidate created with an explicit customElementRegistry argument should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] Document: customElementRegistry of an unknown element after calling CustomElementRegistry.prototype.initialize should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] Document: customElementRegistry of an unknown element created with an explicit customElementRegistry argument should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] Document: customElementRegistry of document and an upgrade candidate after calling CustomElementRegistry.prototype.initialize should return the registry
+  Failed to execute 'initialize' on 'CustomElementRegistry': The provided value is not of type '(Element or ShadowRoot)'.
+[FAIL] Document: customElementRegistry of an element created after calling CustomElementRegistry.prototype.initialize should return the registry
+  Failed to execute 'initialize' on 'CustomElementRegistry': The provided value is not of type '(Element or ShadowRoot)'.
+[FAIL] HTMLDocument: customElementRegistry of an upgrade candidate after calling CustomElementRegistry.prototype.initialize should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] HTMLDocument: customElementRegistry of an upgrade candidate created with an explicit customElementRegistry argument should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] HTMLDocument: customElementRegistry of an unknown element after calling CustomElementRegistry.prototype.initialize should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] HTMLDocument: customElementRegistry of an unknown element created with an explicit customElementRegistry argument should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] HTMLDocument: customElementRegistry of document and an upgrade candidate after calling CustomElementRegistry.prototype.initialize should return the registry
+  Failed to execute 'initialize' on 'CustomElementRegistry': The provided value is not of type '(Element or ShadowRoot)'.
+[FAIL] HTMLDocument: customElementRegistry of an element created after calling CustomElementRegistry.prototype.initialize should return the registry
+  Failed to execute 'initialize' on 'CustomElementRegistry': The provided value is not of type '(Element or ShadowRoot)'.
+[FAIL] XHTMLDocument: customElementRegistry of an upgrade candidate after calling CustomElementRegistry.prototype.initialize should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] XHTMLDocument: customElementRegistry of an upgrade candidate created with an explicit customElementRegistry argument should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] XHTMLDocument: customElementRegistry of an unknown element after calling CustomElementRegistry.prototype.initialize should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] XHTMLDocument: customElementRegistry of an unknown element created with an explicit customElementRegistry argument should return the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] XHTMLDocument: customElementRegistry of document and an upgrade candidate after calling CustomElementRegistry.prototype.initialize should return the registry
+  Failed to execute 'initialize' on 'CustomElementRegistry': The provided value is not of type '(Element or ShadowRoot)'.
+[FAIL] XHTMLDocument: customElementRegistry of an element created after calling CustomElementRegistry.prototype.initialize should return the registry
+  Failed to execute 'initialize' on 'CustomElementRegistry': The provided value is not of type '(Element or ShadowRoot)'.
+Harness: the test ran to completion.
+

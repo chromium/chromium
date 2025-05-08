@@ -107,7 +107,7 @@ public class TabGroupFaviconQuarterUnitTest {
         assertTrue(TextUtils.isEmpty(mTextView.getText()));
         assertEquals(
                 mBackground.getColor().getDefaultColor(),
-                SemanticColorUtils.getColorSurface(mActivity));
+                SemanticColorUtils.getColorSurfaceBright(mActivity));
     }
 
     @Test

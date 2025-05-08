@@ -88,107 +88,96 @@ std::string ParamToTestSuffix(
 
 // Permutations of supported parameters.
 const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
-    // Improved design.
-    {.pixel_test_param = {.test_suffix = "Regular_Improved"}},
+    {.pixel_test_param = {.test_suffix = "Regular"}},
     {
-        .pixel_test_param = {.test_suffix = "SigninDisallowed_Improved"},
+        .pixel_test_param = {.test_suffix = "SigninDisallowed"},
         .signin_status = SigninStatusPixelTestParam::kSigninDisallowed,
     },
     {
-        .pixel_test_param = {.test_suffix = "DarkTheme_Improved",
+        .pixel_test_param = {.test_suffix = "DarkTheme",
                              .use_dark_theme = true},
     },
     {
-        .pixel_test_param = {.test_suffix = "RTL_Improved",
+        .pixel_test_param = {.test_suffix = "RTL",
                              .use_right_to_left_language = true},
     },
     {
+        .pixel_test_param = {.test_suffix = "SignedOut_MultipleProfiles"},
+        .use_multiple_profiles = true,
+    },
+    {
         .pixel_test_param = {.test_suffix =
-                                 "SignedOut_MultipleProfiles_Improved"},
+                                 "SignedOut_MultipleProfiles_DarkTheme",
+                             .use_dark_theme = true},
         .use_multiple_profiles = true,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
-        .pixel_test_param =
-            {.test_suffix = "SignedOut_MultipleProfiles_DarkTheme_Improved",
-             .use_dark_theme = true},
-        .use_multiple_profiles = true,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
-    },
-    {
-        .pixel_test_param = {.test_suffix = "WebSignedIn_Improved"},
+        .pixel_test_param = {.test_suffix = "WebSignedIn"},
         .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
-        .pixel_test_param = {.test_suffix =
-                                 "WebSignedIn_PlaceholderIcon_Improved"},
+        .pixel_test_param = {.test_suffix = "WebSignedIn_PlaceholderIcon"},
         .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
         .account_image_available = false,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
-    },
-    {
-        .pixel_test_param =
-            {.test_suffix = "WebSignedIn_PlaceholderIcon_DarkTheme_Improved",
-             .use_dark_theme = true},
-        .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
-        .account_image_available = false,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
         .pixel_test_param = {.test_suffix =
-                                 "SignedIn_MultipleProfiles_Improved"},
+                                 "WebSignedIn_PlaceholderIcon_DarkTheme",
+                             .use_dark_theme = true},
+        .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
+        .account_image_available = false,
+    },
+    {
+        .pixel_test_param = {.test_suffix = "SignedIn_MultipleProfiles"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .use_multiple_profiles = true,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
         .pixel_test_param = {.test_suffix =
-                                 "SignedIn_MultipleProfiles_DarkTheme_Improved",
+                                 "SignedIn_MultipleProfiles_DarkTheme",
                              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .use_multiple_profiles = true,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
-        .pixel_test_param = {.test_suffix = "SignedIn_Sync_Improved"},
+        .pixel_test_param = {.test_suffix = "SignedIn_Sync"},
         .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
     },
-    {.pixel_test_param = {.test_suffix = "SignedIn_SyncPaused_Improved",
-                          .use_dark_theme = true},
-     .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused},
     {
-        .pixel_test_param = {.test_suffix = "SignInPending_Improved"},
+        .pixel_test_param = {.test_suffix = "SignedIn_SyncPaused",
+                             .use_dark_theme = true},
+        .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused,
+    },
+    {
+        .pixel_test_param = {.test_suffix = "SignInPending"},
         .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
     },
     {
-        .pixel_test_param = {.test_suffix = "SignInPending_RTL_Improved",
+        .pixel_test_param = {.test_suffix = "SignInPending_RTL",
                              .use_right_to_left_language = true},
         .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
     },
     {
-        .pixel_test_param = {.test_suffix = "SignedIn_AccountManaged_Improved"},
+        .pixel_test_param = {.test_suffix = "SignedIn_AccountManaged"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .management_status = ManagementStatus::kAccountManaged,
     },
     {
-        .pixel_test_param = {.test_suffix = "SignedIn_BrowserManaged_Improved",
+        .pixel_test_param = {.test_suffix = "SignedIn_BrowserManaged",
                              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignedOut,
         .management_status = ManagementStatus::kBrowserManaged,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
-        .pixel_test_param =
-            {.test_suffix = "SignedIn_BrowserSupervised_DarkTheme_Improved",
-             .use_dark_theme = true},
+        .pixel_test_param = {.test_suffix =
+                                 "SignedIn_BrowserSupervised_DarkTheme",
+                             .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
         .management_status = ManagementStatus::kSupervisedUser,
     },
     {
         .pixel_test_param =
-            {.test_suffix =
-                 "SignInPending_Nosync_BrowserSupervised_DarkTheme_Improved",
+            {.test_suffix = "SignInPending_Nosync_BrowserSupervised_DarkTheme",
              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
         .management_status = ManagementStatus::kSupervisedUser,
@@ -196,7 +185,7 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     {
         .pixel_test_param =
             {
-                .test_suffix = "SignedIn_BrowserSupervised_Improved",
+                .test_suffix = "SignedIn_BrowserSupervised",
                 .use_dark_theme = false,
             },
         .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
@@ -205,28 +194,27 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     {
         .pixel_test_param =
             {
-                .test_suffix =
-                    "SignInPending_Nosync_BrowserSupervised_Improved",
+                .test_suffix = "SignInPending_Nosync_BrowserSupervised",
                 .use_dark_theme = false,
             },
         .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
         .management_status = ManagementStatus::kSupervisedUser,
     },
     {
-        .pixel_test_param = {.test_suffix = "Guest_Improved"},
+        .pixel_test_param = {.test_suffix = "Guest"},
         .profile_type_param = ProfileTypePixelTestParam::kGuest,
         .extra_features_state_ = {{switches::kEnableImprovedGuestProfileMenu,
                                    true}},
     },
     {
-        .pixel_test_param = {.test_suffix = "Guest_Dark_Improved",
+        .pixel_test_param = {.test_suffix = "Guest_Dark",
                              .use_dark_theme = true},
         .profile_type_param = ProfileTypePixelTestParam::kGuest,
         .extra_features_state_ = {{switches::kEnableImprovedGuestProfileMenu,
                                    true}},
     },
     {
-        .pixel_test_param = {.test_suffix = "Incognito_Improved"},
+        .pixel_test_param = {.test_suffix = "Incognito"},
         .profile_type_param = ProfileTypePixelTestParam::kIncognito,
         .extra_features_state_ = {{switches::kEnableImprovedGuestProfileMenu,
                                    true}},
@@ -242,8 +230,6 @@ class ProfileMenuViewPixelTest
   ProfileMenuViewPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     base::flat_map<base::test::FeatureRef, bool> features_state = {
-        // False by default but may be overridden by `extra_features_state_`.
-        {kOutlineSilhouetteIcon, false},
         {features::kEnterpriseProfileBadgingForMenu, true},
         {features::kEnterpriseProfileBadgingPolicies, true},
         // False by default but may be overridden by `extra_features_state_`.

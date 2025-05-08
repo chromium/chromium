@@ -104,7 +104,6 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   scoped_refptr<UpdateContext> MakeMockUpdateContext() const;
 
   base::OnceClosure quit_closure_;
-  base::ScopedTempDir temp_dir_;
 };
 
 // This test is parameterized for |is_foreground|.
@@ -130,7 +129,6 @@ void UpdateCheckerTest::SetUp() {
 
   error_ = 0;
   retry_after_sec_ = 0;
-  EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
   update_context_ = MakeMockUpdateContext();
   update_context_->is_foreground = is_foreground_;
   update_context_->components_to_check_for_updates = {kUpdateItemId};
@@ -173,9 +171,8 @@ void UpdateCheckerTest::UpdateCheckComplete(
 
 scoped_refptr<UpdateContext> UpdateCheckerTest::MakeMockUpdateContext() const {
   return base::MakeRefCounted<UpdateContext>(
-      config_, base::MakeRefCounted<CrxCache>(temp_dir_.GetPath()), false,
-      false, std::vector<std::string>(), UpdateClient::CrxStateChangeCallback(),
-      UpdateEngine::Callback(), nullptr,
+      config_, false, false, std::vector<std::string>(),
+      UpdateClient::CrxStateChangeCallback(), UpdateEngine::Callback(), nullptr,
       /*is_update_check_only=*/false);
 }
 

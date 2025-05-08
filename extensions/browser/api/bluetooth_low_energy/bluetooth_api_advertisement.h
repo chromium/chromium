@@ -21,7 +21,7 @@ namespace extensions {
 
 // Representation of advertisement instances from the "bluetooth" namespace,
 // abstracting the underlying BluetoothAdvertisementXxx class. All methods
-// must be called on the |kThreadId| thread.
+// must be called on the `kThreadId` thread.
 class BluetoothApiAdvertisement : public ApiResource {
  public:
   BluetoothApiAdvertisement(const std::string& owner_extension_id,
@@ -37,7 +37,7 @@ class BluetoothApiAdvertisement : public ApiResource {
     return advertisement_.get();
   }
 
-  // Implementations of |BluetoothAdvertisement| require being called on the
+  // Implementations of `BluetoothAdvertisement` require being called on the
   // UI thread.
   static const content::BrowserThread::ID kThreadId =
       content::BrowserThread::UI;

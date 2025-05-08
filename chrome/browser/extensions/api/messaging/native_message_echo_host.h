@@ -53,7 +53,7 @@ class NativeMessageEchoHost : public NativeMessageHost {
   // Counter used to ensure message uniqueness for testing.
   int message_number_ = 0;
 
-  // |client_| must outlive this test instance.
+  // `client_` must outlive this test instance.
   raw_ptr<Client> client_ = nullptr;
 };
 

@@ -115,7 +115,7 @@ AccountInfo BnplTosControllerImpl::GetAccountInfo() const {
           .GetAccountInfoForPaymentsServer());
 }
 
-const std::string& BnplTosControllerImpl::GetIssuerId() const {
+BnplIssuer::IssuerId BnplTosControllerImpl::GetIssuerId() const {
   return model_.issuer.issuer_id();
 }
 

@@ -26,8 +26,6 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
   const LayoutResult* Layout();
 
-  LayoutUnit CalculateTieThreshold(const ComputedStyle& style) const;
-
  private:
   friend class MasonryLayoutAlgorithmTest;
 

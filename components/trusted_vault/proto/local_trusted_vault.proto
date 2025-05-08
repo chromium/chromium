@@ -48,7 +48,18 @@ message LocalDeviceRegistrationInfo {
   // the failure corresponds to a re-registration attempt. In this case, besides
   // key retrieval, it may be possible to resolve the error by attempting to
   // download new keys.
+  // TODO(crbug.com/409488087): Migrate this field to LocalTrustedVaultPerUser.
   optional bool last_registration_returned_local_data_obsolete = 4;
+}
+
+message ICloudKeychainRegistrationInfo {
+  // Indicates whether iCloud Keychain is registered, i.e. whether its public
+  // key is successfully submitted to the server.
+  // Note: The iCloud Keychain could have been registered successfully on
+  // another device already, which isn't reflected in this field initially.
+  // Attempting a registration will, however, detect that state an update this
+  // field.
+  optional bool registered = 1;
 }
 
 message LocalTrustedVaultDegradedRecoverabilityState {
@@ -81,6 +92,10 @@ message LocalTrustedVaultPerUser {
 
   // Device key and corresponding registration metadata.
   optional LocalDeviceRegistrationInfo local_device_registration_info = 5;
+
+  // Registration metadata for iCloud Keychain member.
+  optional ICloudKeychainRegistrationInfo icloud_keychain_registration_info =
+      10;
 
   // The time (in milliseconds since UNIX epoch) at which last unsuccessful (due
   // to transient errors) request was sent to the vault service. Used for

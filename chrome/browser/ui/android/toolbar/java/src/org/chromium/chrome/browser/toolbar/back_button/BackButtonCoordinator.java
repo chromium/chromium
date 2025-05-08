@@ -8,16 +8,18 @@ import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.view.View;
-import android.widget.ImageButton;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.ClickWithMetaStateCallback;
+import org.chromium.ui.widget.ChromeImageButton;
 
 /**
  * Root component for the back button. Exposes public API for external consumers to interact with
@@ -27,26 +29,27 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class BackButtonCoordinator {
     private final BackButtonMediator mMediator;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
-    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
     private final View mView;
 
     /**
      * Creates an instance of {@link BackButtonCoordinator}.
      *
-     * @param view an Android {@link ImageButton}.
-     * @param onBackPressed a callback that is invoked on back button click event. Allows parent
-     *     components to intercept click and navigate back in the history or hide custom UI
-     *     components.
+     * @param view an Android {@link ChromeImageButton}.
+     * @param onBackPressed a {@link ClickWithMetaStateCallback} (taking a parameter of meta key
+     *     state) that is invoked on back button click event. Allows parent components to intercept
+     *     click and navigate back in the history or hide custom UI components.
      * @param themeColorProvider a provider that notifies about theme changes.
      * @param tabSupplier a supplier that provides current active tab.
      * @param historyDelegate a delegate that allows parent components to decide how to display
      *     browser history.
      */
     public BackButtonCoordinator(
-            ImageButton view,
-            Runnable onBackPressed,
+            ChromeImageButton view,
+            ClickWithMetaStateCallback onBackPressed,
             ThemeColorProvider themeColorProvider,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
+            ObservableSupplier<Boolean> enabledSupplier,
             NavigationPopup.HistoryDelegate historyDelegate) {
         mView = view;
         mTabSupplier = tabSupplier;
@@ -68,6 +71,7 @@ public class BackButtonCoordinator {
                         onBackPressed,
                         themeColorProvider,
                         tabSupplier,
+                        enabledSupplier,
                         this::showNavigationPopup);
         PropertyModelChangeProcessor.create(model, view, BackButtonViewBinder::bind);
     }
@@ -84,15 +88,6 @@ public class BackButtonCoordinator {
                         mTabSupplier,
                         mHistoryDelegate);
         popup.show(mView);
-    }
-
-    /**
-     * Indicates that parent entered a tab switcher mode.
-     *
-     * @param isTabSwitcherMode whether tab switcher is showing or not.
-     */
-    public void setTabSwitcherMode(boolean isTabSwitcherMode) {
-        mMediator.setTabSwitcherMode(isTabSwitcherMode);
     }
 
     /**
@@ -150,6 +145,15 @@ public class BackButtonCoordinator {
         final var rect = new Rect();
         mView.getHitRect(rect);
         return rect;
+    }
+
+    /**
+     * Gets visibility.
+     *
+     * @return a boolean indicating whether view is visible or not.
+     */
+    public boolean isVisible() {
+        return mMediator.isVisible();
     }
 
     /**

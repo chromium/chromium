@@ -136,7 +136,8 @@ ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
       container.GetDocument(), container, std::nullopt, std::nullopt,
       ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped_,
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
-      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone));
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
+      ContainerScrollDirection::kNone, ContainerScrollDirection::kNone);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -494,7 +495,9 @@ void ContainerQueryEvaluator::UpdateContainerValues() {
       existing_values.Height(), existing_values.StuckHorizontal(),
       existing_values.StuckVertical(), existing_values.SnappedFlags(),
       existing_values.ScrollableHorizontal(),
-      existing_values.ScrollableVertical());
+      existing_values.ScrollableVertical(),
+      existing_values.ScrollDirectionHorizontal(),
+      existing_values.ScrollDirectionVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -537,7 +540,9 @@ void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
       container->GetDocument(), *container, width, height,
       existing_values.StuckHorizontal(), existing_values.StuckVertical(),
       existing_values.SnappedFlags(), existing_values.ScrollableHorizontal(),
-      existing_values.ScrollableVertical());
+      existing_values.ScrollableVertical(),
+      existing_values.ScrollDirectionHorizontal(),
+      existing_values.ScrollDirectionVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -555,7 +560,9 @@ void ContainerQueryEvaluator::UpdateContainerStuck(
       container->GetDocument(), *container, existing_values.Width(),
       existing_values.Height(), stuck_horizontal, stuck_vertical,
       existing_values.SnappedFlags(), existing_values.ScrollableHorizontal(),
-      existing_values.ScrollableVertical());
+      existing_values.ScrollableVertical(),
+      existing_values.ScrollDirectionHorizontal(),
+      existing_values.ScrollDirectionVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -572,7 +579,9 @@ void ContainerQueryEvaluator::UpdateContainerSnapped(
       existing_values.Height(), existing_values.StuckHorizontal(),
       existing_values.StuckVertical(), snapped,
       existing_values.ScrollableHorizontal(),
-      existing_values.ScrollableVertical());
+      existing_values.ScrollableVertical(),
+      existing_values.ScrollDirectionHorizontal(),
+      existing_values.ScrollDirectionVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -590,7 +599,9 @@ void ContainerQueryEvaluator::UpdateContainerScrollable(
       container->GetDocument(), *container, existing_values.Width(),
       existing_values.Height(), existing_values.StuckHorizontal(),
       existing_values.StuckVertical(), existing_values.Snapped(),
-      scrollable_horizontal, scrollable_vertical);
+      scrollable_horizontal, scrollable_vertical,
+      existing_values.ScrollDirectionHorizontal(),
+      existing_values.ScrollDirectionVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }

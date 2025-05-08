@@ -64,6 +64,7 @@ export class PrivacySandboxDialogNoticeStepElement extends
 
   private onNoticeSiteSuggestedAdsLearnMoreExpanded_(
       newValue: boolean, oldValue: boolean) {
+    this.loadPrivacyPolicyOnExpand(newValue, oldValue);
     this.onNoticeSiteSuggestedAdsLearnMoreExpandedChanged(newValue, oldValue);
   }
 

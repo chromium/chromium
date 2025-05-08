@@ -28,7 +28,6 @@ class MediaFormatBuilder {
             boolean allowAdaptivePlayback,
             int profile) {
         MediaFormat format = MediaFormat.createVideoFormat(mime, width, height);
-        if (format == null) return null;
         setCodecSpecificData(format, csds);
         if (hdrMetadata != null) {
             hdrMetadata.addMetadataToFormat(format);
@@ -117,7 +116,7 @@ class MediaFormatBuilder {
         }
         int maxWidth = Math.max(128, format.getInteger(MediaFormat.KEY_WIDTH));
         if (allowAdaptivePlayback && format.containsKey(MediaFormat.KEY_MAX_WIDTH)) {
-            maxWidth = Math.max(maxHeight, format.getInteger(MediaFormat.KEY_MAX_WIDTH));
+            maxWidth = Math.max(maxWidth, format.getInteger(MediaFormat.KEY_MAX_WIDTH));
         }
         int maxPixels;
         int minCompressionRatio;

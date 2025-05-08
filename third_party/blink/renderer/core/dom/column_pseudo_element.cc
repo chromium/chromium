@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 
-#include "third_party/blink/renderer/core/dom/tree_ordered_list.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -25,7 +24,57 @@ Element* ColumnPseudoElement::FirstChildInDOMOrder() const {
   // not match DOM order (e.g. out-of-flow positioning, reversed flex items, and
   // so on). Look for any nodes that start in this column, and get them sorted
   // in DOM order.
-  TreeOrderedList<Element> sorted_elements;
+  class Listener : public PhysicalFragmentTraversalListener {
+    STACK_ALLOCATED();
+
+   public:
+    Element* GetEarliestElement() const { return earliest_element_; }
+
+   private:
+    NextStep HandleEntry(const PhysicalBoxFragment& descendant,
+                         PhysicalOffset,
+                         bool is_first_for_node) final {
+      // We're only interested in nodes that start in this column. Any node
+      // that's resumed from a previous column will seen in its start column.
+      if (is_first_for_node) {
+        if (auto* element = DynamicTo<Element>(descendant.GetNode())) {
+          SetElementIfEarliest(element);
+          // No need to descend into this fragment. Children cannot precede this
+          // element.
+          return kSkipChildren;
+        }
+      }
+      return kContinue;
+    }
+
+    void HandleCulledInline(const LayoutInline& culled_inline,
+                            bool is_first_for_node) final {
+      if (is_first_for_node) {
+        if (auto* element = DynamicTo<Element>(culled_inline.GetNode())) {
+          // TODO(crbug.com/406288653): Note that we wouldn't have to look for
+          // culled inlines, if we instead got all focusable inlines to create
+          // fragments. That would cause some problems for LinkHighlightImpl,
+          // though, with the root cause being either there, or somewhere inside
+          // the outline code.
+          SetElementIfEarliest(element);
+        }
+      }
+    }
+
+    void SetElementIfEarliest(Element* element) {
+      if (!earliest_element_) {
+        earliest_element_ = element;
+        return;
+      }
+      uint16_t position = element->compareDocumentPosition(
+          earliest_element_, kTreatShadowTreesAsComposed);
+      if (position & kDocumentPositionFollowing) {
+        earliest_element_ = element;
+      }
+    }
+
+    Element* earliest_element_ = nullptr;
+  };
 
   const LayoutBox* multicol =
       UltimateOriginatingElement().GetLayoutBox()->ContentLayoutBox();
@@ -47,39 +96,11 @@ Element* ColumnPseudoElement::FirstChildInDOMOrder() const {
       continue;
     }
     const auto& column = *To<PhysicalBoxFragment>(child.get());
-    ForAllBoxFragmentDescendants(
-        column,
-        [&](const PhysicalBoxFragment* descendant,
-            const LayoutInline* culled_inline,
-            bool is_first_for_node) -> FragmentTraversalNextStep {
-          // One, and only one, should be set.
-          DCHECK(!descendant != !culled_inline);
-
-          // We're only interested in nodes that start in this column. Any node
-          // that's resumed from a previous column will seen in its start
-          // column.
-          if (is_first_for_node) {
-            if (descendant) {
-              if (auto* element = DynamicTo<Element>(descendant->GetNode())) {
-                sorted_elements.Add(element);
-                // No need to descend into this fragment. Children cannot
-                // precede this element.
-                return FragmentTraversalNextStep::kSkipChildren;
-              }
-            } else if (auto* element =
-                           DynamicTo<Element>(culled_inline->GetNode())) {
-              // TODO(crbug.com/406288653): Note that we wouldn't have to look
-              // for culled inlines, if we instead got all focusable inlines to
-              // create fragments. That would cause some problems for
-              // LinkHighlightImpl, though, with the root cause being either
-              // there, or somewhere inside the outline code.
-              sorted_elements.Add(element);
-            }
-          }
-          return FragmentTraversalNextStep::kContinue;
-        });
-    if (!sorted_elements.IsEmpty()) {
-      return *sorted_elements.begin();
+    Listener listener;
+    ForAllBoxFragmentDescendants(column, kFragmentTraversalOptionCulledInlines,
+                                 listener);
+    if (Element* first_element = listener.GetEarliestElement()) {
+      return first_element;
     }
   }
   return nullptr;

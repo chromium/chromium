@@ -15,6 +15,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -31,10 +32,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
+#include "base/test/test_waitable_event.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -71,6 +74,7 @@
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/http_util.h"
 #include "net/http/mock_http_cache.h"
+#include "net/http/no_vary_search_cache_storage_mock_file_operations.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
@@ -89,17 +93,26 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
+using base::test::RunClosure;
 using net::test::IsError;
 using net::test::IsOk;
+using testing::_;
 using testing::AllOf;
 using testing::ByRef;
 using testing::Contains;
+using testing::DoAll;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Field;
 using testing::Gt;
+using testing::InSequence;
+using testing::Invoke;
 using testing::IsEmpty;
+using testing::MockFunction;
 using testing::NotNull;
+using testing::Return;
+using testing::StrictMock;
+using testing::Truly;
 
 using base::Time;
 
@@ -2149,10 +2162,87 @@ TEST_F(HttpCacheTest, PrefetchTruncateCancelInConnectedCallback) {
   }
 }
 
+TEST_F(HttpCacheTest, StaleWhileRevalidateTruncated) {
+  MockHttpCache cache;
+  RangeTransactionServer range_support;
+  range_support.set_length(20);
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.response_headers =
+      "Last-Modified: Wed, 28 Nov 2007 00:40:09 GMT\n"
+      "Content-Length: 20\n"
+      "Cache-Control: max-age=0, stale-while-revalidate=60\n"
+      "Etag: foopy\n";
+  transaction.data = "01234567890123456789";
+  transaction.load_flags |= LOAD_SUPPORT_ASYNC_REVALIDATION;
+
+  // Do a truncated read of a stale-while-revalidate resource.
+  {
+    MockHttpRequest request(transaction);
+    Context c;
+
+    int rv = cache.CreateTransaction(&c.trans);
+    ASSERT_THAT(rv, IsOk());
+
+    rv = c.callback.GetResult(
+        c.trans->Start(&request, c.callback.callback(), NetLogWithSource()));
+    ASSERT_THAT(rv, IsOk());
+
+    // Read less than the whole thing.
+    scoped_refptr<IOBufferWithSize> buf =
+        base::MakeRefCounted<IOBufferWithSize>(10);
+    rv = c.callback.GetResult(
+        c.trans->Read(buf.get(), buf->size(), c.callback.callback()));
+    EXPECT_EQ(buf->size(), rv);
+
+    // Destroy the transaction.
+    c.trans.reset();
+    base::RunLoop().RunUntilIdle();
+
+    VerifyTruncatedFlag(&cache, request.CacheKey(), /*flag_value=*/true,
+                        /*data_size=*/10);
+  }
+
+  {
+    bool first = true;
+    transaction.handler = base::BindLambdaForTesting(
+        [&](const HttpRequestInfo* request, std::string* response_status,
+            std::string* response_headers, std::string* response_data) {
+          if (first) {
+            // We should first try sending an If-Range to verify this thing is
+            // valid.
+            EXPECT_EQ(request->extra_headers.GetHeader("Range"), "bytes=10-10");
+            EXPECT_EQ(request->extra_headers.GetHeader("If-Range"), "foopy");
+            response_status->assign("HTTP/1.1 206 Partial Content");
+            response_headers->assign(
+                "Content-Range: bytes 10-10/20\n"
+                "Content-Length: 1");
+            response_data->assign("0");
+            first = false;
+          } else {
+            // Now a range request to the second part.
+            EXPECT_EQ(request->extra_headers.GetHeader("Range"), "bytes=10-19");
+            response_status->assign("HTTP/1.1 206 Partial Content");
+            response_headers->assign(
+                "Content-Range: bytes 10-19/20\n"
+                "Content-Length: 10");
+            *response_data = "0123456789";
+          }
+        });
+    MockHttpRequest request(transaction);
+    RunTransactionTestWithRequest(cache.http_cache(), transaction, request,
+                                  /*response_info=*/nullptr);
+    base::RunLoop().RunUntilIdle();
+
+    VerifyTruncatedFlag(&cache, request.CacheKey(), /*flag_value=*/false,
+                        /*data_size=*/20);
+  }
+}
+
 // Make sure that if a stale-while-revalidate entry is truncated, then an
 // attempt to re-use it gets aborted in connected handler that truncated bit is
 // not lost.
-TEST_F(HttpCacheTest, StaleWhiteRevalidateTruncateCancelInConnectedCallback) {
+TEST_F(HttpCacheTest, StaleWhileRevalidateTruncateCancelInConnectedCallback) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -11742,6 +11832,24 @@ TEST_F(HttpCacheTestSplitCacheFeatureEnabled,
   EXPECT_EQ(base::Seconds(10000), response.headers->GetMaxAgeValue().value());
 }
 
+TEST_F(HttpCacheTestSplitCacheFeatureEnabled, SharedResourceUsesSharedCache) {
+  SchemefulSite site(GURL("http://foo.com"));
+  MockHttpRequest request(kSimpleGET_Transaction);
+  NetworkIsolationKey general_partition_nik(site, site);
+  request.network_isolation_key = general_partition_nik;
+  request.network_anonymization_key =
+      NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          general_partition_nik);
+
+  std::string cache_key = *HttpCache::GenerateCacheKeyForRequest(&request);
+  EXPECT_EQ("1/0/_dk_http://foo.com http://foo.com http://www.google.com/",
+            cache_key);
+
+  request.is_shared_resource = true;
+  cache_key = *HttpCache::GenerateCacheKeyForRequest(&request);
+  EXPECT_EQ("1/0/http://www.google.com/", cache_key);
+}
+
 TEST_F(HttpCacheTest, NonSplitCache) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -14016,12 +14124,14 @@ TEST_F(HttpCacheTest, PrioritizeCachingFlagSetForMainFrameNavigationRequest) {
             HINT_HIGH_PRIORITY);
 }
 
-class HttpCacheNoVarySearchTest : public HttpCacheTest,
-                                  public ::testing::WithParamInterface<bool> {
+class HttpCacheNoVarySearchTestBase
+    : public HttpCacheTest,
+      public ::testing::WithParamInterface<bool> {
  protected:
   static constexpr int kMaxAgeOneDay = 24 * 60 * 60;  // seconds
+  static constexpr std::string_view kBaseURL = "https://example.com/search?";
 
-  HttpCacheNoVarySearchTest() {
+  HttpCacheNoVarySearchTestBase() {
     using base::test::FeatureRef;
     std::vector<FeatureRef> enabled_features = {
         features::kHttpCacheNoVarySearch};
@@ -14033,10 +14143,29 @@ class HttpCacheNoVarySearchTest : public HttpCacheTest,
       disabled_features.push_back(split_cache_feature);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-    http_cache_.emplace();
+  }
+
+  ~HttpCacheNoVarySearchTestBase() {
+    // Destroy the NoVarySearchCacheStorage object.
+    http_cache_.reset();
+
+    // Make sure the NoVarySearchCacheStorage::Journaller object that lives on
+    // the thread pool has been destroyed along with any mock objects it owns.
+    // Despite what the presubmit claims, this use of RunUntilIdle() is correct.
+    RunUntilIdle();
+  }
+
+  void SetUp() override { ConstructCache(http_cache_); }
+
+  // This can be overloaded by subclasses to construct the cache with different
+  // arguments.
+  virtual void ConstructCache(std::optional<MockHttpCache>& http_cache) {
+    http_cache.emplace();
   }
 
   HttpCache* cache() { return http_cache_->http_cache(); }
+
+  MockDiskCache* mock_disk_cache() { return http_cache_->disk_cache(); }
 
   // Callers can safely modify the return value, except for the `url` field.
   MockTransaction& CreateMockTransaction(std::string_view query,
@@ -14054,7 +14183,7 @@ class HttpCacheNoVarySearchTest : public HttpCacheTest,
                       std::string_view no_vary_search,
                       int max_age = kMaxAgeOneDay) {
     MockTransaction& transaction =
-        CreateMockTransaction("q=fred&a=1", "params=(\"a\")", max_age);
+        CreateMockTransaction(query, no_vary_search, max_age);
     MockHttpRequest network_request(transaction);
 
     HttpResponseInfo info;
@@ -14072,7 +14201,7 @@ class HttpCacheNoVarySearchTest : public HttpCacheTest,
       std::string_view query,
       std::string_view no_vary_search,
       int max_age) {
-    GURL url(base::StrCat({"https://example.com/search?", query}));
+    GURL url(base::StrCat({kBaseURL, query}));
     std::string no_vary_search_string(no_vary_search);
     std::string response_headers = base::StringPrintf(
         "ETag: \"foo\"\n"
@@ -14101,6 +14230,8 @@ class HttpCacheNoVarySearchTest : public HttpCacheTest,
   // in the constructor.
   std::optional<MockHttpCache> http_cache_;
 };
+
+using HttpCacheNoVarySearchTest = HttpCacheNoVarySearchTestBase;
 
 TEST_P(HttpCacheNoVarySearchTest, SimpleSuccess) {
   FetchIntoCache("q=fred&a=1", "params=(\"a\")");
@@ -14161,11 +14292,365 @@ TEST_P(HttpCacheNoVarySearchTest, ClearNoVarySearchCache) {
   EXPECT_TRUE(info.network_accessed);
 }
 
+TEST_P(HttpCacheNoVarySearchTest, ModeIsReadButRequiresValidation) {
+  // Insert a non-No-Vary-Search entry that the lookup will fallback to.
+  {
+    MockTransaction plain = kSimpleGET_Transaction;
+    const std::string url = base::StrCat({kBaseURL, "q=fred"});
+    plain.url = url.c_str();
+    ScopedMockTransaction scoped(plain);
+    RunTransactionTest(cache(), scoped);
+  }
+
+  // Insert a No-Vary-Search entry that will match but require validation.
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")", /*max_age=*/0);
+
+  MockTransaction& from_cache = CreateMockTransaction("q=fred", "");
+  // Make the cache request have mode READ, so that it can't perform
+  // revalidation. This will cause it to fall back to the request URL.
+  from_cache.load_flags = LOAD_ONLY_FROM_CACHE;
+
+  auto create_and_start_transaction = [&](MockHttpRequest& request,
+                                          TestCompletionCallback& callback) {
+    std::unique_ptr<HttpTransaction> transaction;
+    EXPECT_THAT(cache()->CreateTransaction(DEFAULT_PRIORITY, &transaction),
+                IsOk());
+    EXPECT_TRUE(transaction);
+    // Avoid crashing even if CreateTransaction() failed for some reason.
+    // ASSERT_TRUE() cannot be used here because the lambda doesn't return
+    // void.
+    if (transaction) {
+      EXPECT_EQ(
+          transaction->Start(&request, callback.callback(), NetLogWithSource()),
+          ERR_IO_PENDING);
+    }
+    return transaction;
+  };
+
+  MockHttpRequest cache_request1(from_cache);
+  TestCompletionCallback callback1;
+  auto transaction1 = create_and_start_transaction(cache_request1, callback1);
+  ASSERT_TRUE(transaction1);
+
+  // At this point, `transaction1` is waiting for the cache lock for
+  // "q=fred&a=1", since the cache lock can only be acquired asynchronously.
+
+  // Add a second transaction to keep another reference to the ActiveEntry to
+  // keep it alive after the first transaction finishes.
+  MockHttpRequest cache_request2(from_cache);
+  TestCompletionCallback callback2;
+  auto transaction2 = create_and_start_transaction(cache_request2, callback2);
+  EXPECT_TRUE(transaction2);
+
+  // Now `transaction2` is waiting behind `transaction1` for the cache lock for
+  // "q=fred&a=1".
+
+  EXPECT_THAT(callback1.WaitForResult(), IsOk());
+
+  // Now `transaction1` has taken the cache lock for "q=fred&a=1", read the
+  // response headers, found that validation is required, released the cache
+  // lock for "q=fred&a=1", restarted, taken the cache lock for "q=fred" and
+  // read the response headers and found them to be usable. A task has been
+  // posted which will later give `transaction2` the cache lock.
+
+  static constexpr auto expect_fresh_response =
+      [](const HttpTransaction& transaction) {
+        const HttpResponseInfo* info = transaction.GetResponseInfo();
+        EXPECT_TRUE(info->was_cached);
+        EXPECT_FALSE(info->network_accessed);
+        EXPECT_EQ(info->cache_entry_status, HttpResponseInfo::ENTRY_USED);
+        EXPECT_EQ(info->headers->response_code(), 200);
+        EXPECT_EQ(info->headers->GetNormalizedHeader("No-Vary-Search"),
+                  std::nullopt);
+      };
+
+  expect_fresh_response(*transaction1);
+
+  // Destroy `transaction1` to ensure there are no dangling pointers to it and
+  // release the cache lock on "q=fred".
+  transaction1.reset();
+
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+
+  // Now `transaction2` has caught up. It should also have used the fresh cache
+  // entry.
+  expect_fresh_response(*transaction2);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          HttpCacheNoVarySearchTest,
                          ::testing::Bool(),
                          [](const auto& info) {
                            return info.param ? "NotSplitCache" : "SplitCache";
                          });
+
+// A GoogleMock action to quit a base::RunLoop. This is not defined using the
+// ACTION_P macro because to be thread-safe QuitClosure() needs to be called
+// when the action is created, not when it is executed.
+auto QuitRunLoop(base::RunLoop& run_loop) {
+  return RunClosure(run_loop.QuitClosure());
+}
+
+// Tests for NoVarySearchCacheStorage integration. These necessarily depend on
+// the implementation of NoVarySearchCacheStorage, and would need to be updated
+// if a different storage backend was used.
+class HttpCacheNoVarySearchMockFileOperationsTest
+    : public HttpCacheNoVarySearchTestBase {
+ public:
+  using StrictMockFileOperations = StrictMock<MockFileOperations>;
+  using StrictMockWriter = StrictMock<MockWriter>;
+  using Checkpoint = StrictMock<MockFunction<void()>>;
+
+  void ConstructCache(std::optional<MockHttpCache>& http_cache) override {
+    auto file_operations = std::make_unique<StrictMockFileOperations>();
+    file_operations_ = file_operations.get();
+    auto writer = std::make_unique<StrictMockWriter>();
+    writer_ = writer.get();
+
+    auto maybe_block = [&] {
+      if (delay_load_.load()) {
+        // This thread synchronously goes to sleep until signalled.
+        load_can_proceed_.Wait();
+      }
+    };
+
+    {
+      InSequence s;
+
+      load_expectations_ +=
+          EXPECT_CALL(*file_operations, Load)
+              .WillOnce(DoAll(
+                  Invoke(maybe_block),
+                  Return(base::unexpected(base::File::FILE_ERROR_NOT_FOUND))));
+      load_expectations_ += EXPECT_CALL(*file_operations, AtomicSave)
+                                .WillOnce(Return(base::ok()));
+      load_expectations_ += EXPECT_CALL(*file_operations, CreateWriter)
+                                .WillOnce(Return(std::move(writer)));
+      load_expectations_ +=
+          EXPECT_CALL(*writer_, Write)
+              .WillOnce(DoAll(QuitRunLoop(load_run_loop_), Return(true)));
+    }
+    http_cache.emplace(std::make_unique<MockBackendFactory>(),
+                       std::move(file_operations));
+  }
+
+  void InitializeBackend() {
+    initialized_backend_ = true;
+    // It's not safe to set new expectations after this point.
+    file_operations_ = nullptr;
+    writer_ = nullptr;
+
+    TestGetBackendCompletionCallback cb;
+    HttpCache::GetBackendResult result = cache()->GetBackend(cb.callback());
+    EXPECT_THAT(cb.GetResult(result).first, IsOk());
+  }
+
+  void WaitForLoad() { load_run_loop_.Run(); }
+
+  // Returns a GoogleMock matcher which tests if `substring` appears within a
+  // uint8_t span. For example SpanHasSubstring("foo") will match against a span
+  // that contains the bytes 'f' 'o' 'o' contiguously in that order.
+  static auto SpanHasSubstring(const std::string& substring) {
+    return Truly([substring](base::span<const uint8_t> span) {
+      return !std::ranges::search(span, substring).empty();
+    });
+  }
+
+  void ResumeLoad() {
+    CHECK(delay_load_.load());
+    load_can_proceed_.Signal();
+  }
+
+  // Set whether loading the snapshot should block the background thread.
+  void set_delay_load(bool delay_load) { delay_load_.store(delay_load); }
+
+  StrictMockFileOperations& operations() {
+    CHECK(!initialized_backend_)
+        << "Set expectations before initializing backend";
+    return *file_operations_;
+  }
+
+  StrictMockWriter& writer() {
+    CHECK(!initialized_backend_)
+        << "Set expectations before initializing backend";
+    return *writer_;
+  }
+
+  const testing::ExpectationSet& load_expectations() const {
+    CHECK(!initialized_backend_)
+        << "Set expectations before initializing backend";
+    return load_expectations_;
+  }
+
+ private:
+  base::RunLoop load_run_loop_;
+  raw_ptr<StrictMockFileOperations> file_operations_ = nullptr;
+
+  // This pointer will dangle if a new snapshot is created
+  raw_ptr<StrictMockWriter> writer_ = nullptr;
+
+  // ExpectationSet represents a set of expectation. See
+  // https://google.github.io/googletest/reference/mocking.html#ExpectationSet
+  // for documentation.
+  testing::ExpectationSet load_expectations_;
+
+  // This is used for blocking load when `delay_load_` is true.
+  base::TestWaitableEvent load_can_proceed_;
+
+  bool initialized_backend_ = false;
+  std::atomic<bool> delay_load_ = false;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpCacheNoVarySearchMockFileOperationsTest,
+                         ::testing::Bool(),
+                         [](const auto& info) {
+                           return info.param ? "NotSplitCache" : "SplitCache";
+                         });
+
+TEST_P(HttpCacheNoVarySearchMockFileOperationsTest, CacheStorageIsCreated) {
+  InitializeBackend();
+
+  WaitForLoad();
+}
+
+TEST_P(HttpCacheNoVarySearchMockFileOperationsTest, InsertsAreJournalled) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(writer(), Write(SpanHasSubstring("q=fred&a=1")))
+      .After(load_expectations())
+      .WillOnce(DoAll(QuitRunLoop(run_loop), Return(true)));
+
+  InitializeBackend();
+
+  WaitForLoad();
+
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+  run_loop.Run();
+}
+
+TEST_P(HttpCacheNoVarySearchMockFileOperationsTest, EraseIsJournalled) {
+  base::RunLoop insert_run_loop;
+  base::RunLoop erase_run_loop;
+  // The same matcher works for the insert and erase operations, because they
+  // both have to contain the original query. This line verifies that two
+  // matching writes have been performed, but to avoid making the test too
+  // sensitive to the format of the journal, it does not verify that the journal
+  // entry types match.
+  EXPECT_CALL(writer(), Write(SpanHasSubstring("q=fred&a=1")))
+      .After(load_expectations())
+      .WillOnce(DoAll(QuitRunLoop(insert_run_loop), Return(true)))
+      .WillOnce(DoAll(QuitRunLoop(erase_run_loop), Return(true)));
+
+  InitializeBackend();
+
+  WaitForLoad();
+
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+
+  // Ensure the insert is really complete. Without this, the call to
+  // set_fail_requests() sometimes causes the previous transaction to fail.
+  insert_run_loop.Run();
+
+  // Cause the next request to fail. This will then cause the entry to be
+  // erased from the NoVarySearchCache.
+  mock_disk_cache()->set_fail_requests(true);
+
+  MockTransaction& from_cache =
+      CreateMockTransaction("q=fred&a=2", "params=(\"a\")");
+  RunTransactionTest(cache(), from_cache);
+  erase_run_loop.Run();
+}
+
+TEST_P(HttpCacheNoVarySearchMockFileOperationsTest,
+       ClearNoVarySearchCacheRewritesSnapshot) {
+  base::RunLoop journal_run_loop;
+  base::RunLoop snapshot_run_loop;
+  {
+    InSequence s;
+
+    // Verifies that the initial FetchIntoCache() transaction is journalled and
+    // permits the main thread to continue.
+    EXPECT_CALL(writer(), Write(SpanHasSubstring("q=fred&a=1")))
+        .After(load_expectations())
+        .WillOnce(DoAll(QuitRunLoop(journal_run_loop), Return(true)));
+
+    // Verifies that the snapshot is written and that it does not contain the
+    // entry that the call to ClearNoVarySearchCache() should have removed.
+    EXPECT_CALL(operations(),
+                AtomicSave(_, Not(Contains(SpanHasSubstring("q=fred&a=1")))))
+        .WillOnce(Return(base::ok()));
+
+    auto writer = std::make_unique<StrictMockWriter>();
+    auto& writer_ref = *writer;
+
+    // Verifies that a new journal file is created.
+    EXPECT_CALL(operations(), CreateWriter).WillOnce(Return(std::move(writer)));
+
+    // Verifies that the magic number (and nothing else) is written to the
+    // journal file, and permits the test to complete.
+    EXPECT_CALL(writer_ref, Write)
+        .WillOnce(DoAll(QuitRunLoop(snapshot_run_loop), Return(true)));
+  }
+
+  InitializeBackend();
+
+  WaitForLoad();
+
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+  journal_run_loop.Run();
+
+  cache()->ClearNoVarySearchCache(UrlFilterType::kFalseIfMatches, {}, {},
+                                  base::Time(), base::Time::Max());
+
+  snapshot_run_loop.Run();
+}
+
+TEST_P(HttpCacheNoVarySearchMockFileOperationsTest,
+       InsertDuringLoadIsJournalled) {
+  // To make the test robust, ensure that background file operations don't
+  // complete until we have finished our first request.
+  set_delay_load(true);
+
+  base::RunLoop run_loop;
+  Checkpoint checkpoint;
+  {
+    InSequence s;
+
+    // Verifies that the journal write does not happen before the call to
+    // ResumeLoad().
+    EXPECT_CALL(checkpoint, Call());
+
+    // Verifies that the transaction that happened before the load completed is
+    // journalled, and permits the test to continue.
+    EXPECT_CALL(writer(), Write(SpanHasSubstring("q=fred&a=1")))
+        .After(load_expectations())
+        .WillOnce(DoAll(QuitRunLoop(run_loop), Return(true)));
+  }
+
+  InitializeBackend();
+
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+
+  checkpoint.Call();
+
+  // Let background file operations resume.
+  ResumeLoad();
+
+  // Wait for the journal to be written.
+  run_loop.Run();
+
+  // The entry should still be there.
+  MockTransaction& from_cache =
+      CreateMockTransaction("q=fred&a=2", "params=(\"a\")");
+  MockHttpRequest cache_request(from_cache);
+
+  HttpResponseInfo info;
+
+  RunTransactionTestWithRequest(cache(), from_cache, cache_request, &info);
+  EXPECT_TRUE(info.was_cached);
+  EXPECT_FALSE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_USED);
+  EXPECT_EQ(info.headers->response_code(), 200);
+}
 
 }  // namespace net

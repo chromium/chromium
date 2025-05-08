@@ -77,47 +77,6 @@ enum class TabGridOpeningMode {
 // Shows the settings UI for price tracking notifications.
 - (void)showPriceTrackingNotificationsSettings;
 
-// Presents the Trusted Vault reauth dialog.
-// `baseViewController` presents the sign-in.
-// `securityDomainID` Identifies a particular security domain.
-// `trigger` UI elements where the trusted vault reauth has been triggered.
-// `accessPoint` Identifies where the dialog is initiated from.
-- (void)
-    showTrustedVaultReauthForFetchKeysFromViewController:
-        (UIViewController*)baseViewController
-                                        securityDomainID:
-                                            (trusted_vault::SecurityDomainId)
-                                                securityDomainID
-                                                 trigger:
-                                                     (syncer::
-                                                          TrustedVaultUserActionTriggerForUMA)
-                                                         trigger
-                                             accessPoint:
-                                                 (signin_metrics::AccessPoint)
-                                                     accessPoint;
-
-// Presents the Trusted Vault degraded recoverability (to enroll additional
-// recovery factors).
-// `baseViewController` presents the sign-in.
-// `securityDomainID` Identifies a particular security domain.
-// `trigger` UI elements where the trusted vault reauth has been triggered.
-// `accessPoint` Identifies where the dialog is initiated from.
-- (void)
-    showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
-        (UIViewController*)baseViewController
-                                                     securityDomainID:
-                                                         (trusted_vault::
-                                                              SecurityDomainId)
-                                                             securityDomainID
-                                                              trigger:
-                                                                  (syncer::
-                                                                       TrustedVaultUserActionTriggerForUMA)
-                                                                      trigger
-                                                          accessPoint:
-                                                              (signin_metrics::
-                                                                   AccessPoint)
-                                                                  accessPoint;
-
 // Shows the Safe Browsing settings page presenting from `baseViewController`.
 - (void)showSafeBrowsingSettingsFromViewController:
     (UIViewController*)baseViewController;
@@ -168,10 +127,12 @@ enum class TabGridOpeningMode {
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController;
 
-// Shows the account menu. `fromWeb` should be true if it’s requested by a web
-// page. On scenes with regular width, the account menu appears as a popover.
-// This command is ignored if there is already a UI being presented.
-- (void)showAccountMenuFromAccessPoint:(AccountMenuAccessPoint)accessPoint;
+// Shows the account menu. On scenes with regular width, the account menu
+// appears as a popover. This command is ignored if there is already a UI being
+// presented. Also, redirects to `url` when the sign-in flow is complete and one
+// is provided.
+- (void)showAccountMenuFromAccessPoint:(AccountMenuAccessPoint)accessPoint
+                                   URL:(const GURL&)url;
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the consistency promo UI that allows users to sign in to Chrome using

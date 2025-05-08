@@ -419,6 +419,9 @@ ci.gpu.windows_builder(
     console_view_entry = consoles.console_view_entry(
         category = "Windows",
     ),
+    # TODO(crbug.com/413285147): Restore this to the default once sync/compile
+    # times are reduced.
+    execution_timeout = 6 * time.hour,
 )
 
 ci.thin_tester(

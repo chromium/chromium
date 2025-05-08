@@ -101,6 +101,14 @@ enum class UserSelectableType;
 // Returns if the data type is enabled for the sync service.
 + (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type;
 
+// Set/clear a global flag to return fake default responses for all profile
+// separation policy fetch requests (unless a specific response is set for the
+// next request, see `setPolicyResponseForNextProfileSeparationPolicyRequest:`).
+// If a test sets this (typically in `setUpForTestCase`), it must also unset it
+// again (in `tearDown`).
++ (void)setUseFakeResponsesForProfileSeparationPolicyRequests;
++ (void)clearUseFakeResponsesForProfileSeparationPolicyRequests;
+
 // Stores a policy that will be returned for the next fetch profile separation
 // policy request.
 + (void)setPolicyResponseForNextProfileSeparationPolicyRequest:

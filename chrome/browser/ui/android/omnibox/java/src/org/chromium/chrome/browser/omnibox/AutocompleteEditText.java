@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.provider.Settings;
@@ -17,11 +19,12 @@ import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -29,12 +32,13 @@ import org.chromium.ui.text.EmptyTextWatcher;
 import java.util.Optional;
 
 /** An {@link EditText} that shows autocomplete text at the end. */
+@NullMarked
 public class AutocompleteEditText extends VerticallyFixedEditText
         implements AutocompleteEditTextModelBase.Delegate {
     private static final String TAG = "AutocompleteEdit";
     private static final boolean DEBUG = OmniboxFeatures.sDiagInputConnection.getValue();
 
-    private AutocompleteEditTextModelBase mModel;
+    private @Nullable AutocompleteEditTextModelBase mModel;
     private boolean mIgnoreTextChangesForAutocomplete = true;
     private boolean mLastEditWasPaste;
     private boolean mOnSanitizing;
@@ -92,14 +96,16 @@ public class AutocompleteEditText extends VerticallyFixedEditText
         mNativeInitialized = true;
     }
 
+    @EnsuresNonNull("mModel")
     private void ensureModel() {
         if (mModel != null) return;
 
         mModel = new SpannableAutocompleteEditTextModel(this, getContext());
         mModel.setIgnoreTextChangeFromAutocomplete(true);
         mModel.onFocusChanged(hasFocus());
-        mModel.onSetText(getText());
-        mModel.onTextChanged(getText(), 0, 0, getText().length());
+        Editable text = assumeNonNull(getText());
+        mModel.onSetText(text);
+        mModel.onTextChanged(text, 0, 0, text.length());
         mModel.onSelectionChanged(getSelectionStart(), getSelectionEnd());
         if (mLastEditWasPaste) mModel.onPaste();
         mModel.setIgnoreTextChangeFromAutocomplete(false);
@@ -214,7 +220,7 @@ public class AutocompleteEditText extends VerticallyFixedEditText
      *     default. Will usually be URL when autocompleting a title, and empty otherwise.
      */
     public void setAutocompleteText(
-            @NonNull CharSequence userText,
+            CharSequence userText,
             @Nullable CharSequence inlineAutocompleteText,
             Optional<String> additionalText) {
         boolean emptyAutocomplete = TextUtils.isEmpty(inlineAutocompleteText);
@@ -279,13 +285,13 @@ public class AutocompleteEditText extends VerticallyFixedEditText
     }
 
     @VisibleForTesting
-    public InputConnection getInputConnection() {
+    public @Nullable InputConnection getInputConnection() {
         if (mModel == null) return null;
         return mModel.getInputConnection();
     }
 
     @Override
-    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+    public @Nullable InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         InputConnection target = super.onCreateInputConnection(outAttrs);
         // Initially, target is null until View gets the focus.
         if (target == null && mModel == null) {
@@ -315,7 +321,7 @@ public class AutocompleteEditText extends VerticallyFixedEditText
     }
 
     @Override
-    public void setOnKeyListener(OnKeyListener listener) {
+    public void setOnKeyListener(@Nullable OnKeyListener listener) {
         super.setOnKeyListener(listener);
         mOnKeyListener = listener;
     }
@@ -357,11 +363,11 @@ public class AutocompleteEditText extends VerticallyFixedEditText
         return defaultIme == null ? "" : defaultIme;
     }
 
-    /* package */ void setModelForTesting(@NonNull AutocompleteEditTextModelBase model) {
+    /* package */ void setModelForTesting(AutocompleteEditTextModelBase model) {
         mModel = model;
     }
 
-    /* package */ AutocompleteEditTextModelBase getModelForTesting() {
+    /* package */ @Nullable AutocompleteEditTextModelBase getModelForTesting() {
         return mModel;
     }
 }

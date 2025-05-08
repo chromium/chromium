@@ -13,31 +13,12 @@ namespace lens {
 class TestLensOverlayController : public LensOverlayController {
  public:
   TestLensOverlayController(tabs::TabInterface* tab,
+                            LensSearchController* lens_search_controller,
                             variations::VariationsClient* variations_client,
                             signin::IdentityManager* identity_manager,
                             PrefService* pref_service,
                             syncer::SyncService* sync_service,
-                            ThemeService* theme_service)
-      : LensOverlayController(tab,
-                              variations_client,
-                              identity_manager,
-                              pref_service,
-                              sync_service,
-                              theme_service) {}
-
-  std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
-      lens::LensOverlayFullImageResponseCallback full_image_callback,
-      lens::LensOverlayUrlResponseCallback url_callback,
-      lens::LensOverlayInteractionResponseCallback interaction_callback,
-      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
-      lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
-      lens::UploadProgressCallback upload_progress_callback,
-      variations::VariationsClient* variations_client,
-      signin::IdentityManager* identity_manager,
-      Profile* profile,
-      lens::LensOverlayInvocationSource invocation_source,
-      bool use_dark_mode,
-      lens::LensOverlayGen204Controller* gen204_controller) override;
+                            ThemeService* theme_service);
 };
 
 }  // namespace lens

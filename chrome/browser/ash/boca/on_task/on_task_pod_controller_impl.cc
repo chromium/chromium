@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/wm/window_pin_util.h"
+#include "ash/wm/window_state.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -66,15 +67,19 @@ OnTaskPodControllerImpl::OnTaskPodControllerImpl(Browser* browser)
       l10n_util::GetStringUTF16(IDS_ON_TASK_POD_ACCESSIBLE_NAME));
   pod_widget_->SetBounds(CalculateWidgetBounds());
   OnPageNavigationContextChanged();
+  pod_widget_->SetFocusTraversableParentView(
+      BrowserView::GetBrowserViewForBrowser(browser_.get()));
   pod_widget_->Show();
-  is_window_pinned_ = IsWindowPinned(browser_window);
 
   browser_window->AddObserver(this);
+  WindowState::Get(browser_window)->AddObserver(this);
 }
 
 OnTaskPodControllerImpl::~OnTaskPodControllerImpl() {
   if (browser_) {
-    browser_->window()->GetNativeWindow()->RemoveObserver(this);
+    aura::Window* const browser_window = browser_->window()->GetNativeWindow();
+    WindowState::Get(browser_window)->RemoveObserver(this);
+    browser_window->RemoveObserver(this);
   }
 }
 
@@ -141,22 +146,29 @@ void OnTaskPodControllerImpl::OnWindowBoundsChanged(
     return;
   }
   pod_widget_->SetBounds(CalculateWidgetBounds());
+}
+
+void OnTaskPodControllerImpl::OnPostWindowStateTypeChange(
+    WindowState* window_state,
+    chromeos::WindowStateType old_type) {
+  // Only update the pod when the old window and new window have different
+  // pinned state.
+  chromeos::WindowStateType new_type = window_state->GetStateType();
+  if (chromeos::IsPinnedWindowStateType(old_type) ==
+      chromeos::IsPinnedWindowStateType(new_type)) {
+    return;
+  }
   views::View* const pod_widget_contents_view = pod_widget_->GetContentsView();
   if (!pod_widget_contents_view) {
     return;
   }
   OnTaskPodView* const on_task_pod_view =
       static_cast<OnTaskPodView*>(pod_widget_contents_view);
+  on_task_pod_view->OnLockedModeUpdate();
 
-  bool is_window_pinned = IsWindowPinned(window);
-  if (is_window_pinned_ != is_window_pinned) {
-    on_task_pod_view->OnLockedModeUpdate();
-
-    // Resize and reset bounds of the widget to fit the contents view.
-    pod_widget_->SetSize(on_task_pod_view->GetPreferredSize());
-    pod_widget_->SetBounds(CalculateWidgetBounds());
-  }
-  is_window_pinned_ = is_window_pinned;
+  // Resize and reset bounds of the widget to fit the contents view.
+  pod_widget_->SetSize(on_task_pod_view->GetPreferredSize());
+  pod_widget_->SetBounds(CalculateWidgetBounds());
 }
 
 void OnTaskPodControllerImpl::OnWindowVisibilityChanged(aura::Window* window,

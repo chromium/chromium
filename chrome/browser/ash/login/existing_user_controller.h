@@ -336,7 +336,7 @@ class ExistingUserController : public HttpAuthDialog::Observer,
 
   // True if password has been changed for user who is completing sign in.
   // Set in OnLoginSuccess. Before that use LoginPerformer::password_changed().
-  bool password_changed_;
+  bool password_changed_ = false;
 
   // Set in OnLoginSuccess. Before that use LoginPerformer::auth_mode().
   // Initialized with `kExternal` as more restricted mode.

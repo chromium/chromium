@@ -8,11 +8,11 @@
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import type {CursorRange} from '/common/cursors/range.js';
 
+import type {InternalKeyEvent} from '../common/internal_key_event.js'
 import {Msgs} from '../common/msgs.js';
 import {QueueMode} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
-import type {InternalKeyEvent} from './input/background_keyboard_handler.js';
 
 import AutomationNode = chrome.automation.AutomationNode;
 

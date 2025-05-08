@@ -19,15 +19,14 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -136,13 +135,8 @@ void PermissionPromptBubbleBaseView::CreatePermissionButtons(
     allow_always_button->SetStyle(ui::ButtonStyle::kTonal);
     block_button->SetStyle(ui::ButtonStyle::kTonal);
 
-    if (permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get()) {
-      buttons_container->AddChildView(std::move(allow_always_button));
-      buttons_container->AddChildView(std::move(allow_once_button));
-    } else {
-      buttons_container->AddChildView(std::move(allow_once_button));
-      buttons_container->AddChildView(std::move(allow_always_button));
-    }
+    buttons_container->AddChildView(std::move(allow_always_button));
+    buttons_container->AddChildView(std::move(allow_once_button));
     buttons_container->AddChildView(std::move(block_button));
 
     views::LayoutProvider* const layout_provider = views::LayoutProvider::Get();
@@ -258,6 +252,14 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
       request_type(), GetPermissionActionString(button),
       record_browser_always_active_value());
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+#if BUILDFLAG(IS_CHROMEOS)
+  // `PERMISSION_SMART_CARD` is essentially a chooser permission without an
+  // actual chooser - thus, there is no blocklist of devices and no real
+  // difference between deny and dismiss. Ergo, deny clicks should be handled as
+  // dismiss, including imposing embargo and recording appropriate histograms.
+  const bool is_deny_supported =
+      request_type() != permissions::RequestTypeForUma::PERMISSION_SMART_CARD;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (browser_view && browser_view->GetLocationBarView()->GetChipController() &&
       browser_view->GetLocationBarView()
           ->GetChipController()
@@ -278,7 +280,14 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
         return;
 
       case PermissionDialogButton::kDeny:
-        chip_controller->PromptDecided(permissions::PermissionAction::DENIED);
+        chip_controller->PromptDecided(
+#if BUILDFLAG(IS_CHROMEOS)
+            is_deny_supported ? permissions::PermissionAction::DENIED
+                              : permissions::PermissionAction::DISMISSED
+#else
+            permissions::PermissionAction::DENIED
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        );
         return;
     }
   }
@@ -291,7 +300,11 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
       delegate_->AcceptThisTime();
       return;
     case PermissionDialogButton::kDeny:
+#if BUILDFLAG(IS_CHROMEOS)
+      is_deny_supported ? delegate_->Deny() : delegate_->Dismiss();
+#else
       delegate_->Deny();
+#endif  // BUILDFLAG(IS_CHROMEOS)
       return;
   }
   NOTREACHED();
@@ -307,10 +320,6 @@ std::u16string PermissionPromptBubbleBaseView::GetPermissionFragmentForTesting()
 // static
 bool PermissionPromptBubbleBaseView::IsOneTimePermission(
     permissions::PermissionPrompt::Delegate& delegate) {
-  if (!base::FeatureList::IsEnabled(
-          permissions::features::kOneTimePermission)) {
-    return false;
-  }
   CHECK_GT(delegate.Requests().size(), 0u);
   for (permissions::PermissionRequest* request : delegate.Requests()) {
     auto content_setting_type =

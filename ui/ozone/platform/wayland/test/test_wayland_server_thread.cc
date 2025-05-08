@@ -20,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "ui/ozone/platform/wayland/test/test_gtk_primary_selection.h"
-#include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_primary_selection.h"
 
 namespace wl {
@@ -56,7 +55,6 @@ TestWaylandServerThread::TestWaylandServerThread(const ServerConfig& config)
       client_destroy_listener_(this),
       config_(config),
       compositor_(config.compositor_version),
-      zcr_text_input_extension_v1_(config.text_input_extension_version),
       controller_(FROM_HERE) {
   DETACH_FROM_THREAD(thread_checker_);
 }
@@ -133,14 +131,11 @@ bool TestWaylandServerThread::Start() {
   if (!xdg_shell_.Initialize(display_.get()))
     return false;
 
-  if (config_.text_input_wrapper_type == ZWPTextInputWrapperType::kV3) {
+  if (config_.text_input_type == ZwpTextInputType::kV3) {
     if (!zwp_text_input_manager_v3_.Initialize(display_.get())) {
       return false;
     }
   } else {
-    if (!zcr_text_input_extension_v1_.Initialize(display_.get())) {
-      return false;
-    }
     if (!zwp_text_input_manager_v1_.Initialize(display_.get())) {
       return false;
     }

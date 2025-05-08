@@ -12,6 +12,7 @@
 
 @protocol LensOverlayResultsPagePresenterDelegate;
 @class LensResultPageViewController;
+@class LensOverlayContainerViewController;
 @class SceneState;
 
 // Presenter for the Lens results bottom sheet.
@@ -31,7 +32,8 @@
 @property(nonatomic, readonly) CGFloat presentedResultsPageHeight;
 
 // Creates a new instance of the presenter.
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+- (instancetype)initWithBaseViewController:
+                    (LensOverlayContainerViewController*)baseViewController
                   resultPageViewController:
                       (LensResultPageViewController*)resultViewController;
 
@@ -40,6 +42,9 @@
                      maximizeSheet:(BOOL)maximizeSheet
                   startInTranslate:(BOOL)startInTranslate
                         completion:(void (^)(void))completion;
+
+// Readjusts the presentation if there was a change in window dimensions.
+- (void)readjustPresentationIfNeeded;
 
 // Dismisses the presented page from the base view controller.
 - (void)dismissResultsPageAnimated:(BOOL)animated

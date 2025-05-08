@@ -170,7 +170,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   enum {
     PENDING = 0,
     METADATA_ONLY = 1,
-    FULL_CONTENT = 2
+    FULL_CONTENT = 2,
+    ASYNC = 3
   } scan_type_ = PENDING;
 
   ContentUploadedCallback content_uploaded_callback_;

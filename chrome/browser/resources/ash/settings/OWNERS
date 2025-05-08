@@ -13,6 +13,7 @@ cros-settings-reviews@google.com
 # user so that our GWSQ is prioritized instead.
 wesokuhara@google.com #{LAST_RESORT_SUGGESTION}
 xiaohuic@chromium.org #{LAST_RESORT_SUGGESTION}
+moteva@google.com #{LAST_RESORT_SUGGESTION}
 
 # Subdir OWNERS can approve icon changes related to their subdir.
 per-file os_settings_icons.html=file://chrome/browser/resources/ash/settings/crostini_page/OWNERS

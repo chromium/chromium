@@ -160,6 +160,7 @@ goog.ui.Menu.prototype.getCssClass = function() {
  * @param {Element} element The element to test for.
  * @return {boolean} Whether the provided element is to be considered inside
  *     the menu.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.Menu.prototype.containsElement = function(element) {
   'use strict';
@@ -371,6 +372,7 @@ goog.ui.Menu.prototype.setVisible = function(show, opt_force, opt_e) {
     this.getKeyEventTarget().focus();
   }
   if (show && opt_e && typeof opt_e.clientX === 'number') {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.openingCoords = new goog.math.Coordinate(opt_e.clientX, opt_e.clientY);
   } else {
     this.openingCoords = null;

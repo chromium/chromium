@@ -118,6 +118,15 @@ struct XRDepthOptions {
   // attempt to support depth starting with the lowest-indexed one. However,
   // failure to do so will not block creation of a session with depth sensing.
   array<XRDepthType> depth_type_request;
+  // Boolean indicating if depth reprojection may be required.
+  // True indicates that the returned depth information should be aligned to
+  // the XRView that it is contained in. No additional geometry data should be
+  // included.
+  // False indicates that the depth information may include additional geometry
+  // data for the pose and projection of the sensor that collected the depth
+  // information. However, this data may be omitted if it is aligned with the
+  // containing XRView.
+  bool match_depth_view;
 };
 
 struct XRSessionOptions {

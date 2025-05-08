@@ -530,7 +530,7 @@ if (!is_robolectric && enable_java_templates) {
       if (defined(invoker.deps)) {
         possible_config_deps = invoker.deps
       }
-      r_text = _rtxt_out_path
+      rtxt_path = _rtxt_out_path
     }
     action_with_pydeps(target_name) {
       forward_variables_from(invoker, [ "visibility" ])
@@ -695,7 +695,7 @@ if (!is_robolectric && enable_java_templates) {
   #     resource_overlay=true depends on another target with
   #     resource_overlay=true the target with the dependency overrides the
   #     other.
-  #   r_text_file: (optional) path to pre-generated R.txt to be used when
+  #   rtxt_file: (optional) path to pre-generated R.txt to be used when
   #     generating R.java instead of resource-based aapt-generated one.
   #   recursive_resource_deps: (optional) whether deps should be walked
   #     recursively to find resource deps.
@@ -728,7 +728,7 @@ if (!is_robolectric && enable_java_templates) {
     _res_sources_path = "$target_gen_dir/${invoker.target_name}.res.sources"
 
     _resources_zip = "$target_out_dir/$target_name.resources.zip"
-    _r_text_out_path = _base_path + "_R.txt"
+    _rtxt_out_path = _base_path + "_R.txt"
     _build_config = _base_path + ".build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
@@ -778,7 +778,7 @@ if (!is_robolectric && enable_java_templates) {
                                "recursive_resource_deps",
                              ])
 
-      r_text = _r_text_out_path
+      rtxt_path = _rtxt_out_path
       possible_config_deps = _deps + [ _android_sdk_dep ]
 
       # Always merge manifests from resources.
@@ -821,10 +821,10 @@ if (!is_robolectric && enable_java_templates) {
       sources = _resource_files
 
       resources_zip = _resources_zip
-      r_text_out_path = _r_text_out_path
+      rtxt_out_path = _rtxt_out_path
 
-      if (defined(invoker.r_text_file)) {
-        r_text_in_path = invoker.r_text_file
+      if (defined(invoker.rtxt_file)) {
+        rtxt_in_path = invoker.rtxt_file
       }
     }
   }
@@ -882,38 +882,39 @@ if (!is_robolectric && enable_java_templates) {
     if (defined(invoker.renaming_sources)) {
       _renaming_sources = invoker.renaming_sources
     }
+    if (_renaming_sources != []) {
+      assert(defined(invoker.renaming_destinations))
+      _source_count = 0
+      foreach(_, _renaming_sources) {
+        _source_count += 1
+      }
+      _dest_count = 0
+      foreach(_, invoker.renaming_destinations) {
+        _dest_count += 1
+      }
+      assert(
+          _source_count == _dest_count,
+          "android_assets() renaming_sources.length != renaming_destinations.length")
+    }
+
     write_build_config(_build_config_target_name) {
       type = "android_assets"
       build_config = _build_config
 
-      forward_variables_from(invoker,
-                             [
-                               "disable_compression",
-                               "treat_as_locale_paks",
-                             ])
-
       if (defined(invoker.deps)) {
         possible_config_deps = invoker.deps
       }
+      assets = {
+        forward_variables_from(invoker,
+                               [
+                                 "disable_compression",
+                                 "treat_as_locale_paks",
+                               ])
 
-      if (_sources != []) {
-        asset_sources = _sources
-      }
-      if (_renaming_sources != []) {
-        assert(defined(invoker.renaming_destinations))
-        _source_count = 0
-        foreach(_, _renaming_sources) {
-          _source_count += 1
+        sources = _renaming_sources + _sources
+        if (_renaming_sources != []) {
+          outputs = invoker.renaming_destinations
         }
-        _dest_count = 0
-        foreach(_, invoker.renaming_destinations) {
-          _dest_count += 1
-        }
-        assert(
-            _source_count == _dest_count,
-            "android_assets() renaming_sources.length != renaming_destinations.length")
-        asset_renaming_sources = _renaming_sources
-        asset_renaming_destinations = invoker.renaming_destinations
       }
     }
 
@@ -1016,16 +1017,14 @@ if (!is_robolectric && enable_java_templates) {
         deps = []
       }
       deps += [ ":$target_name$build_config_target_suffix" ]
-      if (is_cronet_build) {
-        _abs_deps = []
-        if (defined(invoker.deps)) {
-          foreach(dep, invoker.deps) {
-            _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
-          }
-        }
+      if (is_cronet_for_aosp_build) {
         metadata = {
-          all_deps = _abs_deps
-          target_type = [ "java_library" ]
+          java_library_deps = []
+          if (defined(invoker.deps)) {
+            foreach(dep, invoker.deps) {
+              java_library_deps += [ get_label_info(dep, "label_no_toolchain") ]
+            }
+          }
         }
       }
     }
@@ -1646,8 +1645,7 @@ if (!is_robolectric && enable_java_templates) {
         ignore_desugar_missing_deps = true
       } else {
         _rebased_build_config = rebase_path(_build_config, root_build_dir)
-        input_dex_filearg =
-            "@FileArg(${_rebased_build_config}:deps_info:all_dex_files)"
+        input_dex_filearg = "@FileArg(${_rebased_build_config}:all_dex_files)"
       }
     }
   }
@@ -1737,16 +1735,14 @@ if (!is_robolectric && enable_java_templates) {
         rebase_path(depfile, root_build_dir),
         "--output",
         rebase_path(invoker.output, root_build_dir),
-        "--dependencies-res-zips=@FileArg($_rebased_build_config:deps_info:dependency_zips)",
-        "--r-text-files=@FileArg($_rebased_build_config:deps_info:dependency_r_txt_files)",
-        "--proguard-configs=@FileArg($_rebased_build_config:deps_info:proguard_all_configs)",
+        "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zips)",
+        "--r-text-files=@FileArg($_rebased_build_config:dependency_rtxt_files)",
+        "--proguard-configs=@FileArg($_rebased_build_config:proguard_all_configs)",
       ]
       if (_direct_deps_only) {
-        args += [ "--jars=@FileArg($_rebased_build_config:javac:classpath)" ]
+        args += [ "--jars=@FileArg($_rebased_build_config:classpath)" ]
       } else {
-        args += [
-          "--jars=@FileArg($_rebased_build_config:deps_info:device_classpath)",
-        ]
+        args += [ "--jars=@FileArg($_rebased_build_config:device_classpath)" ]
       }
 
       if (defined(invoker.android_manifest)) {
@@ -1992,6 +1988,9 @@ if (!is_robolectric && enable_java_templates) {
       if (is_cronet_build) {
         defines += [ "_IS_CRONET_BUILD" ]
         defines += [ "_LOGTAG_PREFIX=cn_" ]
+        if (is_cronet_for_aosp_build) {
+          defines += [ "_CRONET_FOR_AOSP_BUILD" ]
+        }
       } else {
         defines += [ "_LOGTAG_PREFIX=cr_" ]
       }
@@ -2040,7 +2039,8 @@ if (!is_robolectric && enable_java_templates) {
         forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
         _rebased_build_config =
             rebase_path(invoker.build_config, root_build_dir)
-        defines += [ "LOCALE_LIST=@FileArg($_rebased_build_config:deps_info:locales_java_list)" ]
+        defines +=
+            [ "LOCALE_LIST=@FileArg($_rebased_build_config:locales_java_list)" ]
       }
     }
   }
@@ -2333,7 +2333,7 @@ if (!is_robolectric && enable_java_templates) {
       # to their .build_config.json file only when proguarding.
       if (_proguard_enabled) {
         _final_dex_path = "$_base_path.r8dex.jar"
-      } else if (!_is_bundle_module) {
+      } else {
         _final_dex_path = "$_base_path.mergeddex.jar"
       }
     }
@@ -2370,7 +2370,7 @@ if (!is_robolectric && enable_java_templates) {
           get_label_info(_shared_resources_allowlist_target, "target_gen_dir")
       _allowlist_target_name =
           get_label_info(_shared_resources_allowlist_target, "name")
-      _allowlist_r_txt_path =
+      _allowlist_rtxt_path_path =
           "${_allowlist_gen_dir}/${_allowlist_target_name}" +
           "__compile_resources_R.txt"
       _allowlist_deps =
@@ -2449,7 +2449,7 @@ if (!is_robolectric && enable_java_templates) {
       if (defined(invoker.post_process_package_resources_script)) {
         post_process_script = invoker.post_process_package_resources_script
       }
-      r_text_out_path = _compile_resources_rtxt_out
+      rtxt_out_path = _compile_resources_rtxt_out
       emit_ids_out_path = _compile_resources_emit_ids_out
       size_info_path = _res_size_info_path
       proguard_file = _generated_proguard_config
@@ -2468,8 +2468,7 @@ if (!is_robolectric && enable_java_templates) {
         # So that test resources can references under_test resources via
         # @type/name syntax.
         r_java_root_package_name = "test"
-        arsc_package_name =
-            "@FileArg($_rebased_build_config:deps_info:arsc_package_name)"
+        arsc_package_name = "@FileArg($_rebased_build_config:arsc_package_name)"
 
         # Passing in the --emit-ids mapping will cause aapt2 to assign resources
         # IDs that do not conflict with those from apk_under_test.
@@ -2502,7 +2501,7 @@ if (!is_robolectric && enable_java_templates) {
       if (defined(_shared_resources_allowlist_target)) {
         # Used to ensure that the WebView resources are properly shared
         # (i.e. are non-final and with package ID 0).
-        shared_resources_allowlist = _allowlist_r_txt_path
+        shared_resources_allowlist = _allowlist_rtxt_path_path
         deps += [ _allowlist_deps ]
       }
     }
@@ -2548,7 +2547,7 @@ if (!is_robolectric && enable_java_templates) {
         if (_short_resource_paths) {
           resources_path_map_out_path = _resources_path_map_out_path
         }
-        r_text_path = _compile_resources_rtxt_out
+        rtxt_path = _compile_resources_rtxt_out
         if (_is_bundle_module) {
           proto_input_path = _proto_resources_path
           optimized_proto_output = _optimized_proto_resources_path
@@ -2793,7 +2792,7 @@ if (!is_robolectric && enable_java_templates) {
       } else {
         type = "android_apk"
       }
-      r_text_path = _compile_resources_rtxt_out
+      rtxt_path = _compile_resources_rtxt_out
       main_target_name = _template_name
       supports_android = true
       requires_android = true
@@ -2850,9 +2849,9 @@ if (!is_robolectric && enable_java_templates) {
       deps += _sanitizer_deps
       loadable_modules = _loadable_modules + _sanitizer_loadable_modules
 
-      if (defined(_allowlist_r_txt_path) && _is_bundle_module) {
+      if (defined(_allowlist_rtxt_path_path) && _is_bundle_module) {
         # Used to write the file path to the target's .build_config.json only.
-        base_allowlist_rtxt_path = _allowlist_r_txt_path
+        base_allowlist_rtxt_path = _allowlist_rtxt_path_path
       }
     }
 
@@ -2906,13 +2905,13 @@ if (!is_robolectric && enable_java_templates) {
             # Enable dex merging only when min_sdk_version is >= what the library
             # .dex files were created with.
             input_dex_filearg =
-                "@FileArg(${_rebased_build_config}:deps_info:all_dex_files)"
+                "@FileArg(${_rebased_build_config}:all_dex_files)"
 
             # Pure dex-merge.
             enable_desugar = false
           } else {
             input_classes_filearg =
-                "@FileArg($_rebased_build_config:deps_info:device_classpath)"
+                "@FileArg($_rebased_build_config:device_classpath)"
           }
         }
 
@@ -2984,10 +2983,12 @@ if (!is_robolectric && enable_java_templates) {
             name = "${invoker.name}.apk"
             build_config = _build_config
             res_size_info_path = _res_size_info_path
+            unprocessed_jar_path = "$target_out_dir/$_template_name.javac.jar"
             deps = [
               ":$_build_config_target",
               ":$_compile_resources_target",
               ":$_java_target_name",
+              ":${_template_name}__compile_java",
             ]
             if (defined(invoker.asset_deps)) {
               deps += invoker.asset_deps
@@ -3104,7 +3105,7 @@ if (!is_robolectric && enable_java_templates) {
         args = [
           "--apk-path=$_rebased_incremental_apk_path",
           "--output-path=$_rebased_incremental_install_json_path",
-          "--dex-file=@FileArg($_rebased_build_config:deps_info:all_dex_files)",
+          "--dex-file=@FileArg($_rebased_build_config:all_dex_files)",
         ]
         if (_proguard_enabled) {
           args += [ "--show-proguard-warning" ]
@@ -3604,18 +3605,18 @@ if (!is_robolectric && enable_java_templates) {
         "--script-output-path",
         rebase_path(_generated_script, root_build_dir),
         "--package-name",
-        "@FileArg($_rebased_apk_build_config:deps_info:package_name)",
+        "@FileArg($_rebased_apk_build_config:package_name)",
       ]
       deps += [ "${_apk_target}$build_config_target_suffix" ]
       if (_incremental_apk) {
         args += [
           "--test-apk-incremental-install-json",
-          "@FileArg($_rebased_apk_build_config:deps_info:incremental_install_json_path)",
+          "@FileArg($_rebased_apk_build_config:incremental_install_json_path)",
         ]
       } else {
         args += [
           "--test-apk",
-          "@FileArg($_rebased_apk_build_config:deps_info:apk_path)",
+          "@FileArg($_rebased_apk_build_config:apk_path)",
         ]
       }
       if (defined(invoker.proguard_mapping_path) && !_incremental_apk) {
@@ -3633,7 +3634,7 @@ if (!is_robolectric && enable_java_templates) {
               ".build_config.json"
           _rebased_apk_under_test_build_config =
               rebase_path(_apk_under_test_build_config, root_build_dir)
-          _apk_under_test = "@FileArg($_rebased_apk_under_test_build_config:deps_info:incremental_apk_path)"
+          _apk_under_test = "@FileArg($_rebased_apk_under_test_build_config:incremental_apk_path)"
         } else {
           deps += [ ":${_install_artifacts_target_name}" ]
           _rebased_install_artifacts_json =
@@ -3654,7 +3655,7 @@ if (!is_robolectric && enable_java_templates) {
           _rebased_build_config = rebase_path(_build_config, root_build_dir)
           args += [
             "--additional-apk",
-            "@FileArg($_rebased_build_config:deps_info:apk_path)",
+            "@FileArg($_rebased_build_config:apk_path)",
           ]
         }
         deps += invoker.additional_apks
@@ -3943,7 +3944,25 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("android_aidl") {
-    action_with_pydeps(target_name) {
+    _aidl_target = target_name
+    if (enable_javaless_renderers && defined(invoker.cpp_root_names)) {
+      _do_cpp_gen = true
+      _header_output_folder =
+          "$target_gen_dir/gen/aidl/" + invoker.cpp_package_name
+      _cpp_outputs = []
+      _header_outputs = []
+      foreach(_cpp_root_name, invoker.cpp_root_names) {
+        _cpp_outputs += [ "$target_gen_dir/I${_cpp_root_name}.cpp" ]
+        _header_outputs += [
+          "${_header_output_folder}/I${_cpp_root_name}.h",
+          "${_header_output_folder}/Bn${_cpp_root_name}.h",
+          "${_header_output_folder}/Bp${_cpp_root_name}.h",
+        ]
+      }
+    } else {
+      _do_cpp_gen = false
+    }
+    action_with_pydeps(_aidl_target) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
       script = "//build/android/gyp/aidl.py"
@@ -3972,6 +3991,24 @@ if (!is_robolectric && enable_java_templates) {
         "--depfile",
         rebase_path(depfile, root_build_dir),
       ]
+      if (_do_cpp_gen) {
+        args += [
+          "--header-output-dir",
+
+          # The aidl tool automatically inserts aidl/<package>/<package>...
+          # folders wherever it's told to output headers, but outputs the cpp
+          # files exactly where it's told. So, we assume (in
+          # _header_output_folder) that aidl is going to do this on our behalf.
+          rebase_path("$target_gen_dir/gen", root_build_dir),
+        ]
+        foreach(_cpp_output, _cpp_outputs) {
+          args += [
+            "--cpp-output",
+            rebase_path(_cpp_output, root_build_dir),
+          ]
+        }
+        outputs += _cpp_outputs + _header_outputs
+      }
       if (defined(invoker.import_include) && invoker.import_include != []) {
         _rebased_import_paths = []
         foreach(_import_path, invoker.import_include) {
@@ -3982,6 +4019,14 @@ if (!is_robolectric && enable_java_templates) {
         args += [ "--includes=$_rebased_import_paths" ]
       }
       args += rebase_path(sources, root_build_dir)
+    }
+    if (_do_cpp_gen) {
+      source_set("${_aidl_target}_native") {
+        sources = _cpp_outputs + _header_outputs
+        deps = [ ":$_aidl_target" ]
+        libs = [ "binder_ndk" ]
+        public_configs = [ "//third_party/android_sdk:libbinder_include" ]
+      }
     }
   }
 
@@ -4370,7 +4415,7 @@ if (!is_robolectric && enable_java_templates) {
 
         sources = rebase_path(_scanned_files.resources, "", _output_path)
         if (_scanned_files.has_r_text_file) {
-          r_text_file = "${_output_path}/R.txt"
+          rtxt_file = "${_output_path}/R.txt"
         }
       }
     } else if (defined(invoker.strip_drawables)) {
@@ -4682,12 +4727,10 @@ if (!is_robolectric && enable_java_templates) {
 
     # Make build config, which is required for synchronized proguarding.
     _module_java_targets = []
-    _module_build_configs = []
     _module_targets = []
     foreach(_module, _modules) {
       _module_targets += [ _module.module_target ]
       _module_java_targets += [ "${_module.module_target}__java" ]
-      _module_build_configs += [ _module.build_config ]
     }
 
     # Used to expose the module Java targets of the bundle.
@@ -4722,7 +4765,6 @@ if (!is_robolectric && enable_java_templates) {
       possible_config_deps = _module_targets + [ _android_sdk_dep ]
       build_config = _build_config
       proguard_enabled = _proguard_enabled
-      module_build_configs = _module_build_configs
       modules = _modules
 
       if (_proguard_enabled) {
@@ -4754,11 +4796,11 @@ if (!is_robolectric && enable_java_templates) {
             "--script",
             rebase_path(_rewriter_path, root_build_dir),
             "--classpath",
-            "@FileArg($_rebased_build_config:android:sdk_jars)",
+            "@FileArg($_rebased_build_config:sdk_jars)",
             "--input-jars",
-            "@FileArg($_rebased_build_config:deps_info:device_classpath)",
+            "@FileArg($_rebased_build_config:device_classpath)",
             "--output-jars",
-            "@FileArg($_rebased_build_config:deps_info:trace_event_rewritten_device_classpath)",
+            "@FileArg($_rebased_build_config:trace_event_rewritten_device_classpath)",
           ]
           deps = [
                    _build_config_target,
@@ -4902,7 +4944,7 @@ if (!is_robolectric && enable_java_templates) {
       _unused_resources_target = "${_base_target_name}__unused_resources"
       _unused_resources_config =
           "${_base_target_gen_dir}/${_base_target_name}_unused_resources.config"
-      _unused_resources_r_txt_out =
+      _unused_resources_rtxt_path_out =
           "${_base_target_gen_dir}/${_base_target_name}_unused_resources.R.txt"
       unused_resources(_unused_resources_target) {
         deps = _all_module_unused_resources_deps
@@ -4912,7 +4954,7 @@ if (!is_robolectric && enable_java_templates) {
           proguard_mapping_path = _proguard_mapping_path
         }
         output_config = _unused_resources_config
-        output_r_txt = _unused_resources_r_txt_out
+        output_rtxt_path = _unused_resources_rtxt_path_out
       }
       _unused_resources_final_path = "${_bundle_path}.unused_resources"
       _copy_unused_resources_target =
@@ -4981,18 +5023,19 @@ if (!is_robolectric && enable_java_templates) {
       }
 
       if (_enable_language_splits) {
-        args += [ "--base-allowlist-rtxt-path=@FileArg($_rebased_base_module_build_config:deps_info:base_allowlist_rtxt_path)" ]
+        args += [ "--base-allowlist-rtxt-path=@FileArg($_rebased_base_module_build_config:base_allowlist_rtxt_path)" ]
         if (_strip_unused_resources) {
           # Use the stripped out rtxt file to set resources that are pinned to
           # the default language split.
-          _rebased_unused_resources_r_txt_out =
-              rebase_path(_unused_resources_r_txt_out, root_build_dir)
-          inputs += [ _unused_resources_r_txt_out ]
+          _rebased_unused_resources_rtxt_path_out =
+              rebase_path(_unused_resources_rtxt_path_out, root_build_dir)
+          inputs += [ _unused_resources_rtxt_path_out ]
           deps += [ ":$_unused_resources_target" ]
-          args +=
-              [ "--base-module-rtxt-path=$_rebased_unused_resources_r_txt_out" ]
+          args += [
+            "--base-module-rtxt-path=$_rebased_unused_resources_rtxt_path_out",
+          ]
         } else {
-          args += [ "--base-module-rtxt-path=@FileArg($_rebased_base_module_build_config:deps_info:r_text_path)" ]
+          args += [ "--base-module-rtxt-path=@FileArg($_rebased_base_module_build_config:rtxt_path)" ]
         }
       }
       if (defined(invoker.validate_services) && invoker.validate_services) {
@@ -5004,11 +5047,10 @@ if (!is_robolectric && enable_java_templates) {
             rebase_path(_module.build_config, root_build_dir)
         args += [
           "--uncompressed-assets=@FileArg(" +
-              "$_rebased_build_config:deps_info:uncompressed_assets)",
-          "--rtxt-in-paths=@FileArg(" +
-              "$_rebased_build_config:deps_info:r_text_path)",
+              "$_rebased_build_config:uncompressed_assets)",
+          "--rtxt-in-paths=@FileArg(" + "$_rebased_build_config:rtxt_path)",
           "--pathmap-in-paths=@FileArg(" +
-              "$_rebased_build_config:deps_info:module_pathmap_path)",
+              "$_rebased_build_config:module_pathmap_path)",
           "--module-name=" + _module.name,
         ]
       }
@@ -5074,7 +5116,7 @@ if (!is_robolectric && enable_java_templates) {
       args = [
         "--script-output-path",
         rebase_path(_bundle_wrapper_script_path, root_build_dir),
-        "--package-name=@FileArg($_rebased_base_module_build_config:deps_info:package_name)",
+        "--package-name=@FileArg($_rebased_base_module_build_config:package_name)",
         "--aapt2",
         rebase_path(_android_aapt2_path, root_build_dir),
         "--bundle-path",

@@ -49,6 +49,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.ContentGestureListener.GestureState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -334,14 +336,22 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     public void onToolbarInitialized(
-            View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
-        super.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
+            View coordinatorView,
+            CustomTabToolbar toolbar,
+            @Px int toolbarCornerRadius,
+            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
+        super.onToolbarInitialized(
+                coordinatorView, toolbar, toolbarCornerRadius, toolbarButtonsCoordinator);
 
         mHandleStrategy =
                 new PartialCustomTabHandleStrategy(
                         mActivity, this::isFullHeight, () -> mStatus, this);
         toolbar.setHandleStrategy(mHandleStrategy);
-        toolbar.setMinimizeButtonEnabled(false);
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            toolbarButtonsCoordinator.setMinimizeButtonVisible(false);
+        } else {
+            toolbar.setMinimizeButtonEnabled(false);
+        }
         CustomTabDragBar dragBar = mActivity.findViewById(R.id.drag_bar);
         dragBar.setHandleStrategy(mHandleStrategy);
         View dragHandle = mActivity.findViewById(R.id.drag_handle);
@@ -678,7 +688,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             mVersionCompat.setImeStateCallback(this::onImeStateChanged);
         }
 
-        if (AccessibilityState.isScreenReaderEnabled()) {
+        if (AccessibilityState.isComplexUserInteractionServiceEnabled()) {
             int textId =
                     mStatus == HeightStatus.TOP
                             ? R.string.accessibility_custom_tab_expanded

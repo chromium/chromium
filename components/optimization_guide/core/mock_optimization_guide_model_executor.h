@@ -59,7 +59,9 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
               GetTokenLimits,
               (),
               (const, override));
-  MOCK_METHOD(void, SetInput, (MultimodalMessage request));
+  MOCK_METHOD(void,
+              SetInput,
+              (MultimodalMessage request, SetInputCallback callback));
   MOCK_METHOD(void,
               AddContext,
               (const google::protobuf::MessageLite& request_metadata));
@@ -74,9 +76,9 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
        OptimizationGuideModelExecutionResultStreamingCallback callback));
   MOCK_METHOD(
       void,
-      ExecuteModelWithResponseJsonSchema,
+      ExecuteModelWithResponseConstraint,
       (const google::protobuf::MessageLite& request_metadata,
-       const std::optional<std::string>& response_json_schema,
+       on_device_model::mojom::ResponseConstraintPtr constraint,
        OptimizationGuideModelExecutionResultStreamingCallback callback));
   MOCK_METHOD(void,
               GetSizeInTokens,

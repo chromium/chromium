@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/chrome_app_sorting.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/extensions/extension_garbage_collector.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/shared_module_service.h"
@@ -43,6 +41,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
+#include "extensions/browser/app_sorting.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_pref_store.h"
@@ -61,6 +60,14 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_app_sorting.h"
+#include "chrome/browser/extensions/extension_sync_service.h"
+#else
+#include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
+#include "extensions/browser/null_app_sorting.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -207,6 +214,7 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
     autoupdate_enabled = false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/413460628): Port ExtensionService to desktop Android.
   extension_service_ = std::make_unique<ExtensionService>(
       profile_, base::CommandLine::ForCurrentProcess(),
       profile_->GetPath().AppendASCII(kInstallDirectoryName),
@@ -271,14 +279,20 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
   component_loader->AddDefaultComponentExtensions(skip_session_extensions);
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   app_sorting_ = std::make_unique<ChromeAppSorting>(profile_);
+#else
+  app_sorting_ = std::make_unique<NullAppSorting>();
+#endif
 
   InitInstallGates();
 
   extension_service_->Init();
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Make sure ExtensionSyncService is created.
   ExtensionSyncService::Get(profile_);
+#endif
 
   // Make the chrome://extension-icon/ resource available.
   content::URLDataSource::Add(profile_,
@@ -437,11 +451,8 @@ void ChromeExtensionSystem::InstallUpdate(
     InstallUpdateCallback install_update_callback) {
   DCHECK(!install_update_callback.is_null());
 
-  ExtensionService* service = extension_service();
-  DCHECK(service);
-
   scoped_refptr<CrxInstaller> installer =
-      CrxInstaller::CreateSilent(service->profile());
+      CrxInstaller::CreateSilent(profile_->GetOriginalProfile());
   installer->set_delete_source(true);
   installer->AddInstallerCallback(std::move(install_update_callback));
   installer->set_install_immediately(install_immediately);

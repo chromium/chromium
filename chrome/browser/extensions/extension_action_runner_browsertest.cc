@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionRunnerRunActionBubbleBrowserTest,
 
   // The extension should want to run on the page, should not have
   // injected, should have user site access "on click", and page interaction
-  // witheld.
+  // withheld.
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(runner);

@@ -21,6 +21,7 @@
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
 
 class LensOverlayController;
+class LensSearchController;
 
 namespace ui {
 class ColorChangeHandler;
@@ -88,6 +89,7 @@ class LensSidePanelUntrustedUI
   }
 
  private:
+  LensSearchController& GetLensSearchController();
   LensOverlayController& GetLensOverlayController();
 
   // lens::mojom::LensSidePanelPageHandlerFactory:

@@ -23,12 +23,15 @@ ci/TSAN Debug
 ci/TSAN Release
 ci/UBSan Release
 ci/UBSan vptr Release
-ci/WebKit Linux ASAN
-ci/WebKit Linux Leak
-ci/WebKit Linux MSAN
 ci/Win ASan Release
 ci/Win ASan Release Media
 ci/chromeos-amd64-generic-asan-rel
 ci/ios-asan
+ci/linux-blink-asan-rel
+ci/linux-blink-leak-rel
+ci/linux-blink-msan-rel
 ci/win-asan
+try/linux-blink-asan-rel
+try/linux-blink-leak-rel
+try/linux-blink-msan-rel
 try/linux_chromium_ubsan_rel_ng

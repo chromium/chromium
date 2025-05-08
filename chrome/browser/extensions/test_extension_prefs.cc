@@ -16,7 +16,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/chrome_app_sorting.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
@@ -38,6 +37,10 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_app_sorting.h"
+#endif
 
 using content::BrowserThread;
 using extensions::mojom::ManifestLocation;
@@ -218,8 +221,13 @@ void TestExtensionPrefs::set_extensions_disabled(bool extensions_disabled) {
 }
 
 ChromeAppSorting* TestExtensionPrefs::app_sorting() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   return static_cast<ChromeAppSorting*>(
       ExtensionSystem::Get(&profile_)->app_sorting());
+#else
+  // Android doesn't support Chrome Apps, hence has no app sorting.
+  NOTREACHED();
+#endif
 }
 
 void TestExtensionPrefs::AddDefaultManifestKeys(const std::string& name,

@@ -304,13 +304,10 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
     EnsureChildRules();
     child_rules_->push_back(child);
   }
-  void WrapperInsertRule(unsigned index, StyleRuleBase* rule) {
-    EnsureChildRules();
-    child_rules_->insert(index, rule);
-  }
-  void WrapperRemoveRule(unsigned index) {
-    child_rules_->erase(UNSAFE_TODO(child_rules_->begin() + index));
-  }
+  void WrapperInsertRule(CSSStyleSheet* parent_sheet,
+                         unsigned index,
+                         StyleRuleBase* rule);
+  void WrapperRemoveRule(CSSStyleSheet* parent_sheet, unsigned index);
 
  private:
   friend class StyleRuleBase;
@@ -663,7 +660,7 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleGroup {
                     CSSSyntaxDefinition return_type);
   StyleRuleFunction(const StyleRuleFunction&) = delete;
 
-  const AtomicString& GetName() const { return name_; }
+  const AtomicString& Name() const { return name_; }
   const HeapVector<Parameter>& GetParameters() const { return parameters_; }
   const CSSSyntaxDefinition& GetReturnType() const { return return_type_; }
 

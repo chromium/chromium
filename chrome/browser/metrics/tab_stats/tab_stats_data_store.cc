@@ -7,9 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -128,11 +126,10 @@ void TabStatsDataStore::ResetMaximumsToCurrentState() {
 
   // Iterates over the list of browsers to find the one with the maximum number
   // of tabs opened.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    UpdateMaxTabsPerWindowIfNeeded(
-        static_cast<size_t>(browser->tab_strip_model()->count()));
-  }
+  TabStatsTracker::TabStripInterface::ForEach(
+      [this](const TabStatsTracker::TabStripInterface& tab_strip) {
+        UpdateMaxTabsPerWindowIfNeeded(tab_strip.GetTabCount());
+      });
 }
 
 void TabStatsDataStore::OnTabDiscardStateChange(

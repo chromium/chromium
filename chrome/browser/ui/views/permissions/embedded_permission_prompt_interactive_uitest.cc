@@ -64,8 +64,7 @@ class EmbeddedPermissionPromptInteractiveTest
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     feature_list_.InitWithFeatures(
-        {permissions::features::kOneTimePermission,
-         blink::features::kPermissionElement,
+        {blink::features::kPermissionElement,
          blink::features::kBypassPepcSecurityForTesting},
         {});
   }
@@ -280,8 +279,6 @@ class EmbeddedPermissionPromptInteractiveTest
         CheckContentSettingsValue(content_settings_types,
                                   CONTENT_SETTING_BLOCK),
 
-        // TODO(crbug.com/5020816): Also test with `kOneTimePermission` disabled
-        // when the kAllowId button is present instead.
         // The PreviouslyBlocked view is displayed since the permission is
         // blocked.
         ClickOnPEPCElement(element_id),
@@ -1007,7 +1004,6 @@ class EmbeddedPermissionPromptPositioningInteractiveTest
             {blink::features::kPermissionElement, {}},
             {permissions::features::kPermissionElementPromptPositioning,
              {{"PermissionElementPromptPositioningParam", "near_element"}}},
-            {permissions::features::kOneTimePermission, {}},
             {blink::features::kBypassPepcSecurityForTesting, {}},
         },
         {});

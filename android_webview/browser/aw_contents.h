@@ -127,7 +127,6 @@ class AwContents : public FindHelper::Listener,
   base::android::ScopedJavaLocalRef<jbyteArray> GetCertificate(JNIEnv* env);
   void UpdateLastHitTestData(JNIEnv* env);
   void OnSizeChanged(JNIEnv* env, int w, int h, int ow, int oh);
-  void OnConfigurationChanged(JNIEnv* env);
   void SetViewVisibility(JNIEnv* env, bool visible);
   void SetWindowVisibility(JNIEnv* env, bool visible);
   void SetIsPaused(JNIEnv* env, bool paused);

@@ -1213,7 +1213,18 @@
     },
     {
       // https://html.spec.whatwg.org/multipage/interaction.html#inert
-      name: "IsInert",
+      name: "IsHTMLInert",
+      inherited: true,
+      independent: true,
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+    },
+    {
+      // https://drafts.csswg.org/css-ui-4/#inertness
+      // Bit that is set for interactivity:inert and is never reset in the
+      // subtree even if the interactivity is set back to auto.
+      name: "IsCSSInert",
       inherited: true,
       independent: true,
       field_template: "primitive",

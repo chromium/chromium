@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.omnibox.status;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /** StatusViewBinder observes StatusModel changes and triggers StatusView updates. */
+@NullMarked
 class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, PropertyKey> {
     StatusViewBinder() {}
 

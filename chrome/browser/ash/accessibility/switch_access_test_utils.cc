@@ -120,6 +120,18 @@ void SwitchAccessTestUtils::WaitForEventOnAutomationNode(
   WaitForJS(script);
 }
 
+void SwitchAccessTestUtils::WaitForBackButtonInitialized() {
+  std::string script = base::StringPrintf(
+      R"JS(
+          waitForBackButtonInitialized();
+        )JS");
+  WaitForJS(script);
+}
+
+void SwitchAccessTestUtils::ResetConsoleObserver() {
+  console_observer_.reset();
+}
+
 void SwitchAccessTestUtils::WaitForJS(const std::string& js_to_eval) {
   base::Value value =
       extensions::browsertest_util::ExecuteScriptInBackgroundPage(

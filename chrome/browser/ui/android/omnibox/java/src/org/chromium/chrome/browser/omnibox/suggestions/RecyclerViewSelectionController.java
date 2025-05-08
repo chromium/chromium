@@ -140,8 +140,7 @@ public class RecyclerViewSelectionController
     }
 
     /** Retrieve currently selected element. */
-    @Nullable
-    public View getSelectedView() {
+    public @Nullable View getSelectedView() {
         return mLayoutManager.findViewByPosition(mSelectedItemIndex);
     }
 

@@ -66,6 +66,9 @@ enum ModelAvailabilityCheckResult {
   kUnavailableInsufficientDiskSpace = 18,
   // The on-device translation is not available for the given pair of languages.
   kUnavailableTranslationNotEligible = 19,
+  // The on-device model is not available because the enterprise policy
+  // disables the feature.
+  kUnavailableEnterprisePolicyDisabled = 20,
 
   // Append new line here
 };

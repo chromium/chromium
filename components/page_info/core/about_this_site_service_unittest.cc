@@ -106,15 +106,10 @@ OptimizationGuideDecision ReturnUnknown(const GURL& url,
   return OptimizationGuideDecision::kUnknown;
 }
 
-class AboutThisSiteServiceTest : public ::testing::TestWithParam<bool> {
+class AboutThisSiteServiceTest : public ::testing::Test {
  public:
   void SetUp() override {
-    // Parameterize test until kAboutThisSiteAsyncFetching is enabled by
-    // default.
-    if (GetParam()) {
-      tab_helper_mock_ = std::make_unique<testing::StrictMock<MockTabHelper>>();
-    }
-
+    tab_helper_mock_ = std::make_unique<testing::StrictMock<MockTabHelper>>();
     service_ = std::make_unique<testing::StrictMock<MockAboutThisSiteService>>(
         search_engines_test_environment_.template_url_service());
     SetOptimizationGuideAllowed(true);
@@ -138,16 +133,11 @@ class AboutThisSiteServiceTest : public ::testing::TestWithParam<bool> {
 };
 
 // Tests that correct proto messages are accepted.
-TEST_P(AboutThisSiteServiceTest, ValidResponse) {
+TEST_F(AboutThisSiteServiceTest, ValidResponse) {
   base::HistogramTester t;
-  if (GetParam()) {
     EXPECT_CALL(*tab_helper(), GetAboutThisSiteMetadata())
         .WillOnce(Return(DecisionWithMetadata{OptimizationGuideDecision::kTrue,
                                               CreateValidMetadata()}));
-  } else {
-    EXPECT_CALL(*service(), CanApplyOptimization(_, _))
-        .WillOnce(Invoke(&ReturnDescription));
-  }
 
   auto info = service()->GetAboutThisSiteInfo(
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID(),
@@ -162,7 +152,7 @@ TEST_P(AboutThisSiteServiceTest, ValidResponse) {
 }
 
 // Tests the language specific feature check.
-TEST_P(AboutThisSiteServiceTest, FeatureCheck) {
+TEST_F(AboutThisSiteServiceTest, FeatureCheck) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kPageInfoAboutThisSite);
 
@@ -180,16 +170,11 @@ TEST_P(AboutThisSiteServiceTest, FeatureCheck) {
 }
 
 // Tests that incorrect proto messages are discarded.
-TEST_P(AboutThisSiteServiceTest, InvalidResponse) {
+TEST_F(AboutThisSiteServiceTest, InvalidResponse) {
   base::HistogramTester t;
-  if (GetParam()) {
     EXPECT_CALL(*tab_helper(), GetAboutThisSiteMetadata())
         .WillOnce(Return(DecisionWithMetadata{OptimizationGuideDecision::kTrue,
                                               CreateInvalidDescription()}));
-  } else {
-    EXPECT_CALL(*service(), CanApplyOptimization(_, _))
-        .WillOnce(Invoke(&ReturnInvalidDescription));
-  }
 
   auto info = service()->GetAboutThisSiteInfo(
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID(),
@@ -202,17 +187,12 @@ TEST_P(AboutThisSiteServiceTest, InvalidResponse) {
 }
 
 // Tests that no response is handled.
-TEST_P(AboutThisSiteServiceTest, NoResponse) {
+TEST_F(AboutThisSiteServiceTest, NoResponse) {
   base::HistogramTester t;
   std::optional<proto::AboutThisSiteMetadata> expected;
-  if (GetParam()) {
     EXPECT_CALL(*tab_helper(), GetAboutThisSiteMetadata())
         .WillOnce(Return(DecisionWithMetadata{OptimizationGuideDecision::kFalse,
                                               std::nullopt}));
-  } else {
-    EXPECT_CALL(*service(), CanApplyOptimization(_, _))
-        .WillOnce(Invoke(&ReturnNoResult));
-  }
 
   auto info = service()->GetAboutThisSiteInfo(
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID(),
@@ -225,16 +205,11 @@ TEST_P(AboutThisSiteServiceTest, NoResponse) {
 }
 
 // Tests that unknown response is handled.
-TEST_P(AboutThisSiteServiceTest, Unknown) {
+TEST_F(AboutThisSiteServiceTest, Unknown) {
   base::HistogramTester t;
-  if (GetParam()) {
     EXPECT_CALL(*tab_helper(), GetAboutThisSiteMetadata())
         .WillOnce(Return(DecisionWithMetadata{
             OptimizationGuideDecision::kUnknown, std::nullopt}));
-  } else {
-    EXPECT_CALL(*service(), CanApplyOptimization(_, _))
-        .WillOnce(Invoke(&ReturnUnknown));
-  }
 
   auto info = service()->GetAboutThisSiteInfo(
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID(),
@@ -247,7 +222,7 @@ TEST_P(AboutThisSiteServiceTest, Unknown) {
 }
 
 // Tests that ATP not shown when Google is not set as DSE
-TEST_P(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
+TEST_F(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
   base::HistogramTester t;
 
   // Changing default provider to other than Google
@@ -258,9 +233,9 @@ TEST_P(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
           std::string_view(), std::string_view(), std::string_view(),
           std::string_view(), std::string_view(), std::string_view(),
           std::string_view(), std::string_view(), std::string_view(),
-          std::vector<std::string>(), std::string_view(), std::string_view(),
-          std::u16string_view(), base::Value::List(), false, false, 0,
-          base::span<TemplateURLData::RegulatoryExtension>())));
+          std::string_view(), std::vector<std::string>(), std::string_view(),
+          std::string_view(), std::u16string_view(), base::Value::List(), false,
+          false, 0, base::span<TemplateURLData::RegulatoryExtension>())));
   templateService()->SetUserSelectedDefaultSearchProvider(template_url);
 
   auto info = service()->GetAboutThisSiteInfo(
@@ -274,7 +249,7 @@ TEST_P(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
 }
 
 // Tests that IP addresses and localhost are handled.
-TEST_P(AboutThisSiteServiceTest, LocalHosts) {
+TEST_F(AboutThisSiteServiceTest, LocalHosts) {
   base::HistogramTester t;
 
   auto info = service()->GetAboutThisSiteInfo(
@@ -296,7 +271,7 @@ TEST_P(AboutThisSiteServiceTest, LocalHosts) {
 }
 
 // Tests the local creation of the Diner URL for navigation.
-TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigation) {
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigation) {
   auto url =
       service()->CreateMoreAboutUrlForNavigation(GURL("https://foo.com"));
   EXPECT_EQ(url,
@@ -306,7 +281,7 @@ TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigation) {
 }
 
 // Tests the local creation of the Diner URL for navigation with anchor.
-TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationWithAnchor) {
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationWithAnchor) {
   auto url = service()->CreateMoreAboutUrlForNavigation(
       GURL("https://foo.com#anchor"));
   EXPECT_EQ(url,
@@ -317,7 +292,7 @@ TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationWithAnchor) {
 
 // Tests the local creation of the Diner URL for navigation from an origin with
 // path.
-TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationWithPath) {
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationWithPath) {
   auto url = service()->CreateMoreAboutUrlForNavigation(
       GURL("https://foo.com/index.html"));
   EXPECT_EQ(url,
@@ -328,7 +303,7 @@ TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationWithPath) {
 
 // Tests the local creation of the Diner URL for navigation from an invalid
 // origin.
-TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalid) {
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalid) {
   auto url = service()->CreateMoreAboutUrlForNavigation(
       GURL("https://127.0.0.1/index.html"));
   EXPECT_EQ(url,
@@ -339,7 +314,7 @@ TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalid) {
 
 // Tests the local creation of the Diner URL for navigation from an invalid
 // origin (blank).
-TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalidBlank) {
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalidBlank) {
   auto url = service()->CreateMoreAboutUrlForNavigation(GURL("about:blank"));
   EXPECT_EQ(url,
             "https://www.google.com/search?"
@@ -349,17 +324,12 @@ TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalidBlank) {
 
 // Tests the local creation of the Diner URL for navigation from an invalid
 // origin (file).
-TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalidFile) {
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalidFile) {
   auto url = service()->CreateMoreAboutUrlForNavigation(GURL("file:///a/b/c"));
   EXPECT_EQ(url,
             "https://www.google.com/search?"
             "q=About+file%3A%2F%2F%2F"
             "&tbm=ilp&ctx=chrome_nav");
 }
-
-// Test with TabHelper based fetching enabled and disabled.
-INSTANTIATE_TEST_SUITE_P(/* no label */,
-                         AboutThisSiteServiceTest,
-                         testing::Bool());
 
 }  // namespace page_info

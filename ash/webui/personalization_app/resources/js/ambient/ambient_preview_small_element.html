@@ -82,13 +82,13 @@
         <div class="preview-image-border"></div>
         <img class="preview-image disabled" src="//personalization/images/slideshow.png">
       </div>
-      <h3 id="zeroStateTextContainer"
+      <h2 id="zeroStateTextContainer"
           class="preview-text-container zero-state-info-subpage"
           aria-label$="$i18n{ambientModeMainPageZeroStateMessage}">
         <span class="text">
           $i18n{ambientModeMainPageZeroStateMessage}
         </span>
-      </h3>
+      </h2>
     </template>
     <template is="dom-if" if="[[ambientModeEnabled_]]">
       <!-- TODO(b/226235802) - Add failed/error state when no previewAlbums available.
@@ -101,7 +101,7 @@
               alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
               is-google-photos>
         </div>
-        <h3 aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]"
+        <h2 aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]"
             class="preview-text-container album-info-subpage"
             id="textContainer"
             role="alert">
@@ -115,7 +115,7 @@
           <span id="albumDescription" aria-hidden="true">
             [[getAlbumDescription_(topicSource_, previewAlbums_)]]
           </span>
-        </h3>
+        </h2>
         <div id="buttonContainer">
           <cr-button
               class$="[[getScreenSaverPreviewClass_(ambientUiVisibility_)]]"

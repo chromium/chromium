@@ -120,13 +120,15 @@ bool GpuRasterBufferProvider::RasterBufferImpl::
 }
 
 GpuRasterBufferProvider::GpuRasterBufferProvider(
+    scoped_refptr<gpu::SharedImageInterface> sii,
     viz::RasterContextProvider* compositor_context_provider,
     viz::RasterContextProvider* worker_context_provider,
     bool is_overlay_candidate,
     const gfx::Size& max_tile_size,
     RasterQueryQueue* const pending_raster_queries,
     float raster_metric_probability)
-    : compositor_context_provider_(compositor_context_provider),
+    : sii_(sii),
+      compositor_context_provider_(compositor_context_provider),
       worker_context_provider_(worker_context_provider),
       tile_overlay_candidate_(is_overlay_candidate),
       max_tile_size_(max_tile_size),
@@ -327,7 +329,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   bool mailbox_needs_clear = false;
   if (!backing_->shared_image()) {
     DCHECK(!backing_->returned_sync_token.HasData());
-    auto* sii = client_->worker_context_provider_->SharedImageInterface();
+    auto* sii = client_->sii_.get();
 
     // This SharedImage will serve as the destination of the raster defined by
     // `raster_source` before being sent off to the display compositor.

@@ -20,22 +20,34 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/throbber.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
+
+namespace {
+// View ID used to find the spinner container added to the accept button.
+constexpr int kAcceptButtonSpinnerContainerId = 1327;
+}  // namespace
 
 using Step = AuthenticatorRequestDialogModel::Step;
 
@@ -96,8 +108,14 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
 
   sheet_->ReInitChildViews();
 
+  const AuthenticatorRequestSheetModel::AcceptButtonState accept_state =
+      sheet_->model()->GetAcceptButtonState();
+  const bool accept_button_visible =
+      accept_state !=
+      AuthenticatorRequestSheetModel::AcceptButtonState::kNotVisible;
+
   int buttons = static_cast<int>(ui::mojom::DialogButton::kNone);
-  if (sheet_->model()->IsAcceptButtonVisible()) {
+  if (accept_button_visible) {
     buttons |= static_cast<int>(ui::mojom::DialogButton::kOk);
   }
   if (sheet_->model()->IsCancelButtonVisible()) {
@@ -168,6 +186,50 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   // the former case, sizing/layout will happen once the dialog is visible.
   if (!GetWidget()) {
     return;
+  }
+
+  views::MdTextButton* ok_button = GetOkButton();
+  if (ok_button) {
+    const bool show_spinner =
+        accept_state ==
+        AuthenticatorRequestSheetModel::AcceptButtonState::kDisabledWithSpinner;
+
+    views::View* existing_container =
+        ok_button->GetViewByID(kAcceptButtonSpinnerContainerId);
+
+    if (show_spinner && !existing_container) {
+      constexpr int kDialogButtonSpinnerSize = 16;
+      auto spinner = std::make_unique<views::Throbber>();
+      spinner->SetPreferredSize(
+          gfx::Size(kDialogButtonSpinnerSize, kDialogButtonSpinnerSize));
+      spinner->SetColorId(ui::kColorButtonForegroundProminent);
+      spinner->Start();
+
+      auto spinner_container = std::make_unique<views::BoxLayoutView>();
+      spinner_container->SetOrientation(
+          views::BoxLayout::Orientation::kHorizontal);
+      spinner_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+      spinner_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+      spinner_container->AddChildView(std::move(spinner));
+      spinner_container->SetVisible(false);  // Initially hidden
+      spinner_container->SetID(kAcceptButtonSpinnerContainerId);
+
+      ok_button->SetUseDefaultFillLayout(true);
+      existing_container = ok_button->AddChildView(std::move(spinner_container));
+    }
+
+    if (show_spinner) {
+      // Show the spinner and hide the button text.
+      existing_container->SetVisible(true);
+      ok_button->SetBgColorIdOverride(ui::kColorButtonBackgroundProminent);
+      ok_button->SetTextColor(views::Button::ButtonState::STATE_DISABLED,
+                              ui::kColorButtonBackgroundProminent);
+    } else {
+      if (existing_container) {
+        existing_container->SetVisible(false);
+      }
+      ok_button->SetBgColorIdOverride(std::nullopt);
+    }
   }
 
   auto* frame_view = GetBubbleFrameView();
@@ -246,7 +308,9 @@ bool AuthenticatorRequestDialogView::IsDialogButtonEnabled(
     case ui::mojom::DialogButton::kNone:
       break;
     case ui::mojom::DialogButton::kOk:
-      return sheet_ && sheet_->model()->IsAcceptButtonEnabled();
+      return sheet_ &&
+             sheet_->model()->GetAcceptButtonState() ==
+                 AuthenticatorRequestSheetModel::AcceptButtonState::kEnabled;
     case ui::mojom::DialogButton::kCancel:
       return true;  // Cancel is always enabled if visible.
   }
@@ -272,8 +336,8 @@ views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
     return intially_focused_sheet_control;
   }
 
-  if (sheet_->model()->IsAcceptButtonVisible() &&
-      sheet_->model()->IsAcceptButtonEnabled()) {
+  if (sheet_->model()->GetAcceptButtonState() ==
+      AuthenticatorRequestSheetModel::AcceptButtonState::kEnabled) {
     return GetOkButton();
   }
 

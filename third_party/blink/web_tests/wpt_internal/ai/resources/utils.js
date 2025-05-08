@@ -60,7 +60,7 @@ const testPromptAPI = async () => {
     const session = await LanguageModel.create({
       topK: 3,
       temperature: 0.8,
-      systemPrompt: "Let's talk in English.",
+      initialPrompts: [ { role: "system", content: "Let's talk in English." } ],
       monitor(m) {
         m.addEventListener("downloadprogress", e => {
           isDownloadProgressEventTriggered = true;

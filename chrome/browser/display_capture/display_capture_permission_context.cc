@@ -22,18 +22,16 @@ ContentSetting DisplayCapturePermissionContext::GetPermissionStatusInternal(
 }
 
 void DisplayCapturePermissionContext::DecidePermission(
-    permissions::PermissionRequestData request_data,
+    std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
-  NotifyPermissionSet(request_data.id, request_data.requesting_origin,
-                      request_data.embedding_origin, std::move(callback),
+  NotifyPermissionSet(request_data, std::move(callback),
                       /*persist=*/false, CONTENT_SETTING_DEFAULT,
                       /*is_one_time=*/false,
                       /*is_final_decision=*/true);
 }
 
 void DisplayCapturePermissionContext::UpdateContentSetting(
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
     ContentSetting content_setting,
     bool is_one_time) {
   NOTREACHED();

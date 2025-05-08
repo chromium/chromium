@@ -959,7 +959,8 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
                    *browser_context, rfh->GetLastCommittedURL(),
                    rfh->ComputeSiteForCookies(),
                    rfh->ComputeTopFrameOrigin(rfh->GetLastCommittedOrigin()),
-                   rfh->GetCookieSettingOverrides())) {
+                   rfh->GetCookieSettingOverrides(),
+                   rfh->GetStorageKey().ToCookiePartitionKey())) {
         result.No(
             BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore);
         result.No(BackForwardCacheMetrics::NotRestoredReason::kCookieDisabled);
@@ -1726,11 +1727,6 @@ bool BackForwardCacheImpl::
     }
   }
   return false;
-}
-
-bool BackForwardCacheImpl::IsMediaSessionServiceAllowed() {
-  return base::FeatureList::IsEnabled(
-      features::kBackForwardCacheMediaSessionService);
 }
 
 // Static

@@ -5,13 +5,19 @@
 #ifndef CHROME_BROWSER_UI_DIALOGS_OUTDATED_UPGRADE_BUBBLE_H_
 #define CHROME_BROWSER_UI_DIALOGS_OUTDATED_UPGRADE_BUBBLE_H_
 
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+namespace content {
+class PageNavigator;
+}
 
-class Browser;
+namespace ui {
+class ElementContext;
+}
 
 // OutdatedUpgradeBubbleView warns the user that an upgrade is long overdue.
 // It is intended to be used as the content of a bubble anchored off of the
 // Chrome toolbar.
-void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled);
+void ShowOutdatedUpgradeBubble(ui::ElementContext element_context,
+                               content::PageNavigator* page_navigator,
+                               bool auto_update_enabled);
 
 #endif  // CHROME_BROWSER_UI_DIALOGS_OUTDATED_UPGRADE_BUBBLE_H_

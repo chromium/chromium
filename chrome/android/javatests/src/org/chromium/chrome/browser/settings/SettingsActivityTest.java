@@ -31,6 +31,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.util.AttrUtils;
@@ -115,5 +116,10 @@ public class SettingsActivityTest {
                 SettingsActivity.class, Stage.CREATED, () -> activity.startActivity(intent3));
     }
 
-    public static class TestFragment extends Fragment {}
+    public static class TestFragment extends Fragment implements SettingsFragment {
+        @Override
+        public @AnimationType int getAnimationType() {
+            return AnimationType.PROPERTY;
+        }
+    }
 }

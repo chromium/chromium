@@ -63,6 +63,7 @@ source_set("container_presenter") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -93,8 +94,8 @@ source_set("view_controller") {
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/lens_overlay/ui/resources",
     "//ios/chrome/browser/lens_overlay/ui/resources:animation_files",
-    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup",
+    "//ios/chrome/browser/omnibox/ui:omnibox_internal",
+    "//ios/chrome/browser/omnibox/ui/popup",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",

@@ -34,6 +34,7 @@
 #include "media/base/media_observer.h"
 #include "media/base/media_tracks.h"
 #include "media/base/overlay_info.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/base/pipeline_impl.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/routing_token_callback.h"
@@ -340,7 +341,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void RecordVideoOcclusionState(std::string_view occlusion_state) override;
 
   void RecordAutoPictureInPictureInfo(
-      const WebString& auto_picture_in_picture_info) override;
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) override;
 
   bool IsBackgroundMediaSuspendEnabled() const {
     return is_background_suspend_enabled_;

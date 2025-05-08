@@ -64,6 +64,7 @@ static_library("reporting") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/policy/messaging_layer/proto:app_install_events_proto",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/profiles:profile",
@@ -191,7 +192,6 @@ if (use_fuzzing_engine_with_lpm) {
       # TODO(crbug.com/335294371): Remove dependency on //chrome/browser to
       # implement the proper fix.
       "//chrome/browser",
-      "//components/exo/wayland:test_controller_stub",
       "//components/exo/wayland:ui_controls_protocol_stub",
     ]
   }

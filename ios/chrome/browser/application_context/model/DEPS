@@ -15,4 +15,5 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/update_client/model",
   "+ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h",
+  "+components/application_locale_storage",
 ]

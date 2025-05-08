@@ -455,6 +455,7 @@ void URLRequestHttpJob::Start() {
 #if BUILDFLAG(ENABLE_REPORTING)
   request_info_.reporting_upload_depth = request_->reporting_upload_depth();
 #endif
+  request_info_.is_shared_resource = request_->is_shared_resource();
 
   CookieStore* cookie_store = request()->context()->cookie_store();
   const CookieAccessDelegate* delegate =
@@ -1602,9 +1603,6 @@ bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
   auto determine_storage_access_retry_outcome =
       [&]() -> cookie_util::ActivateStorageAccessRetryOutcome {
     using enum cookie_util::ActivateStorageAccessRetryOutcome;
-    if (!request_->network_delegate()->IsStorageAccessHeaderEnabled()) {
-      return kFailureHeaderDisabled;
-    }
     if (!ShouldAddCookieHeader() ||
         request_->storage_access_status() !=
             cookie_util::StorageAccessStatus::kInactive ||
@@ -1999,12 +1997,29 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
 
       auto& proxy_chain = response_info_->proxy_chain;
       bool direct_only = net::features::kIpPrivacyDirectOnly.Get();
+      if (proxy_chain.is_for_ip_protection()) {
+        base::UmaHistogramTimes("Net.HttpJob.IpProtection.TotalTimeNotCached2",
+                                total_time);
+        base::UmaHistogramTimes(
+            base::StrCat(
+                {"Net.HttpJob.IpProtection.TotalTimeNotCached2.Chain",
+                 base::NumberToString(proxy_chain.ip_protection_chain_id())}),
+            total_time);
+        base::UmaHistogramCustomCounts("Net.HttpJob.IpProtection.BytesSent2",
+                                       GetTotalSentBytes(), 1, 50000000, 50);
+        base::UmaHistogramCustomCounts(
+            "Net.HttpJob.IpProtection.PrefilterBytesRead.Net2",
+            prefilter_bytes_read(), 1, 50000000, 50);
+      }
       // To enable measuring how much traffic would be proxied (for
       // experimentation and planning purposes), treat use of the direct
       // proxy chain as success only when `kIpPrivacyDirectOnly` is
       // true. When it is false, we only care about traffic that actually went
       // through the IP Protection proxies, so a direct chain must be a
       // fallback.
+      // Note that these histograms don't log anything when IP Protection fails
+      // and we fall back to direct. That makes them unsuitable for measuring
+      // the success of experiments. Use the *2 variants above for that.
       bool protection_success = proxy_chain.is_for_ip_protection() &&
                                 (!proxy_chain.is_direct() || direct_only);
       if (protection_success) {
@@ -2047,7 +2062,26 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
           ipp_result = IpProtectionJobResult::kProtectionSuccess;
         } else {
           ipp_result = IpProtectionJobResult::kDirectFallback;
+          base::UmaHistogramTimes(
+              "Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached",
+              total_time);
+          base::UmaHistogramTimes(
+              base::StrCat(
+                  {"Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached.Chain",
+                   base::NumberToString(proxy_chain.ip_protection_chain_id())}),
+              total_time);
+          base::UmaHistogramCustomCounts(
+              "Net.HttpJob.IpProtection.Fallback.BytesSent",
+              GetTotalSentBytes(), 1, 50000000, 50);
+          base::UmaHistogramCustomCounts(
+              "Net.HttpJob.IpProtection.Fallback.PrefilterBytesRead.Net",
+              prefilter_bytes_read(), 1, 50000000, 50);
         }
+        base::UmaHistogramEnumeration(
+            base::StrCat(
+                {"Net.HttpJob.IpProtection.JobResult.Chain",
+                 base::NumberToString(proxy_chain.ip_protection_chain_id())}),
+            ipp_result);
       } else {
         ipp_result = IpProtectionJobResult::kProtectionNotAttempted;
       }

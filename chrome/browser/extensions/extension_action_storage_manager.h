@@ -53,7 +53,7 @@ class ExtensionActionStorageManager
   void ReadFromStorage(const ExtensionId& extension_id,
                        std::optional<base::Value> value);
 
-  // Returns the Extensions StateStore for the |browser_context_|.
+  // Returns the Extensions StateStore for the `browser_context_`.
   // May return NULL.
   StateStore* GetStateStore();
 

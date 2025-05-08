@@ -297,10 +297,18 @@ public class SigninPromoCoordinatorTest {
     @MediumTest
     public void testBookmarksAccountSettingsPromoPrimaryButtonClick() {
         var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncPromo.Continued.Count."
-                                + getAccessPointToHistogramName(SigninAccessPoint.BOOKMARK_MANAGER),
-                        1);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.Promo.ImpressionsUntil.Continued."
+                                        + getAccessPointToHistogramName(
+                                                SigninAccessPoint.BOOKMARK_MANAGER),
+                                1)
+                        .expectIntRecord(
+                                "Signin.SyncPromo.Continued.Count."
+                                        + getAccessPointToHistogramName(
+                                                SigninAccessPoint.BOOKMARK_MANAGER),
+                                1)
+                        .build();
         var impressionHistogramWatcher =
                 getPromoImpressionHistogramWatcher(
                         SigninAccessPoint.BOOKMARK_MANAGER, /* hasAccounts= */ true);
@@ -325,10 +333,16 @@ public class SigninPromoCoordinatorTest {
             return;
         }
         var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncPromo.Continued.Count."
-                                + getAccessPointToHistogramName(accessPoint),
-                        1);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.Promo.ImpressionsUntil.Continued."
+                                        + getAccessPointToHistogramName(accessPoint),
+                                1)
+                        .expectIntRecord(
+                                "Signin.SyncPromo.Continued.Count."
+                                        + getAccessPointToHistogramName(accessPoint),
+                                1)
+                        .build();
         var impressionHistogramWatcher =
                 getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -381,10 +395,16 @@ public class SigninPromoCoordinatorTest {
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testDismissButtonClick(@SigninAccessPoint int accessPoint) {
         var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncPromo.Dismissed.Count."
-                                + getAccessPointToHistogramName(accessPoint),
-                        1);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.Promo.ImpressionsUntil.Dismissed."
+                                        + getAccessPointToHistogramName(accessPoint),
+                                1)
+                        .expectIntRecord(
+                                "Signin.SyncPromo.Dismissed.Count."
+                                        + getAccessPointToHistogramName(accessPoint),
+                                1)
+                        .build();
         var impressionHistogramWatcher =
                 getPromoImpressionHistogramWatcher(
                         accessPoint,

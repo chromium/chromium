@@ -267,6 +267,12 @@ void ToastController::CreateToast(ToastParams params,
   const ui::ImageModel* image_override = params.image_override.has_value()
                                              ? &params.image_override.value()
                                              : nullptr;
+
+  if (spec->has_accelerator()) {
+    params.body_string_replacement_params.emplace_back(
+        spec->accelerator().GetShortcutText());
+  }
+
   const std::u16string body_string =
       params.body_string_override.has_value()
           ? params.body_string_override.value()
@@ -296,6 +302,11 @@ void ToastController::CreateToast(ToastParams params,
     toast_view->AddMenu(std::move(params.menu_model));
   }
 
+  if (spec->has_accelerator()) {
+    toast_view->AddAcceleratorCallback(spec->accelerator(),
+                                       spec->accelerator_callback());
+  }
+
   toast_view_ = toast_view.get();
   toast_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(std::move(toast_view));
@@ -320,7 +331,12 @@ void ToastController::CreateToast(ToastParams params,
   toast_widget_->SetFocusTraversableParentView(anchor_view);
 
   if (!is_omnibox_popup_showing_) {
-    toast_widget_->ShowInactive();
+    if (spec->has_accelerator()) {
+      toast_widget_->Show();
+    } else {
+      toast_widget_->ShowInactive();
+    }
+
     toast_view_->AnimateIn();
   } else {
     toast_widget_->Hide();

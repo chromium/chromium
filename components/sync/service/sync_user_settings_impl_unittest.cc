@@ -171,7 +171,6 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
                             kReadingListEnableSyncTransportModeUponSignIn,
                             kSeparateLocalAndAccountSearchEngines,
                             syncer::kSeparateLocalAndAccountThemes,
-                            syncer::kMoveThemePrefsToSpecifics,
 #endif
                             switches::kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});

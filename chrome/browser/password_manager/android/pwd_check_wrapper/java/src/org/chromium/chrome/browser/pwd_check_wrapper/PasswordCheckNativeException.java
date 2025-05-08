@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.pwd_check_wrapper;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
 
 /**
  * The exception returned by {@link ChromeNativePasswordCheckController} notifying there was an
  * error during password check.
  */
+@NullMarked
 public class PasswordCheckNativeException extends Exception {
     public @PasswordCheckUIStatus int errorCode;
 

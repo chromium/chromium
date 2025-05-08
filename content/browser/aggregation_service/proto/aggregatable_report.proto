@@ -10,12 +10,6 @@ package content.proto;
 
 option optimize_for = LITE_RUNTIME;
 
-// Proto equivalent of `blink::mojom::AggregationServiceMode`
-enum AggregationServiceMode {
-  TEE_BASED = 0;
-  EXPERIMENTAL_POPLAR = 1;
-}
-
 // Proto equivalent of `blink::mojom::AggregatableReportHistogramContribution`
 message AggregatableReportHistogramContribution {
   uint64 bucket_high = 1;
@@ -32,11 +26,12 @@ message AggregationServicePayloadContents {
 
   Operation operation = 1;
   repeated AggregatableReportHistogramContribution contributions = 2;
-  AggregationServiceMode aggregation_mode = 3;
   int32 max_contributions_allowed = 5;
   optional string aggregation_coordinator_origin = 6;
   optional uint32 filtering_id_max_bytes = 7;
 
+  reserved 3;
+  reserved "aggregation_mode";
   reserved 4;
   reserved "aggregation_coordinator";
 }

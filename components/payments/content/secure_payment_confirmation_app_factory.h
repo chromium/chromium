@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app_factory.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -35,7 +36,7 @@ class SecurePaymentConfirmationAppFactory : public PaymentAppFactory,
 
 #if BUILDFLAG(IS_ANDROID)
   void SetBrowserBoundKeyStoreForTesting(
-      std::unique_ptr<BrowserBoundKeyStore> key_store);
+      scoped_refptr<BrowserBoundKeyStore> key_store);
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
@@ -76,7 +77,7 @@ class SecurePaymentConfirmationAppFactory : public PaymentAppFactory,
 
   std::map<WebDataServiceBase::Handle, std::unique_ptr<Request>> requests_;
 #if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<BrowserBoundKeyStore> browser_bound_key_store_for_testing_;
+  scoped_refptr<BrowserBoundKeyStore> browser_bound_key_store_for_testing_;
 #endif  // BUILDFLAG(IS_ANDROID)
   base::WeakPtrFactory<SecurePaymentConfirmationAppFactory> weak_ptr_factory_{
       this};

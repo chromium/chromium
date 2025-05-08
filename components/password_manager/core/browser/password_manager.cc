@@ -469,10 +469,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
   registry->RegisterStringPref(prefs::kUPMErrorUIShownTimestamp, "0");
-  registry->RegisterBooleanPref(
-      prefs::kUserAcknowledgedLocalPasswordsMigrationWarning, false);
-  registry->RegisterIntegerPref(
-      prefs::kLocalPasswordMigrationWarningPrefsVersion, 0);
   registry->RegisterIntegerPref(
       prefs::kPasswordGenerationBottomSheetDismissCount, 0);
   registry->RegisterBooleanPref(
@@ -1467,7 +1463,9 @@ void PasswordManager::OnLoginSuccessful() {
   PasswordFormManager* submitted_manager = GetSubmittedManager();
 
   if (!submitted_manager || !submitted_manager->GetSubmittedForm()) {
-    logger->LogMessage(Logger::STRING_NO_SUBMITTED_MANAGER_AVAILABLE);
+    if (logger) {
+      logger->LogMessage(Logger::STRING_NO_SUBMITTED_MANAGER_AVAILABLE);
+    }
     return;
   }
 

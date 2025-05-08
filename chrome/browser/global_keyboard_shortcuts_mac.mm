@@ -150,10 +150,6 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
       {true,  false, false, true,  kVK_DownArrow,         IDC_FOCUS_NEXT_PANE},
       {true,  false, false, true,  kVK_UpArrow,           IDC_FOCUS_PREVIOUS_PANE},
       {true,  true,  false, true,  kVK_ANSI_A,            IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY},
-
-#if BUILDFLAG(ENABLE_GLIC)
-      {true,  false,  true, false,  kVK_ANSI_G,            IDC_GLIC_TOGGLE_FOCUS},
-#endif
     });
     // clang-format on
 
@@ -161,7 +157,7 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
       keys.push_back(
           {true, false, true, false, kVK_ANSI_C, IDC_ADD_NEW_TAB_TO_GROUP});
       keys.push_back(
-          {true, false, true, false, kVK_ANSI_D, IDC_CREATE_NEW_TAB_GROUP});
+          {true, false, true, false, kVK_ANSI_P, IDC_CREATE_NEW_TAB_GROUP});
       keys.push_back(
           {true, false, true, false, kVK_ANSI_W, IDC_CLOSE_TAB_GROUP});
       keys.push_back(

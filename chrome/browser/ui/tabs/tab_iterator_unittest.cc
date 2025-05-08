@@ -5,9 +5,6 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/ui/tabs/split_tab_collection.h"
-#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -15,6 +12,9 @@
 #include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/split_tab_collection.h"
+#include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_collection.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -126,8 +126,7 @@ TEST_F(TabCollectionIteratorTest, IteratorWithMixedTabsAndCollections) {
   std::unique_ptr<tabs::SplitTabCollection> split_collection =
       std::make_unique<tabs::SplitTabCollection>(
           split_tabs::SplitTabId::GenerateNew(),
-          split_tabs::SplitTabVisualData(
-              split_tabs::SplitTabLayout::kHorizontal, 0.5));
+          split_tabs::SplitTabVisualData());
   split_collection->AddTab(
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
       0);

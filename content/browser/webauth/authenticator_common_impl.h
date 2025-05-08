@@ -63,6 +63,7 @@ inline constexpr char kPasskeyPlatformAuthenticator[] =
 inline constexpr char kUserVerifyingPlatformAuthenticator[] =
     "userVerifyingPlatformAuthenticator";
 inline constexpr char kRelatedOrigins[] = "relatedOrigins";
+inline constexpr char kImmediateGet[] = "immediateGet";
 
 }  // namespace client_capabilities
 

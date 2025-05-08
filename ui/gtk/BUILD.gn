@@ -154,6 +154,8 @@ component("gtk") {
 
   if (ozone_platform_x11) {
     sources += [
+      "ime_compat_check.cc",
+      "ime_compat_check.h",
       "x/gtk_ui_platform_x11.cc",
       "x/gtk_ui_platform_x11.h",
     ]

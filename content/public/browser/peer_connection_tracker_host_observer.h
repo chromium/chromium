@@ -81,6 +81,15 @@ class CONTENT_EXPORT PeerConnectionTrackerHostObserver
       int lid,
       const std::string& message) {}
 
+  // This method is called when a WebRTC DataChannel message has to be logged.
+  // - |render_frame_host_id| identifies the RenderFrameHost.
+  // - |lid| identifies a peer connection.
+  // - |message| is the message to be logged.
+  virtual void OnWebRtcDataChannelLogWrite(
+      GlobalRenderFrameHostId render_frame_host_id,
+      int lid,
+      const std::string& message) {}
+
   // This methods is called when results from
   // PeerConnectionInterface::GetStats() (standard API) are available.
   // - |render_frame_host_id| identifies the RenderFrameHost.

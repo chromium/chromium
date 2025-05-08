@@ -6,7 +6,6 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
-#include "base/features.h"
 #include "base/json/json_writer.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -719,23 +718,6 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, DecodeFailure) {
   auto* oidc_interceptor = GetMockOidcInterceptor();
   RunThrottleAndExpectNoOidcInterception(oidc_interceptor, redirection_url,
                                          NavigationThrottle::CANCEL_AND_IGNORE);
-  CheckFunnelAndResultHistogram(
-      OidcInterceptionFunnelStep::kValidRedirectionCaptured,
-      OidcInterceptionResult::kInvalidUrlOrTokens);
-}
-
-TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, DataDecoderFailure) {
-  // Disable the Rust JSON parser, as it is in-process and cannot crash.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(base::features::kUseRustJsonParser, false);
-  in_process_data_decoder_.SimulateJsonParserCrash(/*drop=*/true);
-
-  std::string redirection_url =
-      BuildStandardResponseUrl(/*oidc_state=*/std::string());
-
-  auto* oidc_interceptor = GetMockOidcInterceptor();
-  RunThrottleAndExpectNoOidcInterception(oidc_interceptor, redirection_url,
-                                         NavigationThrottle::DEFER);
   CheckFunnelAndResultHistogram(
       OidcInterceptionFunnelStep::kValidRedirectionCaptured,
       OidcInterceptionResult::kInvalidUrlOrTokens);

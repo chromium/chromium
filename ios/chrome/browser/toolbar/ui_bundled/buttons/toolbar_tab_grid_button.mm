@@ -49,12 +49,10 @@ const CGFloat kLabelOffset = 3;
     (ToolbarTabGridButtonImageLoader)tabGroupStateImageLoader {
   CHECK(tabGroupStateImageLoader);
   self = [super
-      initWithImageLoader:^{
-        return [[UIImage alloc] init];
-      }
-      IPHHighlightedImageLoader:^{
-        return [[UIImage alloc] init];
-      }];
+            initWithImageLoader:^{
+              return [[UIImage alloc] init];
+            }
+      IPHHighlightedImageLoader:nil];
   if (self) {
     _normalStateImageLoader = ^{
       return tabGroupStateImageLoader(ToolbarTabGroupState::kNormal);
@@ -87,6 +85,11 @@ const CGFloat kLabelOffset = 3;
   _tabGroupState = tabGroupState;
   [self updateImageLoader];
   [self updatePositionConstraints];
+  [self updateTabCountLabelTextColor];
+}
+
+- (void)setIphHighlighted:(BOOL)iphHighlighted {
+  [super setIphHighlighted:iphHighlighted];
   [self updateTabCountLabelTextColor];
 }
 

@@ -364,13 +364,15 @@ public class LibraryLoader {
         /**
          * Optionally puts the RELRO section information so that it can be memory-mapped in another
          * process reading the bundle.
+         *
          * @param bundle Where to serialize.
          */
-        public void putSharedRelrosToBundle(Bundle bundle) {
+        public @Nullable Bundle getSharedRelrosBundle() {
             assert mInitDone;
             if (useChromiumLinker()) {
-                getLinker().putSharedRelrosToBundle(bundle);
+                return getLinker().getSharedRelrosBundle();
             }
+            return null;
         }
 
         private String creationAsString() {

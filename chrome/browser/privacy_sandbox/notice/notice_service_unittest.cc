@@ -4,14 +4,15 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_service.h"
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_catalog.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_storage.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
@@ -32,20 +33,42 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Mock;
+using ::testing::NiceMock;
+using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::StrEq;
 using ::testing::Test;
+
 using Event = PrivacySandboxNoticeEvent;
 using enum PrivacySandboxNotice;
 using enum SurfaceType;
 
-BASE_FEATURE(kTestFeatureA, "TestFeatureA", base::FEATURE_DISABLED_BY_DEFAULT);
+// Feature providing the storage name for the default notice in the catalog.
+BASE_FEATURE(kTestFeatureA, "StorageNameA", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureB, "StorageNameB", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Notice ID for the default notice in the catalog.
+constexpr NoticeId kNotice1InCatalog = {
+    PrivacySandboxNotice::kTopicsConsentNotice, SurfaceType::kDesktopNewTab};
+constexpr NoticeId kNotice2InCatalog = {
+    PrivacySandboxNotice::kTopicsConsentNotice, SurfaceType::kClankCustomTab};
+
+// A notice ID *not* expected in the default catalog.
+constexpr NoticeId kNoticeIdNotInCatalog = {
+    PrivacySandboxNotice::kMeasurementNotice, SurfaceType::kClankCustomTab};
 
 std::unique_ptr<Notice> MakeNoticeWithFeature(NoticeId id,
                                               const base::Feature& feature) {
   auto notice = std::make_unique<Notice>(id);
   notice->SetFeature(&feature);
   return notice;
+}
+
+NoticeStorageData BuildStorageData(Event event) {
+  NoticeStorageData data;
+  data.notice_events.emplace_back(std::make_unique<NoticeEventTimestampPair>(
+      NoticeEventTimestampPair{event, base::Time::Now()}));
+  return data;
 }
 
 class PrivacySandboxNoticeServiceTest : public Test {
@@ -56,10 +79,19 @@ class PrivacySandboxNoticeServiceTest : public Test {
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment();
 
-    storage_unique_ptr_ = std::make_unique<MockNoticeStorage>();
+    storage_unique_ptr_ = std::make_unique<NiceMock<MockNoticeStorage>>();
     mock_storage_ = storage_unique_ptr_.get();
-    catalog_unique_ptr_ = std::make_unique<MockNoticeCatalog>();
+    catalog_unique_ptr_ = std::make_unique<NiceMock<MockNoticeCatalog>>();
     mock_catalog_ = catalog_unique_ptr_.get();
+
+    ON_CALL(*mock_catalog(), GetNotices())
+        .WillByDefault(Return(base::span(notices_)));
+    ON_CALL(*mock_catalog(), GetNotice(kNotice1InCatalog))
+        .WillByDefault(Return(notice_1_.get()));
+    ON_CALL(*mock_catalog(), GetNotice(kNotice2InCatalog))
+        .WillByDefault(Return(notice_2_.get()));
+    ON_CALL(*mock_catalog(), GetNotice(kNoticeIdNotInCatalog))
+        .WillByDefault(Return(nullptr));
   }
 
   void CreateNoticeService() {
@@ -90,76 +122,73 @@ class PrivacySandboxNoticeServiceTest : public Test {
 
   raw_ptr<MockNoticeStorage> mock_storage_ = nullptr;
   raw_ptr<MockNoticeCatalog> mock_catalog_ = nullptr;
+
+  // Notices
+  std::unique_ptr<Notice> notice_1_ =
+      MakeNoticeWithFeature(kNotice1InCatalog, kTestFeatureA);
+  std::unique_ptr<Notice> notice_2_ =
+      MakeNoticeWithFeature(kNotice2InCatalog, kTestFeatureB);
+  std::vector<Notice*> notices_{notice_1_.get(), notice_2_.get()};
 };
 
-TEST_F(PrivacySandboxNoticeServiceTest, Construction_EmitsStartupHistograms) {
-  // 1. Set expectations on Storage: RecordStartupHistograms called once.
-  EXPECT_CALL(*mock_storage(), RecordStartupHistograms()).Times(1);
+TEST_F(PrivacySandboxNoticeServiceTest,
+       Constructor_RefreshesAndSetsFulfilledStatus) {
+  EXPECT_CALL(*mock_storage(), ReadNoticeData(StrEq("StorageNameA")))
+      .WillOnce(Return(BuildStorageData(Event::kAck)));
+  EXPECT_CALL(*mock_storage(), ReadNoticeData(StrEq("StorageNameB")))
+      .WillOnce(Return(std::nullopt));
 
-  // 2. Execute: Create the service, which should trigger the histogram calls.
+  EXPECT_FALSE(mock_catalog()->GetNotice(kNotice1InCatalog)->was_fulfilled());
+  EXPECT_FALSE(mock_catalog()->GetNotice(kNotice2InCatalog)->was_fulfilled());
+
   CreateNoticeService();
 
-  // 3. Verify: Ensure mock expectations were met.
+  EXPECT_TRUE(mock_catalog()->GetNotice(kNotice1InCatalog)->was_fulfilled());
+  EXPECT_FALSE(mock_catalog()->GetNotice(kNotice2InCatalog)->was_fulfilled());
+}
+
+TEST_F(PrivacySandboxNoticeServiceTest, Construction_EmitsStartupHistograms) {
+  EXPECT_CALL(*mock_storage(), RecordStartupHistograms()).Times(1);
+
+  CreateNoticeService();
+
   Mock::VerifyAndClearExpectations(mock_storage());
 }
 
 TEST_F(PrivacySandboxNoticeServiceTest,
        EventOccurred_NoticeFound_CallsRecordEvent) {
-  // 1. Create the Notice object that we expect the service to find.
-  auto test_notice = MakeNoticeWithFeature(
-      {kThreeAdsApisNotice, kDesktopNewTab}, kTestFeatureA);
+  // Set expectations on the storage mock For Startup.
+  EXPECT_CALL(*mock_storage(), ReadNoticeData(StrEq("StorageNameA")))
+      .WillOnce(Return(std::nullopt));
+  EXPECT_CALL(*mock_storage(), ReadNoticeData(StrEq("StorageNameB")))
+      .WillOnce(Return(std::nullopt));
 
-  NoticeMap test_notice_map;
-  test_notice_map[{kThreeAdsApisNotice, kDesktopNewTab}] =
-      std::move(test_notice);
-
-  // 3. Mock GetNoticeMap to return our prepared map.
-  EXPECT_CALL(*mock_catalog(), GetNoticeMap())
-      .WillRepeatedly(ReturnRef(test_notice_map));
-
-  // Ignore constructor histogram calls
-  EXPECT_CALL(*mock_storage(), RecordStartupHistograms())
-      .Times(testing::AnyNumber());
-
-  // 4. Set expectations on the storage mock.
-  EXPECT_CALL(*mock_storage(),
-              RecordEvent(Eq(NoticeId{kThreeAdsApisNotice, kDesktopNewTab}),
-                          Eq(Event::kAck)))
-      .Times(1);
-
-  // 5. Execute
   CreateNoticeService();
 
-  notice_service()->EventOccurred({kThreeAdsApisNotice, kDesktopNewTab},
-                                  Event::kAck);
+  EXPECT_FALSE(mock_catalog()
+                   ->GetNotice(kNotice1InCatalog)
+                   ->was_fulfilled());  // Initial State.
 
-  // Ensure mock expectations are met.
-  Mock::VerifyAndClearExpectations(mock_catalog());
-  Mock::VerifyAndClearExpectations(mock_storage());
+  {
+    testing::Sequence s;
+    EXPECT_CALL(*mock_storage(),
+                RecordEvent(Eq(kNotice1InCatalog), Eq(Event::kAck)));
+
+    EXPECT_CALL(*mock_storage(), ReadNoticeData(StrEq("StorageNameA")))
+        .WillOnce(Return(BuildStorageData(Event::kAck)));
+  }
+
+  notice_service()->EventOccurred(kNotice1InCatalog, Event::kAck);
+
+  EXPECT_TRUE(mock_catalog()->GetNotice(kNotice1InCatalog)->was_fulfilled());
 }
 
 TEST_F(PrivacySandboxNoticeServiceTest, EventOccurred_NoticeNotFound_Crashes) {
-  NoticeId unregistered_notice_id{kTopicsConsentNotice, kDesktopNewTab};
-  NoticeMap empty_notice_map;
-
-  EXPECT_CALL(*mock_catalog(), GetNoticeMap())
-      .WillRepeatedly(
-          ReturnRef(empty_notice_map));  // Called on construction and event
-
-  // Ignore constructor histogram calls
-  EXPECT_CALL(*mock_storage(), RecordStartupHistograms())
-      .Times(testing::AnyNumber());
-
-  // Create the service
   CreateNoticeService();
 
   EXPECT_DEATH(
-      notice_service()->EventOccurred(unregistered_notice_id, Event::kShown),
+      notice_service()->EventOccurred(kNoticeIdNotInCatalog, Event::kShown),
       "");
-
-  // Ensure mock expectations are met.
-  Mock::VerifyAndClearExpectations(mock_catalog());
-  Mock::VerifyAndClearExpectations(mock_storage());
 }
 
 // TODO(crbug.com/392612108): Write tests when GetRequiredNotices is

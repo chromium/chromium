@@ -25,6 +25,7 @@
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/history_embeddings/mock_history_embeddings_service.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -360,7 +361,7 @@ TEST_F(HistoryEmbeddingsProviderTest, Start_Stop_SearchCompletesAfterStop) {
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
   EXPECT_TRUE(last_update_matches_.empty());
 
-  history_embeddings_provider_->Stop(false, false);
+  history_embeddings_provider_->Stop(AutocompleteStopReason::kClobbered);
 
   // Results returned after `Stop()` should be discarded.
   std::move(search_callbacks_[0]).Run("1 1 1", u"1");
@@ -372,10 +373,10 @@ TEST_F(HistoryEmbeddingsProviderTest, Stop) {
 
   // TODO(crbug.com/364303536) Temporarily allow history embeddings provider to
   //   ignore `Stop()`.
-  history_embeddings_provider_->Stop(false, true);
+  history_embeddings_provider_->Stop(AutocompleteStopReason::kInactivity);
   EXPECT_FALSE(history_embeddings_provider_->done_);
 
-  history_embeddings_provider_->Stop(false, false);
+  history_embeddings_provider_->Stop(AutocompleteStopReason::kClobbered);
   EXPECT_TRUE(history_embeddings_provider_->done_);
 }
 

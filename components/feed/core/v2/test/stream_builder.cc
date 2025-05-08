@@ -231,36 +231,40 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id,
 std::unique_ptr<StreamModelUpdateRequest>
 StreamModelUpdateRequestGenerator::MakeFirstPageWithSpecificContents(
     const std::vector<int>& id_numbers) const {
-  int first_cluster_id = id_numbers.front();
-  bool include_notice_card =
-      (privacy_notice_fulfilled && first_cluster_id == 0);
-
   auto initial_update = std::make_unique<StreamModelUpdateRequest>();
   initial_update->source =
       StreamModelUpdateRequest::Source::kInitialLoadFromStore;
   initial_update->stream_structures = {MakeClearAll(), MakeStream()};
 
-  for (const auto i : id_numbers) {
-    if (include_notice_card && i == first_cluster_id) {
-      initial_update->content.push_back(MakeNoticeCardContent(i));
-      initial_update->stream_structures.push_back(
-          MakeNoticeCardCluster(i, MakeRootId()));
-      initial_update->stream_structures.push_back(
-          MakeNoticeCardContentNode(i, MakeClusterId(i)));
-    } else {
-      initial_update->content.push_back(MakeContent(i));
-      initial_update->stream_structures.push_back(MakeCluster(i, MakeRootId()));
-      initial_update->stream_structures.push_back(
-          MakeContentNode(i, MakeClusterId(i)));
+  if (!id_numbers.empty()) {
+    int first_cluster_id = id_numbers.front();
+    bool include_notice_card =
+        (privacy_notice_fulfilled && first_cluster_id == 0);
+
+    for (const auto i : id_numbers) {
+      if (include_notice_card && i == first_cluster_id) {
+        initial_update->content.push_back(MakeNoticeCardContent(i));
+        initial_update->stream_structures.push_back(
+            MakeNoticeCardCluster(i, MakeRootId()));
+        initial_update->stream_structures.push_back(
+            MakeNoticeCardContentNode(i, MakeClusterId(i)));
+      } else {
+        initial_update->content.push_back(MakeContent(i));
+        initial_update->stream_structures.push_back(
+            MakeCluster(i, MakeRootId()));
+        initial_update->stream_structures.push_back(
+            MakeContentNode(i, MakeClusterId(i)));
+      }
     }
+
+    initial_update->shared_states.push_back(MakeSharedState(first_cluster_id));
+    *initial_update->stream_data.add_shared_state_ids() =
+        MakeSharedStateId(first_cluster_id);
   }
 
-  initial_update->shared_states.push_back(MakeSharedState(first_cluster_id));
   *initial_update->stream_data.mutable_content_id() = MakeRootId();
   initial_update->stream_data.set_root_event_id(
       MakeRootEventId(event_id_number));
-  *initial_update->stream_data.add_shared_state_ids() =
-      MakeSharedStateId(first_cluster_id);
   initial_update->stream_data.set_next_page_token("page-2");
   initial_update->stream_data.set_signed_in(signed_in);
   if (signed_in) {
@@ -320,6 +324,17 @@ StreamModelUpdateRequestGenerator::MakeNextPage(
   feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
 
   return initial_update;
+}
+
+std::unique_ptr<StreamModelUpdateRequest> MakeEmptyModelState() {
+  StreamModelUpdateRequestGenerator generator;
+  generator.last_added_time = kTestTimeEpoch;
+  generator.signed_in = true;
+  generator.logging_enabled = true;
+  generator.privacy_notice_fulfilled = false;
+  generator.stream_key = feedstore::StreamKey(StreamType(StreamKind::kForYou));
+
+  return generator.MakeFirstPage(/*first_cluster_id=*/0, /*num_cards=*/0);
 }
 
 std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(

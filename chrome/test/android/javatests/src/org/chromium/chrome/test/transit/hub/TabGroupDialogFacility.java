@@ -44,18 +44,16 @@ import java.util.List;
  */
 public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedActivity>>
         extends Facility<HostStationT> {
-    public static final ViewSpec<View> TOOLBAR = viewSpec(withId(R.id.tab_group_toolbar));
-
     public static final ViewSpec<View> TABS_LIST =
             viewSpec(
                     withId(R.id.tab_list_recycler_view),
                     withParent(withId(R.id.tab_grid_dialog_recycler_view_container)));
-    public static final ViewSpec SHARE_BUTTON = TOOLBAR.descendant(withId(R.id.share_button));
 
     private final List<Integer> mTabIdsInGroup;
     private final String mTitle;
     private final boolean mIsIncognito;
     private final @Nullable @TabGroupColorId Integer mSelectedColor;
+    public ViewElement<View> toolbarElement;
     public ViewElement<View> shareButtonElement;
     public ViewElement<View> tabsListElement;
     public ViewElement<View> colorIconElement;
@@ -86,6 +84,41 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
         mTitle = title;
         mSelectedColor = selectedColor;
         mIsIncognito = isIncognito;
+
+        toolbarElement = declareView(viewSpec(withId(R.id.tab_group_toolbar)));
+        tabsListElement = declareView(TABS_LIST);
+        colorIconElement =
+                declareView(toolbarElement.descendant(withId(R.id.tab_group_color_icon_container)));
+        titleInputElement =
+                declareView(
+                        toolbarElement.descendant(
+                                withId(R.id.title),
+                                isAssignableFrom(EditText.class),
+                                withText(mTitle)));
+        newTabButtonElement =
+                declareView(toolbarElement.descendant(withId(R.id.toolbar_new_tab_button)));
+        backButtonElement =
+                declareView(toolbarElement.descendant(withId(R.id.toolbar_back_button)));
+    }
+
+    @Override
+    public void declareElements(Elements.Builder elements) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+            // TODO(ckitagawa): Add handling for an already shared group.
+            if (isAllowedToShare()) {
+                shareButtonElement =
+                        declareView(toolbarElement.descendant(withId(R.id.share_button)));
+            }
+
+            // Data sharing layout causes the menu button to be hidden due to the rounded corner.
+            listMenuButtonElement =
+                    declareView(
+                            toolbarElement.descendant(withId(R.id.toolbar_menu_button)),
+                            ViewElement.displayingAtLeastOption(51));
+        } else {
+            listMenuButtonElement =
+                    declareView(toolbarElement.descendant(withId(R.id.toolbar_menu_button)));
+        }
     }
 
     private boolean isAllowedToShare() {
@@ -104,47 +137,13 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
                                 .isAllowedToCreate());
     }
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        tabsListElement = elements.declareView(TABS_LIST);
-        colorIconElement =
-                elements.declareView(
-                        TOOLBAR.descendant(withId(R.id.tab_group_color_icon_container)));
-        titleInputElement =
-                elements.declareView(
-                        TOOLBAR.descendant(
-                                withId(R.id.title),
-                                isAssignableFrom(EditText.class),
-                                withText(mTitle)));
-        newTabButtonElement =
-                elements.declareView(TOOLBAR.descendant(withId(R.id.toolbar_new_tab_button)));
-        backButtonElement =
-                elements.declareView(TOOLBAR.descendant(withId(R.id.toolbar_back_button)));
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
-            // TODO(ckitagawa): Add handling for an already shared group.
-            if (isAllowedToShare()) {
-                shareButtonElement =
-                        elements.declareView(TOOLBAR.descendant(withId(R.id.share_button)));
-            }
-
-            // Data sharing layout causes the menu button to be hidden due to the rounded corner.
-            listMenuButtonElement =
-                    elements.declareView(
-                            TOOLBAR.descendant(withId(R.id.toolbar_menu_button)),
-                            ViewElement.displayingAtLeastOption(51));
-        } else {
-            listMenuButtonElement =
-                    elements.declareView(TOOLBAR.descendant(withId(R.id.toolbar_menu_button)));
-        }
-    }
-
     /** Input a new group name. */
     public TabGroupDialogFacility<HostStationT> inputName(String newTabGroupName) {
         return mHostStation.swapFacilitySync(
                 this,
                 new TabGroupDialogFacility<>(
                         mTabIdsInGroup, newTabGroupName, mSelectedColor, mIsIncognito),
-                titleInputElement.performTrigger(replaceText(newTabGroupName)));
+                titleInputElement.getPerformTrigger(replaceText(newTabGroupName)));
     }
 
     /** Create a new tab and transition to the associated RegularNewTabPageStation. */
@@ -156,7 +155,7 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return mHostStation.travelToSync(page, newTabButtonElement.clickTrigger());
+        return mHostStation.travelToSync(page, newTabButtonElement.getClickTrigger());
     }
 
     /** Create a new incognito tab and transition to the associated IncognitoNewTabPageStation. */
@@ -168,11 +167,11 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return mHostStation.travelToSync(page, newTabButtonElement.clickTrigger());
+        return mHostStation.travelToSync(page, newTabButtonElement.getClickTrigger());
     }
 
     /** Press back to exit the facility. */
     public void pressBackArrowToExit() {
-        mHostStation.exitFacilitySync(this, backButtonElement.clickTrigger());
+        mHostStation.exitFacilitySync(this, backButtonElement.getClickTrigger());
     }
 }

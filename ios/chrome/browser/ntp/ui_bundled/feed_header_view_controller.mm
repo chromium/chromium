@@ -30,10 +30,6 @@ const CGFloat kTitleHorizontalMargin = 19;
 const CGFloat kButtonHorizontalMargin = 14;
 // Font size for the custom search engine label.
 const CGFloat kCustomSearchEngineLabelFontSize = 13;
-// Font size for the hidden feed label.
-const CGFloat kHiddenFeedLabelFontSize = 16;
-// The width of the label for when the feed is hidden.
-const CGFloat kHiddenFeedLabelWidth = 250;
 // The height of the header container.
 const CGFloat kDiscoverFeedHeaderHeight = 30;
 
@@ -72,9 +68,6 @@ NSInteger kFeedSymbolPointSize = 17;
 // The view informing the user that the feed is powered by Google if they don't
 // have Google as their default search engine.
 @property(nonatomic, strong) UILabel* customSearchEngineView;
-
-// The label for when the feed visibility is disabled.
-@property(nonatomic, strong) UILabel* hiddenFeedLabel;
 
 // The constraints for the currently visible components of the header.
 @property(nonatomic, strong)
@@ -174,13 +167,7 @@ NSInteger kFeedSymbolPointSize = 17;
   }
 
   [self resetView];
-
-  if ([self.feedControlDelegate shouldFeedBeVisible]) {
-    [self addViewsForVisibleFeed];
-  } else {
-    [self addViewsForHiddenFeed];
-  }
-
+  [self addViewsForFeed];
   [self applyHeaderConstraints];
 }
 
@@ -217,11 +204,7 @@ NSInteger kFeedSymbolPointSize = 17;
 
 - (void)configureHeaderViews {
   if ([self.feedControlDelegate isFollowingFeedAvailable]) {
-    if ([self.feedControlDelegate shouldFeedBeVisible]) {
-      [self addViewsForVisibleFeed];
-    } else {
-      [self addViewsForHiddenFeed];
-    }
+    [self addViewsForFeed];
   } else if (!ShouldRemoveDiscoverLabel(
                  [self.NTPDelegate isGoogleDefaultSearchEngine])) {
     self.titleLabel = [self createTitleLabel];
@@ -339,20 +322,6 @@ NSInteger kFeedSymbolPointSize = 17;
   return segmentedControl;
 }
 
-// Configures and returns the label for when the feed visibility is
-// disabled.
-- (UILabel*)createHiddenFeedLabel {
-  UILabel* hiddenFeedLabel = [[UILabel alloc] init];
-  [hiddenFeedLabel setText:l10n_util::GetNSString(
-                               IDS_IOS_DISCOVER_FEED_HEADER_TURNED_OFF_LABEL)];
-  hiddenFeedLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  hiddenFeedLabel.font = [UIFont systemFontOfSize:kHiddenFeedLabelFontSize];
-  hiddenFeedLabel.textColor = [UIColor colorNamed:kGrey600Color];
-  hiddenFeedLabel.numberOfLines = 0;
-  hiddenFeedLabel.textAlignment = NSTextAlignmentCenter;
-  return hiddenFeedLabel;
-}
-
 // Updates the font and color of the segmented control header to adapt to the
 // current dynamic sizing.
 - (void)updateSegmentedControlFont:(UISegmentedControl*)segmentedControl {
@@ -454,30 +423,17 @@ NSInteger kFeedSymbolPointSize = 17;
 // available.
 - (void)anchorSegmentedControlAndSortButton {
   CHECK([self.feedControlDelegate isFollowingFeedAvailable]);
-  // Anchor views based on the feed being visible or hidden.
-  if ([self.feedControlDelegate shouldFeedBeVisible]) {
-    [self anchorSegmentedControl];
-
-    // Anchor sort button.
-    [self.feedHeaderConstraints addObjectsFromArray:@[
-      [self.sortButton.heightAnchor constraintEqualToConstant:kButtonSize],
-      [self.sortButton.widthAnchor constraintEqualToConstant:kButtonSize],
-      [self.sortButton.leadingAnchor
-          constraintEqualToAnchor:self.container.leadingAnchor
-                         constant:kButtonHorizontalMargin],
-      [self.sortButton.centerYAnchor
-          constraintEqualToAnchor:self.container.centerYAnchor],
-    ]];
-  } else {
-    [self.feedHeaderConstraints addObjectsFromArray:@[
-      [self.hiddenFeedLabel.centerXAnchor
-          constraintEqualToAnchor:self.container.centerXAnchor],
-      [self.hiddenFeedLabel.centerYAnchor
-          constraintEqualToAnchor:self.container.centerYAnchor],
-      [self.hiddenFeedLabel.widthAnchor
-          constraintEqualToConstant:kHiddenFeedLabelWidth],
-    ]];
-  }
+  [self anchorSegmentedControl];
+  // Anchor sort button.
+  [self.feedHeaderConstraints addObjectsFromArray:@[
+    [self.sortButton.heightAnchor constraintEqualToConstant:kButtonSize],
+    [self.sortButton.widthAnchor constraintEqualToConstant:kButtonSize],
+    [self.sortButton.leadingAnchor
+        constraintEqualToAnchor:self.container.leadingAnchor
+                       constant:kButtonHorizontalMargin],
+    [self.sortButton.centerYAnchor
+        constraintEqualToAnchor:self.container.centerYAnchor],
+  ]];
 }
 
 // Anchors the title label that should be shown when the following feed is not
@@ -503,9 +459,6 @@ NSInteger kFeedSymbolPointSize = 17;
 // google.
 - (void)anchorCustomSearchEngineView {
   CHECK(![self.NTPDelegate isGoogleDefaultSearchEngine]);
-  if (![self.feedControlDelegate shouldFeedBeVisible]) {
-    return;
-  }
   if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     [self.feedHeaderConstraints addObjectsFromArray:@[
       // Anchors custom search engine view.
@@ -529,8 +482,8 @@ NSInteger kFeedSymbolPointSize = 17;
   }
 }
 
-// Adds views that only appear when the feed visibility is enabled.
-- (void)addViewsForVisibleFeed {
+// Adds subviews for the feed.
+- (void)addViewsForFeed {
   self.segmentedControl = [self createSegmentedControl];
   [self.container addSubview:self.segmentedControl];
 
@@ -549,19 +502,8 @@ NSInteger kFeedSymbolPointSize = 17;
   }
 }
 
-// Adds views that only appear when the feed visibility is disabled.
-- (void)addViewsForHiddenFeed {
-  self.hiddenFeedLabel = [self createHiddenFeedLabel];
-  [self.container addSubview:self.hiddenFeedLabel];
-}
-
 // Removes the subviews from the header.
 - (void)resetView {
-  if (self.hiddenFeedLabel) {
-    [self.hiddenFeedLabel removeFromSuperview];
-    self.hiddenFeedLabel = nil;
-  }
-
   if (self.segmentedControl) {
     [self.segmentedControl removeFromSuperview];
     self.segmentedControl = nil;
@@ -612,15 +554,7 @@ NSInteger kFeedSymbolPointSize = 17;
 // The title text for the Discover feed header based on user prefs.
 - (NSString*)feedHeaderTitleText {
   DCHECK(![self.feedControlDelegate isFollowingFeedAvailable]);
-
-  NSString* discoverFeedTitle =
-      l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
-  if ([self.feedControlDelegate shouldFeedBeVisible]) {
-    return discoverFeedTitle;
-  }
-  return [NSString stringWithFormat:@"%@ – %@", discoverFeedTitle,
-                                    l10n_util::GetNSString(
-                                        IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
+  return l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
 }
 
 // Updates fonts when the preferred content size class changes.

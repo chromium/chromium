@@ -58,6 +58,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/web_ui/features.h"
+#import "components/search/ntp_features.cc"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/public/constants.h"
@@ -90,7 +91,6 @@
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
-#import "ios/chrome/browser/follow/model/follow_features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/features.h"
@@ -98,6 +98,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/page_info/ui_bundled/features.h"
+#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
@@ -276,28 +277,6 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
      std::size(kStartSurfaceOneHour), nullptr},
 };
 
-const FeatureEntry::FeatureParam kMagicStackMostVisitedModule[] = {
-    {kMagicStackMostVisitedModuleParam, "true"},
-    {kReducedSpaceParam, "-80"}};
-const FeatureEntry::FeatureParam
-    kMagicStackMostVisitedModuleHideIrrelevantModules[] = {
-        {kMagicStackMostVisitedModuleParam, "true"},
-        {kReducedSpaceParam, "-80"},
-        {kHideIrrelevantModulesParam, "true"}};
-const FeatureEntry::FeatureParam kMagicStackHidIrrelevantModules[] = {
-    {kMagicStackMostVisitedModuleParam, "false"},
-    {kHideIrrelevantModulesParam, "true"}};
-
-const FeatureEntry::FeatureVariation kMagicStackVariations[]{
-    {"Most Visited Tiles in Magic Stack", kMagicStackMostVisitedModule,
-     std::size(kMagicStackMostVisitedModule), nullptr},
-    {"Most Visited Tiles in Magic Stack and hide irrelevant modules",
-     kMagicStackMostVisitedModuleHideIrrelevantModules,
-     std::size(kMagicStackMostVisitedModuleHideIrrelevantModules), nullptr},
-    {"Hide irrelevant modules", kMagicStackHidIrrelevantModules,
-     std::size(kMagicStackHidIrrelevantModules), nullptr},
-};
-
 const FeatureEntry::FeatureParam kEnableDefaultModel[] = {
     {segmentation_platform::kDefaultModelEnabledParam, "true"}};
 
@@ -306,30 +285,6 @@ const FeatureEntry::FeatureVariation
         {"Enabled With Default Model Parameter (Must Set this!)",
          kEnableDefaultModel, std::size(kEnableDefaultModel), nullptr},
     };
-
-const FeatureEntry::FeatureParam kIOSTipsNotifications5SecondTrigger[] = {
-    {kIOSTipsNotificationsUnknownTriggerTimeParam, "5s"},
-    {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "5s"},
-    {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "5s"},
-};
-const FeatureEntry::FeatureParam kIOSTipsNotifications10SecondTrigger[] = {
-    {kIOSTipsNotificationsUnknownTriggerTimeParam, "10s"},
-    {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "10s"},
-    {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "10s"},
-};
-const FeatureEntry::FeatureParam kIOSTipsNotifications30SecondTrigger[] = {
-    {kIOSTipsNotificationsUnknownTriggerTimeParam, "30s"},
-    {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "30s"},
-    {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "30s"},
-};
-const FeatureEntry::FeatureVariation kIOSTipsNotificationsVariations[] = {
-    {"(5s trigger)", kIOSTipsNotifications5SecondTrigger,
-     std::size(kIOSTipsNotifications5SecondTrigger), nullptr},
-    {"(10s trigger)", kIOSTipsNotifications10SecondTrigger,
-     std::size(kIOSTipsNotifications10SecondTrigger), nullptr},
-    {"(30s trigger)", kIOSTipsNotifications30SecondTrigger,
-     std::size(kIOSTipsNotifications30SecondTrigger), nullptr},
-};
 
 const FeatureEntry::FeatureParam
     kIOSReactivationNotifications10SecondTrigger[] = {
@@ -825,15 +780,10 @@ const FeatureEntry::FeatureVariation kContextualPanelEntrypointArmVariations[] =
          std::size(kContextualPanelSmallIPHWithBlueHighlightArm), nullptr},
 };
 
-const FeatureEntry::FeatureParam kIdentityDiscAccountMenuNoEllipsis[] = {
-    {kDisableAccountMenuEllipsisParam, "true"},
-};
 const FeatureEntry::FeatureParam kIdentityDiscAccountMenuWithSettings[] = {
     {kShowSettingsInAccountMenuParam, "true"},
 };
 const FeatureEntry::FeatureVariation kIdentityDiscAccountMenuVariations[] = {
-    {" - without account menu ellipsis", kIdentityDiscAccountMenuNoEllipsis,
-     std::size(kIdentityDiscAccountMenuNoEllipsis), nullptr},
     {" - with settings button", kIdentityDiscAccountMenuWithSettings,
      std::size(kIdentityDiscAccountMenuWithSettings), nullptr},
 };
@@ -1170,25 +1120,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
          std::size(kAutofillThrottleFilteredDocFormScanLongPeriodParam),
          nullptr}};
 
-const FeatureEntry::FeatureParam kNewFeedPositioningArm2[] = {
-    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForMidEngaged, "false"},
-    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-};
-
-const FeatureEntry::FeatureParam kNewFeedPositioningArm3[] = {
-    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForMidEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-};
-
-const FeatureEntry::FeatureVariation kNewFeedPositioningVariations[] = {
-    {"- update for high feed engagement", kNewFeedPositioningArm2,
-     std::size(kNewFeedPositioningArm2), nullptr},
-    {"- update for high and mid feed engagement", kNewFeedPositioningArm3,
-     std::size(kNewFeedPositioningArm3), nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kIOSStartTimeBackgroundRemediationsAvoidNTPCleanupArm[] = {
         {kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup, "true"},
@@ -1484,6 +1415,14 @@ const FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
      std::size(kWelcomeBackInFirstRunArm4), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kInvalidateChoiceOnRestoreIsRetroactiveOption[] = {
+        {"is_retroactive", "true"}};
+const FeatureEntry::FeatureVariation
+    kInvalidateSearchEngineChoiceOnRestoreVariations[] = {
+        {"(retroactive)", kInvalidateChoiceOnRestoreIsRetroactiveOption,
+         std::size(kInvalidateChoiceOnRestoreIsRetroactiveOption), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1545,6 +1484,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNTPBackgroundCustomizationName,
      flag_descriptions::kNTPBackgroundCustomizationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kNTPBackgroundCustomization)},
+    {"ntp-alpha-background-collections",
+     flag_descriptions::kNtpAlphaBackgroundCollectionsName,
+     flag_descriptions::kNtpAlphaBackgroundCollectionsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpAlphaBackgroundCollections)},
     {"fullscreen-promos-manager-skip-internal-limits",
      flag_descriptions::kFullscreenPromosManagerSkipInternalLimitsName,
      flag_descriptions::kFullscreenPromosManagerSkipInternalLimitsDescription,
@@ -1615,11 +1559,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSSharedHighlightingColorChangeDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kIOSSharedHighlightingColorChange)},
-    {"ios-tips-notifications", flag_descriptions::kIOSTipsNotificationsName,
-     flag_descriptions::kIOSTipsNotificationsDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSTipsNotifications,
-                                    kIOSTipsNotificationsVariations,
-                                    "IOSTipsNotifications")},
     {"ios-reactivation-notifications",
      flag_descriptions::kIOSReactivationNotificationsName,
      flag_descriptions::kIOSReactivationNotificationsDescription,
@@ -1627,14 +1566,19 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSReactivationNotifications,
                                     kIOSReactivationNotificationsVariations,
                                     "IOSReactivationNotifications")},
+    {"ios-expanded-tips", flag_descriptions::kIOSExpandedTipsName,
+     flag_descriptions::kIOSExpandedTipsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSExpandedTips)},
     {"invalidate-search-engine-choice-on-device-restore-detection",
      flag_descriptions::
          kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionName,
      flag_descriptions::
          kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
+         kInvalidateSearchEngineChoiceOnRestoreVariations,
+         "InvalidateSearchEngineChoiceOnDeviceRestoreDetection")},
     {"ios-provides-app-notification-settings",
      flag_descriptions::kIOSProvidesAppNotificationSettingsName,
      flag_descriptions::kIOSProvidesAppNotificationSettingsDescription,
@@ -1695,9 +1639,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kTrackByDefaultOnMobileName,
      commerce::flag_descriptions::kTrackByDefaultOnMobileDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(commerce::kTrackByDefaultOnMobile)},
-    {"web-feed-ios", flag_descriptions::kEnableWebChannelsName,
-     flag_descriptions::kEnableWebChannelsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableWebChannels)},
     {"ntp-view-hierarchy-repair",
      flag_descriptions::kNTPViewHierarchyRepairName,
      flag_descriptions::kNTPViewHierarchyRepairDescription, flags_ui::kOsIos,
@@ -1796,9 +1737,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)},
     {"content-suggestions-magic-stack", flag_descriptions::kMagicStackName,
      flag_descriptions::kMagicStackDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kMagicStack,
-                                    kMagicStackVariations,
-                                    flag_descriptions::kMagicStackName)},
+     FEATURE_VALUE_TYPE(kMagicStack)},
     {"ios-keyboard-accessory-upgrade-for-ipad",
      flag_descriptions::kIOSKeyboardAccessoryUpgradeForIPadName,
      flag_descriptions::kIOSKeyboardAccessoryUpgradeForIPadDescription,
@@ -1926,13 +1865,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebFeedFeedbackRerouteName,
      flag_descriptions::kWebFeedFeedbackRerouteDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kWebFeedFeedbackReroute)},
-    {"enable-follow-IPH-exp-params",
-     flag_descriptions::kEnableFollowIPHExpParamsName,
-     flag_descriptions::kEnableFollowIPHExpParamsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableFollowIPHExpParams)},
-    {"enable-follow-ui-update", flag_descriptions::kEnableFollowUIUpdateName,
-     flag_descriptions::kEnableFollowUIUpdateDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableFollowUIUpdate)},
     {"ios-browser-edit-menu-metrics",
      flag_descriptions::kIOSBrowserEditMenuMetricsName,
      flag_descriptions::kIOSBrowserEditMenuMetricsDescription, flags_ui::kOsIos,
@@ -1997,9 +1929,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"fullscreen-improvement", flag_descriptions::kFullscreenImprovementName,
      flag_descriptions::kFullscreenImprovementDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kFullscreenImprovement)},
-    {"tab-groups-on-ipad", flag_descriptions::kTabGroupsIPadName,
-     flag_descriptions::kTabGroupsIPadDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabGroupsIPad)},
     {"autofill-enable-dynamically-loading-fields-on-input",
      flag_descriptions::
          kAutofillEnableDynamicallyLoadingFieldsForAddressInputName,
@@ -2418,13 +2347,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kAutofillThrottleFilteredDocumentFormScanIos,
          kAutofillThrottleFilteredDocFormScanVariations,
          "AutofillThrottleFilteredDocumentFormScan")},
-    {"ios-new-feed-positioning",
-     flag_descriptions::kNewFeedPositioningExperimentName,
-     flag_descriptions::kNewFeedPositioningExperimentDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kNewFeedPositioning,
-                                    kNewFeedPositioningVariations,
-                                    "IOSNewFeedPositioningStudy")},
     {"autofill-payments-sheet-v2",
      flag_descriptions::kAutofillPaymentsSheetV2Name,
      flag_descriptions::kAutofillPaymentsSheetV2Description, flags_ui::kOsIos,
@@ -2737,6 +2659,19 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseFeedEligibilityServiceName,
      flag_descriptions::kUseFeedEligibilityServiceDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUseFeedEligibilityService)},
+    {"import-passwords-from-safari",
+     flag_descriptions::kImportPasswordsFromSafariName,
+     flag_descriptions::kImportPasswordsFromSafariDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kImportPasswordsFromSafari)},
+    {"widgets-for-multiprofile", flag_descriptions::kWidgetsForMultiprofileName,
+     flag_descriptions::kWidgetsForMultiprofileDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kWidgetsForMultiprofile)},
+    {"enable-password-manager-trusted-vault-widget",
+     flag_descriptions::kIOSEnablePasswordManagerTrustedVaultWidgetName,
+     flag_descriptions::kIOSEnablePasswordManagerTrustedVaultWidgetDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kIOSEnablePasswordManagerTrustedVaultWidget)},
 
 };
 

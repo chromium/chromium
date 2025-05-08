@@ -8,12 +8,15 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.SubKeyRequester;
 
 /** Provides access to SubKeyRequester with the necessary //chrome dependencies. */
+@NullMarked
 @JNINamespace("autofill")
 public class SubKeyRequesterFactory {
-    private static SubKeyRequester sSubKeyRequesterForTest;
+    private static @Nullable SubKeyRequester sSubKeyRequesterForTest;
 
     private SubKeyRequesterFactory() {}
 

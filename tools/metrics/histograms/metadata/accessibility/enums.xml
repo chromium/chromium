@@ -1197,6 +1197,7 @@ Unknown properties are collapsed to zero. -->
   <int value="10" label="ZoomText"/>
   <int value="11" label="ZDSR"/>
   <int value="12" label="Generic Screen Reader"/>
+  <int value="13" label="Windows Magnifier"/>
 </enum>
 
 <!-- LINT.ThenChange(//ui/accessibility/platform/assistive_tech.h:AssistiveTech) -->

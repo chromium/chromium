@@ -5,11 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BLOCK_LAYOUT_ALGORITHM_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BLOCK_LAYOUT_ALGORITHM_UTILS_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
 
 class BlockBreakToken;
+class BlockNode;
 class BoxFragmentBuilder;
 class ComputedStyle;
 class ExclusionSpace;
@@ -51,6 +53,21 @@ void AlignBlockContent(const ComputedStyle& style,
                        const BlockBreakToken* break_token,
                        LayoutUnit content_block_size,
                        BoxFragmentBuilder& builder);
+
+// Returns the inline static position alignment edge for `oof_node`. If
+// `should_swap_inline_axis` is true, that means that we are in an inline
+// context, and the text direction is in RTL.
+LogicalStaticPosition::InlineEdge InlineStaticPositionEdge(
+    const BlockNode& oof_node,
+    const ComputedStyle* justify_items_style,
+    WritingDirectionMode parent_writing_direction,
+    bool should_swap_inline_axis = false);
+
+// Returns the block static position alignment edge for `oof_node`.
+LogicalStaticPosition::BlockEdge BlockStaticPositionEdge(
+    const BlockNode& oof_node,
+    const ComputedStyle* align_items_style,
+    WritingDirectionMode parent_writing_direction);
 
 }  // namespace blink
 

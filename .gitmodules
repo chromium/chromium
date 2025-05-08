@@ -9,10 +9,6 @@
 	path = chrome/installer/mac/third_party/xz/xz
 	url = https://chromium.googlesource.com/chromium/deps/xz
 	gclient-condition = checkout_mac
-[submodule "chrome/release_scripts"]
-	path = chrome/release_scripts
-	url = https://chrome-internal.googlesource.com/chrome/tools/release/scripts
-	gclient-condition = checkout_chrome_release_scripts
 [submodule "third_party/compiler-rt/src"]
 	path = third_party/compiler-rt/src
 	url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/compiler-rt
@@ -215,6 +211,9 @@
 [submodule "third_party/dom_distiller_js/dist"]
 	path = third_party/dom_distiller_js/dist
 	url = https://chromium.googlesource.com/chromium/dom-distiller/dist
+[submodule "third_party/dragonbox/src"]
+	path = third_party/dragonbox/src
+	url = https://chromium.googlesource.com/external/github.com/jk-jeon/dragonbox
 [submodule "third_party/eigen3/src"]
 	path = third_party/eigen3/src
 	url = https://chromium.googlesource.com/external/gitlab.com/libeigen/eigen
@@ -667,10 +666,6 @@
 	path = chromeos/assistant/internal
 	url = https://chrome-internal.googlesource.com/chrome/assistant
 	gclient-condition = checkout_src_internal and checkout_chromeos
-[submodule "build/fuchsia/internal"]
-	path = build/fuchsia/internal
-	url = https://chrome-internal.googlesource.com/fuchsia/build
-	gclient-condition = checkout_fuchsia_internal and checkout_src_internal
 [submodule "chrome/app/theme/default_100_percent/google_chrome"]
 	path = chrome/app/theme/default_100_percent/google_chrome
 	url = https://chrome-internal.googlesource.com/chrome/theme/default_100_percent/google_chrome
@@ -691,8 +686,8 @@
 	path = chrome/browser/glic/resources/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/glic/resources/internal
 	gclient-condition = checkout_src_internal
-[submodule "chrome/browser/glic/test/internal"]
-	path = chrome/browser/glic/test/internal
+[submodule "chrome/browser/glic/e2e_test/internal"]
+	path = chrome/browser/glic/e2e_test/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/glic/test/internal
 	gclient-condition = checkout_glic_e2e_tests
 [submodule "chrome/browser/google/linkdoctor_internal"]

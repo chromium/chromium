@@ -212,7 +212,8 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       frame_request.GetResourceRequest(), fetch_client_settings_object, window,
       frame_request.GetFrameType(),
       window->GetFrame() ? window->GetFrame()->GetContentSettingsClient()
-                         : nullptr);
+                         : nullptr,
+      window->GetFrame());
 
   if (NavigationShouldReplaceCurrentHistoryEntry(frame_load_type))
     frame_load_type = WebFrameLoadType::kReplaceCurrentItem;

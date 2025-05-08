@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
@@ -16,6 +18,7 @@ import androidx.annotation.RequiresApi;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -24,6 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.Optional;
 
 /** Handles translating the UrlBar model data to the view state. */
+@NullMarked
 class UrlBarViewBinder {
     /**
      * @see PropertyModelChangeProcfessor.ViewBinder#bind(Object, Object, Object)
@@ -88,6 +92,18 @@ class UrlBarViewBinder {
                             ? view.getResources().getDimension(R.dimen.text_size_small)
                             : view.getResources().getDimension(R.dimen.location_bar_url_text_size);
             view.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+
+            // Small text mode is used in a state where available vertical space is much lower and
+            // there
+            // is no location bar "pill" that we must draw inside. Removing the padding avoids
+            // over-constraining the text size to the point of illegibility.
+            int verticalPadding =
+                    useSmallText
+                            ? 0
+                            : view.getResources()
+                                    .getDimensionPixelSize(R.dimen.url_bar_vertical_padding);
+            view.setPaddingRelative(
+                    view.getPaddingStart(), verticalPadding, view.getPaddingEnd(), verticalPadding);
         } else if (UrlBarProperties.HINT_TEXT_COLOR.equals(propertyKey)) {
             view.setHintTextColor(model.get(UrlBarProperties.HINT_TEXT_COLOR));
         } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {
@@ -148,10 +164,10 @@ class UrlBarViewBinder {
     private static void updateCursorAndSelectHandleColor(UrlBar view, boolean useIncognitoColors) {
         // These get* methods may fail on some devices, so we're calling all of them before
         // applying tint to any of the drawables. See https://crbug.com/1263630.
-        final Drawable textCursor = view.getTextCursorDrawable();
-        final Drawable textSelectHandle = view.getTextSelectHandle();
-        final Drawable textSelectHandleLeft = view.getTextSelectHandleLeft();
-        final Drawable textSelectHandleRight = view.getTextSelectHandleRight();
+        final Drawable textCursor = assumeNonNull(view.getTextCursorDrawable());
+        final Drawable textSelectHandle = assumeNonNull(view.getTextSelectHandle());
+        final Drawable textSelectHandleLeft = assumeNonNull(view.getTextSelectHandleLeft());
+        final Drawable textSelectHandleRight = assumeNonNull(view.getTextSelectHandleRight());
 
         final int color =
                 useIncognitoColors

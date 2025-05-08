@@ -4,7 +4,6 @@
 
 import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
-import("//chrome/version.gni")
 
 declare_args() {
   # Should ANGLE be linked statically?

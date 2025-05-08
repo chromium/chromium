@@ -38,6 +38,24 @@ inline constexpr char kAccountsPrefDeviceLocalAccountsKeyIwaKioskBundleId[] =
     "iwa_kiosk_web_bundle_id";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl[] =
     "iwa_kiosk_update_manifest_url";
+inline constexpr char
+    kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateChannel[] =
+        "iwa_kiosk_update_channel";
+inline constexpr char
+    kAccountsPrefDeviceLocalAccountsKeyIwaKioskPinnedVersion[] =
+        "iwa_kiosk_pinned_version";
+inline constexpr char
+    kAccountsPrefDeviceLocalAccountsKeyIwaKioskAllowDowngrades[] =
+        "iwa_kiosk_allow_downgrades";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyArcvmKioskPackage[] =
+    "arcvm_kiosk_package";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyArcvmKioskClass[] =
+    "arcvm_kiosk_class";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyArcvmKioskAction[] =
+    "arcvm_kiosk_action";
+inline constexpr char
+    kAccountsPrefDeviceLocalAccountsKeyArcvmKioskDisplayName[] =
+        "arcvm_kiosk_display_name";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl[] =
     "web_kiosk_url";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle[] =
@@ -658,6 +676,9 @@ inline constexpr char kDevicePrintingClientNameTemplate[] =
 // is available.
 inline constexpr char kDeviceHindiInscriptLayoutEnabled[] =
     "cros.device.hindi_inscript_layout_enabled";
+
+inline constexpr char kDeviceUserInitiatedFirmwareUpdatesEnabled[] =
+    "cros.device.user_initiated_firmware_updates_enabled";
 
 // A list of strings representing DLC identifiers to be pre downloaded on the
 // device.

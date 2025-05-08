@@ -21,6 +21,8 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/check_deref.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
@@ -32,11 +34,13 @@
 #include "components/device_event_log/device_event_log.h"
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
+#include "ui/display/mac/screen_mac_headless.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/switches.h"
 
 extern "C" {
 Boolean CGDisplayUsesForceToGray(void);
@@ -611,6 +615,13 @@ gfx::NativeWindow Screen::GetWindowForView(gfx::NativeView native_view) {
 }
 
 Screen* CreateNativeScreen() {
+  const base::CommandLine& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+
+  if (command_line.HasSwitch(switches::kHeadless)) {
+    return new ScreenMacHeadless;
+  }
+
   return new ScreenMac;
 }
 

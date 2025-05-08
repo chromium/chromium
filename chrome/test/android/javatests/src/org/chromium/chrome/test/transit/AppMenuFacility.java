@@ -127,6 +127,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
 
     public static final @IdRes int NEW_TAB_ID = R.id.new_tab_menu_id;
     public static final @IdRes int NEW_INCOGNITO_TAB_ID = R.id.new_incognito_tab_menu_id;
+    public static final @IdRes int NEW_WINDOW_ID = R.id.new_window_menu_id;
     public static final @IdRes int HISTORY_ID = R.id.open_history_menu_id;
     public static final @IdRes int DELETE_BROWSING_DATA_ID = R.id.quick_delete_menu_id;
     public static final @IdRes int DOWNLOADS_ID = R.id.downloads_menu_id;
@@ -170,6 +171,11 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
                 .withIsOpeningTabs(1)
                 .withIsSelectingTabs(1)
                 .build();
+    }
+
+    /** Default behavior for "Open new window". */
+    protected RegularNewTabPageStation createNewWindowStation() {
+        return RegularNewTabPageStation.newBuilder().withEntryPoint().build();
     }
 
     /** Default behavior for "Delete browsing data". */

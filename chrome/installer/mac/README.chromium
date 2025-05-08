@@ -1,5 +1,8 @@
 pkg-dmg is tri-licensed under the MPL/GPL/LGPL.  It was originally written
-for the Mozilla project.  It can be checked out with:
+for the Mozilla project, which no longer uses it. The final revision of the
+Mozilla version is available at:
 
-cvs -d :pserver:anonymous@cvs-mirror.mozilla.org:/cvsroot checkout \
-   mozilla/build/package/mac_osx/pkg-dmg
+https://hg-edge.mozilla.org/mozilla-central/file/3e51753a099f8014b3dc37ed3fa27b887842735b/build/package/mac_osx/pkg-dmg
+
+and its revision history is available at:
+https://hg-edge.mozilla.org/mozilla-central/log/tip/build/package/mac_osx/pkg-dmg

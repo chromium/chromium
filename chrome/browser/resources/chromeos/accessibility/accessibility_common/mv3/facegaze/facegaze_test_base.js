@@ -157,6 +157,9 @@ class MockFaceLandmarkerResult {
 
     /** @type {!Array<!Object>} */
     this.faceBlendshapes = [{categories: []}];
+
+    /** @type {!Array} */
+    this.facialTransformationMatrixes = [];
   }
 
   /**
@@ -184,6 +187,13 @@ class MockFaceLandmarkerResult {
     this.faceBlendshapes[0].categories.push(data);
     return this;
   }
+
+  invalidate() {
+    this.faceBlendshapes = [];
+    this.faceLandmarks = [];
+    this.facialTransformationMatrixes = [];
+    return this;
+  }
 }
 
 /** Base class for FaceGaze tests JavaScript tests. */
@@ -209,27 +219,27 @@ FaceGazeTestBase = class extends E2ETestBase {
 
       // Save the original set and clear interval functions so they can be used
       // in this file.
-      window.setIntervalOriginal = window.setInterval;
-      window.clearIntervalOriginal = window.clearInterval;
+      globalThis.setIntervalOriginal = globalThis.setInterval;
+      globalThis.clearIntervalOriginal = globalThis.clearInterval;
 
-      window.setTimeout = (callback, timeout) => {
+      globalThis.setTimeout = (callback, timeout) => {
         const id = this.nextTimeoutId_;
         ++this.nextTimeoutId_;
         this.timeoutCallbacks_[id] = callback;
         return id;
       };
-      window.clearTimeout = (id) => {
+      globalThis.clearTimeout = (id) => {
         delete this.timeoutCallbacks_[id];
       };
 
-      window.setInterval = (callback, timeout) => {
+      globalThis.setInterval = (callback, timeout) => {
         // push() will return the new length of the array, which should be the
         // next interval id. For the current callback, return nextIntervalId_ -
         // 1, which should be the id for the current callback.
         this.nextIntervalId_ = this.intervalCallbacks_.push(callback);
         return this.nextIntervalId_ - 1;
       };
-      window.clearInterval = (id) => {
+      globalThis.clearInterval = (id) => {
         delete this.intervalCallbacks_[id];
       };
     }
@@ -548,9 +558,9 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
 
     await new Promise((resolve) => {
-      const intervalId = setIntervalOriginal(() => {
+      const intervalId = globalThis.setIntervalOriginal(() => {
         if (this.getFaceGaze().mouseController_.mouseInterval_ !== -1) {
-          clearIntervalOriginal(intervalId);
+          globalThis.clearIntervalOriginal(intervalId);
           resolve();
         }
       }, 300);
@@ -574,5 +584,9 @@ FaceGazeTestBase = class extends E2ETestBase {
 
   getLatestCursorPosition() {
     return this.mockAccessibilityPrivate.getLatestCursorPosition();
+  }
+
+  runLatestTimeout() {
+    this.timeoutCallbacks_[this.nextTimeoutId_ - 1]();
   }
 };

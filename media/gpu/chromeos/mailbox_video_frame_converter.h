@@ -31,6 +31,7 @@ class SingleThreadTaskRunner;
 
 namespace gpu {
 class CommandBufferStub;
+class Scheduler;
 class SharedImageInterface;
 }  // namespace gpu
 
@@ -52,13 +53,6 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
   static std::unique_ptr<FrameResourceConverter> Create(
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       GetCommandBufferStubCB get_stub_cb);
-  // Creates a MailboxVideoFrameConverter instance. Returns nullptr if the
-  // MailboxVideoFrameConverter can't be created.
-  static std::unique_ptr<FrameResourceConverter> Create(
-      scoped_refptr<gpu::SharedImageInterface> sii,
-      base::RepeatingCallback<bool(scoped_refptr<FrameResource> frame,
-                                   const gpu::SyncToken& sync_token)>
-          release_cb);
 
   MailboxVideoFrameConverter(const MailboxVideoFrameConverter&) = delete;
   MailboxVideoFrameConverter& operator=(const MailboxVideoFrameConverter&) =
@@ -74,6 +68,9 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
   // A self-cleaning SharedImage, with move-only semantics.
   class ScopedSharedImage;
 
+  MailboxVideoFrameConverter(scoped_refptr<gpu::SharedImageInterface> sii,
+                             gpu::Scheduler* scheduler);
+  // Do not call! Only for testing!
   MailboxVideoFrameConverter(
       scoped_refptr<gpu::SharedImageInterface> sii,
       base::RepeatingCallback<bool(scoped_refptr<FrameResource> frame,
@@ -148,6 +145,8 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
                     const gpu::SyncToken& sync_token);
 
   const scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
+  const raw_ptr<gpu::Scheduler> scheduler_;
+  const gpu::SequenceId sequence_;
   base::RepeatingCallback<bool(scoped_refptr<FrameResource> frame,
                                const gpu::SyncToken& sync_token)>
       release_cb_;

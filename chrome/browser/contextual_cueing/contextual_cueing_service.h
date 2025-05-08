@@ -101,7 +101,7 @@ class ContextualCueingService
   // Called when suggestions are received. Cleans up after suggestions
   // generation.
   void OnSuggestionsReceived(
-      content::WebContents* web_contents,
+      base::TimeTicks fetch_begin_time,
       GlicSuggestionsCallback callback,
       std::optional<std::vector<std::string>> suggestions);
 

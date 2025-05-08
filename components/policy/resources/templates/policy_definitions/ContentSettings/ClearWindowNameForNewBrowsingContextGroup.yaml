@@ -1,0 +1,58 @@
+caption: Choose whether to allow clearing window.name for cross-site top-level
+  navigations resulting in a new browsing context group.
+
+default: true
+
+desc: |-
+  This policy controls whether window.name can be cleared for cross-site
+  top-level navigations which result in a new browsing context group being
+  created when the ClearCrossSiteCrossBrowsingContextGroupWindowName variation is
+  enabled.
+
+  The ClearCrossSiteCrossBrowsingContextGroupWindowName variation controls whether
+  window.name will be cleared for cross-site top-level navigations. Examples of
+  such navigations include a user navigating to a new site via the omnibox or
+  clicking on a link to a new site when the link uses "target='_blank'
+  rel='noopener'". Clearing window.name in these cases prevents information from
+  potentially leaking between sites via the window.name property, improving user
+  privacy. ClearWindowNameForNewBrowsingContextGroup policy is in place to
+  restore the previous behavior. When the
+  ClearCrossSiteCrossBrowsingContextGroupWindowName variation is enabled
+  window.name will be cleared for qualifying navigations if this policy is set
+  to Enabled or not set. If it is disabled, window.name will not be cleared.
+
+  If you must use the policy to disable window.name clearing on qualifying
+  navigations, please file a bug on
+  <ph name="BUG_URL">$1<ex>https://crbug.com/new?component=1456652&amp;template=1937639&amp;cc=ladan@chromium.org,miketaylr@chromium.org&amp;noWizard=true</ex></ph>
+  explaining your use case. The policy is scheduled to
+  be offered through <ph name="PRODUCT_NAME">$2<ex>Google Chrome</ex></ph>
+  version 142.
+
+example_value: false
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+future_on:
+ - chrome.*
+ - chrome_os
+ - android
+
+items:
+- caption: Clear window.name when the navigation is top-level, cross-site and swaps BrowsingContextGroup.
+  value: true
+- caption: Do not clear window.name when the navigation is top-level, cross-site and swaps BrowsingContextGroup.
+  value: false
+
+owners:
+- ladan@chromium.org
+- potassium-katabolism@google.com
+
+schema:
+  type: boolean
+
+tags: []
+
+type: main
+

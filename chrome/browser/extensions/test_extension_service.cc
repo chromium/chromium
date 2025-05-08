@@ -34,10 +34,6 @@ void TestExtensionService::CheckForUpdatesSoon() {
   ADD_FAILURE();
 }
 
-void TestExtensionService::AddExtension(const Extension* extension) {
-  ADD_FAILURE();
-}
-
 bool TestExtensionService::UserCanDisableInstalledExtension(
     const std::string& extension_id) {
   ADD_FAILURE();

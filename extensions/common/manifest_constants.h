@@ -573,6 +573,12 @@ inline constexpr char16_t kInvalidThemeColors[] =
     u"Invalid value for theme colors - colors must be integers";
 inline constexpr char16_t kInvalidThemeImages[] =
     u"Invalid value for theme images - images must be strings.";
+inline constexpr char kInvalidThemeImageMimeType[] =
+    "Invalid mime type for theme image '*'.";
+inline constexpr char kThemeImageMissingFileExtension[] =
+    "A file name extension is missing for theme image '*'. The image is "
+    "accepted for compatibility reasons, but such images might become "
+    "unsupported in the future.";
 inline constexpr char kInvalidThemeImagesMissing[] =
     "An image specified in the theme is missing.";
 inline constexpr char16_t kInvalidThemeTints[] =

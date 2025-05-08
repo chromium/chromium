@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 import type {Module, ModuleWrapperElement, NamedWidth} from 'chrome://new-tab-page/lazy_load.js';
-import {MODULE_CUSTOMIZE_ELEMENT_ID, ModuleDescriptor, ModuleRegistry, ModulesV2Element, SUPPORTED_MODULE_WIDTHS} from 'chrome://new-tab-page/lazy_load.js';
+import {ModuleDescriptor, ModuleRegistry, ModulesElement, SUPPORTED_MODULE_WIDTHS} from 'chrome://new-tab-page/lazy_load.js';
 import {NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, createElement, initNullModule, installMock} from '../../test_support.js';
 
@@ -45,7 +46,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
 
   async function createModulesElement(
       modules: Module[], enabled: boolean, width: number,
-      disabledModuleIds: string[] = []): Promise<ModulesV2Element> {
+      disabledModuleIds: string[] = []): Promise<ModulesElement> {
     if (!enabled) {
       assertTrue(
           modules.length === 0,
@@ -59,10 +60,11 @@ suite('NewTabPageModulesModulesV2Test', () => {
     });
 
     moduleRegistry.setResultFor('initializeModulesHavingIds', modulesPromise);
-    const element = new ModulesV2Element();
+    const element = new ModulesElement();
     document.body.style.width = `${width}px`;
     document.body.appendChild(element);
     await modulesPromise;
+    await microtasksFinished();
     return element;
   }
 
@@ -196,9 +198,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
             },
           ],
           true, scenario.width);
-      await waitAfterNextRender(modulesElement);
 
-      const wrappers = modulesElement.shadowRoot!.querySelectorAll(
+      const wrappers = modulesElement.shadowRoot.querySelectorAll(
           'ntp-module-wrapper:not([hidden])');
       assertEquals(scenario.count, wrappers.length);
 
@@ -206,7 +207,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
       scenario.rows.forEach((expectedRowWidths, i) => {
         expectedRowWidths.forEach((expectedWidth, j) => {
           const wrapper = wrappers[index]! as ModuleWrapperElement;
-          const instance = wrapper.$.moduleElement.lastChild! as HTMLElement;
+          const instance = wrapper.lastChild! as HTMLElement;
           assertEquals(expectedWidth.name, instance.getAttribute('format'));
           assertEquals(
               expectedWidth.value, wrapper.clientWidth,
@@ -226,12 +227,11 @@ suite('NewTabPageModulesModulesV2Test', () => {
         {id: barDescriptor.id, name: barDescriptor.id},
       ],
     });
+
     const modulesElement =
         await createModulesElement([], false, SAMPLE_SCREEN_WIDTH);
-    await waitAfterNextRender(modulesElement);
-
     const moduleWrappers =
-        modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
     assertEquals(0, moduleWrappers.length);
     assertEquals(1, metrics.count('NewTabPage.Modules.LoadedModulesCount', 0));
     assertEquals(1, metrics.count('NewTabPage.Modules.InstanceCount', 0));
@@ -264,7 +264,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
             true, SAMPLE_SCREEN_WIDTH);
 
         const moduleWrappers =
-            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+            modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(4, moduleWrappers.length);
         assertEquals(1, metrics.count('NewTabPage.Modules.LoadedModulesCount'));
         assertEquals(1, metrics.count('NewTabPage.Modules.InstanceCount', 4));
@@ -281,78 +281,6 @@ suite('NewTabPageModulesModulesV2Test', () => {
         assertEquals(
             0, metrics.count('NewTabPage.Modules.LoadedWith.bar', 'bar'));
       });
-
-  test('help bubble can correctly find anchor elements', async () => {
-    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-    handler.setResultFor('getModulesIdNames', {
-      data: [
-        {id: fooDescriptor.id, name: fooDescriptor.id},
-      ],
-    });
-
-    const modulesElement = await createModulesElement(
-        [
-          {
-            descriptor: fooDescriptor,
-            elements: [createElement()],
-          },
-        ],
-        true, SAMPLE_SCREEN_WIDTH);
-
-    assertDeepEquals(
-        modulesElement.getSortedAnchorStatusesForTesting(),
-        [
-          [MODULE_CUSTOMIZE_ELEMENT_ID, true],
-        ],
-    );
-  });
-
-  test('modules maxium instance count works correctly', async () => {
-    const SAMPLE_MAX_MODULE_INSTANCE_COUNT = 2;
-    loadTimeData.overrideValues({
-      modulesMaxColumnCount: MAX_COLUMN_COUNT,
-      multipleLoadedModulesMaxModuleInstanceCount:
-          SAMPLE_MAX_MODULE_INSTANCE_COUNT,
-    });
-
-    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-    const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-    const descriptors = [
-      fooDescriptor,
-      barDescriptor,
-    ];
-    const modulesElement = await createModulesElementFromDescriptors(
-        descriptors, SAMPLE_MAX_MODULE_INSTANCE_COUNT + 1);
-    const moduleWrappers =
-        modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
-    assertEquals(
-        descriptors.length * SAMPLE_MAX_MODULE_INSTANCE_COUNT,
-        moduleWrappers.length);
-  });
-
-  test('modules maxium instance capped to maximum column count', async () => {
-    const SAMPLE_MAX_COLUMN_COUNT = 3;
-    const SAMPLE_MAX_MODULE_INSTANCE_COUNT = 3;
-    loadTimeData.overrideValues({
-      modulesMaxColumnCount: SAMPLE_MAX_COLUMN_COUNT,
-      multipleLoadedModulesMaxModuleInstanceCount:
-          SAMPLE_MAX_MODULE_INSTANCE_COUNT,
-    });
-
-    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-    const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-    const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
-    const descriptors = [
-      fooDescriptor,
-      barDescriptor,
-      bazDescriptor,
-    ];
-    const modulesElement = await createModulesElementFromDescriptors(
-        descriptors, SAMPLE_MAX_MODULE_INSTANCE_COUNT);
-    const moduleWrappers =
-        modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
-    assertEquals(SAMPLE_MAX_COLUMN_COUNT, moduleWrappers.length);
-  });
 
   enum UndoStrategy {
     BUTTON_ACTIVATION = 'button activation',
@@ -381,26 +309,26 @@ suite('NewTabPageModulesModulesV2Test', () => {
                   true, SAMPLE_SCREEN_WIDTH);
 
               // Assert.
-              const moduleWrappers =
-                  modulesElement.shadowRoot!.querySelectorAll(
-                      'ntp-module-wrapper');
+              const moduleWrappers = modulesElement.shadowRoot.querySelectorAll(
+                  'ntp-module-wrapper');
               assertEquals(1, moduleWrappers.length);
               assertNotStyle(moduleWrappers[0]!, 'display', 'none');
               assertFalse(modulesElement.$.undoToast.open);
 
               // Act.
               let restoreCalled = false;
-              moduleWrappers[0]!.dispatchEvent(
-                  new CustomEvent('disable-module', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                      message: 'Foo',
-                      restoreCallback: () => {
-                        restoreCalled = true;
-                      },
-                    },
-                  }));
+              const moduleElement =
+                  moduleWrappers[0]!.lastChild! as HTMLElement;
+              moduleElement.dispatchEvent(new CustomEvent('disable-module', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                  message: 'Foo',
+                  restoreCallback: () => {
+                    restoreCalled = true;
+                  },
+                },
+              }));
 
               // Assert.
               assertDeepEquals(
@@ -424,10 +352,10 @@ suite('NewTabPageModulesModulesV2Test', () => {
               assertFalse(restoreCalled);
 
               // Act.
-              await waitAfterNextRender(modulesElement);
+              await microtasksFinished();
               if (undoStrategy === UndoStrategy.BUTTON_ACTIVATION) {
                 const undoButton =
-                    modulesElement.shadowRoot!.querySelector<HTMLElement>(
+                    modulesElement.shadowRoot.querySelector<HTMLElement>(
                         '#undoButton');
                 assertTrue(!!undoButton);
                 undoButton.click();
@@ -475,7 +403,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
                   }],
                   true, SAMPLE_SCREEN_WIDTH);
 
-              let moduleWrappers = modulesElement.shadowRoot!.querySelectorAll(
+              assert(modulesElement.shadowRoot);
+              let moduleWrappers = modulesElement.shadowRoot.querySelectorAll(
                   'ntp-module-wrapper');
               assertEquals(1, moduleWrappers.length);
               assertFalse(modulesElement.$.undoToast.open);
@@ -492,10 +421,11 @@ suite('NewTabPageModulesModulesV2Test', () => {
                       },
                     },
                   }));
+              await microtasksFinished();
 
               assertEquals(
                   0,
-                  modulesElement.shadowRoot!
+                  modulesElement.shadowRoot
                       .querySelectorAll('ntp-module-wrapper')
                       .length);
               assertTrue(modulesElement.$.undoToast.open);
@@ -503,10 +433,11 @@ suite('NewTabPageModulesModulesV2Test', () => {
               assertEquals(1, handler.getCallCount('onDismissModule'));
               assertEquals(moduleId, handler.getArgs('onDismissModule')[0]);
 
-              await waitAfterNextRender(modulesElement);
+              await microtasksFinished();
               if (undoStrategy === UndoStrategy.BUTTON_ACTIVATION) {
+                assert(modulesElement.shadowRoot);
                 const undoButton =
-                    modulesElement.shadowRoot!.querySelector<HTMLElement>(
+                    modulesElement.shadowRoot.querySelector<HTMLElement>(
                         '#undoButton');
                 assertTrue(!!undoButton);
                 undoButton.click();
@@ -517,7 +448,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
                 }));
               }
 
-              moduleWrappers = modulesElement.shadowRoot!.querySelectorAll(
+              await microtasksFinished();
+              moduleWrappers = modulesElement.shadowRoot.querySelectorAll(
                   'ntp-module-wrapper');
               assertEquals(1, moduleWrappers.length);
               assertFalse(modulesElement.$.undoToast.open);
@@ -537,13 +469,13 @@ suite('NewTabPageModulesModulesV2Test', () => {
         {id: fooDescriptor.id, name: fooDescriptor.id},
       ],
     });
-    const modulesElement = await createModulesElement(
+    await createModulesElement(
         [{
           descriptor: fooDescriptor,
           elements: [createElement()],
         }],
         true, SAMPLE_SCREEN_WIDTH);
-    await waitAfterNextRender(modulesElement);
+    await microtasksFinished();
 
     // Act.
     window.dispatchEvent(new KeyboardEvent('keydown', {
@@ -562,7 +494,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
     scenario.rows.forEach((expectedRowWidths, i) => {
       expectedRowWidths.forEach((expectedWidth, j) => {
         const wrapper = moduleWrappers[index]!;
-        const instance = wrapper.$.moduleElement.lastChild! as HTMLElement;
+        const instance = wrapper.lastChild! as HTMLElement;
         assertEquals(expectedWidth.name, instance.getAttribute('format'));
         assertEquals(
             expectedWidth.value, wrapper.clientWidth,
@@ -637,30 +569,31 @@ suite('NewTabPageModulesModulesV2Test', () => {
           });
           const modulesElement =
               await createModulesElement(modules, true, SAMPLE_SCREEN_WIDTH);
-          await waitAfterNextRender(modulesElement);
+          await microtasksFinished();
 
           const moduleWrappers =
               Array.from(
-                  modulesElement.shadowRoot!.querySelectorAll<HTMLElement>(
+                  modulesElement.shadowRoot.querySelectorAll<HTMLElement>(
                       'ntp-module-wrapper')) as ModuleWrapperElement[];
           assertContainerLayout(moduleWrappers, layoutChangeScenario.before);
 
-          moduleWrappers[0]!.dispatchEvent(new CustomEvent('disable-module', {
-            bubbles: true,
-            composed: true,
-            detail: {
-              message: 'Foo',
-            },
-          }));
+          moduleWrappers[0]!.lastChild!.dispatchEvent(
+              new CustomEvent('disable-module', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                  message: 'Foo',
+                },
+              }));
           assertDeepEquals(
               ['foo', true], handler.getArgs('setModuleDisabled')[0]);
           callbackRouterRemote.setDisabledModules(false, ['foo']);
           await callbackRouterRemote.$.flushForTesting();
-          await waitAfterNextRender(modulesElement);
+          await microtasksFinished();
 
           assertContainerLayout(
               Array.from(
-                  modulesElement.shadowRoot!.querySelectorAll<HTMLElement>(
+                  modulesElement.shadowRoot.querySelectorAll<HTMLElement>(
                       'ntp-module-wrapper:not([hidden])')) as
                   ModuleWrapperElement[],
               layoutChangeScenario.after);
@@ -729,11 +662,12 @@ suite('NewTabPageModulesModulesV2Test', () => {
           });
           const modulesElement =
               await createModulesElement(modules, true, SAMPLE_SCREEN_WIDTH);
-          await waitAfterNextRender(modulesElement);
+          await microtasksFinished();
 
+          assert(modulesElement.shadowRoot);
           const moduleWrappers =
               Array.from(
-                  modulesElement.shadowRoot!.querySelectorAll<HTMLElement>(
+                  modulesElement.shadowRoot.querySelectorAll<HTMLElement>(
                       'ntp-module-wrapper')) as ModuleWrapperElement[];
           assertContainerLayout(moduleWrappers, layoutChangeScenario.before);
 
@@ -750,11 +684,11 @@ suite('NewTabPageModulesModulesV2Test', () => {
                 },
               }));
           assertFalse(restoreCalled);
-          await waitAfterNextRender(modulesElement);
+          await microtasksFinished();
 
           assertContainerLayout(
               Array.from(
-                  modulesElement.shadowRoot!.querySelectorAll<HTMLElement>(
+                  modulesElement.shadowRoot.querySelectorAll<HTMLElement>(
                       'ntp-module-wrapper')) as ModuleWrapperElement[],
               layoutChangeScenario.after);
         });
@@ -798,22 +732,24 @@ suite('NewTabPageModulesModulesV2Test', () => {
         const modulesElement = await createModulesElement(
             [], true, SAMPLE_SCREEN_WIDTH,
             /*disabledModuleIds=*/[fooDescriptor.id]);
-        await waitAfterNextRender(modulesElement);
+        await microtasksFinished();
         let moduleWrappers =
-            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+            modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(0, moduleWrappers.length);
+
         // Mock required data for loading foo module.
         const fooModulePromise = getModulePromise(fooDescriptor);
         moduleRegistry.setResultFor('initializeModuleById', fooModulePromise);
 
-        // Act - Remove foo module from disabled modules list.
+        // Act - Remove foo module from disabled modules list and trigger a
+        // reload operation.
         callbackRouterRemote.setDisabledModules(false, []);
+        callbackRouterRemote.setModulesLoadable();
         await fooModulePromise;
-        await waitAfterNextRender(modulesElement);
+        await microtasksFinished();
 
-        // Assert - Foo module loaded.
         moduleWrappers =
-            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+            modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(1, moduleWrappers.length);
         assertEquals(
             fooDescriptor.id,
@@ -824,46 +760,43 @@ suite('NewTabPageModulesModulesV2Test', () => {
             1, metrics.count('NewTabPage.Modules.ReloadedModulesCount', 1));
       });
 
-      test('enabling module while container is being loaded', async () => {
-        // Arrange.
-        loadTimeData.overrideValues({
-          // Prevent initial module loading to ensure module enabling during
-          // container load is tested.
-          waitToLoadModules: true,
-        });
-        const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-        const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-        const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
-        // Initial state: foo and bar enabled, baz disabled.
-        const enabledDescriptors = [fooDescriptor, barDescriptor];
-        const modulesElement = await createModulesElementFromDescriptors(
-            enabledDescriptors, /*instanceCount=*/ 1, [bazDescriptor]);
-        const bazReloadPromise = getModulePromise(bazDescriptor);
-        moduleRegistry.setResultFor('initializeModuleById', bazReloadPromise);
+      test(
+          'enabling module after container has loaded with some modules',
+          async () => {
+            // Arrange.
+            loadTimeData.overrideValues({
+              modulesReloadable: true,
+              // Prevent initial module loading to ensure module enabling during
+              // container load is tested.
+              waitToLoadModules: true,
+            });
+            const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+            const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+            const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
+            // Initial state: foo and bar enabled, baz disabled.
+            const enabledDescriptors = [fooDescriptor, barDescriptor];
+            const modulesElement = await createModulesElementFromDescriptors(
+                enabledDescriptors, /*instanceCount=*/ 1, [bazDescriptor]);
+            callbackRouterRemote.setModulesLoadable();
+            await microtasksFinished();
 
-        // Act - Start module load, then enable baz by clearing the disabled
-        // modules list.
-        callbackRouterRemote.setModulesLoadable();
-        callbackRouterRemote.setDisabledModules(false, []);
-        callbackRouterRemote.$.flushForTesting();
+            const bazReloadPromise = getModulePromise(bazDescriptor);
+            moduleRegistry.setResultFor(
+                'initializeModuleById', bazReloadPromise);
 
-        await bazReloadPromise;
-        await waitAfterNextRender(modulesElement);
+            // Act - Enable baz by clearing the disabled modules list and
+            // trigger a reload operation.
+            callbackRouterRemote.setDisabledModules(false, []);
+            callbackRouterRemote.setModulesLoadable();
+            await bazReloadPromise;
+            await microtasksFinished();
 
-        // Assert.
-        const moduleWrappers =
-            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
-        assertEquals(3, moduleWrappers.length);
-        assertEquals(
-            fooDescriptor.id,
-            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
-        assertEquals(
-            barDescriptor.id,
-            (moduleWrappers[1] as ModuleWrapperElement).module.descriptor.id);
-        assertEquals(
-            bazDescriptor.id,
-            (moduleWrappers[2] as ModuleWrapperElement).module.descriptor.id);
-      });
+            // Assert.
+            assert(modulesElement.shadowRoot);
+            const moduleWrappers = modulesElement.shadowRoot.querySelectorAll(
+                'ntp-module-wrapper');
+            assertEquals(3, moduleWrappers.length);
+          });
 
       test('reloads module container after initial load', async () => {
         // Arrange.
@@ -876,8 +809,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
             enabledDescriptors, /*instanceCount=*/ 1,
             [barDescriptor, bazDescriptor]);
         // Ensure only foo module loaded.
+        assert(modulesElement.shadowRoot);
         let moduleWrappers =
-            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+            modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(1, moduleWrappers.length);
         assertEquals(
             fooDescriptor.id,
@@ -897,14 +831,15 @@ suite('NewTabPageModulesModulesV2Test', () => {
         }));
 
         // Act - Enable the bar module by removing it from the disabled modules
-        // list.
+        // list and trigger a reload operation.
         callbackRouterRemote.setDisabledModules(false, [bazDescriptor.id]);
+        callbackRouterRemote.setModulesLoadable();
         await barModulePromise;
-        await waitAfterNextRender(modulesElement);
+        await microtasksFinished();
 
         // Assert.
         moduleWrappers =
-            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+            modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(2, moduleWrappers.length);
         // Ensure the 'foo' module loads last, as it was not included in the
         // module order returned by |getModulesOrder()|.
@@ -935,12 +870,15 @@ suite('NewTabPageModulesModulesV2Test', () => {
             const barDescriptor = new ModuleDescriptor('bar', initNullModule);
             // Initial state: foo enabled, bar disabled.
             const modulesElement = await createModulesElementFromDescriptors(
-                /*enabledDescriptors=*/[fooDescriptor], /*instanceCount=*/ 1,
+                /*enabledDescriptors=*/[fooDescriptor],
+                /*instanceCount=*/ 1,
                 /*disabledDescriptors=*/[barDescriptor]);
             // Ensure foo module shows.
-            let moduleWrappers = modulesElement.shadowRoot!.querySelectorAll(
+            assert(modulesElement.shadowRoot);
+            let moduleWrappers = modulesElement.shadowRoot.querySelectorAll(
                 'ntp-module-wrapper');
             assertEquals(1, moduleWrappers.length);
+
             let fooModule = moduleWrappers[0] as ModuleWrapperElement;
             assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
             assertNotStyle(fooModule, 'display', 'none');
@@ -960,7 +898,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
             await callbackRouterRemote.$.flushForTesting();
 
             // Assert - Foo module shows and bar module never loaded.
-            moduleWrappers = modulesElement.shadowRoot!.querySelectorAll(
+            moduleWrappers = modulesElement.shadowRoot.querySelectorAll(
                 'ntp-module-wrapper');
             assertEquals(1, moduleWrappers.length);
             fooModule = moduleWrappers[0] as ModuleWrapperElement;
@@ -976,8 +914,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
         const modulesElement = await createModulesElementFromDescriptors(
             [fooDescriptor], /*instanceCount=*/ 1, [barDescriptor]);
         // Ensure only foo module loaded.
+        assert(modulesElement.shadowRoot);
         let moduleWrappers =
-            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+            modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(1, moduleWrappers.length);
         assertEquals(
             fooDescriptor.id,
@@ -987,18 +926,20 @@ suite('NewTabPageModulesModulesV2Test', () => {
         moduleRegistry.setResultFor('initializeModuleById', barModulePromise);
         // Set the module order, to be verified later.
         handler.setResultFor(
-            'getModulesOrder', Promise.resolve({moduleIds: []}));
+            'getModulesOrder',
+            Promise.resolve({moduleIds: [fooDescriptor.id, barDescriptor.id]}));
 
         // Act - Clear the disabled modules list multiple times.
         callbackRouterRemote.setDisabledModules(false, []);
         callbackRouterRemote.setDisabledModules(false, []);
         callbackRouterRemote.setDisabledModules(false, []);
+        callbackRouterRemote.setModulesLoadable();
         await barModulePromise;
-        await flushTasks();
+        await microtasksFinished();
 
         // Assert - Ensure only one instance of the bar module populated.
         moduleWrappers =
-            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+            modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(2, moduleWrappers.length);
         assertEquals(
             fooDescriptor.id,
@@ -1026,7 +967,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
                 }],
                 true, SAMPLE_SCREEN_WIDTH,
                 /*disabledModuleIds=*/[barDescriptor.id]);
-            await waitAfterNextRender(modulesElement);
+            await microtasksFinished();
             const barReloadPromise = getModulePromise(barDescriptor);
             moduleRegistry.setResultFor(
                 'initializeModuleById', barReloadPromise);
@@ -1035,10 +976,10 @@ suite('NewTabPageModulesModulesV2Test', () => {
             // modules list.
             callbackRouterRemote.setDisabledModules(false, []);
             await barReloadPromise;
-            await waitAfterNextRender(modulesElement);
+            await microtasksFinished();
 
             // Assert - Foo module shows and bar module never loaded.
-            const moduleWrappers = modulesElement.shadowRoot!.querySelectorAll(
+            const moduleWrappers = modulesElement.shadowRoot.querySelectorAll(
                 'ntp-module-wrapper');
             assertEquals(1, moduleWrappers.length);
             const fooModule = moduleWrappers[0] as ModuleWrapperElement;
@@ -1058,11 +999,12 @@ suite('NewTabPageModulesModulesV2Test', () => {
           // Act.
           const modulesElement = await createModulesElementFromDescriptors(
               /*enabledDescriptors=*/[fooDescriptor]);
-          await waitAfterNextRender(modulesElement);
+          await microtasksFinished();
 
           // Assert.
+          assert(modulesElement.shadowRoot);
           const moduleWrappers =
-              modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+              modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
           if (waitToLoadModules) {
             assertEquals(0, moduleWrappers.length);
           } else {
@@ -1082,19 +1024,20 @@ suite('NewTabPageModulesModulesV2Test', () => {
         const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
         const modulesElement = await createModulesElementFromDescriptors(
             /*enabledDescriptors=*/[fooDescriptor]);
-        await waitAfterNextRender(modulesElement);
+        await microtasksFinished();
+        assert(modulesElement.shadowRoot);
         let moduleWrappers =
-            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+            modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(0, moduleWrappers.length);
 
         // Act.
         callbackRouterRemote.setModulesLoadable();
         await callbackRouterRemote.$.flushForTesting();
-        await waitAfterNextRender(modulesElement);
+        await microtasksFinished();
 
         // Assert.
         moduleWrappers =
-            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+            modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(1, moduleWrappers.length);
         const fooModule = moduleWrappers[0] as ModuleWrapperElement;
         assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);

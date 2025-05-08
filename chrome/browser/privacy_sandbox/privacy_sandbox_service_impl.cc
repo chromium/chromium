@@ -35,8 +35,6 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/common/semantic_tree.h"
@@ -61,8 +59,6 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "privacy_sandbox_countries_impl.h"
-#include "privacy_sandbox_service_impl.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -74,6 +70,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif
 
 namespace {
@@ -163,6 +160,9 @@ bool IsRegularProfile(profile_metrics::BrowserProfileType profile_type) {
 
 // Returns the text contents of the Topics Consent dialog.
 std::string GetTopicsConfirmationText() {
+  // TODO(crbug.com/413388209): Update the LEARN_MORE_LINK to use a newer
+  // version of the text and remove
+  // `IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK`
   std::vector<int> string_ids = {
       IDS_PRIVACY_SANDBOX_M1_CONSENT_TITLE,
       IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_1,
@@ -440,33 +440,6 @@ void RecordAdMeasurementEnabledHistograms(Profile* profile, bool enabled) {
 }
 
 }  // namespace
-
-// static
-bool PrivacySandboxService::IsUrlSuitableForPrompt(const GURL& url) {
-  // The prompt should be shown on a limited list of pages:
-
-  // about:blank is valid.
-  if (url.IsAboutBlank()) {
-    return true;
-  }
-  // Chrome settings page is valid. The subpages aren't as most of them are not
-  // related to the prompt.
-  if (url == GURL(chrome::kChromeUISettingsURL)) {
-    return true;
-  }
-  // Chrome history is valid as the prompt mentions history.
-  if (url == GURL(chrome::kChromeUIHistoryURL)) {
-    return true;
-  }
-  // Only a Chrome controlled New Tab Page is valid. Third party NTP is still
-  // Chrome controlled, but is without Google branding.
-  if (url == GURL(chrome::kChromeUINewTabPageURL) ||
-      url == GURL(chrome::kChromeUINewTabPageThirdPartyURL)) {
-    return true;
-  }
-
-  return false;
-}
 
 // static
 void PrivacySandboxService::SetPromptDisabledForTests(bool disabled) {

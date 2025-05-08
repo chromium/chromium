@@ -66,7 +66,6 @@ packager_builder(
                 "cmd": [
                     "{CHECKOUT}/src/third_party/android_deps/fetch_all.py",
                     "-v",
-                    "--ignore-vulnerabilities",
                 ],
             }],
             "gclient_config": "chromium",
@@ -371,7 +370,7 @@ packager_builder(
     notifies = [
         luci.notifier(
             name = "rts-model-packager-notifier",
-            notify_emails = ["chrome-browser-infra-team@google.com"],
+            notify_emails = ["chrome-dev-infra-auto+alerts@google.com"],
             on_occurrence = ["FAILURE", "INFRA_FAILURE"],
         ),
     ],

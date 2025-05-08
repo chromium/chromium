@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
@@ -21,8 +22,8 @@ class GetDetailsForCreateBnplPaymentInstrumentRequest : public PaymentsRequest {
       GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details,
       bool full_sync_enabled,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                              std::string context_token,
-                              std::unique_ptr<base::Value::Dict>)> callback);
+                              std::string,
+                              LegalMessageLines)> callback);
   GetDetailsForCreateBnplPaymentInstrumentRequest(
       const GetDetailsForCreateBnplPaymentInstrumentRequest&) = delete;
   GetDetailsForCreateBnplPaymentInstrumentRequest& operator=(
@@ -44,10 +45,10 @@ class GetDetailsForCreateBnplPaymentInstrumentRequest : public PaymentsRequest {
   GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details_;
   bool full_sync_enabled_;
   std::string context_token_;
-  std::unique_ptr<base::Value::Dict> legal_message_;
+  LegalMessageLines legal_message_;
   base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                           std::string,
-                          std::unique_ptr<base::Value::Dict>)>
+                          LegalMessageLines)>
       callback_;
 };
 

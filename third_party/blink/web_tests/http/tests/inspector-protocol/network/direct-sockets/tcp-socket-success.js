@@ -3,14 +3,13 @@
       `https://devtools.oopif.test:8443/inspector-protocol/network/direct-sockets/resources/tcp-socket-success.php`,
       `TCP DirectSockets success`);
 
-  await dp.Network.enable();
-  session.evaluate('openTCP()');
+  await dp.Network.enable({reportDirectSocketTraffic: true});
+  session.evaluate('openSocket()');
 
   const createdEvent = await dp.Network.onceDirectTCPSocketCreated();
   testRunner.log('socket created');
   testRunner.log('   remoteAddr: ' + createdEvent.params.remoteAddr);
-  testRunner.log(
-      '   options:' + JSON.stringify(createdEvent.params.options, null, 3))
+  testRunner.log(createdEvent.params.options, '   options:');
   const initiator = createdEvent.params.initiator;
   testRunner.log('');
   testRunner.log('   Initiator Type: ' + initiator.type);
@@ -29,7 +28,7 @@
   const openedEvent = await dp.Network.onceDirectTCPSocketOpened();
   testRunner.log('socket opened');
   testRunner.log('   remoteAddr: ' + openedEvent.params.remoteAddr);
-  testRunner.log('   localAddr: ' + openedEvent.params.remoteAddr);
+  testRunner.log('   localAddr: ' + openedEvent.params.localAddr);
 
   const chunkSentEvent = await dp.Network.onceDirectTCPSocketChunkSent();
   testRunner.log('socket chunk sent');
@@ -58,8 +57,8 @@ function base64ToUtf8(base64String) {
 }
 
 function cleanUrl(url) {
-  url = url.match(/\/[^\/]+$/);
-  if (url.length)
-    return url[0].substr(1);
+  match = url.match(/\/[^\/]+$/);
+  if (match.length)
+    return match[0].substr(1);
   return url;
 }

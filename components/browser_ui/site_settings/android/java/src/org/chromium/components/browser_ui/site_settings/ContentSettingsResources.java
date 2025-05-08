@@ -51,7 +51,6 @@ public class ContentSettingsResources {
         private final int mSummaryOverrideForScreenReader;
         private final int mEnabledPrimaryText;
         private final int mDisabledPrimaryText;
-        private int mEnabledDescriptionText;
         private int mDisabledDescriptionText;
 
         ResourceItem(
@@ -75,7 +74,6 @@ public class ContentSettingsResources {
             mSummaryOverrideForScreenReader = summaryOverrideForScreenReader;
             mEnabledPrimaryText = enabledPrimaryText;
             mDisabledPrimaryText = disabledPrimaryText;
-            mEnabledDescriptionText = 0;
             mDisabledDescriptionText = 0;
         }
 
@@ -135,17 +133,8 @@ public class ContentSettingsResources {
             return mDisabledPrimaryText == 0 ? getDisabledSummary() : mDisabledPrimaryText;
         }
 
-        private int getEnabledDescriptionText() {
-            return mEnabledDescriptionText;
-        }
-
         private int getDisabledDescriptionText() {
             return mDisabledDescriptionText;
-        }
-
-        public ResourceItem setEnabledDescriptionText(int enabledDescriptionText) {
-            mEnabledDescriptionText = enabledDescriptionText;
-            return this;
         }
 
         public ResourceItem setDisabledDescriptionText(int disabledDescriptionText) {
@@ -382,20 +371,16 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.JAVASCRIPT_OPTIMIZER:
                 return new ResourceItem(
-                                R.drawable.settings_v8,
-                                R.string.website_settings_javascript_optimizer_link_row_label,
-                                ContentSettingValues.ALLOW,
-                                ContentSettingValues.BLOCK,
-                                R.string.website_settings_category_javascript_optimizer_allowed,
-                                R.string.website_settings_category_javascript_optimizer_blocked,
-                                R.string.website_settings_category_javascript_optimizer_a11y,
-                                0,
-                                R.string.website_settings_javascript_optimizer_allowed,
-                                R.string.website_settings_javascript_optimizer_blocked)
-                        .setEnabledDescriptionText(
-                                R.string.website_settings_category_javascript_optimizer_allowed)
-                        .setDisabledDescriptionText(
-                                R.string.website_settings_category_javascript_optimizer_blocked);
+                        R.drawable.settings_v8,
+                        R.string.website_settings_javascript_optimizer_link_row_label,
+                        ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_javascript_optimizer_toggle,
+                        R.string.website_settings_category_javascript_optimizer_toggle,
+                        R.string.website_settings_category_javascript_optimizer_a11y,
+                        0,
+                        R.string.website_settings_javascript_optimizer_allowed,
+                        R.string.website_settings_javascript_optimizer_blocked);
 
             case ContentSettingsType.MEDIASTREAM_CAMERA:
                 return new ResourceItem(
@@ -1023,7 +1008,7 @@ public class ContentSettingsResources {
         int[] descriptionIDs = {
             getResourceItem(contentType).getEnabledPrimaryText(),
             getResourceItem(contentType).getDisabledPrimaryText(),
-            getResourceItem(contentType).getEnabledDescriptionText(),
+            0,
             getResourceItem(contentType).getDisabledDescriptionText()
         };
         return descriptionIDs;

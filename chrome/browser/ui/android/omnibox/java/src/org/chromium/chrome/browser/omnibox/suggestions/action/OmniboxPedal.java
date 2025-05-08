@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.action;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.R;
@@ -19,6 +19,7 @@ import org.chromium.components.omnibox.action.OmniboxPedalId;
  * Omnibox Actions are additional actions associated with Omnibox Matches. For more information,
  * please check on OmniboxAction class definition on native side.
  */
+@NullMarked
 public class OmniboxPedal extends OmniboxAction {
     @VisibleForTesting
     static final ChipIcon DINO_GAME_ICON = new ChipIcon(R.drawable.action_dino_game, true);
@@ -28,8 +29,8 @@ public class OmniboxPedal extends OmniboxAction {
 
     public OmniboxPedal(
             long nativeInstance,
-            @NonNull String hint,
-            @NonNull String accessibilityHint,
+            String hint,
+            String accessibilityHint,
             @OmniboxPedalId int pedalId) {
         super(
                 OmniboxActionId.PEDAL,
@@ -44,7 +45,7 @@ public class OmniboxPedal extends OmniboxAction {
     }
 
     @Override
-    public void execute(@NonNull OmniboxActionDelegate delegate) {
+    public void execute(OmniboxActionDelegate delegate) {
         switch (pedalId) {
             case OmniboxPedalId.MANAGE_CHROME_SETTINGS:
                 delegate.openSettingsPage(SettingsFragment.MAIN);
@@ -83,7 +84,7 @@ public class OmniboxPedal extends OmniboxAction {
      * Cast supplied OmniboxAction to OmniboxPedal. Requires the supplied input to be a valid
      * instance of an OmniboxPedal whose actionId is the PEDAL.
      */
-    public static @NonNull OmniboxPedal from(@NonNull OmniboxAction action) {
+    public static OmniboxPedal from(OmniboxAction action) {
         assert action != null;
         assert action.actionId == OmniboxActionId.PEDAL;
         assert action instanceof OmniboxPedal;

@@ -28,7 +28,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kGenericSensorExtraClasses,
     &kBatteryStatusManagerBroadcastReceiverInBackground,
     &device::features::kBluetoothRfcommAndroid,
-};
+    &device::features::kGmsCoreLocationRequestParamOverride};
 
 // static
 base::android::FeatureMap* GetFeatureMap() {

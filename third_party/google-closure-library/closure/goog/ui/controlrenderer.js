@@ -11,7 +11,6 @@
 
 goog.provide('goog.ui.ControlRenderer');
 
-goog.forwardDeclare('goog.ui.Control');
 goog.require('goog.a11y.aria');
 goog.require('goog.a11y.aria.Role');
 goog.require('goog.a11y.aria.State');
@@ -26,6 +25,7 @@ goog.require('goog.style');
 goog.require('goog.ui.Component');
 goog.require('goog.ui.ControlContent');
 goog.require('goog.userAgent');  // circular
+goog.requireType('goog.ui.Control');
 
 
 
@@ -227,6 +227,7 @@ goog.ui.ControlRenderer.prototype.getContentElement = function(element) {
 goog.ui.ControlRenderer.prototype.enableClassName = function(
     control, className, enable) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var element = /** @type {Element} */ (
       control.getElement ? control.getElement() : control);
   if (element) {
@@ -819,7 +820,7 @@ goog.ui.ControlRenderer.prototype.getAppliedCombinedClassNames_ = function(
   'use strict';
   var toAdd = [];
   if (opt_includedClass) {
-    classes = goog.array.concat(classes, [opt_includedClass]);
+    classes = [].concat(classes, [opt_includedClass]);
   }
   this.getIe6ClassCombinations().forEach(function(combo) {
     'use strict';

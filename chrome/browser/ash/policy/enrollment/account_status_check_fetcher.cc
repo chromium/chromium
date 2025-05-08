@@ -92,15 +92,6 @@ void RecordEnrollmentNudgePolicyFetchResult(
 
 }  // namespace
 
-bool operator==(const AccountStatus& lhs, const AccountStatus& rhs) {
-  return lhs.type == rhs.type &&
-         lhs.enrollment_required == rhs.enrollment_required;
-}
-
-bool operator!=(const AccountStatus& lhs, const AccountStatus& rhs) {
-  return !(lhs == rhs);
-}
-
 AccountStatusCheckFetcher::AccountStatusCheckFetcher(
     const std::string& canonicalized_email)
     : AccountStatusCheckFetcher(

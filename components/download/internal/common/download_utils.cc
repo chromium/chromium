@@ -32,6 +32,7 @@
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/origin.h"
 
@@ -379,6 +380,12 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   request->request_initiator = params->initiator();
   request->trusted_params = network::ResourceRequest::TrustedParams();
   request->has_user_gesture = params->has_user_gesture();
+
+  // TODO(crbug.com/382291442): Remove feature guarding once launched.
+  if (base::FeatureList::IsEnabled(
+          network::features::kPopulatePermissionsPolicyOnRequest)) {
+    request->permissions_policy = params->permissions_policy();
+  }
 
   if (params->isolation_info().has_value()) {
     request->trusted_params->isolation_info = params->isolation_info().value();
@@ -795,6 +802,25 @@ void DetermineLocalPath(DownloadItem* download,
 #endif  // BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(virtual_path, base::FilePath());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Determine the file path for the save package file given the `suggested_path`.
+COMPONENTS_DOWNLOAD_EXPORT
+void DetermineSavePackagePath(const GURL& url,
+                              const base::FilePath& suggested_path,
+                              LocalPathCallback callback) {
+  base::FilePath mhtml_path = suggested_path.ReplaceExtension("mhtml");
+  if (DownloadCollectionBridge::ShouldPublishDownload(mhtml_path)) {
+    GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&CreateIntermediateUri, url, GURL(), mhtml_path,
+                       mhtml_path.BaseName(), "multipart/related"),
+        base::BindOnce(&OnInterMediateUriCreated, std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(mhtml_path, mhtml_path.BaseName());
+}
+#endif
 
 bool IsInterruptedDownloadAutoResumable(download::DownloadItem* download_item,
                                         int auto_resumption_size_limit) {

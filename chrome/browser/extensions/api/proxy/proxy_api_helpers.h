@@ -60,21 +60,21 @@ bool CreatePACScriptFromDataURL(
 
 // Helper functions for extension->browser pref transformation:
 
-// The following functions extract one piece of data from the |proxy_config|
-// each. |proxy_config| is a ProxyConfig dictionary as defined in the
+// The following functions extract one piece of data from the `proxy_config`
+// each. `proxy_config` is a ProxyConfig dictionary as defined in the
 // extension API. All output values conform to the format expected by a
 // ProxyConfigDictionary.
 //
 // - If there are NO entries for the respective pieces of data, the functions
 //   return true.
-//   The GetPacMandatoryFromExtensionPref() function sets |out| to false in this
+//   The GetPacMandatoryFromExtensionPref() function sets `out` to false in this
 //   case.
-// - If there ARE entries and they could be parsed, the functions set |out|
+// - If there ARE entries and they could be parsed, the functions set `out`
 //   and return true.
-// - If there are entries that could not be parsed, the functions set |error|
+// - If there are entries that could not be parsed, the functions set `error`
 //   and return false.
 //
-// The parameter |bad_message| is passed to simulate the behavior of
+// The parameter `bad_message` is passed to simulate the behavior of
 // EXTENSION_FUNCTION_VALIDATE. It is never NULL.
 bool GetProxyModeFromExtensionPref(const base::Value::Dict& proxy_config,
                                    ProxyPrefs::ProxyMode* out,
@@ -103,7 +103,7 @@ bool GetBypassListFromExtensionPref(const base::Value::Dict& proxy_config,
 
 // Creates and returns a ProxyConfig dictionary (as defined in the extension
 // API) from the given parameters. Ownership is passed to the caller.
-// Depending on the value of |mode_enum|, several of the strings may be empty.
+// Depending on the value of `mode_enum`, several of the strings may be empty.
 std::optional<base::Value::Dict> CreateProxyConfigDict(
     ProxyPrefs::ProxyMode mode_enum,
     bool pac_mandatory,
@@ -114,18 +114,18 @@ std::optional<base::Value::Dict> CreateProxyConfigDict(
     std::string* error);
 
 // Converts a ProxyServer dictionary instance (as defined in the extension API)
-// |proxy_server| to a net::ProxyServer.
-// |default_scheme| is the default scheme that is filled in, in case the
+// `proxy_server` to a net::ProxyServer.
+// `default_scheme` is the default scheme that is filled in, in case the
 // caller did not pass one.
-// Returns true if successful and sets |error| otherwise.
+// Returns true if successful and sets `error` otherwise.
 bool GetProxyServer(const base::Value::Dict& proxy_server,
                     net::ProxyServer::Scheme default_scheme,
                     net::ProxyServer* out,
                     std::string* error,
                     bool* bad_message);
 
-// Joins a list of URLs (stored as StringValues) in |list| with |joiner|
-// to |out|. Returns true if successful and sets |error| otherwise.
+// Joins a list of URLs (stored as StringValues) in `list` with `joiner`
+// to `out`. Returns true if successful and sets `error` otherwise.
 bool JoinUrlList(const base::Value::List& list,
                  const std::string& joiner,
                  std::string* out,
@@ -151,7 +151,7 @@ base::Value::Dict CreateProxyServerDict(const net::ProxyChain& proxy);
 std::optional<base::Value::Dict> CreatePacScriptDict(
     const ProxyConfigDictionary& proxy_config);
 
-// Tokenizes the |in| at delimiters |delims| and returns a new
+// Tokenizes the `in` at delimiters `delims` and returns a new
 // base::Value::List with string values created from the tokens.
 base::Value::List TokenizeToStringList(const std::string& in,
                                        const std::string& delims);

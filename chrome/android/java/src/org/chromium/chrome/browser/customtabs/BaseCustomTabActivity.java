@@ -8,6 +8,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
+import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.HANDLED_BY_OS;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.USER_NAVIGATION;
 
 import android.app.Activity;
@@ -72,6 +73,7 @@ import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -85,6 +87,7 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Custom
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
+import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesThemeColorProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarColorController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
@@ -105,6 +108,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
@@ -171,7 +175,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private WebappDeferredStartupWithStorageHandler mWebappDeferredStartupWithStorageHandler;
     private TrustedWebActivityModel mTrustedWebActivityModel;
     private SharedActivityCoordinator mSharedActivityCoordinator;
+    private TrustedWebActivityBrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
+    private @Nullable BrowserServicesThemeColorProvider mBrowserServicesThemeColorProvider;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -371,7 +377,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         () -> getCustomTabFeatureOverridesManager(),
                         () -> getCustomTabActivityNavigationController().openCurrentUrlInBrowser(),
                         getEdgeToEdgeManager(),
-                        getAppHeaderCoordinator());
+                        getAppHeaderCoordinator(),
+                        this::getBrowserServicesThemeColorProvider);
         return mBaseCustomTabRootUiCoordinator;
     }
 
@@ -566,10 +573,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         mCustomTabToolbarColorController =
                 new CustomTabToolbarColorController(
                         this,
-                        getIntentDataProvider(),
-                        getCustomTabActivityTabProvider(),
-                        getTabObserverRegistrar(),
-                        getTopUiThemeColorProvider());
+                        getBrowserServicesThemeColorProvider(),
+                        getAppHeaderCoordinator(),
+                        getIntentDataProvider());
 
         mCustomTabCompositorContentInitializer =
                 new CustomTabCompositorContentInitializer(
@@ -656,7 +662,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 new DefaultCustomTabIntentHandlingStrategy(
                         getCustomTabActivityTabProvider(),
                         getCustomTabActivityNavigationController(),
-                        getCustomTabObserver());
+                        getCustomTabObserver(),
+                        getVerifier(),
+                        getCurrentPageVerifier(),
+                        this);
         if (getActivityType() == ActivityType.TRUSTED_WEB_ACTIVITY
                 || getActivityType() == ActivityType.WEB_APK) {
             TwaSharingController controller =
@@ -679,17 +688,21 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         getCustomTabActivityNavigationController()
                 .setFinishHandler(
                         (reason, warmupOnFinish) -> {
-                            if (reason == USER_NAVIGATION) {
+                            if (reason == USER_NAVIGATION || reason == HANDLED_BY_OS) {
                                 getCustomTabActivityClientConnectionKeeper()
                                         .recordClientConnectionStatus();
                             }
-                            handleFinishAndClose(warmupOnFinish);
+                            handleFinishAndClose(reason, warmupOnFinish);
                         });
 
         mBackPressManager.setFallbackOnBackPressed(this::handleBackPressed);
         mBackPressManager.addHandler(
                 getCustomTabActivityNavigationController(),
                 BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
+        if (CustomTabActivityNavigationController.supportsPredictiveBackGesture()) {
+            mBackPressManager.addOnSystemNavigationObserver(
+                    getCustomTabActivityNavigationController());
+        }
 
         new CustomTabSessionHandler(
                 getIntentDataProvider(),
@@ -779,20 +792,32 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         }
 
         if (mWarmupOnDestroy) {
+            RecordHistogram.recordBooleanHistogram("CustomTabs.SpareRenderer", true);
             Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     () -> CustomTabsConnection.createSpareWebContents(profile));
+        } else {
+            RecordHistogram.recordBooleanHistogram("CustomTabs.SpareRenderer", false);
         }
 
         if (getCustomTabActivityTabController() != null) {
             getCustomTabActivityTabController().destroy();
         }
 
+        if (mBrowserControlsVisibilityManager != null) {
+            mBrowserControlsVisibilityManager.destroy();
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
                 && mAppHeaderCoordinator != null) {
             mAppHeaderCoordinator.destroy();
             mAppHeaderCoordinator = null;
+        }
+
+        if (mBrowserServicesThemeColorProvider != null) {
+            mBrowserServicesThemeColorProvider.destroy();
+            mBrowserServicesThemeColorProvider = null;
         }
 
         super.onDestroyInternal();
@@ -855,6 +880,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     protected void destroyTabModels() {
         if (mTabFactory != null) {
             mTabFactory.destroyTabModelOrchestrator();
+        }
+
+        // If tab models have not been initialized, any early created tabs would leak.
+        if (mTabProvider != null
+                && mTabProvider.getTab() != null
+                && !mTabProvider.getTab().isDestroyed()) {
+            mTabProvider.getTab().destroy();
         }
     }
 
@@ -944,7 +976,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     protected boolean handleBackPressed() {
-        return getCustomTabActivityNavigationController().navigateOnBack();
+        return getCustomTabActivityNavigationController()
+                .navigateOnBack(FinishReason.USER_NAVIGATION);
     }
 
     @Override
@@ -968,7 +1001,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
      * Internal implementation that finishes the activity and removes the references from Android
      * recents.
      */
-    protected void handleFinishAndClose(boolean warmupOnFinish) {
+    protected void handleFinishAndClose(@FinishReason int reason, boolean warmupOnFinish) {
         // Delay until we're destroyed to avoid jank in the transition animation when closing the
         // tab.
         mWarmupOnDestroy = warmupOnFinish;
@@ -993,7 +1026,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             // WebContents is missing during the close animation due to android:windowIsTranslucent.
             // We let partial CCT handle the animation.
             mBaseCustomTabRootUiCoordinator.handleCloseAnimation(defaultBehavior);
-        } else {
+        } else if (reason != HANDLED_BY_OS) {
+            // Back events handled by the OS, such as predictive gesture, are removed by the OS.
+            // There is no need in overriding their transitions.
             defaultBehavior.run();
         }
     }
@@ -1427,12 +1462,19 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
     private TrustedWebActivityBrowserControlsVisibilityManager
             createTrustedWebActivityBrowserControlsVisibilityManager() {
-        return new TrustedWebActivityBrowserControlsVisibilityManager(
-                getTabObserverRegistrar(),
-                getCustomTabActivityTabProvider(),
-                getCustomTabToolbarCoordinator(),
-                getCloseButtonVisibilityManager(),
-                getIntentDataProvider());
+        if (mBrowserControlsVisibilityManager != null) {
+            return mBrowserControlsVisibilityManager;
+        }
+
+        mBrowserControlsVisibilityManager =
+                new TrustedWebActivityBrowserControlsVisibilityManager(
+                        getTabObserverRegistrar(),
+                        getCustomTabActivityTabProvider(),
+                        getCustomTabToolbarCoordinator(),
+                        getCloseButtonVisibilityManager(),
+                        getAppHeaderCoordinator(),
+                        getIntentDataProvider());
+        return mBrowserControlsVisibilityManager;
     }
 
     private SharedActivityCoordinator getSharedActivityCoordinator() {
@@ -1443,13 +1485,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                     new SharedActivityCoordinator(
                             getCurrentPageVerifier(),
                             controlsVisibilityManager,
-                            getCustomTabToolbarColorController(),
                             getCustomTabStatusBarColorProvider(),
                             this::createImmersiveModeController,
                             getIntentDataProvider(),
                             getCustomTabOrientationController(),
                             getCustomTabActivityNavigationController(),
                             getVerifier(),
+                            getBrowserServicesThemeColorProvider(),
                             getLifecycleDispatcher());
         }
         return mSharedActivityCoordinator;
@@ -1471,6 +1513,19 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getEdgeToEdgeManager().getEdgeToEdgeStateProvider());
 
         return mAppHeaderCoordinator;
+    }
+
+    private BrowserServicesThemeColorProvider getBrowserServicesThemeColorProvider() {
+        if (mBrowserServicesThemeColorProvider != null) return mBrowserServicesThemeColorProvider;
+
+        mBrowserServicesThemeColorProvider =
+                new BrowserServicesThemeColorProvider(
+                        this,
+                        getIntentDataProvider(),
+                        getTopUiThemeColorProvider(),
+                        getCustomTabActivityTabProvider(),
+                        getTabObserverRegistrar());
+        return mBrowserServicesThemeColorProvider;
     }
 
     protected @Nullable WebappActivityCoordinator getWebappActivityCoordinator() {

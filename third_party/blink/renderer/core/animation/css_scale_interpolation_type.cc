@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -25,6 +26,10 @@ InterpolableNumber* CSSValueToInterpolableNumber(
     const CSSValue& value,
     const CSSLengthResolver& length_resolver) {
   const auto& primitive_value = To<CSSPrimitiveValue>(value);
+  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
+  // and sibling-count() if necessary.
+  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
+  // if necessary.
   // TODO(crbug.com/41494232): Don't resolve it here, once we can divide units.
   // The problem now is when we end up with kNumber for neutral keyframe
   // and kPercentage for non-neutral keyframe, we have to sum number and

@@ -34,6 +34,18 @@ struct ScheduledNotificationRequest {
 // the PushNotificationClient class.
 class PushNotificationClient {
  public:
+  // Constructor for `PushNotificationClient`s that are scoped per-Profile.
+  // This constructor should be used for clients whose `scope` is implicitly
+  // `PushNotificationClientScope::kPerProfile`. It is intended for use when
+  // multi-Profile push notification handling is enabled (i.e.,
+  // `kIOSPushNotificationMultiProfile` is enabled).
+  PushNotificationClient(PushNotificationClientId client_id,
+                         ProfileIOS* profile);
+  // Constructor for `PushNotificationClient`s that are app-scoped (i.e., not
+  // tied to a specific user Profile).
+  // This constructor should be used for clients where `scope` is not
+  // `PushNotificationClientScope::kPerProfile` (e.g., typically
+  // `PushNotificationClientScope::kAppWide`).
   PushNotificationClient(PushNotificationClientId client_id,
                          PushNotificationClientScope scope);
   virtual ~PushNotificationClient() = 0;
@@ -124,24 +136,23 @@ class PushNotificationClient {
   // or per-Profile.
   const PushNotificationClientScope client_scope_;
 
-  // Returns an arbitrary Browser with an active Scene (i.e. a Scene at the
-  // level SceneActivationLevelForegroundActive) if any. This will return a
-  // valid Browser if there is one, but when multiple profiles are loaded it
-  // will be arbitrary. The push notification system should be re-designed
-  // to not depend on this method (either create specific manager per-profile,
-  // or include in the notification an identifier, e.g. gaia id).
-  // TODO(crbug.com/41497027): This API should be redesigned.
-  Browser* GetSceneLevelForegroundActiveBrowser();
+  // Returns the most appropriate active foreground browser based on the
+  // client's scope. Encapsulates the logic for choosing between
+  // Profile-specific and arbitrary browser lookups. Returns `nullptr` if no
+  // suitable browser is found.
+  Browser* GetActiveForegroundBrowser();
 
-  // Similar to `GetSceneLevelForegroundActiveBrowser()`, but specifically
-  // searches for a browser associated with the provided `profile`. Returns the
-  // first matching browser with scene level
-  // `SceneActivationLevelForegroundActive`, or `nullptr` if none exists for
-  // this profile.
-  Browser* GetSceneLevelForegroundActiveBrowserForProfile(ProfileIOS* profile);
+  // Returns the `ProfileIOS` associated with this client instance. Set during
+  // construction, primarily for clients with `kPerProfile` scope.
+  ProfileIOS* GetProfile();
 
  private:
   friend class ::CommercePushNotificationClientTest;
+
+  // Pointer to the user Profile if this client is per-Profile scoped
+  // (`client_scope_` is `PushNotificationClientScope::kPerProfile`).
+  base::WeakPtr<ProfileIOS> profile_;
+
   std::vector<std::pair<GURL, base::OnceCallback<void(Browser*)>>>
       urls_delayed_for_loading_;
 

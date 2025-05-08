@@ -274,8 +274,8 @@ void SavedTabGroupBar::OnPaint(gfx::Canvas* canvas) {
 
 void SavedTabGroupBar::OnInitialized() {
   RemoveAllChildViews();
-  LoadAllButtonsFromModel();
   overflow_button_ = AddChildView(CreateOverflowButton());
+  LoadAllButtonsFromModel();
   InvalidateLayout();
 }
 

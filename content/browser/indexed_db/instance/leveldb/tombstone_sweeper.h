@@ -69,6 +69,9 @@ class WrappingIterator {
 class CONTENT_EXPORT LevelDbTombstoneSweeper
     : public BackingStorePreCloseTaskQueue::PreCloseTask {
  public:
+  using MetadataVector =
+      std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>;
+
   // The |database| must outlive this instance.
   explicit LevelDbTombstoneSweeper(leveldb::DB* database);
 
@@ -83,14 +86,11 @@ class CONTENT_EXPORT LevelDbTombstoneSweeper
 
   bool RequiresMetadata() const override;
 
-  void SetMetadata(
-      const std::vector<blink::IndexedDBDatabaseMetadata>* metadata) override;
+  void SetMetadata(const MetadataVector* metadata) override;
 
   bool RunRound() override;
 
  private:
-  using IndexedDBDatabaseMetadataVector =
-      std::vector<blink::IndexedDBDatabaseMetadata>;
   using ObjectStoreMetadataMap =
       std::map<int64_t, blink::IndexedDBObjectStoreMetadata>;
   using IndexMetadataMap = std::map<int64_t, blink::IndexedDBIndexMetadata>;
@@ -106,8 +106,7 @@ class CONTENT_EXPORT LevelDbTombstoneSweeper
 
     // Stores the random starting database seed. Not bounded.
     size_t start_database_seed = 0;
-    std::optional<WrappingIterator<IndexedDBDatabaseMetadataVector>>
-        database_it;
+    std::optional<WrappingIterator<MetadataVector>> database_it;
 
     // Stores the random starting object store seed. Not bounded.
     size_t start_object_store_seed = 0;
@@ -156,7 +155,7 @@ class CONTENT_EXPORT LevelDbTombstoneSweeper
   bool has_writes_ = false;
   leveldb::WriteBatch round_deletion_batch_;
 
-  raw_ptr<const std::vector<blink::IndexedDBDatabaseMetadata>>
+  raw_ptr<const std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>>
       database_metadata_ = nullptr;
   std::unique_ptr<leveldb::Iterator> iterator_;
 

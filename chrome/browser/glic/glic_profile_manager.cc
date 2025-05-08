@@ -13,12 +13,14 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/network_service_instance.h"
@@ -147,6 +149,9 @@ void GlicProfileManager::OnUnloadingClientForService(GlicKeyedService* glic) {
 void GlicProfileManager::ShouldPreloadForProfile(
     Profile* profile,
     ShouldPreloadCallback callback) {
+  if (IsProfileDirectoryMarkedForDeletion(profile->GetPath())) {
+    return;
+  }
   if (!base::FeatureList::IsEnabled(features::kGlicWarming) ||
       !GlicEnabling::IsReadyForProfile(profile)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -199,17 +204,23 @@ void GlicProfileManager::ShowProfilePicker() {
 }
 
 void GlicProfileManager::DidSelectProfile(Profile* profile) {
-  // TODO(crbug.com/399727295) Remove once the profile picker calls this with
-  // fully initialized profiles.
   if (!GlicEnabling::IsEnabledForProfile(profile)) {
     return;
   }
-  // Toggle glic but prevent close if it is already open for the selected
-  // profile.
+
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  service->ToggleUI(nullptr, /*prevent_close=*/true,
-                    mojom::InvocationSource::kProfilePicker);
+
+  if (!GlicEnabling::HasConsentedForProfile(profile)) {
+    // Open a browser and show the FRE in a new tab.
+    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+    service->OpenFreDialogInNewTab(displayer.browser());
+  } else {
+    // Toggle glic but prevent close if it is already open for the selected
+    // profile.
+    service->ToggleUI(nullptr, /*prevent_close=*/true,
+                      mojom::InvocationSource::kProfilePicker);
+  }
 }
 
 void GlicProfileManager::AddObserver(Observer* observer) {
@@ -303,6 +314,10 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
         base::BindOnce(on_got_connection_type, profile,
                        std::move(callbacks.second), connection_type));
   }
+}
+
+base::WeakPtr<GlicProfileManager> GlicProfileManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace glic

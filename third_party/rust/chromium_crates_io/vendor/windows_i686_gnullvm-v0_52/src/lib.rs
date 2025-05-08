@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @generated from third_party/rust/chromium_crates_io/removed_lib.rs
-// by tools/crates/gnrt. Do not edit!
-
-// This is an empty crate that has replaced the 'windows_i686_gnullvm' crate, since
-// it was listed in `resolve.remove_crates` in gnrt_config.toml.
+// @generated from `tools/crates/gnrt/removed_lib.rs.hbs`
+// by `tools/crates/run_gnrt.py vendor`. Do not edit!
+//
+// This is an empty placeholder that has replaced the
+// `windows_i686_gnullvm-0.52.6` crate.
+//
+// See `//tools/crates/gnrt/removed_crate.md` to learn more.

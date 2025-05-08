@@ -51,6 +51,7 @@ PasswordFormMetricsRecorder::BubbleDismissalReason GetBubbleDismissalReason(
     // Declined by user.
     case metrics_util::CLICKED_CANCEL:
     case metrics_util::CLICKED_NEVER:
+    case metrics_util::CLICKED_NOT_NOW:
       return BubbleDismissalReason::kDeclined;
 
     // Ignored by user.

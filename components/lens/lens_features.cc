@@ -75,6 +75,10 @@ BASE_FEATURE(kLensSearchSidePanelNewFeedback,
              "LensSearchSidePanelNewFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensSearchSidePanelScrollToAPI,
+             "LensSearchSidePanelScrollToAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Lens Overlay omnibox entry point. This is a separate feature from
 // kLensOverlay so that the omnibox entry point can be disabled without a
 // dependency on the rest of the Lens Overlay features. This means if can be
@@ -90,6 +94,14 @@ BASE_FEATURE(kLensOverlayUploadChunking,
 BASE_FEATURE(kLensOverlayRecontextualizeOnQuery,
              "LensOverlayRecontextualizeOnQuery",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensOverlayCornerSliders,
+             "LensOverlayCornerSliders",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensSearchProtectedPage,
+             "LensSearchProtectedPage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
@@ -481,6 +493,9 @@ constexpr base::FeatureParam<bool> kLensOverlayUploadChunkingUseDebugOptions{
 
 constexpr base::FeatureParam<int> kLensOverlayUploadChunkRequestTimeoutMs{
     &kLensOverlayUploadChunking, "upload-chunk-request-timeout-ms", 60000};
+
+constexpr base::FeatureParam<int> kLensOverlaySliderChangedTimeout{
+    &kLensOverlayCornerSliders, "slider-changed-timeout", 1000};
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
@@ -1028,6 +1043,22 @@ bool IsLensSearchSidePanelNewFeedbackEnabled() {
 
 bool ShouldLensOverlayRecontextualizeOnQuery() {
   return base::FeatureList::IsEnabled(kLensOverlayRecontextualizeOnQuery);
+}
+
+bool AreLensOverlayCornerSlidersEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayCornerSliders);
+}
+
+int GetLensOverlaySliderChangedTimeout() {
+  return kLensOverlaySliderChangedTimeout.Get();
+}
+
+bool IsLensSearchProtectedPageEnabled() {
+  return base::FeatureList::IsEnabled(kLensSearchProtectedPage);
+}
+
+bool IsLensSearchSidePanelScrollToAPIEnabled() {
+  return base::FeatureList::IsEnabled(kLensSearchSidePanelScrollToAPI);
 }
 
 }  // namespace lens::features

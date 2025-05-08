@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/compositor/debug_utils.h"
 
@@ -63,8 +59,6 @@ void PrintLayerHierarchyImp(const Layer* layer,
       break;
     case ui::LAYER_TEXTURED:
       *out << " textured";
-      if (layer->fills_bounds_opaquely())
-        *out << " opaque";
       break;
     case ui::LAYER_SOLID_COLOR:
       *out << " solid";
@@ -72,6 +66,10 @@ void PrintLayerHierarchyImp(const Layer* layer,
     case ui::LAYER_NINE_PATCH:
       *out << " nine_patch";
       break;
+  }
+
+  if (layer->fills_bounds_opaquely()) {
+    *out << " opaque";
   }
 
   if (!layer->visible())

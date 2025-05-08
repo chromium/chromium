@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/common/material_timing.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/device_form_factor.h"
 
@@ -124,6 +125,13 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 
 - (BOOL)hasOmnibox {
   return self.locationBarViewController != nil;
+}
+
+- (void)IPHHighlightTabGridButton:(BOOL)highlight {
+  self.view.tabGridButton.iphHighlighted = highlight;
+  // Needed so spotlightView can have correct frame.
+  [self.view.tabGridButton setNeedsLayout];
+  [self.view.tabGridButton layoutIfNeeded];
 }
 
 #pragma mark - UIViewController

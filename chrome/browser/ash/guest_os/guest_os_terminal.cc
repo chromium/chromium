@@ -21,6 +21,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_installer.h"
@@ -126,20 +127,20 @@ void LaunchTerminalImpl(Profile* profile,
   // If opening a new tab, first pin home tab.
   full_restore::FullRestoreSaveHandler::GetInstance();
   GURL home(GetTerminalHomeUrl());
-  Browser* browser = ash::LaunchSystemWebAppImpl(
+  ash::BrowserDelegate* browser = ash::LaunchSystemWebAppImpl(
       profile, ash::SystemWebAppType::TERMINAL, home, params);
   if (!browser) {
     return;
   }
   if (url != home) {
-    chrome::AddTabAt(browser, url, /*index=*/1, /*foreground=*/true);
+    browser->AddTab(url, /*index=*/1,
+                    ash::BrowserDelegate::TabDisposition::kForeground);
   }
   auto info = std::make_unique<app_restore::AppLaunchInfo>(
-      kTerminalSystemAppId, browser->session_id().id(), params.container,
+      kTerminalSystemAppId, browser->GetSessionID().id(), params.container,
       params.disposition, params.display_id, std::vector<base::FilePath>{},
       nullptr);
-  full_restore::SaveAppLaunchInfo(browser->profile()->GetPath(),
-                                  std::move(info));
+  full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(info));
 }
 
 }  // namespace

@@ -10,7 +10,11 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** The content of the post password migration sheet that needs to be scrollable. */
+@NullMarked
 public class ScrollablePasswordMigrationWarningContent extends RelativeLayout {
     private ScrollView mScrollView;
 
@@ -18,7 +22,8 @@ public class ScrollablePasswordMigrationWarningContent extends RelativeLayout {
         this(context, null);
     }
 
-    public ScrollablePasswordMigrationWarningContent(Context context, AttributeSet attrs) {
+    public ScrollablePasswordMigrationWarningContent(
+            Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 

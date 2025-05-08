@@ -62,7 +62,7 @@ void EchoAILanguageModel::DoMockExecution(
 
 void EchoAILanguageModel::Prompt(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
-    const std::optional<std::string>& response_json_schema,
+    on_device_model::mojom::ResponseConstraintPtr constraint,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   if (is_destroyed_) {
@@ -134,12 +134,20 @@ void EchoAILanguageModel::Destroy() {
 }
 
 void EchoAILanguageModel::MeasureInputUsage(
-    const std::string& input,
+    std::vector<blink::mojom::AILanguageModelPromptPtr> input,
     mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
         client) {
+  size_t total = 0;
+  for (const auto& prompt : input) {
+    if (prompt->content->is_text()) {
+      total += prompt->content->get_text().size();
+    } else {
+      total += 100;  // TODO(crbug.com/415304330): Improve estimate.
+    }
+  }
   mojo::Remote<blink::mojom::AILanguageModelMeasureInputUsageClient>(
       std::move(client))
-      ->OnResult(input.size());
+      ->OnResult(total);
 }
 
 }  // namespace content

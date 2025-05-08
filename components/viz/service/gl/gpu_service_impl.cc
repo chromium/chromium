@@ -98,17 +98,14 @@
 #include "components/chromeos_camera/mojo_jpeg_encode_accelerator_service.h"
 #include "components/chromeos_camera/mojo_mjpeg_decode_accelerator_service.h"
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 #include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decoder.h"
-#endif
 #include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager_proxy.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -349,10 +346,10 @@ GpuServiceImpl::GpuServiceImpl(
           features::kClearGrShaderDiskCacheOnInvalidPrefix)) {
   DCHECK(!io_runner_->BelongsToCurrentThread());
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   protected_buffer_manager_ = new arc::ProtectedBufferManager();
 #endif  // BUILDFLAG(IS_CHROMEOS) &&
-        // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 #if BUILDFLAG(ENABLE_VULKAN)
   if (vulkan_implementation_) {
@@ -650,6 +647,11 @@ void GpuServiceImpl::InitializeWithHostInternal(
   shutdown_event_ = shutdown_event;
 
   mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));
+
+#if BUILDFLAG(IS_LINUX)
+  gpu_extra_info_.is_gmb_nv12_supported = IsGMBNV12Supported();
+#endif
+
   gpu_host->DidInitialize(gpu_info_, gpu_feature_info_,
                           gpu_info_for_hardware_gpu_,
                           gpu_feature_info_for_hardware_gpu_, gpu_extra_info_);
@@ -756,7 +758,7 @@ void GpuServiceImpl::RecordLogMessage(int severity,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 void GpuServiceImpl::CreateArcVideoDecodeAccelerator(
     mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver) {
   DCHECK(io_runner_->BelongsToCurrentThread());
@@ -820,11 +822,9 @@ void GpuServiceImpl::CreateArcVideoDecodeAcceleratorOnMainThread(
 void GpuServiceImpl::CreateArcVideoDecoderOnMainThread(
     mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver) {
   DCHECK(main_runner_->BelongsToCurrentThread());
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<arc::GpuArcVideoDecoder>(protected_buffer_manager_),
       std::move(vd_receiver));
-#endif
 }
 
 void GpuServiceImpl::CreateArcVideoEncodeAcceleratorOnMainThread(
@@ -858,7 +858,7 @@ void GpuServiceImpl::CreateArcProtectedBufferManagerOnMainThread(
           protected_buffer_manager_),
       std::move(pbm_receiver));
 }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 void GpuServiceImpl::CreateJpegDecodeAccelerator(
     mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
@@ -961,61 +961,6 @@ void GpuServiceImpl::BindWebNNContextProvider(
 
   webnn_context_provider_->BindWebNNContextProvider(
       std::move(pending_receiver));
-}
-
-void GpuServiceImpl::CreateGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    int client_id,
-    gpu::SurfaceHandle surface_handle,
-    CreateGpuMemoryBufferCallback callback) {
-  // This needs to happen in the IO thread.
-  DCHECK(io_runner_->BelongsToCurrentThread());
-
-  // Create a native buffer handle if supported.
-  if (IsNativeBufferSupported(format, usage)) {
-    gpu_memory_buffer_factory_->CreateGpuMemoryBufferAsync(
-        id, size, format, usage, client_id, surface_handle,
-        std::move(callback));
-    return;
-  }
-
-  // Otherwise, create a shared memory handle if supported.
-  if (gpu::GpuMemoryBufferImplSharedMemory::IsUsageSupported(usage) &&
-      gpu::GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(size,
-                                                                 format)) {
-    gfx::GpuMemoryBufferHandle shm_handle;
-    shm_handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-        id, size, format, usage);
-    std::move(callback).Run(std::move(shm_handle));
-    return;
-  }
-
-  // By default, return a null handle.
-  std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-}
-
-void GpuServiceImpl::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                                            int client_id) {
-  if (!main_runner_->BelongsToCurrentThread()) {
-    main_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&GpuServiceImpl::DestroyGpuMemoryBuffer,
-                                  weak_ptr_, id, client_id));
-    return;
-  }
-  gpu_channel_manager_->DestroyGpuMemoryBuffer(id, client_id);
-}
-
-void GpuServiceImpl::CopyGpuMemoryBuffer(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion shared_memory,
-    CopyGpuMemoryBufferCallback callback) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
-  std::move(callback).Run(
-      gpu_memory_buffer_factory_->FillSharedMemoryRegionWithBufferContents(
-          std::move(buffer_handle), std::move(shared_memory)));
 }
 
 void GpuServiceImpl::GetVideoMemoryUsageStats(
@@ -1546,6 +1491,32 @@ bool GpuServiceImpl::OnBeginFrameDerivedImpl(const BeginFrameArgs& args) {
                                       base::Unretained(this), args));
   return true;
 }
+
+#if BUILDFLAG(IS_LINUX)
+bool GpuServiceImpl::IsGMBNV12Supported() {
+  CHECK(main_runner_->BelongsToCurrentThread());
+  auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  auto buffer_usage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
+
+  if (!IsNativeBufferSupported(buffer_format, buffer_usage)) {
+    return false;
+  }
+  auto size = gfx::Size(2, 2);
+
+  // Note that |gmb_id| and |client_id| does not matter here as this is the
+  // first GMB which will created and immediately destroyed.
+  auto gmb_id = gfx::GpuMemoryBufferId(
+      static_cast<int>(gpu::MappableSIClientGmbId::kGpuServiceImpl));
+  auto client_id = gpu::kMappableSIClientId;
+  auto gmb_handle = gpu_memory_buffer_factory_->CreateGpuMemoryBuffer(
+      gmb_id, size, /*framebuffer_size=*/size, buffer_format, buffer_usage,
+      client_id, gpu::kNullSurfaceHandle);
+
+  // Destroy the gmb_handle since it will be no longer needed.
+  gpu_memory_buffer_factory_->DestroyGpuMemoryBuffer(gmb_id, client_id);
+  return !gmb_handle.is_null();
+}
+#endif
 
 void GpuServiceImpl::OnBeginFrameSourcePausedChanged(bool paused) {}
 

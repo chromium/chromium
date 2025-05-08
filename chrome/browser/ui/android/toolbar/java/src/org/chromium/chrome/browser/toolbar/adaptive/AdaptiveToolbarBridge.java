@@ -11,12 +11,14 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Bridge between UI layer and native where segmentation platform is invoked. */
+@NullMarked
 public class AdaptiveToolbarBridge {
     /**
      * Called to get the per-session button list to show on the adaptive toolbar.

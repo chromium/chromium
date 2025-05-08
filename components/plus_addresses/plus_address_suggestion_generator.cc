@@ -190,9 +190,7 @@ PlusAddressSuggestionGenerator::GetSuggestions(
   // should be among the single field suggestions offered and no prefix matching
   // should be applied.
   const bool is_field_empty_or_autofilled =
-      normalized_field_value.empty() ||
-      (focused_field.is_autofilled() &&
-       autofill::IsAddressFieldSwappingEnabled());
+      normalized_field_value.empty() || focused_field.is_autofilled();
 
   if (affiliated_plus_addresses.empty()) {
     // Do not offer creation if disabled.

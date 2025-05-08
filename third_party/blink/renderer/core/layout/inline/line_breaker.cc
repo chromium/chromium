@@ -1464,7 +1464,8 @@ void LineBreaker::SplitTextIntoSegments(const InlineItem& item,
   DCHECK_EQ(current_.text_offset, item.StartOffset());
 
   const ShapeResult& shape = *item.TextShapeResult();
-  if (shape.NumGlyphs() == 0 || !needs_svg_segmentation_) {
+  const unsigned num_glyphs = shape.NumGlyphs();
+  if (num_glyphs == 0 || !needs_svg_segmentation_) {
     InlineItemResult* result = AddItem(item, line_info);
     result->should_create_line_box = true;
     result->shape_result = ShapeResultView::Create(&shape);
@@ -1477,7 +1478,7 @@ void LineBreaker::SplitTextIntoSegments(const InlineItem& item,
   }
 
   Vector<unsigned> index_list;
-  index_list.reserve(shape.NumGlyphs());
+  index_list.reserve(num_glyphs);
   shape.ForEachGlyph(0, CollectCharIndex, &index_list);
   if (shape.IsRtl())
     index_list.Reverse();

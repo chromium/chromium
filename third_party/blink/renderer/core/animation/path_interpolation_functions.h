@@ -25,7 +25,7 @@ class CORE_EXPORT PathInterpolationFunctions {
 
   static void Composite(UnderlyingValueOwner&,
                         double underlying_fraction,
-                        const InterpolationType&,
+                        const InterpolationType*,
                         const InterpolationValue&);
 
   static InterpolationValue ConvertValue(const StylePath*,

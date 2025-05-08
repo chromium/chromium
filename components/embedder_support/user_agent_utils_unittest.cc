@@ -671,6 +671,26 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
 
 #if BUILDFLAG(IS_WIN)
   VerifyWinPlatformVersion(metadata.platform_version);
+#elif BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/40245146): Remove this Blink feature
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kReduceUserAgentDataLinuxPlatformVersion);
+  {
+    auto metadata_reduced = GetUserAgentMetadata();
+    EXPECT_EQ(metadata_reduced.platform_version, "");
+  }
+  scoped_feature_list.Reset();
+
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kReduceUserAgentDataLinuxPlatformVersion);
+  {
+    auto metadata_full = GetUserAgentMetadata();
+    int32_t major, minor, bugfix = 0;
+    base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+    EXPECT_EQ(metadata_full.platform_version,
+              base::StringPrintf("%d.%d.%d", major, minor, bugfix));
+  }
 #else
   int32_t major, minor, bugfix = 0;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);

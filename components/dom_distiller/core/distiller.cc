@@ -63,15 +63,6 @@ DistillerImpl::~DistillerImpl() {
   DCHECK(destruction_allowed_);
 }
 
-bool DistillerImpl::DoesFetchImages() {
-// Only iOS makes use of the fetched image data.
-#if BUILDFLAG(IS_IOS)
-  return true;
-#else
-  return false;
-#endif
-}
-
 void DistillerImpl::SetMaxNumPagesInArticle(size_t max_num_pages) {
   max_pages_in_article_ = max_num_pages;
 }
@@ -256,7 +247,7 @@ void DistillerImpl::MaybeFetchImage(int page_num,
   DCHECK(started_pages_index_.find(page_num) != started_pages_index_.end());
   DistilledPageData* page_data = GetPageAtIndex(started_pages_index_[page_num]);
 
-  if (!DoesFetchImages()) {
+  if (!distiller_page_->ShouldFetchOfflineData()) {
     DistilledPageProto_Image* image =
         page_data->distilled_page_proto->data.add_image();
     image->set_name(image_id);

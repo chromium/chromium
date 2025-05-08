@@ -1054,6 +1054,15 @@ TEST(CreditCardTest, Compare) {
   a.set_card_issuer(CreditCard::Issuer::kExternalIssuer);
   b.set_card_issuer(CreditCard::Issuer::kExternalIssuer);
 
+  // Cards with benefits from different sources are different.
+  a.set_benefit_source("bmo");
+  b.set_benefit_source("amex");
+  EXPECT_NE(0, a.Compare(b));
+  // Two same non-empty benefit source are considered the same.
+  a.set_benefit_source("bmo");
+  b.set_benefit_source("bmo");
+  EXPECT_EQ(0, a.Compare(b));
+
   // Difference in issuer id.
   a.set_issuer_id("amex");
   b.set_issuer_id("capitalone");

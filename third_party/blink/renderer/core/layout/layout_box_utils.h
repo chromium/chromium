@@ -32,6 +32,15 @@ DeprecatedLayoutPoint ComputeBoxLocation(
     const PhysicalBoxFragment& container_fragment,
     const BlockBreakToken* previous_container_break_token);
 
+// Set the LayoutBox location for direct children of the specified fragment, or,
+// if the specified fragment establishes a root fragmentation context (i.e. when
+// it does not participate in any outer fragmentation context), do this for the
+// entire fragmented subtree. This function is called after layout of each
+// node. For fragmented content, we need to have laid out the entire
+// fragmentation context before we can tell where boxes are relatively to each
+// other.
+void UpdateChildLayoutBoxLocations(const PhysicalBoxFragment&);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BOX_UTILS_H_

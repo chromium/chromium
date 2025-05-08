@@ -10,6 +10,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/values.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -61,7 +64,9 @@ class StubTabStripUIEmbedder : public TabStripUIEmbedder {
   void ShowContextMenuAtPoint(
       gfx::Point point,
       std::unique_ptr<ui::MenuModel> menu_model,
-      base::RepeatingClosure on_menu_closed_callback) override {}
+      base::RepeatingClosure on_menu_closed_callback) override {
+    menu_model_ = std::move(menu_model);
+  }
   void CloseContextMenu() override {}
   void ShowEditDialogForGroupAtPoint(gfx::Point point,
                                      gfx::Rect rect,
@@ -72,6 +77,11 @@ class StubTabStripUIEmbedder : public TabStripUIEmbedder {
   SkColor GetColorProviderColor(ui::ColorId id) const override {
     return SK_ColorWHITE;
   }
+
+  std::unique_ptr<ui::MenuModel> menu_model() { return std::move(menu_model_); }
+
+ private:
+  std::unique_ptr<ui::MenuModel> menu_model_;
 };
 
 class MockPage : public tab_strip::mojom::Page {
@@ -142,6 +152,7 @@ class TabStripPageHandlerTest : public BrowserWithTestWindowTest {
 
   TabStripPageHandler* handler() { return handler_.get(); }
   content::TestWebUI* web_ui() { return &web_ui_; }
+  StubTabStripUIEmbedder* embedder() { return &stub_embedder_; }
 
   void ExpectVisualData(const tab_groups::TabGroupVisualData& visual_data,
                         const tab_strip::mojom::TabGroupVisualData& tab_group) {
@@ -776,4 +787,33 @@ TEST_F(TabStripPageHandlerTest, OnThemeChanged) {
   webui::GetNativeThemeDeprecated(web_ui()->GetWebContents())
       ->NotifyOnNativeThemeUpdated();
   EXPECT_CALL(page_, ThemeChanged());
+}
+
+TEST_F(TabStripPageHandlerTest, BookmarkAllTabs) {
+  BookmarkModelFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(), BookmarkModelFactory::GetDefaultFactory());
+  bookmarks::test::WaitForBookmarkModelToLoad(
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile()));
+
+  // Assert that the bookmark all tabs menu item exists.
+  tab_strip::mojom::PageHandler* page_handler = handler();
+  page_handler->ShowBackgroundContextMenu(0, 0);
+  std::unique_ptr<ui::MenuModel> menu_model = embedder()->menu_model();
+  int bookmark_all_tabs_index = -1;
+  for (size_t i = 0; i < menu_model->GetItemCount(); i++) {
+    if (IDC_BOOKMARK_ALL_TABS == menu_model->GetCommandIdAt(i)) {
+      bookmark_all_tabs_index = i;
+    }
+  }
+  ASSERT_GE(bookmark_all_tabs_index, 0);
+
+  // Add one tab. Bookmark all tabs should be disabled.
+  AddTab(browser(), GURL("http://foo"));
+  page_handler->ShowBackgroundContextMenu(0, 0);
+  EXPECT_FALSE(embedder()->menu_model()->IsEnabledAt(bookmark_all_tabs_index));
+
+  // Add a second tab. Bookmark all tabs should be enabled.
+  AddTab(browser(), GURL("http://bar"));
+  page_handler->ShowBackgroundContextMenu(0, 0);
+  EXPECT_TRUE(embedder()->menu_model()->IsEnabledAt(bookmark_all_tabs_index));
 }

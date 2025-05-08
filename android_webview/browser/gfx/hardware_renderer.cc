@@ -267,17 +267,19 @@ HardwareRenderer::OnViz::OnViz(
         [](HardwareRenderer::OnViz* self,
            viz::FrameIntervalDecider::Result result,
            viz::FrameIntervalMatcherType matcher_type) {
-          self->preferred_frame_interval_ =
-              std::visit(base::Overloaded(
-                             [](viz::FrameIntervalDecider::FrameIntervalClass
-                                    frame_interval_class) {
-                               // Zero currently is interpreted by WebView as no
-                               // opinion, which allows system to use its
-                               // default heuristics.
-                               return base::Milliseconds(0);
-                             },
-                             [](base::TimeDelta interval) { return interval; }),
-                         result);
+          self->preferred_frame_interval_ = std::visit(
+              base::Overloaded(
+                  [](viz::FrameIntervalDecider::FrameIntervalClass
+                         frame_interval_class) {
+                    // Zero currently is interpreted by WebView as no
+                    // opinion, which allows system to use its
+                    // default heuristics.
+                    return base::Milliseconds(0);
+                  },
+                  [](viz::FrameIntervalDecider::ResultInterval interval) {
+                    return interval.interval;
+                  }),
+              result);
         },
         this);
     decider->UpdateSettings(std::move(settings), std::move(matchers));

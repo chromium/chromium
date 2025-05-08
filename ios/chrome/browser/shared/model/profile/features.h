@@ -17,4 +17,7 @@ bool AreSeparateProfilesForManagedAccountsEnabled();
 // YES if the account particle disc on the NTP should open the account menu.
 bool IsIdentityDiscAccountMenuEnabled();
 
+// Whether the feature to have widgets per account is enabled.
+bool IsWidgetsForMultiprofileEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_FEATURES_H_

@@ -51,7 +51,8 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
                                const SkRegion& occluded_region) override;
 
   // Overridden from NativeBrowserFrame:
-  views::Widget::InitParams GetWidgetParams() override;
+  views::Widget::InitParams GetWidgetParams(
+      views::Widget::InitParams::Ownership ownership) override;
   bool UseCustomFrame() const override;
   bool UsesNativeSystemMenu() const override;
   int GetMinimizeButtonOffset() const override;
@@ -64,6 +65,7 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
   bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;
   bool ShouldRestorePreviousBrowserWidgetState() const override;
   bool ShouldUseInitialVisibleOnAllWorkspaces() const override;
+  void ClientDestroyedWidget() override;
 
  private:
   // The BrowserView is our ClientView. This is a pointer to it.

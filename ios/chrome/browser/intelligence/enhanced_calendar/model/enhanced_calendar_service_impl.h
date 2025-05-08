@@ -70,6 +70,9 @@ class EnhancedCalendarServiceImpl : public mojom::EnhancedCalendarService,
   void InvokePendingCallback(
       mojom::EnhancedCalendarResponseResultPtr union_result);
 
+  // Records response status in UMA.
+  void RecordMetrics(std::optional<std::string> error_message);
+
   // Optimization Guide service to execute genAI queries.
   const raw_ref<OptimizationGuideService> service_;
 

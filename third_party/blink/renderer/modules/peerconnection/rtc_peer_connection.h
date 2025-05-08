@@ -197,9 +197,9 @@ class MODULES_EXPORT RTCPeerConnection final
   // A remote stream is any stream associated with a receiver.
   MediaStreamVector getRemoteStreams() const;
 
-  void addStream(v8::Isolate*, MediaStream*, ExceptionState&);
+  void addStream(ScriptState*, MediaStream*, ExceptionState&);
 
-  void removeStream(v8::Isolate*, MediaStream*, ExceptionState&);
+  void removeStream(MediaStream*, ExceptionState&);
 
   ScriptPromise<RTCStatsReport> getStats(ScriptState* script_state,
                                          MediaStreamTrack* selector,

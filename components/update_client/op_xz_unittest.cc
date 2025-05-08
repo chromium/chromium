@@ -56,7 +56,9 @@ class XzOperationTest : public testing::Test {
 
 TEST_F(XzOperationTest, Success) {
   base::FilePath in_file = CopyToTemp("file1.xz");
-  XzOperation(base::MakeRefCounted<InProcessUnzipperFactory>()->Create(),
+  XzOperation(base::MakeRefCounted<InProcessUnzipperFactory>(
+                  InProcessUnzipperFactory::SymlinkOption::DONT_PRESERVE)
+                  ->Create(),
               MakePingCallback(), in_file,
               base::BindLambdaForTesting(
                   [&](base::expected<base::FilePath, CategorizedError> result) {
@@ -75,7 +77,9 @@ TEST_F(XzOperationTest, Success) {
 
 TEST_F(XzOperationTest, BadPatch) {
   base::FilePath in_file = CopyToTemp("file1");
-  XzOperation(base::MakeRefCounted<InProcessUnzipperFactory>()->Create(),
+  XzOperation(base::MakeRefCounted<InProcessUnzipperFactory>(
+                  InProcessUnzipperFactory::SymlinkOption::DONT_PRESERVE)
+                  ->Create(),
               MakePingCallback(), in_file,
               base::BindLambdaForTesting(
                   [&](base::expected<base::FilePath, CategorizedError> result) {

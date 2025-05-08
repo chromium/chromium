@@ -16,6 +16,8 @@
 self.CLOSURE_BASE_PATH =
 self.CLOSURE_BASE_PATH = '../../';
 importScripts('../../bootstrap/webworkers.js');
+self.CLOSURE_DEFINES = self.CLOSURE_DEFINES || {};
+self.CLOSURE_DEFINES['goog.ENABLE_DEBUG_LOADER'] = true;
 importScripts('../../base.js');
 
 // The provide is necessary to stop the jscompiler from thinking this is an

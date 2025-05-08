@@ -27,6 +27,10 @@ typescript/loc/*
 # --minify-js which is the only entry to that codepath.
 uglify-js/*
 
+# This is pulled in from ts-poet used by ts-proto, but the format option
+# isn't used, which is the only entry to that codepath.
+dprint-node/*
+
 # Exclude all Lit related files, except the ones in lit_include.txt
 @lit/*
 lit/*
@@ -43,6 +47,9 @@ lit-html/*
 @mediapipe/tasks-vision/vision_bundle.cjs
 @mediapipe/tasks-vision/vision_bundle.cjs.map
 @mediapipe/tasks-vision/vision_bundle.mjs.map
+
+# Exclude unnecessary files from ts-proto.
+ts-proto/README.markdown
 
 # Exlude unnecessary files fom @rollup/wasm-node.
 @rollup/wasm-node/dist/es/*

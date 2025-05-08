@@ -82,8 +82,8 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
                       public content::ServiceWorkerContextObserverSynchronous {
  public:
   // A callback used to asynchronously respond to an intercepted authentication
-  // request. If |should_cancel| is true the request will be cancelled.
-  // Otherwise any supplied |credentials| will be used. If no credentials are
+  // request. If `should_cancel` is true the request will be cancelled.
+  // Otherwise any supplied `credentials` will be used. If no credentials are
   // supplied, default browser behavior will follow (e.g. UI prompt for login).
   using AuthRequestCallback = base::OnceCallback<void(
       const std::optional<net::AuthCredentials>& credentials,
@@ -96,7 +96,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
 
     // Asks the Proxy to handle an auth request on behalf of one of its known
     // in-progress network requests. If the request will *not* be handled by
-    // the proxy, |callback| should be invoked with |std::nullopt|.
+    // the proxy, `callback` should be invoked with |std::nullopt|.
     virtual void HandleAuthRequest(
         const net::AuthChallengeInfo& auth_info,
         scoped_refptr<net::HttpResponseHeaders> response_headers,
@@ -125,15 +125,15 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
     // Remove a Proxy. The removed proxy is deleted upon this call.
     void RemoveProxy(Proxy* proxy);
 
-    // Associates |proxy| with |id|. |proxy| must already be registered within
+    // Associates `proxy` with `id`. `proxy` must already be registered within
     // this ProxySet.
     //
     // Each Proxy may be responsible for multiple requests, but any given
-    // request identified by |id| must be associated with only a single proxy.
+    // request identified by `id` must be associated with only a single proxy.
     void AssociateProxyWithRequestId(Proxy* proxy,
                                      const content::GlobalRequestID& id);
 
-    // Disassociates |proxy| with |id|. |proxy| must already be registered
+    // Disassociates `proxy` with `id`. `proxy` must already be registered
     // within this ProxySet.
     void DisassociateProxyWithRequestId(Proxy* proxy,
                                         const content::GlobalRequestID& id);
@@ -172,12 +172,12 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
 
     // Generates a WebRequest ID. If the same (routing_id,
     // network_service_request_id) pair is passed to this as was previously
-    // passed to SaveID(), the |request_id| passed to SaveID() will be returned.
+    // passed to SaveID(), the `request_id` passed to SaveID() will be returned.
     int64_t Generate(int32_t routing_id, int32_t network_service_request_id);
 
     // This saves a WebRequest ID mapped to the (routing_id,
     // network_service_request_id) pair. Clients must call Generate() with the
-    // same ID pair to retrieve the |request_id|, or else there may be a memory
+    // same ID pair to retrieve the `request_id`, or else there may be a memory
     // leak.
     void SaveID(int32_t routing_id,
                 int32_t network_service_request_id,
@@ -219,15 +219,15 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // BrowserContext, |*factory_request| is swapped out for a new request which
   // proxies through an internal URLLoaderFactory. This supports lifetime
   // observation and control on behalf of the WebRequest API.
-  // |frame| and |render_process_id| are the frame and render process id in
-  // which the URLLoaderFactory will be used. |frame| can be nullptr for
+  // `frame` and `render_process_id` are the frame and render process id in
+  // which the URLLoaderFactory will be used. `frame` can be nullptr for
   // factories proxied for service worker.
   //
-  // |navigation_response_task_runner| is a task runner that may be non-null for
+  // `navigation_response_task_runner` is a task runner that may be non-null for
   // navigation requests and can be used to run navigation request blocking
   // tasks.
   //
-  // Returns |true| if the URLLoaderFactory will be proxied; |false| otherwise.
+  // Returns `true` if the URLLoaderFactory will be proxied; `false` otherwise.
   bool MaybeProxyURLLoaderFactory(
       content::BrowserContext* browser_context,
       content::RenderFrameHost* frame,
@@ -244,7 +244,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // Any request which requires authentication to complete will be bounced
   // through this method.
   //
-  // If this returns |true|, |callback| will eventually be invoked on the UI
+  // If this returns `true`, `callback` will eventually be invoked on the UI
   // thread.
   bool MaybeProxyAuthRequest(
       content::BrowserContext* browser_context,
@@ -255,7 +255,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       AuthRequestCallback callback,
       WebViewGuest* web_view_guest);
 
-  // Starts proxying the connection with |factory|. This function can be called
+  // Starts proxying the connection with `factory`. This function can be called
   // only when MayHaveProxies() returns true.
   void ProxyWebSocket(
       content::RenderFrameHost* frame,

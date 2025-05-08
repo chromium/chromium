@@ -452,6 +452,39 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
   }
 
+  bool OverwriteImage(const scoped_refptr<gpu::ClientSharedImage>& shared_image,
+                      const gfx::Rect& copy_rect,
+                      const gpu::SyncToken& ready_sync_token,
+                      gpu::SyncToken& completion_sync_token) override {
+    gpu::raster::RasterInterface* raster = RasterInterface();
+    if (!raster) {
+      return false;
+    }
+
+    if (IsGpuContextLost()) {
+      return false;
+    }
+
+    EndWriteAccess();
+    WillDrawInternal(false);
+
+    auto dst_client_si = resource()->GetClientSharedImage();
+    if (!dst_client_si) {
+      return false;
+    }
+
+    std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+        shared_image->BeginRasterAccess(raster, ready_sync_token,
+                                        /*readonly=*/true);
+    raster->CopySharedImage(shared_image->mailbox(), dst_client_si->mailbox(),
+                            /*xoffset=*/0,
+                            /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
+                            copy_rect.width(), copy_rect.height());
+    completion_sync_token =
+        gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+    return true;
+  }
+
  protected:
   scoped_refptr<CanvasResource> ProduceCanvasResource(
       FlushReason reason) override {
@@ -644,6 +677,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     is_cleared_ = true;
     RasterRecordOOP(std::move(last_recording), needs_clear,
                     resource()->GetClientSharedImage()->mailbox());
+    resource()->GetSyncToken();
   }
 
   bool ShouldReplaceTargetBuffer(
@@ -1707,32 +1741,6 @@ void CanvasResourceProvider::NotifyWillTransfer(
   // references to such a bitmap on the current thread must be released, which
   // means that DisplayItemLists that reference it must be flushed.
   GetFlushForImageListener()->NotifyFlushForImage(content_id);
-}
-
-bool CanvasResourceProvider::OverwriteImage(
-    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    const gfx::Rect& copy_rect,
-    const gpu::SyncToken& ready_sync_token,
-    gpu::SyncToken& completion_sync_token) {
-  gpu::raster::RasterInterface* raster = RasterInterface();
-  if (!raster) {
-    return false;
-  }
-  auto dst_client_si = GetBackingClientSharedImageForOverwrite();
-  if (!dst_client_si) {
-    return false;
-  }
-
-  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
-      shared_image->BeginRasterAccess(raster, ready_sync_token,
-                                      /*readonly=*/true);
-  raster->CopySharedImage(shared_image->mailbox(), dst_client_si->mailbox(),
-                          /*xoffset=*/0,
-                          /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
-                          copy_rect.width(), copy_rect.height());
-  completion_sync_token =
-      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
-  return true;
 }
 
 void CanvasResourceProvider::EnsureSkiaCanvas() {

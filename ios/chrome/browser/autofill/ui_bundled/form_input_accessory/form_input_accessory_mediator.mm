@@ -854,6 +854,9 @@ bool IsStateless() {
                                  provider:formSuggestion.provider];
   }
 
+  // Close the popover view.
+  [self.handler dismissPopover];
+
   [self logReauthenticationEvent:ReauthenticationEvent::kAttempt
                    forSuggestion:formSuggestion];
 

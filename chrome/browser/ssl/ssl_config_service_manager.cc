@@ -232,17 +232,14 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
 
   config->ech_enabled = ech_enabled_.GetValue();
 
-  config->post_quantum_override = network::mojom::OptionalBool::kUnset;
   if (post_quantum_enabled_.IsManaged()) {
-    config->post_quantum_override = post_quantum_enabled_.GetValue()
-                                        ? network::mojom::OptionalBool::kTrue
-                                        : network::mojom::OptionalBool::kFalse;
+    config->post_quantum_key_agreement_enabled =
+        post_quantum_enabled_.GetValue();
   }
 #if BUILDFLAG(IS_CHROMEOS)
   if (device_post_quantum_enabled_.IsManaged()) {
-    config->post_quantum_override = device_post_quantum_enabled_.GetValue()
-                                        ? network::mojom::OptionalBool::kTrue
-                                        : network::mojom::OptionalBool::kFalse;
+    config->post_quantum_key_agreement_enabled =
+        device_post_quantum_enabled_.GetValue();
   }
 #endif
 

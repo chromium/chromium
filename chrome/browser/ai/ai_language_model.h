@@ -127,7 +127,7 @@ class AILanguageModel : public AIContextBoundObject,
 
   // `blink::mojom::AILanguageModel` implementation.
   void Prompt(std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
-              const std::optional<std::string>& response_json_schema,
+              on_device_model::mojom::ResponseConstraintPtr constraint,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
   void Fork(
@@ -135,7 +135,7 @@ class AILanguageModel : public AIContextBoundObject,
           client) override;
   void Destroy() override;
   void MeasureInputUsage(
-      const std::string& input,
+      std::vector<blink::mojom::AILanguageModelPromptPtr> input,
       mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
           client) override;
 
@@ -145,7 +145,6 @@ class AILanguageModel : public AIContextBoundObject,
   // Format the initial prompts, gets the token count, updates the session,
   // and passes the session information back through the callback.
   void SetInitialPrompts(
-      const std::optional<std::string> system_prompt,
       std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
       CreateLanguageModelCallback callback);
   blink::mojom::AILanguageModelInstanceInfoPtr GetLanguageModelInstanceInfo();
@@ -155,7 +154,7 @@ class AILanguageModel : public AIContextBoundObject,
   void PromptGetInputSizeCompletion(
       mojo::RemoteSetElementId responder_id,
       Context::ContextItem current_item,
-      const std::optional<std::string>& response_json_schema,
+      on_device_model::mojom::ResponseConstraintPtr constraint,
       std::optional<uint32_t> result);
   void ModelExecutionCallback(
       const Context::ContextItem& current_item,

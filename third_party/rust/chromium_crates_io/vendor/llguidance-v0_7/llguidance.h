@@ -458,6 +458,20 @@ struct LlgMatcher *llg_new_matcher(const struct LlgConstraintInit *init,
                                    const char *data);
 
 /**
+ * Check if given grammar is valid.
+ * This about twice as fast as creating a matcher (which also validates).
+ * See llg_new_matcher() for the grammar format.
+ * Returns 0 on success and -1 on error and 1 on warning.
+ * The error message or warning is written to message, which is message_len bytes long.
+ * It's always NUL-terminated.
+ */
+int32_t llg_validate_grammar(const struct LlgConstraintInit *init,
+                             const char *constraint_type,
+                             const char *data,
+                             char *message,
+                             size_t message_len);
+
+/**
  * Compute the set of allowed tokens for the current state.
  * The result is written to mask_dest.
  * mask_byte_len must be equal to llg_matcher_get_mask_byte_size().
@@ -469,7 +483,7 @@ int32_t llg_matcher_compute_mask_into(struct LlgMatcher *matcher,
 
 /**
  * Compute the set of allowed tokens for the current state.
- * The pointer to the result is written to mask_dest.
+ * Use llg_matcher_get_mask() to get the result.
  * Returns 0 on success and -1 on error.
  */
 int32_t llg_matcher_compute_mask(struct LlgMatcher *matcher);

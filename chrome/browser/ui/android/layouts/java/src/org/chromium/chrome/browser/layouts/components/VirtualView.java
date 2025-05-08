@@ -4,12 +4,13 @@
 package org.chromium.chrome.browser.layouts.components;
 
 import android.graphics.RectF;
+import android.view.MotionEvent;
 
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * {@link VirtualView} is the minimal interface that provides information for
- * building accessibility events.
+ * {@link VirtualView} is the minimal interface that provides information for building accessibility
+ * events.
  */
 @NullMarked
 public interface VirtualView {
@@ -48,8 +49,11 @@ public interface VirtualView {
      * Notifies the view to handle the click action.
      *
      * @param time The time of the click action.
+     * @param motionEventButtonState {@link MotionEvent#getButtonState()} at the moment of the click
+     *     if the click is detected via motion events; otherwise, this parameter is {@link
+     *     org.chromium.ui.util.MotionEventUtils#MOTION_EVENT_BUTTON_NONE}.
      */
-    void handleClick(long time);
+    void handleClick(long time, int motionEventButtonState);
 
     /**
      * Set keyboard focus state of {@link VirtualView} to {@param isFocused}.

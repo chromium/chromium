@@ -8,24 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
-#include <memory>
-#include <vector>
-
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-
-namespace gpu {
-class GpuMemoryBufferManager;
-}
-
-namespace viz {
-class HostGpuMemoryBufferManager;
-}
 
 namespace content {
 
@@ -63,7 +51,6 @@ class BrowserGpuChannelHostFactory : public gpu::GpuChannelEstablishFactory {
   void EstablishGpuChannel(
       gpu::GpuChannelEstablishedCallback callback) override;
   scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync() override;
-  gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
 
  private:
   class EstablishRequest;
@@ -80,7 +67,6 @@ class BrowserGpuChannelHostFactory : public gpu::GpuChannelEstablishFactory {
   const int gpu_client_id_;
   const uint64_t gpu_client_tracing_id_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
-  std::unique_ptr<viz::HostGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   scoped_refptr<EstablishRequest> pending_request_;
   bool is_visible_ = true;
 

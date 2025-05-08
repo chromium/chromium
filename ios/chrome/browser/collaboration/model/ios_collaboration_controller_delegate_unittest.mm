@@ -59,7 +59,7 @@ namespace collaboration {
 namespace {
 std::unique_ptr<KeyedService> BuildTestShareKitService(
     web::BrowserState* context) {
-  ProfileIOS* profile = static_cast<ProfileIOS*>(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   data_sharing::DataSharingService* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   TabGroupService* tab_group_service =
@@ -105,7 +105,6 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
         /*enabled_features=*/
         {
             kTabGroupSync,
-            kTabGroupsIPad,
             data_sharing::features::kDataSharingFeature,
         },
         /*disable_features=*/{});
@@ -131,12 +130,6 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
         base::BindRepeating(&BuildTestFaviconLoader));
-    test_profile_builder.AddTestingFactory(
-        TabGroupServiceFactory::GetInstance(),
-        TabGroupServiceFactory::GetDefaultFactory());
-    test_profile_builder.AddTestingFactory(
-        TabGroupServiceFactory::GetInstance(),
-        TabGroupServiceFactory::GetDefaultFactory());
 
     profile_ = std::move(test_profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());

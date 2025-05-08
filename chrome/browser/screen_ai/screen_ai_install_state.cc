@@ -19,8 +19,8 @@
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
-// crbug.com/406145318 and crbug.com/381000306
-const char kMinExpectedVersion[] = "136.00";
+// From 138.0, the library has the new `GetMaxImageDimension` API function.
+const char kMinExpectedVersion[] = "138.0";
 const int kScreenAICleanUpDelayInDays = 30;
 
 bool IsDeviceCompatible() {

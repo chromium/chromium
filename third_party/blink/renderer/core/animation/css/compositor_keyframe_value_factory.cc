@@ -78,16 +78,15 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
       if (const auto* number_value = DynamicTo<CSSNumericLiteralValue>(value)) {
         if (number_value->IsNumber()) {
           return MakeGarbageCollected<CompositorKeyframeDouble>(
-              number_value->GetFloatValue());
+              number_value->GetDoubleValue());
         }
       }
 
       // TODO: Add supported for interpolable color values from
       // CSSIdentifierValue when given a value of currentcolor
       if (const auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
-        Color color = color_value->Value();
-        return MakeGarbageCollected<CompositorKeyframeColor>(SkColorSetARGB(
-            color.AlphaAsInteger(), color.Red(), color.Green(), color.Blue()));
+        return MakeGarbageCollected<CompositorKeyframeColor>(
+            color_value->Value().toSkColor4f().toSkColor());
       }
 
       return nullptr;

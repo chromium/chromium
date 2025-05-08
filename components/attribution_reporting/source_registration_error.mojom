@@ -44,7 +44,7 @@ enum SourceRegistrationError {
 
   kTriggerDataMatchingValueInvalid = 27,
 
-  kTriggerSpecsWrongType = 28,
+  // Deprecated: kTriggerSpecsWrongType = 28,
   kTriggerSpecTriggerDataMissing = 29,
   kTriggerSpecTriggerDataListInvalid = 30,
   kTriggerDataListInvalid = 31,
@@ -57,10 +57,10 @@ enum SourceRegistrationError {
 
   kTopLevelTriggerDataAndTriggerSpecs = 37,
 
-  kSummaryOperatorValueInvalid = 38,
+  // Deprecated: kSummaryOperatorValueInvalid = 38,
 
-  kSummaryBucketsListInvalid = 39,
-  kSummaryBucketsValueInvalid = 40,
+  // Deprecated: kSummaryBucketsListInvalid = 39,
+  // Deprecated: kSummaryBucketsValueInvalid = 40,
 
   kEventLevelEpsilonValueInvalid = 41,
 

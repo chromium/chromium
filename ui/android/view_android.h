@@ -236,6 +236,8 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   void NotifyContextMenuInsetsObservers(const gfx::Rect&);
 
+  void ShowInterestInElement(int);
+
   void SetLayoutForTesting(int x, int y, int width, int height);
 
   EventForwarder* event_forwarder() { return event_forwarder_.get(); }

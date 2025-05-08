@@ -6,18 +6,6 @@
 
 #include <tuple>
 
-bool DownloadDisplay::ProgressInfo::operator==(
-    const ProgressInfo& other) const {
-  return std::tie(progress_percentage, download_count, progress_certain) ==
-         std::tie(other.progress_percentage, other.download_count,
-                  other.progress_certain);
-}
-
-bool DownloadDisplay::ProgressInfo::operator!=(
-    const ProgressInfo& other) const {
-  return !operator==(other);
-}
-
 bool DownloadDisplay::ProgressInfo::FieldsEqualExceptPercentage(
     const ProgressInfo& other) const {
   return std::tie(download_count, progress_certain) ==

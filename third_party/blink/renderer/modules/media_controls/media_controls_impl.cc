@@ -26,6 +26,8 @@
 
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 
+#include <array>
+
 #include "base/auto_reset.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -117,7 +119,7 @@ constexpr int kMinWidthForOverlayPlayButton = 72;
 
 constexpr int kMinScrubbingMessageWidth = 300;
 
-const char* const kStateCSSClasses[8] = {
+const std::array<const char*, 8> kStateCSSClasses = {
     "state-no-source",                 // kNoSource
     "state-no-metadata",               // kNotLoaded
     "state-loading-metadata-paused",   // kLoadingMetadataPaused

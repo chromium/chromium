@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
@@ -100,6 +101,8 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   void ChangeRequestPriority(RequestPriority priority) override;
 
  private:
+  friend class FakeServiceEndpointResolver;
+
   raw_ptr<Delegate> delegate_;
 
   int start_result_ = ERR_IO_PENDING;
@@ -108,6 +111,8 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   bool endpoints_crypto_ready_ = false;
   ResolveErrorInfo resolve_error_info_;
   RequestPriority priority_ = RequestPriority::IDLE;
+
+  base::WeakPtrFactory<FakeServiceEndpointRequest> weak_ptr_factory_{this};
 };
 
 // A fake HostResolver that implements the ServiceEndpointRequest API using
@@ -127,7 +132,7 @@ class FakeServiceEndpointResolver : public HostResolver {
   // CreateServiceEndpointRequest() consumes the request. You will need to call
   // this method multiple times when you expect multiple
   // CreateServiceEndpointRequest() calls.
-  FakeServiceEndpointRequest* AddFakeRequest();
+  base::WeakPtr<FakeServiceEndpointRequest> AddFakeRequest();
 
   // HostResolver methods:
   void OnShutdown() override;
@@ -210,14 +215,18 @@ class FakeStreamSocket : public MockClientSocket {
   bool WasEverUsed() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
 
-  // Simulate a situation where a connected socket immediately disconnects after
-  // checking IsConnected(). This could happen in the real world.
-  void DisconnectAfterIsConnectedCall();
+  // Simulates a situation where a connected socket disconnects after
+  // IsConnected() is called `count` times. Such situation could happen in the
+  // real world.
+  void DisconnectAfterIsConnectedCall(int count = 1);
 
  private:
   bool is_idle_ = true;
   bool was_ever_used_ = false;
-  bool disconnect_after_is_connected_call_ = false;
+  // When set to a positive value, every IsConnected() call decrements this
+  // counter. After this counter reached zero, IsConnected() uses
+  // `is_connected_override_`.
+  mutable int disconnect_after_is_connected_call_count_ = -1;
   mutable std::optional<bool> is_connected_override_;
   std::optional<SSLInfo> ssl_info_;
 };
@@ -340,8 +349,9 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
 // Convert a ClientSocketPool::GroupId to an HttpStreamKey.
 HttpStreamKey GroupIdToHttpStreamKey(const ClientSocketPool::GroupId& group_id);
 
-// Wait for the `group`'s current AttemptManager completion.
-void WaitForAttemptManagerComplete(HttpStreamPool::Group& group);
+// Wait for the `attempt_manager`'s completion.
+void WaitForAttemptManagerComplete(
+    HttpStreamPool::AttemptManager* attempt_manager);
 
 }  // namespace net
 

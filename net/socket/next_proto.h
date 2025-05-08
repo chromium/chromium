@@ -38,6 +38,10 @@ NET_EXPORT_PRIVATE NextProto NextProtoFromString(std::string_view proto_string);
 
 NET_EXPORT_PRIVATE const char* NextProtoToString(NextProto next_proto);
 
+// Used for histograms.
+NET_EXPORT_PRIVATE const std::string_view NegotiatedProtocolToHistogramSuffix(
+    NextProto next_proto);
+
 }  // namespace net
 
 #endif  // NET_SOCKET_NEXT_PROTO_H_

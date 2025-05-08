@@ -255,6 +255,39 @@ testCtxtParseContent(void) {
 
     return err;
 }
+
+static int
+testNoBlanks(void) {
+    const xmlChar xml[] =
+        "<refentry>\n"
+        "  <refsect1>\n"
+        "    <para>\n"
+        "      Run <command>tester --help</command> for more options.\n"
+        "    </para>\n"
+        "  </refsect1>\n"
+        "</refentry>\n";
+    const xmlChar expect[] =
+        "<?xml version=\"1.0\"?>\n"
+        "<refentry><refsect1><para>\n"
+        "      Run <command>tester --help</command> for more options.\n"
+        "    </para></refsect1></refentry>\n";
+    xmlDocPtr doc;
+    xmlChar *out;
+    int size;
+    int err = 0;
+
+    doc = xmlReadDoc(xml, NULL, NULL, XML_PARSE_NOBLANKS);
+    xmlDocDumpMemory(doc, &out, &size);
+    xmlFreeDoc(doc);
+
+    if (!xmlStrEqual(out, expect)) {
+        fprintf(stderr, "parsing with XML_PARSE_NOBLANKS failed\n");
+        err = 1;
+    }
+    xmlFree(out);
+
+    return err;
+}
 #endif /* LIBXML_OUTPUT_ENABLED */
 
 #ifdef LIBXML_SAX1_ENABLED
@@ -314,7 +347,7 @@ testHugeEncodedChunk(void) {
     xmlBufferPtr buf;
     xmlChar *chunk;
     xmlParserCtxtPtr ctxt;
-    int err, i;
+    int err = 0, i;
 
     /*
      * Test the push parser with a built-in encoding handler like ISO-8859-1
@@ -335,7 +368,8 @@ testHugeEncodedChunk(void) {
     xmlParseChunk(ctxt, (char *) chunk, xmlStrlen(chunk), 0);
     xmlParseChunk(ctxt, NULL, 0, 1);
 
-    err = ctxt->wellFormed ? 0 : 1;
+    if (!ctxt->wellFormed)
+        err = 1;
     xmlFreeDoc(ctxt->myDoc);
     xmlFreeParserCtxt(ctxt);
     xmlFree(chunk);
@@ -365,14 +399,71 @@ testHugeEncodedChunk(void) {
 
     xmlParseChunk(ctxt, (char *) chunk, xmlStrlen(chunk), 1);
 
-    err = ctxt->wellFormed ? 0 : 1;
+    if (!ctxt->wellFormed)
+        err = 1;
     xmlFreeDoc(ctxt->myDoc);
     xmlFreeParserCtxt(ctxt);
     xmlFree(chunk);
 
     return err;
 }
-#endif
+
+static int
+testPushCDataEnd(void) {
+    int err = 0;
+    int k;
+
+    for (k = 0; k < 2; k++) {
+        xmlBufferPtr buf;
+        xmlChar *chunk;
+        xmlParserCtxtPtr ctxt;
+        int i;
+
+        ctxt = xmlCreatePushParserCtxt(NULL, NULL, NULL, 0, NULL);
+        xmlCtxtSetOptions(ctxt, XML_PARSE_NOERROR);
+
+        /*
+         * Push parse text data with ']]>' split across chunks.
+         */
+        buf = xmlBufferCreate();
+        xmlBufferCCat(buf, "<doc>");
+
+        /*
+         * Also test xmlParseCharDataCopmlex
+         */
+        if (k == 0)
+            xmlBufferCCat(buf, "x");
+        else
+            xmlBufferCCat(buf, "\xC3\xA4");
+
+        /*
+         * Create enough data to trigger a "characters" SAX callback.
+         * (XML_PARSER_BIG_BUFFER_SIZE = 300)
+         */
+        for (i = 0; i < 2000; i++)
+            xmlBufferCCat(buf, "x");
+
+        xmlBufferCCat(buf, "]");
+        chunk = xmlBufferDetach(buf);
+        xmlBufferFree(buf);
+
+        xmlParseChunk(ctxt, (char *) chunk, xmlStrlen(chunk), 0);
+        xmlParseChunk(ctxt, "]>xxx</doc>", 11, 1);
+
+        if (ctxt->errNo != XML_ERR_MISPLACED_CDATA_END) {
+            fprintf(stderr, "xmlParseChunk failed to detect CData end: %d\n",
+                    ctxt->errNo);
+            err = 1;
+        }
+
+        xmlFree(chunk);
+        xmlFreeDoc(ctxt->myDoc);
+        xmlFreeParserCtxt(ctxt);
+    }
+
+    return err;
+}
+#endif /* PUSH */
 
 #ifdef LIBXML_HTML_ENABLED
 static int
@@ -416,7 +507,7 @@ testHtmlPushWithEncoding(void) {
         err = 1;
     }
 
-    node = xmlDocGetRootElement(doc)->children->children->children;
+    node = xmlDocGetRootElement(doc)->children->children;
     if (!xmlStrEqual(node->content, BAD_CAST "-\xC3\xA4-")) {
         fprintf(stderr, "testHtmlPushWithEncoding failed\n");
         err = 1;
@@ -492,6 +583,76 @@ testReaderContent(void) {
         err = 1;
     }
     xmlFree(string);
+
+    xmlFreeTextReader(reader);
+    return err;
+}
+
+static int
+testReaderNode(xmlTextReader *reader) {
+    xmlChar *string;
+    int type;
+    int err = 0;
+
+    type = xmlTextReaderNodeType(reader);
+    string = xmlTextReaderReadString(reader);
+
+    if (type == XML_READER_TYPE_ELEMENT) {
+        xmlNodePtr node = xmlTextReaderCurrentNode(reader);
+
+        if ((node->children == NULL) != (string == NULL))
+            err = 1;
+    } else if (type == XML_READER_TYPE_TEXT ||
+               type == XML_READER_TYPE_CDATA ||
+               type == XML_READER_TYPE_WHITESPACE ||
+               type == XML_READER_TYPE_SIGNIFICANT_WHITESPACE) {
+        if (string == NULL)
+            err = 1;
+    } else {
+        if (string != NULL)
+            err = 1;
+    }
+
+    if (err)
+        fprintf(stderr, "xmlTextReaderReadString failed for %d\n", type);
+
+    xmlFree(string);
+
+    return err;
+}
+
+static int
+testReader(void) {
+    xmlTextReader *reader;
+    const xmlChar *xml = BAD_CAST
+        "<d>\n"
+        "  x<e a='v'>y</e><f>z</f>\n"
+        "  <![CDATA[cdata]]>\n"
+        "  <!-- comment -->\n"
+        "  <?pi content?>\n"
+        "  <empty/>\n"
+        "</d>";
+    int err = 0;
+
+    reader = xmlReaderForDoc(xml, NULL, NULL, 0);
+
+    while (xmlTextReaderRead(reader) > 0) {
+        if (testReaderNode(reader) > 0) {
+            err = 1;
+            break;
+        }
+
+        if (xmlTextReaderMoveToFirstAttribute(reader) > 0) {
+            do {
+                if (testReaderNode(reader) > 0) {
+                    err = 1;
+                    break;
+                }
+            } while (xmlTextReaderMoveToNextAttribute(reader) > 0);
+
+            xmlTextReaderMoveToElement(reader);
+        }
+    }
 
     xmlFreeTextReader(reader);
     return err;
@@ -749,11 +910,163 @@ testBuildRelativeUri(void) {
     return err;
 }
 
+#if defined(_WIN32) || defined(__CYGWIN__)
+static int
+testWindowsUri(void) {
+    const char *url = "c:/a%20b/file.txt";
+    xmlURIPtr uri;
+    xmlChar *res;
+    int err = 0;
+    int i;
+
+    static const xmlRelativeUriTest tests[] = {
+        {
+            "c:/a%20b/file.txt",
+            "base.xml",
+            "c:/a b/file.txt"
+        }, {
+            "file:///c:/a%20b/file.txt",
+            "base.xml",
+            "file:///c:/a%20b/file.txt"
+        }, {
+            "Z:/a%20b/file.txt",
+            "http://example.com/",
+            "Z:/a b/file.txt"
+        }, {
+            "a%20b/b1/c1",
+            "C:/a/b2/c2",
+            "C:/a/b2/a b/b1/c1"
+        }, {
+            "a%20b/b1/c1",
+            "\\a\\b2\\c2",
+            "/a/b2/a b/b1/c1"
+        }, {
+            "a%20b/b1/c1",
+            "\\\\?\\a\\b2\\c2",
+            "//?/a/b2/a b/b1/c1"
+        }, {
+            "a%20b/b1/c1",
+            "\\\\\\\\server\\b2\\c2",
+            "//server/b2/a b/b1/c1"
+        }
+    };
+
+    uri = xmlParseURI(url);
+    if (uri == NULL) {
+        fprintf(stderr, "xmlParseURI failed\n");
+        err = 1;
+    } else {
+        if (uri->scheme != NULL) {
+            fprintf(stderr, "invalid scheme: %s\n", uri->scheme);
+            err = 1;
+        }
+        if (uri->path == NULL || strcmp(uri->path, "c:/a b/file.txt") != 0) {
+            fprintf(stderr, "invalid path: %s\n", uri->path);
+            err = 1;
+        }
+
+        xmlFreeURI(uri);
+    }
+
+    for (i = 0; (size_t) i < sizeof(tests) / sizeof(tests[0]); i++) {
+        const xmlRelativeUriTest *test = tests + i;
+
+        res = xmlBuildURI(BAD_CAST test->uri, BAD_CAST test->base);
+        if (res == NULL || !xmlStrEqual(res, BAD_CAST test->result)) {
+            fprintf(stderr, "xmlBuildURI failed uri=%s base=%s "
+                    "result=%s expected=%s\n", test->uri, test->base,
+                    res, test->result);
+            err = 1;
+        }
+        xmlFree(res);
+    }
+
+    return err;
+}
+#endif /* WIN32 */
+
+#if defined(LIBXML_ICONV_ENABLED) || defined(LIBXML_ICU_ENABLED)
+static int
+testTruncatedMultiByte(void) {
+    const char xml[] =
+        "<?xml version=\"1.0\" encoding=\"EUC-JP\"?>\n"
+        "<doc/>\xC3";
+#ifdef LIBXML_HTML_ENABLED
+    const char html[] =
+        "<meta charset=\"EUC-JP\">\n"
+        "<div/>\xC3";
+#endif
+    xmlDocPtr doc;
+    const xmlError *error;
+    int err = 0;
+
+    xmlResetLastError();
+    doc = xmlReadDoc(BAD_CAST xml, NULL, NULL, XML_PARSE_NOERROR);
+    error = xmlGetLastError();
+    if (error == NULL || error->code != XML_ERR_INVALID_ENCODING) {
+        fprintf(stderr, "xml, pull: expected XML_ERR_INVALID_ENCODING\n");
+        err = 1;
+    }
+    xmlFreeDoc(doc);
+
+#ifdef LIBXML_HTML_ENABLED
+    xmlResetLastError();
+    doc = htmlReadDoc(BAD_CAST html, NULL, NULL, XML_PARSE_NOERROR);
+    error = xmlGetLastError();
+    if (error == NULL || error->code != XML_ERR_INVALID_ENCODING) {
+        fprintf(stderr, "html, pull: expected XML_ERR_INVALID_ENCODING\n");
+        err = 1;
+    }
+    xmlFreeDoc(doc);
+#endif /* LIBXML_HTML_ENABLED */
+
+#ifdef LIBXML_PUSH_ENABLED
+    {
+        xmlParserCtxtPtr ctxt;
+
+        ctxt = xmlCreatePushParserCtxt(NULL, NULL, NULL, 0, NULL);
+        xmlCtxtSetOptions(ctxt, XML_PARSE_NOERROR);
+
+        xmlParseChunk(ctxt, xml, sizeof(xml) - 1, 0);
+        xmlParseChunk(ctxt, "", 0, 1);
+
+        if (ctxt->errNo != XML_ERR_INVALID_ENCODING) {
+            fprintf(stderr, "xml, push: expected XML_ERR_INVALID_ENCODING\n");
+            err = 1;
+        }
+
+        xmlFreeDoc(ctxt->myDoc);
+        xmlFreeParserCtxt(ctxt);
+
+#ifdef LIBXML_HTML_ENABLED
+        ctxt = htmlCreatePushParserCtxt(NULL, NULL, NULL, 0, NULL,
+                                        XML_CHAR_ENCODING_NONE);
+        xmlCtxtSetOptions(ctxt, XML_PARSE_NOERROR);
+
+        htmlParseChunk(ctxt, html, sizeof(html) - 1, 0);
+        htmlParseChunk(ctxt, "", 0, 1);
+
+        if (ctxt->errNo != XML_ERR_INVALID_ENCODING) {
+            fprintf(stderr, "html, push: expected XML_ERR_INVALID_ENCODING\n");
+            err = 1;
+        }
+
+        xmlFreeDoc(ctxt->myDoc);
+        htmlFreeParserCtxt(ctxt);
+#endif /* LIBXML_HTML_ENABLED */
+    }
+#endif /* LIBXML_PUSH_ENABLED */
+
+    return err;
+}
+#endif /* iconv || icu */
+
 static int charEncConvImplError;
 
-static int
-rot13Convert(unsigned char *out, int *outlen,
-             const unsigned char *in, int *inlen, void *vctxt) {
+static xmlCharEncError
+rot13Convert(void *vctxt, unsigned char *out, int *outlen,
+             const unsigned char *in, int *inlen,
+             int flush ATTRIBUTE_UNUSED) {
     int *ctxt = vctxt;
     int inSize = *inlen;
     int outSize = *outlen;
@@ -783,27 +1096,23 @@ rot13ConvCtxtDtor(void *vctxt) {
     xmlFree(vctxt);
 }
 
-static int
+static xmlParserErrors
 rot13ConvImpl(void *vctxt ATTRIBUTE_UNUSED, const char *name,
-              xmlCharEncConverter *conv) {
+              xmlCharEncFlags flags, xmlCharEncodingHandler **out) {
     int *inputCtxt;
 
-    if (strcmp(name, "rot13") != 0) {
-        fprintf(stderr, "rot13ConvImpl received wrong name\n");
-        charEncConvImplError = 1;
+    if (strcmp(name, "rot13") != 0)
+        return xmlCreateCharEncodingHandler(name, flags, NULL, NULL, out);
 
+    if (flags & XML_ENC_OUTPUT)
         return XML_ERR_UNSUPPORTED_ENCODING;
-    }
 
-    conv->input = rot13Convert;
-    conv->output = rot13Convert;
-    conv->ctxtDtor = rot13ConvCtxtDtor;
-    
     inputCtxt = xmlMalloc(sizeof(*inputCtxt));
     *inputCtxt = 13;
-    conv->inputCtxt = inputCtxt;
 
-    return XML_ERR_OK;
+    return xmlCharEncNewCustomHandler(name, rot13Convert, NULL,
+                                      rot13ConvCtxtDtor, inputCtxt, NULL,
+                                      out);
 }
 
 static int
@@ -847,6 +1156,7 @@ main(void) {
 #endif
 #ifdef LIBXML_OUTPUT_ENABLED
     err |= testCtxtParseContent();
+    err |= testNoBlanks();
 #endif
 #ifdef LIBXML_SAX1_ENABLED
     err |= testBalancedChunk();
@@ -854,6 +1164,7 @@ main(void) {
 #ifdef LIBXML_PUSH_ENABLED
     err |= testHugePush();
     err |= testHugeEncodedChunk();
+    err |= testPushCDataEnd();
 #endif
 #ifdef LIBXML_HTML_ENABLED
     err |= testHtmlIds();
@@ -864,6 +1175,7 @@ main(void) {
 #ifdef LIBXML_READER_ENABLED
     err |= testReaderEncoding();
     err |= testReaderContent();
+    err |= testReader();
 #ifdef LIBXML_XINCLUDE_ENABLED
     err |= testReaderXIncludeError();
 #endif
@@ -872,6 +1184,12 @@ main(void) {
     err |= testWriterClose();
 #endif
     err |= testBuildRelativeUri();
+#if defined(_WIN32) || defined(__CYGWIN__)
+    err |= testWindowsUri();
+#endif
+#if defined(LIBXML_ICONV_ENABLED) || defined(LIBXML_ICU_ENABLED)
+    err |= testTruncatedMultiByte();
+#endif
     err |= testCharEncConvImpl();
 
     return err;

@@ -43,7 +43,10 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
-  deps = [ "//third_party/rust/windows_link/v0_1:lib" ]
+  deps = []
+  if (is_win) {
+    deps += [ "//third_party/rust/windows_link/v0_1:lib" ]
+  }
   features = [ "std" ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates

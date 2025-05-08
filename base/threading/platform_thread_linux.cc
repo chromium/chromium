@@ -52,7 +52,6 @@ FilePath ThreadTypeToCgroupDirectory(const FilePath& cgroup_filepath,
   switch (thread_type) {
     case ThreadType::kBackground:
     case ThreadType::kUtility:
-    case ThreadType::kResourceEfficient:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("non-urgent"));
     case ThreadType::kDefault:
       return cgroup_filepath;
@@ -96,7 +95,6 @@ const ThreadPriorityToNiceValuePairForTest
         {ThreadPriorityForTest::kRealtimeAudio, -10},
         {ThreadPriorityForTest::kDisplay, -8},
         {ThreadPriorityForTest::kNormal, 0},
-        {ThreadPriorityForTest::kResourceEfficient, 1},
         {ThreadPriorityForTest::kUtility, 2},
         {ThreadPriorityForTest::kBackground, 10},
 };
@@ -107,9 +105,9 @@ const ThreadPriorityToNiceValuePairForTest
 // The uniqueness of the nice value per-type helps to change and restore the
 // scheduling params of threads when their process toggles between FG and BG.
 const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
-    {ThreadType::kBackground, 10},       {ThreadType::kUtility, 2},
-    {ThreadType::kResourceEfficient, 1}, {ThreadType::kDefault, 0},
-    {ThreadType::kDisplayCritical, -8},  {ThreadType::kRealtimeAudio, -10},
+    {ThreadType::kBackground, 10},     {ThreadType::kUtility, 2},
+    {ThreadType::kDefault, 0},         {ThreadType::kDisplayCritical, -8},
+    {ThreadType::kRealtimeAudio, -10},
 };
 
 bool CanSetThreadTypeToRealtimeAudio() {

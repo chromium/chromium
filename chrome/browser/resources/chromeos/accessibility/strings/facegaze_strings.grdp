@@ -177,4 +177,13 @@
   <message name="IDS_FACEGAZE_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze is active. This is meant to be informational text that is shown when nothing else populates the bubble UI.">
     Face control active
   </message>
+  <message name="IDS_FACEGAZE_INVALID_RESULT" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze couldn't process the most recent camera frame.">
+    Can’t access camera. Turn on camera and make sure it isn’t blocked.
+  </message>
+  <message name="IDS_FACEGAZE_CAMERA_MUTED" desc="A message displayed in the FaceGaze bubble UI informing the user that the camera is temporarily disconnected.">
+    Camera unavailable. Make sure you are signed in and camera is on.
+  </message>
+  <message name="IDS_FACEGAZE_CONNECT_TO_CAMERA" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze couldn't connect to the camera and that it will be turned off soon.">
+    Trying to connect to camera. Face control will turn off in <ph name="seconds">$1<ex>10</ex></ph> seconds.
+  </message>
 </grit-part>

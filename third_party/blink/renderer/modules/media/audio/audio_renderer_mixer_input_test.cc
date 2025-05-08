@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
 
 #include <stddef.h>
+
+#include <array>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -124,7 +122,7 @@ class AudioRendererMixerInputTest : public testing::Test,
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   media::AudioParameters audio_parameters_;
-  std::unique_ptr<AudioRendererMixer> mixers_[2];
+  std::array<std::unique_ptr<AudioRendererMixer>, 2> mixers_;
   scoped_refptr<AudioRendererMixerInput> mixer_input_;
   std::unique_ptr<media::FakeAudioRenderCallback> fake_callback_;
   std::unique_ptr<media::AudioBus> audio_bus_;

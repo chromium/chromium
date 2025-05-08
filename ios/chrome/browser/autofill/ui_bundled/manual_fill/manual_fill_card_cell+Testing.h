@@ -17,7 +17,7 @@
 // The part of the cell's accessibility label that is used to indicate the
 // 1-based index at which the payment method represented by this item is
 // positioned in the list of payment methods to show.
-@property(nonatomic, strong, readonly) NSString* cellIndexAccessibilityLabel;
+@property(nonatomic, copy, readonly) NSString* cellIndexAccessibilityLabel;
 
 @end
 

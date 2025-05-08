@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/intelligence/enhanced_calendar/constants/error_strings.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
@@ -19,15 +20,15 @@ namespace {
 // The string template to use for parsing the end and start date/time.
 NSString* kDateTimeTemplate = @"dd/MM/yyyy HH:mm";
 
-// The string template to use for the calendar event description. This should be
-// equivalent to:
-// ```
-// {eventSummaryString}
-//
-// Location: {locationString}
-// URL: {URLString}
-// ```
-constexpr std::string kCalendarEventDescriptionTemplate = "{}\n\n{} {}\n{} {}";
+// String template to use for adding additional information to the calendar
+// event summary.
+constexpr std::string kCalendarEventSummaryAdditionalInfoTemplate = "\n{} {}";
+
+// The string template to use for the calendar event summary.
+constexpr std::string kCalendarEventSummaryTemplate = "{}\n";
+
+// The string template to use for the calendar event title.
+constexpr std::string kCalendarEventTitleTemplate = "{} {}";
 
 }  // namespace
 
@@ -107,8 +108,16 @@ constexpr std::string kCalendarEventDescriptionTemplate = "{}\n\n{} {}\n{} {}";
     (ai::mojom::EnhancedCalendarResponseResultPtr)responseResult {
   // Present the "add to calendar" UI with default values if the response is an
   // error.
-  // TODO (crbug.com/410809676) : Handle dismissing the UI.
   if (responseResult->is_error()) {
+    std::string error = responseResult->get_error();
+
+    // If the error is due to account change, dismiss the UI.
+    if (error == ai::GetEnhancedCalendarErrorString(
+                     ai::EnhancedCalendarError::kPrimaryAccountChangeError)) {
+      [_delegate cancelRequestsAndDismissViewController:self];
+      return;
+    }
+
     [_delegate presentAddToCalendar:self config:_enhancedCalendarConfig];
     return;
   }
@@ -146,35 +155,24 @@ constexpr std::string kCalendarEventDescriptionTemplate = "{}\n\n{} {}\n{} {}";
     _enhancedCalendarConfig.calendarEventConfig.endDateTime = endDateTime;
   }
 
-  // Set the title.
-  _enhancedCalendarConfig.calendarEventConfig.eventTitle =
-      base::SysUTF8ToNSString(enhancedCalendarResponse.event_title());
+  // The expected string template for the calendar event should be equivalent
+  // to:
+  // ```
+  // {eventSummaryString}
+  //
+  // Location: {optional locationString}
+  // URL: {URLString}
+  // Confirmation code: {optional confirmationCode}
+  // ```
 
-  // Set the templated description.
-  _enhancedCalendarConfig.calendarEventConfig.eventDescription =
-      base::SysUTF8ToNSString(
-          std::format(kCalendarEventDescriptionTemplate,
-                      enhancedCalendarResponse.event_summary(),
-                      l10n_util::GetStringUTF8(
-                          IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_LOCATION),
-                      enhancedCalendarResponse.event_location(),
-                      l10n_util::GetStringUTF8(
-                          IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_URL),
-                      _enhancedCalendarConfig.URL));
-
-  // Optionally add the confirmation code if it exists.
-  NSString* confirmationCode = base::SysUTF8ToNSString(
-      enhancedCalendarResponse.event_confirmation_code());
-  if (confirmationCode) {
-    _enhancedCalendarConfig.calendarEventConfig
-        .eventDescription = [_enhancedCalendarConfig.calendarEventConfig
-                                 .eventDescription
-        stringByAppendingFormat:
-            @"\n%@ %@",
-            l10n_util::GetNSString(
-                IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_CONFIRMATION_CODE),
-            confirmationCode];
-  }
+  _enhancedCalendarConfig.calendarEventConfig.eventTitle = [self
+      formattedCalendarEventTitle:enhancedCalendarResponse.event_title()
+                    isEventBooked:enhancedCalendarResponse.is_event_booked()];
+  _enhancedCalendarConfig.calendarEventConfig.eventDescription = [self
+      formattedCalendarEventSummary:enhancedCalendarResponse.event_summary()
+                      eventLocation:enhancedCalendarResponse.event_location()
+                   confirmationCode:enhancedCalendarResponse
+                                        .event_confirmation_code()];
 
   // Set `isAllDay`.
   _enhancedCalendarConfig.calendarEventConfig.isAllDay =
@@ -196,6 +194,73 @@ constexpr std::string kCalendarEventDescriptionTemplate = "{}\n\n{} {}\n{} {}";
       [NSString stringWithFormat:@"%@ %@", base::SysUTF8ToNSString(dateString),
                                  base::SysUTF8ToNSString(timeString)];
   return [dateFormatter dateFromString:dateTimeString];
+}
+
+// Get optional location field.
+- (NSString*)optionalLocationField:(std::string)eventLocation {
+  if (eventLocation.empty()) {
+    return @"";
+  }
+
+  return base::SysUTF8ToNSString(
+      std::format(kCalendarEventSummaryAdditionalInfoTemplate,
+                  l10n_util::GetStringUTF8(
+                      IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_LOCATION),
+                  eventLocation));
+}
+
+// Get description URL field.
+- (NSString*)descriptionURL {
+  CHECK(!_enhancedCalendarConfig.URL.empty());
+
+  return base::SysUTF8ToNSString(std::format(
+      kCalendarEventSummaryAdditionalInfoTemplate,
+      l10n_util::GetStringUTF8(IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_URL),
+      _enhancedCalendarConfig.URL));
+}
+
+// Get optional confirmation code field.
+- (NSString*)optionalConfirmationCodeField:(std::string)confirmationCode {
+  if (confirmationCode.empty()) {
+    return @"";
+  }
+
+  return base::SysUTF8ToNSString(std::format(
+      kCalendarEventSummaryAdditionalInfoTemplate,
+      l10n_util::GetStringUTF8(
+          IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_CONFIRMATION_CODE),
+      confirmationCode));
+}
+
+// Get the event title.
+- (NSString*)formattedCalendarEventTitle:(std::string)eventTitle
+                           isEventBooked:(BOOL)isEventBooked {
+  // Add an optional `BOOKED` prefix before the title of the event.
+  if (!isEventBooked) {
+    return base::SysUTF8ToNSString(eventTitle);
+  }
+
+  std::string prefix = l10n_util::GetStringUTF8(
+      IDS_IOS_ENHANCED_CALENDAR_EVENT_TITLE_BOOKED_PREFIX);
+  return base::SysUTF8ToNSString(
+      std::format(kCalendarEventTitleTemplate, prefix, eventTitle));
+}
+
+// Get the event summary.
+- (NSString*)formattedCalendarEventSummary:(std::string)eventSummary
+                             eventLocation:(std::string)eventLocation
+                          confirmationCode:(std::string)confirmationCode {
+  // Set the templated description.
+  NSString* summary = base::SysUTF8ToNSString(
+      std::format(kCalendarEventSummaryTemplate, eventSummary));
+
+  summary = [summary
+      stringByAppendingString:[self optionalLocationField:eventLocation]];
+  summary = [summary stringByAppendingString:
+                         [self optionalConfirmationCodeField:confirmationCode]];
+  summary = [summary stringByAppendingString:[self descriptionURL]];
+
+  return summary;
 }
 
 @end

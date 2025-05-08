@@ -25,14 +25,17 @@ int GetFrameThicknessFromDisplayId(int64_t id) {
 
 }  // namespace
 
+int GetResizeFrameOnlyThickness(HMONITOR monitor) {
+  return display::win::GetScreenWin()->GetSystemMetricsForMonitor(
+      monitor, SM_CXSIZEFRAME);
+}
+
 int GetFrameThickness(HMONITOR monitor) {
   // On Windows 10 the visible frame border is one pixel thick, but there is
   // some additional non-visible space: SM_CXSIZEFRAME (the resize handle)
   // and SM_CXPADDEDBORDER (additional border space that isn't part of the
   // resize handle).
-  const int resize_frame_thickness =
-      display::win::GetScreenWin()->GetSystemMetricsForMonitor(monitor,
-                                                               SM_CXSIZEFRAME);
+  const int resize_frame_thickness = GetResizeFrameOnlyThickness(monitor);
   const int padding_thickness =
       display::win::GetScreenWin()->GetSystemMetricsForMonitor(
           monitor, SM_CXPADDEDBORDER);

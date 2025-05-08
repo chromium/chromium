@@ -64,6 +64,67 @@ TEST(XEventTranslationTest, KeyEventDomKeyExtraction) {
   EXPECT_EQ(ui::DomKey::ENTER, copy.GetDomKey());
 }
 
+// Ensure KeyEvent repeat flag is set when XI2 key event repeat flag is set.
+TEST(XEventTranslationTest, KeyEventXI2EventRepeat) {
+  ScopedXI2Event scoped_xev;
+  // deviceid of XI2 key event must match that of virtual core keyboard in
+  // x11::TouchFactory to be processed.
+  scoped_xev.InitGenericKeyEvent(/*deviceid=*/3, /*sourceid=*/0,
+                                 EventType::kKeyPressed, KeyboardCode::VKEY_A,
+                                 EF_NONE);
+  x11::Event* xev = scoped_xev;
+  auto* xievent = xev->As<x11::Input::DeviceEvent>();
+
+  // Repeat flag is not set at first.
+  auto non_repeat_key_event = ui::BuildKeyEventFromXEvent(*xev);
+  ASSERT_TRUE(non_repeat_key_event);
+  EXPECT_FALSE(non_repeat_key_event->is_repeat());
+
+  // Now set repeat flag on XI2 key event.
+  xievent->flags = x11::Input::KeyEventFlags::KeyRepeat;
+
+  auto repeat_key_event = ui::BuildKeyEventFromXEvent(*xev);
+  ASSERT_TRUE(repeat_key_event);
+  EXPECT_TRUE(repeat_key_event->is_repeat());
+}
+
+// Ensure KeyEvent::Properties is properly set when XI2 key events are used.
+TEST(XEventTranslationTest, KeyEventXI2EventPropertiesSet) {
+  ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
+  ScopedXI2Event scoped_xev;
+  // deviceid of XI2 key event must match that of virtual core keyboard in
+  // x11::TouchFactory to be processed.
+  scoped_xev.InitGenericKeyEvent(/*deviceid=*/3, /*sourceid=*/0,
+                                 EventType::kKeyPressed, KeyboardCode::VKEY_A,
+                                 EF_NONE);
+
+  x11::Event* xev = scoped_xev;
+  auto* connection = x11::Connection::Get();
+  // Set keyboard group.
+  auto* xievent = xev->As<x11::Input::DeviceEvent>();
+  xievent->group.base = 2;
+  xievent->group.effective = 2;
+
+  auto keyev = ui::BuildKeyEventFromXEvent(*xev);
+  ASSERT_TRUE(keyev);
+
+  auto* properties = keyev->properties();
+  ASSERT_TRUE(properties);
+  EXPECT_FALSE(properties->empty());
+
+  // Ensure hardware keycode and keyboard group are properly set.
+  auto hw_keycode_it = properties->find(ui::kPropertyKeyboardHwKeyCode);
+  EXPECT_NE(hw_keycode_it, properties->end());
+  EXPECT_EQ(1u, hw_keycode_it->second.size());
+  EXPECT_EQ(static_cast<uint8_t>(connection->KeysymToKeycode(XK_a)),
+            hw_keycode_it->second[0]);
+
+  auto kbd_group_it = properties->find(ui::kPropertyKeyboardGroup);
+  EXPECT_NE(kbd_group_it, properties->end());
+  EXPECT_EQ(1u, kbd_group_it->second.size());
+  EXPECT_EQ(2u, kbd_group_it->second[0]);
+}
+
 // Ensure KeyEvent::Properties is properly set regardless X11 build config is
 // in place. This prevents regressions such as crbug.com/1047999.
 TEST(XEventTranslationTest, KeyEventXEventPropertiesSet) {
@@ -81,10 +142,10 @@ TEST(XEventTranslationTest, KeyEventXEventPropertiesSet) {
   xev->As<x11::KeyEvent>()->state = static_cast<x11::KeyButMask>(state);
 
   auto keyev = ui::BuildKeyEventFromXEvent(*xev);
-  EXPECT_TRUE(keyev);
+  ASSERT_TRUE(keyev);
 
   auto* properties = keyev->properties();
-  EXPECT_TRUE(properties);
+  ASSERT_TRUE(properties);
   EXPECT_EQ(4u, properties->size());
 
   // Ensure hardware keycode, keyboard group and IME flag properties are

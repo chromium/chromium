@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -250,7 +251,7 @@ FileTransferAnalysisDelegate::Create(
 }
 
 // static
-void FileTransferAnalysisDelegate::SetFactorForTesting(
+void FileTransferAnalysisDelegate::SetFactoryForTesting(
     FileTransferAnalysisDelegateFactory factory) {
   GetFactoryStorage() = factory;
 }
@@ -429,6 +430,10 @@ const AnalysisSettings& FileTransferAnalysisDelegate::settings() const {
   return settings_;
 }
 
+signin::IdentityManager* FileTransferAnalysisDelegate::identity_manager() const {
+  return IdentityManagerFactory::GetForProfile(profile_);
+}
+
 int FileTransferAnalysisDelegate::user_action_requests_count() const {
   return scanning_urls_.size();
 }
@@ -455,6 +460,12 @@ const GURL& FileTransferAnalysisDelegate::tab_url() const {
 
 ContentAnalysisRequest::Reason FileTransferAnalysisDelegate::reason() const {
   return ContentAnalysisRequest::UNKNOWN;
+}
+
+google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+FileTransferAnalysisDelegate::referrer_chain() const {
+  return google::protobuf::RepeatedPtrField<
+      ::safe_browsing::ReferrerChainEntry>();
 }
 
 void FileTransferAnalysisDelegate::OnGotFileURLs(

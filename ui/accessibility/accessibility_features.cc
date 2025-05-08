@@ -241,7 +241,7 @@ bool IsAccessibilityMouseKeysEnabled() {
 
 BASE_FEATURE(kAccessibilityCaptionsOnBrailleDisplay,
              "CaptionsOnBrailleDisplay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityCaptionsOnBrailleDisplayEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityCaptionsOnBrailleDisplay);
@@ -476,7 +476,7 @@ bool IsBlockRootWindowAccessibleNameChangeEventEnabled() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kWasmTtsComponentUpdaterEnabled,
              "WasmTtsComponentUpdaterEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsWasmTtsComponentUpdaterEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
          base::FeatureList::IsEnabled(

@@ -31,7 +31,6 @@ class ImageDecoderWrapper {
 
   // Returns true if the decode succeeded.
   bool Decode(ImageDecoderFactory* factory,
-              wtf_size_t* frame_count,
               bool* has_alpha);
 
   // Indicates that the decode failed due to a corrupt image.

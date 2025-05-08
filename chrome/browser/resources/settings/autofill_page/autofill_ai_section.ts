@@ -31,6 +31,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
@@ -215,6 +216,15 @@ export class SettingsAutofillAiSectionElement extends
     if (this.ineligibleUser) {
       this.set('optedIn_.value', false);
     }
+  }
+
+  /**
+   * Whether an info bullet regarding logging is shown. Autofill Ai only shows
+   * logging behaviour information for enterprise clients who have either the
+   * feature disabled or just logging disabled.
+   */
+  private showLoggingInfoBullet_(pref: number) {
+    return pref !== ModelExecutionEnterprisePolicyValue.ALLOW;
   }
 
   /**

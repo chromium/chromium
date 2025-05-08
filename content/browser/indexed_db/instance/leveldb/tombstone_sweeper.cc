@@ -12,6 +12,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -101,12 +102,12 @@ bool LevelDbTombstoneSweeper::RequiresMetadata() const {
 }
 
 void LevelDbTombstoneSweeper::SetMetadata(
-    const std::vector<IndexedDBDatabaseMetadata>* metadata) {
+    const std::vector<std::unique_ptr<IndexedDBDatabaseMetadata>>* metadata) {
   database_metadata_ = metadata;
   total_indices_ = 0;
-  for (const auto& db : *metadata) {
-    for (const auto& os_pair : db.object_stores) {
-      total_indices_ += os_pair.second.indexes.size();
+  for (const std::unique_ptr<IndexedDBDatabaseMetadata>& db : *metadata) {
+    for (const auto& [id, object_store] : db->object_stores) {
+      total_indices_ += object_store.indexes.size();
     }
   }
 }
@@ -192,15 +193,15 @@ LevelDbTombstoneSweeper::SweepStatus LevelDbTombstoneSweeper::DoSweep(
   if (!sweep_state_.database_it) {
     size_t start_database_idx = static_cast<size_t>(
         sweep_state_.start_database_seed % database_metadata_->size());
-    sweep_state_.database_it =
-        WrappingIterator<IndexedDBDatabaseMetadataVector>(
-            database_metadata_.get(), start_database_idx);
+    sweep_state_.database_it.emplace(database_metadata_.get(),
+                                     start_database_idx);
   }
   // Loop conditions facilitate starting at random index.
-  for (; sweep_state_.database_it.value().IsValid();
-       sweep_state_.database_it.value().Next()) {
-    const IndexedDBDatabaseMetadata& database =
-        sweep_state_.database_it.value().Value();
+  for (; sweep_state_.database_it->IsValid();
+       sweep_state_.database_it->Next()) {
+    const blink::IndexedDBDatabaseMetadata& database =
+        *sweep_state_.database_it->Value();
+
     if (database.object_stores.empty()) {
       continue;
     }
@@ -208,14 +209,14 @@ LevelDbTombstoneSweeper::SweepStatus LevelDbTombstoneSweeper::DoSweep(
     if (!sweep_state_.object_store_it) {
       size_t start_object_store_idx = static_cast<size_t>(
           sweep_state_.start_object_store_seed % database.object_stores.size());
-      sweep_state_.object_store_it = WrappingIterator<ObjectStoreMetadataMap>(
-          &database.object_stores, start_object_store_idx);
+      sweep_state_.object_store_it.emplace(&database.object_stores,
+                                           start_object_store_idx);
     }
     // Loop conditions facilitate starting at random index.
-    for (; sweep_state_.object_store_it.value().IsValid();
-         sweep_state_.object_store_it.value().Next()) {
+    for (; sweep_state_.object_store_it->IsValid();
+         sweep_state_.object_store_it->Next()) {
       const IndexedDBObjectStoreMetadata& object_store =
-          sweep_state_.object_store_it.value().Value().second;
+          sweep_state_.object_store_it->Value().second;
 
       if (object_store.indexes.empty()) {
         continue;
@@ -228,13 +229,15 @@ LevelDbTombstoneSweeper::SweepStatus LevelDbTombstoneSweeper::DoSweep(
             &object_store.indexes, start_index_idx);
       }
       // Loop conditions facilitate starting at random index.
-      for (; sweep_state_.index_it.value().IsValid();
-           sweep_state_.index_it.value().Next()) {
+      for (; sweep_state_.index_it->IsValid(); sweep_state_.index_it->Next()) {
         const IndexedDBIndexMetadata& index =
-            sweep_state_.index_it.value().Value().second;
+            sweep_state_.index_it->Value().second;
 
+        int64_t database_id =
+            reinterpret_cast<const BackingStore::DatabaseMetadata*>(&database)
+                ->id.value();
         bool can_continue =
-            IterateIndex(database.id, object_store.id, index, &sweep_status,
+            IterateIndex(database_id, object_store.id, index, &sweep_status,
                          leveldb_status, &round_iterations);
         if (!can_continue) {
           return sweep_status;
@@ -256,7 +259,7 @@ bool LevelDbTombstoneSweeper::IterateIndex(
     int* round_iterations) {
   // If the sweeper exited early from an index scan, continue where it left off.
   if (sweep_state_.index_it_key) {
-    iterator_->Seek(sweep_state_.index_it_key.value().Encode());
+    iterator_->Seek(sweep_state_.index_it_key->Encode());
     if (!ShouldContinueIteration(sweep_status, leveldb_status,
                                  round_iterations)) {
       return false;
@@ -285,7 +288,7 @@ bool LevelDbTombstoneSweeper::IterateIndex(
     sweep_state_.index_it_key.emplace(IndexDataKey());
     if (!IndexDataKey::Decode(&index_key_str,
                               &sweep_state_.index_it_key.value()) ||
-        sweep_state_.index_it_key.value().IndexId() != index.id) {
+        sweep_state_.index_it_key->IndexId() != index.id) {
       break;
     }
 

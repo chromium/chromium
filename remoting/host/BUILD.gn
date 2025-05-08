@@ -563,14 +563,13 @@ static_library("common") {
 
   if (is_linux) {
     sources += [
-      "host_utmp_logger.cc",
-      "host_utmp_logger.h",
+      "host_wtmpdb_logger.cc",
+      "host_wtmpdb_logger.h",
     ]
 
-    libs += [
-      "utempter",
-      "util",
-    ]
+    libs += [ "util" ]
+
+    deps += [ "//sql" ]
   }
 
   if (is_linux) {
@@ -1207,13 +1206,13 @@ if (enable_me2me_host) {
         "//remoting/host/mac:host_service_main",
       ]
     } else {
-      deps += [
-        "//remoting/host/crash:crash_uploader_main",
-        "//remoting/host/remote_open_url:main",
-      ]
+      deps += [ "//remoting/host/remote_open_url:main" ]
     }
     if (is_win) {
-      deps += [ "//remoting/host/security_key:main" ]
+      deps += [
+        "//remoting/host/crash:crash_uploader_main",
+        "//remoting/host/security_key:main",
+      ]
     }
   }
 

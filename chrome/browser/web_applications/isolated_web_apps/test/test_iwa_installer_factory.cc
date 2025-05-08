@@ -70,6 +70,7 @@ std::unique_ptr<IwaInstaller> TestIwaInstallerFactory::CreateIwaInstaller(
   return std::make_unique<IwaInstaller>(
       std::move(install_options), install_source_type,
       std::move(url_loader_factory), std::move(install_command_wrapper), log,
+      provider,
       base::BindOnce(
           [](TestIwaInstallerFactory* installer_instance,
              IwaInstaller::ResultCallback callback, webapps::AppId app_id,

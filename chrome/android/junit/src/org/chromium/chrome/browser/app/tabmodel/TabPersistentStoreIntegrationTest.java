@@ -85,7 +85,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @LooperMode(Mode.PAUSED)
 @EnableFeatures({ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID})
 @DisableFeatures({
-    ChromeFeatureList.ANDROID_TAB_DECLUTTER,
     ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH,
     ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY
 })

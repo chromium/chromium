@@ -16,12 +16,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
@@ -45,6 +45,7 @@ import org.chromium.url.GURL;
  * Represents creator tab content and the toolbar, which can be included inside the bottom sheet.
  * This is based on the implementation of bottombar/ephemeraltab/EphemeralTabSheetContent.java.
  */
+@NullMarked
 public class CreatorTabSheetContent implements BottomSheetContent {
     /**
      * The base duration of the settling animation of the sheet. 218 ms is a spec for material
@@ -66,11 +67,11 @@ public class CreatorTabSheetContent implements BottomSheetContent {
     private ViewGroup mToolbarView;
     private ViewGroup mSheetContentView;
 
-    private WebContents mWebContents;
-    private ContentView mWebContentView;
+    private @Nullable WebContents mWebContents;
+    private @Nullable ContentView mWebContentView;
     private ThinWebView mThinWebView;
     private FadingShadowView mShadow;
-    private Drawable mCurrentFavicon;
+    private @Nullable Drawable mCurrentFavicon;
     private ImageView mFaviconView;
 
     /**
@@ -109,7 +110,9 @@ public class CreatorTabSheetContent implements BottomSheetContent {
      * @param delegate The {@link WebContentsDelegateAndroid} that handles requests on WebContents.
      */
     public void attachWebContents(
-            WebContents webContents, ContentView contentView, WebContentsDelegateAndroid delegate) {
+            WebContents webContents,
+            ContentView contentView,
+            @Nullable WebContentsDelegateAndroid delegate) {
         mWebContents = webContents;
         mWebContentView = contentView;
         if (mWebContentView.getParent() != null) {
@@ -275,13 +278,12 @@ public class CreatorTabSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public Integer getBackgroundColor() {
+    public @Nullable Integer getBackgroundColor() {
         return null;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return mToolbarView;
     }
 
@@ -339,7 +341,7 @@ public class CreatorTabSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.ephemeral_tab_sheet_description);
     }
 

@@ -19,6 +19,7 @@
 #include "net/base/load_flags.h"
 #include "net/url_request/clear_site_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
@@ -37,7 +38,9 @@ enum LoggableEventMask {
   CLEAR_SITE_DATA_CACHE = 1 << 2,
   CLEAR_SITE_DATA_BUCKETS = 1 << 3,
   CLEAR_SITE_DATA_CLIENT_HINTS = 1 << 4,
-  CLEAR_SITE_DATA_MAX_VALUE = 1 << 5,
+  CLEAR_SITE_DATA_PREFETCH_CACHE = 1 << 5,
+  CLEAR_SITE_DATA_PRERENDER_CACHE = 1 << 6,
+  CLEAR_SITE_DATA_MAX_VALUE = 1 << 7,
 };
 
 void LogEvent(int event) {
@@ -63,6 +66,12 @@ int ParametersMask(const ClearSiteDataTypeSet clear_site_data_types,
   }
   if (clear_site_data_types.Has(ClearSiteDataType::kClientHints)) {
     mask = mask | CLEAR_SITE_DATA_CLIENT_HINTS;
+  }
+  if (clear_site_data_types.Has(ClearSiteDataType::kPrefetchCache)) {
+    mask = mask | CLEAR_SITE_DATA_PREFETCH_CACHE;
+  }
+  if (clear_site_data_types.Has(ClearSiteDataType::kPrerenderCache)) {
+    mask = mask | CLEAR_SITE_DATA_PRERENDER_CACHE;
   }
   return mask;
 }
@@ -300,6 +309,10 @@ bool ClearSiteDataHandler::ParseHeader(
       data_type = ClearSiteDataType::kCache;
     } else if (input_type == net::kDatatypeClientHints) {
       data_type = ClearSiteDataType::kClientHints;
+    } else if (input_type == net::kDatatypePrefetchCache) {
+      data_type = ClearSiteDataType::kPrefetchCache;
+    } else if (input_type == net::kDatatypePrerenderCache) {
+      data_type = ClearSiteDataType::kPrerenderCache;
     } else if (input_type == net::kDatatypeWildcard) {
       continue;
     } else {
@@ -308,6 +321,20 @@ bool ClearSiteDataHandler::ParseHeader(
           base::StringPrintf("Unrecognized type: %s.", input_type.c_str()),
           blink::mojom::ConsoleMessageLevel::kWarning);
       continue;
+    }
+
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kClearSiteDataPrefetchPrerenderCache)) {
+      if (data_type == ClearSiteDataType::kPrefetchCache ||
+          data_type == ClearSiteDataType::kPrerenderCache) {
+        delegate->AddMessage(
+            current_url,
+            base::StringPrintf(
+                "prefetchCache and prerenderCache not enabled: %s.",
+                input_type.c_str()),
+            blink::mojom::ConsoleMessageLevel::kWarning);
+        continue;
+      }
     }
 
     DCHECK_NE(data_type, ClearSiteDataType::kUndefined);

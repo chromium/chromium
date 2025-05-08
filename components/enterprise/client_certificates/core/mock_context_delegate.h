@@ -24,6 +24,7 @@ class MockContextDelegate : public ContextDelegate {
   MOCK_METHOD(std::string, GetIdentityName, (), (override));
   MOCK_METHOD(std::string, GetTemporaryIdentityName, (), (override));
   MOCK_METHOD(std::string, GetPolicyPref, (), (override));
+  MOCK_METHOD(std::string, GetLoggingContext, (), (override));
 };
 
 }  // namespace client_certificates

@@ -91,6 +91,8 @@
 #include <cmath>
 #include <memory>
 #include <numeric>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -1976,7 +1978,8 @@ bool WebLocalFrameImpl::GetPrintPresetOptionsForPlugin(
 bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
                                             cc::PaintCanvas* canvas,
                                             bool include_linked_destinations,
-                                            bool skip_accelerated_content) {
+                                            bool skip_accelerated_content,
+                                            bool allow_scrollbars) {
   bool success = false;
   {
     // Ignore paint timing while capturing a paint preview as it can change LCP
@@ -1988,7 +1991,8 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
         *GetFrame()->GetDocument(),
         skip_accelerated_content
             ? Document::kPaintingPreviewSkipAcceleratedContent
-            : Document::kPaintingPreview);
+            : Document::kPaintingPreview,
+        allow_scrollbars);
     GetFrame()->StartPaintPreview();
     PaintPreviewContext* paint_preview_context =
         MakeGarbageCollected<PaintPreviewContext>(GetFrame());
@@ -2593,48 +2597,19 @@ WebViewImpl* WebLocalFrameImpl::ViewImpl() const {
   return GetFrame()->GetPage()->GetChromeClient().GetWebView();
 }
 
-bool WebLocalFrameImpl::ShouldWarmUpCompositorOnPrerenderFromThisPoint(
-    features::Prerender2WarmUpCompositorTriggerPoint trigger_point) {
-  static const bool is_warm_up_compositor_enabled =
-      base::FeatureList::IsEnabled(::features::kWarmUpCompositor);
-  if (!is_warm_up_compositor_enabled) {
-    return false;
-  }
-
+bool WebLocalFrameImpl::ShouldWarmUpCompositor() {
   if (!GetFrame()->IsOutermostMainFrame()) {
     return false;
   }
 
-  if (!GetFrame()->GetPage() || !GetFrame()->GetPage()->IsPrerendering() ||
-      !GetFrame()->GetPage()->ShouldWarmUpCompositorOnPrerender()) {
-    return false;
-  }
-
-  static const bool is_prerender2_warm_up_compositor_enabled =
-      base::FeatureList::IsEnabled(features::kPrerender2WarmUpCompositor);
-  // TODO(crbug.com/41496019): Seek the best point to start warm-up.
-  static const auto prerender2_warm_up_compositor_trigger_point =
-      features::kPrerender2WarmUpCompositorTriggerPoint.Get();
-  if (!is_prerender2_warm_up_compositor_enabled ||
-      prerender2_warm_up_compositor_trigger_point != trigger_point) {
-    return false;
-  }
-
-  return true;
+  // It can be effective for prerendering pages to consider warming up their
+  // composers before they are activated and visible.
+  return GetFrame()->GetPage() && GetFrame()->GetPage()->IsPrerendering() &&
+         GetFrame()->GetPage()->ShouldWarmUpCompositorOnPrerender();
 }
 
 void WebLocalFrameImpl::DidCommitLoad() {
-  if (frame_widget_ &&
-      ShouldWarmUpCompositorOnPrerenderFromThisPoint(
-          features::Prerender2WarmUpCompositorTriggerPoint::kDidCommitLoad)) {
-    frame_widget_->WarmUpCompositor();
-  }
-}
-
-void WebLocalFrameImpl::DidDispatchDOMContentLoadedEvent() {
-  if (frame_widget_ && ShouldWarmUpCompositorOnPrerenderFromThisPoint(
-                           features::Prerender2WarmUpCompositorTriggerPoint::
-                               kDidDispatchDOMContentLoadedEvent)) {
+  if (frame_widget_ && ShouldWarmUpCompositor()) {
     frame_widget_->WarmUpCompositor();
   }
 }
@@ -2652,12 +2627,6 @@ void WebLocalFrameImpl::DidFailLoad(const ResourceError& error,
 void WebLocalFrameImpl::DidFinish() {
   if (!Client())
     return;
-
-  if (frame_widget_ &&
-      ShouldWarmUpCompositorOnPrerenderFromThisPoint(
-          features::Prerender2WarmUpCompositorTriggerPoint::kDidFinishLoad)) {
-    frame_widget_->WarmUpCompositor();
-  }
 
   if (WebPluginContainerImpl* plugin = GetFrame()->GetWebPluginContainer())
     plugin->DidFinishLoading();
@@ -3181,6 +3150,14 @@ void WebLocalFrameImpl::AddInspectorIssueImpl(
           InspectorIssue::Create(std::move(info)))));
 }
 
+void WebLocalFrameImpl::AddUserReidentificationIssueImpl(
+    std::optional<std::string> devtools_request_id,
+    const WebURL& affected_request_url) {
+  DCHECK(GetFrame());
+  AuditsIssue::ReportUserReidentificationIssue(GetFrame(), devtools_request_id,
+                                               affected_request_url);
+}
+
 void WebLocalFrameImpl::AddGenericIssueImpl(
     mojom::blink::GenericIssueErrorType error_type,
     int violating_node_id) {
@@ -3365,7 +3342,8 @@ void WebLocalFrameImpl::SetLCPPHint(
     return;
   }
 
-  lcpp->set_lcp_element_locators(hint->lcp_element_locators);
+  lcpp->set_lcp_element_locators(hint->lcp_element_locators,
+                                 hint->lcp_element_locators_all);
 
   HashSet<KURL> lcp_influencer_scripts;
   for (auto& url : hint->lcp_influencer_scripts) {

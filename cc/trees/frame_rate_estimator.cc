@@ -17,12 +17,6 @@ namespace {
 
 constexpr auto kInputPriorityDelay = base::Milliseconds(250);
 
-bool IsThrottleFrameRateOnManyDidNotProduceFrameEnabled() {
-  static const bool feature_allowed = base::FeatureList::IsEnabled(
-      features::kThrottleFrameRateOnManyDidNotProduceFrame);
-  return feature_allowed;
-}
-
 }  // namespace
 
 FrameRateEstimator::FrameRateEstimator(base::SequencedTaskRunner* task_runner)
@@ -47,14 +41,10 @@ void FrameRateEstimator::SetVideoConferenceMode(bool enabled) {
 void FrameRateEstimator::WillDraw(base::TimeTicks now) {
   TRACE_EVENT1(
       "cc,benchmark", "FrameRateEstimator::WillDraw", "Info",
-      base::StringPrintf("num_did_not_produce_frame_since_last_draw: %" PRIu64
-                         "\nin_video_conference_mode: %d\ninput_priority_mode: "
-                         "%d\nkNumDidNotProduceFrameBeforeThrottle: %d",
-                         num_did_not_produce_frame_since_last_draw_,
-                         in_video_conference_mode_, input_priority_mode_,
-                         features::kNumDidNotProduceFrameBeforeThrottle.Get()));
+      base::StringPrintf("\nin_video_conference_mode: %d\ninput_priority_mode: "
+                         "%d",
+                         in_video_conference_mode_, input_priority_mode_));
 
-  num_did_not_produce_frame_since_last_draw_ = 0u;
   if (!in_video_conference_mode_ || input_priority_mode_) {
     return;
   }
@@ -91,15 +81,6 @@ base::TimeDelta FrameRateEstimator::GetPreferredInterval() const {
     return viz::BeginFrameArgs::DefaultInterval() * 2;
   }
 
-  static const uint64_t num_did_not_produce_frame_before_throttle =
-      static_cast<uint64_t>(
-          features::kNumDidNotProduceFrameBeforeThrottle.Get());
-  if (IsThrottleFrameRateOnManyDidNotProduceFrameEnabled() &&
-      num_did_not_produce_frame_since_last_draw_ >
-          num_did_not_produce_frame_before_throttle) {
-    return viz::BeginFrameArgs::DefaultInterval() * 2;
-  }
-
   return viz::BeginFrameArgs::MinInterval();
 }
 
@@ -116,7 +97,6 @@ void FrameRateEstimator::OnExitInputPriorityMode() {
 
 void FrameRateEstimator::DidNotProduceFrame() {
   num_of_consecutive_frames_with_min_delta_ = 0u;
-  ++num_did_not_produce_frame_since_last_draw_;
 }
 
 }  // namespace cc

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/gray_highlight_button.h"
 #import "ios/chrome/browser/shared/ui/elements/text_field_configuration.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -49,6 +50,9 @@ constexpr CGFloat kTitleInsetTrailing = 20;
 
 constexpr CGFloat kSpinnerInsetTop = 12;
 constexpr CGFloat kSpinnerInsetBottom = 14;
+
+constexpr CGFloat kConfirmationImageMarginBottom = 14;
+constexpr CGFloat kConfirmationSymbolPointSize = 22;
 
 constexpr CGFloat kMessageInsetLeading = 20;
 constexpr CGFloat kMessageInsetBottom = 6;
@@ -232,8 +236,8 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 @property(nonatomic, assign) BOOL actionButtonsAreInitiallyDisabled;
 
 // The Lottie image names for the image in the alert.
-@property(nonatomic, strong) NSString* imageLottieName;
-@property(nonatomic, strong) NSString* imageDarkModeLottieName;
+@property(nonatomic, copy) NSString* imageLottieName;
+@property(nonatomic, copy) NSString* imageDarkModeLottieName;
 
 // Custom animation view used for the image in this alert.
 @property(nonatomic, strong) id<LottieAnimation> animationViewWrapper;
@@ -243,7 +247,14 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 
 @end
 
-@implementation AlertViewController
+@implementation AlertViewController {
+  // The spinner view shown between the title and the content message, it is
+  // shown only when shouldShowActivityIndicator is true.
+  UIActivityIndicatorView* _spinner;
+  // The checkmark shown when the pending state suggested by the _spinner ends.
+  // It replaces the _spinner in the view.
+  UIImageView* _checkmark;
+}
 
 #pragma mark - Public
 
@@ -356,10 +367,19 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   }
 
   if (self.shouldShowActivityIndicator) {
-    UIActivityIndicatorView* spinner = GetLargeUIActivityIndicatorView();
-    [spinner startAnimating];
-    [stackView addArrangedSubview:spinner];
-    [stackView setCustomSpacing:kSpinnerInsetBottom afterView:spinner];
+    _spinner = GetLargeUIActivityIndicatorView();
+    [stackView addArrangedSubview:_spinner];
+    [stackView setCustomSpacing:kSpinnerInsetBottom afterView:_spinner];
+
+    _checkmark = [[UIImageView alloc] init];
+    _checkmark.image = DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
+                                                  kConfirmationSymbolPointSize);
+    _checkmark.tintColor = [UIColor systemGreenColor];
+    [stackView addArrangedSubview:_checkmark];
+    [stackView setCustomSpacing:kConfirmationImageMarginBottom
+                      afterView:_checkmark];
+
+    [self setProgressState:ProgressIndicatorStateActivity];
   }
 
   if (self.message.length) {
@@ -562,12 +582,44 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   return _buttonAlertActionsDictionary;
 }
 
-#pragma mark - ALertConsumer
+#pragma mark - AlertConsumer
 
 - (void)setImageLottieName:(NSString*)imageLottieName
-        darkModeLottieName:imageDarkModeLottieName {
-  _imageLottieName = imageLottieName;
-  _imageDarkModeLottieName = imageDarkModeLottieName;
+        darkModeLottieName:(NSString*)imageDarkModeLottieName {
+  _imageLottieName = [imageLottieName copy];
+  _imageDarkModeLottieName = [imageDarkModeLottieName copy];
+}
+
+- (void)updateProgressViewsForCurrentState {
+  if (!_shouldShowActivityIndicator || !self.isViewLoaded || !_checkmark ||
+      !_spinner) {
+    return;
+  }
+  if (_progressState == ProgressIndicatorStateActivity) {
+    _checkmark.hidden = YES;
+    _spinner.hidden = NO;
+    [_spinner startAnimating];
+  } else if (_progressState == ProgressIndicatorStateSuccess) {
+    _spinner.hidden = YES;
+    [_spinner stopAnimating];
+    _checkmark.hidden = NO;
+    _checkmark.accessibilityLabel = self.confirmationAccessibilityLabel;
+    _checkmark.isAccessibilityElement =
+        (self.confirmationAccessibilityLabel.length > 0);
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                    _checkmark);
+  } else {
+    _spinner.hidden = YES;
+    [_spinner stopAnimating];
+    _checkmark.hidden = YES;
+  }
+}
+
+- (void)setProgressState:(ProgressIndicatorState)progressState {
+  if (_progressState != progressState) {
+    _progressState = progressState;
+    [self updateProgressViewsForCurrentState];
+  }
 }
 
 #pragma mark - UIGestureRecognizerDelegate

@@ -9,6 +9,7 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -18,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 
 /** Handles showing and hiding a scrim when url bar focus changes. */
+@NullMarked
 public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     /** The params used to control how the scrim behaves when shown for the omnibox. */
     private PropertyModel mScrimModel;

@@ -146,7 +146,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
                 this,
                 new NewTabGroupDialogFacility(
                         mTabIdsToGroup, newTabGroupName, mSelectedColor, mSoftKeyboard),
-                titleInputElement.performTrigger(replaceText(newTabGroupName)));
+                titleInputElement.getPerformTrigger(replaceText(newTabGroupName)));
     }
 
     /** Select a color. */
@@ -154,7 +154,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         return mHostStation.swapFacilitySync(
                 this,
                 new NewTabGroupDialogFacility(mTabIdsToGroup, mTitle, newColor, mSoftKeyboard),
-                colorElements[newColor].clickTrigger());
+                colorElements[newColor].getClickTrigger());
     }
 
     /** Press "Done" to confirm the tab group name and color. */
@@ -168,7 +168,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         return mHostStation.swapFacilitySync(
                 this,
                 new TabSwitcherGroupCardFacility(expectedCardIndex, mTabIdsToGroup, mTitle),
-                doneButtonElement.clickTrigger());
+                doneButtonElement.getClickTrigger());
     }
 
     /** Press "Done" to confirm the tab group name and color, but no-op from an invalid title. */
@@ -180,7 +180,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
                 new NewTabGroupDialogFacility(
                         mTabIdsToGroup, mTitle, mSelectedColor, mSoftKeyboard),
                 Transition.possiblyAlreadyFulfilledOption(),
-                doneButtonElement.clickTrigger());
+                doneButtonElement.getClickTrigger());
     }
 
     /** Press the system backpress to confirm the tab group name and color. */

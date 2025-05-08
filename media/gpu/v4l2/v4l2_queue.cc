@@ -33,7 +33,7 @@ namespace media {
 namespace {
 
 // TODO(jkardatzke): Remove this when it is in linux/videodev2.h.
-#define V4L2_MEMORY_FLAG_SECURE 0x2
+#define V4L2_MEMORY_FLAG_RESTRICTED 0x2
 
 // Maximum number of requests that can be created.
 constexpr size_t kMaxNumRequests = 32;
@@ -752,7 +752,7 @@ bool V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<FrameResource> frame,
     return false;
   }
   const std::vector<gfx::NativePixmapPlane>& planes =
-      gmb_handle.native_pixmap_handle.planes;
+      gmb_handle.native_pixmap_handle().planes;
 
   if (!self.buffer_data_->CheckNumFDsForFormat(planes.size())) {
     return false;
@@ -1194,7 +1194,7 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
 
   __u8 flags = incoherent ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
   if (allocate_secure_cb_) {
-    flags |= V4L2_MEMORY_FLAG_SECURE;
+    flags |= V4L2_MEMORY_FLAG_RESTRICTED;
   }
   struct v4l2_requestbuffers reqbufs = {
       .count = base::checked_cast<decltype(v4l2_requestbuffers::count)>(count),
@@ -1270,7 +1270,7 @@ bool V4L2Queue::DeallocateBuffers() {
   // Free all buffers.
   __u8 flags = incoherent_ ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
   if (allocate_secure_cb_) {
-    flags |= V4L2_MEMORY_FLAG_SECURE;
+    flags |= V4L2_MEMORY_FLAG_RESTRICTED;
   }
   struct v4l2_requestbuffers reqbufs = {
       .count = 0, .type = type_, .memory = memory_, .flags = flags};

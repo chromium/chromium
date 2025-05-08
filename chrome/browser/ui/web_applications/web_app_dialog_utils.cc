@@ -272,6 +272,24 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
   return true;
 }
 
+void CreateWebAppForBackgroundInstall(
+    content::WebContents* initiating_web_contents,
+    std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+    const GURL& install_url,
+    const std::optional<GURL>& manifest_id,
+    WebAppInstalledCallback installed_callback) {
+  auto* provider = WebAppProvider::GetForWebContents(initiating_web_contents);
+  CHECK(provider);
+
+  provider->scheduler().InstallAppFromUrl(
+      install_url, manifest_id, initiating_web_contents->GetWeakPtr(),
+      base::BindOnce(&OnWebAppInstallShowInstallDialog,
+                     WebAppInstallFlow::kInstallSite,
+                     webapps::WebappInstallSource::WEB_INSTALL,
+                     PwaInProductHelpState::kNotShown, std::move(tracker)),
+      std::move(installed_callback));
+}
+
 void ShowPwaInstallDialog(Browser* browser) {
   CHECK(browser);
 

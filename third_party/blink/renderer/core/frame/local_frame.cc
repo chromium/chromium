@@ -356,38 +356,10 @@ mojom::blink::BlockingDetailsPtr CreateBlockingDetailsMojom(
   return feature_location_to_report;
 }
 
-bool IsNavigationBlockedByCoopRestrictProperties(
-    const LocalFrame& accessing_frame,
-    const Frame& target_frame) {
-  // If the two windows are not in the same CoopRelatedGroup, we should not
-  // block one window from navigating the other. This prevents restricting
-  // things that were not meant to. These are the cross browsing context group
-  // accesses that already existed before COOP: restrict-properties.
-  // TODO(https://crbug.com/1464618): Is there actually any scenario where cross
-  // browsing context group was allowed before COOP: restrict-properties? Verify
-  // that we need to have this check.
-  if (accessing_frame.GetPage()->CoopRelatedGroupToken() !=
-      target_frame.GetPage()->CoopRelatedGroupToken()) {
-    return false;
-  }
-
-  // If we're dealing with an actual COOP: restrict-properties case, then
-  // compare the browsing context group tokens. If they are different, the
-  // navigation should not be permitted.
-  if (accessing_frame.GetPage()->BrowsingContextGroupToken() !=
-      target_frame.GetPage()->BrowsingContextGroupToken()) {
-    return true;
-  }
-
-  return false;
-}
-
 // TODO: b/338175253 - remove the need for this conversion
 mojom::blink::StorageTypeAccessed ToMojoStorageType(
     blink::WebContentSettingsClient::StorageType storage_type) {
   switch (storage_type) {
-    case blink::WebContentSettingsClient::StorageType::kDatabase:
-      return mojom::blink::StorageTypeAccessed::kDatabase;
     case blink::WebContentSettingsClient::StorageType::kCacheStorage:
       return mojom::blink::StorageTypeAccessed::kCacheStorage;
     case blink::WebContentSettingsClient::StorageType::kIndexedDB:
@@ -1564,7 +1536,7 @@ void LocalFrame::SetInvalidationForCapture(bool capturing) {
   // applied to the frame level scroller.
   layout_view->SetNeedsPaintPropertyUpdate();
 
-  if (!GetPage()->GetScrollbarTheme().UsesOverlayScrollbars()) {
+  if (!GetDocument()->AreScrollbarsAllowedInPaintPreview()) {
     // During CapturePaintPreview, the LayoutView thinks it should not have
     // scrollbars. So if scrollbars affect layout, we should force relayout
     // when entering and exiting paint preview.
@@ -1970,22 +1942,18 @@ LocalFrame::LocalFrame(
 
   // See SubresourceFilterAgent::Initialize for why we don't set this here for
   // fenced frames.
-  std::vector<AdScriptIdentifier> ad_script_ancestry;
   is_frame_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
-                                     &ad_script_ancestry);
-  if (!ad_script_ancestry.empty()) {
-    DCHECK(is_frame_created_by_ad_script_);
-    ad_script_from_frame_creation_stack_ = ad_script_ancestry[0];
-  }
+                                     &provisional_ad_script_ancestry_);
 
   Initialize();
   // Now that we know whether the frame is provisional, inherit the probe
   // sink from parent if appropriate. See comment above for more details.
   if (!IsLocalRoot() && !IsProvisional()) {
     probe_sink_ = LocalFrameRoot().probe_sink_;
-    probe::FrameAttachedToParent(this, ad_script_from_frame_creation_stack_);
+    probe::FrameAttachedToParent(this, provisional_ad_script_ancestry_);
+    provisional_ad_script_ancestry_.clear();
   }
 }
 
@@ -2049,12 +2017,6 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
           SecurityOrigin::Create(destination_url).get())) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kOpenerNavigationWithoutGesture);
-  }
-
-  // Frames from different browsing context groups in the same CoopRelatedGroup
-  // should not be able navigate one another.
-  if (IsNavigationBlockedByCoopRestrictProperties(*this, target_frame)) {
-    return false;
   }
 
   if (destination_url.ProtocolIsJavaScript() &&
@@ -3079,7 +3041,8 @@ bool LocalFrame::SwapIn() {
     probe_sink_ = LocalFrameRoot().probe_sink_;
     // For remote -> local swap, Send a frameAttached event to keep the legacy
     // behavior where we fire the frameAttached event on cross-site navigations.
-    probe::FrameAttachedToParent(this, ad_script_from_frame_creation_stack_);
+    probe::FrameAttachedToParent(this, provisional_ad_script_ancestry_);
+    provisional_ad_script_ancestry_.clear();
   }
 
   return client->SwapIn(WebFrame::FromCoreFrame(provisional_owner_frame));
@@ -3514,6 +3477,17 @@ void LocalFrame::NotifyContextMenuInsetsObservers(
   for (ContextMenuInsetsChangedObserver* observer : observers) {
     observer->ContextMenuInsetsChanged(safe_area.IsEmpty() ? nullptr : &insets);
   }
+}
+
+void LocalFrame::ShowInterestInElement(int nodeID) const {
+  Element* element = DynamicTo<Element>(DOMNodeIds::NodeForId(nodeID));
+  if (!element) {
+    LOG(ERROR) << "Unable to find node, or it isn't an element: "
+               << DOMNodeIds::NodeForId(nodeID);
+    return;
+  }
+  LOG(ERROR) << "Showing interest in element " << element;
+  element->ShowInterestNow();
 }
 
 void LocalFrame::AddInspectorIssue(AuditsIssue info) {

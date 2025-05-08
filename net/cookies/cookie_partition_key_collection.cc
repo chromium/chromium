@@ -4,6 +4,7 @@
 
 #include "net/cookies/cookie_partition_key_collection.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -19,7 +20,8 @@
 
 namespace net {
 
-CookiePartitionKeyCollection::CookiePartitionKeyCollection() = default;
+CookiePartitionKeyCollection::CookiePartitionKeyCollection()
+    : CookiePartitionKeyCollection(base::flat_set<CookiePartitionKey>()) {}
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
     CookiePartitionKey key)
@@ -28,17 +30,17 @@ CookiePartitionKeyCollection::CookiePartitionKeyCollection(
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
     base::flat_set<CookiePartitionKey> keys)
-    : keys_(std::move(keys)) {}
+    : state_(std::move(keys)) {}
 
-CookiePartitionKeyCollection::CookiePartitionKeyCollection(
-    bool contains_all_keys)
-    : contains_all_keys_(contains_all_keys) {}
+CookiePartitionKeyCollection::CookiePartitionKeyCollection(PrivateTag,
+                                                           InternalState state)
+    : state_(std::move(state)) {}
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
     std::optional<CookiePartitionKey> opt_key)
-    : keys_(opt_key ? base::flat_set<CookiePartitionKey>(
-                          {std::move(opt_key).value()})
-                    : base::flat_set<CookiePartitionKey>()) {}
+    : state_(opt_key ? base::flat_set<CookiePartitionKey>(
+                           {std::move(opt_key).value()})
+                     : base::flat_set<CookiePartitionKey>()) {}
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
     const CookiePartitionKeyCollection& other) = default;
@@ -56,20 +58,7 @@ CookiePartitionKeyCollection::~CookiePartitionKeyCollection() = default;
 
 bool CookiePartitionKeyCollection::Contains(
     const CookiePartitionKey& key) const {
-  return contains_all_keys_ || base::Contains(keys_, key);
-}
-
-bool operator==(const CookiePartitionKeyCollection& lhs,
-                const CookiePartitionKeyCollection& rhs) {
-  if (lhs.ContainsAllKeys()) {
-    return rhs.ContainsAllKeys();
-  }
-
-  if (rhs.ContainsAllKeys()) {
-    return false;
-  }
-
-  return lhs.PartitionKeys() == rhs.PartitionKeys();
+  return ContainsAllKeys() || state_.value().contains(key);
 }
 
 CookiePartitionKeyCollection CookiePartitionKeyCollection::MatchesSite(

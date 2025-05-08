@@ -7,6 +7,7 @@ licenses(["notice"])
 closure_js_library(
     name = "webchannel",
     srcs = [],
+    lenient = True,
     exports = [
         ":webchannelbase",
         ":webchannelbasetransport",
@@ -19,6 +20,7 @@ closure_js_library(
         "channel.js",
         "channelrequest.js",
     ],
+    lenient = True,
     deps = [
         ":connectionstate",
         ":environment",
@@ -51,17 +53,20 @@ alias(
 closure_js_library(
     name = "connectionstate",
     srcs = ["connectionstate.js"],
+    lenient = True,
 )
 
 closure_js_library(
     name = "environment",
     srcs = ["environment.js"],
+    lenient = True,
     deps = ["//closure/goog/useragent"],
 )
 
 closure_js_library(
     name = "forwardchannelrequestpool",
     srcs = ["forwardchannelrequestpool.js"],
+    lenient = True,
     deps = [
         ":channelrequest",
         ":wire",
@@ -73,6 +78,7 @@ closure_js_library(
 closure_js_library(
     name = "netutils",
     srcs = ["netutils.js"],
+    lenient = True,
     deps = [
         ":webchanneldebug",
         "//closure/goog/uri",
@@ -82,6 +88,7 @@ closure_js_library(
 closure_js_library(
     name = "requeststats",
     srcs = ["requeststats.js"],
+    lenient = True,
     deps = [
         "//closure/goog/events:event",
         "//closure/goog/events:eventtarget",
@@ -91,6 +98,7 @@ closure_js_library(
 closure_js_library(
     name = "webchannelbase",
     srcs = ["webchannelbase.js"],
+    lenient = True,
     deps = [
         ":channel",
         ":channelrequest",
@@ -122,11 +130,13 @@ closure_js_library(
 closure_js_library(
     name = "webchannelbasetransport",
     srcs = ["webchannelbasetransport.js"],
+    lenient = True,
     deps = [
         ":channelrequest",
         ":webchannelbase",
         ":wire",
         "//closure/goog/asserts",
+        "//closure/goog/collections:maps",
         "//closure/goog/events:eventtarget",
         "//closure/goog/json",
         "//closure/goog/labs/net:webchannel",
@@ -141,6 +151,7 @@ closure_js_library(
 closure_js_library(
     name = "webchanneldebug",
     srcs = ["webchanneldebug.js"],
+    lenient = True,
     deps = [
         "//closure/goog/json",
         "//closure/goog/log",
@@ -152,12 +163,14 @@ closure_js_library(
 closure_js_library(
     name = "wire",
     srcs = ["wire.js"],
+    lenient = True,
     deps = ["//closure/goog/collections:maps"],
 )
 
 closure_js_library(
     name = "wirev8",
     srcs = ["wirev8.js"],
+    lenient = True,
     deps = [
         ":wire",
         "//closure/goog/asserts",

@@ -89,7 +89,7 @@ public class ButtonCompat extends AppCompatButton {
                 a.getResourceId(R.styleable.ButtonCompat_borderColor, android.R.color.transparent);
         int borderWidthId =
                 a.getResourceId(
-                        R.styleable.ButtonCompat_borderWidth,
+                        R.styleable.ButtonCompat_buttonBorderWidth,
                         R.dimen.default_ripple_background_border_size);
         int verticalInset =
                 a.getDimensionPixelSize(

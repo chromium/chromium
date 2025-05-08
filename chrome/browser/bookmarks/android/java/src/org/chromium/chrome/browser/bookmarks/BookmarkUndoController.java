@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.bookmarks;
 import android.content.Context;
 
 import org.chromium.base.lifetime.DestroyChecker;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel.BookmarkDeleteObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -16,6 +18,7 @@ import java.util.Locale;
 
 /** Shows an undo bar when the user modifies bookmarks, allowing them to undo their changes. */
 // TODO(crbug.com/40900777): Write tests for this class.
+@NullMarked
 public class BookmarkUndoController extends BookmarkModelObserver
         implements SnackbarManager.SnackbarController, BookmarkDeleteObserver {
     private static final int SNACKBAR_DURATION_MS = 3000;
@@ -82,7 +85,7 @@ public class BookmarkUndoController extends BookmarkModelObserver
     }
 
     @Override
-    public void onAction(Object actionData) {
+    public void onAction(@Nullable Object actionData) {
         mDestroyChecker.checkNotDestroyed();
 
         mBookmarkModel.undo();
@@ -91,7 +94,7 @@ public class BookmarkUndoController extends BookmarkModelObserver
     }
 
     @Override
-    public void onDismissNoAction(Object actionData) {
+    public void onDismissNoAction(@Nullable Object actionData) {
         mDestroyChecker.checkNotDestroyed();
 
         if (mDestroyAfterFirstAction) destroyIfNecessary();

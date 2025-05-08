@@ -37,6 +37,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ActInFocusedTabErrorReason) -->
 
+<!-- LINT.IfChange(DeepScanAccessPoint) -->
+
+<enum name="DeepScanAccessPoint">
+<!-- These values are persisted to logs. Entries should not be renumbered and
+     numeric values should never be reused. Keep this in sync with
+     safe_browsing::DeepScanAccessPoint in
+     chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h
+    -->
+
+  <int value="0" label="File Downloaded"/>
+  <int value="1" label="File Uploaded"/>
+  <int value="2" label="Drag and Drop"/>
+  <int value="3" label="Paste"/>
+  <int value="4" label="Print"/>
+  <int value="5" label="File Transfer"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h:DeepScanAccessPoint) -->
+
 <!-- LINT.IfChange(GlicAttachChangeReason) -->
 
 <enum name="GlicAttachChangeReason">
@@ -46,6 +65,20 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:AttachChangeReason) -->
+
+<!-- LINT.IfChange(GlicDetailedWebClientState) -->
+
+<enum name="GlicDetailedWebClientState">
+  <int value="0" label="Bootstrap pending"/>
+  <int value="1" label="Web client not created"/>
+  <int value="2" label="Web client initialize failed"/>
+  <int value="3" label="Web client created but not initialized"/>
+  <int value="4" label="Temporary unresponsive"/>
+  <int value="5" label="Permanent unresponsive"/>
+  <int value="6" label="Responsive"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/glic_api_host.ts:DetailedWebClientState) -->
 
 <!-- LINT.IfChange(GlicEntryPointImpression) -->
 

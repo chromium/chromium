@@ -46,13 +46,6 @@ class GetCardUploadDetailsRequest : public PaymentsRequest {
       PaymentsAutofillClient::PaymentsRpcResult result) override;
 
  private:
-  // Helper for ParseResponse(). Input format should be :"1234,30000-55555,765",
-  // where ranges are separated by commas and items separated with a dash means
-  // the start and ends of the range. Items without a dash have the same start
-  // and end (ex. 1234-1234)
-  std::vector<std::pair<int, int>> ParseSupportedCardBinRangesString(
-      const std::string& supported_card_bin_ranges_string);
-
   const std::vector<AutofillProfile> addresses_;
   const int detected_values_;
   const std::vector<ClientBehaviorConstants> client_behavior_signals_;

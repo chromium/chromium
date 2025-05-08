@@ -82,7 +82,9 @@ found in the LICENSE file.
                         android:ellipsize="none"/>
                 </LinearLayout>
             </LinearLayout>
-
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
             <!-- Normal layout. -->
             <LinearLayout
                 android:id="@+id/normal_layout"
@@ -249,9 +251,63 @@ found in the LICENSE file.
                             android:src="@drawable/baseline_more_horiz_24"
                             android:layout_gravity="center_vertical"
                             android:contentDescription="@string/readaloud_options_menu_button"/>
+                        <ImageView
+                            android:id="@+id/readaloud_thumb_up_button"
+                            android:layout_width="@dimen/readaloud_playback_thumb_up_down_dimen"
+                            android:layout_height="@dimen/readaloud_playback_thumb_up_down_dimen"
+                            android:src="@drawable/feedback_thumb_up_selector"
+                            android:padding="12dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="8dp"
+                            android:contentDescription="@string/readaloud_feedback_thumb_up"
+                            android:visibility="gone" />
+                        <ImageView
+                            android:id="@+id/readaloud_thumb_down_button"
+                            android:layout_width="@dimen/readaloud_playback_thumb_up_down_dimen"
+                            android:layout_height="@dimen/readaloud_playback_thumb_up_down_dimen"
+                            android:src="@drawable/feedback_thumb_down_selector"
+                            android:padding="12dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:layout_gravity="center_vertical"
+                            android:contentDescription="@string/readaloud_feedback_thumb_down"
+                            android:visibility="gone" />
                     </LinearLayout>
                 </RelativeLayout>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/readaloud_loading_text"
+                android:layout_width="wrap_content"
+                android:maxLines="1"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="@dimen/readaloud_expanded_player_loading_text_margin_start"
+                android:layout_marginBottom="@dimen/readaloud_expanded_player_loading_text_margin_bottom"
+                android:gravity="center_vertical"
+                android:layout_height="@dimen/readaloud_menu_buttons_width"
+                android:text="@string/readaloud_playback_loading"
+                android:textAppearance="@style/TextAppearance.TextAccentMediumThick" />
+
+            <!-- Loading layout -->
+            <LinearLayout
+                android:id="@+id/readaloud_loading_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_gravity="center">
+                <ProgressBar
+                    android:id="@+id/readaloud_loading_progress_bar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"/>
+                </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

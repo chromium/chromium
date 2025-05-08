@@ -26,7 +26,6 @@ bool g_enable_for_testing = false;
 
 SiteDataCacheFacadeFactory* SiteDataCacheFacadeFactory::GetInstance() {
   static base::NoDestructor<SiteDataCacheFacadeFactory> instance;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return instance.get();
 }
 
@@ -61,7 +60,6 @@ SiteDataCacheFacadeFactory::SiteDataCacheFacadeFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DependsOn(HistoryServiceFactory::GetInstance());
 }
 

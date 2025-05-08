@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/web/model/print/print_tab_helper.h"
 
-#import "base/test/task_environment.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -12,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/print/web_state_printer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -49,7 +49,7 @@ class PrintTabHelperTest : public PlatformTest {
   }
 
   PrintTabHelperTestPrinter* printer_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
 };

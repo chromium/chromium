@@ -172,7 +172,9 @@ void ExtensionUpdateClientBaseTest::CreatedBrowserMainParts(
 
 void ExtensionUpdateClientBaseTest::SetUpOnMainThread() {
   ExtensionBrowserTest::SetUpOnMainThread();
+#if BUILDFLAG(IS_CHROMEOS)
   extensions::browsertest_util::CreateAndInitializeLocalCache();
+#endif
 
   update_service_ =
       extensions::UpdateServiceFactory::GetForBrowserContext(profile());

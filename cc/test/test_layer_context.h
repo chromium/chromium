@@ -24,7 +24,8 @@ class TestLayerContext : public LayerContext {
   void UpdateDisplayTile(PictureLayerImpl& layer,
                          const Tile& tile,
                          viz::ClientResourceProvider& resource_provider,
-                         viz::RasterContextProvider& context_provider) override;
+                         viz::RasterContextProvider& context_provider,
+                         bool update_damage) override;
 };
 
 }  // namespace cc

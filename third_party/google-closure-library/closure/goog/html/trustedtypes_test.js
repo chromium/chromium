@@ -28,7 +28,7 @@ testSuite({
   },
 
   testGetPolicyPrivateDoNotAccessOrElse_noPolicyName() {
-    stubs.set(goog, 'TRUSTED_TYPES_POLICY_NAME', '');
+    stubs.set(trustedtypes, 'POLICY_NAME', '');
     const recorder = recordFunction(goog.createTrustedTypesPolicy);
     stubs.set(goog, 'createTrustedTypesPolicy', recorder);
     const policy = trustedtypes.getPolicyPrivateDoNotAccessOrElse();
@@ -37,17 +37,28 @@ testSuite({
   },
 
   testGetPolicyPrivateDoNotAccessOrElse_withPolicyName() {
-    stubs.set(goog, 'TRUSTED_TYPES_POLICY_NAME', 'foo');
+    stubs.set(trustedtypes, 'POLICY_NAME', 'foo');
     const recorder = recordFunction(goog.createTrustedTypesPolicy);
     stubs.set(goog, 'createTrustedTypesPolicy', recorder);
     const policy = trustedtypes.getPolicyPrivateDoNotAccessOrElse();
     recorder.assertCallCount(1);
-    assertEquals('foo#html', recorder.getLastCall().getArguments()[0]);
+    assertEquals('foo', recorder.getLastCall().getArguments()[0]);
+    assertEquals(recorder.getLastCall().getReturnValue(), policy);
+  },
+
+  testGetPolicyPrivateDoNotAccessOrElse_defaultPolicyName() {
+    const recorder = recordFunction(goog.createTrustedTypesPolicy);
+    stubs.set(goog, 'createTrustedTypesPolicy', recorder);
+    const policy = trustedtypes.getPolicyPrivateDoNotAccessOrElse();
+    recorder.assertCallCount(1);
+    assertEquals(
+        `${goog.TRUSTED_TYPES_POLICY_NAME}#html`,
+        recorder.getLastCall().getArguments()[0]);
     assertEquals(recorder.getLastCall().getReturnValue(), policy);
   },
 
   testGetPolicyPrivateDoNotAccessOrElse_caching() {
-    stubs.set(goog, 'TRUSTED_TYPES_POLICY_NAME', 'foo');
+    stubs.set(trustedtypes, 'POLICY_NAME', 'foo');
     const recorder = recordFunction(goog.createTrustedTypesPolicy);
     stubs.set(goog, 'createTrustedTypesPolicy', recorder);
     trustedtypes.getPolicyPrivateDoNotAccessOrElse();

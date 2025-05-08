@@ -6,16 +6,10 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_THREAD_SAFE_FORWARDER_BASE_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/synchronization/lock.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
 

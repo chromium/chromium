@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/interpolated_svg_path_source.h"
 #include "third_party/blink/renderer/core/animation/svg_path_seg_interpolation_functions.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/svg/svg_path.h"
@@ -195,7 +196,7 @@ PairwiseInterpolationValue PathInterpolationFunctions::MaybeMergeSingles(
 void PathInterpolationFunctions::Composite(
     UnderlyingValueOwner& underlying_value_owner,
     double underlying_fraction,
-    const InterpolationType& type,
+    const InterpolationType* type,
     const InterpolationValue& value) {
   const auto& list = To<InterpolableList>(*value.interpolable_value);
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.

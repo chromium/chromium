@@ -14,6 +14,7 @@
 namespace blink {
 
 class GPUMemoryHeapInfo;
+class GPUSubgroupMatrixConfig;
 
 class GPUAdapterInfo : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -37,6 +38,7 @@ class GPUAdapterInfo : public ScriptWrappable {
   GPUAdapterInfo& operator=(const GPUAdapterInfo&) = delete;
 
   void AppendMemoryHeapInfo(GPUMemoryHeapInfo*);
+  void AppendSubgroupMatrixConfig(GPUSubgroupMatrixConfig*);
 
   // gpu_adapter_info.idl {{{
   const String& vendor() const;
@@ -50,6 +52,8 @@ class GPUAdapterInfo : public ScriptWrappable {
   const String& backend() const;
   const String& type() const;
   const HeapVector<Member<GPUMemoryHeapInfo>>& memoryHeaps() const;
+  const HeapVector<Member<GPUSubgroupMatrixConfig>>& subgroupMatrixConfigs()
+      const;
   const std::optional<uint32_t>& d3dShaderModel() const;
   const std::optional<uint32_t>& vkDriverVersion() const;
   const String& powerPreference() const;
@@ -69,6 +73,7 @@ class GPUAdapterInfo : public ScriptWrappable {
   String backend_;
   String type_;
   HeapVector<Member<GPUMemoryHeapInfo>> memory_heaps_;
+  HeapVector<Member<GPUSubgroupMatrixConfig>> subgroup_matrix_configs_;
   std::optional<uint32_t> d3d_shader_model_;
   std::optional<uint32_t> vk_driver_version_;
   String power_preference_;

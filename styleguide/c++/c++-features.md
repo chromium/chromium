@@ -1309,9 +1309,8 @@ it's an implementation detail that the data is contiguous (e.g.
 ### std::remove_cvref[_t] <sup>[allowed]</sup>
 
 ```c++
-template <typename T,
-          typename = std::enable_if_t<std::is_same_v<std::remove_cvref_t<T>,
-                                                     int>>>
+template <typename T>
+  requires (std::is_same_v<std::remove_cvref_t<T>, int>)
 void foo(T t);
 ```
 

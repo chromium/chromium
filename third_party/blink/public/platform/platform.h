@@ -417,8 +417,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // in the |destination_bus|.
   // Returns true on success.
   virtual bool DecodeAudioFileData(WebAudioBus* destination_bus,
-                                   const char* audio_file_data,
-                                   size_t data_size) {
+                                   base::span<const char> audio_file_data) {
     return false;
   }
 

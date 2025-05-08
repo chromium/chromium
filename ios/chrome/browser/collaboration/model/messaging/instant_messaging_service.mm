@@ -5,22 +5,42 @@
 #import "ios/chrome/browser/collaboration/model/messaging/instant_messaging_service.h"
 
 #import "base/functional/callback.h"
+#import "ios/chrome/browser/collaboration/model/messaging/infobar/collaboration_group_infobar_delegate.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace collaboration::messaging {
 
-InstantMessagingService::InstantMessagingService() {}
+InstantMessagingService::InstantMessagingService(ProfileIOS* profile)
+    : profile_(profile) {
+  DCHECK(profile_);
+}
 InstantMessagingService::~InstantMessagingService() {}
 
 void InstantMessagingService::DisplayInstantaneousMessage(
-    collaboration::messaging::InstantMessage message,
+    collaboration::messaging::InstantMessage instant_message,
     MessagingBackendService::InstantMessageDelegate::SuccessCallback
         success_callback) {
-  // TODO(crbug.com/375595834): Send the message to the UI components.
+  bool message_displayed = false;
 
-  // Inform the backend that the message was displayed.
-  std::move(success_callback).Run(true);
-  // TODO(crbug.com/375595834): Call the callback with `false` when showing the
-  // message fails.
+  switch (instant_message.level) {
+    case InstantNotificationLevel::UNDEFINED:
+    case InstantNotificationLevel::SYSTEM:
+      break;
+    case InstantNotificationLevel::BROWSER:
+      message_displayed = ShowCollaborationGroupInfobar(instant_message);
+      break;
+  }
+
+  std::move(success_callback).Run(message_displayed);
+}
+
+bool InstantMessagingService::ShowCollaborationGroupInfobar(
+    collaboration::messaging::InstantMessage instant_message) {
+  bool infobar_displayed =
+      CollaborationGroupInfoBarDelegate::Create(profile_, instant_message);
+  return infobar_displayed;
 }
 
 }  // namespace collaboration::messaging

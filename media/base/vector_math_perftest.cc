@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/base/vector_math.h"
 
@@ -30,7 +26,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
   perf_test::PerfResultReporter reporter("vector_math", story_name);
   reporter.RegisterImportantMetric("_fmac", "runs/s");
   reporter.RegisterImportantMetric("_fmul", "runs/s");
-  reporter.RegisterImportantMetric("_clamp", "runs/s");
+  reporter.RegisterImportantMetric("_fclamp", "runs/s");
   reporter.RegisterImportantMetric("_ewma_and_max_power", "runs/s");
   return reporter;
 }

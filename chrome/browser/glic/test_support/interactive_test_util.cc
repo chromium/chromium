@@ -22,9 +22,9 @@ GlicWindowControllerStateObserver::~GlicWindowControllerStateObserver() =
 DEFINE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
                               kGlicWindowControllerState);
 
-GlicAppStateObserver::GlicAppStateObserver(GlicWindowController* controler)
-    : ObservationStateObserver(controler) {
-  WebUiStateChanged(controler->GetWebUiState());
+GlicAppStateObserver::GlicAppStateObserver(Host* host)
+    : ObservationStateObserver(host) {
+  WebUiStateChanged(host->GetPrimaryWebUiState());
 }
 
 GlicAppStateObserver::~GlicAppStateObserver() = default;

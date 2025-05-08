@@ -99,9 +99,7 @@ std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
   TRACE_EVENT1("exo", "Display::CreateLinuxDMABufBuffer", "size",
                size.ToString());
 
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::NATIVE_PIXMAP;
-  gmb_handle.native_pixmap_handle = std::move(handle);
+  gfx::GpuMemoryBufferHandle gmb_handle(std::move(handle));
 
   const gfx::BufferUsage buffer_usage = gfx::BufferUsage::GPU_READ;
 

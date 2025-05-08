@@ -129,9 +129,7 @@ class NET_EXPORT CookiePartitionKey {
   // TODO(crbug.com/40188414) Consider removing this factory method and
   // `from_script_` flag when BlinkStorageKey is available in
   // ServiceWorkerGlobalScope.
-  static std::optional<CookiePartitionKey> FromScript() {
-    return std::make_optional(CookiePartitionKey(true));
-  }
+  static CookiePartitionKey FromScript() { return CookiePartitionKey(true); }
 
   // Create a new CookiePartitionKey from the components of a StorageKey.
   // Forwards to FromWire, but unlike that method in this one the optional nonce

@@ -128,14 +128,14 @@ mojom::ExtensionLoadedParamsPtr CreateExtensionLoadedParams(
 
   // TODO(crbug.com/390138269): Optimize by only setting the value for the
   // process(es) that host an extension that can use the userScripts API.
-  const UserScriptManager* user_script_manager =
+  UserScriptManager* user_script_manager =
       ExtensionSystem::Get(browser_context)->user_script_manager();
   if (!user_script_manager) {
     CHECK_IS_TEST();
   }
   bool user_scripts_allowed =
       user_script_manager &&
-      user_script_manager->AreUserScriptsAllowed(extension, browser_context);
+      user_script_manager->AreUserScriptsAllowed(extension);
 
   return mojom::ExtensionLoadedParams::New(
       extension.manifest()->value()->Clone(), extension.location(),
@@ -559,7 +559,6 @@ void RendererStartupHelper::BindForRenderer(
 }
 
 void RendererStartupHelper::FlushAllForTesting() {
-  CHECK_IS_TEST();
   for (auto& it : process_mojo_map_) {
     it.second.FlushForTesting();  // IN-TEST
   }

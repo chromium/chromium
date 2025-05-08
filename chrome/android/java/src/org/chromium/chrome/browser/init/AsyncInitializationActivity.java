@@ -247,8 +247,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             TraceEvent.begin("maybePreconnect");
             Intent intent = getIntent();
             if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) return;
-            // TODO(https://crbug.com/372710946): Clean this up if CCTEarlyNav doesn't ship.
-            if (intent.getBooleanExtra(IntentHandler.EXTRA_SKIP_PRECONNECT, false)) return;
+            // Preconnect is too late if we've already started navigation early.
+            if (intent.getBooleanExtra(IntentHandler.EXTRA_CCT_EARLY_NAV, false)) return;
             String url = IntentHandler.getUrlFromIntent(intent);
             if (url == null) return;
             // Blocking pre-connect for all off-the-record profiles.

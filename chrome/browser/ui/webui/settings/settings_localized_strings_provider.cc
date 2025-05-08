@@ -512,10 +512,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("aiPageMainManagedLearnMoreUrl",
                          chrome::kAiSettingsLearnMorePageManagedUrl);
 
-  html_source->AddString("glicKeyboardShortcutLearnMoreUrl",
-                         chrome::kGlicKeyboardShortcutLearnMoreURL);
-  html_source->AddString("glicKeyboardShortcutLearnMoreManagedUrl",
-                         chrome::kGlicKeyboardShortcutLearnMoreManagedURL);
   html_source->AddString("historySearchLearnMoreUrl",
                          chrome::kHistorySearchLearnMorePageURL);
   html_source->AddString("historySearchLearnMoreManagedUrl",
@@ -661,6 +657,10 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
       {"historyDeletionDialogTitle",
        IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE},
       {"historyDeletionDialogOK", IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_OK},
+      {"manageOtherGoogleDataTitle",
+       IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_LABEL},
+      {"manageOtherGoogleDataDescription",
+       IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_SUB_LABEL},
       {"passwordsDeletionDialogTitle",
        IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE_TITLE},
       {"passwordsDeletionDialogOK",
@@ -743,7 +743,7 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
       {"glicRowSublabel", IDS_SETTINGS_GLIC_ROW_SUBLABEL},
       {"glicPolicyDisabledMessage", IDS_SETTINGS_GLIC_POLICY_DISABLED_MESSAGE},
       {"glicPreferencesSection", IDS_SETTINGS_GLIC_PREFERENCES_SECTION},
-      {"glicDataSection", IDS_SETTINGS_GLIC_DATA_SECTION},
+      {"glicDataSection", IDS_SETTINGS_GLIC_PERMISSIONS_SECTION},
       {"glicOsWidgetToggle", IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE},
       {"glicOsWidgetToggleSublabel",
        IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL},
@@ -752,25 +752,54 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL},
       {"glicKeyboardShortcutLearnMoreLabel",
        IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_LABEL},
-      {"glicLocationToggle", IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE},
+      {"glicNavigationShortcut", IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT},
+      {"glicNavigationShortcutSublabel",
+       IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_SUBLABEL},
+      {"glicClosedCaptionsToggle", IDS_SETTINGS_GLIC_CLOSED_CAPTIONING},
+      {"glicClosedCaptionsToggleSublabel",
+       IDS_SETTINGS_GLIC_CLOSED_CAPTIONING_SUBLABEL},
+      {"glicLocationToggle", IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE},
       {"glicLocationToggleSublabel",
-       IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE_SUBLABEL},
-      {"glicMicrophoneToggle", IDS_SETTINGS_GLIC_DATA_MICROPHONE_TOGGLE},
+       IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL},
+      {"glicMicrophoneToggle", IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE},
       {"glicMicrophoneToggleSublabel",
-       IDS_SETTINGS_GLIC_DATA_MICROPHONE_TOGGLE_SUBLABEL},
-      {"glicTabAccessToggle", IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_TOGGLE},
+       IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL},
+      {"glicTabAccessToggle", IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE},
       {"glicTabAccessToggleSublabel",
-       IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_TOGGLE_SUBLABEL},
-      {"glicActivityButton", IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON},
+       IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL},
+      {"glicActivityButton", IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON},
       {"glicActivityButtonSublabel",
-       IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_SUBLABEL},
-      {"glicActivityButtonUrl", IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_URL},
-      {"glicTabAccessWhenOn1", IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_WHEN_ON_1},
-      {"glicTabAccessWhenOn2", IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_WHEN_ON_2},
-      {"glicTabAccessConsider1", IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_CONSIDER_1},
-      {"glicTabAccessConsider2", IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_CONSIDER_2},
+       IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_SUBLABEL},
+      {"glicActivityButtonUrl",
+       IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_URL},
+      {"glicTabAccessWhenOn1",
+       IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_1},
+      {"glicTabAccessWhenOn2",
+       IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_2},
+      {"glicTabAccessConsider1",
+       IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1},
+      {"glicTabAccessConsider1LearnMoreLabel",
+       IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  bool has_url =
+      command_line->HasSwitch(::switches::kGlicShortcutsLearnMoreURL);
+  const std::string keyboard_shortcut_learn_more_url =
+      has_url ? command_line->GetSwitchValueASCII(
+                    ::switches::kGlicShortcutsLearnMoreURL)
+              : features::kGlicShortcutsLearnMoreURL.Get();
+  html_source->AddString("glicKeyboardShortcutLearnMoreUrl",
+                         keyboard_shortcut_learn_more_url);
+  html_source->AddString("glicLauncherToggleLearnMoreUrl",
+                         features::kGlicLauncherToggleLearnMoreURL.Get());
+  html_source->AddString("glicLocationToggleLearnMoreUrl",
+                         features::kGlicLocationToggleLearnMoreURL.Get());
+  html_source->AddString("glicTabAccessToggleLearnMoreUrl",
+                         features::kGlicTabAccessToggleLearnMoreURL.Get());
+  html_source->AddString("glicSettingsPageLearnMoreUrl",
+                         features::kGlicSettingsPageLearnMoreURL.Get());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -1389,6 +1418,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_DATE_VALIDATION_ERROR},
       {"autofillAiAddOrEditDialogValidationError",
        IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_VALIDATION_ERROR},
+      {"autofillAiSubpageSublabelLoggingManagedDisabled",
+       IDS_SETTINGS_AUTOFILL_AI_ENTERPRISE_LOGGING_MANAGED_DISABLED},
       {"autofillPayOverTimeSettingsLabel", IDS_AUTOFILL_BNPL_SETTINGS_LABEL},
   };
 
@@ -1434,17 +1465,16 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("enableNewFopDisplay", EnableNewFopDisplayDesktop());
 
-  html_source->AddBoolean(
-      "autofillCardBenefitsAvailable",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardBenefitsForAmericanExpress) ||
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillEnableCardBenefitsForBmo));
+  html_source->AddBoolean("autofillCardBenefitsAvailable",
+                          payments_data.IsCardBenefitsFeatureEnabled());
 
   html_source->AddString(
       "cardBenefitsToggleSublabel",
       l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK,
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableNewCardBenefitsToggleText)
+              ? IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_ISSUER_TERMS_APPLY_TEXT_AND_LEARN_LINK
+              : IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK,
           chrome::kCardBenefitsLearnMoreURL,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
@@ -1490,8 +1520,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddString(
       "autofillPayOverTimeSettingsSublabel",
-      l10n_util::GetStringFUTF16(IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL,
-                                 chrome::kPayOverTimeLearnMoreUrl));
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL, chrome::kPayOverTimeLearnMoreUrl,
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+
+  html_source->AddString("googleAccountHomeAddressUrl",
+                         chrome::kGoogleAccountHomeAddressURL);
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
@@ -1921,7 +1955,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       {"safeBrowsingEnableExtendedReportingDesc",
        IDS_SETTINGS_SAFEBROWSING_ENABLE_REPORTING_DESC},
       {"safeBrowsingEnhanced", IDS_SETTINGS_SAFEBROWSING_ENHANCED},
-      {"safeBrowsingEnhancedDesc", IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC},
       {"safeBrowsingEnhancedDescUpdated",
        IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC_UPDATED},
       {"safeBrowsingEnhancedExpandA11yLabel",
@@ -1944,8 +1977,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_THREE},
       {"safeBrowsingEnhancedWhenOnBulFour",
        IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_FOUR},
-      {"safeBrowsingEnhancedWhenOnBulFive",
-       IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_FIVE},
       {"safeBrowsingEnhancedThingsToConsiderBulOne",
        IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_ONE},
       {"safeBrowsingEnhancedThingsToConsiderBulTwo",
@@ -2569,12 +2600,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_TOGGLE_SUB_LABEL},
       {"trackingProtectionThirdPartyCookiesLearnMoreAriaLabel",
        IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_LEARN_MORE_ARIA_LABEL},
-      {"trackingProtectionIpProtectionToggleLabel",
-       IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LABEL},
-      {"trackingProtectionFingerprintingProtectionToggleLabel",
-       IDS_SETTINGS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_LABEL},
-      {"trackingProtectionFingerprintingProtectionToggleSubLabel",
-       IDS_SETTINGS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_SUB_LABEL},
       {"trackingProtectionDoNotTrackToggleSubLabel",
        IDS_SETTINGS_TRACKING_PROTECTION_DO_NOT_TRACK_TOGGLE_SUB_LABEL},
       {"trackingProtectionSitesAllowedCookiesTitle",
@@ -3440,13 +3465,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   html_source->AddString("trackingProtectionThirdPartyCookiesLearnMoreUrl",
                          chrome::kManage3pcHelpCenterURL);
-  html_source->AddString(
-      "trackingProtectionIpProtectionToggleSubLabel",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL,
-          l10n_util::GetStringUTF16(
-              IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LEARN_MORE_ARIA_LABEL),
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   html_source->AddString("ipProtectionLearnMoreUrl",
                          chrome::kIpProtectionHelpCenterURL);
 

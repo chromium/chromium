@@ -33,6 +33,7 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -78,6 +80,7 @@ import org.chromium.components.collaboration.SyncStatus;
 import org.chromium.components.data_sharing.TestDataSharingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -134,6 +137,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private UndoBarThrottle mUndoBarThrottle;
+    @Mock private Supplier<PaneManager> mPaneManagerSupplier;
+    @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
 
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor private ArgumentCaptor<LifecycleObserver> mLifecycleObserverCaptor;
@@ -206,7 +211,9 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mEdgeToEdgeSupplier,
                         mShareDelegateSupplier,
                         mTabBookmarkerSupplier,
-                        mUndoBarThrottle);
+                        mUndoBarThrottle,
+                        mPaneManagerSupplier,
+                        mTabGroupUiActionHandlerSupplier);
     }
 
     @Test

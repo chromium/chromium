@@ -9,9 +9,11 @@
 #include <memory>
 #include <variant>
 
+#include "base/android/jni_callback.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
@@ -23,6 +25,35 @@ namespace credential_management {
 using base::android::ConvertJavaStringToUTF8;
 using JniDelegate = ThirdPartyCredentialManagerBridge::JniDelegate;
 
+void OnPasswordCredentialReceived(
+    const std::string& origin,
+    GetCallback completion_callback,
+    PasswordCredentialResponse credential_response) {
+  password_manager::CredentialManagerError status =
+      password_manager::CredentialManagerError::UNKNOWN;
+  std::optional<password_manager::CredentialInfo> info;
+  if (credential_response.success) {
+    status = password_manager::CredentialManagerError::SUCCESS;
+    info = password_manager::CredentialInfo(
+        ::password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
+        /*id=*/credential_response.username,
+        /*name=*/credential_response.username,
+        /*icon=*/GURL(),
+        /*password=*/credential_response.password,
+        /*federation=*/
+        url::SchemeHostPort(GURL(origin)));
+  }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(completion_callback), status, std::move(info)));
+}
+
+void OnCreateCredentialResponse(StoreCallback completion_callback,
+                                bool success) {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(completion_callback)));
+}
+
 class JniDelegateImpl : public JniDelegate {
  public:
   JniDelegateImpl() = default;
@@ -30,26 +61,33 @@ class JniDelegateImpl : public JniDelegate {
   JniDelegateImpl& operator=(const JniDelegateImpl&) = delete;
   ~JniDelegateImpl() override = default;
 
-  void CreateBridge(ThirdPartyCredentialManagerBridge* bridge) override {
+  void CreateBridge() override {
     java_bridge_.Reset(Java_ThirdPartyCredentialManagerBridge_Constructor(
-        jni_zero::AttachCurrentThread(), reinterpret_cast<intptr_t>(bridge)));
+        jni_zero::AttachCurrentThread()));
   }
 
-  void Get(const std::string& origin) override {
+  void Get(bool is_auto_select_allowed,
+           const std::string& origin,
+           base::OnceCallback<void(PasswordCredentialResponse)>
+               completion_callback) override {
     JNIEnv* env = jni_zero::AttachCurrentThread();
     Java_ThirdPartyCredentialManagerBridge_get(
-        env, java_bridge_, base::android::ConvertUTF8ToJavaString(env, origin));
+        env, java_bridge_, is_auto_select_allowed,
+        base::android::ConvertUTF8ToJavaString(env, origin),
+        base::android::ToJniCallback(env, std::move(completion_callback)));
   }
 
-  void Store(const std::string& username,
-             const std::string& password,
-             const std::string& origin) override {
+  void Store(const std::u16string& username,
+             const std::u16string& password,
+             const std::string& origin,
+             base::OnceCallback<void(bool)> completion_callback) override {
     JNIEnv* env = jni_zero::AttachCurrentThread();
     Java_ThirdPartyCredentialManagerBridge_store(
         env, java_bridge_,
-        base::android::ConvertUTF8ToJavaString(env, username),
-        base::android::ConvertUTF8ToJavaString(env, password),
-        base::android::ConvertUTF8ToJavaString(env, origin));
+        base::android::ConvertUTF16ToJavaString(env, username),
+        base::android::ConvertUTF16ToJavaString(env, password),
+        base::android::ConvertUTF8ToJavaString(env, origin),
+        base::android::ToJniCallback(env, std::move(completion_callback)));
   }
 
  private:
@@ -68,61 +106,27 @@ ThirdPartyCredentialManagerBridge::ThirdPartyCredentialManagerBridge(
 ThirdPartyCredentialManagerBridge::~ThirdPartyCredentialManagerBridge() =
     default;
 
-void ThirdPartyCredentialManagerBridge::Create(
-    std::variant<GetCallback, StoreCallback> callback) {
-  callback_ = std::move(callback);
-  jni_delegate_->CreateBridge(this);
+void ThirdPartyCredentialManagerBridge::Create() {
+  jni_delegate_->CreateBridge();
 }
 
-void ThirdPartyCredentialManagerBridge::Get(const std::string& origin) {
-  jni_delegate_->Get(origin);
+void ThirdPartyCredentialManagerBridge::Get(bool is_auto_select_allowed,
+                                            const std::string& origin,
+                                            GetCallback completion_callback) {
+  base::OnceCallback<void(PasswordCredentialResponse)> on_complete =
+      base::BindOnce(&OnPasswordCredentialReceived, origin,
+                     std::move(completion_callback));
+  jni_delegate_->Get(is_auto_select_allowed, origin, std::move(on_complete));
 }
 
-void ThirdPartyCredentialManagerBridge::OnPasswordCredentialReceived(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_username,
-    const base::android::JavaParamRef<jstring>& j_password,
-    const base::android::JavaParamRef<jstring>& j_origin) {
-  CHECK(j_username);
-  CHECK(j_password);
-  password_manager::CredentialInfo info = password_manager::CredentialInfo(
-      ::password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
-      /*id=*/base::android::ConvertJavaStringToUTF16(env, j_username),
-      base::android::ConvertJavaStringToUTF16(env, j_username),
-      /*icon=*/GURL(), base::android::ConvertJavaStringToUTF16(env, j_password),
-      /*federation=*/
-      url::SchemeHostPort(
-          GURL(base::android::ConvertJavaStringToUTF16(j_origin))));
-  CHECK(std::holds_alternative<GetCallback>(callback_));
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(std::get<0>(callback_)),
-                     password_manager::CredentialManagerError::SUCCESS,
-                     std::optional(info)));
-}
-
-void ThirdPartyCredentialManagerBridge::OnGetPasswordCredentialError(
-    JNIEnv* env) {
-  CHECK(std::holds_alternative<GetCallback>(callback_));
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(std::get<0>(callback_)),
-                     password_manager::CredentialManagerError::UNKNOWN,
-                     std::nullopt));
-}
-
-void ThirdPartyCredentialManagerBridge::Store(const std::string& username,
-                                              const std::string& password,
-                                              const std::string& origin) {
-  jni_delegate_->Store(username, password, origin);
-}
-
-void ThirdPartyCredentialManagerBridge::OnCreateCredentialResponse(
-    JNIEnv* env,
-    jboolean success) {
-  CHECK(std::holds_alternative<StoreCallback>(callback_));
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(std::get<1>(callback_))));
+void ThirdPartyCredentialManagerBridge::Store(
+    const std::u16string& username,
+    const std::u16string& password,
+    const std::string& origin,
+    StoreCallback completion_callback) {
+  base::OnceCallback<void(bool)> on_complete = base::BindOnce(
+      &OnCreateCredentialResponse, std::move(completion_callback));
+  jni_delegate_->Store(username, password, origin, std::move(on_complete));
 }
 
 }  // namespace credential_management

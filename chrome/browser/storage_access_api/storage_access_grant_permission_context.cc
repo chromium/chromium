@@ -5,6 +5,7 @@
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -30,8 +31,11 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/metrics/dwa/dwa_builders.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -132,8 +136,14 @@ RequestOutcome RequestOutcomeFromPrompt(ContentSetting content_setting,
   }
 }
 
-void RecordOutcomeSample(RequestOutcome outcome) {
+void RecordOutcomeSample(RequestOutcome outcome,
+                         const net::SchemefulSite& requesting_site) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestOutcome", outcome);
+
+  dwa::builders::StorageAccess_RequestOutcome()
+      .SetOutcome(static_cast<int>(outcome))
+      .SetContent(requesting_site.GetURL().spec())
+      .Record(metrics::dwa::DwaRecorder::Get());
 }
 
 content_settings::ContentSettingConstraints ComputeConstraints(
@@ -187,31 +197,6 @@ bool ShouldPersistSetting(bool permission_allowed, RequestOutcome outcome) {
   return permission_allowed;
 }
 
-// Returns true if the user/field trials have enabled FedCM/SAA autogrants
-// globally via the flag/Feature, or "locally" via the origin trial.
-//
-// Feature state overrides take precedence over origin trial state.
-bool AreFedCmAutograntsEnabled(content::RenderFrameHost* rfh) {
-  if (std::optional<bool> state = base::FeatureList::GetStateIfOverridden(
-          blink::features::kFedCmWithStorageAccessAPI);
-      state.has_value()) {
-    return state.value();
-  }
-
-  // RuntimeFeatureStateDocumentData doesn't know what the default state of a
-  // feature is, so we check the underlying feature explicitly.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFedCmWithStorageAccessAPI)) {
-    return true;
-  }
-  content::RuntimeFeatureStateDocumentData* document_data =
-      content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(rfh);
-  CHECK(document_data);
-
-  return document_data->runtime_feature_state_read_context()
-      .IsFedCmWithStorageAccessAPIEnabled();
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class AutograntViaFedCmOutcome {
@@ -234,8 +219,6 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
     const net::SchemefulSite& embedding_site,
     const net::SchemefulSite& requesting_site) {
   CHECK(browser_context);
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kFedCmWithStorageAccessAPI));
   if (!rfh->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     RecordAutograntViaFedCmOutcomeSample(
@@ -263,7 +246,7 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
   }
 
   RecordAutograntViaFedCmOutcomeSample(AutograntViaFedCmOutcome::kAllowed);
-  RecordOutcomeSample(RequestOutcome::kAllowedByFedCM);
+  RecordOutcomeSample(RequestOutcome::kAllowedByFedCM, requesting_site);
   return fedcm_context;
 }
 
@@ -291,21 +274,25 @@ StorageAccessGrantPermissionContext::~StorageAccessGrantPermissionContext() =
     default;
 
 void StorageAccessGrantPermissionContext::DecidePermissionForTesting(
-    permissions::PermissionRequestData request_data,
+    std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
   DecidePermission(std::move(request_data), std::move(callback));
 }
 
 void StorageAccessGrantPermissionContext::DecidePermission(
-    permissions::PermissionRequestData request_data,
+    std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(request_data.requesting_origin.is_valid());
-  CHECK(request_data.embedding_origin.is_valid());
+  CHECK(request_data->requesting_origin.is_valid());
+  CHECK(request_data->embedding_origin.is_valid());
 
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      request_data.id.global_render_frame_host_id());
+      request_data->id.global_render_frame_host_id());
   CHECK(rfh);
+
+  const net::SchemefulSite requesting_site(request_data->requesting_origin);
+  const url::Origin embedding_origin =
+      url::Origin::Create(request_data->embedding_origin);
 
   if (rfh->GetLastCommittedOrigin().opaque() || rfh->IsCredentialless() ||
       rfh->IsNestedWithinFencedFrame() ||
@@ -315,7 +302,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     // No need to log anything here, since well-behaved renderers have already
     // done these checks and have logged to the console. This block is to handle
     // compromised renderers.
-    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites);
+    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites,
+                        requesting_site);
     mojo::ReportBadMessage(
         "requestStorageAccess: Must not be called by a fenced frame, iframe "
         "with an opaque origin, credentialless iframe, or sandboxed iframe");
@@ -329,16 +317,15 @@ void StorageAccessGrantPermissionContext::DecidePermission(
       HostContentSettingsMapFactory::GetForProfile(browser_context());
   CHECK(settings_map);
   ContentSetting setting = settings_map->GetContentSetting(
-      request_data.requesting_origin, request_data.embedding_origin,
+      request_data->requesting_origin, request_data->embedding_origin,
       ContentSettingsType::COOKIES);
+
   if (setting == CONTENT_SETTING_BLOCK) {
-    RecordOutcomeSample(RequestOutcome::kDeniedByCookieSettings);
+    RecordOutcomeSample(RequestOutcome::kDeniedByCookieSettings,
+                        requesting_site);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
-
-  const url::Origin embedding_origin =
-      url::Origin::Create(request_data.embedding_origin);
 
   // Return early without prompting users if cookie access is already allowed.
   // This does not take previously granted SAA permission into account.
@@ -349,7 +336,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   if (overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible) ||
       overrides.Has(
           net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
-    RecordOutcomeSample(RequestOutcome::kDeniedAborted);
+    RecordOutcomeSample(RequestOutcome::kDeniedAborted, requesting_site);
     // The caller already has the `kStorageAccessGrantEligible` or
     // `kStorageAccessGrantEligibleViaHeader` override, which is impossible
     // since those overrides should be used solely by the network service. This
@@ -360,21 +347,22 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
-  if (cookie_settings->IsFullCookieAccessAllowed(request_data.requesting_origin,
-                                                 net::SiteForCookies(),
-                                                 embedding_origin, overrides)) {
-    RecordOutcomeSample(RequestOutcome::kAllowedByCookieSettings);
+
+  if (cookie_settings->IsFullCookieAccessAllowed(
+          request_data->requesting_origin, net::SiteForCookies(),
+          embedding_origin, overrides)) {
+    RecordOutcomeSample(RequestOutcome::kAllowedByCookieSettings,
+                        requesting_site);
     std::move(callback).Run(CONTENT_SETTING_ALLOW);
     return;
   }
 
-  const net::SchemefulSite requesting_site(request_data.requesting_origin);
   const net::SchemefulSite embedding_site(embedding_origin);
 
   // Return early without prompting users if the requesting frame is same-site
   // with the top-level frame.
   if (requesting_site == embedding_site) {
-    RecordOutcomeSample(RequestOutcome::kAllowedBySameSite);
+    RecordOutcomeSample(RequestOutcome::kAllowedBySameSite, requesting_site);
     std::move(callback).Run(CONTENT_SETTING_ALLOW);
     return;
   }
@@ -388,16 +376,15 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     // persisted, respect that decision.
     ContentSetting existing_setting =
         PermissionContextBase::GetPermissionStatusInternal(
-            rfh, request_data.requesting_origin, request_data.embedding_origin);
+            rfh, request_data->requesting_origin,
+            request_data->embedding_origin);
     // ALLOW grants are handled by PermissionContextBase so they never reach
     // this point.
     CHECK_NE(existing_setting, CONTENT_SETTING_ALLOW);
     if (existing_setting == CONTENT_SETTING_BLOCK) {
-      NotifyPermissionSetInternal(
-          request_data.id, request_data.requesting_origin,
-          request_data.embedding_origin, std::move(callback),
-          /*persist=*/false, existing_setting,
-          RequestOutcome::kReusedPreviousDecision);
+      NotifyPermissionSetInternal(request_data, std::move(callback),
+                                  /*persist=*/false, existing_setting,
+                                  RequestOutcome::kReusedPreviousDecision);
       return;
     }
     CHECK_EQ(existing_setting, CONTENT_SETTING_ASK);
@@ -405,24 +392,23 @@ void StorageAccessGrantPermissionContext::DecidePermission(
 
   // FedCM grants (and the appropriate permissions policy) may allow the call to
   // auto-resolve (without granting a new permission).
-  if (AreFedCmAutograntsEnabled(rfh)) {
-    if (FederatedIdentityPermissionContext* fedcm_context =
-            IsAutograntViaFedCmAllowed(browser_context(), rfh, embedding_origin,
-                                       embedding_site, requesting_site);
-        fedcm_context) {
-      fedcm_context->MarkStorageAccessEligible(
-          /*relying_party_embedder=*/embedding_site,
-          /*identity_provider=*/requesting_site,
-          base::BindOnce(std::move(callback), CONTENT_SETTING_ALLOW));
-      return;
-    }
+  if (FederatedIdentityPermissionContext* fedcm_context =
+          IsAutograntViaFedCmAllowed(browser_context(), rfh, embedding_origin,
+                                     embedding_site, requesting_site);
+      fedcm_context) {
+    fedcm_context->MarkStorageAccessEligible(
+        /*relying_party_embedder=*/embedding_site,
+        /*identity_provider=*/requesting_site,
+        base::BindOnce(std::move(callback), CONTENT_SETTING_ALLOW));
+    return;
   }
 
-  if (!request_data.user_gesture) {
+  if (!request_data->user_gesture) {
     rfh->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         "requestStorageAccess: Must be handling a user gesture to use.");
-    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites);
+    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites,
+                        requesting_site);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
@@ -438,7 +424,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
 }
 
 void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
-    permissions::PermissionRequestData request_data,
+    std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback,
     net::FirstPartySetMetadata metadata) {
   if (metadata.AreSitesInSameFirstPartySet()) {
@@ -447,11 +433,9 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
       case net::SiteType::kAssociated:
         // Since the sites are in the same First-Party Set, risk of abuse due
         // to allowing access is considered to be low.
-        NotifyPermissionSetInternal(
-            request_data.id, request_data.requesting_origin,
-            request_data.embedding_origin, std::move(callback),
-            /*persist=*/true, CONTENT_SETTING_ALLOW,
-            RequestOutcome::kGrantedByFirstPartySet);
+        NotifyPermissionSetInternal(request_data, std::move(callback),
+                                    /*persist=*/true, CONTENT_SETTING_ALLOW,
+                                    RequestOutcome::kGrantedByFirstPartySet);
         return;
       case net::SiteType::kService:
         break;
@@ -471,17 +455,15 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
 
     const int existing_implicit_grants = std::ranges::count_if(
         implicit_grants, [&request_data](const auto& entry) {
-          return entry.primary_pattern.Matches(request_data.requesting_origin);
+          return entry.primary_pattern.Matches(request_data->requesting_origin);
         });
 
     // If we have fewer grants than our limit, we can just set an implicit grant
     // now and skip prompting the user.
     if (existing_implicit_grants < implicit_grant_limit) {
-      NotifyPermissionSetInternal(
-          request_data.id, request_data.requesting_origin,
-          request_data.embedding_origin, std::move(callback),
-          /*persist=*/true, CONTENT_SETTING_ALLOW,
-          RequestOutcome::kGrantedByAllowance);
+      NotifyPermissionSetInternal(request_data, std::move(callback),
+                                  /*persist=*/true, CONTENT_SETTING_ALLOW,
+                                  RequestOutcome::kGrantedByAllowance);
       return;
     }
   }
@@ -500,7 +482,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
     return;
   }
 
-  GURL site(request_data.requesting_origin);
+  GURL site(request_data->requesting_origin);
   dips_service->DidSiteHaveUserActivationSince(
       site, base::Time::Now() - kStorageAccessAPITopLevelUserInteractionBound,
       base::BindOnce(&StorageAccessGrantPermissionContext::
@@ -510,16 +492,17 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
 }
 
 void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
-    permissions::PermissionRequestData request_data,
+    std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback,
     bool had_top_level_user_interaction) {
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      request_data.id.global_render_frame_host_id());
+      request_data->id.global_render_frame_host_id());
 
   if (!rfh) {
     // After async steps, the RenderFrameHost is not guaranteed to still be
     // alive.
-    RecordOutcomeSample(RequestOutcome::kDeniedAborted);
+    RecordOutcomeSample(RequestOutcome::kDeniedAborted,
+                        net::SchemefulSite(request_data->requesting_origin));
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
@@ -530,8 +513,7 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
         "requestStorageAccess: Request denied because the embedded site has "
         "never been interacted with as a top-level context");
     NotifyPermissionSetInternal(
-        request_data.id, request_data.requesting_origin,
-        request_data.embedding_origin, std::move(callback),
+        request_data, std::move(callback),
         /*persist=*/false, CONTENT_SETTING_BLOCK,
         RequestOutcome::kDeniedByTopLevelInteractionHeuristic);
     return;
@@ -570,9 +552,7 @@ ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
 }
 
 void StorageAccessGrantPermissionContext::NotifyPermissionSet(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -587,7 +567,8 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
     // if the exception has an ephemeral session model.
     content_settings::SettingInfo info;
     HostContentSettingsMapFactory::GetForProfile(browser_context())
-        ->GetContentSetting(requesting_origin, embedding_origin,
+        ->GetContentSetting(request_data->requesting_origin,
+                            request_data->embedding_origin,
                             ContentSettingsType::STORAGE_ACCESS, &info);
 
     if (info.metadata.decided_by_related_website_sets()) {
@@ -604,35 +585,35 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
     }
   }
   NotifyPermissionSetInternal(
-      id, requesting_origin, embedding_origin, std::move(callback),
+      request_data, std::move(callback),
       persist && ShouldPersistSetting(content_setting == CONTENT_SETTING_ALLOW,
                                       outcome),
       content_setting, outcome);
 }
 
 void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
     RequestOutcome outcome) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  RecordOutcomeSample(outcome);
+  RecordOutcomeSample(outcome,
+                      net::SchemefulSite(request_data->requesting_origin));
 
   const bool permission_allowed = (content_setting == CONTENT_SETTING_ALLOW);
-  UpdateTabContext(id, requesting_origin, permission_allowed);
+  UpdateTabContext(request_data->id, request_data->requesting_origin,
+                   permission_allowed);
 
   if (ShouldDisplayOutcomeInOmnibox(outcome)) {
     auto* content_settings =
         content_settings::PageSpecificContentSettings::GetForFrame(
-            id.global_render_frame_host_id());
+            request_data->id.global_render_frame_host_id());
     if (content_settings) {
       content_settings->OnTwoSitePermissionChanged(
           ContentSettingsType::STORAGE_ACCESS,
-          net::SchemefulSite(requesting_origin), content_setting);
+          net::SchemefulSite(request_data->requesting_origin), content_setting);
     }
   }
 
@@ -660,8 +641,9 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   CHECK(persist);
 
   settings_map->SetContentSettingDefaultScope(
-      requesting_origin, embedding_origin, ContentSettingsType::STORAGE_ACCESS,
-      content_setting, ComputeConstraints(outcome, settings_map->Now()));
+      request_data->requesting_origin, request_data->embedding_origin,
+      ContentSettingsType::STORAGE_ACCESS, content_setting,
+      ComputeConstraints(outcome, settings_map->Now()));
 
   ContentSettingsForOneType grants =
       settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
@@ -683,8 +665,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
 }
 
 void StorageAccessGrantPermissionContext::UpdateContentSetting(
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
     ContentSetting content_setting,
     bool is_one_time) {
   CHECK(!is_one_time);

@@ -4,6 +4,7 @@
 
 #include "services/webnn/tflite/context_impl_tflite.h"
 
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
@@ -35,7 +36,7 @@ void ContextImplTflite::CreateGraphImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     CreateGraphImplCallback callback) {
   std::move(callback).Run(GraphImplTflite::CreateAndBuild(

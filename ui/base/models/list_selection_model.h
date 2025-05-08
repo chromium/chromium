@@ -86,12 +86,13 @@ class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
   // anchor indices.
   void RemoveIndexFromSelection(size_t index);
 
-  // Extends the selection from the anchor to |index|. If the anchor is empty,
+  // Sets the selection from the anchor to |index|. If the anchor is empty,
   // this sets the anchor, selection and active indices to |index|.
   void SetSelectionFromAnchorTo(size_t index);
 
-  // Makes sure the indices from the anchor to |index| are selected. This only
-  // adds to the selection.
+  // Makes sure the tabs from the anchor to |index| are selected. This adds to
+  // the selection if there is an anchor and resets the selection to |index| if
+  // there is not an anchor.
   void AddSelectionFromAnchorTo(size_t index);
 
   // Invoked when an item moves. |old_index| is the original index, |new_index|

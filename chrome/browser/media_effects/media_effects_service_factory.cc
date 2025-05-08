@@ -8,10 +8,14 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/media_effects/media_effects_model_provider.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "media/base/media_switches.h"
+#include "services/video_effects/public/cpp/buildflags.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "components/media_effects/media_effects_model_provider.h"
+#endif
 
 // static
 MediaEffectsService* MediaEffectsServiceFactory::GetForBrowserContext(
@@ -24,9 +28,11 @@ MediaEffectsService* MediaEffectsServiceFactory::GetForBrowserContext(
 MediaEffectsServiceFactory* MediaEffectsServiceFactory::GetInstance() {
   static base::NoDestructor<MediaEffectsServiceFactory> instance;
 
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   // Media Effects Service depends on Optimization Guide because it needs to
   // subscribe to the model updates.
   instance->DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+#endif
 
   return instance.get();
 }
@@ -38,6 +44,7 @@ MediaEffectsServiceFactory::MediaEffectsServiceFactory()
 
 MediaEffectsServiceFactory::~MediaEffectsServiceFactory() = default;
 
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 class SegmentationModelObserver
     : public optimization_guide::OptimizationTargetModelObserver,
       public MediaEffectsModelProvider {
@@ -133,21 +140,23 @@ class SegmentationModelObserver
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
+#endif
 
 std::unique_ptr<KeyedService>
 MediaEffectsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
   CHECK(browser_context);
 
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   std::unique_ptr<SegmentationModelObserver> model_provider;
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
     model_provider =
         std::make_unique<SegmentationModelObserver>(browser_context);
   }
-#endif
-
   return std::make_unique<MediaEffectsService>(
       user_prefs::UserPrefs::Get(browser_context), std::move(model_provider));
+#else
+  return std::make_unique<MediaEffectsService>(
+      user_prefs::UserPrefs::Get(browser_context));
+#endif
 }

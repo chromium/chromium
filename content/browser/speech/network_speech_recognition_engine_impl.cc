@@ -129,8 +129,7 @@ void NetworkSpeechRecognitionEngineImpl::StartRecognition() {
 
 void NetworkSpeechRecognitionEngineImpl::UpdateRecognitionContext(
     const media::SpeechRecognitionRecognitionContext& recognition_context) {
-  Abort(media::mojom::SpeechRecognitionErrorCode::
-            kRecognitionContextNotSupported);
+  Abort(media::mojom::SpeechRecognitionErrorCode::kPhrasesNotSupported);
 }
 
 void NetworkSpeechRecognitionEngineImpl::EndRecognition() {

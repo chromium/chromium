@@ -56,7 +56,6 @@ mojom("mojom_platform") {
     "close_watcher/close_listener.mojom",
     "commit_result/commit_result.mojom",
     "compute_pressure/web_pressure_manager.mojom",
-    "compute_pressure/web_pressure_manager_automation.mojom",
     "confidence_level.mojom",
     "content_extraction/ai_page_content.mojom",
     "content_extraction/inner_html.mojom",
@@ -64,7 +63,6 @@ mojom("mojom_platform") {
     "content_index/content_index.mojom",
     "context_menu/context_menu.mojom",
     "conversions/conversions.mojom",
-    "cookie_manager/cookie_manager_automation.mojom",
     "cookie_store/cookie_store.mojom",
     "crash/crash_memory_metrics_reporter.mojom",
     "css/preferred_color_scheme.mojom",
@@ -72,7 +70,6 @@ mojom("mojom_platform") {
     "data_transfer/data_transfer.mojom",
     "device/device.mojom",
     "device_posture/device_posture_provider.mojom",
-    "device_posture/device_posture_provider_automation.mojom",
     "devtools/console_message.mojom",
     "devtools/devtools_agent.mojom",
     "devtools/devtools_frontend.mojom",
@@ -184,7 +181,6 @@ mojom("mojom_platform") {
     "peerconnection/webrtc_ip_handling_url_entry.mojom",
     "performance_manager/v8_detailed_memory_reporter.mojom",
     "permissions/permission.mojom",
-    "permissions/permission_automation.mojom",
     "permissions/permission_status.mojom",
     "permissions_policy/document_policy_feature.mojom",
     "permissions_policy/policy_disposition.mojom",
@@ -195,7 +191,6 @@ mojom("mojom_platform") {
     "preloading/anchor_element_interaction_host.mojom",
     "prerender/prerender.mojom",
     "presentation/presentation.mojom",
-    "privacy_sandbox/web_privacy_sandbox_automation.mojom",
     "private_aggregation/private_aggregation_host.mojom",
     "push_messaging/push_messaging.mojom",
     "push_messaging/push_messaging_status.mojom",
@@ -211,7 +206,6 @@ mojom("mojom_platform") {
     "security_context/insecure_request_policy.mojom",
     "selection_menu/selection_menu_behavior.mojom",
     "sensor/web_sensor_provider.mojom",
-    "sensor/web_sensor_provider_automation.mojom",
     "serial/serial.mojom",
     "service_worker/controller_service_worker_mode.mojom",
     "service_worker/dispatch_fetch_event_params.mojom",
@@ -235,7 +229,6 @@ mojom("mojom_platform") {
     "sms/webotp_service.mojom",
     "speculation_rules/speculation_rules.mojom",
     "speech/speech_synthesis.mojom",
-    "storage_access/storage_access_automation.mojom",
     "subapps/sub_apps_service.mojom",
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
@@ -248,7 +241,6 @@ mojom("mojom_platform") {
     "webaudio/audio_context_manager.mojom",
     "webid/digital_identity_request.mojom",
     "webid/federated_auth_request.mojom",
-    "webid/federated_auth_request_automation.mojom",
     "webpreferences/web_preferences.mojom",
     "websockets/websocket_connector.mojom",
     "webtransport/web_transport_connector.mojom",
@@ -304,6 +296,7 @@ mojom("mojom_platform") {
     "//services/device/public/mojom",
     "//services/device/public/mojom:generic_sensor",
     "//services/network/public/mojom",
+    "//services/network/public/mojom:mojom_integrity_policy",
     "//services/network/public/mojom:mojom_ip_address",
     "//services/network/public/mojom:mojom_permissions_policy",
     "//services/network/public/mojom:mojom_proxy_config",
@@ -349,6 +342,7 @@ mojom("mojom_platform") {
       "//services/network/public/mojom:mojom_content_security_policy",
       "//services/network/public/mojom:mojom_cors_origin_pattern",
       "//services/network/public/mojom:mojom_integrity_algorithm",
+      "//services/network/public/mojom:mojom_integrity_policy",
       "//services/network/public/mojom:mojom_network_param",
       "//services/network/public/mojom:mojom_schemeful_site",
       "//services/network/public/mojom:mojom_source_location",
@@ -1201,6 +1195,7 @@ mojom("android_mojo_bindings") {
       "//services/network/public/mojom:mojom_content_security_policy",
       "//services/network/public/mojom:mojom_cors_origin_pattern",
       "//services/network/public/mojom:mojom_integrity_algorithm",
+      "//services/network/public/mojom:mojom_integrity_policy",
       "//services/network/public/mojom:mojom_source_location",
       "//services/network/public/mojom:mojom_web_sandbox_flags",
       "//services/network/public/mojom:url_loader_base",
@@ -1364,7 +1359,6 @@ mojom("mojom_core") {
     "frame/user_activation_update_types.mojom",
     "frame/view_transition_state.mojom",
     "frame/viewport_intersection_state.mojom",
-    "page/browsing_context_group_info.mojom",
     "page/display_cutout.mojom",
     "page/draggable_region.mojom",
     "page/page.mojom",
@@ -1453,6 +1447,7 @@ mojom("mojom_core") {
       "//services/network/public/mojom:mojom_content_security_policy",
       "//services/network/public/mojom:mojom_cors_origin_pattern",
       "//services/network/public/mojom:mojom_integrity_algorithm",
+      "//services/network/public/mojom:mojom_integrity_policy",
       "//services/network/public/mojom:mojom_source_location",
       "//services/network/public/mojom:mojom_storage_access_api",
       "//services/network/public/mojom:mojom_web_sandbox_flags",
@@ -1512,19 +1507,6 @@ mojom("mojom_core") {
       ]
       traits_private_headers = [ "//third_party/blink/public/common/messaging/accelerated_static_bitmap_image_mojom_traits.h" ]
       traits_deps = [ "//gpu/ipc/common" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.BrowsingContextGroupInfo"
-          cpp = "::blink::BrowsingContextGroupInfo"
-          default_constructible = false
-        },
-      ]
-      traits_headers = [
-        "//third_party/blink/public/common/page/browsing_context_group_info.h",
-      ]
-      traits_private_headers = [ "//third_party/blink/public/common/page/browsing_context_group_info_mojom_traits.h" ]
     },
     {
       types = [

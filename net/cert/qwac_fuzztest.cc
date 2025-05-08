@@ -107,6 +107,17 @@ FUZZ_TEST(QwacFuzzTest, FuzzParseQcTypeInfo)
         base::ToVector(kQcTypeInfoMultiple),
     });
 
+void FuzzParseTwoQwacCertBinding(std::string_view jws) {
+  const auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  if (!cert_binding.has_value()) {
+    return;
+  }
+  ASSERT_FALSE(cert_binding->header_string.empty());
+  ASSERT_FALSE(cert_binding->header.sig_alg.empty());
+}
+
+FUZZ_TEST(QwacFuzzTest, FuzzParseTwoQwacCertBinding);
+
 }  // namespace
 
 }  // namespace net

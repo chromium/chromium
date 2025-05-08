@@ -4,11 +4,6 @@
 
 #include "base/strings/to_string.h"
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This file contains the ResponseAnalyzerTests (which test the response
 // analyzer's behavior in several parameterized test scenarios) and at the end
 // includes the CrossOriginReadBlockingTests, which are more typical unittests.

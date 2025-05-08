@@ -439,6 +439,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
       return address_controller_.get();
     case AccessoryAction::MANAGE_CREDIT_CARDS:
+    case AccessoryAction::MANAGE_LOYALTY_CARDS:
       return payment_method_controller_.get();
     case AccessoryAction::AUTOFILL_SUGGESTION:
     case AccessoryAction::COUNT:

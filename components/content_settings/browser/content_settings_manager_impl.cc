@@ -58,7 +58,6 @@ void NotifyStorageAccess(const content::GlobalRenderFrameHostToken& frame_token,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool should_notify_pscs = ([storage_type]() {
     switch (storage_type) {
-      case StorageType::DATABASE:
       case StorageType::LOCAL_STORAGE:
       case StorageType::SESSION_STORAGE:
       case StorageType::FILE_SYSTEM:
@@ -90,7 +89,6 @@ void NotifyStorageAccess(const content::GlobalRenderFrameHostToken& frame_token,
             return page_load_metrics::StorageType::kIndexedDb;
           case StorageType::CACHE:
             return page_load_metrics::StorageType::kCacheStorage;
-          case StorageType::DATABASE:
           case StorageType::WEB_LOCKS:
             return std::nullopt;
         }
@@ -162,8 +160,8 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
   CookieSettingsBase::CookieSettingWithMetadata cookie_settings;
 
   bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
-      url, site_for_cookies, top_frame_origin,
-      cookie_settings_->SettingOverridesForStorage(), &cookie_settings);
+      url, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
+      &cookie_settings);
 
   //  If storage partitioning is active, third-party partitioned storage is
   //  allowed by default, and access is only blocked due to general third-party

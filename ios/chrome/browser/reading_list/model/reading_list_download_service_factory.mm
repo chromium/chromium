@@ -6,8 +6,7 @@
 
 #import "base/files/file_path.h"
 #import "base/no_destructor.h"
-#import "components/dom_distiller/core/distiller.h"
-#import "components/dom_distiller/core/distiller_url_fetcher.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page_factory.h"
@@ -36,6 +35,7 @@ ReadingListDownloadServiceFactory::ReadingListDownloadServiceFactory()
   DependsOn(ReadingListModelFactory::GetInstance());
   DependsOn(ios::FaviconServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
+  DependsOn(DistillerServiceFactory::GetInstance());
 }
 
 ReadingListDownloadServiceFactory::~ReadingListDownloadServiceFactory() {}
@@ -50,17 +50,9 @@ ReadingListDownloadServiceFactory::BuildServiceInstanceFor(
           std::make_unique<reading_list::ReadingListDistillerPageFactory>(
               context);
 
-  auto distiller_url_fetcher_factory =
-      std::make_unique<dom_distiller::DistillerURLFetcherFactory>(
-          context->GetSharedURLLoaderFactory());
-
-  dom_distiller::proto::DomDistillerOptions options;
-  auto distiller_factory =
-      std::make_unique<dom_distiller::DistillerFactoryImpl>(
-          std::move(distiller_url_fetcher_factory), options);
-
   return std::make_unique<ReadingListDownloadService>(
-      ReadingListModelFactory::GetForProfile(profile), profile->GetPrefs(),
-      profile->GetStatePath(), profile->GetSharedURLLoaderFactory(),
-      std::move(distiller_factory), std::move(distiller_page_factory));
+      ReadingListModelFactory::GetForProfile(profile), profile->GetStatePath(),
+      profile->GetSharedURLLoaderFactory(),
+      DistillerServiceFactory::GetForProfile(profile),
+      std::move(distiller_page_factory));
 }

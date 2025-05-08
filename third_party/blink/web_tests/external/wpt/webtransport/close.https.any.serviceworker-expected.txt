@@ -4,8 +4,8 @@ This is a testharness.js-based test.
 [FAIL] opening bidirectional stream before ready
   promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createBidirectionalStream' on 'WebTransport': No connection."
 [FAIL] server initiated closure while opening unidirectional stream before ready
-  promise_rejects_dom: function "function() { throw e }" threw object "NetworkError: Failed to execute 'createUnidirectionalStream' on 'WebTransport': No connection." that is not a DOMException InvalidStateError: property "code" is equal to 19, expected 11
+  promise_rejects_dom: function "function() { throw e; }" threw object "NetworkError: Failed to execute 'createUnidirectionalStream' on 'WebTransport': No connection." that is not a DOMException InvalidStateError: property "code" is equal to 19, expected 11
 [FAIL] server initiated closure while opening bidirectional stream before ready
-  promise_rejects_dom: function "function() { throw e }" threw object "NetworkError: Failed to execute 'createBidirectionalStream' on 'WebTransport': No connection." that is not a DOMException InvalidStateError: property "code" is equal to 19, expected 11
+  promise_rejects_dom: function "function() { throw e; }" threw object "NetworkError: Failed to execute 'createBidirectionalStream' on 'WebTransport': No connection." that is not a DOMException InvalidStateError: property "code" is equal to 19, expected 11
 Harness: the test ran to completion.
 

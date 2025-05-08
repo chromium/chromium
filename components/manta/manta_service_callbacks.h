@@ -14,8 +14,10 @@
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 
+namespace endpoint_fetcher {
 class EndpointFetcher;
 struct EndpointResponse;
+}  // namespace endpoint_fetcher
 
 namespace manta {
 
@@ -45,11 +47,12 @@ using MantaGenericCallback =
     base::OnceCallback<void(base::Value::Dict, MantaStatus)>;
 
 COMPONENT_EXPORT(MANTA)
-void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
-                               const base::Time& start_time,
-                               const MantaMetricType request_type,
-                               std::unique_ptr<EndpointFetcher> fetcher,
-                               std::unique_ptr<EndpointResponse> responses);
+void OnEndpointFetcherComplete(
+    MantaProtoResponseCallback callback,
+    base::Time start_time,
+    const MantaMetricType request_type,
+    std::unique_ptr<endpoint_fetcher::EndpointFetcher> fetcher,
+    std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
 }  // namespace manta
 

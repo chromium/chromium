@@ -386,25 +386,31 @@ void EncodeFormFieldsForUpload(
       added_field->add_autofill_type(field_type);
     }
 
-    if (field->vote_type()) {
-      added_field->set_vote_type(field->vote_type());
+    if (field_options && field_options->vote_type) {
+      added_field->set_vote_type(field_options->vote_type);
     }
 
-    if (field->initial_value_hash()) {
-      added_field->set_initial_value_hash(field->initial_value_hash().value());
+    if (field_options && field_options->initial_value_hash) {
+      added_field->set_initial_value_hash(
+          field_options->initial_value_hash.value());
     }
 
-    if (field->initial_value_changed().has_value()) {
-      added_field->set_initial_value_changed(
-          field->initial_value_changed().value());
+    // TODO(crbug.com/40286837): Understand and document why the type is
+    // relevant.
+    if (!field->initial_value().empty() &&
+        ((field->Type().GetStorableType() != NO_SERVER_DATA &&
+          field->Type().GetStorableType() != UNKNOWN_TYPE) ||
+         !field->possible_types().empty())) {
+      added_field->set_initial_value_changed(field->initial_value() !=
+                                             field->value());
     }
 
-    if (auto it = fields.find(field->global_id()); it != fields.end()) {
-      for (const std::u16string& format_string : it->second.format_strings) {
+    if (field_options) {
+      for (const std::u16string& format_string :
+           field_options->format_strings) {
         DCHECK(data_util::IsValidDateFormat(format_string));
         auto* added_format_string = added_field->add_format_string();
-        added_format_string->set_type(
-            AutofillUploadContents_Field_FormatString_Type_DATE);
+        added_format_string->set_type(FormatString_Type_DATE);
         added_format_string->set_format_string(
             base::UTF16ToUTF8(format_string));
       }
@@ -916,9 +922,16 @@ void ProcessServerPredictionsQueryResponse(
             field_suggestion->password_requirements());
       }
       if (field_suggestion->has_format_string()) {
-        field->set_format_string_unless_overruled(
-            base::UTF8ToUTF16(field_suggestion->format_string()),
-            AutofillField::FormatStringSource::kServer);
+        switch (field_suggestion->format_string().type()) {
+          case FormatString_Type_DATE:
+            field->set_format_string_unless_overruled(
+                base::UTF8ToUTF16(
+                    field_suggestion->format_string().format_string()),
+                AutofillField::FormatStringSource::kServer);
+            break;
+          default:
+            break;
+        }
       }
       ++field_rank_map[field->GetFieldSignature()];
 

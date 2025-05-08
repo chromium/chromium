@@ -132,7 +132,7 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   // message, or waits until it arrives. Once this returns true, message() and
   // extension_id_for_message() accessors can be used.
   // Returns false if the wait is interrupted and we still haven't gotten the
-  // message, or if the message was equal to |failure_message_|.
+  // message, or if the message was equal to `failure_message_`.
   [[nodiscard]] bool WaitUntilSatisfied();
 
   // Send the given message as a reply. It is only valid to call this after
@@ -218,7 +218,7 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   // If we received a message that was the failure message.
   bool failed_ = false;
 
-  // The extension id from which |message_| was received.
+  // The extension id from which `message_` was received.
   extensions::ExtensionId extension_id_for_message_;
 
   // Whether the ExtensionFunction handling the message had an active user

@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/wm/core/window_modality_controller.h"
+
+#include <array>
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/test/test_child_modal_parent.h"
 #include "ash/wm/window_util.h"
+#include "base/containers/span.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -32,10 +30,16 @@ using WindowModalityControllerTest = AshTestBase;
 
 namespace {
 
-bool ValidateStacking(aura::Window* parent, int ids[], int count) {
-  for (int i = 0; i < count; ++i) {
-    if (parent->children().at(i)->GetId() != ids[i])
+bool ValidateStacking(aura::Window* parent, base::span<const int> ids) {
+  const auto& children = parent->children();
+  if (children.size() < ids.size()) {
+    return false;
+  }
+
+  for (size_t i = 0; i < ids.size(); ++i) {
+    if (children[i].get()->GetId() != ids[i]) {
       return false;
+    }
   }
   return true;
 }
@@ -71,15 +75,15 @@ TEST_F(WindowModalityControllerTest, BasicActivation) {
   wm::ActivateWindow(w11.get());
   EXPECT_TRUE(wm::IsActiveWindow(w11.get()));
 
-  int check1[] = {-1, -12, -11};
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, std::size(check1)));
+  constexpr auto check1 = std::to_array({-1, -12, -11});
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check1));
 
   wm::ActivateWindow(w1.get());
   EXPECT_TRUE(wm::IsActiveWindow(w12.get()));
   // Transient children are always stacked above their transient parent, which
   // is why this order is not -11, -1, -12.
-  int check2[] = {-1, -11, -12};
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check2, std::size(check2)));
+  constexpr auto check2 = std::to_array({-1, -11, -12});
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check2));
 
   w12.reset();
   EXPECT_TRUE(wm::IsActiveWindow(w11.get()));
@@ -118,21 +122,21 @@ TEST_F(WindowModalityControllerTest, NestedModals) {
 
   wm::ActivateWindow(w1.get());
   EXPECT_TRUE(wm::IsActiveWindow(w111.get()));
-  int check1[] = {-2, -1, -11, -111};
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, std::size(check1)));
+  constexpr auto check1 = std::to_array({-2, -1, -11, -111});
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check1));
 
   wm::ActivateWindow(w11.get());
   EXPECT_TRUE(wm::IsActiveWindow(w111.get()));
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, std::size(check1)));
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check1));
 
   wm::ActivateWindow(w111.get());
   EXPECT_TRUE(wm::IsActiveWindow(w111.get()));
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, std::size(check1)));
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check1));
 
   wm::ActivateWindow(w2.get());
   EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
-  int check2[] = {-1, -11, -111, -2};
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check2, std::size(check2)));
+  constexpr auto check2 = std::to_array({-1, -11, -111, -2});
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check2));
 
   w2.reset();
   EXPECT_TRUE(wm::IsActiveWindow(w111.get()));

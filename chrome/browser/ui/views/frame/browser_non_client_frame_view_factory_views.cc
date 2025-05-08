@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux_native.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view_linux.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/nav_button_provider.h"
@@ -82,8 +83,13 @@ std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
     BrowserFrame* frame,
     BrowserView* browser_view) {
   if (browser_view->browser()->is_type_picture_in_picture()) {
+#if BUILDFLAG(IS_LINUX)
+    return std::make_unique<PictureInPictureBrowserFrameViewLinux>(
+        frame, browser_view);
+#else
     return std::make_unique<PictureInPictureBrowserFrameView>(frame,
                                                               browser_view);
+#endif
   }
 
 #if BUILDFLAG(IS_WIN)

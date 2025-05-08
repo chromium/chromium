@@ -98,16 +98,6 @@ AccessCode& AccessCode::operator=(const AccessCode&) = default;
 
 AccessCode::~AccessCode() = default;
 
-bool AccessCode::operator==(const AccessCode& rhs) const {
-  return code_ == rhs.code() && valid_from_ == rhs.valid_from() &&
-         valid_to_ == rhs.valid_to();
-}
-
-bool AccessCode::operator!=(const AccessCode& rhs) const {
-  return code_ != rhs.code() || valid_from_ != rhs.valid_from() ||
-         valid_to_ != rhs.valid_to();
-}
-
 std::ostream& operator<<(std::ostream& out, const AccessCode& code) {
   return out << code.code() << " [" << code.valid_from() << " - "
              << code.valid_to() << "]";

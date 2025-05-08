@@ -76,11 +76,14 @@ Embedder::TaskId TestEmbedder::ComputePassagesEmbeddings(
                         ComputePassagesEmbeddingsCallback callback) {
                        std::move(callback).Run(
                            passages, ComputeEmbeddingsForPassages(passages),
-                           kInvalidTaskId, ComputeEmbeddingsStatus::kSuccess);
+                           /*task_id=*/0, ComputeEmbeddingsStatus::kSuccess);
                      },
                      passages, std::move(callback)));
-  return kInvalidTaskId;
+  return 0;
 }
+
+void TestEmbedder::ReprioritizeTasks(PassagePriority priority,
+                                     const std::set<TaskId>& tasks) {}
 
 bool TestEmbedder::TryCancel(TaskId task_id) {
   return false;

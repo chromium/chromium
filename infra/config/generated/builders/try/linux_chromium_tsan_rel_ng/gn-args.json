@@ -5,7 +5,7 @@
     "is_component_build": false,
     "is_debug": false,
     "is_tsan": true,
-    "symbol_level": 1,
+    "symbol_level": 0,
     "target_cpu": "x64",
     "target_os": "linux",
     "use_reclient": false,

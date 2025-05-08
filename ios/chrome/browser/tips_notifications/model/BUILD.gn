@@ -83,6 +83,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",
     "//ios/testing:block_swizzler",
+    "//ios/web/public/test",
     "//third_party/ocmock",
   ]
 }

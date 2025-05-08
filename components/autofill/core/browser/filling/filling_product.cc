@@ -36,6 +36,8 @@ std::string FillingProductToString(FillingProduct filling_product) {
       return "AutofillAi";
     case FillingProduct::kLoyaltyCard:
       return "LoyaltyCard";
+    case FillingProduct::kIdentityCredential:
+      return "IdentityCredential";
   };
   NOTREACHED();
 }
@@ -50,7 +52,6 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kManageAddress:
-    case SuggestionType::kIdentityCredential:
       return FillingProduct::kAddress;
     case SuggestionType::kBnplEntry:
     case SuggestionType::kCreditCardEntry:
@@ -104,6 +105,8 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kLoyaltyCardEntry:
     case SuggestionType::kManageLoyaltyCard:
       return FillingProduct::kLoyaltyCard;
+    case SuggestionType::kIdentityCredential:
+      return FillingProduct::kIdentityCredential;
   }
   NOTREACHED();
 }

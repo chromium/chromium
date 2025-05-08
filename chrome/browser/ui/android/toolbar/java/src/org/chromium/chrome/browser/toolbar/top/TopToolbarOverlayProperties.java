@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties associated with the top toolbar's composited layer. */
+@NullMarked
 public class TopToolbarOverlayProperties {
     /** Whether the URL should be hidden when rendered. */
     public static final WritableBooleanPropertyKey ANONYMIZE = new WritableBooleanPropertyKey();

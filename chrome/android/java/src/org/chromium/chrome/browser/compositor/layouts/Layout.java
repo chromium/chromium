@@ -88,7 +88,7 @@ public abstract class Layout {
         int HIDDEN = 3;
     }
 
-    /** Length of the unstalling animation. **/
+    /** Length of the unstalling animation. */
     public static final long UNSTALLED_ANIMATION_DURATION_MS = 500;
 
     private static final float SNAP_SPEED = 1.0f; // dp per second

@@ -9,10 +9,8 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -28,7 +26,6 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_dialogs.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
@@ -171,8 +168,7 @@ void RecheckPasswordExpiryTask::CancelPendingRecheck() {
 // static
 std::unique_ptr<InSessionPasswordChangeManager>
 InSessionPasswordChangeManager::CreateIfEnabled(Profile* primary_profile) {
-  if (base::FeatureList::IsEnabled(::features::kInSessionPasswordChange) &&
-      primary_profile->GetPrefs()->GetBoolean(
+  if (primary_profile->GetPrefs()->GetBoolean(
           prefs::kSamlInSessionPasswordChangeEnabled)) {
     std::unique_ptr<InSessionPasswordChangeManager> manager =
         std::make_unique<InSessionPasswordChangeManager>(primary_profile);

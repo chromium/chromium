@@ -85,12 +85,6 @@ using VibrationManagerBinder = base::RepeatingCallback<void(
 CONTENT_EXPORT void OverrideVibrationManagerBinderForTesting(
     VibrationManagerBinder binder);
 
-// Allows tests to override how frame hosts bind Authenticator receivers.
-using AuthenticatorBinder = base::RepeatingCallback<void(
-    mojo::PendingReceiver<blink::mojom::Authenticator>)>;
-CONTENT_EXPORT void OverrideAuthenticatorBinderForTesting(
-    AuthenticatorBinder binder);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BROWSER_INTERFACE_BINDERS_H_

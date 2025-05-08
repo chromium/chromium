@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/privacy_sandbox/dialog_origin_marker.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -155,7 +156,14 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
         views::test::AnyWidgetTestPasskey{},
         PrivacySandboxDialogView::kViewClassName);
     PrivacySandboxDialog::Show(browser(), prompt_type);
-    waiter.WaitIfNeededAndGet();
+    views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
+    auto* privacy_sandbox_dialog_view = static_cast<PrivacySandboxDialogView*>(
+        dialog_widget->widget_delegate()->GetContentsView());
+    // Verify that the DialogOriginMarker is present for WebContents created
+    // within the dialog view context.
+    ASSERT_NE(privacy_sandbox::DialogOriginMarker::FromWebContents(
+                  privacy_sandbox_dialog_view->GetWebContentsForTesting()),
+              nullptr);
   }
 
   MockPrivacySandboxService* mock_service() { return mock_service_; }
@@ -306,6 +314,11 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
 
     auto* privacy_sandbox_dialog_view = static_cast<PrivacySandboxDialogView*>(
         dialog_widget->widget_delegate()->GetContentsView());
+    // Verify that the DialogOriginMarker is present for WebContents created
+    // within the dialog view context.
+    ASSERT_NE(privacy_sandbox::DialogOriginMarker::FromWebContents(
+                  privacy_sandbox_dialog_view->GetWebContentsForTesting()),
+              nullptr);
 
     // Click expand button.
     EXPECT_TRUE(
@@ -343,8 +356,9 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(https://crbug.com/415305952): High failure rate.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewPrivacyPolicyBrowserTest,
-                       InvokeUi_PrivacyPolicy) {
+                       DISABLED_InvokeUi_PrivacyPolicy) {
   ShowAndVerifyUi();
 }
 
@@ -367,9 +381,10 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(https://crbug.com/415305952): High failure rate.
 IN_PROC_BROWSER_TEST_F(
     PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest,
-    InvokeUi_PrivacyPolicy) {
+    DISABLED_InvokeUi_PrivacyPolicy) {
   ShowAndVerifyUi();
 }
 
@@ -402,6 +417,11 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest
 
     auto* privacy_sandbox_dialog_view = static_cast<PrivacySandboxDialogView*>(
         dialog_widget->widget_delegate()->GetContentsView());
+    // Verify that the DialogOriginMarker is present for WebContents created
+    // within the dialog view context.
+    ASSERT_NE(privacy_sandbox::DialogOriginMarker::FromWebContents(
+                  privacy_sandbox_dialog_view->GetWebContentsForTesting()),
+              nullptr);
 
     auto [primary_selector, secondary_selector] =
         GetDialogElementSelector(name);

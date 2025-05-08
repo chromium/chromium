@@ -99,10 +99,12 @@ public class TabGridContextMenuCoordinatorUnitTest {
     private Activity mActivity;
     private GURL mUrl;
     private Token mTabGroupId;
+    private ObservableSupplierImpl<TabBookmarker> mTabBookmarkerSupplier;
 
     @Before
     public void setUp() {
         mTabGroupId = Token.createRandom();
+        mTabBookmarkerSupplier = new ObservableSupplierImpl<>(mTabBookmarker);
 
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
@@ -121,7 +123,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         mCoordinator =
                 new TabGridContextMenuCoordinator(
                         mActivity,
-                        mTabBookmarker,
+                        mTabBookmarkerSupplier,
                         mProfile,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
@@ -170,7 +172,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     public void testGetMenuItemClickedCallback_shareTab() {
         TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
-                        mTabBookmarker,
+                        mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
@@ -185,7 +187,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     public void testGetMenuItemClickedCallback_addToTabGroup() {
         TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
-                        mTabBookmarker,
+                        mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
@@ -200,7 +202,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     public void testGetMenuItemClickedCallback_addToNewTabGroup() {
         TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
-                        mTabBookmarker,
+                        mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
@@ -215,7 +217,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     public void testGetMenuItemClickedCallback_addToBookmarks() {
         TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
-                        mTabBookmarker,
+                        mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
@@ -230,7 +232,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     public void testGetMenuItemClickedCallback_editBookmark() {
         TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
-                        mTabBookmarker,
+                        mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
@@ -245,7 +247,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     public void testGetMenuItemClickedCallback_selectTabs() {
         TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
-                        mTabBookmarker,
+                        mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
@@ -260,7 +262,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     public void testGetMenuItemClickedCallback_closeTab() {
         TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
-                        mTabBookmarker,
+                        mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
@@ -274,7 +276,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     public void testGetMenuItemClickedCallback_invalidTabId() {
         TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
-                        mTabBookmarker,
+                        mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
@@ -290,7 +292,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         when(mTabModel.getTabById(anyInt())).thenReturn(null);
         TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
-                        mTabBookmarker,
+                        mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
@@ -305,6 +307,21 @@ public class TabGridContextMenuCoordinatorUnitTest {
     public void testBuildMenuActionItems_withGroups() {
         mUrl = new GURL(LOCALHOST_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
+        mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
+
+        assertEquals(5, mMenuItemList.size());
+        assertEquals(R.string.move_tab_to_group, getMenuItemTitleId(0));
+        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
+        assertEquals(R.string.share, getMenuItemTitleId(2));
+        assertEquals(R.string.select_tab, getMenuItemTitleId(3));
+        assertEquals(R.string.close_tab, getMenuItemTitleId(4));
+    }
+
+    @Test
+    public void testBuildMenuActionItems_notInGroup() {
+        mUrl = new GURL(LOCALHOST_URL);
+        when(mTab.getUrl()).thenReturn(mUrl);
+        when(mTab.getTabGroupId()).thenReturn(null);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(5, mMenuItemList.size());
@@ -350,6 +367,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     @Test
     public void testBuildMenuActionItems_sharingDisabled() {
         mUrl = new GURL(CHROME_URL);
+        when(mTab.getTabGroupId()).thenReturn(null);
         when(mTab.getUrl()).thenReturn(mUrl);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 

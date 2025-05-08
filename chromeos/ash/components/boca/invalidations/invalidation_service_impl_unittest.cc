@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
@@ -33,6 +34,8 @@ namespace {
 constexpr char kTestEmail[] = "testemail";
 constexpr GaiaId::Literal kGaiaId("123");
 constexpr int kTokenValidationPeriodMinutesDefault = 60 * 24;
+constexpr char kBocaUploadTokenErrorCodeUmaPath[] =
+    "Ash.Boca.UploadToken.ErrorCode";
 
 class MockSessionClientImpl : public SessionClientImpl {
  public:
@@ -187,6 +190,7 @@ TEST_F(InvalidationServiceImplTest, HandleTokenUpload) {
 }
 
 TEST_F(InvalidationServiceImplTest, HandleTokenUploadFailureWithBackoff) {
+  base::HistogramTester histogram_tester;
   // Check that the handler gets the token through GetToken.
   const char token[] = "token_2";
   EXPECT_CALL(mock_instance_id_, GetToken)
@@ -211,6 +215,11 @@ TEST_F(InvalidationServiceImplTest, HandleTokenUploadFailureWithBackoff) {
         std::move(request->callback()).Run(true);
       });
   task_environment_.FastForwardBy(base::Seconds(3));
+  histogram_tester.ExpectTotalCount(kBocaUploadTokenErrorCodeUmaPath, 1);
+
+  histogram_tester.ExpectBucketCount(
+      kBocaUploadTokenErrorCodeUmaPath,
+      google_apis::ApiErrorCode::HTTP_BAD_REQUEST, 1);
 }
 }  // namespace
 }  // namespace ash::boca

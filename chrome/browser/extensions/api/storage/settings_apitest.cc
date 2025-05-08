@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -37,12 +36,15 @@
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -290,9 +292,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, SplitModeIncognito) {
   // regular and incognito mode.
   ResultCatcher catcher;
   ResultCatcher catcher_incognito;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
   catcher_incognito.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // Sync, local and managed follow the same storage flow (RunWithStorage),
   // whereas session follows a separate flow (RunWithSession). For the purpose
@@ -330,9 +332,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   // regular and incognito mode.
   ResultCatcher catcher;
   ResultCatcher catcher_incognito;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
   catcher_incognito.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   StorageAreaNamespace storage_areas[2] = {StorageAreaNamespace::kSync,
                                            StorageAreaNamespace::kSession};
@@ -378,9 +380,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   // regular and incognito mode.
   ResultCatcher catcher;
   ResultCatcher catcher_incognito;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
   catcher_incognito.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   LoadAndReplyWhenSatisfied(StorageAreaNamespace::kSync,
                             "assertNoNotifications", "assertNoNotifications",
@@ -490,9 +492,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
   ResultCatcher catcher, catcher_incognito;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
   catcher_incognito.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   const Extension* extension = LoadAndReplyWhenSatisfied(
       StorageAreaNamespace::kSync, "assertNoNotifications",
@@ -535,9 +537,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
   ResultCatcher catcher, catcher_incognito;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
   catcher_incognito.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   const Extension* extension = LoadAndReplyWhenSatisfied(
       StorageAreaNamespace::kLocal, "assertNoNotifications",
@@ -571,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, IsStorageEnabled) {
-  StorageFrontend* frontend = StorageFrontend::Get(browser()->profile());
+  StorageFrontend* frontend = StorageFrontend::Get(profile());
   EXPECT_TRUE(frontend->IsStorageEnabled(settings_namespace::LOCAL));
   EXPECT_TRUE(frontend->IsStorageEnabled(settings_namespace::SYNC));
 
@@ -602,9 +604,12 @@ class ExtensionSettingsManagedStorageApiTest
   ResultCatcher events_result_catcher_;
 };
 
+// Desktop Android supports only service worker, not persistent background.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionSettingsManagedStorageApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif
 
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionSettingsManagedStorageApiTest,
@@ -613,8 +618,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
                        ExtensionsSchemas) {
   // Verifies that the Schemas for the extensions domain are created on startup.
-  Profile* profile = browser()->profile();
-  ExtensionSystem* extension_system = ExtensionSystem::Get(profile);
+  ExtensionSystem* extension_system = ExtensionSystem::Get(profile());
   if (!extension_system->ready().is_signaled()) {
     // Wait until the extension system is ready.
     base::RunLoop run_loop;
@@ -628,7 +632,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   message_.clear();
 
   policy::SchemaRegistry* registry =
-      profile->GetPolicySchemaRegistryService()->registry();
+      profile()->GetPolicySchemaRegistryService()->registry();
   ASSERT_TRUE(registry);
   EXPECT_FALSE(registry->schema_map()->GetSchema(policy::PolicyNamespace(
       policy::POLICY_DOMAIN_EXTENSIONS, kManagedStorageExtensionId)));
@@ -721,6 +725,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
   ASSERT_TRUE(RunExtensionTest("settings/managed_storage")) << message_;
 }
 
+// TODO(crbug.com/40200835): PRE_ test does not work on android_browsertest,
+// therefore, disabled the following tests until the PRE_ test issue is
+// resolved.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/40789870): This test should be rewritten. See the bug for more
 // details.
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
@@ -775,11 +783,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   EXPECT_TRUE(events_result_catcher_.GetNextResult())
       << events_result_catcher_.message();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
                        ManagedStorageDisabled) {
   // Disable the 'managed' namespace.
-  StorageFrontend* frontend = StorageFrontend::Get(browser()->profile());
+  StorageFrontend* frontend = StorageFrontend::Get(profile());
   frontend->DisableStorageForTesting(settings_namespace::MANAGED);
   EXPECT_FALSE(frontend->IsStorageEnabled(settings_namespace::MANAGED));
   // Now run the extension.

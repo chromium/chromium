@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -126,7 +127,8 @@ class FaviconFetchObserver : public ui::test::ObservationStateObserver<
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
                                     kTabCountState);
 
-class SavedTabGroupInteractiveTestBase : public InteractiveBrowserTest {
+class SavedTabGroupInteractiveTestBase
+    : public TabStripInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   SavedTabGroupInteractiveTestBase() = default;
   ~SavedTabGroupInteractiveTestBase() override = default;
@@ -163,32 +165,6 @@ class SavedTabGroupInteractiveTestBase : public InteractiveBrowserTest {
         // On Mac the menu might still be animating closed, so wait for that.
         WaitForHide(AppMenuModel::kBookmarksMenuItem),
         WaitForShow(kBookmarkBarElementId));
-  }
-
-  MultiStep FinishTabstripAnimations() {
-    return Steps(WaitForShow(kTabStripElementId),
-                 WithView(kTabStripElementId, [](TabStrip* tab_strip) {
-                   tab_strip->StopAnimating(true);
-                 }).SetDescription("FinishTabstripAnimation"));
-  }
-
-  MultiStep HoverTabGroupHeader(tab_groups::TabGroupId group_id) {
-    const char kTabGroupHeaderToHover[] = "Tab group header to hover";
-    return Steps(
-        FinishTabstripAnimations(),
-        NameDescendantView(
-            kBrowserViewElementId, kTabGroupHeaderToHover,
-            base::BindRepeating(
-                [](tab_groups::TabGroupId group_id, const views::View* view) {
-                  const TabGroupHeader* header =
-                      views::AsViewClass<TabGroupHeader>(view);
-                  if (!header) {
-                    return false;
-                  }
-                  return header->group().value() == group_id;
-                },
-                group_id)),
-        MoveMouseTo(kTabGroupHeaderToHover));
   }
 
   auto WaitForTabCount(Browser* browser, int expected_count) {

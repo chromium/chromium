@@ -144,6 +144,7 @@ const FieldTrialTestingExperiment
          /*platforms=*/array_kEarlyBootFieldTrialConfig_platforms,
          /*form_factors=*/{},
          /*is_low_end_device=*/std::nullopt,
+         /*disable_benchmarking=*/std::nullopt,
          /*min_os_version=*/nullptr,
          /*params=*/array_kEarlyBootFieldTrialConfig_params,
          /*enable_features=*/early_boot_enable_features,

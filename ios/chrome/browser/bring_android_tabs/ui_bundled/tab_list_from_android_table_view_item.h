@@ -44,7 +44,7 @@
 @property(nonatomic, readonly, strong) UILabel* URLLabel;
 
 // Unique identifier that matches with one TabListFromAndroidTableViewItem.
-@property(nonatomic, strong) NSString* cellUniqueIdentifier;
+@property(nonatomic, copy) NSString* cellUniqueIdentifier;
 
 @end
 

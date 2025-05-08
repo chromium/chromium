@@ -9,11 +9,11 @@
 #import "base/files/file_path.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 namespace em = enterprise_management;
@@ -59,7 +59,7 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> profile_;

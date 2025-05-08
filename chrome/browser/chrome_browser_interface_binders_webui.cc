@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom.h"
@@ -42,7 +43,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
-#include "components/webui/chrome_urls/features.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller_interface_binder.h"
@@ -96,6 +96,8 @@
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
@@ -427,10 +429,8 @@ void PopulateChromeWebUIFrameBinders(
       commerce::mojom::CommerceInternalsHandlerFactory,
       commerce::CommerceInternalsUI>(map);
 
-  if (base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref)) {
-    RegisterWebUIControllerInterfaceBinder<
-        chrome_urls::mojom::PageHandlerFactory, chrome_urls::ChromeUrlsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<chrome_urls::mojom::PageHandlerFactory,
+                                         chrome_urls::ChromeUrlsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       data_sharing_internals::mojom::PageHandlerFactory,
@@ -522,10 +522,14 @@ void PopulateChromeWebUIFrameBinders(
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
       UserEducationInternalsUI, ReadingListUI, TabSearchUI, WebuiGalleryUI,
       HistoryClustersSidePanelUI, ShoppingInsightsSidePanelUI,
-      media_router::AccessCodeCastUI, commerce::ProductSpecificationsUI>(map);
+      media_router::AccessCodeCastUI, commerce::ProductSpecificationsUI,
+      NewTabFooterUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      new_tab_footer::mojom::NewTabFooterHandlerFactory, NewTabFooterUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI,
@@ -1211,6 +1215,10 @@ void PopulateChromeWebUIFrameBinders(
         private_state_tokens::mojom::PrivateStateTokensPageHandler,
         privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
   }
+
+  RegisterWebUIControllerInterfaceBinder<
+      privacy_sandbox::dialog::mojom::BaseDialogPageHandler,
+      privacy_sandbox::BaseDialogUI>(map);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

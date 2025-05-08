@@ -33,6 +33,7 @@
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_attempt.h"
@@ -54,16 +55,16 @@ class HttpStreamKey;
 //
 // Maintains multiple in-flight Jobs for a single destination keyed by
 // HttpStreamKey. Peforms DNS resolution and manages connection attempts.
-// Delegates QUIC connection attempts to QuicTask. Upon successful HttpStream
+// Delegates QUIC connection attempts to QuicAttempt. Upon successful HttpStream
 // creations or fatal error occurrence, notify jobs of success or failure.
 //
 // Created by an HttpStreamPool::Group when new connection attempts are needed
-// and destroyed when all jobs, in-flight attempts, and the QuicTask are
+// and destroyed when all jobs, in-flight attempts, and the QuicAttempt are
 // completed.
 class HttpStreamPool::AttemptManager
     : public HostResolver::ServiceEndpointRequest::Delegate {
  public:
-  class NET_EXPORT_PRIVATE QuicTask;
+  class NET_EXPORT_PRIVATE QuicAttempt;
 
   // The state of an IPEndPoint. There is no success state. The absence of a
   // state for an endpoint means that we haven't yet attempted to connect to the
@@ -147,8 +148,8 @@ class HttpStreamPool::AttemptManager
   // Cancels all jobs.
   void CancelJobs(int error);
 
-  // Cancels the QuicTask if it exists.
-  void CancelQuicTask(int error);
+  // Cancels the QuicAttempt if it exists.
+  void CancelQuicAttempt(int error);
 
   // Returns the number of pending jobs/preconnects. The number is
   // calculated by subtracting the number of in-flight attempts (excluding slow
@@ -175,8 +176,8 @@ class HttpStreamPool::AttemptManager
   // still ongoing.
   bool IsSvcbOptional();
 
-  // Called when the QuicTask owned by `this` is completed.
-  void OnQuicTaskComplete(int rv, NetErrorDetails details);
+  // Called when the QuicAttempt owned by `this` is completed.
+  void OnQuicAttemptComplete(int rv, NetErrorDetails details);
 
   // Retrieves information on the current state of `this` as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
@@ -184,11 +185,13 @@ class HttpStreamPool::AttemptManager
   MultiplexedSessionCreationInitiator
   CalculateMultiplexedSessionCreationInitiator();
 
-  std::optional<int> GetQuicTaskResultForTesting() { return quic_task_result_; }
+  std::optional<int> GetQuicAttemptResultForTesting() {
+    return quic_attempt_result_;
+  }
 
   void SetIsFailingForTest(bool is_failing) { is_failing_ = is_failing; }
 
-  QuicTask* quic_task_for_testing() const { return quic_task_.get(); }
+  QuicAttempt* quic_attempt_for_testing() const { return quic_attempt_.get(); }
 
   IPEndPointStateMap& ip_endpoint_states_for_testing() {
     return ip_endpoint_states_;
@@ -197,7 +200,7 @@ class HttpStreamPool::AttemptManager
     return ip_endpoint_states_;
   }
 
-  bool HasSSLConfigForTesting() const { return ssl_config_.has_value(); }
+  void SetOnCompleteCallbackForTesting(base::OnceClosure callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpStreamPoolAttemptManagerTest,
@@ -290,13 +293,11 @@ class HttpStreamPool::AttemptManager
     return service_endpoint_request_finished_;
   }
 
-  int WaitForSSLConfigReady();
-
   void SetInitialAttemptState();
   InitialAttemptState CalculateInitialAttemptState();
 
   base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig(
-      TcpBasedAttempt* attempt);
+      const IPEndPoint& endpoint);
 
   bool UsingTls() const;
 
@@ -319,12 +320,8 @@ class HttpStreamPool::AttemptManager
   bool CanUseExistingQuicSessionAfterEndpointChanges();
   bool CanUseExistingSpdySessionAfterEndpointChanges();
 
-  // Calculate SSLConfig if it's not calculated yet and `this` has received
-  // enough information to calculate it.
-  void MaybeCalculateSSLConfig();
-
-  // When SSLConfig is ready and the notification has not yet been sent,
-  // notifies in-flight TCP based attempts that SSLConfig is ready.
+  // If `this` is ready to start cryptographic handshakes, notifies TCP based
+  // attempts that SSLConfigs are ready.
   void MaybeNotifySSLConfigReady();
 
   // Attempts QUIC sessions if QUIC can be used and `this` is ready to start
@@ -394,8 +391,13 @@ class HttpStreamPool::AttemptManager
   bool HasEnoughTcpBasedAttemptsForSlowIPEndPoint(
       const IPEndPoint& ip_endpoint);
 
+  // Returns a QUIC endpoint to make a connection attempt. See the comments in
+  // QuicSessionPool::SelectQuicVersion() for the criteria to select a QUIC
+  // endpoint.
+  std::optional<QuicEndpoint> GetQuicEndpointToAttempt();
+
   // Called when this gets a fatal error. Notifies all jobs of the failure and
-  // cancels in-flight TCP based attempts and QuicTask's, if they exist.
+  // cancels in-flight TCP based attempts and QuicAttempt's, if they exist.
   void HandleFinalError(int error);
 
   // Calculate the failure kind to notify jobs of failure. Used to call one of
@@ -454,8 +456,6 @@ class HttpStreamPool::AttemptManager
   raw_ptr<Job> RemoveJobFromQueue(JobQueue::Pointer job_pointer);
 
   void OnTcpBasedAttemptComplete(TcpBasedAttempt* raw_attempt, int rv);
-  void OnTcpBasedAttemptTcpHandshakeComplete(TcpBasedAttempt* raw_attempt,
-                                             int rv);
   void OnTcpBasedAttemptSlow(TcpBasedAttempt* raw_attempt);
 
   void HandleTcpBasedAttemptFailure(
@@ -558,29 +558,6 @@ class HttpStreamPool::AttemptManager
   ResolveErrorInfo resolve_error_info_;
   ConnectionAttempts connection_attempts_;
 
-  // TODO(crbug.com/403373872): Remove below fields once we identify the cause
-  // of the bug.
-  enum class AttemptAbortReason : int {
-    kEndpointResultsEmpty = 0,
-    kEndpointUnusable = 1,
-    kEndpointNotInResults = 2,
-  };
-  struct AbortedAttempt {
-    AbortedAttempt();
-    ~AbortedAttempt();
-
-    AbortedAttempt(AbortedAttempt&& other);
-    AbortedAttempt& operator=(AbortedAttempt&& other);
-
-    AttemptAbortReason reason;
-    bool service_endpoint_request_finished;
-    IPEndPoint endpoint;
-    std::vector<ServiceEndpoint> current_endpoints;
-    std::string service_endpoint_request_debug_string;
-  };
-  std::vector<AbortedAttempt> aborted_tcp_based_attempts_;
-  std::vector<std::vector<ServiceEndpoint>> service_endpoint_results_history_;
-
   // TODO(crbug.com/406936736): Remove this once we identify the cause of the
   // bug.
   bool ip_matching_spdy_session_found_ = false;
@@ -601,14 +578,9 @@ class HttpStreamPool::AttemptManager
   // Used to notify jobs.
   scoped_refptr<SSLCertRequestInfo> client_auth_cert_info_;
 
-  // Allowed bad certificates from the newest job.
-  std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
-  // SSLConfig for all TLS connection attempts. Calculated after the service
-  // endpoint request is ready to proceed cryptographic handshakes.
-  // TODO(crbug.com/40812426): We need to have separate SSLConfigs when we
-  // support multiple HTTPS RR that have different service endpoints.
-  std::optional<SSLConfig> ssl_config_;
-  bool ssl_config_ready_notified_ = false;
+  // Base SSLConfig for TCP based attempts, Allowed bad certificates are set
+  // from the newest job.
+  std::optional<SSLConfig> base_ssl_config_;
 
   std::set<std::unique_ptr<TcpBasedAttempt>, base::UniquePtrComparator>
       tcp_based_attempts_;
@@ -632,16 +604,18 @@ class HttpStreamPool::AttemptManager
   // from Alt-Svc.
   quic::ParsedQuicVersion quic_version_ =
       quic::ParsedQuicVersion::Unsupported();
-  // Created when attempting QUIC sessions.
-  std::unique_ptr<QuicTask> quic_task_;
-  // Set when `quic_task_` is completed.
-  std::optional<int> quic_task_result_;
+  // Created when attempting a QUIC session.
+  std::unique_ptr<QuicAttempt> quic_attempt_;
+  // Set when `quic_attempt_` is completed.
+  std::optional<int> quic_attempt_result_;
 
   // The delay for TCP based stream attempts in favor of QUIC.
   base::TimeDelta tcp_based_attempt_delay_;
   // Set to true when TCP based attempts should be blocked.
   bool should_block_tcp_based_attempt_ = false;
   base::OneShotTimer tcp_based_attempt_delay_timer_;
+
+  base::OnceClosure on_complete_callback_for_testing_;
 
   base::WeakPtrFactory<AttemptManager> weak_ptr_factory_{this};
 };

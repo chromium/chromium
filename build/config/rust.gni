@@ -33,13 +33,6 @@ declare_args() {
   #   (including `//base`, `//net`, etc.)
   enable_rust = build_with_chromium
 
-  # The CXX tool is in //third_party/rust which is not shared with downstream
-  # projects yet. So they need to copy the required dependencies and GN files
-  # into their project to enable CXX there.
-  #
-  # We do not support disabling this flag in Chromium code.
-  enable_rust_cxx = build_with_chromium
-
   # The chromium prelude crate provides the `chromium::import!` macro which
   # is needed to depend on first-party rust libraries. Third-party libraries
   # are specified with cargo_crate and do not get imported through this macro.
@@ -104,6 +97,16 @@ declare_args() {
   force_rustc_color_output = false
 }
 
+declare_args() {
+  # The CXX tool is in //third_party/rust which is not shared with downstream
+  # projects yet. So they need to copy the required dependencies and GN files
+  # into their project to enable CXX there.
+  #
+  # Currently, cxx is needed to use Rust with an allocator since the Chromium
+  # allocator shim uses cxx
+  enable_rust_cxx = enable_rust
+}
+
 # Use the Rust toolchain built in-tree. When false, we use the prebuilt Rust
 # stdlibs that come with the specified custom toolchain.
 use_chromium_rust_toolchain = rust_sysroot_absolute == ""
@@ -125,10 +128,20 @@ if (enable_rust) {
   if (use_chromium_rust_toolchain) {
     toolchain_has_rust = chromium_toolchain_supports_platform
     if (toolchain_has_rust) {
-      update_rust_args = [ "--print-package-version" ]
-      rustc_revision = exec_script("//tools/rust/update_rust.py",
-                                   update_rust_args,
-                                   "trim string")
+      rustc_revision =
+          read_file("//third_party/rust-toolchain/VERSION", "trim string")
+
+      # Example:
+      # rustc 1.88.0 c8f94230282a8e8c1148f3e657f0199aad909228 (c8f94230282a8e8c1148f3e657f0199aad909228-1-llvmorg-21-init-9266-g09006611 chromium)
+      # Trim it down as much as we can using GN.
+      rustc_revision = string_replace(rustc_revision, "rustc ", "")
+      rustc_revision = string_replace(rustc_revision, " chromium", "")
+      rustc_revision = string_replace(rustc_revision, "init-", "")
+      rustc_revision = string_replace(rustc_revision, "llvmorg-", "")
+      rustc_revision = string_replace(rustc_revision, " ", "")
+      rustc_revision = string_replace(rustc_revision, ".", "")
+      rustc_revision = string_replace(rustc_revision, "(", "-")
+      rustc_revision = string_replace(rustc_revision, ")", "")
     }
 
     # The same as written in `config.toml.template`.
@@ -351,7 +364,22 @@ if (is_linux || is_chromeos) {
   }
 }
 
-assert(!toolchain_has_rust || rust_abi_target != "")
+if (toolchain_has_rust) {
+  assert(rust_abi_target != "")
+
+  _known_rust_target_triples_filepath = "//build/rust/known-target-triples.txt"
+  _is_rust_abi_target_a_known_triple = false
+  _known_rust_target_triples_ =
+      read_file(_known_rust_target_triples_filepath, "list lines")
+  foreach(_known_triple, _known_rust_target_triples_) {
+    if (_known_triple == rust_abi_target) {
+      _is_rust_abi_target_a_known_triple = true
+    }
+  }
+  assert(_is_rust_abi_target_a_known_triple,
+         "`${rust_abi_target}` needs to be added to " +
+             "`//${_known_rust_target_triples_filepath}`")
+}
 
 # This variable is passed to the Rust libstd build.
 rust_target_arch = ""

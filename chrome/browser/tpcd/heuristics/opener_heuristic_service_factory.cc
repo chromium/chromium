@@ -40,9 +40,9 @@ content::BrowserContext* OpenerHeuristicServiceFactory::GetBrowserContextToUse(
     return nullptr;
   }
 
-  // Enable the heuristic for the same profiles as DIPS -- profiles associated
+  // Enable the heuristic for the same profiles as BTM -- profiles associated
   // with a human user.
-  if (!ShouldBrowserContextEnableDips(context)) {
+  if (!ShouldBrowserContextEnableBtm(context)) {
     return nullptr;
   }
 

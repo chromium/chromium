@@ -30,6 +30,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @JNINamespace("media")
@@ -44,9 +46,9 @@ class AudioManagerAndroid {
     /** Simple container for device information. */
     public static class AudioDevice {
         private final int mId;
-        private final String mName;
+        private final @Nullable String mName;
 
-        public AudioDevice(int id, String name) {
+        public AudioDevice(int id, @Nullable String name) {
             mId = id;
             mName = name;
         }
@@ -57,7 +59,7 @@ class AudioManagerAndroid {
         }
 
         @CalledByNative("AudioDevice")
-        private String name() {
+        private @Nullable String name() {
             return mName;
         }
     }
@@ -257,11 +259,57 @@ class AudioManagerAndroid {
     }
 
     /**
+     * @param inputs If true, input devices will be returned; otherwise, output devices will be
+     *     returned.
+     * @return The current list of available audio devices. Note that this call does not trigger any
+     *     update of the list of devices, it only copies the current state into the output array.
+     */
+    @CalledByNative
+    private AudioDevice @Nullable [] getDevices(boolean inputs) {
+        if (DEBUG) logd("getDevices");
+
+        AudioDeviceInfo[] deviceInfos =
+                mAudioManager.getDevices(
+                        inputs
+                                ? AudioManager.GET_DEVICES_INPUTS
+                                : AudioManager.GET_DEVICES_OUTPUTS);
+
+        List<AudioDevice> devices = new ArrayList<>();
+        for (int deviceIndex = 0; deviceIndex < deviceInfos.length; deviceIndex++) {
+            AudioDeviceInfo deviceInfo = deviceInfos[deviceIndex];
+
+            int type = deviceInfo.getType();
+            switch (type) {
+                case 28: // AudioDeviceInfo.TYPE_ECHO_REFERENCE
+                case AudioDeviceInfo.TYPE_REMOTE_SUBMIX:
+                case AudioDeviceInfo.TYPE_TELEPHONY:
+                    // Unusable device types.
+                    continue;
+                case AudioDeviceInfo.TYPE_BLUETOOTH_A2DP:
+                case AudioDeviceInfo.TYPE_BLUETOOTH_SCO:
+                    // TODO(crbug.com/405955144): Bluetooth Classic streams do not work correctly,
+                    // as they do not manage or react to SCO state changes.
+                    continue;
+            }
+
+            int id = deviceInfo.getId();
+            String name = deviceInfo.getProductName().toString();
+            if (name.equals(android.os.Build.MODEL)) {
+                // Undo the Android framework's substitution of a missing name with
+                // `android.os.Build.MODEL` to facilitate providing a custom fallback name instead.
+                name = null;
+            }
+            devices.add(new AudioDevice(id, name));
+        }
+        return devices.toArray(new AudioDevice[0]);
+    }
+
+    /**
      * Required permissions: android.Manifest.permission.MODIFY_AUDIO_SETTINGS and
      * android.Manifest.permission.RECORD_AUDIO.
      *
-     * @return the current list of available communication devices. Note that this call does not
-     *     trigger any update of the list of devices, it only copies the current state in to the
+     * @return The current list of available communication devices. Note that this call does not
+     *     trigger any update of the list of devices, it only copies the current state into the
      *     output array.
      */
     @CalledByNative

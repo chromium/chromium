@@ -78,6 +78,24 @@ inline ContainerScrollableFlags Flip(ContainerScrollableFlags overflowing) {
   return flipped;
 }
 
+enum class ContainerScrollDirection {
+  kNone = 0,
+  kStart = 1 << 0,
+  kEnd = 1 << 1,
+};
+
+inline ContainerScrollDirection Flip(
+    ContainerScrollDirection scroll_direction) {
+  switch (scroll_direction) {
+    case ContainerScrollDirection::kNone:
+      return ContainerScrollDirection::kNone;
+    case ContainerScrollDirection::kStart:
+      return ContainerScrollDirection::kEnd;
+    case ContainerScrollDirection::kEnd:
+      return ContainerScrollDirection::kStart;
+  }
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_STATE_H_

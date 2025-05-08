@@ -43,6 +43,7 @@ class ChromeContextMenuItem {
         Item.SHARE_LINK,
         Item.DIRECT_SHARE_LINK,
         Item.READ_LATER,
+        Item.SHOW_INTEREST_IN_ELEMENT,
         Item.LOAD_ORIGINAL_IMAGE,
         Item.SAVE_IMAGE,
         Item.OPEN_IMAGE,
@@ -93,42 +94,43 @@ class ChromeContextMenuItem {
         int SHARE_LINK = 12;
         int DIRECT_SHARE_LINK = 13;
         int READ_LATER = 14;
+        int SHOW_INTEREST_IN_ELEMENT = 15;
         // Image Group
-        int LOAD_ORIGINAL_IMAGE = 15;
-        int SAVE_IMAGE = 16;
-        int OPEN_IMAGE = 17;
-        int OPEN_IMAGE_IN_NEW_TAB = 18;
-        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 19;
-        int COPY_IMAGE = 20;
-        int SEARCH_BY_IMAGE = 21;
-        int SEARCH_WITH_GOOGLE_LENS = 22;
-        int SHOP_IMAGE_WITH_GOOGLE_LENS = 23;
-        int SHARE_IMAGE = 24;
-        int DIRECT_SHARE_IMAGE = 25;
+        int LOAD_ORIGINAL_IMAGE = 16;
+        int SAVE_IMAGE = 17;
+        int OPEN_IMAGE = 18;
+        int OPEN_IMAGE_IN_NEW_TAB = 19;
+        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 20;
+        int COPY_IMAGE = 21;
+        int SEARCH_BY_IMAGE = 22;
+        int SEARCH_WITH_GOOGLE_LENS = 23;
+        int SHOP_IMAGE_WITH_GOOGLE_LENS = 24;
+        int SHARE_IMAGE = 25;
+        int DIRECT_SHARE_IMAGE = 26;
         // Message Group
-        int CALL = 26;
-        int SEND_MESSAGE = 27;
-        int ADD_TO_CONTACTS = 28;
-        int COPY = 29;
+        int CALL = 27;
+        int SEND_MESSAGE = 28;
+        int ADD_TO_CONTACTS = 29;
+        int COPY = 30;
         // Video Group
-        int SAVE_VIDEO = 30;
+        int SAVE_VIDEO = 31;
         // Other
-        int OPEN_IN_CHROME = 31;
+        int OPEN_IN_CHROME = 32;
         // Shared Highlighting options
-        int SHARE_HIGHLIGHT = 32;
-        int REMOVE_HIGHLIGHT = 33;
-        int LEARN_MORE = 34;
+        int SHARE_HIGHLIGHT = 33;
+        int REMOVE_HIGHLIGHT = 34;
+        int LEARN_MORE = 35;
         // Page Group
-        int SAVE_PAGE = 35;
-        int SHARE_PAGE = 36;
-        int PRINT_PAGE = 37;
-        int BACK = 38;
-        int FORWARD = 39;
-        int RELOAD = 40;
+        int SAVE_PAGE = 36;
+        int SHARE_PAGE = 37;
+        int PRINT_PAGE = 38;
+        int BACK = 39;
+        int FORWARD = 40;
+        int RELOAD = 41;
         // Developer Group
-        int INSPECT_ELEMENT = 41;
+        int INSPECT_ELEMENT = 42;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 42;
+        int NUM_ENTRIES = 43;
     }
 
     /** Mapping from {@link Item} to the ID found in the ids.xml. */
@@ -148,6 +150,7 @@ class ChromeContextMenuItem {
         R.id.contextmenu_share_link, // Item.SHARE_LINK
         R.id.contextmenu_direct_share_link, // Item.DIRECT_SHARE_LINK
         R.id.contextmenu_read_later, // Item.READ_LATER
+        R.id.contextmenu_show_interest_in_element, // Item.SHOW_INTEREST_IN_ELEMENT
         R.id.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE
         R.id.contextmenu_save_image, // Item.SAVE_IMAGE
         R.id.contextmenu_open_image, // Item.OPEN_IMAGE
@@ -194,6 +197,7 @@ class ChromeContextMenuItem {
         R.string.contextmenu_share_link, // Item.SHARE_LINK
         0, // Item.DIRECT_SHARE_LINK is not handled by this mapping.
         R.string.contextmenu_read_later, // Item.READ_LATER
+        R.string.contextmenu_show_interest_in_element, // Item.SHOW_INTEREST_IN_ELEMENT
         R.string.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE:
         R.string.contextmenu_save_image, // Item.SAVE_IMAGE:
         R.string.contextmenu_open_image, // Item.OPEN_IMAGE:

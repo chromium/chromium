@@ -89,8 +89,8 @@ class ExtensionManagement : public KeyedService {
   // Returns installation mode for an extension.
   ManagedInstallationMode GetInstallationMode(const Extension* extension);
 
-  // Returns installation mode for an extension with id |extension_id| and
-  // updated with |update_url|.
+  // Returns installation mode for an extension with id `extension_id` and
+  // updated with `update_url`.
   ManagedInstallationMode GetInstallationMode(const ExtensionId& extension_id,
                                               const std::string& update_url);
 
@@ -101,12 +101,12 @@ class ExtensionManagement : public KeyedService {
   // Like GetForceInstallList(), but returns recommended install list instead.
   base::Value::Dict GetRecommendedInstallList() const;
 
-  // Returns |true| if there is at least one extension with
-  // |INSTALLATION_ALLOWED| as installation mode. This excludes force installed
+  // Returns `true` if there is at least one extension with
+  // `INSTALLATION_ALLOWED` as installation mode. This excludes force installed
   // extensions.
   bool HasAllowlistedExtension();
 
-  // Returns if an extension with |id| is force installed and the update URL is
+  // Returns if an extension with `id` is force installed and the update URL is
   // overridden by policy.
   bool IsUpdateUrlOverridden(const ExtensionId& id);
 
@@ -117,11 +117,11 @@ class ExtensionManagement : public KeyedService {
   // Returns true if this extension's update URL is from webstore.
   bool UpdatesFromWebstore(const Extension& extension);
 
-  // Returns if an extension with id |id| is explicitly allowed by enterprise
+  // Returns if an extension with id `id` is explicitly allowed by enterprise
   // policy or not.
   bool IsInstallationExplicitlyAllowed(const ExtensionId& id);
 
-  // Returns if an extension with id |id| is explicitly blocked by enterprise
+  // Returns if an extension with id `id` is explicitly blocked by enterprise
   // policy or not.
   bool IsInstallationExplicitlyBlocked(const ExtensionId& id);
 
@@ -129,8 +129,8 @@ class ExtensionManagement : public KeyedService {
   bool IsOffstoreInstallAllowed(const GURL& url,
                                 const GURL& referrer_url) const;
 
-  // Returns true if an extension with manifest type |manifest_type| and
-  // id |extension_id| is allowed to be installed.
+  // Returns true if an extension with manifest type `manifest_type` and
+  // id `extension_id` is allowed to be installed.
   bool IsAllowedManifestType(Manifest::Type manifest_type,
                              const std::string& extension_id) const;
 
@@ -161,19 +161,19 @@ class ExtensionManagement : public KeyedService {
   // but they must be hosted within the web store. See https://b/283274398.
   bool ShouldBlockForceInstalledOffstoreExtension(const Extension& extension);
 
-  // Returns the list of blocked API permissions for |extension|.
+  // Returns the list of blocked API permissions for `extension`.
   APIPermissionSet GetBlockedAPIPermissions(const Extension* extension);
 
   // Returns the list of blocked API permissions for an extension with id
-  // |extension_id| and updated with |update_url|.
+  // `extension_id` and updated with `update_url`.
   APIPermissionSet GetBlockedAPIPermissions(const ExtensionId& extension_id,
                                             const std::string& update_url);
 
-  // Returns the list of hosts blocked by policy for |extension|.
+  // Returns the list of hosts blocked by policy for `extension`.
   const URLPatternSet& GetPolicyBlockedHosts(const Extension* extension);
 
   // Returns the hosts exempted by policy from the PolicyBlockedHosts for
-  // |extension|.
+  // `extension`.
   const URLPatternSet& GetPolicyAllowedHosts(const Extension* extension);
 
   // Returns the list of hosts blocked by policy for Default scope. This can be
@@ -187,13 +187,13 @@ class ExtensionManagement : public KeyedService {
   // initialize a new renderer.
   const URLPatternSet& GetDefaultPolicyAllowedHosts() const;
 
-  // Checks if an |extension| has its own runtime_blocked_hosts or
+  // Checks if an `extension` has its own runtime_blocked_hosts or
   // runtime_allowed_hosts defined in the individual scope of the
   // ExtensionSettings policy.
   // Returns false if an individual scoped setting isn't defined.
   bool UsesDefaultPolicyHostRestrictions(const Extension* extension);
 
-  // Returns blocked permission set for |extension|.
+  // Returns blocked permission set for `extension`.
   std::unique_ptr<const PermissionSet> GetBlockedPermissions(
       const Extension* extension);
 
@@ -202,19 +202,19 @@ class ExtensionManagement : public KeyedService {
   // string length is 1000 characters.
   const std::string BlockedInstallMessage(const ExtensionId& id);
 
-  // Returns true if every permission in |perms| is allowed for |extension|.
+  // Returns true if every permission in `perms` is allowed for `extension`.
   bool IsPermissionSetAllowed(const Extension* extension,
                               const PermissionSet& perms);
 
-  // Returns true if every permission in |perms| is allowed for an extension
-  // with id |extension_id| and updated with |update_url|.
+  // Returns true if every permission in `perms` is allowed for an extension
+  // with id `extension_id` and updated with `update_url`.
   bool IsPermissionSetAllowed(const ExtensionId& extension_id,
                               const std::string& update_url,
                               const PermissionSet& perms);
 
-  // Returns true if |extension| meets the minimum required version set for it.
+  // Returns true if `extension` meets the minimum required version set for it.
   // If there is no such requirement set for it, returns true as well.
-  // If false is returned and |required_version| is not null, the minimum
+  // If false is returned and `required_version` is not null, the minimum
   // required version is returned.
   bool CheckMinimumVersion(const Extension* extension,
                            std::string* required_version);
@@ -224,7 +224,7 @@ class ExtensionManagement : public KeyedService {
   // aren't deferred).
   ExtensionIdSet GetForcePinnedList() const;
 
-  // Returns if an extension with |id| can navigate to file URLs.
+  // Returns if an extension with `id` can navigate to file URLs.
   bool IsFileUrlNavigationAllowed(const ExtensionId& id);
 
  private:
@@ -236,7 +236,7 @@ class ExtensionManagement : public KeyedService {
                      std::unique_ptr<internal::IndividualSettings>>;
   friend class ExtensionManagementServiceTest;
 
-  // Load all extension management preferences from |pref_service|, and
+  // Load all extension management preferences from `pref_service`, and
   // refresh the settings.
   void Refresh();
 
@@ -246,17 +246,17 @@ class ExtensionManagement : public KeyedService {
   bool ParseById(const std::string& extension_id,
                  const base::Value::Dict& subdict);
 
-  // Returns the individual settings for |extension_id| if it exists, otherwise
+  // Returns the individual settings for `extension_id` if it exists, otherwise
   // returns nullptr. This method will also lazy load the settings if they're
   // not loaded yet.
   internal::IndividualSettings* GetSettingsForId(
       const std::string& extension_id);
 
-  // Loads the deferred settings information for |extension_id|.
+  // Loads the deferred settings information for `extension_id`.
   void LoadDeferredExtensionSetting(const std::string& extension_id);
 
-  // Loads preference with name |pref_name| and expected type |expected_type|.
-  // If |force_managed| is true, only loading from the managed preference store
+  // Loads preference with name `pref_name` and expected type `expected_type`.
+  // If `force_managed` is true, only loading from the managed preference store
   // is allowed. Returns NULL if the preference is not present, not allowed to
   // be loaded from or has the wrong type.
   const base::Value* LoadPreference(const char* pref_name,
@@ -277,8 +277,8 @@ class ExtensionManagement : public KeyedService {
   void NotifyExtensionManagementPrefChanged();
 
   // Reports install creation stage to InstallStageTracker for the extensions.
-  // |forced_stage| is reported for the extensions which have installation mode
-  // as INSTALLATION_FORCED, and |other_stage| is reported for all other
+  // `forced_stage` is reported for the extensions which have installation mode
+  // as INSTALLATION_FORCED, and `other_stage` is reported for all other
   // installation modes.
   void ReportExtensionManagementInstallCreationStage(
       InstallStageTracker::InstallCreationStage forced_stage,
@@ -292,12 +292,12 @@ class ExtensionManagement : public KeyedService {
   // Helper to update `extension_dict` for forced installs.
   void UpdateForcedExtensions(const base::Value::Dict* extension_dict);
 
-  // Helper function to access |settings_by_id_| with |id| as key.
-  // Adds a new IndividualSettings entry to |settings_by_id_| if none exists for
-  // |id| yet.
+  // Helper function to access `settings_by_id_` with `id` as key.
+  // Adds a new IndividualSettings entry to `settings_by_id_` if none exists for
+  // `id` yet.
   internal::IndividualSettings* AccessById(const ExtensionId& id);
 
-  // Similar to AccessById(), but access |settings_by_update_url_| instead.
+  // Similar to AccessById(), but access `settings_by_update_url_` instead.
   internal::IndividualSettings* AccessByUpdateUrl(
       const std::string& update_url);
 
@@ -307,11 +307,11 @@ class ExtensionManagement : public KeyedService {
   SettingsIdMap settings_by_id_;
 
   // A set of extension IDs whose parsing of settings and insertion into
-  // |settings_by_id_| has been deferred until needed. We keep track of this to
+  // `settings_by_id_` has been deferred until needed. We keep track of this to
   // avoid scanning the prefs repeatedly for entries that don't have a setting.
   base::flat_set<std::string> deferred_ids_;
 
-  // Similar to |settings_by_id_|, but contains the settings for a group of
+  // Similar to `settings_by_id_`, but contains the settings for a group of
   // extensions with same update URL. The update url itself is used as index
   // key for the map.
   SettingsUpdateUrlMap settings_by_update_url_;
@@ -319,8 +319,8 @@ class ExtensionManagement : public KeyedService {
   // The default IndividualSettings.
   // For extension settings applied to an individual extension (identified by
   // extension ID) or a group of extension (with specified extension update
-  // URL), all unspecified part will take value from |default_settings_|.
-  // For all other extensions, all settings from |default_settings_| will be
+  // URL), all unspecified part will take value from `default_settings_`.
+  // For all other extensions, all settings from `default_settings_` will be
   // enforced.
   std::unique_ptr<internal::IndividualSettings> default_settings_;
 

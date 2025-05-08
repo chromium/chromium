@@ -85,7 +85,8 @@ public class NotificationUmaTracker {
         SystemNotificationType.DATA_SHARING,
         SystemNotificationType.UPM_ACCESS_LOSS_WARNING,
         SystemNotificationType.TRACING,
-        SystemNotificationType.SERIAL
+        SystemNotificationType.SERIAL,
+        SystemNotificationType.SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
@@ -133,8 +134,9 @@ public class NotificationUmaTracker {
         int UPM_ACCESS_LOSS_WARNING = 40;
         int TRACING = 41;
         int SERIAL = 42;
+        int SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS = 43;
 
-        int NUM_ENTRIES = 43;
+        int NUM_ENTRIES = 44;
     }
 
     /*
@@ -168,7 +170,12 @@ public class NotificationUmaTracker {
         ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT,
         ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT,
         ActionType.SHOW_ORIGINAL_NOTIFICATION,
-        ActionType.ALWAYS_ALLOW
+        ActionType.ALWAYS_ALLOW,
+        ActionType.SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_ACK,
+        ActionType.SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_REVIEW,
+        ActionType.REPORT_AS_SAFE,
+        ActionType.REPORT_WARNED_NOTIFICATION_AS_SPAM,
+        ActionType.REPORT_UNWARNED_NOTIFICATION_AS_SPAM
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionType {
@@ -252,8 +259,24 @@ public class NotificationUmaTracker {
         // The "Always allow" button, used for allowing suspicious web notifications from an origin.
         int ALWAYS_ALLOW = 35;
 
+        // The "Got it" button on Safety Hub notification about unsubscribed notifications.
+        int SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_ACK = 36;
+
+        // The "Review" button on Safety Hub notification about unsubscribed notifications.
+        int SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_REVIEW = 37;
+
+        // The "Report as safe" button, used for sending non-suspicious notification contents to
+        // Google.
+        int REPORT_AS_SAFE = 38;
+        // The "Report as spam" button, used for sending suspicious notification contents to Google
+        // after the user unsubscribed from notifications when they received a warning.
+        int REPORT_WARNED_NOTIFICATION_AS_SPAM = 39;
+        // The "Report as spam" button, used for sending suspicious notification contents to Google
+        // after the user unsubscribed from notifications when they did not receive a warning.
+        int REPORT_UNWARNED_NOTIFICATION_AS_SPAM = 40;
+
         // Number of real entries, excluding `UNKNOWN`.
-        int NUM_ENTRIES = 36;
+        int NUM_ENTRIES = 41;
     }
 
     /**

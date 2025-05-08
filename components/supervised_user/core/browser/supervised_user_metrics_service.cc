@@ -67,21 +67,18 @@ void SupervisedUserMetricsService::Shutdown() {
 
 void SupervisedUserMetricsService::CheckForNewDay() {
   int day_id = pref_service_->GetInteger(prefs::kSupervisedUserMetricsDayId);
-  base::Time now = base::Time::Now();
+  int current_day_id = GetDayId(base::Time::Now());
   // The OnNewDay() event can fire sooner or later than 24 hours due to clock or
   // time zone changes.
-  bool should_update_day_id = false;
-  if (day_id < GetDayId(now)) {
-    if (url_filter_->EmitURLFilterMetrics()) {
-      should_update_day_id = true;
-    }
+  if (day_id < current_day_id) {
+    bool should_update_day_id = url_filter_->EmitURLFilterMetrics();
     if (extensions_metrics_delegate_ &&
         extensions_metrics_delegate_->RecordExtensionsMetrics()) {
       should_update_day_id = true;
     }
     if (should_update_day_id) {
       pref_service_->SetInteger(prefs::kSupervisedUserMetricsDayId,
-                                GetDayId(now));
+                                current_day_id);
     }
   }
 }

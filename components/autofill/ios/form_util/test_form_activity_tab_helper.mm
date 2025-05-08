@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
+#import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
 
-#include "base/observer_list.h"
-#include "components/autofill/ios/form_util/form_activity_observer.h"
-#include "components/autofill/ios/form_util/form_activity_params.h"
-#include "components/autofill/ios/form_util/form_activity_tab_helper.h"
+#import "base/observer_list.h"
+#import "components/autofill/ios/form_util/form_activity_observer.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 
 namespace autofill {
 TestFormActivityTabHelper::TestFormActivityTabHelper(web::WebState* web_state)

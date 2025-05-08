@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -301,7 +302,7 @@ public class StripLayoutHelperManager
             }
             long time = time();
             if (mModelSelectorButton != null && mModelSelectorButton.click(x, y, buttons)) {
-                mModelSelectorButton.handleClick(time);
+                mModelSelectorButton.handleClick(time, buttons);
                 return;
             }
             getActiveStripLayoutHelper().click(time(), x, y, buttons);
@@ -486,8 +487,12 @@ public class StripLayoutHelperManager
 
         if (!ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) {
             StripLayoutViewOnClickHandler selectorClickHandler =
-                    (time, view) -> handleModelSelectorButtonClick();
-            createModelSelectorButton(context, selectorClickHandler);
+                    (time, view, motionEventButtonState) -> handleModelSelectorButtonClick();
+            StripLayoutViewOnKeyboardFocusHandler selectorKeyboardFocusHandler =
+                    (isFocused, view) -> {
+                        getActiveStripLayoutHelper().onKeyboardFocus(isFocused, view);
+                    };
+            createModelSelectorButton(context, selectorClickHandler, selectorKeyboardFocusHandler);
         }
         // Use toolbar menu button padding to align MSB with menu button.
         mStripEndPadding = res.getDimension(R.dimen.button_end_padding) / mDensity;
@@ -609,7 +614,9 @@ public class StripLayoutHelperManager
 
     // Incognito button for Tab Strip Redesign.
     private void createModelSelectorButton(
-            Context context, StripLayoutViewOnClickHandler selectorClickHandler) {
+            Context context,
+            StripLayoutViewOnClickHandler selectorClickHandler,
+            StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler) {
         mModelSelectorButton =
                 new TintedCompositorButton(
                         context,
@@ -618,6 +625,7 @@ public class StripLayoutHelperManager
                         MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP,
                         MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP,
                         selectorClickHandler,
+                        keyboardFocusHandler,
                         R.drawable.ic_incognito,
                         MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP);
 
@@ -1139,9 +1147,9 @@ public class StripLayoutHelperManager
             Rect msbRect =
                     new Rect(
                             (int) Math.floor(msbTouchRect.left * mDensity),
-                            (int) Math.max(Math.floor(msbTouchRect.top * mDensity), mTopPadding),
+                            (int) Math.floor(Math.max(msbTouchRect.top, mTopPadding) * mDensity),
                             (int) Math.ceil(msbTouchRect.right * mDensity),
-                            (int) Math.min(Math.ceil(msbTouchRect.bottom * mDensity), mHeight));
+                            (int) Math.ceil(Math.min(msbTouchRect.bottom, mHeight) * mDensity));
             rects.add(msbRect);
         }
         mToolbarControlContainer.setSystemGestureExclusionRects(rects);
@@ -1589,7 +1597,8 @@ public class StripLayoutHelperManager
         return mStripVisibilityStateSupplier.get();
     }
 
-    private void setStripVisibilityState(@StripVisibilityState int visibilityState, boolean clear) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void setStripVisibilityState(@StripVisibilityState int visibilityState, boolean clear) {
         @StripVisibilityState int curVisibility = mStripVisibilityStateSupplier.get();
         mStripVisibilityStateSupplier.set(
                 clear ? (curVisibility & ~visibilityState) : (curVisibility | visibilityState));

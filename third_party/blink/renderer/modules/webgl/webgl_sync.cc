@@ -7,18 +7,19 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-WebGLSync::WebGLSync(WebGL2RenderingContextBase* ctx,
+WebGLSync::WebGLSync(WebGLContextObjectSupport* ctx,
                      GLuint object,
                      GLenum object_type)
-    : WebGLSharedObject(ctx),
+    : WebGLObject(ctx),
       sync_status_(GL_UNSIGNALED),
-      object_(object),
       object_type_(object_type),
       task_runner_(ctx->GetContextTaskRunner()) {
+  SetObject(object);
   ScheduleAllowCacheUpdate();
 }
 
@@ -38,7 +39,7 @@ void WebGLSync::UpdateCache(gpu::gles2::GLES2Interface* gl) {
   // We can only update the cached result when control returns to the browser.
   allow_cache_update_ = false;
   GLuint value = 0;
-  gl->GetQueryObjectuivEXT(object_, GL_QUERY_RESULT_AVAILABLE, &value);
+  gl->GetQueryObjectuivEXT(Object(), GL_QUERY_RESULT_AVAILABLE, &value);
   if (value == GL_TRUE) {
     sync_status_ = GL_SIGNALED;
   } else {
@@ -79,8 +80,7 @@ void WebGLSync::AllowCacheUpdate() {
 }
 
 void WebGLSync::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteQueriesEXT(1, &object_);
-  object_ = 0;
+  gl->DeleteQueriesEXT(1, &Object());
 }
 
 }  // namespace blink

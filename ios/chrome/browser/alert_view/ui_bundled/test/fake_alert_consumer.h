@@ -18,6 +18,7 @@
 @property(nonatomic, copy) NSString* alertAccessibilityIdentifier;
 @property(nonatomic, assign) BOOL shouldShowActivityIndicator;
 @property(nonatomic, assign) BOOL actionButtonsAreInitiallyDisabled;
+@property(nonatomic, copy) NSString* confirmationAccessibilityLabel;
 
 @end
 

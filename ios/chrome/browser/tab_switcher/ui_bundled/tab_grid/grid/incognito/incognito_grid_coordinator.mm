@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
@@ -23,6 +22,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/incognito/incognito_grid_mediator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/incognito/incognito_grid_view_controller.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/incognito_grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_context_menu_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_view_controller.h"
 
-@interface IncognitoGridCoordinator ()
+@interface IncognitoGridCoordinator () <IncognitoGridCommands>
 
 // Redefined as readwrite.
 @property(nonatomic, readwrite, strong)
@@ -181,6 +181,12 @@
   }
 }
 
+#pragma mark - IncognitoGridCommands
+
+- (void)dismissIncognitoGridModals {
+  [self stopChildCoordinators];
+}
+
 #pragma mark - IncognitoGridMediatorDelegate
 
 - (void)shouldDisableIncognito:(BOOL)disable {
@@ -215,8 +221,6 @@
   CHECK(_tabContextMenuHelper);
   IncognitoGridViewController* gridViewController =
       [[IncognitoGridViewController alloc] init];
-  gridViewController.applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
   gridViewController.reauthHandler = _reauthAgent;
   gridViewController.menuProvider = _tabContextMenuHelper;
 
@@ -224,6 +228,7 @@
   gridViewController.mutator = _mediator;
   gridViewController.gridProvider = _mediator;
   gridViewController.gridHandler = _mediator;
+  gridViewController.incognitoGridHandler = self;
   // TODO(crbug.com/40273478): Move the following lines to the grid itself when
   // specific grid file will be created.
   gridViewController.view.accessibilityIdentifier = kIncognitoTabGridIdentifier;

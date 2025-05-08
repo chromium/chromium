@@ -135,6 +135,17 @@ public abstract class TabCreator {
         return createTabWithWebContents(parent, webContents, type, url, true);
     }
 
+    /**
+     * Creates a {@link Tab} with the same history stack as {@param parent}.
+     *
+     * @param parent The tab to copy.
+     * @param type The {@code TabLaunchType} (should be {@code FROM_HISTORY_NAVIGATION_FOREGROUND}
+     *     or {@code FROM_HISTORY_NAVIGATION_BACKGROUND}.
+     * @return The {@link Tab} which was created.
+     */
+    public @Nullable abstract Tab createTabWithHistory(
+            @Nullable Tab parent, @TabLaunchType int type);
+
     /** Creates a new tab and loads the NTP. */
     public final void launchNtp() {
         launchNtp(TabLaunchType.FROM_CHROME_UI);

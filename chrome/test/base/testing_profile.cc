@@ -5,6 +5,8 @@
 #include "chrome/test/base/testing_profile.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 
@@ -83,6 +85,8 @@
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/supervised_user/core/browser/supervised_user_pref_store.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -109,23 +113,23 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/browser/extensions/extension_special_storage_policy.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_provider_factory.h"
-#include "components/guest_view/browser/guest_view_manager.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_prefs_observer.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/switches.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_provider_factory.h"
+#include "components/guest_view/browser/guest_view_manager.h"
+#include "extensions/browser/extension_system.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -140,11 +144,48 @@
 #include "components/account_manager_core/chromeos/account_manager.h"
 #endif
 
+namespace {
 using base::Time;
 using content::BrowserThread;
 using content::DownloadManagerDelegate;
 using testing::NiceMock;
 using testing::Return;
+
+// Just like SupervisedUserPrefStore. The difference is that
+// SupervisedUserPrefStore does not offer TestingPrefStore interface, but this
+// one does (by actually wrapping SupervisedUserPrefStore).
+class SupervisedUserTestingPrefStore : public TestingPrefStore,
+                                       public PrefStore::Observer {
+ public:
+  explicit SupervisedUserTestingPrefStore(
+      supervised_user::SupervisedUserSettingsService* settings_service)
+      : pref_store_(
+            base::MakeRefCounted<SupervisedUserPrefStore>(settings_service)) {
+    observation_.Observe(pref_store_.get());
+  }
+
+ private:
+  ~SupervisedUserTestingPrefStore() override = default;
+
+  void OnPrefValueChanged(std::string_view key) override {
+    const base::Value* value = nullptr;
+    // Flags are ignored in the TestingPrefStore.
+    if (pref_store_->GetValue(key, &value)) {
+      SetValue(key, value->Clone(), /*flags=*/0);
+    } else {
+      RemoveValue(key, /*flags=*/0);
+    }
+  }
+
+  void OnInitializationCompleted(bool succeeded) override {
+    CHECK(succeeded) << "During tests initialization must succeed";
+    SetInitializationCompleted();
+  }
+
+  scoped_refptr<PrefStore> pref_store_;
+  base::ScopedObservation<PrefStore, PrefStore::Observer> observation_{this};
+};
+}  // namespace
 
 TestingProfile::TestingFactory::TestingFactory(
     BrowserContextKeyedServiceFactory* service_factory,
@@ -357,14 +398,18 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
   if (!IsOffTheRecord()) {
     supervised_user::SupervisedUserSettingsService* settings_service =
         SupervisedUserSettingsServiceFactory::GetForKey(key_.get());
-    supervised_user_pref_store_ = base::MakeRefCounted<TestingPrefStore>();
-    settings_service->Init(supervised_user_pref_store_.get());
+
+    // Note: this pref store is not a part of any pref service, but rather a
+    // convenient storage backend of the supervised user settings service.
+    scoped_refptr<TestingPrefStore> supervised_user_backing_pref_store =
+        base::MakeRefCounted<TestingPrefStore>();
+    supervised_user_backing_pref_store->SetInitializationCompleted();
+
+    settings_service->Init(supervised_user_backing_pref_store);
     settings_service->MergeDataAndStartSyncing(
         syncer::SUPERVISED_USER_SETTINGS, syncer::SyncDataList(),
         std::unique_ptr<syncer::SyncChangeProcessor>(
             new syncer::FakeSyncChangeProcessor));
-
-    supervised_user_pref_store_->SetInitializationCompleted();
   }
 
   if (prefs_.get())
@@ -417,7 +462,7 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
 
     extensions_path_ = profile_path_.AppendASCII("Extensions");
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     // Note that the GetPrefs() creates a TestingPrefService, therefore
     // the extension controlled pref values set in ExtensionPrefs
     // are not reflected in the pref service. One would need to
@@ -436,7 +481,9 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
 
     extensions::ChromeExtensionSystemFactory::GetInstance()->SetTestingFactory(
         this, base::BindRepeating(&extensions::TestExtensionSystem::Build));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     web_app::WebAppProviderFactory::GetInstance()->SetTestingFactory(
         this, base::BindRepeating(&web_app::FakeWebAppProvider::BuildDefault));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -694,16 +741,14 @@ const Profile* TestingProfile::GetOriginalProfile() const {
 
 void TestingProfile::SetIsSupervisedProfile(bool is_supervised_profile) {
   if (is_supervised_profile) {
-    GetPrefs()->SetString(prefs::kSupervisedUserId,
-                          supervised_user::kChildAccountSUID);
+    supervised_user::EnableParentalControls(*GetPrefs());
   } else {
-    GetPrefs()->ClearPref(prefs::kSupervisedUserId);
+    supervised_user::DisableParentalControls(*GetPrefs());
   }
 }
 
 bool TestingProfile::IsChild() const {
-  return GetPrefs()->GetString(prefs::kSupervisedUserId) ==
-         supervised_user::kChildAccountSUID;
+  return supervised_user::IsSubjectToParentalControls(*GetPrefs());
 }
 
 bool TestingProfile::AllowsBrowserWindows() const {
@@ -746,7 +791,9 @@ void TestingProfile::CreatePrefServiceForSupervisedUser() {
   // Construct testing_prefs_ by hand to add the supervised user pref store.
   testing_prefs_ = new sync_preferences::TestingPrefServiceSyncable(
       /*managed_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
-      supervised_user_pref_store_,
+      /*supervised_user_prefs=*/
+      base::MakeRefCounted<SupervisedUserTestingPrefStore>(
+          SupervisedUserSettingsServiceFactory::GetForKey(key_.get())),
       /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*recommended_prefs=*/base::MakeRefCounted<TestingPrefStore>(),

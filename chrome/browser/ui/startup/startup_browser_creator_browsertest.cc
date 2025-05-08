@@ -24,6 +24,7 @@
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -178,7 +179,8 @@ Browser* FindOneOtherBrowser(Browser* browser) {
 
 void DisableWhatsNewPage() {
   PrefService* pref_service = g_browser_process->local_state();
-  pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
+  pref_service->SetInteger(prefs::kLastWhatsNewVersion,
+                           version_info::GetMajorVersionNumberAsInt());
 }
 
 Browser* OpenNewBrowser(Profile* profile) {

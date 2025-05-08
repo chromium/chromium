@@ -74,9 +74,14 @@ pub type iconv_t = *mut c_void;
 pub type sctp_assoc_t = __s32;
 
 pub type eventfd_t = u64;
-missing! {
-    #[cfg_attr(feature = "extra_traits", derive(Debug))]
-    pub enum fpos64_t {} // FIXME(linux): fill this out with a struct
+
+cfg_if! {
+    if #[cfg(not(target_env = "gnu"))] {
+        missing! {
+            #[cfg_attr(feature = "extra_traits", derive(Debug))]
+            pub enum fpos64_t {} // FIXME(linux): fill this out with a struct
+        }
+    }
 }
 
 e! {
@@ -966,12 +971,52 @@ s! {
         pub rec_seq: [c_uchar; TLS_CIPHER_AES_GCM_256_REC_SEQ_SIZE],
     }
 
+    pub struct tls12_crypto_info_aes_ccm_128 {
+        pub info: tls_crypto_info,
+        pub iv: [c_uchar; TLS_CIPHER_AES_CCM_128_IV_SIZE],
+        pub key: [c_uchar; TLS_CIPHER_AES_CCM_128_KEY_SIZE],
+        pub salt: [c_uchar; TLS_CIPHER_AES_CCM_128_SALT_SIZE],
+        pub rec_seq: [c_uchar; TLS_CIPHER_AES_CCM_128_REC_SEQ_SIZE],
+    }
+
     pub struct tls12_crypto_info_chacha20_poly1305 {
         pub info: tls_crypto_info,
         pub iv: [c_uchar; TLS_CIPHER_CHACHA20_POLY1305_IV_SIZE],
         pub key: [c_uchar; TLS_CIPHER_CHACHA20_POLY1305_KEY_SIZE],
         pub salt: [c_uchar; TLS_CIPHER_CHACHA20_POLY1305_SALT_SIZE],
         pub rec_seq: [c_uchar; TLS_CIPHER_CHACHA20_POLY1305_REC_SEQ_SIZE],
+    }
+
+    pub struct tls12_crypto_info_sm4_gcm {
+        pub info: tls_crypto_info,
+        pub iv: [c_uchar; TLS_CIPHER_SM4_GCM_IV_SIZE],
+        pub key: [c_uchar; TLS_CIPHER_SM4_GCM_KEY_SIZE],
+        pub salt: [c_uchar; TLS_CIPHER_SM4_GCM_SALT_SIZE],
+        pub rec_seq: [c_uchar; TLS_CIPHER_SM4_GCM_REC_SEQ_SIZE],
+    }
+
+    pub struct tls12_crypto_info_sm4_ccm {
+        pub info: tls_crypto_info,
+        pub iv: [c_uchar; TLS_CIPHER_SM4_CCM_IV_SIZE],
+        pub key: [c_uchar; TLS_CIPHER_SM4_CCM_KEY_SIZE],
+        pub salt: [c_uchar; TLS_CIPHER_SM4_CCM_SALT_SIZE],
+        pub rec_seq: [c_uchar; TLS_CIPHER_SM4_CCM_REC_SEQ_SIZE],
+    }
+
+    pub struct tls12_crypto_info_aria_gcm_128 {
+        pub info: tls_crypto_info,
+        pub iv: [c_uchar; TLS_CIPHER_ARIA_GCM_128_IV_SIZE],
+        pub key: [c_uchar; TLS_CIPHER_ARIA_GCM_128_KEY_SIZE],
+        pub salt: [c_uchar; TLS_CIPHER_ARIA_GCM_128_SALT_SIZE],
+        pub rec_seq: [c_uchar; TLS_CIPHER_ARIA_GCM_128_REC_SEQ_SIZE],
+    }
+
+    pub struct tls12_crypto_info_aria_gcm_256 {
+        pub info: tls_crypto_info,
+        pub iv: [c_uchar; TLS_CIPHER_ARIA_GCM_256_IV_SIZE],
+        pub key: [c_uchar; TLS_CIPHER_ARIA_GCM_256_KEY_SIZE],
+        pub salt: [c_uchar; TLS_CIPHER_ARIA_GCM_256_SALT_SIZE],
+        pub rec_seq: [c_uchar; TLS_CIPHER_ARIA_GCM_256_REC_SEQ_SIZE],
     }
 
     // linux/wireless.h
@@ -3285,18 +3330,19 @@ pub const SECCOMP_SET_MODE_FILTER: c_uint = 1;
 pub const SECCOMP_GET_ACTION_AVAIL: c_uint = 2;
 pub const SECCOMP_GET_NOTIF_SIZES: c_uint = 3;
 
-pub const SECCOMP_FILTER_FLAG_TSYNC: c_ulong = 1;
-pub const SECCOMP_FILTER_FLAG_LOG: c_ulong = 2;
-pub const SECCOMP_FILTER_FLAG_SPEC_ALLOW: c_ulong = 4;
-pub const SECCOMP_FILTER_FLAG_NEW_LISTENER: c_ulong = 8;
-pub const SECCOMP_FILTER_FLAG_TSYNC_ESRCH: c_ulong = 16;
-pub const SECCOMP_FILTER_FLAG_WAIT_KILLABLE_RECV: c_ulong = 32;
+pub const SECCOMP_FILTER_FLAG_TSYNC: c_ulong = 1 << 0;
+pub const SECCOMP_FILTER_FLAG_LOG: c_ulong = 1 << 1;
+pub const SECCOMP_FILTER_FLAG_SPEC_ALLOW: c_ulong = 1 << 2;
+pub const SECCOMP_FILTER_FLAG_NEW_LISTENER: c_ulong = 1 << 3;
+pub const SECCOMP_FILTER_FLAG_TSYNC_ESRCH: c_ulong = 1 << 4;
+pub const SECCOMP_FILTER_FLAG_WAIT_KILLABLE_RECV: c_ulong = 1 << 5;
 
 pub const SECCOMP_RET_KILL_PROCESS: c_uint = 0x80000000;
 pub const SECCOMP_RET_KILL_THREAD: c_uint = 0x00000000;
 pub const SECCOMP_RET_KILL: c_uint = SECCOMP_RET_KILL_THREAD;
 pub const SECCOMP_RET_TRAP: c_uint = 0x00030000;
 pub const SECCOMP_RET_ERRNO: c_uint = 0x00050000;
+pub const SECCOMP_RET_USER_NOTIF: c_uint = 0x7fc00000;
 pub const SECCOMP_RET_TRACE: c_uint = 0x7ff00000;
 pub const SECCOMP_RET_LOG: c_uint = 0x7ffc0000;
 pub const SECCOMP_RET_ALLOW: c_uint = 0x7fff0000;
@@ -3450,6 +3496,12 @@ pub const BPF_JGE: __u32 = 0x30;
 pub const BPF_JSET: __u32 = 0x40;
 pub const BPF_K: __u32 = 0x00;
 pub const BPF_X: __u32 = 0x08;
+
+// linux/filter.h
+
+pub const BPF_A: __u32 = 0x10;
+pub const BPF_TAX: __u32 = 0x00;
+pub const BPF_TXA: __u32 = 0x80;
 
 // linux/openat2.h
 pub const RESOLVE_NO_XDEV: crate::__u64 = 0x01;
@@ -4419,6 +4471,12 @@ pub const NLM_F_EXCL: c_int = 0x200;
 pub const NLM_F_CREATE: c_int = 0x400;
 pub const NLM_F_APPEND: c_int = 0x800;
 
+pub const NLM_F_NONREC: c_int = 0x100;
+pub const NLM_F_BULK: c_int = 0x200;
+
+pub const NLM_F_CAPPED: c_int = 0x100;
+pub const NLM_F_ACK_TLVS: c_int = 0x200;
+
 pub const NETLINK_ADD_MEMBERSHIP: c_int = 1;
 pub const NETLINK_DROP_MEMBERSHIP: c_int = 2;
 pub const NETLINK_PKTINFO: c_int = 3;
@@ -4714,6 +4772,9 @@ pub const PTP_PF_PHYSYNC: c_uint = 3;
 pub const TLS_TX: c_int = 1;
 pub const TLS_RX: c_int = 2;
 
+pub const TLS_TX_ZEROCOPY_RO: c_int = 3;
+pub const TLS_RX_EXPECT_NO_PAD: c_int = 4;
+
 pub const TLS_1_2_VERSION_MAJOR: __u8 = 0x3;
 pub const TLS_1_2_VERSION_MINOR: __u8 = 0x3;
 pub const TLS_1_2_VERSION: __u16 =
@@ -4738,6 +4799,13 @@ pub const TLS_CIPHER_AES_GCM_256_SALT_SIZE: usize = 4;
 pub const TLS_CIPHER_AES_GCM_256_TAG_SIZE: usize = 16;
 pub const TLS_CIPHER_AES_GCM_256_REC_SEQ_SIZE: usize = 8;
 
+pub const TLS_CIPHER_AES_CCM_128: __u16 = 53;
+pub const TLS_CIPHER_AES_CCM_128_IV_SIZE: usize = 8;
+pub const TLS_CIPHER_AES_CCM_128_KEY_SIZE: usize = 16;
+pub const TLS_CIPHER_AES_CCM_128_SALT_SIZE: usize = 4;
+pub const TLS_CIPHER_AES_CCM_128_TAG_SIZE: usize = 16;
+pub const TLS_CIPHER_AES_CCM_128_REC_SEQ_SIZE: usize = 8;
+
 pub const TLS_CIPHER_CHACHA20_POLY1305: __u16 = 54;
 pub const TLS_CIPHER_CHACHA20_POLY1305_IV_SIZE: usize = 12;
 pub const TLS_CIPHER_CHACHA20_POLY1305_KEY_SIZE: usize = 32;
@@ -4745,10 +4813,52 @@ pub const TLS_CIPHER_CHACHA20_POLY1305_SALT_SIZE: usize = 0;
 pub const TLS_CIPHER_CHACHA20_POLY1305_TAG_SIZE: usize = 16;
 pub const TLS_CIPHER_CHACHA20_POLY1305_REC_SEQ_SIZE: usize = 8;
 
+pub const TLS_CIPHER_SM4_GCM: __u16 = 55;
+pub const TLS_CIPHER_SM4_GCM_IV_SIZE: usize = 8;
+pub const TLS_CIPHER_SM4_GCM_KEY_SIZE: usize = 16;
+pub const TLS_CIPHER_SM4_GCM_SALT_SIZE: usize = 4;
+pub const TLS_CIPHER_SM4_GCM_TAG_SIZE: usize = 16;
+pub const TLS_CIPHER_SM4_GCM_REC_SEQ_SIZE: usize = 8;
+
+pub const TLS_CIPHER_SM4_CCM: __u16 = 56;
+pub const TLS_CIPHER_SM4_CCM_IV_SIZE: usize = 8;
+pub const TLS_CIPHER_SM4_CCM_KEY_SIZE: usize = 16;
+pub const TLS_CIPHER_SM4_CCM_SALT_SIZE: usize = 4;
+pub const TLS_CIPHER_SM4_CCM_TAG_SIZE: usize = 16;
+pub const TLS_CIPHER_SM4_CCM_REC_SEQ_SIZE: usize = 8;
+
+pub const TLS_CIPHER_ARIA_GCM_128: __u16 = 57;
+pub const TLS_CIPHER_ARIA_GCM_128_IV_SIZE: usize = 8;
+pub const TLS_CIPHER_ARIA_GCM_128_KEY_SIZE: usize = 16;
+pub const TLS_CIPHER_ARIA_GCM_128_SALT_SIZE: usize = 4;
+pub const TLS_CIPHER_ARIA_GCM_128_TAG_SIZE: usize = 16;
+pub const TLS_CIPHER_ARIA_GCM_128_REC_SEQ_SIZE: usize = 8;
+
+pub const TLS_CIPHER_ARIA_GCM_256: __u16 = 58;
+pub const TLS_CIPHER_ARIA_GCM_256_IV_SIZE: usize = 8;
+pub const TLS_CIPHER_ARIA_GCM_256_KEY_SIZE: usize = 32;
+pub const TLS_CIPHER_ARIA_GCM_256_SALT_SIZE: usize = 4;
+pub const TLS_CIPHER_ARIA_GCM_256_TAG_SIZE: usize = 16;
+pub const TLS_CIPHER_ARIA_GCM_256_REC_SEQ_SIZE: usize = 8;
+
 pub const TLS_SET_RECORD_TYPE: c_int = 1;
 pub const TLS_GET_RECORD_TYPE: c_int = 2;
 
 pub const SOL_TLS: c_int = 282;
+
+// enum
+pub const TLS_INFO_UNSPEC: c_int = 0x00;
+pub const TLS_INFO_VERSION: c_int = 0x01;
+pub const TLS_INFO_CIPHER: c_int = 0x02;
+pub const TLS_INFO_TXCONF: c_int = 0x03;
+pub const TLS_INFO_RXCONF: c_int = 0x04;
+pub const TLS_INFO_ZC_RO_TX: c_int = 0x05;
+pub const TLS_INFO_RX_NO_PAD: c_int = 0x06;
+
+pub const TLS_CONF_BASE: c_int = 1;
+pub const TLS_CONF_SW: c_int = 2;
+pub const TLS_CONF_HW: c_int = 3;
+pub const TLS_CONF_HW_RECORD: c_int = 4;
 
 // linux/if_alg.h
 pub const ALG_SET_KEY: c_int = 1;
@@ -5092,6 +5202,13 @@ pub const FF_MAX: __u16 = 0x7f;
 pub const FF_CNT: usize = FF_MAX as usize + 1;
 
 // linux/input-event-codes.h
+pub const INPUT_PROP_POINTER: __u16 = 0x00;
+pub const INPUT_PROP_DIRECT: __u16 = 0x01;
+pub const INPUT_PROP_BUTTONPAD: __u16 = 0x02;
+pub const INPUT_PROP_SEMI_MT: __u16 = 0x03;
+pub const INPUT_PROP_TOPBUTTONPAD: __u16 = 0x04;
+pub const INPUT_PROP_POINTING_STICK: __u16 = 0x05;
+pub const INPUT_PROP_ACCELEROMETER: __u16 = 0x06;
 pub const INPUT_PROP_MAX: __u16 = 0x1f;
 pub const INPUT_PROP_CNT: usize = INPUT_PROP_MAX as usize + 1;
 pub const EV_MAX: __u16 = 0x1f;
@@ -5868,88 +5985,28 @@ pub const SCHED_FLAG_ALL: c_int = SCHED_FLAG_RESET_ON_FORK
 pub const EPIOCSPARAMS: Ioctl = 0x40088a01;
 pub const EPIOCGPARAMS: Ioctl = 0x80088a02;
 
-const _IOC_NRBITS: u32 = 8;
-const _IOC_TYPEBITS: u32 = 8;
-
 // siginfo.h
 pub const SI_DETHREAD: c_int = -7;
 pub const TRAP_PERF: c_int = 6;
 
-// https://github.com/search?q=repo%3Atorvalds%2Flinux+%22%23define+_IOC_NONE%22&type=code
-cfg_if! {
-    if #[cfg(any(
-        any(target_arch = "powerpc", target_arch = "powerpc64"),
-        any(target_arch = "sparc", target_arch = "sparc64"),
-        any(target_arch = "mips", target_arch = "mips64"),
-    ))] {
-        // https://github.com/torvalds/linux/blob/b311c1b497e51a628aa89e7cb954481e5f9dced2/arch/powerpc/include/uapi/asm/ioctl.h
-        // https://github.com/torvalds/linux/blob/b311c1b497e51a628aa89e7cb954481e5f9dced2/arch/sparc/include/uapi/asm/ioctl.h
-        // https://github.com/torvalds/linux/blob/b311c1b497e51a628aa89e7cb954481e5f9dced2/arch/mips/include/uapi/asm/ioctl.h
-
-        const _IOC_SIZEBITS: u32 = 13;
-        const _IOC_DIRBITS: u32 = 3;
-
-        const _IOC_NONE: u32 = 1;
-        const _IOC_READ: u32 = 2;
-        const _IOC_WRITE: u32 = 4;
-    } else {
-        // https://github.com/torvalds/linux/blob/b311c1b497e51a628aa89e7cb954481e5f9dced2/include/uapi/asm-generic/ioctl.h
-
-        const _IOC_SIZEBITS: u32 = 14;
-        const _IOC_DIRBITS: u32 = 2;
-
-        const _IOC_NONE: u32 = 0;
-        const _IOC_WRITE: u32 = 1;
-        const _IOC_READ: u32 = 2;
-    }
-}
-
-const _IOC_NRMASK: u32 = (1 << _IOC_NRBITS) - 1;
-const _IOC_TYPEMASK: u32 = (1 << _IOC_TYPEBITS) - 1;
-const _IOC_SIZEMASK: u32 = (1 << _IOC_SIZEBITS) - 1;
-const _IOC_DIRMASK: u32 = (1 << _IOC_DIRBITS) - 1;
-
-const _IOC_NRSHIFT: u32 = 0;
-const _IOC_TYPESHIFT: u32 = _IOC_NRSHIFT + _IOC_NRBITS;
-const _IOC_SIZESHIFT: u32 = _IOC_TYPESHIFT + _IOC_TYPEBITS;
-const _IOC_DIRSHIFT: u32 = _IOC_SIZESHIFT + _IOC_SIZEBITS;
-
-// adapted from https://github.com/torvalds/linux/blob/8a696a29c6905594e4abf78eaafcb62165ac61f1/rust/kernel/ioctl.rs
-
-/// Build an ioctl number, analogous to the C macro of the same name.
-const fn _IOC(dir: u32, ty: u32, nr: u32, size: usize) -> u32 {
-    // FIXME(ctest) the `garando_syntax` crate (used by ctest2 in the CI test suite)
-    // cannot currently parse these `debug_assert!`s
-    //
-    // debug_assert!(dir <= _IOC_DIRMASK);
-    // debug_assert!(ty <= _IOC_TYPEMASK);
-    // debug_assert!(nr <= _IOC_NRMASK);
-    // debug_assert!(size <= (_IOC_SIZEMASK as usize));
-
-    (dir << _IOC_DIRSHIFT)
-        | (ty << _IOC_TYPESHIFT)
-        | (nr << _IOC_NRSHIFT)
-        | ((size as u32) << _IOC_SIZESHIFT)
-}
-
 /// Build an ioctl number for an argumentless ioctl.
-pub(crate) const fn _IO(ty: u32, nr: u32) -> u32 {
-    _IOC(_IOC_NONE, ty, nr, 0)
+pub const fn _IO(ty: u32, nr: u32) -> u32 {
+    super::_IOC(super::_IOC_NONE, ty, nr, 0)
 }
 
 /// Build an ioctl number for an read-only ioctl.
-pub(crate) const fn _IOR<T>(ty: u32, nr: u32) -> u32 {
-    _IOC(_IOC_READ, ty, nr, size_of::<T>())
+pub const fn _IOR<T>(ty: u32, nr: u32) -> u32 {
+    super::_IOC(super::_IOC_READ, ty, nr, size_of::<T>())
 }
 
 /// Build an ioctl number for an write-only ioctl.
-pub(crate) const fn _IOW<T>(ty: u32, nr: u32) -> u32 {
-    _IOC(_IOC_WRITE, ty, nr, size_of::<T>())
+pub const fn _IOW<T>(ty: u32, nr: u32) -> u32 {
+    super::_IOC(super::_IOC_WRITE, ty, nr, size_of::<T>())
 }
 
 /// Build an ioctl number for a read-write ioctl.
-pub(crate) const fn _IOWR<T>(ty: u32, nr: u32) -> u32 {
-    _IOC(_IOC_READ | _IOC_WRITE, ty, nr, size_of::<T>())
+pub const fn _IOWR<T>(ty: u32, nr: u32) -> u32 {
+    super::_IOC(super::_IOC_READ | super::_IOC_WRITE, ty, nr, size_of::<T>())
 }
 
 f! {
@@ -6063,6 +6120,26 @@ f! {
         (x + TPACKET_ALIGNMENT - 1) & !(TPACKET_ALIGNMENT - 1)
     }
 
+    pub fn BPF_CLASS(code: __u32) -> __u32 {
+        code & 0x07
+    }
+
+    pub fn BPF_SIZE(code: __u32) -> __u32 {
+        code & 0x18
+    }
+
+    pub fn BPF_MODE(code: __u32) -> __u32 {
+        code & 0xe0
+    }
+
+    pub fn BPF_OP(code: __u32) -> __u32 {
+        code & 0xf0
+    }
+
+    pub fn BPF_SRC(code: __u32) -> __u32 {
+        code & 0x08
+    }
+
     pub fn BPF_RVAL(code: __u32) -> __u32 {
         code & 0x18
     }
@@ -6168,17 +6245,23 @@ cfg_if! {
 cfg_if! {
     if #[cfg(all(not(target_env = "uclibc"), not(target_env = "ohos")))] {
         extern "C" {
+            #[cfg_attr(gnu_file_offset_bits64, link_name = "aio_read64")]
             pub fn aio_read(aiocbp: *mut aiocb) -> c_int;
+            #[cfg_attr(gnu_file_offset_bits64, link_name = "aio_write64")]
             pub fn aio_write(aiocbp: *mut aiocb) -> c_int;
             pub fn aio_fsync(op: c_int, aiocbp: *mut aiocb) -> c_int;
+            #[cfg_attr(gnu_file_offset_bits64, link_name = "aio_error64")]
             pub fn aio_error(aiocbp: *const aiocb) -> c_int;
+            #[cfg_attr(gnu_file_offset_bits64, link_name = "aio_return64")]
             pub fn aio_return(aiocbp: *mut aiocb) -> ssize_t;
             pub fn aio_suspend(
                 aiocb_list: *const *const aiocb,
                 nitems: c_int,
                 timeout: *const crate::timespec,
             ) -> c_int;
+            #[cfg_attr(gnu_file_offset_bits64, link_name = "aio_cancel64")]
             pub fn aio_cancel(fd: c_int, aiocbp: *mut aiocb) -> c_int;
+            #[cfg_attr(gnu_file_offset_bits64, link_name = "lio_listio64")]
             pub fn lio_listio(
                 mode: c_int,
                 aiocb_list: *const *mut aiocb,
@@ -6192,12 +6275,14 @@ cfg_if! {
 cfg_if! {
     if #[cfg(not(target_env = "uclibc"))] {
         extern "C" {
+            #[cfg_attr(gnu_file_offset_bits64, link_name = "pwritev64")]
             pub fn pwritev(
                 fd: c_int,
                 iov: *const crate::iovec,
                 iovcnt: c_int,
                 offset: off_t,
             ) -> ssize_t;
+            #[cfg_attr(gnu_file_offset_bits64, link_name = "preadv64")]
             pub fn preadv(
                 fd: c_int,
                 iov: *const crate::iovec,
@@ -6362,7 +6447,9 @@ extern "C" {
     pub fn mprotect(addr: *mut c_void, len: size_t, prot: c_int) -> c_int;
     pub fn __errno_location() -> *mut c_int;
 
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "fallocate64")]
     pub fn fallocate(fd: c_int, mode: c_int, offset: off_t, len: off_t) -> c_int;
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "posix_fallocate64")]
     pub fn posix_fallocate(fd: c_int, offset: off_t, len: off_t) -> c_int;
     pub fn readahead(fd: c_int, offset: off64_t, count: size_t) -> ssize_t;
     pub fn getxattr(
@@ -6469,12 +6556,14 @@ extern "C" {
         ...
     ) -> *mut c_void;
 
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "glob64")]
     pub fn glob(
         pattern: *const c_char,
         flags: c_int,
         errfunc: Option<extern "C" fn(epath: *const c_char, errno: c_int) -> c_int>,
         pglob: *mut crate::glob_t,
     ) -> c_int;
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "globfree64")]
     pub fn globfree(pglob: *mut crate::glob_t);
 
     pub fn posix_madvise(addr: *mut c_void, len: size_t, advice: c_int) -> c_int;
@@ -6500,6 +6589,7 @@ extern "C" {
         addr: *mut crate::sockaddr,
         addrlen: *mut crate::socklen_t,
     ) -> ssize_t;
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "mkstemps64")]
     pub fn mkstemps(template: *mut c_char, suffixlen: c_int) -> c_int;
 
     pub fn nl_langinfo(item: crate::nl_item) -> *mut c_char;
@@ -6664,6 +6754,7 @@ extern "C" {
         policy: c_int,
         param: *const crate::sched_param,
     ) -> c_int;
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "sendfile64")]
     pub fn sendfile(out_fd: c_int, in_fd: c_int, offset: *mut off_t, count: size_t) -> ssize_t;
     pub fn sigsuspend(mask: *const crate::sigset_t) -> c_int;
     pub fn getgrgid_r(

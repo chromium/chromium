@@ -11,7 +11,7 @@ namespace extensions {
 // an action could be applied. This is required because for example the response
 // headers cannot be tested before a request has been sent. Note that currently
 // not all stages are supported in declarative Web Request, only those marked
-// as "active" in |kActiveStages| below.
+// as "active" in `kActiveStages` below.
 enum RequestStage {
   ON_BEFORE_REQUEST = 1 << 0,
   ON_BEFORE_SEND_HEADERS = 1 << 1,
@@ -27,7 +27,7 @@ enum RequestStage {
 // The bitmap with active stages.
 extern const unsigned int kActiveStages;
 
-// The highest bit in |kActiveStages|. This allows to iterate over all active
+// The highest bit in `kActiveStages`. This allows to iterate over all active
 // stages in a "for" loop.
 extern const unsigned int kLastActiveStage;
 

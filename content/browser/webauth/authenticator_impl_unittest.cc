@@ -761,15 +761,19 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
       const std::vector<blink::mojom::WebAuthnClientCapabilityPtr>&
           capabilities,
       std::string_view capability_name,
-      bool supported) {
+      std::optional<bool> supported) {
     auto capability_it =
         std::find_if(capabilities.begin(), capabilities.end(),
                      [&capability_name](const auto& capability) {
                        return capability->name == capability_name;
                      });
 
-    ASSERT_NE(capability_it, capabilities.end());
-    EXPECT_EQ(supported, (*capability_it)->supported);
+    if (supported.has_value()) {
+      ASSERT_NE(capability_it, capabilities.end());
+      EXPECT_EQ(supported, (*capability_it)->supported);
+    } else {
+      EXPECT_EQ(capability_it, capabilities.end());
+    }
   }
 
   bool AuthenticatorIsConditionalMediationAvailable() {
@@ -1159,6 +1163,17 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities_ConditonalCreate) {
     ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
     ExpectCapability(capabilities, client_capabilities::kConditionalCreate,
                      enabled);
+  }
+}
+
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_ImmediateGet) {
+  for (const bool enabled : {false, true}) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(device::kWebAuthnImmediateGet, enabled);
+    NavigateAndCommit(GURL(kTestOrigin1));
+    ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+    ExpectCapability(capabilities, client_capabilities::kImmediateGet,
+                     enabled ? std::optional<bool>(true) : std::nullopt);
   }
 }
 

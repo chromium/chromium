@@ -453,7 +453,7 @@ struct RequireShortcutTestCase {
     {
         .policy_require_shortcut = false,
         .mock_require_shortcut = true,
-        .expected_result = false,
+        .expected_result = true,
     },
     {
         .policy_require_shortcut = true,
@@ -463,7 +463,7 @@ struct RequireShortcutTestCase {
     {
         .policy_require_shortcut = true,
         .mock_require_shortcut = false,
-        .expected_result = true,
+        .expected_result = false,
     },
     {
         .policy_require_shortcut = true,

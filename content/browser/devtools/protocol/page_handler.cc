@@ -604,13 +604,15 @@ void PageHandler::DidDetachInterstitialPage() {
 }
 
 void PageHandler::DidRunJavaScriptDialog(const GURL& url,
+                                         const base::UnguessableToken& frame_id,
                                          const std::u16string& message,
                                          const std::u16string& default_prompt,
                                          JavaScriptDialogType dialog_type,
                                          bool has_non_devtools_handlers,
                                          JavaScriptDialogCallback callback) {
-  if (!enabled_)
+  if (!enabled_) {
     return;
+  }
   DCHECK(pending_dialog_.is_null());
   pending_dialog_ = std::move(callback);
   std::string type = Page::DialogTypeEnum::Alert;
@@ -618,29 +620,37 @@ void PageHandler::DidRunJavaScriptDialog(const GURL& url,
     type = Page::DialogTypeEnum::Confirm;
   if (dialog_type == JAVASCRIPT_DIALOG_TYPE_PROMPT)
     type = Page::DialogTypeEnum::Prompt;
-  frontend_->JavascriptDialogOpening(url.spec(), base::UTF16ToUTF8(message),
-                                     type, has_non_devtools_handlers,
-                                     base::UTF16ToUTF8(default_prompt));
+  frontend_->JavascriptDialogOpening(
+      url.spec(), frame_id.ToString(), base::UTF16ToUTF8(message), type,
+      has_non_devtools_handlers, base::UTF16ToUTF8(default_prompt));
 }
 
-void PageHandler::DidRunBeforeUnloadConfirm(const GURL& url,
-                                            bool has_non_devtools_handlers,
-                                            JavaScriptDialogCallback callback) {
-  if (!enabled_)
+void PageHandler::DidRunBeforeUnloadConfirm(
+    const GURL& url,
+    const base::UnguessableToken& frame_id,
+    bool has_non_devtools_handlers,
+    JavaScriptDialogCallback callback) {
+  if (!enabled_) {
     return;
+  }
   DCHECK(pending_dialog_.is_null());
   pending_dialog_ = std::move(callback);
-  frontend_->JavascriptDialogOpening(url.spec(), std::string(),
+  frontend_->JavascriptDialogOpening(url.spec(), frame_id.ToString(),
+                                     std::string(),
                                      Page::DialogTypeEnum::Beforeunload,
                                      has_non_devtools_handlers, std::string());
 }
 
-void PageHandler::DidCloseJavaScriptDialog(bool success,
-                                           const std::u16string& user_input) {
-  if (!enabled_)
+void PageHandler::DidCloseJavaScriptDialog(
+    const base::UnguessableToken& frame_id,
+    bool success,
+    const std::u16string& user_input) {
+  if (!enabled_) {
     return;
+  }
   pending_dialog_.Reset();
-  frontend_->JavascriptDialogClosed(success, base::UTF16ToUTF8(user_input));
+  frontend_->JavascriptDialogClosed(frame_id.ToString(), success,
+                                    base::UTF16ToUTF8(user_input));
 }
 
 Response PageHandler::Enable(

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_BACKGROUND_GLIC_GLIC_CONTROLLER_H_
 
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace glic {
 
@@ -30,6 +31,8 @@ class GlicController {
 
   // Returns true if the glic UI is visible.
   virtual bool IsShowing() const;
+
+  virtual void CloseForProfile(Profile* profile);
 
  private:
   // Helper that implements both Toggle and Show.

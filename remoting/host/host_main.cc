@@ -24,7 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
-#include "remoting/base/crash/crash_reporting.h"
+#include "remoting/base/crash/crash_reporting_crashpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
@@ -42,6 +42,8 @@
 
 #include <commctrl.h>
 #include <shellapi.h>
+
+#include "remoting/base/crash/crash_reporting_breakpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
@@ -85,7 +87,7 @@ const char kUsageMessage[] =
     "  --type                   - Specifies process type.\n"
     "  --version                - Prints the host version and exits.\n"
     "  --evaluate-type=<type>   - Evaluates the capability of the host.\n"
-    "  --enable-utempter        - Enables recording to utmp/wtmp on Linux.\n"
+    "  --enable-wtmpdb          - Enables recording to wtmpdb on Linux.\n"
     "  --webrtc-trace-event-file=<path> - Enables logging webrtc trace events "
     "to a file.\n";
 
@@ -230,12 +232,14 @@ int HostMain(int argc, char** argv) {
   // the crash reports uploaded.
   if (IsUsageStatsAllowed()) {
 #if BUILDFLAG(IS_LINUX)
-    InitializeCrashReporting();
+    InitializeCrashpadReporting();
 #elif BUILDFLAG(IS_WIN)
     // TODO: joedow - Enable crash reporting for the RDP process.
-    if (process_type == kProcessTypeDesktop ||
-        process_type == kProcessTypeDaemon) {
-      InitializeCrashReporting();
+    if (process_type == kProcessTypeDaemon) {
+      InitializeBreakpadReporting();
+    } else if (process_type == kProcessTypeDesktop) {
+      // TODO(garykac): Switch to use InitializeCrashpadReporting();
+      InitializeBreakpadReporting();
     } else if (command_line->HasSwitch(kCrashServerPipeHandle)) {
       InitializeOopCrashClient(
           command_line->GetSwitchValueASCII(kCrashServerPipeHandle));

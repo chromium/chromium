@@ -8,6 +8,8 @@
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "ui/gfx/color_utils.h"
 
 namespace content {
 
@@ -200,6 +202,25 @@ void FederatedProviderFetcher::OnConfigFetched(
     }
   }
 
+  if (!idp_metadata.brand_background_color && idp_metadata.brand_text_color) {
+    idp_metadata.brand_text_color = std::nullopt;
+    render_frame_host_->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "The FedCM text color is ignored because background color was not "
+        "provided");
+  }
+  if (idp_metadata.brand_background_color && idp_metadata.brand_text_color) {
+    float text_contrast_ratio = color_utils::GetContrastRatio(
+        *idp_metadata.brand_background_color, *idp_metadata.brand_text_color);
+    if (text_contrast_ratio < color_utils::kMinimumReadableContrastRatio) {
+      idp_metadata.brand_text_color = std::nullopt;
+      render_frame_host_->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          "The FedCM text color is ignored because it does not contrast enough "
+          "with the provided background color");
+    }
+  }
+
   fetch_result.endpoints = endpoints;
   fetch_result.metadata = idp_metadata;
 
@@ -286,9 +307,8 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
       result.wellknown.accounts.is_valid() ||
       (IsFedCmLightweightModeEnabled() && result.wellknown.accounts.is_empty());
 
-  if (webid::IsFedCmAuthzEnabled() && is_wellknown_accounts_valid &&
-      result.wellknown.login_url.is_valid() && result.metadata &&
-      result.metadata->idp_login_url.is_valid()) {
+  if (is_wellknown_accounts_valid && result.wellknown.login_url.is_valid() &&
+      result.metadata && result.metadata->idp_login_url.is_valid()) {
     // Behind the AuthZ flag, it is valid for IdPs to have valid configURLs
     // by announcing their accounts_endpoint and their login_urls in the
     // .well-known file. When that happens, and both of these urls match the

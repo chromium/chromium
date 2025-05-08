@@ -37,12 +37,17 @@ def __host_cpu():
         return "x64"
     return runtime.arch
 
-def __enabled(ctx):
+def __target_is_windows(ctx):
     if "args.gn" in ctx.metadata:
         gn_args = gn.args(ctx)
         if gn_args.get("target_os") == '"win"':
             return True
     return runtime.os == "windows"
+
+def __enabled(ctx):
+    if __target_is_windows(ctx) and __win_toolchain_dir(ctx):
+        return True
+    return False
 
 def __filegroups(ctx):
     win_toolchain_dir = __win_toolchain_dir(ctx)
@@ -259,6 +264,9 @@ def __step_config(ctx, step_config):
             # third_party/dawn/third_party/dxc/lib/Support includes "D3Dcommon.h"
             # https://github.com/microsoft/DirectXShaderCompiler/pull/6380
             path.join(win_toolchain_dir, "Windows Kits/10/Include", sdk_version, "um/D3Dcommon.h"),
+            # third_party/angle/src/libANGLE/renderer/d3d/d3d11/converged/CompositorNativeWindow11.h
+            # includes dispatcherqueue.h
+            path.join(win_toolchain_dir, "Windows Kits/10/Include", sdk_version, "um/dispatcherqueue.h"),
         ])
 
         def __extend_libs_for_case_varients(libs, cpu):

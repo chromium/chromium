@@ -4,6 +4,8 @@
 
 #include "base/memory/platform_shared_memory_region.h"
 
+#include <utility>
+
 #include "base/bits.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -24,6 +26,14 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::CreateWritable(
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::CreateUnsafe(
     size_t size) {
   return Create(Mode::kUnsafe, size);
+}
+
+PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
+    ScopedPlatformSharedMemoryHandle handle,
+    Mode mode,
+    size_t size,
+    const UnguessableToken& guid) {
+  return TakeOrFail(std::move(handle), mode, size, guid).value();
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion() = default;

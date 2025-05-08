@@ -12,7 +12,6 @@
 #include "components/prefs/pref_service.h"
 
 class PrefValueMap;
-class PrefRegistrySimple;
 
 namespace policy {
 
@@ -96,7 +95,6 @@ class SystemFeaturesDisableListPolicyHandler
   SystemFeaturesDisableListPolicyHandler();
   ~SystemFeaturesDisableListPolicyHandler() override;
 
-  static void RegisterPrefs(PrefRegistrySimple* registry);
   static SystemFeature GetSystemFeatureFromAppId(const std::string& app_id);
   static bool IsSystemFeatureDisabled(SystemFeature feature,
                                       PrefService* const pref_service);

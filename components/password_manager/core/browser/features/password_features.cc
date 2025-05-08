@@ -10,6 +10,12 @@
 
 namespace password_manager::features {
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kAndroidSmsOtpFilling,
+             "AndroidSmsOtpFilling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,
              "AutoApproveSharedPasswordUpdatesFromSameSender",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -18,10 +24,11 @@ BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,
 BASE_FEATURE(kAutofillPasswordUserPerceptionSurvey,
              "AutofillPasswordUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Disabled by default.
+
+// Enabled by default in M138. Remove in or after M141.
 BASE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
              "WebAuthnUsePasskeyFromAnotherDeviceInContextMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kBiometricTouchToFill,
@@ -153,10 +160,6 @@ BASE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords,
 BASE_FEATURE(kBiometricAuthIdentityCheck,
              "BiometricAuthIdentityCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDropLoginDbRenameForUpmSyncingUsers,
-             "DropLoginDbRenameForUpmSyncingUsers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLoginDbDeprecationAndroid,
              "LoginDbDeprecationAndroid",

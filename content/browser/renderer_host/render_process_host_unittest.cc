@@ -928,7 +928,7 @@ TEST_F(RenderProcessHostUnitTest,
   site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
       browser_context(), kRedirectUrl2);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_NE(speculative_process_host_id,
               site_instance->GetProcess()->GetDeprecatedID());
   } else {

@@ -380,14 +380,14 @@ def _crossbench_speedometer2_1(estimated_runtime=60, arguments=None):
 
 def _crossbench_speedometer2(estimated_runtime=60, arguments=None):
   """Alias for the latest Speedometer 2.X version."""
-  return CrossbenchConfig('speedometer2.1.crossbench',
-                          'speedometer_2.1',
+  return CrossbenchConfig('speedometer2.crossbench',
+                          'speedometer_2',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
 
 def _crossbench_speedometer3_0(estimated_runtime=60, arguments=None):
-  return CrossbenchConfig('speedometer3.crossbench',
+  return CrossbenchConfig('speedometer3.0.crossbench',
                           'speedometer_3.0',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
@@ -403,7 +403,7 @@ def _crossbench_speedometer3_1(estimated_runtime=60, arguments=None):
 def _crossbench_speedometer3(estimated_runtime=60, arguments=None):
   """Alias for the latest Speedometer 3.X version."""
   return CrossbenchConfig('speedometer3.crossbench',
-                          'speedometer_3.0',
+                          'speedometer_3',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
@@ -498,20 +498,17 @@ def _crossbench_loadline_tablet(estimated_runtime=3600, arguments=None):
 
 _CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
     _crossbench_jetstream2(),
-    _crossbench_speedometer3_0(),
-    _crossbench_speedometer3_1(),
+    _crossbench_speedometer3(),
 ])
 
 _CROSSBENCH_MOTIONMARK_SPEEDOMETER = frozenset([
     _crossbench_motionmark1_3(),
-    _crossbench_speedometer3_0(),
-    _crossbench_speedometer3_1(),
+    _crossbench_speedometer3(),
 ])
 
 _CROSSBENCH_BENCHMARKS_ALL = frozenset([
     _crossbench_speedometer2(),
-    _crossbench_speedometer3_0(),
-    _crossbench_speedometer3_1(),
+    _crossbench_speedometer3(),
     _crossbench_motionmark1_3(),
     _crossbench_jetstream2(),
 ])
@@ -519,8 +516,7 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
 # TODO(crbug.com/338630584): Remove it when other benchmarks can be run on
 # Android.
 _CROSSBENCH_ANDROID = frozenset([
-    _crossbench_speedometer3_0(arguments=['--fileserver']),
-    _crossbench_speedometer3_1(arguments=['--fileserver']),
+    _crossbench_speedometer3(arguments=['--fileserver']),
     _crossbench_loadline_phone(arguments=[
         '--cool-down-threshold=moderate',
         '--no-splash',
@@ -532,12 +528,16 @@ _CROSSBENCH_ANDROID = frozenset([
 _CROSSBENCH_PIXEL9 = frozenset([
     # _crossbench_jetstream2(arguments=['--fileserver', '--debug']),
     _crossbench_motionmark1_3(arguments=['--fileserver', '--debug']),
-    _crossbench_speedometer3_1(arguments=['--fileserver', '--debug']),
+    _crossbench_speedometer3(arguments=['--fileserver', '--debug']),
     _crossbench_loadline_phone(arguments=[
         '--cool-down-threshold=moderate',
         '--no-splash',
         '--debug',
     ]),
+])
+
+_CROSSBENCH_ANDROID_BYRA = frozenset([
+    _crossbench_speedometer3(arguments=['--fileserver', '--debug']),
 ])
 
 _CROSSBENCH_TANGOR = frozenset([
@@ -658,6 +658,7 @@ _MAC_M2_PRO_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'speedometer2-minorms',
     'speedometer3-minorms',
 ])
+_MAC_M3_PRO_BENCHMARK_CONFIGS = PerfSuite([])
 
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
@@ -767,6 +768,15 @@ _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS = PerfSuite(
         _GetBenchmarkConfig('speedometer2-minorms'),
         _GetBenchmarkConfig('speedometer3-minorms')
     ])
+# Android Desktop (AL)
+_ANDROID_BYRA_BENCHMARK_CONFIGS = PerfSuite([
+    # Byra will also run the crossbench variant to ensure that both legacy and
+    # crossbench work.
+    _GetBenchmarkConfig('speedometer3'),
+    _GetBenchmarkConfig('rendering.mobile'),
+    _GetBenchmarkConfig('rendering.desktop'),
+])
+
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('rendering.desktop')])
 _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS = PerfSuite([
@@ -844,7 +854,12 @@ MAC_M2_PRO = PerfPlatform('mac-m2-pro-perf',
                           20,
                           'mac',
                           crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-
+MAC_M3_PRO = PerfPlatform('mac-m3-pro-perf',
+                          'Mac M3 PRO ARM',
+                          _MAC_M3_PRO_BENCHMARK_CONFIGS,
+                          4,
+                          'mac',
+                          crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 # Win
 WIN_10_LOW_END = PerfPlatform(
     'win-10_laptop_low_end-perf',
@@ -935,6 +950,14 @@ WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
     is_fyi=True)
 
 # Android
+ANDROID_BYRA = PerfPlatform(name='android-byra-perf',
+                            description='AL Byra',
+                            num_shards=7,
+                            benchmark_configs=_ANDROID_BYRA_BENCHMARK_CONFIGS,
+                            platform_os='android',
+                            executables=None,
+                            crossbench=_CROSSBENCH_ANDROID_BYRA)
+
 ANDROID_PIXEL4 = PerfPlatform('android-pixel4-perf',
                               'Android R',
                               _ANDROID_PIXEL4_BENCHMARK_CONFIGS,

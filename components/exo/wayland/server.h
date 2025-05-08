@@ -28,7 +28,6 @@ namespace wayland {
 
 class ClientTracker;
 class SerialTracker;
-class TestController;
 class UiControls;
 struct WaylandDataDeviceManager;
 struct WaylandKeyboardExtension;
@@ -140,7 +139,6 @@ class Server : public OutputController::Delegate {
   std::unique_ptr<UiControls> ui_controls_holder_;
   std::unique_ptr<ClientTracker> client_tracker_;
   std::unique_ptr<WaylandProtocolLogger> wayland_protocol_logger_;
-  std::unique_ptr<TestController> test_controller_;
 };
 
 }  // namespace wayland

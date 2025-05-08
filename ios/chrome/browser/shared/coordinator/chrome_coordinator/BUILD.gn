@@ -16,3 +16,12 @@ source_set("chrome_coordinator") {
     "//ios/chrome/browser/shared/public/commands",
   ]
 }
+
+source_set("animated_coordinator") {
+  sources = [
+    "animated_coordinator.h",
+    "animated_coordinator.mm",
+  ]
+  deps = [ ":chrome_coordinator" ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -25,7 +25,7 @@ class VcBackgroundUISystemAppDelegate : public SystemWebAppDelegate {
   // SystemWebAppDelegate:
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   gfx::Size GetMinimumWindowSize() const override;
-  gfx::Rect GetDefaultBounds(Browser* browser) const override;
+  gfx::Rect GetDefaultBounds(BrowserDelegate* browser) const override;
   bool IsAppEnabled() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearchAndShelf() const override;

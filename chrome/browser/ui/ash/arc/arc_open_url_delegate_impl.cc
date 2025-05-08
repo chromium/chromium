@@ -13,6 +13,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
@@ -27,6 +28,8 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -35,12 +38,12 @@
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
@@ -52,6 +55,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user_manager.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/url_util.h"
@@ -329,23 +333,23 @@ void ArcOpenUrlDelegateImpl::OpenArcCustomTab(
   auto custom_tab = std::make_unique<arc::CustomTab>(arc_window);
   auto web_contents = arc::CreateArcCustomTabWebContents(profile, url);
 
+  const user_manager::User& user = CHECK_DEREF(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+
   // |custom_tab_browser| will be destroyed when its tab strip becomes empty,
   // either due to the user opening the custom tab page in a tabbed browser or
   // because of the CustomTabSessionImpl object getting destroyed.
-  Browser::CreateParams params(Browser::TYPE_CUSTOM_TAB, profile,
-                               /*user_gesture=*/true);
-  params.omit_from_session_restore = true;
-  auto* custom_tab_browser = Browser::Create(params);
-
-  custom_tab_browser->tab_strip_model()->AppendWebContents(
-      std::move(web_contents), /* foreground= */ true);
+  ash::BrowserDelegate* custom_tab_browser =
+      ash::BrowserController::GetInstance()->CreateCustomTab(
+          user, std::move(web_contents));
+  CHECK(custom_tab_browser);
 
   // TODO(crbug.com/41454219): Remove this temporary conversion to InterfacePtr
   // once OnOpenCustomTab from
   // //chromeos/ash/experiences/arc/mojom/intent_helper.mojom could take
   // pending_remote directly. Refer to crrev.com/c/1868870.
-  auto custom_tab_remote(
-      CustomTabSessionImpl::Create(std::move(custom_tab), custom_tab_browser));
+  auto custom_tab_remote(CustomTabSessionImpl::Create(
+      std::move(custom_tab), &custom_tab_browser->GetBrowser()));
   std::move(callback).Run(std::move(custom_tab_remote));
 }
 

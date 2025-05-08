@@ -33,7 +33,7 @@ testSuite({
     assertEquals('call count', 1, f.getCallCount());
     const lastCall = f.getLastCall();
     assertEquals(
-        'original function', goog.nullFunction, lastCall.getFunction());
+        'original function', functions.UNDEFINED, lastCall.getFunction());
     assertEquals('this context', undefined, lastCall.getThis());
     assertArrayEquals('arguments', [1], lastCall.getArguments());
     assertEquals('arguments[0]', 1, lastCall.getArgument(0));

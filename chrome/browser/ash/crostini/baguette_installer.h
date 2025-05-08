@@ -64,6 +64,9 @@ class BaguetteInstaller {
 
  private:
   void GetBaguetteImageUrl(BaguetteInstallerCallback callback);
+  void OnListVmDisks(
+      BaguetteInstallerCallback callback,
+      std::optional<vm_tools::concierge::ListVmDisksResponse> response);
   void OnInstallDlc(BaguetteInstallerCallback callback,
                     guest_os::GuestOsDlcInstallation::Result result);
   void OnConciergeAvailable(BaguetteInstallerCallback callback,

@@ -11,8 +11,6 @@
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
-// Forward declare browser and profile.
-class Browser;
 class Profile;
 
 namespace web_app {
@@ -45,7 +43,7 @@ class BocaSystemAppDelegate : public ash::SystemWebAppDelegate {
   gfx::Size GetMinimumWindowSize() const override;
   std::unique_ptr<ui::SimpleMenuModel> GetTabMenuModel(
       ui::SimpleMenuModel::Delegate* delegate) const override;
-  Browser* LaunchAndNavigateSystemWebApp(
+  ash::BrowserDelegate* LaunchAndNavigateSystemWebApp(
       Profile* profile,
       web_app::WebAppProvider* provider,
       const GURL& url,

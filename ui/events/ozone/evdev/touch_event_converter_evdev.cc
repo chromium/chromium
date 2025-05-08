@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/events/ozone/evdev/touch_event_converter_evdev.h"
 
@@ -16,6 +12,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <optional>
@@ -456,8 +453,10 @@ void TouchEventConverterEvdev::OnFileCanReadWithoutBlocking(int fd) {
                "TouchEventConverterEvdev::OnFileCanReadWithoutBlocking", "fd",
                fd);
 
-  input_event inputs[kNumTouchEvdevSlots * 6 + 1];
-  ssize_t read_size = read(fd, inputs, sizeof(inputs));
+  std::array<input_event, kNumTouchEvdevSlots * 6 + 1> inputs;
+  ssize_t read_size =
+      read(fd, inputs.data(),
+           (inputs.size() * sizeof(decltype(inputs)::value_type)));
   if (read_size < 0) {
     if (errno == EINTR || errno == EAGAIN)
       return;
@@ -467,7 +466,7 @@ void TouchEventConverterEvdev::OnFileCanReadWithoutBlocking(int fd) {
     return;
   }
 
-  for (unsigned i = 0; i < read_size / sizeof(*inputs); i++) {
+  for (unsigned i = 0; i < read_size / sizeof(inputs[0]); i++) {
     if (!has_mt_) {
       // Emulate the device as an MT device with only 1 slot by inserting extra
       // MT protocol events in the stream.

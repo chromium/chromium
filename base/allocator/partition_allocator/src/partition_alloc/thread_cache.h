@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/lightweight_quarantine.h"
@@ -22,7 +23,6 @@
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
-#include "partition_alloc/partition_bucket_lookup.h"
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_stats.h"
@@ -176,7 +176,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   bool is_purging_configured_ = false;
 
   uint16_t largest_active_bucket_index_ =
-      internal::BucketIndexLookup::GetIndex(kThreadCacheDefaultSizeThreshold);
+      BucketIndexLookup::GetIndexForNeutralBuckets(
+          kThreadCacheDefaultSizeThreshold);
 };
 
 constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
@@ -231,7 +232,7 @@ class ReentrancyGuard {
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
  public:
   struct Bucket {
-    internal::PartitionFreelistEntry* freelist_head = nullptr;
+    internal::FreelistEntry* freelist_head = nullptr;
     // Want to keep sizeof(Bucket) small, using small types.
     uint8_t count = 0;
     std::atomic<uint8_t> limit{};  // Can be changed from another thread.
@@ -283,9 +284,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // Must be called without the partition locked, as this may allocate.
   static ThreadCache* Create(PartitionRoot* root);
 
-  const internal::PartitionFreelistDispatcher*
-  get_freelist_dispatcher_from_root();
-
   ~ThreadCache();
 
   // Disallow copy and move.
@@ -318,10 +316,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // The Partition lock must *not* be held when calling this.
   // Must be called from the thread this cache is for.
   void Purge();
-  // |TryPurge| is the same as |Purge|, except that |TryPurge| will
-  // not crash if the thread cache is inconsistent. Normally inconsistency
-  // is a sign of a bug somewhere, so |Purge| should be preferred in most cases.
-  void TryPurge();
   // Amount of cached memory for this thread's cache, in bytes.
   size_t CachedMemory() const;
   void AccumulateStats(ThreadCacheStats* stats) const;
@@ -366,9 +360,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
       kThreadCacheDefaultSizeThreshold;
   static constexpr size_t kLargeSizeThreshold = kThreadCacheLargeSizeThreshold;
   static constexpr uint16_t kBucketCount =
-      internal::BucketIndexLookup::GetIndex(kThreadCacheLargeSizeThreshold) + 1;
+      BucketIndexLookup::GetIndexForNeutralBuckets(
+          kThreadCacheLargeSizeThreshold) +
+      1;
   static_assert(
-      kBucketCount < internal::kNumBuckets,
+      kBucketCount <= BucketIndexLookup::kNumBuckets,
       "Cannot have more cached buckets than what the allocator supports");
 
   const ThreadCache* prev_for_testing() const
@@ -408,20 +404,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   static void operator delete(void* ptr);
 
   void PurgeInternal();
-  template <bool crash_on_corruption>
-  void PurgeInternalHelper();
 
   // Fills a bucket from the central allocator.
   void FillBucket(size_t bucket_index);
   // Empties the |bucket| until there are at most |limit| objects in it.
-  template <bool crash_on_corruption>
-  void ClearBucketHelper(Bucket& bucket, size_t limit);
   void ClearBucket(Bucket& bucket, size_t limit);
   PA_ALWAYS_INLINE void PutInBucket(Bucket& bucket, uintptr_t slot_start);
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
-  template <bool crash_on_corruption>
-  void FreeAfter(internal::PartitionFreelistEntry* head, size_t slot_size);
+  void FreeAfter(internal::FreelistEntry* head, size_t slot_size);
   static void SetGlobalLimits(PartitionRoot* root, float multiplier);
 
   // On some architectures, ThreadCache::Get() can be called and return
@@ -544,7 +535,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   }
 
   PA_DCHECK(bucket.count != 0);
-  internal::PartitionFreelistEntry* entry = bucket.freelist_head;
+  internal::FreelistEntry* entry = bucket.freelist_head;
   // TODO(lizeb): Consider removing once crbug.com/1382658 is fixed.
 #if PA_BUILDFLAG(IS_CHROMEOS) && PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && \
     PA_BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -562,15 +553,8 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   // corruption, we know the bucket size that lead to the crash, helping to
   // narrow down the search for culprit. |bucket| was touched just now, so this
   // does not introduce another cache miss.
-  const internal::PartitionFreelistDispatcher* freelist_dispatcher =
-      get_freelist_dispatcher_from_root();
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-  internal::PartitionFreelistEntry* next =
-      freelist_dispatcher->GetNextForThreadCacheTrue(entry, bucket.slot_size);
-#else
-  internal::PartitionFreelistEntry* next =
-      freelist_dispatcher->GetNextForThreadCache<true>(entry, bucket.slot_size);
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+  internal::FreelistEntry* next =
+      entry->GetNextForThreadCache(bucket.slot_size);
 
   PA_DCHECK(entry != next);
   bucket.count--;
@@ -637,9 +621,8 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
 #endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) &&
         // PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
-  auto* entry =
-      get_freelist_dispatcher_from_root()->EmplaceAndInitForThreadCache(
-          slot_start, bucket.freelist_head);
+  auto* entry = internal::FreelistEntry::EmplaceAndInitForThreadCache(
+      slot_start, bucket.freelist_head);
   bucket.freelist_head = entry;
   bucket.count++;
 }

@@ -8,6 +8,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/safe_ref.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -125,7 +126,7 @@ class CONTENT_EXPORT NavigationEntryScreenshotManager
   base::LRUCacheSet<NavigationEntryScreenshotCacheEvictor*> managed_caches_;
 
   raw_ptr<const base::TickClock> tick_clock_;
-  base::OneShotTimer cleanup_task_;
+  base::OneShotDelayedBackgroundTimer cleanup_task_;
   const base::TimeDelta cleanup_delay_;
 
   SEQUENCE_CHECKER(sequence_checker_);

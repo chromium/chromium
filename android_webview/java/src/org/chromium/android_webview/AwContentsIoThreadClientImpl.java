@@ -86,6 +86,11 @@ class AwContentsIoThreadClientImpl extends AwContentsIoThreadClient {
     }
 
     @Override
+    public boolean shouldIncludeCookiesInIntercept() {
+        return mSettings.getIncludeCookiesOnIntercept();
+    }
+
+    @Override
     public void onLoadResource(String url) {
         mContentsClient.getCallbackHelper().postOnLoadResource(url);
     }

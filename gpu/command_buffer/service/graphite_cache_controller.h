@@ -31,7 +31,7 @@ class GPU_GLES2_EXPORT GraphiteCacheController final
   // DawnContextProvider which live on GPU main thread.
   explicit GraphiteCacheController(
       skgpu::graphite::Recorder* recorder,
-      gpu::GraphiteSharedContext* context = nullptr,
+      bool can_handle_context_resources = false,
       DawnContextProvider* dawn_context_provider = nullptr);
 
   GraphiteCacheController(const GraphiteCacheController&) = delete;
@@ -65,13 +65,20 @@ class GPU_GLES2_EXPORT GraphiteCacheController final
   void ScheduleCleanUpAllResources(uint32_t idle_id);
   void MaybeCleanUpAllResources(uint32_t posted_idle_id);
   void CleanUpAllResourcesImpl();
+  GraphiteSharedContext* GetGraphiteSharedContext();
 
   const raw_ptr<skgpu::graphite::Recorder> recorder_;
-  const raw_ptr<GraphiteSharedContext> context_;
   const raw_ptr<DawnContextProvider> dawn_context_provider_;
 
   uint32_t local_idle_id_ = 0;
   base::CancelableOnceClosure idle_cleanup_cb_;
+
+  // If multiple DawnContextProviders share the same graphite::Context, only one
+  // controller is responsible for cleaning up the graphite context resources.
+  // TODO(crbug.com/407874799): Fix the issue that dawn cleanup won't happen if
+  // no work is done on CrGpuMain to call into ScheduleCleanup() and start the
+  // timer.
+  const bool can_handle_context_resources_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

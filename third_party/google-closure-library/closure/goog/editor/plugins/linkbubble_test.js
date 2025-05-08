@@ -16,14 +16,17 @@ const GoogEvent = goog.require('goog.events.Event');
 const KeyCodes = goog.require('goog.events.KeyCodes');
 const Link = goog.require('goog.editor.Link');
 const LinkBubble = goog.require('goog.editor.plugins.LinkBubble');
+const LivePriority = goog.require('goog.a11y.aria.LivePriority');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const Range = goog.require('goog.dom.Range');
 const TagName = goog.require('goog.dom.TagName');
 const TestHelper = goog.require('goog.testing.editor.TestHelper');
 const dom = goog.require('goog.dom');
 const events = goog.require('goog.testing.events');
+const googArray = goog.require('goog.array');
 const googString = goog.require('goog.string');
 const googWindow = goog.require('goog.window');
+const recordFunction = goog.require('goog.testing.recordFunction');
 const style = goog.require('goog.style');
 const testSuite = goog.require('goog.testing.testSuite');
 const userAgent = goog.require('goog.userAgent');
@@ -256,6 +259,38 @@ testSuite({
     assertEquals(
         'Link selection on link text end',
         dom.getRawTextContent(linkChild).length, range.getEndOffset());
+    FIELDMOCK.$verify();
+  },
+
+  /**
+     @suppress {missingProperties,visibility} suppression added to enable type
+     checking
+   */
+  testDeleteAnnounced() {
+    FIELDMOCK.dispatchBeforeChange();
+    FIELDMOCK.$times(1);
+    FIELDMOCK.dispatchChange();
+    FIELDMOCK.$times(1);
+    FIELDMOCK.focus();
+    FIELDMOCK.$times(1);
+    FIELDMOCK.$replay();
+
+    linkBubble.enable(FIELDMOCK);
+
+    linkBubble.handleSelectionChange(createMouseEvent(link));
+    assertBubble();
+
+    const sayFunction = recordFunction();
+    /** @suppress {visibility} suppression added to enable type checking */
+    linkBubble.announcer_.say = sayFunction;
+
+    events.fireClickSequence(dom.$(LinkBubble.DELETE_LINK_ID_));
+
+    assertEquals(1, sayFunction.getCallCount());
+
+    assertTrue(googArray.equals(
+        ['Removed link.', LivePriority.ASSERTIVE],
+        sayFunction.getLastCall().getArguments()));
     FIELDMOCK.$verify();
   },
 

@@ -123,10 +123,10 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 @property(nonatomic, strong) UILabel* titleLabel;
 
 // Subtitle string that will be displayed when the sharing is succesful.
-@property(nonatomic, strong) NSString* subtitleString;
+@property(nonatomic, copy) NSString* subtitleString;
 
 // Footer string that will be displayed when the sharing is succesful.
-@property(nonatomic, strong) NSString* footerString;
+@property(nonatomic, copy) NSString* footerString;
 
 // The button that cancels the sharing process.
 @property(nonatomic, strong) UIButton* cancelButton;
@@ -231,11 +231,11 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 }
 
 - (void)setSubtitleString:(NSString*)subtitleString {
-  _subtitleString = subtitleString;
+  _subtitleString = [subtitleString copy];
 }
 
 - (void)setFooterString:(NSString*)footerString {
-  _footerString = footerString;
+  _footerString = [footerString copy];
 }
 
 - (void)setURL:(const GURL&)URL {

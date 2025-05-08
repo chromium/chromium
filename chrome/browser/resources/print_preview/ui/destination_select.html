@@ -12,16 +12,19 @@
         style="background-image:
             [[getBackgroundImages_(selectedValue, destination,
                                    noDestinations, dark)]];"
-        disabled$="[[disabled]]"
-        value="[[selectedValue]]" on-change="onSelectChange">
+        disabled$="[[disabled]]" on-change="onSelectChange">
       <template is="dom-repeat" items="[[recentDestinationList]]">
-        <option value="[[item.key]]">[[item.displayName]]</option>
+        <option value="[[item.key]]"
+            selected$="[[isSelected_(item.key, selectedValue)]]">
+          [[item.displayName]]
+        </option>
       </template>
-      <option value="[[pdfDestinationKey_]]" hidden$="[[pdfPrinterDisabled]]">
+      <option value="[[pdfDestinationKey_]]" hidden$="[[pdfPrinterDisabled]]"
+          selected$="[[isSelected_(pdfDestinationKey_, selectedValue)]]">
         $i18n{printToPDF}
       </option>
-      <option value="noDestinations"
-              hidden$="[[!noDestinations]]" selected$="[[noDestinations]]">
+      <option value="noDestinations" hidden$="[[!noDestinations]]"
+          selected$="[[noDestinations]]">
         $i18n{noDestinationsMessage}
       </option>
       <option value="seeMore" aria-label$="[[i18n(seeMoreDestinationsLabel)]]">

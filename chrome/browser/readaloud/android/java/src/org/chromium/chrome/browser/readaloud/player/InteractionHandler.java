@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.readaloud.player;
 
 import android.widget.SeekBar;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
+import org.chromium.chrome.modules.readaloud.Feedback.NegativeFeedbackReason;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 
 /** Callbacks for player buttons and seek bar. */
+@NullMarked
 public interface InteractionHandler {
     /** Called when the play/pause button is clicked. */
     void onPlayPauseClick();
@@ -76,4 +80,13 @@ public interface InteractionHandler {
 
     /** Called when the mini player should be restored. */
     void onShouldRestoreMiniPlayer();
+
+    /** Called when a positive feedback was requested. */
+    void onPositiveFeedback();
+
+    /** Called when a negative feedback was requested. */
+    void onNegativeFeedback(NegativeFeedbackReason negativeFeedbackReason);
+
+    /** Called when a feedback was sent successfully. */
+    void setFeedbackType(FeedbackType type);
 }

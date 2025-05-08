@@ -45,6 +45,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CollaborationService.Latency" enum="CollaborationServiceStep"
+    expires_after="2025-10-11">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the time in milliseconds between when a flow step
+    is started and finished.
+
+    Recorded by the CollaborationService for each step in a collaboration flow
+    that has user wait time.
+  </summary>
+</histogram>
+
 <histogram name="CollaborationService.ShareOrManageFlow"
     enum="CollaborationServiceShareOrManageEvent" expires_after="2025-10-11">
   <owner>dljames@chromium.org</owner>

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
@@ -61,8 +62,9 @@ TerminalSystemAppDelegate::GetWebAppInfo() const {
   return info;
 }
 
-Browser* TerminalSystemAppDelegate::GetWindowForLaunch(Profile* profile,
-                                                       const GURL& url) const {
+ash::BrowserDelegate* TerminalSystemAppDelegate::GetWindowForLaunch(
+    Profile* profile,
+    const GURL& url) const {
   return nullptr;
 }
 
@@ -90,8 +92,9 @@ bool TerminalSystemAppDelegate::ShouldHaveTabStrip() const {
   return true;
 }
 
-gfx::Rect TerminalSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
-  if (browser->is_type_app_popup()) {
+gfx::Rect TerminalSystemAppDelegate::GetDefaultBounds(
+    ash::BrowserDelegate* browser) const {
+  if (browser->GetType() == ash::BrowserType::kAppPopup) {
     gfx::Rect bounds =
         display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
     bounds.ClampToCenteredSize(TERMINAL_SETTINGS_DEFAULT_SIZE);

@@ -17,7 +17,6 @@
 #include "mojo/core/embedder/embedder.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/crash/crash_reporting.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
@@ -44,10 +43,15 @@
 #include "remoting/host/mac/permission_utils.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
+#if BUILDFLAG(IS_LINUX)
+#include "remoting/base/crash/crash_reporting_crashpad.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <commctrl.h>
+#include "remoting/base/crash/crash_reporting_breakpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
@@ -100,7 +104,11 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   // needs to be initialized first, so that the preference for crash-reporting
   // can be looked up in the config file.
   if (IsUsageStatsAllowed()) {
-    InitializeCrashReporting();
+#if BUILDFLAG(IS_LINUX)
+    InitializeCrashpadReporting();
+#elif BUILDFLAG(IS_WIN)
+    InitializeBreakpadReporting();
+#endif  // BUILDFLAG(IS_LINUX)
   }
 #endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 

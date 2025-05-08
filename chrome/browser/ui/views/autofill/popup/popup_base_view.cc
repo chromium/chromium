@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/autofill/popup/custom_cursor_suppressor.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -77,7 +78,8 @@ std::unique_ptr<views::Border> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
   border->SetColor(ui::kColorDropdownBackground);
-  border->SetCornerRadius(PopupBaseView::GetCornerRadius());
+  border->set_rounded_corners(
+      gfx::RoundedCornersF(PopupBaseView::GetCornerRadius()));
   border->set_md_shadow_elevation(
       ChromeLayoutProvider::Get()->GetShadowElevationMetric(
           base::FeatureList::IsEnabled(features::kAutofillMoreProminentPopup)

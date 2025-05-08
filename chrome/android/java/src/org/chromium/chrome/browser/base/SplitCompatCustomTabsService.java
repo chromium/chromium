@@ -167,12 +167,6 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
     }
 
     @Override
-    @androidx.browser.customtabs.ExperimentalEphemeralBrowsing
-    protected boolean isEphemeralBrowsingSupported(Bundle extras) {
-        return mImpl.isEphemeralBrowsingSupported(extras);
-    }
-
-    @Override
     protected boolean cleanUpSession(AuthTabSessionToken sessionToken) {
         mImpl.cleanUpSession(sessionToken);
         return super.cleanUpSession(sessionToken);
@@ -251,8 +245,6 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
                 CustomTabsSessionToken sessionToken,
                 EngagementSignalsCallback callback,
                 Bundle extras);
-
-        protected abstract boolean isEphemeralBrowsingSupported(Bundle extras);
 
         protected abstract void cleanUpSession(AuthTabSessionToken sessionToken);
 

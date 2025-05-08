@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -13,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Binder for a button in the bookmark bar which provides users with bookmark access from top
  * chrome.
  */
+@NullMarked
 class BookmarkBarButtonViewBinder {
 
     private BookmarkBarButtonViewBinder() {}
@@ -24,10 +24,7 @@ class BookmarkBarButtonViewBinder {
      * @param view the bookmark bar button to update to reflect the state of the model property.
      * @param key the key for the property in the model for which to update the bookmark bar button.
      */
-    public static void bind(
-            @NonNull PropertyModel model,
-            @NonNull BookmarkBarButton view,
-            @NonNull PropertyKey key) {
+    public static void bind(PropertyModel model, BookmarkBarButton view, PropertyKey key) {
         if (key == BookmarkBarButtonProperties.CLICK_CALLBACK) {
             view.setClickCallback(model.get(BookmarkBarButtonProperties.CLICK_CALLBACK));
         } else if (key == BookmarkBarButtonProperties.ICON_SUPPLIER) {

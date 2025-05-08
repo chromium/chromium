@@ -90,26 +90,20 @@ CookieSettingsFactory::BuildServiceInstanceFor(
       HostContentSettingsMapFactory::GetForProfile(profile);
 
   content_settings::CookieSettings::ComputeFedCmSharingPermissionsCallback
-      compute_fedcm_sharing_permissions =
-          base::FeatureList::IsEnabled(
-              blink::features::kFedCmWithStorageAccessAPI)
-              ? base::BindRepeating(
-                    [](Profile* profile, scoped_refptr<HostContentSettingsMap>
-                                             host_content_settings_map)
-                        -> ContentSettingsForOneType {
-                      // This is called by the CookieSettings ctor, and
-                      // FederatedIdentityPermissionContextFactory
-                      // (transitively) depends on CookieSettingsFactory so we
-                      // cannot depend on
-                      // FederatedIdentityPermissionContextFactory here.
+      compute_fedcm_sharing_permissions = base::BindRepeating(
+          [](Profile* profile,
+             scoped_refptr<HostContentSettingsMap> host_content_settings_map)
+              -> ContentSettingsForOneType {
+            // This is called by the CookieSettings ctor, and
+            // FederatedIdentityPermissionContextFactory (transitively) depends
+            // on CookieSettingsFactory so we cannot depend on
+            // FederatedIdentityPermissionContextFactory here.
 
-                      return FederatedIdentityAccountKeyedPermissionContext(
-                                 profile, host_content_settings_map.get())
-                          .GetSharingPermissionGrantsAsContentSettings();
-                    },
-                    profile, scoped_refptr(host_content_settings_map))
-              : content_settings::CookieSettings::
-                    NoFedCmSharingPermissionsCallback();
+            return FederatedIdentityAccountKeyedPermissionContext(
+                       profile, host_content_settings_map.get())
+                .GetSharingPermissionGrantsAsContentSettings();
+          },
+          profile, scoped_refptr(host_content_settings_map));
 
   return new content_settings::CookieSettings(
       host_content_settings_map, prefs,

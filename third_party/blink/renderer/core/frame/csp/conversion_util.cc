@@ -28,6 +28,7 @@ network::mojom::blink::CSPSourceListPtr ConvertSourceList(
       WTF::ToVector(source_list.sources, ConvertSource),
       Vector<String>(source_list.nonces),
       WTF::ToVector(source_list.hashes, ConvertHashSource),
+      WTF::ToVector(source_list.url_hashes, ConvertHashSource),
       source_list.allow_self, source_list.allow_star, source_list.allow_inline,
       source_list.allow_inline_speculation_rules, source_list.allow_eval,
       source_list.allow_wasm_eval, source_list.allow_wasm_unsafe_eval,

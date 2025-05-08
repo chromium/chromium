@@ -15,7 +15,7 @@ import org.chromium.payments.mojom.PaymentOptions;
 import java.util.Map;
 
 /** The parameters of PaymentRequest specified by the merchant. */
-@MockedInTests // Tell R8 not to break the ability to mock the class.
+@MockedInTests // Needed due to R8's computeDelayedInterfaceMethodSyntheticBridges. b/147584922
 @NullMarked
 public interface PaymentRequestParams {
     /**

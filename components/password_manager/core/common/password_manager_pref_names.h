@@ -182,12 +182,6 @@ inline constexpr char kUnenrolledFromGoogleMobileServicesDueToErrors[] =
 // time interval (currently 24h).
 inline constexpr char kUPMErrorUIShownTimestamp[] =
     "profile.upm_error_ui_shown_timestamp";
-
-// Boolean value meant to record in the prefs if the user clicked "Got it" in
-// the UPM local passwords migration warning. When set to true, the warning
-// should not be displayed again.
-inline constexpr char kUserAcknowledgedLocalPasswordsMigrationWarning[] =
-    "user_acknowledged_local_passwords_migration_warning";
 #endif
 
 // Maintains a list of password hashes of enterprise passwords. This pref
@@ -198,10 +192,6 @@ inline constexpr char kLocalPasswordHashDataList[] =
     "local.password_hash_data_list";
 
 #if BUILDFLAG(IS_ANDROID)
-// The version of the password migration warning prefs.
-inline constexpr char kLocalPasswordMigrationWarningPrefsVersion[] =
-    "local_passwords_migration_warning_reset_count";
-
 // How many times the password generation bottom sheet was dismissed by the user
 // in a row. The counter resets when the user applies password generation.
 inline constexpr char kPasswordGenerationBottomSheetDismissCount[] =

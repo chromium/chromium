@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.build.BuildConfig;
 import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.Flags;
@@ -263,7 +264,10 @@ public class BidirectionalStreamTest {
         testSimpleGet();
         mTestLogger.waitForLogCronetTrafficInfo();
         assertThat(mTestLogger.getLastCronetTrafficInfo().getCronetSource())
-                .isEqualTo(CronetSource.CRONET_SOURCE_STATICALLY_LINKED);
+                .isEqualTo(
+                        BuildConfig.CRONET_FOR_AOSP_BUILD
+                                ? CronetSource.CRONET_SOURCE_PLATFORM
+                                : CronetSource.CRONET_SOURCE_STATICALLY_LINKED);
     }
 
     @Test
@@ -1009,7 +1013,7 @@ public class BidirectionalStreamTest {
         var oldMessage = "Invalid header header:name=headervalue";
         var newMessage = "Invalid header with headername: header:name";
         if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM
-                && !mTestRule.isRunningInAOSP()) {
+                && !BuildConfig.CRONET_FOR_AOSP_BUILD) {
             // We may be running against an HttpEngine backed by an old version of Cronet, so accept
             // both the old and new variants of the message.
             assertThat(e).hasMessageThat().isAnyOf(oldMessage, newMessage);
@@ -1031,7 +1035,7 @@ public class BidirectionalStreamTest {
         var oldMessage = "Invalid header headername=bad header\r\nvalue";
         var newMessage = "Invalid header with headername: headername";
         if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM
-                && !mTestRule.isRunningInAOSP()) {
+                && !BuildConfig.CRONET_FOR_AOSP_BUILD) {
             // We may be running against an HttpEngine backed by an old version of Cronet, so accept
             // both the old and new variants of the message.
             assertThat(e).hasMessageThat().isAnyOf(oldMessage, newMessage);

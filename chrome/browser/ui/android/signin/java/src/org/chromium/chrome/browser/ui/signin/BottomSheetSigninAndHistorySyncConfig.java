@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.base.CoreAccountId;
@@ -21,6 +21,7 @@ import java.util.Objects;
  * Class containing configurations for the bottom sheet based sign-in view and the history sync
  * opt-in view.
  */
+@NullMarked
 public final class BottomSheetSigninAndHistorySyncConfig {
 
     /** The sign-in step that should be shown to the user when there's no account on the device. */
@@ -55,8 +56,8 @@ public final class BottomSheetSigninAndHistorySyncConfig {
         int CHOOSE_ACCOUNT_BOTTOM_SHEET = 1;
     }
 
-    public final @NonNull AccountPickerBottomSheetStrings bottomSheetStrings;
-    public final @NonNull HistorySyncConfig historySyncConfig;
+    public final AccountPickerBottomSheetStrings bottomSheetStrings;
+    public final HistorySyncConfig historySyncConfig;
     public final @NoAccountSigninMode int noAccountSigninMode;
     public final @WithAccountSigninMode int withAccountSigninMode;
     public final @HistorySyncConfig.OptInMode int historyOptInMode;
@@ -64,7 +65,7 @@ public final class BottomSheetSigninAndHistorySyncConfig {
 
     /** Builder for {@link BottomSheetSigninAndHistorySyncConfig}. */
     public static class Builder {
-        private @NonNull AccountPickerBottomSheetStrings mBottomSheetStrings;
+        private AccountPickerBottomSheetStrings mBottomSheetStrings;
         private @StringRes int mHistorySyncTitleId;
         private @StringRes int mHistorySyncSubtitleId;
         private @NoAccountSigninMode int mNoAccountSigninMode;
@@ -84,7 +85,7 @@ public final class BottomSheetSigninAndHistorySyncConfig {
          *     shown.
          */
         public Builder(
-                @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
+                AccountPickerBottomSheetStrings bottomSheetStrings,
                 @NoAccountSigninMode int noAccountSigninMode,
                 @WithAccountSigninMode int withAccountSigninMode,
                 @HistorySyncConfig.OptInMode int historyOptInMode) {
@@ -141,8 +142,8 @@ public final class BottomSheetSigninAndHistorySyncConfig {
     }
 
     private BottomSheetSigninAndHistorySyncConfig(
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @NonNull HistorySyncConfig historySyncConfig,
+            AccountPickerBottomSheetStrings bottomSheetStrings,
+            HistorySyncConfig historySyncConfig,
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
             @HistorySyncConfig.OptInMode int historyOptInMode,

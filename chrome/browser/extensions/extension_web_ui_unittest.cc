@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
@@ -70,8 +69,8 @@ class ExtensionWebUITest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     TestExtensionSystem* system =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()));
-    extension_service_ = system->CreateExtensionService(
-        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
+    system->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
+                                   base::FilePath(), false);
     ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildOverrideRegistrar));
     ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(profile_.get());
@@ -87,7 +86,6 @@ class ExtensionWebUITest : public testing::Test {
   }
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
   content::BrowserTaskEnvironment task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -118,7 +116,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
           .SetLocation(ManifestLocation::kUnpacked)
           .SetID("abcdefghijabcdefghijabcdefghijaa")
           .Build());
-  ExtensionRegistrar::Get(profile_.get())->AddExtension(ext_unpacked.get());
+  registrar()->AddExtension(ext_unpacked.get());
 
   const GURL kExpectedUnpackedOverrideUrl =
       ext_unpacked->GetResourceURL(kOverrideResource);
@@ -314,8 +312,8 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
                     ntp_url, profile_.get()));
 
   // Disabling an extension should remove it from the override count.
-  extension_service_->DisableExtension(extension2->id(),
-                                       disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(extension2->id(),
+                                {disable_reason::DISABLE_USER_ACTION});
   EXPECT_EQ(2u, ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
                     ntp_url, profile_.get()));
 }

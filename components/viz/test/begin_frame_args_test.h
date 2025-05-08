@@ -59,8 +59,6 @@ BeginFrameArgs CreateBeginFrameArgsForTesting(
 // operate on.
 
 // Allow "EXPECT_EQ(args1, args2);"
-// We don't define operator!= because EXPECT_NE(args1, args2) isn't all that
-// sensible.
 bool operator==(const BeginFrameArgs& lhs, const BeginFrameArgs& rhs);
 
 // Allow gtest to pretty print begin frame args.

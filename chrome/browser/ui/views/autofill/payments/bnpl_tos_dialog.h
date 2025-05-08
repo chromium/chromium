@@ -34,6 +34,7 @@ class BnplTosDialog : public views::DialogDelegateView {
 
   // DialogDelegate:
   void AddedToWidget() override;
+  void OnWidgetInitialized() override;
 
  private:
   TitleWithIconAfterLabelView::Icon GetTitleIcon() const;

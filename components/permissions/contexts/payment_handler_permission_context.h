@@ -29,7 +29,7 @@ class PaymentHandlerPermissionContext
  private:
   // PermissionContextBase
   void DecidePermission(
-      permissions::PermissionRequestData request_data,
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
 };
 

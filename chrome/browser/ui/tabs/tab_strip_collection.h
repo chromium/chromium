@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <optional>
+#include <unordered_map>
 
-#include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/tabs/split_tab_data.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_collection.h"
 
 namespace tabs {
 
@@ -106,6 +106,7 @@ class TabStripCollection : public TabCollection {
                    const std::vector<TabInterface*>& tabs,
                    split_tabs::SplitTabVisualData visual_data);
   void Unsplit(split_tabs::SplitTabId split_id);
+  void MoveSplit(split_tabs::SplitTabId split_id, bool pinned);
 
   void ValidateData() const;
 
@@ -116,12 +117,19 @@ class TabStripCollection : public TabCollection {
   TabGroupTabCollection* MaybeAttachDetachedGroupCollection(
       int index,
       const tab_groups::TabGroupId& new_group);
-  void MaybeRemoveGroupCollection(const tab_groups::TabGroupId& group);
+
+  void MaybeRemoveGroupCollection(TabGroupTabCollection* group_collection);
 
   // Removes the group collection with `group_id` from
   // `detached_group_collections_`.
   std::unique_ptr<tabs::TabGroupTabCollection> PopDetachedGroupCollection(
       const tab_groups::TabGroupId& group_id);
+
+  // Returns the list of tabs and collection to remove for `MoveTabsRecursive`.
+  // Collections might be present instead of tabs to retain certain collections
+  // during drag.
+  ChildrenPtrs GetTabsAndCollectionsForMove(
+      const std::vector<int>& tab_indices);
 
   // All of the pinned tabs for this tabstrip is present in this collection.
   // This should be below `impl_` to avoid being a dangling pointer during

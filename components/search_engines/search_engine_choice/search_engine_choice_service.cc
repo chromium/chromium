@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -218,6 +219,24 @@ bool ShouldRepromptFromFeatureParams(
   return false;
 }
 
+// Writes the histogram that tracks choice screen completion date in a specific
+// format: YYYYMM (of type int).
+void RecordChoiceScreenCompletionDate(PrefService& profile_prefs) {
+  std::optional<base::Time> timestamp =
+      GetChoiceScreenCompletionTimestamp(profile_prefs);
+  if (!timestamp.has_value()) {
+    return;
+  }
+
+  // Take year and month in local time.
+  base::Time::Exploded exploded;
+  timestamp->LocalExplode(&exploded);
+
+  // Expected value space is 12 samples / year.
+  base::UmaHistogramSparse(kSearchEngineChoiceCompletedOnMonthHistogram,
+                           exploded.year * 100 + exploded.month);
+}
+
 }  // namespace
 
 // -- SearchEngineChoiceService::Client ---------------------------------------
@@ -253,6 +272,7 @@ SearchEngineChoiceService::SearchEngineChoiceService(
       prepopulate_data_resolver_(prepopulate_data_resolver) {
   ProcessPendingChoiceScreenDisplayState();
   PreprocessPrefsForReprompt();
+  RecordChoiceScreenCompletionDate(profile_prefs);
 }
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
@@ -336,7 +356,8 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
   }
   CHECK(default_search_engine);
 
-  if (default_search_engine->GetEngineType(
+  if (!IsSearchEngineChoiceInvalid(profile_prefs_.get()) &&
+      default_search_engine->GetEngineType(
           template_url_service.search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
     return SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine;
   }
@@ -399,6 +420,8 @@ void SearchEngineChoiceService::RecordChoiceMade(
     ChoiceMadeLocation choice_location,
     TemplateURLService* template_url_service) {
   CHECK_NE(choice_location, ChoiceMadeLocation::kOther);
+
+  ClearSearchEngineChoiceInvalidation(*profile_prefs_);
 
   // Don't modify the pref if the user is not in the EEA region.
   if (!regional_capabilities_service_->IsInEeaCountry()) {
@@ -544,11 +567,13 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
 
   if (base::FeatureList::IsEnabled(
           switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
-      client_->IsDeviceRestoreDetectedInCurrentSession() &&
       client_->DoesChoicePredateDeviceRestore(completion_metadata.value())) {
-    WipeSearchEngineChoicePrefs(profile_prefs_.get(),
-                                SearchEngineChoiceWipeReason::kDeviceRestored);
-    return;
+    if (switches::kInvalidateChoiceOnRestoreIsRetroactive.Get() ||
+        client_->IsDeviceRestoreDetectedInCurrentSession()) {
+      WipeSearchEngineChoicePrefs(
+          profile_prefs_.get(), SearchEngineChoiceWipeReason::kDeviceRestored);
+      return;
+    }
   }
 
   if (ShouldRepromptFromFeatureParams(

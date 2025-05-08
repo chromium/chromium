@@ -202,25 +202,16 @@ testSuite({
 
     // Gecko start to support wheel with version 17.
     goog.userAgent.GECKO = true;
-    goog.userAgent.version = 16;
-    assertEquals(GECKO_TYPE, WheelHandler.getDomEventType());
-    goog.userAgent.version = 17;
     assertEquals(PREFERRED_TYPE, WheelHandler.getDomEventType());
     goog.userAgent.GECKO = false;
 
     // IE started with version 9.
     goog.userAgent.IE = true;
-    goog.userAgent.version = 8;
-    assertEquals(LEGACY_TYPE, WheelHandler.getDomEventType());
-    goog.userAgent.version = 9;
     assertEquals(PREFERRED_TYPE, WheelHandler.getDomEventType());
     goog.userAgent.IE = false;
 
     // Chrome started with version 31.
     goog.userAgent.product.CHROME = true;
-    goog.userAgent.product.version = 30;
-    assertEquals(LEGACY_TYPE, WheelHandler.getDomEventType());
-    goog.userAgent.product.version = 31;
     assertEquals(PREFERRED_TYPE, WheelHandler.getDomEventType());
     goog.userAgent.product.CHROME = false;
   },

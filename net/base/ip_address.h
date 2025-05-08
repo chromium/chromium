@@ -26,9 +26,15 @@ namespace net {
 
 // Helper class to represent the sequence of bytes in an IP address.
 // A vector<uint8_t> would be simpler but incurs heap allocation, so
-// IPAddressBytes uses a fixed size array.
+// IPAddressBytes uses a fixed size std::array.
 class NET_EXPORT IPAddressBytes {
  public:
+  // Public solely for iterator types.
+  using IPAddressStorage = std::array<uint8_t, 16>;
+
+  using iterator = IPAddressStorage::iterator;
+  using const_iterator = IPAddressStorage::const_iterator;
+
   constexpr IPAddressBytes() : bytes_{}, size_(0) {}
   constexpr explicit IPAddressBytes(base::span<const uint8_t> data) {
     Assign(data);
@@ -60,13 +66,21 @@ class NET_EXPORT IPAddressBytes {
   constexpr const uint8_t* data() const { return bytes_.data(); }
   constexpr uint8_t* data() { return bytes_.data(); }
 
-  // Returns a pointer to the first element.
-  constexpr const uint8_t* begin() const { return data(); }
-  constexpr uint8_t* begin() { return data(); }
+  // Returns an iterator to the first element.
+  constexpr const_iterator begin() const { return bytes_.begin(); }
+  constexpr iterator begin() { return bytes_.begin(); }
 
-  // Returns a pointer past the last element.
-  constexpr const uint8_t* end() const { return UNSAFE_TODO(data() + size_); }
-  constexpr uint8_t* end() { return UNSAFE_TODO(data() + size_); }
+  // Returns an iterator past the last element.
+  constexpr const_iterator end() const { return bytes_.begin() + size_; }
+  constexpr iterator end() { return bytes_.begin() + size_; }
+
+  // Returns the address as a span.
+  constexpr base::span<const uint8_t> span() const {
+    return base::span(bytes_).first(size_);
+  }
+  constexpr base::span<uint8_t> span() {
+    return base::span(bytes_).first(size_);
+  }
 
   // Returns a reference to the last element.
   constexpr uint8_t& back() {
@@ -104,8 +118,8 @@ class NET_EXPORT IPAddressBytes {
   size_t EstimateMemoryUsage() const;
 
  private:
-  // Underlying sequence of bytes
-  std::array<uint8_t, 16> bytes_;
+  // Underlying sequence of bytes.
+  IPAddressStorage bytes_;
 
   // Number of elements in |bytes_|. Should be either kIPv4AddressSize
   // or kIPv6AddressSize or 0.
@@ -145,6 +159,11 @@ constexpr bool ParseIPLiteralToBytes(std::string_view ip_literal,
 
 }  // namespace internal
 
+// Represent an IP address. Has built-in support for IPv4 and IPv6 addresses,
+// though may also be used for Bluetooth addresses.
+//
+// See ip_address_util.h for helpers to convert an IPAddress to an in_addr or
+// in6_addr.
 class NET_EXPORT IPAddress {
  public:
   enum : size_t { kIPv4AddressSize = 4, kIPv6AddressSize = 16 };
@@ -316,9 +335,6 @@ using IPAddressList = std::vector<IPAddress>;
 // port. For example: "192.168.0.1:99" or "[::1]:80".
 NET_EXPORT std::string IPAddressToStringWithPort(const IPAddress& address,
                                                  uint16_t port);
-
-// Returns the address as a sequence of bytes in network-byte-order.
-NET_EXPORT std::string IPAddressToPackedString(const IPAddress& address);
 
 // Converts an IPv4 address to an IPv4-mapped IPv6 address.
 // For example 192.168.0.1 would be converted to ::ffff:192.168.0.1.

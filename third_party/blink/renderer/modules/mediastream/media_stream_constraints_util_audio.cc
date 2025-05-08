@@ -52,12 +52,6 @@ using VoiceIsolationTypeSet =
 using IntRangeSet = blink::media_constraints::NumericRangeSet<int>;
 using StringSet = blink::media_constraints::DiscreteSet<std::string>;
 
-// The presence of a MediaStreamAudioSource object indicates whether the source
-// in question is currently in use, or not. This convenience enum helps
-// identifying whether a source is available and, if so, whether it has audio
-// processing enabled or disabled.
-enum class SourceType { kNone, kUnprocessed, kNoApmProcessed, kApmProcessed };
-
 // The sample size is set to 16 due to the Signed-16 format representation.
 int32_t GetSampleSize() {
   return media::SampleFormatToBitsPerChannel(media::kSampleFormatS16);
@@ -120,35 +114,44 @@ struct Score {
   std::tuple<double, bool, EcModeScore, int> score;
 };
 
-// This class represents the output of DeviceContainer::InfoFromSource and is
-// used to obtain information regarding an active source, if that exists.
+// Information regarding an active source, if that exists.
 class SourceInfo {
  public:
-  SourceInfo(SourceType type,
-             const AudioProcessingProperties& properties,
-             std::optional<int> channels,
-             std::optional<int> sample_rate,
-             std::optional<double> latency)
-      : type_(type),
-        properties_(properties),
+  static std::optional<SourceInfo> FromSource(
+      blink::MediaStreamAudioSource* source) {
+    if (!source) {
+      return std::nullopt;
+    }
+
+    media::AudioParameters source_parameters = source->GetAudioParameters();
+    std::optional<AudioProcessingProperties> properties =
+        source->GetAudioProcessingProperties();
+    CHECK(properties);
+
+    return SourceInfo(*properties, source_parameters.channels(),
+                      source_parameters.sample_rate(),
+                      source_parameters.GetBufferDuration().InSecondsF());
+  }
+
+  const AudioProcessingProperties& properties() const { return properties_; }
+  int channels() const { return channels_; }
+  int sample_rate() const { return sample_rate_; }
+  double latency() const { return latency_; }
+
+ private:
+  SourceInfo(const AudioProcessingProperties& properties,
+             int channels,
+             int sample_rate,
+             double latency)
+      : properties_(properties),
         channels_(std::move(channels)),
         sample_rate_(std::move(sample_rate)),
         latency_(latency) {}
 
-  bool HasActiveSource() { return type_ != SourceType::kNone; }
-
-  SourceType type() { return type_; }
-  const AudioProcessingProperties& properties() { return properties_; }
-  const std::optional<int>& channels() { return channels_; }
-  const std::optional<int>& sample_rate() { return sample_rate_; }
-  const std::optional<double>& latency() { return latency_; }
-
- private:
-  const SourceType type_;
   const AudioProcessingProperties properties_;
-  const std::optional<int> channels_;
-  const std::optional<int> sample_rate_;
-  const std::optional<double> latency_;
+  const int channels_;
+  const int sample_rate_;
+  const double latency_;
 };
 
 // Container for each independent boolean constrainable property.
@@ -394,17 +397,17 @@ class EchoCancellationContainer {
         is_device_capture_(true) {}
 
   EchoCancellationContainer(Vector<EchoCancellationType> allowed_values,
-                            bool has_active_source,
+                            std::optional<SourceInfo> source_info,
                             bool is_device_capture,
                             media::AudioParameters device_parameters,
-                            AudioProcessingProperties properties,
                             bool is_reconfiguration_allowed)
       : ec_mode_allowed_values_(
             EchoCancellationTypeSet(std::move(allowed_values))),
         device_parameters_(device_parameters),
         is_device_capture_(is_device_capture) {
-    if (!has_active_source)
+    if (!source_info) {
       return;
+    }
 
     // If HW echo cancellation is used, reconfiguration is not always supported
     // and only the current values are allowed. Otherwise, allow all possible
@@ -421,17 +424,17 @@ class EchoCancellationContainer {
         // Allowing it when the system echo cancellation is enforced via flag,
         // for evaluation purposes.
         media::IsSystemEchoCancellationEnforced() ||
-        properties.echo_cancellation_type !=
+        source_info->properties().echo_cancellation_type !=
             EchoCancellationType::kEchoCancellationSystem;
 #endif
     if (is_reconfiguration_allowed && is_aec_reconfiguration_supported) {
       return;
     }
 
-    ec_mode_allowed_values_ =
-        EchoCancellationTypeSet({properties.echo_cancellation_type});
+    ec_mode_allowed_values_ = EchoCancellationTypeSet(
+        {source_info->properties().echo_cancellation_type});
     ec_allowed_values_ =
-        BoolSet({properties.echo_cancellation_type !=
+        BoolSet({source_info->properties().echo_cancellation_type !=
                  EchoCancellationType::kEchoCancellationDisabled});
   }
 
@@ -723,7 +726,7 @@ class ProcessingBasedContainer {
   // related |parameters.effects()|, and (b) any combination of processing
   // properties settings.
   static ProcessingBasedContainer CreateApmProcessedContainer(
-      const SourceInfo& source_info,
+      std::optional<SourceInfo> source_info,
       mojom::blink::MediaStreamType stream_type,
       bool is_device_capture,
       const media::AudioParameters& device_parameters,
@@ -748,7 +751,7 @@ class ProcessingBasedContainer {
   // allowed by the |parameters.effects()|, or none, while (b) all other
   // processing properties settings cannot be enabled.
   static ProcessingBasedContainer CreateNoApmProcessedContainer(
-      const SourceInfo& source_info,
+      std::optional<SourceInfo> source_info,
       bool is_device_capture,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
@@ -771,7 +774,7 @@ class ProcessingBasedContainer {
   // allowed by the |parameters.effects()|, or none, while (c) all processing
   // properties settings cannot be enabled.
   static ProcessingBasedContainer CreateUnprocessedContainer(
-      const SourceInfo& source_info,
+      std::optional<SourceInfo> source_info,
       bool is_device_capture,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
@@ -946,7 +949,7 @@ class ProcessingBasedContainer {
                            IntRangeSet sample_size_range,
                            Vector<int> channels_set,
                            IntRangeSet sample_rate_range,
-                           SourceInfo source_info,
+                           std::optional<SourceInfo> source_info,
                            bool is_device_capture,
                            media::AudioParameters device_parameters,
                            bool is_reconfiguration_allowed)
@@ -963,9 +966,8 @@ class ProcessingBasedContainer {
           EchoCancellationType::kEchoCancellationSystem);
     }
     echo_cancellation_container_ = EchoCancellationContainer(
-        std::move(echo_cancellation_types), source_info.HasActiveSource(),
-        is_device_capture, device_parameters, source_info.properties(),
-        is_reconfiguration_allowed);
+        std::move(echo_cancellation_types), source_info, is_device_capture,
+        device_parameters, is_reconfiguration_allowed);
 
     auto_gain_control_container_ =
         AutoGainControlContainer(auto_gain_control_set);
@@ -977,9 +979,8 @@ class ProcessingBasedContainer {
     // Allow the full set of supported values when the device is not open or
     // when the candidate settings would open the device using an unprocessed
     // source.
-    if (!source_info.HasActiveSource() ||
-        (is_reconfiguration_allowed &&
-         processing_type_ == ProcessingType::kUnprocessed)) {
+    if (!source_info || (is_reconfiguration_allowed &&
+                         processing_type_ == ProcessingType::kUnprocessed)) {
       return;
     }
 
@@ -988,19 +989,16 @@ class ProcessingBasedContainer {
     // for this is that opening multiple instances of the APM is costly.
     // TODO(crbug.com/1147928): Consider removing this restriction.
     auto_gain_control_container_ = AutoGainControlContainer(
-        BoolSet({source_info.properties().auto_gain_control}));
+        BoolSet({source_info->properties().auto_gain_control}));
 
-    noise_suppression_container_ =
-        BooleanContainer(BoolSet({source_info.properties().noise_suppression}));
+    noise_suppression_container_ = BooleanContainer(
+        BoolSet({source_info->properties().noise_suppression}));
 
-    DCHECK(source_info.channels());
-    channels_container_ = IntegerDiscreteContainer({*source_info.channels()});
-    DCHECK(source_info.sample_rate() != std::nullopt);
+    channels_container_ = IntegerDiscreteContainer({source_info->channels()});
     sample_rate_container_ = IntegerRangeContainer(
-        IntRangeSet::FromValue(*source_info.sample_rate()));
-    DCHECK(source_info.latency() != std::nullopt);
+        IntRangeSet::FromValue(source_info->sample_rate()));
     latency_container_ =
-        DoubleRangeContainer(DoubleRangeSet::FromValue(*source_info.latency()));
+        DoubleRangeContainer(DoubleRangeSet::FromValue(source_info->latency()));
   }
 
   // The allowed latency is expressed in a range latencies in seconds.
@@ -1078,8 +1076,8 @@ class DeviceContainer {
     // must be initialized such that their only supported values correspond to
     // the source settings. Otherwise, the containers are initialized to contain
     // all possible values.
-    SourceInfo source_info =
-        InfoFromSource(capability.source(), device_parameters_.effects());
+    std::optional<SourceInfo> source_info =
+        SourceInfo::FromSource(capability.source());
 
     // Three variations of the processing-based container. Each variant is
     // associated to a different type of audio processing configuration, namely
@@ -1098,8 +1096,9 @@ class DeviceContainer {
               is_reconfiguration_allowed));
       DCHECK_EQ(processing_based_containers_.size(), 3u);
 
-    if (source_info.type() == SourceType::kNone)
-      return;
+      if (!source_info) {
+        return;
+      }
 
     blink::MediaStreamAudioSource* source = capability.source();
     boolean_containers_[kDisableLocalEcho] =
@@ -1261,48 +1260,6 @@ class DeviceContainer {
       kBooleanPropertyContainerInfoMap[] = {
           {kDisableLocalEcho, &ConstraintSet::disable_local_echo},
           {kRenderToAssociatedSink, &ConstraintSet::render_to_associated_sink}};
-
-  // Utility function to determine which version of this class should be
-  // allocated depending on the |source| provided.
-  static SourceInfo InfoFromSource(blink::MediaStreamAudioSource* source,
-                                   int effects) {
-    SourceType source_type;
-    AudioProcessingProperties properties;
-    auto* processed_source = ProcessedLocalAudioSource::From(source);
-    std::optional<int> channels;
-    std::optional<int> sample_rate;
-    std::optional<double> latency;
-
-    if (!source) {
-      source_type = SourceType::kNone;
-    } else {
-      media::AudioParameters source_parameters = source->GetAudioParameters();
-      channels = source_parameters.channels();
-      sample_rate = source_parameters.sample_rate();
-      latency = source_parameters.GetBufferDuration().InSecondsF();
-      properties = *(source->GetAudioProcessingProperties());
-
-      if (!processed_source) {
-        source_type = SourceType::kUnprocessed;
-        properties.DisableDefaultProperties();
-
-        // It is possible, however, that the HW echo canceller is enabled. In
-        // such case the property for echo cancellation type should be updated
-        // accordingly.
-        if (effects & media::AudioParameters::ECHO_CANCELLER) {
-          properties.echo_cancellation_type =
-              EchoCancellationType::kEchoCancellationSystem;
-        }
-      } else {
-        source_type = properties.EchoCancellationIsWebRtcProvided()
-                          ? SourceType::kApmProcessed
-                          : SourceType::kNoApmProcessed;
-        properties = processed_source->audio_processing_properties();
-      }
-    }
-
-    return SourceInfo(source_type, properties, channels, sample_rate, latency);
-  }
 
   media::AudioParameters device_parameters_;
   StringContainer device_id_container_;

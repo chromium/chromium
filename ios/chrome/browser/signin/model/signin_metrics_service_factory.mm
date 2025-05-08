@@ -29,7 +29,8 @@ SigninMetricsServiceFactory* SigninMetricsServiceFactory::GetInstance() {
 
 SigninMetricsServiceFactory::SigninMetricsServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SigninMetricsService",
-                                    ServiceCreation::kCreateWithProfile) {
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
-#include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "url/gurl.h"
 
@@ -28,20 +28,32 @@ class TestSharedStorageObserver
   struct Access {
     AccessScope scope;
     AccessMethod method;
-    FrameTreeNodeId main_frame_id;
+    GlobalRenderFrameHostId main_frame_id;
     std::string owner_origin;
     SharedStorageEventParams params;
     friend bool operator==(const Access& lhs, const Access& rhs);
-    friend std::ostream& operator<<(std::ostream& os, const Access& access);
+  };
+
+  struct OperationFinishedInfo {
+    base::TimeDelta execution_time;
+    AccessMethod method;
+    int operation_id;
+    int worklet_id;
+    GlobalRenderFrameHostId main_frame_id;
+    std::string owner_origin;
   };
 
   TestSharedStorageObserver();
   ~TestSharedStorageObserver() override;
 
-  void OnSharedStorageAccessed(const base::Time& access_time,
+  GlobalRenderFrameHostId AssociatedFrameHostId() const override;
+
+  bool ShouldReceiveAllReports() const override;
+
+  void OnSharedStorageAccessed(base::Time access_time,
                                AccessScope scope,
                                AccessMethod method,
-                               FrameTreeNodeId main_frame_id,
+                               GlobalRenderFrameHostId main_frame_id,
                                const std::string& owner_origin,
                                const SharedStorageEventParams& params) override;
 
@@ -50,7 +62,19 @@ class TestSharedStorageObserver
   void OnConfigPopulated(
       const std::optional<FencedFrameConfig>& config) override;
 
+  void OnWorkletOperationExecutionFinished(
+      base::Time finished_time,
+      base::TimeDelta execution_time,
+      AccessMethod method,
+      int operation_id,
+      int worklet_id,
+      GlobalRenderFrameHostId main_frame_id,
+      const std::string& owner_origin) override;
+
   void ExpectAccessObserved(const std::vector<Access>& expected_accesses);
+
+  void ExpectOperationFinishedInfosObserved(
+      const std::vector<OperationFinishedInfo>& expected_infos);
 
   const std::vector<GURL>& urn_uuids_observed() const {
     return urn_uuids_observed_;
@@ -59,7 +83,18 @@ class TestSharedStorageObserver
  private:
   std::vector<Access> accesses_;
   std::vector<GURL> urn_uuids_observed_;
+  std::vector<OperationFinishedInfo> operation_finished_infos_;
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const TestSharedStorageObserver::Access& access);
+
+bool operator==(const TestSharedStorageObserver::OperationFinishedInfo& lhs,
+                const TestSharedStorageObserver::OperationFinishedInfo& rhs);
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const TestSharedStorageObserver::OperationFinishedInfo& info);
 
 }  // namespace content
 

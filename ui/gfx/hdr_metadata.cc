@@ -10,6 +10,7 @@
 #include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "ui/gfx/switches.h"
 
 namespace gfx {
 
@@ -65,6 +66,12 @@ HdrMetadataAgtm& HdrMetadataAgtm::operator=(const HdrMetadataAgtm& other) =
 
 HdrMetadataAgtm::~HdrMetadataAgtm() = default;
 
+// static
+bool HdrMetadataAgtm::IsEnabled() {
+  static bool result = base::FeatureList::IsEnabled(features::kHdrAgtm);
+  return result;
+}
+
 std::string HdrMetadataAgtm::ToString() const {
   return "agtm placeholder";
 }
@@ -87,6 +94,33 @@ HDRMetadata::HDRMetadata(const HdrMetadataCta861_3& cta_861_3)
 HDRMetadata::HDRMetadata(const HDRMetadata& rhs) = default;
 HDRMetadata& HDRMetadata::operator=(const HDRMetadata& rhs) = default;
 HDRMetadata::~HDRMetadata() = default;
+
+// static
+float HDRMetadata::GetReferenceWhiteLuminance(
+    const std::optional<gfx::HDRMetadata>& metadata) {
+  if (metadata.has_value()) {
+    if (metadata->ndwl.has_value() && metadata->ndwl->nits > 0.f) {
+      return metadata->ndwl->nits;
+    }
+  }
+  return 203.f;
+}
+
+// static
+float HDRMetadata::GetContentMaxLuminance(
+    const std::optional<gfx::HDRMetadata>& metadata) {
+  if (metadata.has_value()) {
+    if (metadata->cta_861_3.has_value() &&
+        metadata->cta_861_3->max_content_light_level > 0.f) {
+      return metadata->cta_861_3->max_content_light_level;
+    }
+    if (metadata->smpte_st_2086.has_value() &&
+        metadata->smpte_st_2086->luminance_max > 0.f) {
+      return metadata->smpte_st_2086->luminance_max;
+    }
+  }
+  return 1000.f;
+}
 
 // static
 HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(

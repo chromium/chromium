@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/lobster/lobster_candidate_resizer.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
@@ -34,7 +36,14 @@ class LobsterCandidateResizerTest : public testing::Test {
 
   ~LobsterCandidateResizerTest() override = default;
 
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kLobsterUseRewrittenQuery},
+        /*disabled_features=*/{ash::features::kLobsterI18n});
+  }
+
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
@@ -53,7 +62,7 @@ TEST_F(LobsterCandidateResizerTest, InflateImageCallsSnapperProvider) {
                /*query=*/"a nice strawberry",
                /*seed=*/kFakeBaseGenerationSeed, /*size=*/
                gfx::Size(kFullImageDimensionLength, kFullImageDimensionLength),
-               /*num_outputs=*/1, /*use_query_rewriter=*/false,
+               /*num_outputs=*/1, /*use_query_rewriter=*/true,
                /*use_i18n=*/false)),
            testing::_, testing::_))
       .WillOnce(testing::Invoke(
@@ -101,7 +110,7 @@ TEST_F(LobsterCandidateResizerTest,
                /*query=*/"a nice strawberry",
                /*seed=*/kFakeBaseGenerationSeed, /*size=*/
                gfx::Size(kFullImageDimensionLength, kFullImageDimensionLength),
-               /*num_outputs=*/1, /*use_query_rewriter=*/false,
+               /*num_outputs=*/1, /*use_query_rewriter=*/true,
                /*use_i18n=*/false)),
            testing::_, testing::_))
       .WillOnce(testing::Invoke(
@@ -146,7 +155,7 @@ TEST_F(LobsterCandidateResizerTest,
                /*query=*/"a nice strawberry",
                /*seed=*/kFakeBaseGenerationSeed, /*size=*/
                gfx::Size(kFullImageDimensionLength, kFullImageDimensionLength),
-               /*num_outputs=*/1, /*use_query_rewriter=*/false,
+               /*num_outputs=*/1, /*use_query_rewriter=*/true,
                /*use_i18n=*/false)),
            testing::_, testing::_))
       .WillOnce(testing::Invoke(

@@ -13,11 +13,6 @@ import("//tools/grit/grit_rule.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
-  android_components_strings_java_resources =
-      [ "java/res/values/components_strings.xml" ] +
-      process_file_template(
-          android_bundle_locales_as_resources,
-          [ "java/res/values-{{source_name_part}}/components_strings.xml" ])
 }
 
 group("strings") {
@@ -50,16 +45,13 @@ grit("components_strings") {
   }
 
   if (is_android) {
-    outputs += android_components_strings_java_resources
+    create_android_resources = true
   }
 }
 
 if (is_android) {
   java_strings_grd_prebuilt("components_strings_grd") {
-    grit_output_dir = "$root_gen_dir/components/strings/java/res"
-    generated_files =
-        rebase_path(android_components_strings_java_resources, "java/res", ".")
-    deps = [ ":components_strings" ]
+    generating_target = ":components_strings"
   }
 }
 
@@ -71,14 +63,6 @@ grit("components_branded_strings") {
   }
 }
 
-if (is_android) {
-  android_components_locale_settings_java_resources =
-      [ "java/res/values/components_locale_settings.xml" ]
-  android_components_locale_settings_java_resources += process_file_template(
-          android_bundle_locales_as_resources,
-          [ "java/res/values-{{source_name_part}}/components_locale_settings.xml" ])
-}
-
 grit("components_locale_settings") {
   source = "../components_locale_settings.grd"
   outputs = [ "grit/components_locale_settings.h" ]
@@ -87,7 +71,7 @@ grit("components_locale_settings") {
   }
 
   if (is_android) {
-    outputs += android_components_locale_settings_java_resources
+    create_android_resources = true
   }
 }
 
@@ -101,21 +85,8 @@ grit("search_engine_descriptions_strings") {
 
 if (is_android) {
   java_strings_grd_prebuilt("components_locale_settings_grd") {
-    grit_output_dir = "$root_gen_dir/components/strings/java/res"
-    generated_files =
-        rebase_path(android_components_locale_settings_java_resources,
-                    "java/res",
-                    ".")
-    deps = [ ":components_locale_settings" ]
+    generating_target = ":components_locale_settings"
   }
-}
-
-if (is_android) {
-  android_privacy_sandbox_strings_java_resources =
-      [ "java/res/values/privacy_sandbox_strings.xml" ]
-  android_privacy_sandbox_strings_java_resources += process_file_template(
-          android_bundle_locales_as_resources,
-          [ "java/res/values-{{source_name_part}}/privacy_sandbox_strings.xml" ])
 }
 
 grit("privacy_sandbox_strings") {
@@ -126,17 +97,12 @@ grit("privacy_sandbox_strings") {
   }
 
   if (is_android) {
-    outputs += android_privacy_sandbox_strings_java_resources
+    create_android_resources = true
   }
 }
 
 if (is_android) {
   java_strings_grd_prebuilt("privacy_sandbox_strings_grd") {
-    grit_output_dir = "$root_gen_dir/components/strings/java/res"
-    generated_files =
-        rebase_path(android_privacy_sandbox_strings_java_resources,
-                    "java/res",
-                    ".")
-    deps = [ ":privacy_sandbox_strings" ]
+    generating_target = ":privacy_sandbox_strings"
   }
 }

@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "ui/accessibility/ax_enums.mojom";
 import "third_party/blink/public/mojom/forms/form_control_type.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -32,6 +33,7 @@ enum AIPageContentAttributeType {
   // Image chunks.
   kImage,
   kSVG,
+  kCanvas,
 
   // Structured chunks.
   kForm,
@@ -115,11 +117,9 @@ struct AIPageContentFrameInteractionInfo {
 };
 
 struct AIPageContentNodeInteractionInfo {
-  // Whether the content node can scroll in the x direction.
-  bool scrolls_overflow_x;
-
-  // Whether the content node can scroll in the y direction.
-  bool scrolls_overflow_y;
+  // If this node supports scrolling, provides information about its current
+  // state.
+  AIPageContentScrollerInfo? scroller_info;
 
   // Whether the content node is selectable.
   bool is_selectable;
@@ -145,9 +145,35 @@ struct AIPageContentNodeInteractionInfo {
   // behavior. It also checks for whether the node has a click handler.
   bool is_clickable;
 
-  // If this node is a label associated with an input node, provides the
-  // dom_node_id for the corresponding input node.
-  int32 for_dom_node_id;
+  // The z-order of the content node relative to other nodes in the same
+  // Document. A higher value means the node is in front of other nodes with
+  // lower values.
+  //
+  // Since all content within a Document is rendered as a single layer, nodes
+  // behind the iframe in the embedder draw behind all nodes inside the
+  // iframe's Document (similar for nodes on top of the iframe node).
+  //
+  // Note: This value is only set for nodes in the viewport.
+  int32? document_scoped_z_order;
+};
+
+// The coordinate space for the dimensions here is physical coordinates (not
+// logical coordinates). This means it's the same irrespective of the writing
+// mode.
+// The dimensions also exclude non-overlay scrollbars.
+struct AIPageContentScrollerInfo {
+  // The complete layout dimensions of the scroller. This is the total area
+  // that can be revealed through a scroll operation.
+  gfx.mojom.Size scrolling_bounds;
+
+  // The subset of this scroller's content which is currently scrolled to. This
+  // is relative to the origin of `scrolling_bounds`.
+  gfx.mojom.Rect visible_area;
+
+  // Indicates whether this can be scrolled by the user in horizontal or
+  // vertical directions.
+  bool user_scrollable_horizontal;
+  bool user_scrollable_vertical;
 };
 
 enum AIPageContentTextSize {
@@ -204,20 +230,16 @@ struct AIPageContentSVGData {
   string? inner_text;
 };
 
+struct AIPageContentCanvasData {
+  // The layout size of the canvas element. This is the total size of the
+  // element irrespective of clipping or transforms.
+  gfx.mojom.Size layout_size;
+};
+
 // Represents meta tags on the page.
 struct AIPageContentMeta {
   string name;
   string content;
-};
-
-// Represents a DOM node which is eligible for hit testing.
-struct AIPageContentHitTestNode {
-  // The ID to uniquely identify this node. If the DOM node generates a
-  // ContentNode, this ID is consisted with the ContentNode's ID.
-  int32 dom_node_id;
-
-  // The bounds in viewport coordinates where this is rendered.
-  gfx.mojom.Rect visible_bounding_box;
 };
 
 // Data common to frames (main and embedded).
@@ -235,11 +257,6 @@ struct AIPageContentFrameData {
   // Whether the frame contains paid content. The value exists
   // if the document was checked.
   bool? contains_paid_content;
-
-  // The ordered list of DOM nodes which are eligible for hit testing in the
-  // viewport. This list is ordered back-to-front, i.e., in the given list
-  // [0, 1], node 1 draws on top of node 0.
-  array<AIPageContentHitTestNode> hit_test_nodes_in_viewport;
 };
 
 // Provides metadata for frames (local and remote) accessible from the
@@ -290,6 +307,7 @@ struct AIPageContentSelectOption {
   string? value;
   string? text;
   bool is_selected;
+  bool disabled;
 };
 
 struct AIPageContentFormControlData {
@@ -337,6 +355,9 @@ struct AIPageContentAttributes {
   // Only set if attribute_type is kSVG.
   AIPageContentSVGData? svg_data;
 
+  // Only set if attribute_type is kCanvas.
+  AIPageContentCanvasData? canvas_data;
+
   // Only set if attribute_type is kAnchor.
   AIPageContentAnchorData? anchor_data;
 
@@ -360,6 +381,14 @@ struct AIPageContentAttributes {
   // A text description of the node. Only populated when actionable elements are
   // enabled.
   string? label;
+
+  // The role derived from `aria_role`. Only populated when actionable elements
+  // are enabled.
+  ax.mojom.Role? aria_role;
+
+  // If this node is a label associated with an input node, provides the
+  // dom_node_id for the corresponding input node.
+  int32? label_for_dom_node_id;
 };
 
 // A semantic chunk of information on a page. It can represent text, structured
@@ -388,18 +417,18 @@ struct AIPageContent {
 struct AIPageContentOptions {
   // Indicates whether the geometry for each ContentNode should be included in
   // the content.
-  bool include_geometry = true;
+  bool include_geometry = false;
 
   // Indicates whether this request is on the critical path, i.e., user visible.
   // Requests which are not on the critical path can be de-prioritized to avoid
   // blocking higher priority work.
-  bool on_critical_path = true;
+  bool on_critical_path = false;
 
   // The page can have content which is currently hidden but can be accessed by
   // the user via find-in-page. This content's style and layout is not kept
   // up-to-date as an optimization. Including it will force the renderer to
   // update it's style and layout.
-  bool include_hidden_searchable_content = true;
+  bool include_hidden_searchable_content = false;
 
   // The maximum number of meta elements to include in the content.
   int32 max_meta_elements = 0;

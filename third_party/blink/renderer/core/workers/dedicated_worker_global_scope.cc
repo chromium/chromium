@@ -531,9 +531,6 @@ DedicatedWorkerObjectProxy& DedicatedWorkerGlobalScope::WorkerObjectProxy()
 
 void DedicatedWorkerGlobalScope::UpdateBackForwardCacheDisablingFeatures(
     BlockingDetails details) {
-  // `back_forward_cache_controller_host_` might not be bound when non-
-  // PlzDedicatedWorker is used. Non-PlzDedicatedWorker will be removed in near
-  // future.
   // TODO(crbug.com/40093136): Remove this 'if' branch now that
   // PlzDedicatedWorker has been removed.
   if (!back_forward_cache_controller_host_.is_bound()) {

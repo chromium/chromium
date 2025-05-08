@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
@@ -562,33 +561,27 @@ void ExtensionMenuItemView::OnPinButtonPressed() {
 }
 
 bool ExtensionMenuItemView::IsContextMenuRunningForTesting() const {
-  CHECK_IS_TEST();
   return context_menu_controller_->IsMenuRunning();
 }
 
 ExtensionsMenuButton*
 ExtensionMenuItemView::primary_action_button_for_testing() {
-  CHECK_IS_TEST();
   return primary_action_button_;
 }
 
 views::ToggleButton* ExtensionMenuItemView::site_access_toggle_for_testing() {
-  CHECK_IS_TEST();
   return site_access_toggle_;
 }
 
 HoverButton* ExtensionMenuItemView::context_menu_button_for_testing() {
-  CHECK_IS_TEST();
   return context_menu_button_;
 }
 
 HoverButton* ExtensionMenuItemView::pin_button_for_testing() {
-  CHECK_IS_TEST();
   return pin_button_;
 }
 
 HoverButton* ExtensionMenuItemView::site_permissions_button_for_testing() {
-  CHECK_IS_TEST();
   return site_permissions_button_;
 }
 

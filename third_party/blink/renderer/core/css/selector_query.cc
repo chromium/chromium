@@ -160,9 +160,20 @@ static void CollectElementsByClassName(
     const AtomicString& class_name,
     const CSSSelector* selector,
     typename SelectorQueryTrait::OutputType& output) {
+  const Element::TinyBloomFilter filter = Element::FilterForString(class_name);
+
   SelectorChecker checker(SelectorChecker::kQueryingRules);
   for (Element& element : ElementTraversal::DescendantsOf(root_node)) {
     QUERY_STATS_INCREMENT(fast_class);
+    if (!element.CouldHaveClassWithPrecomputedFilter(filter)) {
+#if DCHECK_IS_ON()
+      DCHECK(!element.HasClassName(class_name))
+          << element << " should have contained class " << class_name
+          << ", Bloom bits on element are "
+          << element.AttributeOrClassBloomFilterForDebug();
+#endif
+      continue;
+    }
     if (!element.HasClassName(class_name)) {
       continue;
     }
@@ -263,7 +274,8 @@ static void CollectElementsByAttributeExact(
   const bool needs_synchronize_attribute =
       NeedsSynchronizeAttribute(selector_attr, is_html_doc);
 
-  const uint32_t filter = Element::FilterForAttribute(selector_attr);
+  const Element::TinyBloomFilter filter =
+      Element::FilterForAttribute(selector_attr);
 
   for (Element& element : ElementTraversal::DescendantsOf(root_node)) {
     QUERY_STATS_INCREMENT(fast_scan);
@@ -308,7 +320,7 @@ static void CollectElementsByAttributeExact(
       DCHECK(element.CouldHaveAttributeWithPrecomputedFilter(filter))
           << element << " should have contained attribute " << selector_attr
           << ", Bloom bits on element are "
-          << element.AttributeBloomFilterForDebug();
+          << element.AttributeOrClassBloomFilterForDebug();
 #endif
 
       if (AttributeValueMatchesExact(attribute_item, selector_value,

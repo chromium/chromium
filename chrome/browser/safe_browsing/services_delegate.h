@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/safe_browsing/incident_reporting/delayed_analysis_callback.h"
 #include "components/safe_browsing/buildflags.h"

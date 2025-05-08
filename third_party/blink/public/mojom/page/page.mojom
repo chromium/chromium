@@ -11,7 +11,6 @@ import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/remote_frame.mojom";
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
-import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
@@ -157,9 +156,9 @@ interface PageBroadcast {
     RemoteMainFrameInterfaces remote_main_frame_interfaces);
 
   // Update the page's browsing context group, with the information contained
-  // in `browsing_context_group_info`.
+  // in `browsing_context_group_token`.
   UpdatePageBrowsingContextGroup(
-    blink.mojom.BrowsingContextGroupInfo browsing_context_group_info);
+    mojo_base.mojom.UnguessableToken browsing_context_group_token);
 
   // Allows the browser to inform the renderer about a change in attribution
   // support, e.g. when the OS indicates that the OS Attribution API is

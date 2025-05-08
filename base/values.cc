@@ -29,6 +29,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
+#include "base/types/pass_key.h"
 #include "base/types/to_address.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
@@ -356,6 +357,16 @@ ListValue Value::TakeList() && {
 
 DictValue::DictValue() = default;
 
+DictValue::DictValue(flat_map<std::string, std::unique_ptr<Value>> storage)
+    : storage_(std::move(storage)) {
+  DCHECK(std::ranges::all_of(storage_,
+                             [](const auto& entry) { return !!entry.second; }));
+}
+
+DictValue::DictValue(PassKey<internal::JSONParser>,
+                     flat_map<std::string, std::unique_ptr<Value>> storage)
+    : DictValue(std::move(storage)) {}
+
 DictValue::DictValue(DictValue&&) noexcept = default;
 
 DictValue& DictValue::operator=(DictValue&&) noexcept = default;
@@ -420,28 +431,37 @@ DictValue DictValue::Clone() const {
     storage.emplace_back(key, std::make_unique<Value>(value->Clone()));
   }
 
-  DictValue result;
   // `storage` is already sorted and unique by construction, which allows us to
   // avoid an additional O(n log n) step.
-  result.storage_ = flat_map<std::string, std::unique_ptr<Value>>(
-      sorted_unique, std::move(storage));
-  return result;
+  return DictValue(flat_map<std::string, std::unique_ptr<Value>>(
+      sorted_unique, std::move(storage)));
 }
 
 void DictValue::Merge(DictValue dict) {
-  for (const auto [key, value] : dict) {
-    if (DictValue* nested_dict = value.GetIfDict()) {
-      if (DictValue* current_dict = FindDict(key)) {
-        // If `key` is a nested dictionary in this dictionary and the dictionary
-        // being merged, recursively merge the two dictionaries.
+  if (empty()) {
+    *this = std::move(dict);
+    return;
+  }
+
+  for (auto& [key, value] : dict.storage_) {
+    // Temporarily use nullptr for newly inserted values to avoid allocating a
+    // `std::unique_ptr` unnecessarily; this will be replaced with `value`
+    // itself.
+    auto [it, inserted] = storage_.try_emplace(std::move(key), nullptr);
+    if (!inserted) {
+      DictValue* nested_dict = value->GetIfDict();
+      DictValue* current_dict = it->second->GetIfDict();
+      // If `key` is a nested dictionary in this dictionary and the dictionary
+      // being merged, recursively merge the two dictionaries.
+      if (nested_dict && current_dict) {
         current_dict->Merge(std::move(*nested_dict));
         continue;
       }
     }
 
     // Otherwise, unconditionally set the value, overwriting any value that may
-    // already be associated with the key.
-    Set(key, std::move(value));
+    // already be associated with the key, including the temporary nullptr.
+    it->second = std::move(value);
   }
 }
 

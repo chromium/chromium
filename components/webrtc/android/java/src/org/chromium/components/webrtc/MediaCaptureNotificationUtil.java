@@ -27,6 +27,8 @@ public class MediaCaptureNotificationUtil {
         MediaType.AUDIO_AND_VIDEO,
         MediaType.VIDEO_ONLY,
         MediaType.AUDIO_ONLY,
+        MediaType.TAB_CAPTURE,
+        MediaType.WINDOW_CAPTURE,
         MediaType.SCREEN_CAPTURE
     })
     public @interface MediaType {
@@ -34,7 +36,15 @@ public class MediaCaptureNotificationUtil {
         int AUDIO_AND_VIDEO = 1;
         int VIDEO_ONLY = 2;
         int AUDIO_ONLY = 3;
-        int SCREEN_CAPTURE = 4;
+        int TAB_CAPTURE = 4;
+        int WINDOW_CAPTURE = 5;
+        int SCREEN_CAPTURE = 6;
+    }
+
+    public static boolean isCapture(@MediaType int mediaType) {
+        return mediaType == MediaType.TAB_CAPTURE
+                || mediaType == MediaType.WINDOW_CAPTURE
+                || mediaType == MediaType.SCREEN_CAPTURE;
     }
 
     /**
@@ -67,7 +77,7 @@ public class MediaCaptureNotificationUtil {
                     appContext.getString(R.string.accessibility_stop),
                     stopIntent);
         } else {
-            assert mediaType != MediaType.SCREEN_CAPTURE : "SCREEN_CAPTURE requires a stop action";
+            assert !isCapture(mediaType) : "Capture requires a stop action";
         }
 
         // App name is automatically added to the title from Android N.
@@ -102,7 +112,11 @@ public class MediaCaptureNotificationUtil {
      */
     private static String getNotificationTitleText(@MediaType int mediaType) {
         int notificationContentTextId = 0;
-        if (mediaType == MediaType.SCREEN_CAPTURE) {
+        if (mediaType == MediaType.TAB_CAPTURE) {
+            notificationContentTextId = R.string.tab_capture_notification_title;
+        } else if (mediaType == MediaType.WINDOW_CAPTURE) {
+            notificationContentTextId = R.string.window_capture_notification_title;
+        } else if (mediaType == MediaType.SCREEN_CAPTURE) {
             notificationContentTextId = R.string.screen_capture_notification_title;
         } else if (mediaType == MediaType.AUDIO_AND_VIDEO) {
             notificationContentTextId = R.string.video_audio_capture_notification_title;
@@ -127,7 +141,7 @@ public class MediaCaptureNotificationUtil {
             notificationIconId = R.drawable.webrtc_video;
         } else if (mediaType == MediaType.AUDIO_ONLY) {
             notificationIconId = R.drawable.webrtc_audio;
-        } else if (mediaType == MediaType.SCREEN_CAPTURE) {
+        } else if (isCapture(mediaType)) {
             notificationIconId = R.drawable.webrtc_video;
         }
         return notificationIconId;

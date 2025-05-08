@@ -554,17 +554,16 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
   bool error_reported_ = false;
 };
 
-TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldExposeNewlyTrackedAccountId) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldExposeNewlyTrackedGaiaId) {
   ModelReadyToSync();
-  ASSERT_EQ("", type_processor()->TrackedAccountId());
+  ASSERT_EQ(GaiaId(), type_processor()->TrackedGaiaId());
   OnSyncStarting();
   worker()->UpdateFromServer();
-  EXPECT_EQ(kDefaultAuthenticatedGaiaId.ToString(),
-            type_processor()->TrackedAccountId());
+  EXPECT_EQ(kDefaultAuthenticatedGaiaId, type_processor()->TrackedGaiaId());
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldExposePreviouslyTrackedAccountId) {
+       ShouldExposePreviouslyTrackedGaiaId) {
   const GaiaId kPersistedGaiaId("PersistedGaiaId");
 
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
@@ -579,16 +578,16 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
-  // Even prior to starting sync, the account ID should already be tracked.
-  EXPECT_EQ(kPersistedGaiaId.ToString(), type_processor()->TrackedAccountId());
+  // Even prior to starting sync, the Gaia ID should already be tracked.
+  EXPECT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 
   // If sync gets started, the account should still be tracked.
   OnSyncStarting(kPersistedGaiaId);
-  EXPECT_EQ(kPersistedGaiaId.ToString(), type_processor()->TrackedAccountId());
+  EXPECT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldExposeNewlyTrackedAccountIdIfChanged) {
+       ShouldExposeNewlyTrackedGaiaIdIfChanged) {
   const GaiaId kPersistedGaiaId("PersistedGaiaId");
 
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
@@ -604,13 +603,13 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
   // Even prior to starting sync, the account ID should already be tracked.
-  ASSERT_EQ(kPersistedGaiaId.ToString(), type_processor()->TrackedAccountId());
+  ASSERT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 
   // If sync gets started, the new account should be tracked.
   const GaiaId kNewGaiaId("NewGaiaId");
   OnSyncStarting(kNewGaiaId);
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
-  EXPECT_EQ(kNewGaiaId.ToString(), type_processor()->TrackedAccountId());
+  EXPECT_EQ(kNewGaiaId, type_processor()->TrackedGaiaId());
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,
@@ -2696,40 +2695,42 @@ class CommitOnlyClientTagBasedDataTypeProcessorTest
 };
 
 TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
-       ShouldExposeNewlyTrackedAccountId) {
+       ShouldExposeNewlyTrackedGaiaId) {
   ModelReadyToSync();
-  ASSERT_EQ("", type_processor()->TrackedAccountId());
+  ASSERT_EQ(GaiaId(), type_processor()->TrackedGaiaId());
   OnSyncStarting();
-  EXPECT_EQ(kDefaultAuthenticatedGaiaId.ToString(),
-            type_processor()->TrackedAccountId());
+  EXPECT_EQ(kDefaultAuthenticatedGaiaId, type_processor()->TrackedGaiaId());
 }
 
 TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
-       ShouldExposePreviouslyTrackedAccountId) {
+       ShouldExposePreviouslyTrackedGaiaId) {
+  const GaiaId kPersistedGaiaId("PersistedGaiaId");
+
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::DataTypeState data_type_state(metadata_batch->GetDataTypeState());
 
   data_type_state.set_initial_sync_state(
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   data_type_state.set_cache_guid(kCacheGuid);
-  data_type_state.set_authenticated_obfuscated_gaia_id("PersistedGaiaId");
+  data_type_state.set_authenticated_obfuscated_gaia_id(
+      kPersistedGaiaId.ToString());
   data_type_state.mutable_progress_marker()->set_data_type_id(
       GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
-  // Even prior to starting sync, the account ID should already be tracked.
-  EXPECT_EQ("PersistedGaiaId", type_processor()->TrackedAccountId());
+  // Even prior to starting sync, the Gaia ID should already be tracked.
+  EXPECT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 
   // If sync gets started, the account should still be tracked.
-  OnSyncStarting(GaiaId("PersistedGaiaId"));
-  EXPECT_EQ("PersistedGaiaId", type_processor()->TrackedAccountId());
+  OnSyncStarting(kPersistedGaiaId);
+  EXPECT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 }
 
 TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
        ShouldCallMergeWhenSyncEnabled) {
   ModelReadyToSync();
-  ASSERT_EQ("", type_processor()->TrackedAccountId());
+  ASSERT_TRUE(type_processor()->TrackedGaiaId().empty());
   ASSERT_EQ(0, bridge()->merge_call_count());
   OnSyncStarting();
   EXPECT_EQ(1, bridge()->merge_call_count());
@@ -2737,22 +2738,25 @@ TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
 
 TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
        ShouldNotCallMergeAfterRestart) {
+  const GaiaId kPersistedGaiaId("PersistedGaiaId");
+
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::DataTypeState data_type_state(metadata_batch->GetDataTypeState());
   data_type_state.set_initial_sync_state(
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   data_type_state.set_cache_guid(kCacheGuid);
-  data_type_state.set_authenticated_obfuscated_gaia_id("PersistedGaiaId");
+  data_type_state.set_authenticated_obfuscated_gaia_id(
+      kPersistedGaiaId.ToString());
   data_type_state.mutable_progress_marker()->set_data_type_id(
       GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
   // Even prior to starting sync, the account ID should already be tracked.
-  ASSERT_EQ("PersistedGaiaId", type_processor()->TrackedAccountId());
+  ASSERT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 
   // When sync gets started, MergeFullSyncData() should not be called.
-  OnSyncStarting(GaiaId("PersistedGaiaId"));
+  OnSyncStarting(kPersistedGaiaId);
   ASSERT_EQ(0, bridge()->merge_call_count());
 }
 

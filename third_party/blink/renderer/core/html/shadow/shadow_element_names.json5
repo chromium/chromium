@@ -42,6 +42,10 @@
       Symbol: "kIdEditingViewPort",
     },
     {
+      name: "textarea-placeholder-break",
+      Symbol: "kIdPlaceholderBreak",
+    },
+    {
       name: "picker",
       Symbol: "kIdPickerIndicator",
     },

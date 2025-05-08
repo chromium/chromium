@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/cpp/creative_info.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/trusted_kvv2_signals.h"
@@ -101,7 +102,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // whether additional fields like creative_scanning_metadata, size and owner
   // info are sent with trusted scoring requests. If this is off, this
   // information should not be included in the passed in
-  // TrustedSignals::CreativeInfo.
+  // CreativeInfo.
   //
   // TODO(crbug.com/40810962): Investigate improving the
   // `automatically_send_requests` logic.
@@ -143,8 +144,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // the format matches the one accepted by ScoringSignals::Result, which
   // minimizes conversions.
   std::unique_ptr<Request> RequestScoringSignals(
-      TrustedSignals::CreativeInfo ad,
-      std::set<TrustedSignals::CreativeInfo> ad_components,
+      CreativeInfo ad,
+      std::set<CreativeInfo> ad_components,
       int32_t max_trusted_scoring_signals_url_length,
       LoadSignalsCallback load_signals_callback);
 
@@ -162,8 +163,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // support. Requires `bidder_owner_origin` and `bidder_joining_origin` instead
   // of `max_trusted_scoring_signals_url_length`.
   std::unique_ptr<Request> RequestKVv2ScoringSignals(
-      TrustedSignals::CreativeInfo ad,
-      std::set<TrustedSignals::CreativeInfo> ad_components,
+      CreativeInfo ad,
+      std::set<CreativeInfo> ad_components,
       const url::Origin& bidder_owner_origin,
       const url::Origin& bidder_joining_origin,
       LoadSignalsCallback load_signals_callback);
@@ -192,8 +193,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     // Constructor for the BYOS version of trusted scoring signals, which builds
     // a GET request with a limit set by max_trusted_scoring_signals_url_length.
     RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
-                TrustedSignals::CreativeInfo ad,
-                std::set<TrustedSignals::CreativeInfo> ad_components,
+                CreativeInfo ad,
+                std::set<CreativeInfo> ad_components,
                 int32_t max_trusted_scoring_signals_url_length,
                 LoadSignalsCallback load_signals_callback);
 
@@ -209,8 +210,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     // Constructor for trusted scoring signals with KVv2 support, which builds a
     // POST request.
     RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
-                TrustedSignals::CreativeInfo ad,
-                std::set<TrustedSignals::CreativeInfo> ad_components,
+                CreativeInfo ad,
+                std::set<CreativeInfo> ad_components,
                 const url::Origin& bidder_owner_origin,
                 const url::Origin& bidder_joining_origin,
                 LoadSignalsCallback load_signals_callback);
@@ -235,8 +236,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     // Used for requests for scoring signals. `ad_` must be non-null for
     // scoring signals requests. `ad_` and `ad_components_` must be nullopt and
     // empty respectively for bidding signals requests.
-    std::optional<TrustedSignals::CreativeInfo> ad_;
-    std::set<TrustedSignals::CreativeInfo> ad_components_;
+    std::optional<CreativeInfo> ad_;
+    std::set<CreativeInfo> ad_components_;
     std::optional<url::Origin> bidder_owner_origin_;
     std::optional<url::Origin> bidder_joining_origin_;
 
@@ -269,6 +270,9 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     bool operator()(const RequestImpl* r1, const RequestImpl* r2) const;
   };
 
+  using RequestSet =
+      std::set<raw_ptr<RequestImpl, SetExperimental>, CompareRequestImpl>;
+
   // Manages building and loading trusted signals URLs.
   class TrustedSignalsUrlBuilder;
   class TrustedBiddingSignalsUrlBuilder;
@@ -290,8 +294,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     std::unique_ptr<TrustedKVv2Signals> trusted_kvv2_signals;
 
     // The batched Requests this is for.
-    std::set<raw_ptr<RequestImpl, SetExperimental>, CompareRequestImpl>
-        requests;
+    RequestSet requests;
   };
 
   // Adds `request` to `queued_requests_`, and starts `timer_` if needed.
@@ -315,7 +318,20 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // request with it, cancelling the request if it's no longer needed.
   void OnRequestDestroyed(RequestImpl* request);
 
-  void IssueRequests(TrustedSignalsUrlBuilder& url_builder);
+  // Add `request` to `merged_requests` if the relevant
+  // TrustedBiddingSignalsUrlBuilder has room for it. Returns whether the
+  // request was successfully added.
+  bool TryToAddRequest(TrustedBiddingSignalsUrlBuilder& bidding_url_builder,
+                       RequestSet& merged_requests,
+                       RequestImpl* request);
+
+  bool TryToAddRequest(TrustedScoringSignalsUrlBuilder& scoring_url_builder,
+                       RequestSet& merged_requests,
+                       RequestImpl* request);
+
+  // Starts a batched request. Resets `url_builder`.
+  void IssueRequests(TrustedSignalsUrlBuilder& url_builder,
+                     RequestSet merged_requests);
 
   const Type type_;
   const raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
@@ -333,8 +349,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
 
   // All live requests that haven't yet been assigned to a
   // BatchedTrustedSignalsRequest.
-  std::set<raw_ptr<RequestImpl, SetExperimental>, CompareRequestImpl>
-      queued_requests_;
+  RequestSet queued_requests_;
 
   std::set<std::unique_ptr<BatchedTrustedSignalsRequest>,
            base::UniquePtrComparator>

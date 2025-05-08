@@ -147,7 +147,7 @@ class Feature {
                                              Platform platform,
                                              int context_id) const = 0;
 
-  // Returns true if the feature is available to |extension|.
+  // Returns true if the feature is available to `extension`.
   Availability IsAvailableToExtension(const Extension* extension) const;
 
   // Returns true if the feature is available to be used in the specified

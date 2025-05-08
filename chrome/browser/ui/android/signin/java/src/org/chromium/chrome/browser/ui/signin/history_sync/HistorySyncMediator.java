@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -27,6 +30,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.SignInStateObserver {
     private final PropertyModel mModel;
     private final String mAccountEmail;
@@ -52,17 +56,18 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mDelegate = delegate;
         mShouldSignOutOnDecline = shouldSignOutOnDecline;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
-        mSyncService = SyncServiceFactory.getForProfile(profile);
+        mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile));
+        mSyncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
         mHistorySyncHelper = HistorySyncHelper.getForProfile(profile);
         mProfileDataCache.addObserver(this);
         mSigninManager.addSignInStateObserver(this);
         mConfig = config;
         mAccountEmail =
-                CoreAccountInfo.getEmailFrom(
-                        mSigninManager
-                                .getIdentityManager()
-                                .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                assumeNonNull(
+                        CoreAccountInfo.getEmailFrom(
+                                mSigninManager
+                                        .getIdentityManager()
+                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
         // The history sync screen should never be created when the user is signed out.
         assert mAccountEmail != null;
         DisplayableProfileData profileData =

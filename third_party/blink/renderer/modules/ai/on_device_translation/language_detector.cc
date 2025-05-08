@@ -6,16 +6,18 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
-#include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
+#include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "v8/include/v8-isolate.h"
 
 namespace blink {
 
@@ -38,6 +40,20 @@ static constexpr auto kSupportedLanguages =
         "tr",      "uk",  "ur",  "uz",      "vi", "xh", "yi", "yo",      "zh",
         "zh-Latn", "zu",
     });
+
+bool RequiresUserActivation(
+    language_detection::mojom::blink::LanguageDetectionModelStatus result) {
+  switch (result) {
+    case language_detection::mojom::blink::LanguageDetectionModelStatus::
+        kAfterDownload:
+      return true;
+    case language_detection::mojom::blink::LanguageDetectionModelStatus::
+        kReadily:
+    case language_detection::mojom::blink::LanguageDetectionModelStatus::
+        kNotAvailable:
+      return false;
+  }
+}
 
 // Runs `callback` on destruction unless `Reset` is called.
 class RunOnDestruction {
@@ -91,20 +107,20 @@ class LanguageDetectorCreateTask
         task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())),
         options_(options) {
     if (options->hasMonitor()) {
-      monitor_ = MakeGarbageCollected<AICreateMonitor>(GetExecutionContext(),
-                                                       task_runner_);
+      monitor_ = MakeGarbageCollected<CreateMonitor>(GetExecutionContext(),
+                                                     task_runner_);
 
       // If an exception is thrown, don't initiate language detection model
-      // download. `AICreateMonitorCallback`'s `Invoke` will automatically
+      // download. `CreateMonitorCallback`'s `Invoke` will automatically
       // reject the promise with the thrown exception.
       if (options->monitor()->Invoke(nullptr, monitor_).IsNothing()) {
         return;
       }
     }
 
-    AIInterfaceProxy::GetLanguageDetectionModel(
+    AIInterfaceProxy::GetLanguageDetectionModelStatus(
         GetExecutionContext(),
-        WTF::BindOnce(&LanguageDetectorCreateTask::OnModelLoaded,
+        WTF::BindOnce(&LanguageDetectorCreateTask::OnGotAvailability,
                       WrapPersistent(this))
             .Then(RejectOnDestruction(resolver)));
   }
@@ -114,6 +130,39 @@ class LanguageDetectorCreateTask
     AIContextObserver::Trace(visitor);
     visitor->Trace(monitor_);
     visitor->Trace(options_);
+  }
+
+  void OnGotAvailability(
+      language_detection::mojom::blink::LanguageDetectionModelStatus result) {
+    if (!GetResolver()) {
+      return;
+    }
+
+    ScriptState* script_state = GetScriptState();
+    ExecutionContext* context = ExecutionContext::From(script_state);
+    LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
+
+    // The Language Detector API is only available within a window or extension
+    // service worker context. User activation is not consumed by workers, as
+    // they lack the ability to do so.
+    CHECK(window != nullptr || context->IsServiceWorkerGlobalScope());
+
+    if (!context->IsServiceWorkerGlobalScope() &&
+        RequiresUserActivation(result) &&
+        !LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
+      GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "Requires handling a user gesture when availability is "
+          "\"downloadable\".");
+      Cleanup();
+      return;
+    }
+
+    AIInterfaceProxy::GetLanguageDetectionModel(
+        GetExecutionContext(),
+        WTF::BindOnce(&LanguageDetectorCreateTask::OnModelLoaded,
+                      WrapPersistent(this))
+            .Then(RejectOnDestruction(GetResolver())));
   }
 
   void OnModelLoaded(base::expected<LanguageDetectionModel*,
@@ -127,7 +176,8 @@ class LanguageDetectorCreateTask
     }
 
     std::optional<Vector<String>> expected_input_languages;
-    if (options_->hasExpectedInputLanguages()) {
+    if (options_->hasExpectedInputLanguages() &&
+        !options_->expectedInputLanguages().empty()) {
       expected_input_languages = GetBestFitLanguages(
           kSupportedLanguages, options_->expectedInputLanguages());
       if (!expected_input_languages.has_value()) {
@@ -174,7 +224,7 @@ class LanguageDetectorCreateTask
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  Member<AICreateMonitor> monitor_;
+  Member<CreateMonitor> monitor_;
   Member<LanguageDetectorCreateOptions> options_;
 };
 
@@ -202,6 +252,22 @@ void OnGotStatus(
   resolver->Resolve(AvailabilityToV8(availability));
 }
 
+bool ValidateAndCanonicalizeExpectedInputLanguages(
+    v8::Isolate* isolate,
+    LanguageDetectorCreateCoreOptions* options) {
+  if (!options->hasExpectedInputLanguages()) {
+    return true;
+  }
+  std::optional<Vector<String>> expected_input_languages =
+      ValidateAndCanonicalizeBCP47Languages(isolate,
+                                            options->expectedInputLanguages());
+  if (!expected_input_languages.has_value()) {
+    return false;
+  }
+  options->setExpectedInputLanguages(*expected_input_languages);
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -209,17 +275,23 @@ ScriptPromise<V8Availability> LanguageDetector::availability(
     ScriptState* script_state,
     LanguageDetectorCreateCoreOptions* options,
     ExceptionState& exception_state) {
-  if (!ValidateScriptState(script_state, exception_state)) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::LanguageDetectionAPIForWorkersEnabled(
+              context))) {
     return EmptyPromise();
   }
 
-  // TODO(crbug.com/409848465): Validate and canonicalize
-  // expectedInputLanguages.
+  if (!ValidateAndCanonicalizeExpectedInputLanguages(script_state->GetIsolate(),
+                                                     options)) {
+    return EmptyPromise();
+  }
 
   ScriptPromiseResolver<V8Availability>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
   ScriptPromise<V8Availability> promise = resolver->Promise();
-  ExecutionContext* context = ExecutionContext::From(script_state);
 
   // Return unavailable for cross-origin iframe access with no permission
   // policy.
@@ -245,12 +317,19 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
     ScriptState* script_state,
     LanguageDetectorCreateOptions* options,
     ExceptionState& exception_state) {
-  if (!ValidateScriptState(script_state, exception_state)) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::LanguageDetectionAPIForWorkersEnabled(
+              context))) {
     return EmptyPromise();
   }
 
-  // TODO(crbug.com/409848465): Validate and canonicalize
-  // expectedInputLanguages.
+  if (!ValidateAndCanonicalizeExpectedInputLanguages(script_state->GetIsolate(),
+                                                     options)) {
+    return EmptyPromise();
+  }
 
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
@@ -263,7 +342,6 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
           script_state);
 
   // Block cross-origin iframe access with no permission policy.
-  ExecutionContext* context = ExecutionContext::From(script_state);
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     if (window->GetFrame() &&
         window->GetFrame()->IsCrossOriginToOutermostMainFrame() &&
@@ -272,7 +350,7 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           kExceptionMessageCrossOriginAccess));
-      return EmptyPromise();
+      return resolver->Promise();
     }
   }
 
@@ -314,7 +392,12 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
     const WTF::String& input,
     LanguageDetectorDetectOptions* options,
     ExceptionState& exception_state) {
-  if (!ValidateScriptState(script_state, exception_state)) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::LanguageDetectionAPIForWorkersEnabled(
+              context))) {
     return EmptyPromise();
   }
 
@@ -360,7 +443,12 @@ ScriptPromise<IDLDouble> LanguageDetector::measureInputUsage(
     const WTF::String& input,
     LanguageDetectorDetectOptions* options,
     ExceptionState& exception_state) {
-  if (!ValidateScriptState(script_state, exception_state)) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::LanguageDetectionAPIForWorkersEnabled(
+              context))) {
     return EmptyPromise();
   }
 
@@ -387,8 +475,18 @@ double LanguageDetector::inputQuota() const {
 
 HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
     WTF::Vector<LanguageDetectionModel::LanguagePrediction> predictions) {
-  float last_score = 1;
-  float cumulative_confidence = 0;
+  double last_score = 1;
+  double cumulative_confidence = 0;
+
+  const WTF::UncheckedIterator<LanguageDetectionModel::LanguagePrediction>&
+      unknown_iter = std::find_if(
+          predictions.begin(), predictions.end(),
+          [](const LanguageDetectionModel::LanguagePrediction& prediction) {
+            return prediction.language == "unknown";
+          });
+
+  CHECK_NE(unknown_iter, predictions.end());
+  double unknown = unknown_iter->score;
 
   HeapVector<Member<LanguageDetectionResult>> results;
   for (const auto& prediction : predictions) {
@@ -397,9 +495,10 @@ HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
     CHECK_LE(prediction.score, last_score);
     last_score = prediction.score;
 
-    if (prediction.score == 0 || prediction.language == "unknown") {
+    if (prediction.score == 0 || prediction.score < unknown) {
       break;
     }
+
     auto* result = MakeGarbageCollected<LanguageDetectionResult>();
     results.push_back(result);
     result->setDetectedLanguage(String(prediction.language));
@@ -412,12 +511,17 @@ HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
     }
   }
 
+  CHECK_GE(1 - cumulative_confidence, unknown);
+  if (!results.empty()) {
+    CHECK_GE(results.back()->confidence(), unknown);
+  }
+
   // Append "und" to end. Set it's confidence so that the total confidences add
   // up to 1.
-  auto* result = MakeGarbageCollected<LanguageDetectionResult>();
-  results.push_back(result);
-  result->setDetectedLanguage(String("und"));
-  result->setConfidence(1 - cumulative_confidence);
+  auto* und_result = MakeGarbageCollected<LanguageDetectionResult>();
+  results.push_back(und_result);
+  und_result->setDetectedLanguage(String("und"));
+  und_result->setConfidence(unknown);
 
   return results;
 }

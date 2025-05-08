@@ -49,6 +49,10 @@ const char kJsBuildLabel[] = "js_build_label";
 const char kJsExceptionCategory[] = "js_exception_category";
 const char kJsExceptionDetails[] = "js_exception_details";
 const char kJsExceptionSignature[] = "js_exception_signature";
+const char kJsErrorAppKey[] = "js_error_app";
+const char kPreviousLogFileKey[] = "previous_logfile";
+const char kBackgroundAppsKey[] = "background_apps";
+const char kServerUrl[] = "server_url";
 
 // Convenience wrapper around Value::Dict::FindString(), for easier use in if
 // statements. If `key` is a string in `dict`, writes it to `out` and returns
@@ -118,6 +122,10 @@ base::Value DumpInfo::GetAsValue() const {
   result.Set(kJsExceptionCategory, params_.js_exception_category);
   result.Set(kJsExceptionDetails, params_.js_exception_details);
   result.Set(kJsExceptionSignature, params_.js_exception_signature);
+  result.Set(kJsErrorAppKey, params_.js_error_app);
+  result.Set(kPreviousLogFileKey, params_.previous_logfile);
+  result.Set(kBackgroundAppsKey, params_.background_apps);
+  result.Set(kServerUrl, params_.server_url);
 
   return base::Value(std::move(result));
 }
@@ -209,10 +217,24 @@ bool DumpInfo::ParseEntry(const base::Value* entry) {
                  params_.js_exception_signature)) {
     ++num_params;
   }
+  if (FindString(*dict, kJsErrorAppKey, params_.js_error_app)) {
+    ++num_params;
+  }
+  if (FindString(*dict, kPreviousLogFileKey, params_.previous_logfile)) {
+    ++num_params;
+  }
+  if (FindString(*dict, kBackgroundAppsKey, params_.background_apps)) {
+    ++num_params;
+  }
+  if (FindString(*dict, kServerUrl, params_.server_url)) {
+    ++num_params;
+  }
 
   // Disallow extraneous params
-  if (dict->size() != num_params)
+  if (dict->size() != num_params) {
+    LOG(ERROR) << "Failed to parse DumpInfo: missing required fields";
     return false;
+  }
 
   valid_ = true;
   return true;

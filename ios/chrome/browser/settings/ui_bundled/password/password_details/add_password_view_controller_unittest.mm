@@ -53,7 +53,7 @@ constexpr char kPassword[] = "test";
 // Whether `showExistingCredential` was called.
 @property(nonatomic) BOOL showExistingCredentialCalled;
 
-@property(nonatomic, strong) NSString* suggestedPassword;
+@property(nonatomic, copy) NSString* suggestedPassword;
 
 @property(nonatomic, strong) TableViewTextEditItem* passwordCell;
 

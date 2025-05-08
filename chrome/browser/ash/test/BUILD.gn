@@ -25,11 +25,12 @@ static_library("test_support") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash/settings",
-    "//chrome/browser/ash/settings:test_support",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/settings:test_support",
     "//components/account_id",
+    "//components/policy/proto",
     "//components/prefs",
     "//components/user_manager:test_support",
   ]
@@ -49,6 +50,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/ui/webui/ash/login",
     "//chromeos/ash/components/policy",
     "//chromeos/ash/components/policy/weekly_time:test_support",

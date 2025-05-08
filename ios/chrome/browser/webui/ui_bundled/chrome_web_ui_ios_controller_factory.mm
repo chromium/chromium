@@ -107,13 +107,15 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   if (url_host == kChromeUIAutofillInternalsHost) {
     return &NewWebUIIOS<AutofillInternalsUIIOS>;
   }
-  if (base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref) &&
-      url_host == kChromeUIChromeURLsHost) {
-    // New ChromeUrlsUI is behind the kInternalOnlyUisPref feature flag.
-    return &NewWebUIIOS<chrome_urls::ChromeUrlsUI>;
+  if (url_host == kChromeUIChromeURLsHost) {
+    if (base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref)) {
+      // New ChromeUrlsUI is behind the kInternalOnlyUisPref feature flag.
+      return &NewWebUIIOS<chrome_urls::ChromeUrlsUI>;
+    } else {
+      return &NewWebUIIOS<AboutUI>;
+    }
   }
-  if (url_host == kChromeUIChromeURLsHost ||
-      url_host == kChromeUIHistogramHost || url_host == kChromeUICreditsHost) {
+  if (url_host == kChromeUIHistogramHost || url_host == kChromeUICreditsHost) {
     return &NewWebUIIOS<AboutUI>;
   }
   if (url_host == commerce::kChromeUICommerceInternalsHost) {

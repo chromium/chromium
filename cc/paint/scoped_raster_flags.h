@@ -21,7 +21,8 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
 
  public:
   // |flags| and |image_provider| must outlive this class.
-  template <class F, class = std::enable_if_t<std::is_same_v<F, float>>>
+  template <class F>
+    requires(std::is_same_v<F, float>)
   ScopedRasterFlags(const PaintFlags* flags,
                     ImageProvider* image_provider,
                     const SkMatrix& ctm,

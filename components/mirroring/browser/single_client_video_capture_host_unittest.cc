@@ -18,9 +18,13 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#endif
 
 using media::VideoFrameReceiver;
 using ::testing::InvokeWithoutArgs;
@@ -84,8 +88,10 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
       base::OnceClosure connection_lost_cb,
       Callbacks* callbacks,
       base::OnceClosure done_cb,
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
           video_effects_processor,
+#endif
       mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
           readonly_video_effects_manager) override {
     if (!params.IsValid()) {

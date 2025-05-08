@@ -84,7 +84,14 @@ class Component final : public GarbageCollected<Component> {
 
   // Method to determine if the URL associated with this component should be
   // treated as a "standard" URL like `https://foo` vs a "path" URL like
-  // `data:foo`.  This should only be called for kProtocol components.
+  // `data:foo`.  This should only be called for `kProtocol` components.
+  //
+  // This function checks if the protocol pattern matches any of the known
+  // standard protocol strings.  So an exact pattern of `http` will match, but
+  // so will `http{s}?` and `*`.  Typical non-standard protocols are `data`,
+  // `javascript`, `about`, and any other custom protocol strings.  The
+  // computation cost of this function may be a bit expensive for the first
+  // call, but the result is cached once computed.
   bool ShouldTreatAsStandardURL() const;
 
   // Returns if this component has at least one part that uses an ECMAScript

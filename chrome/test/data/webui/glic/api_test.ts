@@ -8,8 +8,11 @@
 
 import {PanelStateKind, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber} from '/glic/glic_api/glic_api.js';
+import {ObservableValue} from '/glic/observable.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
+
+let maxTimeoutEndTime = performance.now() + 10000;
 
 function getTestName(): string|null {
   let testName = new URL(window.location.href).searchParams.get('test');
@@ -70,6 +73,8 @@ class WebClient implements GlicWebClient {
   host?: GlicBrowserHost;
   firstOpened = Promise.withResolvers<void>();
   initializedPromise = Promise.withResolvers<void>();
+  onNotifyPanelWasClosed: () => void = () => {};
+  panelOpenState = ObservableValue.withValue<boolean>(false);
 
   async initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
     this.host = glicBrowserHost;
@@ -78,12 +83,18 @@ class WebClient implements GlicWebClient {
 
   async notifyPanelWillOpen(_panelOpeningData: PanelOpeningData):
       Promise<OpenPanelInfo> {
+    this.panelOpenState.assignAndSignal(true);
     this.firstOpened.resolve();
 
     const openPanelInfo: OpenPanelInfo = {
       startingMode: WebClientMode.TEXT,
     };
     return openPanelInfo;
+  }
+
+  async notifyPanelWasClosed(): Promise<void> {
+    this.onNotifyPanelWasClosed();
+    this.panelOpenState.assignAndSignal(false);
   }
 
   waitForFirstOpen(): Promise<void> {
@@ -108,13 +119,22 @@ class ApiTestFixtureBase {
   testParams: any;
   constructor(protected testStepper: TestStepper) {}
 
+  // Return to the C++ side, and wait for it to call ContinueJsTest() to
+  // continue execution in the JS test. Optionally, pass data to the C++ side.
+  advanceToNextStep(data?: any): Promise<void> {
+    return this.testStepper.nextStep(data);
+  }
+
   // Sets up the web client. This is called when the web contents loads,
   // before `ExecuteJsTest()`.
   async setUpClient() {
+    this.setUpWithClient(this.createWebClient());
+  }
+
+  async setUpWithClient(client: WebClient) {
     const registry = await glicHostRegistry.promise;
-    const webClient = this.createWebClient();
-    registry.registerWebClient(webClient);
-    this.clientValue = webClient;
+    this.clientValue = client;
+    await registry.registerWebClient(client);
     assertTrue(!!this.clientValue);
   }
 
@@ -146,12 +166,6 @@ class ApiTests extends ApiTestFixtureBase {
     await this.client.waitForFirstOpen();
   }
 
-  // Return to the C++ side, and wait for it to call ContinueJsTest() to
-  // continue execution in the JS test. Optionally, pass data to the C++ side.
-  private advanceToNextStep(data?: any): Promise<void> {
-    return this.testStepper.nextStep(data);
-  }
-
   // WARNING: Remember to update chrome/browser/glic/host/glic_api_uitest.cc
   // if you add a new test!
 
@@ -165,6 +179,8 @@ class ApiTests extends ApiTestFixtureBase {
     }
     await this.advanceToNextStep(allNames);
   }
+
+  async testRequestHeader() {}
 
   async testCreateTab() {
     assertTrue(!!this.host.createTab);
@@ -210,7 +226,12 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testClosePanel() {
     assertTrue(!!this.host.closePanel);
+
+    // Close the panel, and verify notifyPanelWasClosed is called.
+    const closedPromise = Promise.withResolvers<void>();
+    this.client.onNotifyPanelWasClosed = closedPromise.resolve;
     await this.host.closePanel();
+    await waitFor(closedPromise.promise);
   }
 
   async testAttachPanel() {
@@ -403,7 +424,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertFalse(!!result.viewportScreenshot);
   }
 
-  // TODO(harringtond): Add a test for a PDF.
   async testGetContextFromFocusedTabWithAllRequestedData() {
     await this.host.setTabContextPermissionState(true);
 
@@ -454,6 +474,38 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(metaTag.content, 'George');
   }
 
+  async testGetContextFromFocusedTabWithPdfFile() {
+    await this.host.setTabContextPermissionState(true);
+
+    // Pdf pages have two loads: one of the WebContents, and another of the
+    // element within an iframe that contains the actual pdf. We need to wait
+    // for both to be finished before running the test. The cpp side waits for
+    // the WebContents to be loaded, but we must still wait here.
+    const result = await runUntil(async () => {
+      const result =
+          await this.host.getContextFromFocusedTab?.({pdfData: true});
+      if (!result || !result.pdfDocumentData ||
+          !result.pdfDocumentData.pdfData) {
+        return undefined;
+      }
+      return result;
+    });
+
+    assertTrue(
+        result.tabData.url.endsWith('pdf/test.pdf') ?? false,
+        `Tab data has unexpected url ${result.tabData.url}`);
+    assertFalse(!!result.webPageData);
+
+    // Original PDF size is 7984 bytes, because Chrome reserializes the PDF,
+    // the size can change, but it shouldn't be too small.
+    const pdfData = await readStream(result.pdfDocumentData!.pdfData!);
+    assertTrue(
+        pdfData.byteLength > 5000,
+        `PDF data is too short. length=${pdfData.byteLength}`);
+    assertEquals('%PDF', new TextDecoder().decode(pdfData.slice(0, 4)));
+    assertFalse(result.pdfDocumentData!.pdfSizeLimitExceeded);
+  }
+
   // TODO(harringtond): This is disabled because it hangs. Fix it.
   async testCaptureScreenshot() {
     assertTrue(!!this.host.captureScreenshot);
@@ -494,11 +546,28 @@ class ApiTests extends ApiTestFixtureBase {
   async testGetOsHotkeyState() {
     assertTrue(!!this.host.getOsHotkeyState);
     const osHotkeyState = observeSequence(this.host.getOsHotkeyState());
-    const initialHotkeyState = await osHotkeyState.next();
-    assertEquals('<Ctrl>-<G>', initialHotkeyState.hotkey);
+    let hotkeyState = await osHotkeyState.next();
+    const isMac = /Mac/.test(navigator.platform);
+    let expectedHotkey = isMac ? '<⌃>-<G>' : '<Ctrl>-<G>';
+    assertEquals(expectedHotkey, hotkeyState.hotkey);
     await this.advanceToNextStep();
-    const changedState = await osHotkeyState.next();
-    assertEquals('<Ctrl>-<Shift>-<1>', changedState.hotkey);
+    hotkeyState = await osHotkeyState.next();
+    expectedHotkey = isMac ? '<⌃>-<⇧>-<1>' : '<Ctrl>-<Shift>-<1>';
+    assertEquals(expectedHotkey, hotkeyState.hotkey);
+    await this.advanceToNextStep();
+    hotkeyState = await osHotkeyState.next();
+    expectedHotkey = '';
+    assertEquals(expectedHotkey, hotkeyState.hotkey);
+  }
+
+  async testClosedCaptioning() {
+    assertTrue(!!this.host.getClosedCaptioningSetting);
+    assertTrue(!!this.host.setClosedCaptioningSetting);
+    const closedCaptioningState =
+        observeSequence(this.host.getClosedCaptioningSetting());
+    assertFalse(await closedCaptioningState.next());
+    await this.host.setClosedCaptioningSetting(true);
+    assertTrue(await closedCaptioningState.next());
   }
 
   async testGetUserProfileInfo() {
@@ -527,8 +596,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals('', profileInfo.givenName);
     assertEquals(false, profileInfo.isManaged!);
     assertTrue((profileInfo.localProfileName?.length ?? 0) > 0);
-
-    await this.advanceToNextStep();
   }
 
   async testSetContextAccessIndicator() {
@@ -565,10 +632,7 @@ class ApiTests extends ApiTestFixtureBase {
     // The client should be able to use getDisplayMedia() to capture the glic
     // window.
     const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: {
-        cursor: 'always',
-        displaySurface: 'browser',
-      } as MediaTrackConstraints,
+      video: true,
       audio: false,
       preferCurrentTab: true,
     } as any);
@@ -654,6 +718,56 @@ class ApiTests extends ApiTestFixtureBase {
     await observeSequence(this.host.isManuallyResizing()).waitForValue(false);
   }
 
+  async testResizeWindowTooSmall() {
+    assertTrue(!!this.host.resizeWindow);
+    await this.host.resizeWindow(0, 0);
+  }
+
+  async testResizeWindowTooLarge() {
+    assertTrue(!!this.host.resizeWindow);
+    await this.host.resizeWindow(20000, 20000);
+  }
+
+  async testResizeWindowWithinBounds() {
+    assertTrue(!!this.host.resizeWindow);
+    assertTrue(!!this.testParams);
+    await this.host.resizeWindow(this.testParams.width, this.testParams.height);
+  }
+
+  async testGetContextFromFocusedTabWithIneligiblePage() {
+    assertTrue(!!this.host.getContextFromFocusedTab);
+    await this.host.setTabContextPermissionState(true);
+
+    try {
+      await this.host.getContextFromFocusedTab?.({
+        innerText: true,
+        viewportScreenshot: true,
+        annotatedPageContent: true,
+        maxMetaTags: 32,
+        pdfData: true,
+      });
+    } catch (e) {
+      assertEquals(
+          'tabContext failed: page context ineligible', (e as Error).message);
+      return;
+    }
+    assertTrue(false, 'getContextFromFocusedTab should have thrown an error');
+  }
+
+  async testGetContextFromFocusedTabWithEligiblePage() {
+    await this.host.setTabContextPermissionState(true);
+
+    const result = await this.host.getContextFromFocusedTab?.({
+      innerText: true,
+      viewportScreenshot: true,
+      annotatedPageContent: true,
+      maxMetaTags: 32,
+      pdfData: true,
+    });
+
+    assertTrue(!!result);
+  }
+
   async testOpenOsMediaPermissionSettings() {
     assertTrue(!!this.host.openOsPermissionSettingsMenu);
     this.host.openOsPermissionSettingsMenu('media');
@@ -662,11 +776,6 @@ class ApiTests extends ApiTestFixtureBase {
   async testOpenOsGeoPermissionSettings() {
     assertTrue(!!this.host.openOsPermissionSettingsMenu);
     this.host.openOsPermissionSettingsMenu('geolocation');
-  }
-
-  async testIncompatiblePermissionWithOsPermissionSettings() {
-    assertTrue(!!this.host.openOsPermissionSettingsMenu);
-    this.host.openOsPermissionSettingsMenu('notifications');
   }
 
   async testGetOsMicrophonePermissionStatusAllowed() {
@@ -782,6 +891,8 @@ class WebClientThatFailsInitialize extends WebClient {
         location.href = '/sorry/index.html';
       });
     }
+    // This initialization is sometimes skipped depending on the type of desired
+    // failure detected above
     return super.initialize(glicBrowserHost);
   }
 }
@@ -800,22 +911,25 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
   // testParams when `createWebClient()` is called.
   override async setUpClient() {}
 
-  async testInitializeFailsWindowClosed() {
-    // Failing initialize will tear down this web contents. Deferring that here
-    // so that our test can exit cleanly.
+  // Runs ApiTestFixtureBase.setUpClient() after 100 ms, and returns
+  // immediately. This allows the test to exit cleanly before the web contents
+  // is torn down.
+  deferredSetUpClient() {
     sleep(100).then(() => super.setUpClient());
   }
 
+  async testInitializeFailsWindowClosed() {
+    this.deferredSetUpClient();
+  }
+
   async testInitializeFailsWindowOpen() {
-    // Failing initialize will tear down this web contents. Deferring that here
-    // so that our test can exit cleanly.
-    sleep(100).then(() => super.setUpClient());
+    this.deferredSetUpClient();
   }
 
   async testReload() {
     // First run.
     if (this.getTestParams().failWith === 'reloadAfterInitialize') {
-      sleep(100).then(() => super.setUpClient());
+      this.deferredSetUpClient();
       return;
     }
 
@@ -825,19 +939,46 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
   }
 
   async testSorryPageBeforeInitialize() {
-    sleep(100).then(() => super.setUpClient());
+    this.deferredSetUpClient();
   }
 
   async testSorryPageAfterInitialize() {
-    sleep(100).then(() => super.setUpClient());
+    this.deferredSetUpClient();
   }
 
   async testInitializeFailsAfterReload() {
-    sleep(100).then(() => super.setUpClient());
+    this.deferredSetUpClient();
   }
-
+  // Skips the setup entirely.
+  async testNoClientCreated() {}
+  // Skips the bootstrap as well. The test name "testNoBootstrap" is handled
+  // specially.
+  async testNoBootstrap() {}
   async testInitializeTimesOut() {
     await super.setUpClient();
+  }
+
+  // Tests notifyPanelWillOpen() returning after the panel is closed and then
+  // reopened.
+  async testCloseAndOpenWhileOpening() {
+    const openSignal = Promise.withResolvers<void>();
+    class WebClientThatOpensSlowly extends WebClient {
+      override async notifyPanelWillOpen(): Promise<OpenPanelInfo> {
+        this.panelOpenState.assignAndSignal(true);
+        await openSignal.promise;
+        return {
+          startingMode: WebClientMode.TEXT,
+        };
+      }
+    }
+    await this.setUpWithClient(new WebClientThatOpensSlowly());
+    const panelOpenState = observeSequence(this.client.panelOpenState);
+    panelOpenState.waitForValue(true);
+    await this.host.closePanel!();
+    panelOpenState.waitForValue(false);
+    await this.advanceToNextStep();
+    openSignal.resolve();
+    await panelOpenState.waitForValue(true);
   }
 }
 
@@ -936,8 +1077,9 @@ class TestRunner implements TestStepper {
   }
 
   // Sets up the test and starts running it.
-  async run(payload: any): Promise<TestResult> {
+  async run(maxTimeoutMs: number, payload: any): Promise<TestResult> {
     assertTrue(this.testFound, `Test not found`);
+    maxTimeoutEndTime = performance.now() + maxTimeoutMs;
     console.info(`Running test ${this.testName} with payload ${
         JSON.stringify(payload)}`);
     this.fixture!.testParams = payload;
@@ -1011,8 +1153,10 @@ async function improveStackTrace(stack: string) {
 }
 
 async function main() {
-  console.info('api_test waiting for GlicHostRegistry');
-  glicHostRegistry.resolve(await createGlicHostRegistryOnLoad());
+  if (getTestName() !== 'testNoBootstrap') {
+    console.info('api_test waiting for GlicHostRegistry');
+    glicHostRegistry.resolve(await createGlicHostRegistryOnLoad());
+  }
 
   // If no test is selected, load a client that does nothing.
   // This is present because test.html is used as a dummy test client in
@@ -1020,9 +1164,10 @@ async function main() {
   const testRunner = new TestRunner(getTestName() ?? 'testDoNothing');
   await testRunner.setUp();
 
-  (window as any).runApiTest = (payload: any): Promise<TestResult> => {
-    return testRunner.run(payload);
-  };
+  (window as any).runApiTest =
+      (maxTimeoutMs: number, payload: any): Promise<TestResult> => {
+        return testRunner.run(maxTimeoutMs, payload);
+      };
 
   (window as any).continueApiTest = (payload: any): Promise<TestResult> => {
     return testRunner.stepComplete(payload);
@@ -1056,6 +1201,49 @@ function sleep(timeoutMs: number): Promise<void> {
   return new Promise((resolve) => {
     window.setTimeout(resolve, timeoutMs);
   });
+}
+
+function getTimeout(timeoutMs?: number): number {
+  if (timeoutMs === undefined) {
+    return Math.max(0, maxTimeoutEndTime - performance.now());
+  }
+  return timeoutMs;
+}
+
+// Waits for a promise to resolve. If the timeout is reached first, throws an
+// exception. Note this is useful because if the test times out in the normal
+// way, we do not receive a very useful error.
+async function waitFor<T>(value: Promise<T>, timeoutMs?: number): Promise<T> {
+  const timeoutResult = Symbol();
+  const result = await Promise.race(
+      [value, sleep(getTimeout(timeoutMs)).then(() => timeoutResult)]);
+  if (result === timeoutResult) {
+    throw new Error(`Timed out while waiting`);
+  }
+  return value;
+}
+
+
+// Run until `condition()` returns a truthy value. Throws an exception if the
+// timeout is reached first. Otherwise, this returns the value returned by
+// condition.
+async function runUntil<T>(
+    condition: () => Promise<T>, timeoutMs?: number): Promise<NonNullable<T>> {
+  timeoutMs = getTimeout(timeoutMs);
+  const sleepMs = getTimeout(timeoutMs) / 20;
+  const timeout = performance.now() + timeoutMs;
+  while (performance.now() < timeout) {
+    const result = await condition();
+    if (result) {
+      return result;
+    }
+    await sleep(sleepMs);
+  }
+  throw new Error('runUntil timed out');
+}
+
+function readStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
+  return new Response(stream).bytes();
 }
 
 main();

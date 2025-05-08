@@ -25,6 +25,7 @@ import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
 
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -400,8 +401,11 @@ public abstract class BrowserServicesIntentDataProvider {
         return getActivityType() == ActivityType.WEB_APK;
     }
 
-    /** Returns {@link TrustedWebActivityDisplayMode} supplied in the intent. */
-    public @Nullable TrustedWebActivityDisplayMode getTwaDisplayMode() {
+    /**
+     * Returns {@link TrustedWebActivityDisplayMode} supplied in the intent. This a raw display mode
+     * that's not altered in any way.
+     */
+    public @Nullable TrustedWebActivityDisplayMode getProvidedTwaDisplayMode() {
         return null;
     }
 
@@ -699,5 +703,21 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public @Nullable FileHandlingData getFileHandlingData() {
         return null;
+    }
+
+    /**
+     * Calculates the closest supported display mode to the provided one. To get provided display
+     * mode use {@link WebappExtras#displayMode} or {@link #getProvidedTwaDisplayMode()}.
+     *
+     * <p>A caller is guaranteed of the following fallback chain: <lo>
+     * <li>Fullscreen
+     * <li>Standalone
+     * <li>Minimal UI
+     * <li>Browser </lo>
+     *
+     * @return {@link DisplayMode} that the browser should be running PWA in.
+     */
+    public @DisplayMode.EnumType int getResolvedDisplayMode() {
+        return DisplayMode.BROWSER;
     }
 }

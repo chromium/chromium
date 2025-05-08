@@ -118,8 +118,6 @@ class WebInstallCurrentDocumentBrowserTest
         webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
     manager->WaitForInstallableCheck();
-
-    SetAutoAcceptPWAInstallConfirmationForTesting(true);
   }
 
   content::WebContents* web_contents() {
@@ -171,6 +169,8 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest, Install) {
       GenerateManifestId("some_id", current_doc_url).spec();
 
   NavigateAndConfigureCurrentDocumentForInstall(current_doc_url);
+  auto auto_accept_pwa_install_confirmation =
+      SetAutoAcceptPWAInstallConfirmationForTesting();
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       install_future;

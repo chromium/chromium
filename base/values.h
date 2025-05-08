@@ -30,12 +30,17 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/trace_event/base_tracing_forward.h"
+#include "base/types/pass_key.h"
 #include "base/value_iterators.h"
 
 namespace base {
 
 class DictValue;
 class Value;
+
+namespace internal {
+class JSONParser;
+}  // namespace internal
 
 using BlobStorage = std::vector<uint8_t>;
 
@@ -277,6 +282,9 @@ class BASE_EXPORT GSL_OWNER DictValue {
     }
     storage_ = flat_map<std::string, std::unique_ptr<Value>>(std::move(values));
   }
+
+  DictValue(PassKey<internal::JSONParser>,
+            flat_map<std::string, std::unique_ptr<Value>>);
 
   ~DictValue();
 
@@ -566,6 +574,8 @@ class BASE_EXPORT GSL_OWNER DictValue {
                                      const DictValue& rhs);
   BASE_EXPORT friend std::partial_ordering operator<=>(const DictValue& lhs,
                                                        const DictValue& rhs);
+
+  explicit DictValue(flat_map<std::string, std::unique_ptr<Value>>);
 
   // TODO(dcheng): Replace with `flat_map<std::string, Value>` once no caller
   // relies on stability of pointers anymore.

@@ -75,9 +75,6 @@ class ConnectorsServiceTest : public PlatformTest {
     fake_browser_dm_token_storage_.SetDMToken(kTestBrowserDmToken);
     fake_browser_dm_token_storage_.SetClientId(kTestClientId);
 
-    // Setup required to register connectors prefs with `pref_service_`.
-    RegisterProfilePrefs(prefs()->registry());
-
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_managed_by(kTestMachineDomain);
 
@@ -99,8 +96,6 @@ class ConnectorsServiceTest : public PlatformTest {
         ->SetMachineLevelUserCloudPolicyManagerForTesting(manager_.get());
   }
 
-  TestingPrefServiceSimple* prefs() { return &pref_service_; }
-
   TestProfileIOS* profile() { return profile_.get(); }
 
   signin::IdentityManager* identity_manager() {
@@ -114,7 +109,6 @@ class ConnectorsServiceTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestProfileIOS> profile_;
   policy::FakeBrowserDMTokenStorage fake_browser_dm_token_storage_;
   std::unique_ptr<policy::MachineLevelUserCloudPolicyManager> manager_;
@@ -123,12 +117,8 @@ class ConnectorsServiceTest : public PlatformTest {
 }  // namespace
 
 TEST_F(ConnectorsServiceTest, GetPrefs) {
-  ConnectorsService connectors_service{/*off_the_record=*/false, prefs(),
-                                       /*user_cloud_policy_client=*/nullptr,
-                                       identity_manager()};
-  const ConnectorsService const_connectors_service{
-      /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/nullptr, identity_manager()};
+  ConnectorsService connectors_service{profile()};
+  const ConnectorsService const_connectors_service{profile()};
 
   PrefService* prefs = connectors_service.GetPrefs();
   const PrefService* const_prefs = const_connectors_service.GetPrefs();
@@ -139,12 +129,9 @@ TEST_F(ConnectorsServiceTest, GetPrefs) {
 }
 
 TEST_F(ConnectorsServiceTest, GetProfileDmToken) {
-  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
-                      policy::POLICY_SCOPE_USER);
-  ConnectorsService connectors_service{
-      /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-      identity_manager()};
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_USER);
+  ConnectorsService connectors_service{profile()};
 
   auto profile_dm_token =
       connectors_service.GetDmToken(kEnterpriseRealTimeUrlCheckScope);
@@ -154,12 +141,9 @@ TEST_F(ConnectorsServiceTest, GetProfileDmToken) {
 }
 
 TEST_F(ConnectorsServiceTest, GetBrowserDmToken) {
-  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
-                      policy::POLICY_SCOPE_MACHINE);
-  ConnectorsService connectors_service{
-      /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-      identity_manager()};
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_MACHINE);
+  ConnectorsService connectors_service{profile()};
 
   auto browser_dm_token =
       connectors_service.GetDmToken(kEnterpriseRealTimeUrlCheckScope);
@@ -177,25 +161,13 @@ TEST_F(ConnectorsServiceTest, ConnectorsEnabled) {
   ASSERT_FALSE(ConnectorsServiceFactory::GetForProfile(
                    profile()->GetOffTheRecordProfile())
                    ->ConnectorsEnabled());
-  ASSERT_TRUE(
-      ConnectorsService(
-          /*off_the_record=*/false, prefs(),
-          /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-          identity_manager())
-          .ConnectorsEnabled());
-  ASSERT_FALSE(
-      ConnectorsService(
-          /*off_the_record=*/true, prefs(),
-          /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-          /*identity_manager=*/nullptr)
-          .ConnectorsEnabled());
+  ASSERT_TRUE(ConnectorsService(profile()).ConnectorsEnabled());
+  ASSERT_FALSE(ConnectorsService(profile()->GetOffTheRecordProfile())
+                   .ConnectorsEnabled());
 }
 
 TEST_F(ConnectorsServiceTest, RealTimeUrlCheck) {
-  auto service = ConnectorsService(
-      /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-      identity_manager());
+  auto service = ConnectorsService(profile());
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
@@ -204,19 +176,19 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck) {
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
             EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
 
-  prefs()->SetInteger(
+  profile()->GetPrefs()->SetInteger(
       kEnterpriseRealTimeUrlCheckMode,
       EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
-                      policy::POLICY_SCOPE_MACHINE);
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_MACHINE);
   ASSERT_TRUE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(*service.GetDMTokenForRealTimeUrlCheck(), kTestBrowserDmToken);
   ASSERT_EQ(
       service.GetAppliedRealTimeUrlCheck(),
       EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
 
-  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
-                      policy::POLICY_SCOPE_USER);
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_USER);
   ASSERT_TRUE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(*service.GetDMTokenForRealTimeUrlCheck(), kTestProfileDmToken);
   ASSERT_EQ(
@@ -225,10 +197,7 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck) {
 }
 
 TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
-  auto service = ConnectorsService(
-      /*off_the_record=*/true, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-      /*identity_manager=*/nullptr);
+  auto service = ConnectorsService(profile()->GetOffTheRecordProfile());
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
@@ -237,11 +206,11 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
             EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
 
-  prefs()->SetInteger(
+  profile()->GetPrefs()->SetInteger(
       kEnterpriseRealTimeUrlCheckMode,
       EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
-                      policy::POLICY_SCOPE_MACHINE);
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_MACHINE);
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
             ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::
@@ -249,8 +218,8 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
             EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
 
-  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
-                      policy::POLICY_SCOPE_USER);
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_USER);
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
             ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::
@@ -260,15 +229,12 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
 }
 
 TEST_F(ConnectorsServiceTest, ReportingSettings) {
-  auto service = ConnectorsService(
-      /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-      identity_manager());
+  auto service = ConnectorsService(profile());
 
   EXPECT_FALSE(service.GetReportingSettings());
   EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
 
-  test::SetOnSecurityEventReporting(prefs(), /*enabled=*/true);
+  test::SetOnSecurityEventReporting(profile()->GetPrefs(), /*enabled=*/true);
 
   auto settings = service.GetReportingSettings();
   EXPECT_TRUE(settings.has_value());
@@ -282,7 +248,7 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
   EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));
 
   test::SetOnSecurityEventReporting(
-      prefs(), /*enabled=*/true, /*enabled_event_names=*/{},
+      profile()->GetPrefs(), /*enabled=*/true, /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{}, /*machine_scope=*/false);
 
   settings = service.GetReportingSettings();
@@ -298,21 +264,18 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
 }
 
 TEST_F(ConnectorsServiceTest, ReportingSettings_OffTheRecord) {
-  auto service = ConnectorsService(
-      /*off_the_record=*/true, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-      /*identity_manager=*/nullptr);
+  auto service = ConnectorsService(profile()->GetOffTheRecordProfile());
 
   EXPECT_FALSE(service.GetReportingSettings());
   EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
 
-  test::SetOnSecurityEventReporting(prefs(), /*enabled=*/true);
+  test::SetOnSecurityEventReporting(profile()->GetPrefs(), /*enabled=*/true);
 
   EXPECT_FALSE(service.GetReportingSettings());
   EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
 
   test::SetOnSecurityEventReporting(
-      prefs(), /*enabled=*/true, /*enabled_event_names=*/{},
+      profile()->GetPrefs(), /*enabled=*/true, /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{}, /*machine_scope=*/false);
 
   EXPECT_FALSE(service.GetReportingSettings());
@@ -320,52 +283,45 @@ TEST_F(ConnectorsServiceTest, ReportingSettings_OffTheRecord) {
 }
 
 TEST_F(ConnectorsServiceTest, GetManagementDomain_UrlFilteringEnabled) {
-  auto service = ConnectorsService(
-      /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-      identity_manager());
+  auto service = ConnectorsService(profile());
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
 
   base::test::ScopedFeatureList feature(kIOSEnterpriseRealtimeUrlFiltering);
-  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
-                      policy::POLICY_SCOPE_USER);
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_USER);
 
   MakePrimaryAccountAvailable(kTestProfileEmail);
 
   ASSERT_EQ(service.GetManagementDomain(), kTestProfileDomain);
 
-  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
-                      policy::POLICY_SCOPE_MACHINE);
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_MACHINE);
 
   ASSERT_EQ(service.GetManagementDomain(), kTestMachineDomain);
 }
 
 TEST_F(ConnectorsServiceTest, GetManagementDomain_EventReportingEnabled) {
-  auto service = ConnectorsService(
-      /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-      identity_manager());
+  auto service = ConnectorsService(profile());
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
 
   base::test::ScopedFeatureList feature(kEnterpriseRealtimeEventReportingOnIOS);
-  prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_USER);
+  profile()->GetPrefs()->SetInteger(kOnSecurityEventScopePref,
+                                    policy::POLICY_SCOPE_USER);
 
   MakePrimaryAccountAvailable(kTestProfileEmail);
 
   ASSERT_EQ(service.GetManagementDomain(), kTestProfileDomain);
 
-  prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_MACHINE);
+  profile()->GetPrefs()->SetInteger(kOnSecurityEventScopePref,
+                                    policy::POLICY_SCOPE_MACHINE);
 
   ASSERT_EQ(service.GetManagementDomain(), kTestMachineDomain);
 }
 
 TEST_F(ConnectorsServiceTest, GetManagementDomain_MachinePolicyHasPrecedence) {
-  auto service = ConnectorsService(
-      /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-      identity_manager());
+  auto service = ConnectorsService(profile());
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
 
@@ -374,9 +330,10 @@ TEST_F(ConnectorsServiceTest, GetManagementDomain_MachinePolicyHasPrecedence) {
       /*enabled_features=*/{kEnterpriseRealtimeEventReportingOnIOS,
                             kIOSEnterpriseRealtimeUrlFiltering},
       /*disabled_features=*/{});
-  prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_USER);
-  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
-                      policy::POLICY_SCOPE_MACHINE);
+  profile()->GetPrefs()->SetInteger(kOnSecurityEventScopePref,
+                                    policy::POLICY_SCOPE_USER);
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_MACHINE);
 
   MakePrimaryAccountAvailable(kTestProfileEmail);
 
@@ -384,10 +341,7 @@ TEST_F(ConnectorsServiceTest, GetManagementDomain_MachinePolicyHasPrecedence) {
 }
 
 TEST_F(ConnectorsServiceTest, GetManagementDomain_OffTheRecord) {
-  auto service = ConnectorsService(
-      /*off_the_record=*/true, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
-      /*identity_manager=*/nullptr);
+  auto service = ConnectorsService(profile()->GetOffTheRecordProfile());
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
 }

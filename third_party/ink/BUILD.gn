@@ -78,8 +78,6 @@ source_set("ink") {
     "src/ink/geometry/triangle.h",
     "src/ink/geometry/vec.cc",
     "src/ink/geometry/vec.h",
-    "src/ink/rendering/bitmap.cc",
-    "src/ink/rendering/bitmap.h",
     "src/ink/rendering/skia/common_internal/mesh_specification_data.cc",
     "src/ink/rendering/skia/common_internal/mesh_specification_data.h",
     "src/ink/rendering/skia/common_internal/sksl_common_shader_helper_functions.h",

@@ -9,10 +9,6 @@
 
 static_assert(BUILDFLAG(IS_CHROMEOS), "ARC can be built only for ChromeOS.");
 
-#if defined(COMPONENT_BUILD) && defined(ARC_IMPLEMENTATION)
 #define ARC_EXPORT __attribute__((visibility("default")))
-#else  // !defined(COMPONENT_BUILD) || !defined(ARC_IMPLEMENTATION)
-#define ARC_EXPORT
-#endif
 
 #endif  // CHROMEOS_ASH_EXPERIENCES_ARC_ARC_EXPORT_H_

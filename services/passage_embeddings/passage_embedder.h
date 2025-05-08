@@ -86,6 +86,9 @@ class PassageEmbedder : public mojom::PassageEmbedder {
   // The number of threads to use for PassagePriority::kUserInitiated.
   uint32_t user_initiated_priority_num_threads_;
 
+  // The number of threads to use for PassagePriority::kUrgent.
+  uint32_t urgent_priority_num_threads_;
+
   // The number of threads to use for PassagePriority::kPassive.
   uint32_t passive_priority_num_threads_;
 

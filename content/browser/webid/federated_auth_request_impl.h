@@ -134,8 +134,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // content::FederatedAuthAutofillSource
   const std::optional<std::vector<IdentityRequestAccountPtr>>
   GetAutofillSuggestions() const override;
-  void NotifyAutofillSuggestionAccepted(const GURL& idp,
-                                        const std::string& account_id) override;
+  void NotifyAutofillSuggestionAccepted(
+      const GURL& idp,
+      const std::string& account_id,
+      bool show_modal,
+      OnFederatedTokenReceivedCallback callback) override;
 
   // To be called on the FederatedAuthRequest object corresponding to a
   // popup opened by ShowModalDialog, specifically for the case when
@@ -156,7 +159,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   struct IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderRequestOptionsPtr,
                             blink::mojom::RpContext rp_context,
-                            blink::mojom::RpMode rp_mode);
+                            blink::mojom::RpMode rp_mode,
+                            std::optional<blink::mojom::Format> format);
     ~IdentityProviderGetInfo();
     IdentityProviderGetInfo(const IdentityProviderGetInfo&);
     IdentityProviderGetInfo& operator=(const IdentityProviderGetInfo& other);
@@ -164,6 +168,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     blink::mojom::IdentityProviderRequestOptionsPtr provider;
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
     blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
+    std::optional<blink::mojom::Format> format;
   };
 
   struct IdentityProviderInfo {
@@ -171,7 +176,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                          IdpNetworkRequestManager::Endpoints,
                          IdentityProviderMetadata,
                          blink::mojom::RpContext rp_context,
-                         blink::mojom::RpMode rp_mode);
+                         blink::mojom::RpMode rp_mode,
+                         std::optional<blink::mojom::Format> format);
     ~IdentityProviderInfo();
     IdentityProviderInfo(const IdentityProviderInfo&);
 
@@ -181,6 +187,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     bool has_failing_idp_signin_status{false};
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
     blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
+    std::optional<blink::mojom::Format> format;
     IdentityProviderDataPtr data;
     gfx::Image decoded_idp_brand_icon;
   };
@@ -593,6 +600,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // simultaneously.
   RequestTokenCallback auth_request_token_callback_;
 
+  OnFederatedTokenReceivedCallback token_received_callback_for_autofill_;
+
   std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
 
   // Set of pending user info requests.
@@ -683,7 +692,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // A list of discloures that were parsed in the token response, when
   // the token's format is "vc+sd-jwt".
-  std::vector<std::pair<std::string, std::string>> disclosures_;
+  std::vector<std::pair<std::string, content::sdjwt::JSONString>> disclosures_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };

@@ -166,6 +166,26 @@ $.hang.addEventListener('click', () => {
   busyWork(durationMs);
 });
 
+$.setClosedCaptioningTrue.addEventListener('click', async () => {
+  logMessage('Setting closed captioning to true');
+  try {
+    await getBrowser()?.setClosedCaptioningSetting?.(true);
+    logMessage('Set closed captioning true done.');
+  } catch (e) {
+    logMessage(`Error setting closed captioning true: ${e}`);
+  }
+});
+
+$.setClosedCaptioningFalse.addEventListener('click', async () => {
+  logMessage('Setting closed captioning to false');
+  try {
+    await getBrowser()?.setClosedCaptioningSetting?.(false);
+    logMessage('Set closed captioning false done.');
+  } catch (e) {
+    logMessage(`Error setting closed captioning false: ${e}`);
+  }
+});
+
 window.addEventListener('load', () => {
   $.desktopScreenshot.addEventListener('click', async () => {
     logMessage('Requesting desktop screenshot...');
@@ -187,8 +207,6 @@ window.addEventListener('load', () => {
   $.panelScreenshot.addEventListener('click', async () => {
     const stream = await navigator.mediaDevices.getDisplayMedia({
       video: {
-        cursor: 'always',
-        displaySurface: 'browser',
         height: 200,
         width: 200,
       },
@@ -228,3 +246,47 @@ $.failInitializationCheckbox.addEventListener('click', () => {
     localStorage.removeItem('test-init-failure');
   }
 });
+
+$.screenWakeLockSwitch.addEventListener('click', async () => {
+  if ($.screenWakeLockSwitch.checked) {
+    await acquireScreenWakeLock();
+  } else {
+    await releaseScreenWakeLock();
+  }
+});
+
+let screenWakeLock: WakeLockSentinel|null = null;
+async function acquireScreenWakeLock(): Promise<void> {
+  if (screenWakeLock) {
+    console.warn('Screen wake lock was not released before! Releasing...');
+    await screenWakeLock.release();
+  }
+  try {
+    screenWakeLock = await navigator.wakeLock.request('screen');
+    screenWakeLock.onrelease = () => {
+      if (screenWakeLock) {
+        $.screenWakeLockStatus.setAttribute('lockStatus', 'unexpectedRelease');
+        $.screenWakeLockSwitch.checked = false;
+        screenWakeLock = null;
+        console.warn('Unexpected screen wake lock release.');
+      }
+    };
+    $.screenWakeLockStatus.setAttribute('lockStatus', 'acquired');
+  } catch (err) {
+    $.screenWakeLockStatus.setAttribute('lockStatus', 'error');
+    $.screenWakeLockSwitch.checked = false;
+    screenWakeLock = null;
+    console.error('Failed to acquire screen wake lock', err);
+  }
+}
+async function releaseScreenWakeLock(): Promise<void> {
+  const wakeLock = screenWakeLock;
+  if (!wakeLock) {
+    return;
+  }
+  screenWakeLock = null;
+  if (!wakeLock.released) {
+    await wakeLock.release();
+    $.screenWakeLockStatus.setAttribute('lockStatus', 'released');
+  }
+}

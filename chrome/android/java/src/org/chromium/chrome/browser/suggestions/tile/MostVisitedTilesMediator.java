@@ -107,6 +107,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
                         suggestionsUiDelegate,
                         contextMenuManager,
                         tileGroupDelegate,
+                        new TileDragDelegateImpl(mMvTilesLayout),
                         /* observer= */ this,
                         offlinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);

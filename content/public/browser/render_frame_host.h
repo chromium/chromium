@@ -1048,6 +1048,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void EnableWebRtcEventLogOutput(int lid, int output_period_ms) = 0;
   virtual void DisableWebRtcEventLogOutput(int lid) = 0;
 
+  // Start/stop data channel output from WebRTC on this RFH for the peer
+  // connection identified locally within the RFH using the ID `lid`.
+  virtual void EnableWebRtcDataChannelLogOutput(int lid) = 0;
+  virtual void DisableWebRtcDataChannelLogOutput(int lid) = 0;
+
   // Return true if onload has been executed in the renderer in the main frame.
   virtual bool IsDocumentOnLoadCompletedInMainFrame() = 0;
 

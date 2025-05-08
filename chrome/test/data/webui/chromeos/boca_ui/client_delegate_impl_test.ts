@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import type {AddStudentsError, Assignment, BocaValidPref, CaptionConfig, Config, Course, EndViewScreenSessionError, Identity, OnTaskConfig, Permission, PermissionSetting, RemoveStudentError, SessionResult, SetViewScreenSessionActiveError, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import type {AddStudentsError, Assignment, BocaValidPref, CaptionConfig, Config, Course, CreateSessionError, EndViewScreenSessionError, Identity, OnTaskConfig, Permission, PermissionSetting, RemoveStudentError, SessionResult, SetViewScreenSessionActiveError, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {PageHandlerRemote, SubmitAccessCodeError} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import type {TimeDelta} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
@@ -86,7 +86,8 @@ class MockRemoteHandler extends PageHandlerRemote {
     });
   }
 
-  override createSession(config: Config): Promise<{success: boolean}> {
+  override createSession(config: Config):
+      Promise<{error: CreateSessionError | null}> {
     assertDeepEquals(
         {
           sessionDuration: {
@@ -142,7 +143,7 @@ class MockRemoteHandler extends PageHandlerRemote {
           },
         },
         config);
-    return Promise.resolve({success: true});
+    return Promise.resolve({error: null});
   }
 
   override getSession(): Promise<{result: SessionResult}> {
@@ -507,7 +508,7 @@ suite('ClientDelegateTest', function() {
             sessionTranslationEnabled: true,
           },
         });
-        assertTrue(result);
+        assertDeepEquals(1, result);
       });
 
   test('client delegate should properly translate get session', async () => {

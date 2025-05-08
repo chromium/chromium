@@ -1,7 +1,7 @@
 Name: Guava InternalFutureFailureAccess and InternalFutures
 Short Name: failureaccess
 URL: https://github.com/google/guava
-Version: 1.0.2
+Version: 1.0.3
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

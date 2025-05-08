@@ -16,6 +16,7 @@ source_set("commands") {
     "bring_android_tabs_commands.h",
     "browser_commands.h",
     "browser_coordinator_commands.h",
+    "collaboration_group_commands.h",
     "command_dispatcher.h",
     "command_dispatcher.mm",
     "contextual_panel_entrypoint_commands.h",
@@ -31,6 +32,7 @@ source_set("commands") {
     "generate_qr_code_command.h",
     "generate_qr_code_command.mm",
     "google_one_commands.h",
+    "guided_tour_commands.h",
     "help_commands.h",
     "lens_commands.h",
     "lens_overlay_commands.h",
@@ -45,6 +47,7 @@ source_set("commands") {
     "open_new_tab_command.h",
     "open_new_tab_command.mm",
     "overflow_menu_customization_commands.h",
+    "page_action_menu_commands.h",
     "page_info_commands.h",
     "page_side_swipe_commands.h",
     "parent_access_commands.h",
@@ -59,6 +62,7 @@ source_set("commands") {
     "qr_scanner_commands.h",
     "quick_delete_commands.h",
     "reader_mode_commands.h",
+    "reader_mode_options_commands.h",
     "reading_list_add_command.h",
     "reading_list_add_command.mm",
     "recent_activity_commands.h",
@@ -102,9 +106,9 @@ source_set("commands") {
     "//ios/chrome/browser/lens_overlay/model:entrypoint",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
-    "//ios/chrome/browser/tabs/model",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/web/public",
+    "//ios/web/public/navigation:referrer",
     "//net",
     "//url",
   ]
@@ -121,6 +125,27 @@ source_set("commands") {
     "//ios/chrome/browser/google_one/shared",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/web/public/annotations:custom_text_check_result",
+  ]
+}
+
+source_set("shared_group_last_tab_commands") {
+  sources = [
+    "shared_tab_group_last_tab_closed_alert_command.h",
+    "shared_tab_group_last_tab_closed_alert_command.mm",
+    "shared_tab_group_last_tab_closed_alert_commands.h",
+  ]
+  deps = [
+    "//base",
+    "//components/collaboration/public",
+    "//ios/chrome/browser/collaboration/model",
+    "//ios/chrome/browser/collaboration/model:collaboration_delegate",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:tab_group_confirmation",
+    "//ios/web/public",
   ]
 }
 

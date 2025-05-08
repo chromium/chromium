@@ -105,7 +105,8 @@ MEDIA_EXPORT extern const char kUserGestureRequiredPolicy[];
 
 }  // namespace autoplay
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// TODO(crbug.com/414429305): Restrict this flag to USE_V4L2_CODEC.
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
 #endif
 
@@ -124,27 +125,27 @@ MEDIA_EXPORT extern const char kEnablePrimaryNodeAccessForVkmsTesting[];
 // kCastStreamingForceEnableHardwareH264.
 MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareH264[];
 
-// If enabled, completely disables use of VP8 hardware encoding for Cast
-// Streaming sessions. Takes precedence over
-// kCastStreamingForceEnableHardwareVp8.
-MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareVp8[];
-
-// If enabled, completely disables use of VP9 hardware encoding for Cast
-// Streaming sessions. Takes precedence over
-// kCastStreamingForceEnableHardwareVp9.
-MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareVp9[];
-
 // If enabled, allows use of H264 hardware encoding for Cast Streaming sessions,
 // even on platforms where it is disabled due to performance and reliability
 // issues. kCastStreamingForceDisableHardwareH264 must be disabled for this flag
 // to take effect.
 MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareH264[];
 
+// If enabled, completely disables use of VP8 hardware encoding for Cast
+// Streaming sessions. Takes precedence over
+// kCastStreamingForceEnableHardwareVp8.
+MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareVp8[];
+
 // If enabled, allows use of VP8 hardware encoding for Cast Streaming sessions,
 // even on platforms where it is disabled due to performance and reliability
 // issues. kCastStreamingForceDisableHardwareVp8 must be disabled for this flag
 // to take effect.
 MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp8[];
+
+// If enabled, completely disables use of VP9 hardware encoding for Cast
+// Streaming sessions. Takes precedence over
+// kCastStreamingForceEnableHardwareVp9.
+MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareVp9[];
 
 // If enabled, allows use of VP9 hardware encoding for Cast Streaming sessions,
 // even on platforms where it is disabled due to performance and reliability
@@ -194,6 +195,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kCameraMicEffects);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingAv1);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(
     kCastStreamingExponentialVideoBitrateAlgorithm);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingHardwareHevc);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingMediaVideoEncoder);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingPerformanceOverlay);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingVp8);
@@ -210,6 +212,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSaveVideoFrameAs);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSearchForVideoFrame);
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeWideEchoCancellation);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kSystemLoopbackAsAecReference);
+MEDIA_EXPORT extern const base::FeatureParam<int> kAddedProcessingDelay;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kEnforceSystemEchoCancellation);
@@ -408,7 +414,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kBuiltInHlsPlayer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kBuiltInHlsMP4);
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeOSHWVBREncoding);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLimitConcurrentDecoderInstances);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUSeSequencedTaskRunnerForVEA);
@@ -422,7 +428,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kEnableArmHwdrm10bitOverlays);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kEnableArmHwdrm);
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kDirectShowGetPhotoState);
@@ -543,6 +549,8 @@ MEDIA_EXPORT std::string GetEffectiveAutoplayPolicy(
     const base::CommandLine& command_line);
 
 MEDIA_EXPORT bool IsChromeWideEchoCancellationEnabled();
+MEDIA_EXPORT bool IsSystemLoopbackAsAecReferenceEnabled();
+MEDIA_EXPORT std::optional<base::TimeDelta> GetAecAddedDelay();
 MEDIA_EXPORT bool IsSystemEchoCancellationEnforced();
 MEDIA_EXPORT bool IsSystemEchoCancellationEnforcedAndAllowAgcInTandem();
 MEDIA_EXPORT bool IsSystemEchoCancellationEnforcedAndAllowNsInTandem();

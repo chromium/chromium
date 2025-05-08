@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 
 namespace autofill {

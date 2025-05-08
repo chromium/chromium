@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
@@ -79,6 +80,7 @@
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/one_time_passwords/otp_manager.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -122,6 +124,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -245,6 +248,15 @@ void MaybeShowPostMigrationSheetWrapper(
 }
 
 #endif
+
+bool PredictionsContainOtpFields(
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+        predictions) {
+  return std::any_of(predictions.begin(), predictions.end(),
+                     [](const auto& field) {
+                       return field.second == autofill::ONE_TIME_CODE;
+                     });
+}
 
 }  // namespace
 
@@ -1296,6 +1308,16 @@ void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
 #endif
 }
 
+void ChromePasswordManagerClient::InformPasswordChangeServiceOfOtpPresent() {
+  ChromePasswordChangeService* password_change_service =
+      PasswordChangeServiceFactory::GetForProfile(profile_);
+  if (password_change_service &&
+      password_change_service->GetPasswordChangeDelegate(web_contents())) {
+    password_change_service->GetPasswordChangeDelegate(web_contents())
+        ->OnOtpFieldDetected(web_contents());
+  }
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void ChromePasswordManagerClient::NavigateToManagePasskeysPage(
     password_manager::ManagePasswordsReferrer referrer) {
@@ -1798,6 +1820,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
                                 g_browser_process->local_state(),
                                 SyncServiceFactory::GetForProfile(profile_)),
       httpauth_manager_(this),
+      otp_manager_(this),
       content_credential_manager_(
           password_manager::BrowserCredentialManagerFactory(this)
               .CreateCredentialManager()),
@@ -1937,13 +1960,18 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
             driver, form,
             manager.GetServerPredictionsForForm(form_id, field_ids));
         break;
-      case FieldTypeSource::kHeuristicsOrAutocomplete:
-        password_manager_.ProcessClassificationModelPredictions(
-            driver, form,
-            manager.GetHeursticPredictionForForm(
-                autofill::HeuristicSource::kPasswordManagerMachineLearning,
-                form_id, field_ids));
+      case FieldTypeSource::kHeuristicsOrAutocomplete: {
+        auto predictions = manager.GetHeursticPredictionForForm(
+            autofill::HeuristicSource::kPasswordManagerMachineLearning, form_id,
+            field_ids);
+        password_manager_.ProcessClassificationModelPredictions(driver, form,
+                                                                predictions);
+
+        if (PredictionsContainOtpFields(predictions)) {
+          otp_manager_.ProcessClassificationModelPredictions(form, predictions);
+        }
         break;
+      }
     }
   }
 }
@@ -2101,8 +2129,17 @@ void ChromePasswordManagerClient::MaybeShowSavePasswordPrimingPromo(
   if (auto* const user_ed =
           BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
               web_contents())) {
-    user_ed->MaybeShowFeaturePromo(
-        feature_engagement::kIPHPasswordsSavePrimingPromoFeature);
+    if (signin::IdentityManager* const identity_manager =
+            IdentityManagerFactory::GetForProfile(profile_)) {
+      const bool signed_in =
+          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+      user_education::FeaturePromoParams params(
+          feature_engagement::kIPHPasswordsSavePrimingPromoFeature);
+      params.body_params = l10n_util::GetStringUTF16(
+          signed_in ? IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY_SIGNED_IN
+                    : IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY_NOT_SIGNED_IN);
+      user_ed->MaybeShowFeaturePromo(std::move(params));
+    }
   }
 }
 

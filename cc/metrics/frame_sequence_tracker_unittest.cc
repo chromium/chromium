@@ -51,22 +51,23 @@ class DroppedFrameCounterMock : public DroppedFrameCounter {
   MOCK_METHOD2(OnEndFrame, void(const viz::BeginFrameArgs&, const FrameInfo&));
 };
 
-class FrameSequenceTrackerTest : public testing::Test {
+class FrameSequenceTrackerTest : public testing::Test, FrameSorterObserver {
  public:
   const uint32_t kImplDamage = 0x1;
   const uint32_t kMainDamage = 0x2;
 
   FrameSequenceTrackerTest()
       : dfc_mock_(DroppedFrameCounterMock()),
+        collection_(/*is_single_threaded=*/false, &dfc_mock_),
         compositor_frame_reporting_controller_(
             std::make_unique<CompositorFrameReportingController>(
                 /*should_report_histograms=*/true,
                 /*should_report_ukm=*/false,
-                /*layer_tree_host_id=*/1)),
-        collection_(/*is_single_threaded=*/false,
-                    compositor_frame_reporting_controller_.get()),
-        sorter_(base::BindRepeating(&FrameSequenceTrackerTest::OnFrameResult,
-                                    base::Unretained(this))) {
+                /*layer_tree_host_id=*/1)) {
+    dfc_mock_.set_total_counter(&total_frame_counter_);
+    compositor_frame_reporting_controller_->SetFrameSorter(&sorter_);
+    compositor_frame_reporting_controller_->SetDroppedFrameCounter(&dfc_mock_);
+    sorter_.AddObserver(this);
     tracker_ = collection_.StartScrollSequence(
         FrameSequenceTrackerType::kTouchScroll,
         FrameInfo::SmoothEffectDrivingThread::kCompositor);
@@ -335,19 +336,24 @@ class FrameSequenceTrackerTest : public testing::Test {
     return tracker_->termination_status_;
   }
 
-  // FrameSorter callback.
-  void OnFrameResult(const viz::BeginFrameArgs& args,
-                     const FrameInfo& frame_info) {
+  // FrameSorter observer function.
+  void AddSortedFrame(const viz::BeginFrameArgs& args,
+                      const FrameInfo& frame_info) override {
     collection_.AddSortedFrame(args, frame_info);
   }
 
  protected:
+  TotalFrameCounter total_frame_counter_;
   DroppedFrameCounterMock dfc_mock_;
+  FrameSequenceTrackerCollection collection_;
+  FrameSorter sorter_;
+  // Since CFRC destructor cleans up the FrameSorter's
+  // registered observers (in this case, DFC and FSTC)
+  // it needs to be declared last so that it will be
+  // cleaned up first.
   std::unique_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
-  FrameSequenceTrackerCollection collection_;
   raw_ptr<FrameSequenceTracker, DanglingUntriaged> tracker_;
-  FrameSorter sorter_;
 };
 
 // Tests that the tracker works correctly when the source-id for the
@@ -895,6 +901,7 @@ TEST_F(FrameSequenceTrackerTest,
   uint64_t sequence = 0;
   const uint64_t kNumFramesSkipped = 5;
 
+  dfc_mock_.OnFirstContentfulPaintReceived();
   // Expect that kNumFramesSkipped are backfilled with the appropriate smooth
   // thread set.
   EXPECT_CALL(dfc_mock_, OnEndFrame(testing::_, testing::_))
@@ -906,7 +913,6 @@ TEST_F(FrameSequenceTrackerTest,
                   FrameInfo::SmoothEffectDrivingThread::kCompositor);
       });
 
-  compositor_frame_reporting_controller_->SetDroppedFrameCounter(&dfc_mock_);
   compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
       &collection_);
   auto frame0_args = CreateBeginFrameArgs(source, ++sequence);

@@ -130,11 +130,14 @@ class ReadAnythingAppModel {
   bool redraw_required() const { return redraw_required_; }
   void reset_redraw_required() { redraw_required_ = false; }
 
-  bool selection_from_reading_mode() const {
-    return selection_from_reading_mode_;
+  int unprocessed_selections_from_reading_mode() {
+    return selections_from_reading_mode_;
   }
-  void set_selection_from_reading_mode(bool selection_from_action) {
-    selection_from_reading_mode_ = selection_from_action;
+  void increment_selections_from_reading_mode() {
+    ++selections_from_reading_mode_;
+  }
+  void decrement_selections_from_reading_mode() {
+    --selections_from_reading_mode_;
   }
 
   const std::string& base_language_code() const { return base_language_code_; }
@@ -231,7 +234,8 @@ class ReadAnythingAppModel {
   void SetActiveTreeId(ui::AXTreeID active_tree_id);
 
   ukm::SourceId GetUkmSourceId() const;
-  void SetUkmSourceId(ukm::SourceId ukm_source_id);
+  void SetUkmSourceIdForTree(const ui::AXTreeID& tree,
+                             ukm::SourceId ukm_source_id);
 
   int GetNumSelections() const;
   void SetNumSelections(int num_selections);
@@ -282,9 +286,11 @@ class ReadAnythingAppModel {
   // displayed in the Read Anything app.ts by default.
   void ComputeDisplayNodeIdsForDistilledTree();
 
-  ui::AXSerializableTree* GetTreeFromId(const ui::AXTreeID& tree_id) const;
+  ui::AXSerializableTree* GetActiveTree() const;
 
   bool ContainsTree(const ui::AXTreeID& tree_id) const;
+
+  bool ContainsActiveTree() const;
 
   void UnserializePendingUpdates(const ui::AXTreeID& tree_id);
 
@@ -334,6 +340,8 @@ class ReadAnythingAppModel {
     int offset = -1;
   };
 
+  ui::AXSerializableTree* GetTreeFromId(const ui::AXTreeID& tree_id) const;
+
   void ResetSelection();
 
   bool ContentNodesOnlyContainHeadings();
@@ -359,6 +367,7 @@ class ReadAnythingAppModel {
   void OnTreeChangeTimerTriggered();
 
   void SetFontSize(double font_size, int increment = 0);
+  void SetUkmSourceId(ukm::SourceId ukm_source_id);
 
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<AXTreeInfo>> tree_infos_;
@@ -439,7 +448,7 @@ class ReadAnythingAppModel {
   bool requires_distillation_ = false;
   bool reset_draw_timer_ = false;
   bool requires_post_process_selection_ = false;
-  bool selection_from_reading_mode_ = false;
+  int selections_from_reading_mode_ = 0;
 
   // For screen2x data collection, Chrome is launched from the CLI to open one
   // webpage. We record the result of the distill() call for this entire
@@ -462,6 +471,8 @@ class ReadAnythingAppModel {
   bool requires_tree_lang_ = false;
 
   bool will_hide_ = false;
+
+  std::map<ui::AXTreeID, ukm::SourceId> pending_ukm_sources_;
 
   // List of observers of model state changes.
   base::ObserverList<ModelObserver, /*check_empty=*/true> observers_;

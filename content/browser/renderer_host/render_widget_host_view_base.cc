@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/input/event_with_latency_info.h"
@@ -256,11 +257,11 @@ void RenderWidgetHostViewBase::CopyFromExactSurface(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void RenderWidgetHostViewBase::CopyFromExactSurfaceWithIpcPriority(
+void RenderWidgetHostViewBase::CopyFromExactSurfaceWithIpcDelay(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
     base::OnceCallback<void(const SkBitmap&)> callback,
-    CopyOutputIpcPriority ipc_priority) {
+    base::TimeDelta ipc_delay) {
   NOTIMPLEMENTED_LOG_ONCE();
   std::move(callback).Run(SkBitmap());
 }

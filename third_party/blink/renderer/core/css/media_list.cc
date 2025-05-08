@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -198,8 +200,9 @@ void MediaList::deleteMedium(ExecutionContext* execution_context,
   const MediaQuerySet* new_media_queries =
       Queries()->CopyAndRemove(medium, execution_context);
   if (!new_media_queries) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
-                                      "Failed to delete '" + medium + "'.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotFoundError,
+        WTF::StrCat({"Failed to delete '", medium, "'."}));
     return;
   }
   Owner()->SetMediaQueries(new_media_queries);

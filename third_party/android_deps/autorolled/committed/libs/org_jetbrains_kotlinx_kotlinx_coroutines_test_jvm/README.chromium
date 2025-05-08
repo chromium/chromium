@@ -1,7 +1,7 @@
 Name: kotlinx-coroutines-test
 Short Name: kotlinx-coroutines-test-jvm
 URL: https://github.com/Kotlin/kotlinx.coroutines
-Version: 1.7.3
+Version: 1.8.1
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

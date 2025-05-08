@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
+#include "base/power_monitor/energy_monitor_android.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -49,6 +51,38 @@ class AndroidBatteryMetrics
     std::optional<performance_scenarios::InputScenario> latest_input_scenario_;
     std::optional<performance_scenarios::InputScenario>
         input_scenario_to_report_;
+  };
+
+  class CONTENT_EXPORT EnergyConsumedTracker {
+   public:
+    // Classification of power monitor consumers into subsystems for power
+    // attribution. The exact list of subsystems and their meaning depends on
+    // the device
+    // https://developer.android.com/reference/android/os/PowerMonitor#POWER_MONITOR_TYPE_CONSUMER,
+    // so this works on a best-effort basis.
+    enum class Subsystem {
+      kCpu = 0,
+      kGpu = 1,
+      kDisplay = 2,
+      kOther = 3,
+    };
+
+    struct Delta {
+      Subsystem subsystem;
+      int64_t energy_consumed_mwh;
+    };
+
+    EnergyConsumedTracker();
+    ~EnergyConsumedTracker();
+
+    void UpdatePowerMonitorReadings(
+        const std::vector<base::android::PowerMonitorReading>& readings);
+    // Returns per subsystem deltas in milliwatt-hours.
+    std::vector<Delta> GetDeltas(
+        const std::vector<base::android::PowerMonitorReading>& readings) const;
+
+   private:
+    base::flat_map<Subsystem, int64_t> last_total_energy_uws_;
   };
 
   static void CreateInstance();
@@ -107,6 +141,7 @@ class AndroidBatteryMetrics
   PowerStateObserver::BatteryPowerStatus battery_power_status_ =
       PowerStateObserver::BatteryPowerStatus::kUnknown;
   int last_remaining_capacity_uah_ = 0;
+  EnergyConsumedTracker energy_consumed_tracker_;
   base::RepeatingTimer metrics_timer_;
   int skipped_timers_ = 0;
 

@@ -259,10 +259,17 @@ SessionType GetSessionType(Environment& env) {
 }
 
 std::optional<std::string> ExtractXdgActivationTokenFromEnv(Environment& env) {
-  if (auto token = env.GetVar(kXdgActivationTokenEnvVar).value_or("");
+  std::string token;
+  if (token = env.GetVar(kXdgActivationTokenEnvVar).value_or("");
       !token.empty()) {
     GetXdgActivationToken() = std::move(token);
     env.UnSetVar(kXdgActivationTokenEnvVar);
+  } else if (token = env.GetVar(kDesktopStartupIdEnvVar).value_or("");
+             !token.empty()) {
+    // X11 apps use DESKTOP_STARTUP_ID to pass the activation token.
+    // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/xdg-activation/x11-interoperation.rst
+    GetXdgActivationToken() = std::move(token);
+    env.UnSetVar(kDesktopStartupIdEnvVar);
   }
   return GetXdgActivationToken();
 }

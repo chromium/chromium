@@ -1079,6 +1079,19 @@ experimental domain Audits
       # The value of the property rule property that failed to parse
       optional string propertyValue
 
+  type UserReidentificationIssueType extends string
+    enum
+      BlockedFrameNavigation
+      BlockedSubresource
+
+  # This issue warns about uses of APIs that may be considered misuse to
+  # re-identify users.
+  type UserReidentificationIssueDetails extends object
+    properties
+      UserReidentificationIssueType type
+      # Applies to BlockedFrameNavigation and BlockedSubresource issue types.
+      optional AffectedRequest request
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -1109,6 +1122,7 @@ experimental domain Audits
       SharedDictionaryIssue
       SelectElementAccessibilityIssue
       SRIMessageSignatureIssue
+      UserReidentificationIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -1139,6 +1153,7 @@ experimental domain Audits
       optional SharedDictionaryIssueDetails sharedDictionaryIssueDetails
       optional SelectElementAccessibilityIssueDetails selectElementAccessibilityIssueDetails
       optional SRIMessageSignatureIssueDetails sriMessageSignatureIssueDetails
+      optional UserReidentificationIssueDetails userReidentificationIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.
@@ -6208,6 +6223,7 @@ domain Network
       mixed-content
       origin
       inspector
+      integrity
       subresource-filter
       content-type
       coep-frame-resource-needs-coep-header
@@ -7003,6 +7019,8 @@ domain Network
       experimental optional integer maxResourceBufferSize
       # Longest post body size (in bytes) that would be included in requestWillBeSent notification
       optional integer maxPostDataSize
+      # Whether DirectSocket chunk send/receive events should be reported.
+      experimental optional boolean reportDirectSocketTraffic
 
   # Returns all browser cookies. Depending on the backend support, will return detailed cookie
   # information in the `cookies` field.
@@ -7534,16 +7552,78 @@ domain Network
       binary data
       MonotonicTime timestamp
 
-  # Fired when there is an error
-  # when writing to tcp direct socket stream.
-  # For example, if user writes illegal type like string
-  # instead of ArrayBuffer or ArrayBufferView.
-  # There's no reporting for reading, because
-  # we cannot know errors on the other side.
-  experimental event directTCPSocketChunkError
+  experimental type DirectUDPSocketOptions extends object
+    properties
+      optional string remoteAddr
+      # Unsigned int 16.
+      optional integer remotePort
+
+      optional string localAddr
+      # Unsigned int 16.
+      optional integer localPort
+
+      optional DirectSocketDnsQueryType dnsQueryType
+
+      # Expected to be unsigned integer.
+      optional number sendBufferSize
+      # Expected to be unsigned integer.
+      optional number receiveBufferSize
+
+
+  # Fired upon direct_socket.UDPSocket creation.
+  experimental event directUDPSocketCreated
+    parameters
+      RequestId identifier
+      DirectUDPSocketOptions options
+      MonotonicTime timestamp
+      optional Initiator initiator
+
+  # Fired when direct_socket.UDPSocket connection is opened.
+  experimental event directUDPSocketOpened
+    parameters
+      RequestId identifier
+      string localAddr
+      # Expected to be unsigned integer.
+      integer localPort
+      MonotonicTime timestamp
+      optional string remoteAddr
+      # Expected to be unsigned integer.
+      optional integer remotePort
+
+  # Fired when direct_socket.UDPSocket is aborted.
+  experimental event directUDPSocketAborted
     parameters
       RequestId identifier
       string errorMessage
+      MonotonicTime timestamp
+
+  # Fired when direct_socket.UDPSocket is closed.
+  experimental event directUDPSocketClosed
+    parameters
+      RequestId identifier
+      MonotonicTime timestamp
+
+  experimental type DirectUDPMessage extends object
+    properties
+      binary data
+      # Null for connected mode.
+      optional string remoteAddr
+      # Null for connected mode.
+      # Expected to be unsigned integer.
+      optional integer remotePort
+
+  # Fired when message is sent to udp direct socket stream.
+  experimental event directUDPSocketChunkSent
+    parameters
+      RequestId identifier
+      DirectUDPMessage message
+      MonotonicTime timestamp
+
+  # Fired when message is received from udp direct socket stream.
+  experimental event directUDPSocketChunkReceived
+    parameters
+      RequestId identifier
+      DirectUDPMessage message
       MonotonicTime timestamp
 
   experimental type PrivateNetworkRequestPolicy extends string
@@ -7879,7 +7959,7 @@ domain Network
       LoadNetworkResourcePageResult resource
 
   # Sets Controls for third-party cookie access
-  # Page reload is required before the new cookie bahavior will be observed
+  # Page reload is required before the new cookie behavior will be observed
   experimental command setCookieControls
     parameters
       # Whether 3pc restriction is enabled.
@@ -8455,6 +8535,7 @@ domain Page
 
   # All Permissions Policy features. This enum should match the one defined
   # in services/network/public/cpp/permissions_policy/permissions_policy_features.json5.
+  # LINT.IfChange(PermissionsPolicyFeature)
   experimental type PermissionsPolicyFeature extends string
     enum
       accelerometer
@@ -8521,6 +8602,7 @@ domain Page
       keyboard-map
       language-detector
       local-fonts
+      local-network-access
       magnetometer
       media-playback-while-not-visible
       microphone
@@ -8534,6 +8616,7 @@ domain Page
       private-state-token-redemption
       publickey-credentials-create
       publickey-credentials-get
+      record-ad-auction-events
       rewriter
       run-ad-auction
       screen-wake-lock
@@ -8558,6 +8641,7 @@ domain Page
       window-management
       writer
       xr-spatial-tracking
+  # LINT.ThenChange(//services/network/public/cpp/permissions_policy/permissions_policy_features.json5:PermissionsPolicy)
 
   # Reason for a permissions policy feature to be disabled.
   experimental type PermissionsPolicyBlockReason extends string
@@ -9186,13 +9270,15 @@ domain Page
       # Recommendation for manifest's id attribute to match current id computed from start_url
       optional string recommendedId
 
-  experimental command getAdScriptId
+  experimental command getAdScriptAncestryIds
     parameters
       FrameId frameId
     returns
-      # Identifies the bottom-most script which caused the frame to be labelled
-      # as an ad. Only sent if frame is labelled as an ad and id is available.
-      optional AdScriptId adScriptId
+      # The ancestry chain of ad script identifiers leading to this frame's
+      # creation, ordered from the most immediate script (in the frame creation
+      # stack) to more distant ancestors (that created the immediately preceding
+      # script). Only sent if frame is labelled as an ad and ids are available.
+      array of AdScriptId adScriptAncestryIds
 
   # Returns present frame tree structure.
   command getFrameTree
@@ -9804,6 +9890,8 @@ domain Page
   # closed.
   event javascriptDialogClosed
     parameters
+      # Frame id.
+      experimental FrameId frameId
       # Whether dialog was confirmed.
       boolean result
       # User input in case of prompt.
@@ -9815,6 +9903,8 @@ domain Page
     parameters
       # Frame url.
       string url
+      # Frame id.
+      experimental FrameId frameId
       # Message that will be displayed by the dialog.
       string message
       # Dialog type.
@@ -11354,6 +11444,28 @@ experimental domain Storage
       AttributionReportingTriggerRegistration registration
       AttributionReportingEventLevelResult eventLevel
       AttributionReportingAggregatableResult aggregatable
+
+  experimental type AttributionReportingReportResult extends string
+    enum
+      # A network request was attempted for the report.
+      sent
+      # No request was attempted because of browser policy.
+      prohibited
+      # No request was attempted because of an error in report assembly,
+      # e.g. the aggregation service was unavailable.
+      failedToAssemble
+      # No request was attempted because the report's expiry passed.
+      expired
+
+  experimental event attributionReportingReportSent
+    parameters
+      string url
+      object body
+      AttributionReportingReportResult result
+      # If result is `sent`, populated with net/HTTP status.
+      optional integer netError
+      optional string netErrorName
+      optional integer httpStatusCode
 
   # A single Related Website Set object.
   experimental type RelatedWebsiteSet extends object
@@ -13345,6 +13457,27 @@ experimental domain BluetoothEmulation
       connection
       discovery
 
+  # Indicates the various types of characteristic write.
+  type CharacteristicWriteType extends string
+    enum
+      write-default-deprecated
+      write-with-response
+      write-without-response
+
+  # Indicates the various types of characteristic operation.
+  type CharacteristicOperationType extends string
+    enum
+      read
+      write
+      subscribe-to-notifications
+      unsubscribe-from-notifications
+
+  # Indicates the various types of descriptor operation.
+  type DescriptorOperationType extends string
+    enum
+      read
+      write
+
   # Stores the manufacturer data
   type ManufacturerData extends object
     properties
@@ -13429,6 +13562,30 @@ experimental domain BluetoothEmulation
       GATTOperationType type
       integer code
 
+  # Simulates the response from the characteristic with |characteristicId| for a
+  # characteristic operation of |type|. The |code| value follows the Error
+  # Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response.
+  # The |data| is expected to exist when simulating a successful read operation
+  # response.
+  command simulateCharacteristicOperationResponse
+    parameters
+      string characteristicId
+      CharacteristicOperationType type
+      integer code
+      optional binary data
+
+  # Simulates the response from the descriptor with |descriptorId| for a
+  # descriptor operation of |type|. The |code| value follows the Error
+  # Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response.
+  # The |data| is expected to exist when simulating a successful read operation
+  # response.
+  command simulateDescriptorOperationResponse
+    parameters
+      string descriptorId
+      DescriptorOperationType type
+      integer code
+      optional binary data
+
   # Adds a service with |serviceUuid| to the peripheral with |address|.
   command addService
     parameters
@@ -13475,9 +13632,33 @@ experimental domain BluetoothEmulation
     parameters
       string descriptorId
 
+  # Simulates a GATT disconnection from the peripheral with |address|.
+  command simulateGATTDisconnection
+    parameters
+      string address
+
   # Event for when a GATT operation of |type| to the peripheral with |address|
   # happened.
   event gattOperationReceived
     parameters
       string address
       GATTOperationType type
+
+  # Event for when a characteristic operation of |type| to the characteristic
+  # respresented by |characteristicId| happened. |data| and |writeType| is
+  # expected to exist when |type| is write.
+  event characteristicOperationReceived
+    parameters
+      string characteristicId
+      CharacteristicOperationType type
+      optional binary data
+      optional CharacteristicWriteType writeType
+
+  # Event for when a descriptor operation of |type| to the descriptor
+  # respresented by |descriptorId| happened. |data| is expected to exist when
+  # |type| is write.
+  event descriptorOperationReceived
+    parameters
+      string descriptorId
+      CharacteristicOperationType type
+      optional binary data

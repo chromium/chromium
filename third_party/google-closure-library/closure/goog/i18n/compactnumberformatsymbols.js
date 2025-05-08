@@ -6,7 +6,7 @@
 /**
  * @fileoverview Compact number formatting symbols.
  *
- * File generated from CLDR ver. 39
+ * File generated from CLDR ver. 43
  *
  * To reduce the file size (which may cause issues in some JS
  * developing environments), this file will only contain locales
@@ -900,13 +900,13 @@ goog.i18n.CompactNumberFormatSymbols_bs = {
 goog.i18n.CompactNumberFormatSymbols_ca = {
   COMPACT_DECIMAL_SHORT_PATTERN: {
     '1000': {
-      'other': '0m'
+      'other': '0 k'
     },
     '10000': {
-      'other': '00m'
+      'other': '00 k'
     },
     '100000': {
-      'other': '000m'
+      'other': '000 k'
     },
     '1000000': {
       'other': '0 M'
@@ -921,10 +921,10 @@ goog.i18n.CompactNumberFormatSymbols_ca = {
       'other': '0000 M'
     },
     '10000000000': {
-      'other': '00mM'
+      'other': '00 kM'
     },
     '100000000000': {
-      'other': '000mM'
+      'other': '000 kM'
     },
     '1000000000000': {
       'other': '0 B'
@@ -1633,7 +1633,7 @@ goog.i18n.CompactNumberFormatSymbols_en_IN = {
       'other': '00LCr'
     },
     '100000000000000': {
-      'other': '000T'
+      'other': '000LCr'
     }
   },
   COMPACT_DECIMAL_LONG_PATTERN: {
@@ -1974,22 +1974,22 @@ goog.i18n.CompactNumberFormatSymbols_es_US = {
       'other': '000 M'
     },
     '1000000000': {
-      'other': '0 B'
+      'other': '0000 M'
     },
     '10000000000': {
-      'other': '00 B'
+      'other': '00 mil M'
     },
     '100000000000': {
-      'other': '000 B'
+      'other': '000 mil M'
     },
     '1000000000000': {
-      'other': '0 T'
+      'other': '0 B'
     },
     '10000000000000': {
-      'other': '00 T'
+      'other': '00 B'
     },
     '100000000000000': {
-      'other': '000 T'
+      'other': '000 B'
     }
   },
   COMPACT_DECIMAL_LONG_PATTERN: {
@@ -2012,22 +2012,22 @@ goog.i18n.CompactNumberFormatSymbols_es_US = {
       'other': '000 millones'
     },
     '1000000000': {
-      'other': '0 billones'
+      'other': '0 mil millones'
     },
     '10000000000': {
-      'other': '00 billones'
+      'other': '00 mil millones'
     },
     '100000000000': {
-      'other': '000 billones'
+      'other': '000 mil millones'
     },
     '1000000000000': {
-      'other': '0 trillones'
+      'other': '0 billón'
     },
     '10000000000000': {
-      'other': '00 trillones'
+      'other': '00 billones'
     },
     '100000000000000': {
-      'other': '000 trillones'
+      'other': '000 billones'
     }
   }
 };
@@ -2066,13 +2066,13 @@ goog.i18n.CompactNumberFormatSymbols_et = {
       'other': '000 mld'
     },
     '1000000000000': {
-      'other': '0 trl'
+      'other': '0 trln'
     },
     '10000000000000': {
-      'other': '00 trl'
+      'other': '00 trln'
     },
     '100000000000000': {
-      'other': '000 trl'
+      'other': '000 trln'
     }
   },
   COMPACT_DECIMAL_LONG_PATTERN: {
@@ -2220,25 +2220,25 @@ goog.i18n.CompactNumberFormatSymbols_fa = {
       'other': '00 میلیون'
     },
     '100000000': {
-      'other': '000 م'
+      'other': '000 میلیون'
     },
     '1000000000': {
-      'other': '0 م'
+      'other': '0 میلیارد'
     },
     '10000000000': {
-      'other': '00 م'
+      'other': '00 میلیارد'
     },
     '100000000000': {
-      'other': '000B'
+      'other': '000 میلیارد'
     },
     '1000000000000': {
       'other': '0 تریلیون'
     },
     '10000000000000': {
-      'other': '00 ت'
+      'other': '00 تریلیون'
     },
     '100000000000000': {
-      'other': '000 ت'
+      'other': '000 تریلیون'
     }
   },
   COMPACT_DECIMAL_LONG_PATTERN: {
@@ -3861,6 +3861,21 @@ goog.i18n.CompactNumberFormatSymbols_ja = {
     },
     '100000000000000': {
       'other': '000兆'
+    },
+    '1000000000000000': {
+      'other': '0000兆'
+    },
+    '10000000000000000': {
+      'other': '0京'
+    },
+    '100000000000000000': {
+      'other': '00京'
+    },
+    '1000000000000000000': {
+      'other': '000京'
+    },
+    '10000000000000000000': {
+      'other': '0000京'
     }
   },
   COMPACT_DECIMAL_LONG_PATTERN: {
@@ -3899,6 +3914,21 @@ goog.i18n.CompactNumberFormatSymbols_ja = {
     },
     '100000000000000': {
       'other': '000兆'
+    },
+    '1000000000000000': {
+      'other': '0000兆'
+    },
+    '10000000000000000': {
+      'other': '0京'
+    },
+    '100000000000000000': {
+      'other': '00京'
+    },
+    '1000000000000000000': {
+      'other': '000京'
+    },
+    '10000000000000000000': {
+      'other': '0000京'
     }
   }
 };
@@ -5245,78 +5275,78 @@ goog.i18n.CompactNumberFormatSymbols_mt = {
 goog.i18n.CompactNumberFormatSymbols_my = {
   COMPACT_DECIMAL_SHORT_PATTERN: {
     '1000': {
-      'other': '0ထောင်'
+      'other': '0 ထောင်'
     },
     '10000': {
-      'other': '0သောင်း'
+      'other': '0 သောင်း'
     },
     '100000': {
-      'other': '0သိန်း'
+      'other': '0 သိန်း'
     },
     '1000000': {
-      'other': '0သန်း'
+      'other': '0 သန်း'
     },
     '10000000': {
-      'other': '0ကုဋေ'
+      'other': '0 ကုဋေ'
     },
     '100000000': {
-      'other': '00ကုဋေ'
+      'other': '00 ကုဋေ'
     },
     '1000000000': {
-      'other': 'ကုဋေ000'
+      'other': '000 ကုဋေ'
     },
     '10000000000': {
-      'other': 'ကုဋေ0ထ'
+      'other': 'ကုဋေ 0 ထ'
     },
     '100000000000': {
-      'other': 'ကုဋေ0သ'
+      'other': 'ကုဋေ 0 သ'
     },
     '1000000000000': {
-      'other': 'ဋေ0သိန်း'
+      'other': 'ဋေ 0 သိန်း'
     },
     '10000000000000': {
-      'other': 'ဋေ0သန်း'
+      'other': 'ဋေ 0 သန်း'
     },
     '100000000000000': {
-      'other': '0ကောဋိ'
+      'other': '0 ကောဋိ'
     }
   },
   COMPACT_DECIMAL_LONG_PATTERN: {
     '1000': {
-      'other': '0ထောင်'
+      'other': '0 ထောင်'
     },
     '10000': {
-      'other': '0သောင်း'
+      'other': '0 သောင်း'
     },
     '100000': {
-      'other': '0သိန်း'
+      'other': '0 သိန်း'
     },
     '1000000': {
-      'other': '0သန်း'
+      'other': '0 သန်း'
     },
     '10000000': {
-      'other': '0ကုဋေ'
+      'other': '0 ကုဋေ'
     },
     '100000000': {
-      'other': '00ကုဋေ'
+      'other': '00 ကုဋေ'
     },
     '1000000000': {
-      'other': 'ကုဋေ000'
+      'other': '000 ကုဋေ'
     },
     '10000000000': {
-      'other': 'ကုဋေ0000'
+      'other': '0000 ကုဋေ'
     },
     '100000000000': {
-      'other': 'ကုဋေ0သောင်း'
+      'other': 'ကုဋေ 0 သောင်း'
     },
     '1000000000000': {
-      'other': 'ကုဋေ0သိန်း'
+      'other': 'ကုဋေ 0 သိန်း'
     },
     '10000000000000': {
-      'other': 'ကုဋေ0သန်း'
+      'other': 'ကုဋေ 0 သန်း'
     },
     '100000000000000': {
-      'other': '0ကောဋိ'
+      'other': '0 ကောဋိ'
     }
   }
 };

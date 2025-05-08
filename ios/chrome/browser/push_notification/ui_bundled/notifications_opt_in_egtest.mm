@@ -51,7 +51,6 @@ id<GREYMatcher> OptInScreenMatcher() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kIOSTipsNotifications);
   config.features_enabled.push_back(kContentPushNotifications);
   config.features_disabled.push_back(set_up_list::kSetUpListInFirstRun);
   return config;

@@ -20,6 +20,7 @@ class BrowserContextDelegate : public ContextDelegate {
   std::string GetIdentityName() override;
   std::string GetTemporaryIdentityName() override;
   std::string GetPolicyPref() override;
+  std::string GetLoggingContext() override;
 };
 
 }  // namespace client_certificates

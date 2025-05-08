@@ -70,7 +70,7 @@ LiveCaptionUnavailabilityNotifier::LiveCaptionUnavailabilityNotifier(
 LiveCaptionUnavailabilityNotifier::~LiveCaptionUnavailabilityNotifier() {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (live_caption_controller)
-    live_caption_controller->OnAudioStreamEnd(context_.get());
+    live_caption_controller->OnAudioStreamEnd(GetWebContents(), context_.get());
 }
 
 void LiveCaptionUnavailabilityNotifier::MediaFoundationRendererCreated(

@@ -43,6 +43,15 @@
                 "optional": "True"
               },
               {
+                "field": "disable_benchmarking",
+                "type": "class",
+                "ctype": "std::optional<bool>",
+                "javatype": "Boolean",
+                "default": "std::nullopt",
+                "java_default": "null",
+                "optional": "True"
+              },
+              {
                 "field": "min_os_version",
                 "type": "string"
               },

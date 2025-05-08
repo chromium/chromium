@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"

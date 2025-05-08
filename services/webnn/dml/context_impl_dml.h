@@ -18,6 +18,7 @@
 namespace webnn::dml {
 
 class Adapter;
+class CommandQueue;
 class CommandRecorder;
 class TensorImplDml;
 
@@ -58,6 +59,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
   // TODO(crbug.com/349640008): For the `context lost` errors, we should
   // gracefully terminate the GPU process.
   void HandleContextLostOrCrash(std::string_view message_for_log, HRESULT hr);
+
+  CommandQueue* GetCommandQueue() const;
 
   void RemoveDeviceForTesting();
 

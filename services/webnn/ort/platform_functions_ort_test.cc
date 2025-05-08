@@ -9,18 +9,7 @@
 
 namespace webnn::ort {
 
-class WebNNOrtPlatformFunctionsTest : public testing::Test {
- public:
-  void SetUp() override;
-};
-
-void WebNNOrtPlatformFunctionsTest::SetUp() {
-  // Skip tests if the loading platform functions fail.
-  // In order to be able to run this test suite successfully, the developer
-  // needs to place a copy of onnxruntime.dll which supports ORT_API_VERSION
-  // defined in onnxruntime_c_api.h into Chromium module folder before.
-  SKIP_TEST_IF(!PlatformFunctions::GetInstance());
-}
+class WebNNOrtPlatformFunctionsTest : public TestBaseOrt {};
 
 TEST_F(WebNNOrtPlatformFunctionsTest, AllFunctionsLoaded) {
   PlatformFunctions* platformFunctions = PlatformFunctions::GetInstance();

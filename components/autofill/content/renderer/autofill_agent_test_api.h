@@ -34,7 +34,7 @@ class AutofillAgentTestApi {
       const blink::WebFormControlElement& element,
       AutofillSuggestionTriggerSource trigger_source,
       const SynchronousFormCache& form_cache,
-      base::optional_ref<const PasswordSuggestionRequest> password_request) {
+      std::optional<PasswordSuggestionRequest> password_request) {
     agent_->ShowSuggestions(element, trigger_source, form_cache,
                             password_request);
   }

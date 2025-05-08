@@ -9,6 +9,7 @@ import codecs
 import os
 import re
 
+from grit import constants
 from grit import util
 
 
@@ -30,8 +31,11 @@ def _FormatHeader(root, output_dir):
 # end _FormatHeader() function
 
 
-def Format(root, lang='en', output_dir='.'):
+def Format(root, lang='en', gender=None, output_dir='.'):
   """Outputs a C switch statement representing the string table."""
+  assert gender is None, "c_format doesn't support gender translations, yet " \
+      f"Format() was called with gender {gender}"
+
   from grit.node import message
   assert isinstance(lang, str)
 
@@ -61,7 +65,8 @@ def _HexToOct(match):
 def _FormatMessage(item, lang):
   """Format a single <message> element."""
 
-  message = item.ws_at_start + item.Translate(lang) + item.ws_at_end
+  message = item.ws_at_start + item.Translate(
+      lang, constants.DEFAULT_GENDER) + item.ws_at_end
   # Output message with non-ascii chars escaped as octal numbers C's grammar
   # allows escaped hexadecimal numbers to be infinite, but octal is always of
   # the form \OOO.  Python 3 doesn't support string-escape, so we have to jump

@@ -67,13 +67,28 @@ public class EitherId {
             return new EitherGroupId(null, syncId);
         }
 
+        @EnsuresNonNullIf("mLocalId")
         public boolean isLocalId() {
             return mLocalId != null;
         }
 
-        public @Nullable LocalTabGroupId getLocalId() {
+        public LocalTabGroupId getLocalId() {
             assert isLocalId();
             return mLocalId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof EitherGroupId)) return false;
+            EitherGroupId eitherId = (EitherGroupId) o;
+
+            boolean localIdEqual =
+                    isLocalId()
+                            && eitherId.isLocalId()
+                            && getLocalId().equals(eitherId.getLocalId());
+            boolean syncIdEqual =
+                    isSyncId() && eitherId.isSyncId() && getSyncId().equals(eitherId.getSyncId());
+            return localIdEqual || syncIdEqual;
         }
     }
 

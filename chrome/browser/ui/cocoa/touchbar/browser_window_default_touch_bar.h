@@ -27,7 +27,7 @@ class Browser;
 // True if the forward button is enabled.
 @property(nonatomic, assign) BOOL canGoForward;
 
-@property(nonatomic, assign) BrowserWindowTouchBarController* controller;
+@property(nonatomic, weak) BrowserWindowTouchBarController* controller;
 
 @property(nonatomic) Browser* browser;
 

@@ -128,8 +128,9 @@ class PDFiumPage {
   std::vector<int> GetImageObjectIndices();
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Returns the image as a 32-bit bitmap format for OCR.
-  SkBitmap GetImageForOcr(int page_object_index);
+  // Returns the image as a 32-bit bitmap format for OCR. The image dimensions
+  // will be at most `max_image_dimension`.
+  SkBitmap GetImageForOcr(int page_object_index, int max_image_dimension);
 
   // Called to inform PDFiumPage that OCR operations performed on this page
   // added text into the page or not.

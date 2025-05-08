@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import android.animation.Animator;
@@ -12,8 +13,11 @@ import android.app.Activity;
 import android.graphics.PointF;
 import android.view.View;
 
+import org.junit.Rule;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Token;
@@ -26,15 +30,18 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 
 import java.util.List;
 
-public class ReorderStrategyTestBase {
+public abstract class ReorderStrategyTestBase {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     protected static final int TAB_WIDTH = 50;
     protected static final PointF DRAG_START_POINT = new PointF(70f, 20f); // Arbitrary value.
@@ -44,16 +51,27 @@ public class ReorderStrategyTestBase {
             new Token(/* high= */ 1L, /* low= */ 1L); // Arbitrary value.
     protected static final Token GROUP_ID2 =
             new Token(/* high= */ 2L, /* low= */ 2L); // Arbitrary value.
+    protected static final Token GROUP_ID3 =
+            new Token(/* high= */ 3L, /* low= */ 3L); // Arbitrary value.
+
+    protected static final int TAB_ID1 = 1;
+    protected static final int TAB_ID2 = 2;
+    protected static final int TAB_ID3 = 3;
+    protected static final int TAB_ID4 = 4;
+    protected static final int TAB_ID5 = 5;
+    protected static final int TAB_ID6 = 6;
+    protected static final int[] TAB_IDS = {TAB_ID1, TAB_ID2, TAB_ID3, TAB_ID4, TAB_ID5, TAB_ID6};
 
     // Dependencies
     private Activity mActivity;
+    protected MockTabModel mModel;
+    @Mock protected Profile mProfile;
     @Mock protected ActionConfirmationManager mActionConfirmationManager;
     @Mock protected StripUpdateDelegate mStripUpdateDelegate;
     @Mock protected ScrollDelegate mScrollDelegate;
     @Mock protected View mContainerView;
     @Mock protected ObservableSupplierImpl<Integer> mGroupIdToHideSupplier;
     @Mock protected TabGroupModelFilter mTabGroupModelFilter;
-    @Mock protected TabModel mModel;
     @Mock protected ReorderDelegate mReorderDelegate;
     @Mock protected Supplier<Float> mTabWidthSupplier;
     @Mock protected Supplier<Long> mLastReorderScrollTimeSupplier;
@@ -64,6 +82,7 @@ public class ReorderStrategyTestBase {
     protected StripLayoutTab[] mStripTabs = new StripLayoutTab[0];
     protected StripLayoutGroupTitle[] mGroupTitles = new StripLayoutGroupTitle[0];
     protected StripLayoutView[] mStripViews = new StripLayoutView[0];
+
     protected StripLayoutTab mInteractingTab;
     protected StripLayoutGroupTitle mInteractingGroupTitle;
     @Mock protected Tab mTabForInteractingView;
@@ -72,35 +91,53 @@ public class ReorderStrategyTestBase {
         mActivity = Robolectric.setupActivity(Activity.class);
         // StripLayoutViews need styles during initializations.
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
-        when(mModel.getTabById(INTERACTING_VIEW_ID)).thenReturn(mTabForInteractingView);
+        mModel = spy(new MockTabModel(mProfile, /* delegate= */ null));
+        for (int id : TAB_IDS) mModel.addTab(id);
+        mModel.setIndex(0, TabSelectionType.FROM_USER);
+
         when(mTabForInteractingView.getId()).thenReturn(INTERACTING_VIEW_ID);
+        when(mTabForInteractingView.getRootId()).thenReturn(INTERACTING_VIEW_ID);
         when(mTabWidthSupplier.get()).thenReturn((float) TAB_WIDTH);
         when(mLastReorderScrollTimeSupplier.get()).thenReturn(0L);
+        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUnGrouper);
+        setupStripViews();
     }
 
-    protected StripLayoutGroupTitle buildGroupTitle(
-            Integer rootId, Token groupId, int x, int width) {
+    protected abstract void setupStripViews();
+
+    protected StripLayoutGroupTitle buildGroupTitle(Integer rootId, Token groupId, int x) {
         StripLayoutGroupTitle title =
-                new StripLayoutGroupTitle(mActivity, null, false, rootId, groupId);
-        setDrawProperties(title, x, width);
+                new StripLayoutGroupTitle(mActivity, null, null, false, rootId, groupId);
+        setDrawProperties(title, x);
         return title;
     }
 
-    protected StripLayoutTab buildStripTab(int id, int x, int width) {
-        StripLayoutTab tab = new StripLayoutTab(mActivity, id, null, null, null, false);
-        setDrawProperties(tab, x, width);
+    protected StripLayoutTab buildStripTab(int id, int x) {
+        StripLayoutTab tab = new StripLayoutTab(mActivity, id, null, null, null, null, false);
+        setDrawProperties(tab, x);
         return tab;
     }
 
-    private void setDrawProperties(StripLayoutView view, int x, int width) {
+    private void setDrawProperties(StripLayoutView view, int x) {
         view.setIdealX(x);
         view.setDrawX(x);
         view.setDrawY(0);
         view.setHeight(40);
-        view.setWidth(width);
+        view.setWidth(TAB_WIDTH);
         // Reset touch target inset to only use draw properties for position calculations.
         view.setTouchTargetInsets(0f, 0f, 0f, 0f);
         view.setVisible(true);
+    }
+
+    protected void mockTabGroup(Token groupId, int rootId, Tab... tabs) {
+        List<Tab> tabList = List.of(tabs);
+        for (Tab tab : tabList) {
+            when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
+            when(mTabGroupModelFilter.getRelatedTabList(tab.getId())).thenReturn(tabList);
+            tab.setTabGroupId(groupId);
+            tab.setRootId(rootId);
+        }
+        when(mTabGroupModelFilter.getTabCountForGroup(groupId)).thenReturn(tabList.size());
     }
 
     private static class TestAnimationHost implements AnimationHost {

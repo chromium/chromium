@@ -66,8 +66,6 @@ void IOTask::CompleteWithError(PolicyError policy_error) {}
 
 bool PolicyError::operator==(const PolicyError& other) const = default;
 
-bool PolicyError::operator!=(const PolicyError& other) const = default;
-
 bool ConflictPauseParams::operator==(const ConflictPauseParams& other) const =
     default;
 

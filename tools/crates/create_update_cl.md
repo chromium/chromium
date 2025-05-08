@@ -20,7 +20,7 @@ up-to-date Chromium repo.  One way to start a shift is to run `git fetch`,
 `git checkout origin/main`, and `gclient sync` (but other workflows should also
 work - e.g. ones based on `git-new-workdir`).
 
-## Avoiding Conflicts
+## Avoiding conflicts
 
 Before creating a CL stack, check for open CLs with the [`cratesio-autoupdate`
 tag](https://chromium-review.googlesource.com/q/hashtag:%22cratesio-autoupdate%22+(status:open%20OR%20status:merged)).
@@ -28,26 +28,25 @@ Such CLs tend to conflict, so coordinate with owners of any open CLs.
 
 ## Automated step: `create_update_cl.py`
 
-The first actual step of the rotation is running the script:
+The first actual step of the rotation is running `create_update_cl.py`. You must
+invoke it from within the `src/` directory of a Chromium repository checkout,
+and it depends on `depot_tools` and `git` being present in the `PATH`.
 
-```
+```sh
+$ cd ~/chromium/src  # or wherever you have your checkout
 $ tools/crates/create_update_cl.py auto
 ```
 
-`create_update_cl.py` has to be invoked from within a Chromium repo.
-The script depends on `depot_tools` and `git` being present in the `PATH`.
-
-In `auto` mode `//tools/crates/create_update_cl.py` runs `gnrt update` to
-discover crate updates and then for each update creates a
-new local git branch (and a Gerrit CL unless invoked with `--no-upload`).
-Each branch contains an update created by `gnrt update <old crate id>`, `gnrt
-vendor`, and `gnrt gen`.
-Depending on how many crates are updated, the script may need 10-15 minutes to
-run.
+In `auto` mode, it runs `gnrt update` to discover crate updates and then for
+each update creates a new local git branch (and a Gerrit CL unless invoked with
+`--no-upload`). Each branch contains an update created by `gnrt update <old
+crate id>`, `gnrt vendor`, and `gnrt gen`. Depending on how many crates are
+updated, the script may need 10-15 minutes to run.
 
 The script should Just Work in most cases, but sometimes it may fail when
-dealing with a specific create update.  See the "Recovering from script
-failures" section below for what to do when that happens.
+dealing with a specific crate update.  See [Recovering from script
+failures](#recovering-from-script-failures) below for what to do when that
+happens.
 
 Before the auto-generated CLs can be landed, you will need to get an LGTM from
 `//third_party/rust/OWNERS`.  See `//third_party/rust/OWNERS-security-review.md`
@@ -62,7 +61,7 @@ Notes from `//third_party/rust/OWNERS-security-review.md` apply:
   [chrome-atls-discuss@google.com](mailto:chrome-atls-discuss@google.com)
   in order to record the addition.
 
-### Optional: Adding the transitive dependency in its own CL.
+### Optional: Adding the transitive dependency in its own CL
 
 If the new crate is non-trivial, it's possible to split the
 additional crate into its own CL, however then it will default to global
@@ -81,9 +80,6 @@ visibility and allowing non-test use.
   group but needs to be visible outside of tests.
 
 ## Potential additional steps
-
-* If updating `cxx`, you will also need to update its version in
-    - `build/rust/cxx_version.gni`
 
 * The `create_update_cl.py` script may stop early if it detects that `gnrt
   vendor` or `gnrt gen` have reported any warnings or errors (e.g. a "License
@@ -117,7 +113,7 @@ transitive dependencies with a new major version, you can use the command below
 (running it in the final update CL branch - after all the minor version
 updates):
 
-```
+```sh
 $ tools/crates/run_cargo.py -Zunstable-options -C third_party/rust/chromium_crates_io -Zbindeps update --dry-run --verbose
 ...
    Unchanged serde_json_lenient v0.1.8 (latest: v0.2.0)
@@ -164,7 +160,7 @@ case the transition can be split into the following steps:
 Note that the following `Cargo.toml` syntax allows two versions of a crate to
 coexist:
 
-```
+```toml
 [dependencies.serde_json_lenient_old_epoch]
 package = "serde_json_lenient"
 version = "0.1"
@@ -221,6 +217,7 @@ For maximal control, the script can be used in `manual` mode:
     - To make the review easier, one of the patchsets covers just the path
       changes.  For example - see [the delta here](https://crrev.com/c/5445719/2..7).
 
+<a id="recovering-from-script-failures"></a>
 ## Recovering from script failures
 
 Sometimes the `create_update_cl.py` script will fail when dealing with
@@ -234,16 +231,15 @@ Examples of a few specific situations that may lead to script failure:
 * An update brought in a new crate, but `gnrt` didn't recognize new crate's
   license kind or license file.  In that case a prerequisite CL needs to be
   landed first, teaching `gnrt` about the new license kinds/files
-  (somewhere around
-  [here](https://source.chromium.org/chromium/chromium/src/+/main:tools/crates/gnrt/lib/readme.rs;l=264-290;drc=c838bc6c6317d4c1ead1f7f0c615af353482f2b3)).
-  Example CL with such a fix: https://crrev.com/c/6219211
+  ([in readme.rs](https://source.chromium.org/chromium/chromium/src/+/main:tools/crates/gnrt/lib/readme.rs;l=264-290;drc=c838bc6c6317d4c1ead1f7f0c615af353482f2b3)).
+  You can see [an example CL with such a fix](https://crrev.com/c/6219211).
 * Patches from `//third_party/rust/chromium_crates_io/patches/` no longer
   apply cleanly to the new version of a crate.  In that case the crate update CL
   needs to 1) first update the patches, and then 2) update the crate as usual.
   This is not very well supported by the script... But something like this
   should work:
     - Checkout a new branch:
-        ```
+        ```sh
         $ git checkout rust-crates-update--last-successful-update
         $ git checkout -b fix-patches-for-foo
         $ git branch --set-upstream-to=rust-crates-update--last-successful-update
@@ -251,7 +247,7 @@ Examples of a few specific situations that may lead to script failure:
     - Fix the patches and upload as a temporary / throw-away CL
       (this CL can't be landed on its own - it needs to be combined
       with the actual update CL):
-        ```
+        ```sh
         $ # Fix the patches
         $ git commit -a -m ...
         $ git cl upload
@@ -259,13 +255,13 @@ Examples of a few specific situations that may lead to script failure:
     - Restart the script (the CL created by the script can't be landed
       as-is / on its own - it needs to be combined with the fixed patches
       in the step below) with `--upstream-branch` parameter:
-        ```
+        ```sh
         $ tools/crates/create_update_cl.py auto \
             --upstream-branch=fix-patches-for-foo \
             -- name-of-failed-crate
         ```
     - Combine the branches:
-        ```
+        ```sh
         $ git map-branches -v # to orient yourself
         $ git checkout rust-crates-update--new-successful-update
         $ git branch --set-upstream-to=rust-crates-update--last-successful-update

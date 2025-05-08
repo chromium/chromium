@@ -38,12 +38,12 @@ class ExtensionWebUI {
   static bool HandleChromeURLOverrideReverse(
       GURL* url, content::BrowserContext* browser_context);
 
-  // Returns the extension that currently controls the specified |url|, if any.
+  // Returns the extension that currently controls the specified `url`, if any.
   static const extensions::Extension* GetExtensionControllingURL(
       const GURL& url,
       content::BrowserContext* browser_context);
 
-  // Returns the number of extensions that are overriding the given |url|. Note
+  // Returns the number of extensions that are overriding the given `url`. Note
   // that only one is *actively* overriding it; the others would take over if
   // that one were to be disabled or removed.
   static size_t GetNumberOfExtensionsOverridingURL(
@@ -80,7 +80,7 @@ class ExtensionWebUI {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Get the favicon for the extension by getting an icon from the manifest.
-  // Note. |callback| is always run asynchronously.
+  // Note. `callback` is always run asynchronously.
   static void GetFaviconForURL(Profile* profile,
                                const GURL& page_url,
                                favicon_base::FaviconResultsCallback callback);

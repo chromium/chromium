@@ -291,9 +291,9 @@ void HanKerning::Compute(const String& text,
                                              : HB_TAG('v', 'h', 'a', 'l');
   features_ = features;
   num_features_before_ = features->size();
-  features->Reserve(features->size() + indices.size());
+  features->reserve(features->size() + indices.size());
   for (const wtf_size_t i : indices) {
-    features->Append({{tag, 1}, i, i + 1});
+    features->push_back(FontFeatureRange{{tag, 1}, i, i + 1});
   }
 }
 

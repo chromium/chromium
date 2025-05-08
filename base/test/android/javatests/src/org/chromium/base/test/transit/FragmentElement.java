@@ -38,7 +38,7 @@ public class FragmentElement<FragmentT extends Fragment, ActivityT extends Fragm
     }
 
     @Override
-    public ConditionWithResult<FragmentT> createEnterCondition() {
+    public @Nullable ConditionWithResult<FragmentT> createEnterCondition() {
         return new FragmentExistsCondition();
     }
 

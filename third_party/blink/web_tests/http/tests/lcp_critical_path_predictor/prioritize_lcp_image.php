@@ -18,19 +18,14 @@ if ($_SERVER['QUERY_STRING'] != "start")
     const hint_matched_img_priority = await internals.getInitialResourcePriority(url, document);
 
     assert_equals(hint_matched_img_priority, kVeryHigh);
-  }, "Ensure LCPP hinted images were loaded with VeryHigh priority.")
+  }, "Ensure LCPP hinted images were loaded with VeryHigh priority.");
 
   promise_test(async t => {
     const url = new URL('/resources/square100.png', location).toString();
     const hint_matched_img_priority = await internals.getInitialResourcePriority(url, document);
 
     assert_equals(hint_matched_img_priority, kMedium);
-  }, "Ensure non-LCPP hinted images were loaded unaffected with Medium priority.")
-
-  promise_test(async t => {
-    const lcp_element = await internals.LCPPrediction(document);
-    assert_equals(lcp_element, "/#lcp_image");
-  }, "Ensure document::RunLCPPredictedCallbacks is called with LCP element locator.")
+  }, "Ensure non-LCPP hinted images were loaded unaffected with Medium priority.");
 </script>
 <img src="/resources/square.png" id="lcp_image">
 <img src="/resources/square100.png">

@@ -117,8 +117,9 @@ const LayoutObject* LayoutListItem::FindSymbolMarkerLayoutText(
     return FindSymbolMarkerLayoutText(inline_list_item->Marker());
   }
 
-  if (object->IsAnonymousBlock())
+  if (object->IsAnonymousBlockFlow()) {
     return FindSymbolMarkerLayoutText(GetLayoutObjectForParentNode(object));
+  }
 
   if (object->IsLayoutTextCombine()) {
     return FindSymbolMarkerLayoutText(object->Parent());

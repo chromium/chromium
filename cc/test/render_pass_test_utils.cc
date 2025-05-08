@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "cc/test/render_pass_test_utils.h"
 
@@ -253,21 +249,21 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
   auto* stream_video_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   stream_video_quad->SetNew(
-      shared_state, rect, visible_rect, needs_blending, resource6, false,
+      shared_state, rect, visible_rect, needs_blending, resource6, true,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
       false, false, gfx::ProtectedVideoType::kHardwareProtected);
   stream_video_quad->is_stream_video = true;
 
   auto* texture_quad = to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   texture_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                       resource1, false, gfx::PointF(0.f, 0.f),
+                       resource1, true, gfx::PointF(0.f, 0.f),
                        gfx::PointF(1.f, 1.f), SkColors::kTransparent, false,
                        false, gfx::ProtectedVideoType::kClear);
 
   auto* external_resource_texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   external_resource_texture_quad->SetNew(
-      shared_state, rect, visible_rect, needs_blending, resource8, false,
+      shared_state, rect, visible_rect, needs_blending, resource8, true,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
       false, false, gfx::ProtectedVideoType::kClear);
 
@@ -414,7 +410,7 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   viz::TextureDrawQuad* stream_video_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   stream_video_quad->SetNew(
-      shared_state, rect, visible_rect, needs_blending, mapped_resource6, false,
+      shared_state, rect, visible_rect, needs_blending, mapped_resource6, true,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
       false, false, gfx::ProtectedVideoType::kHardwareProtected);
   stream_video_quad->is_stream_video = true;
@@ -422,14 +418,14 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   viz::TextureDrawQuad* texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   texture_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                       mapped_resource1, false, gfx::PointF(0.f, 0.f),
+                       mapped_resource1, true, gfx::PointF(0.f, 0.f),
                        gfx::PointF(1.f, 1.f), SkColors::kTransparent, false,
                        false, gfx::ProtectedVideoType::kClear);
 
   viz::TextureDrawQuad* external_resource_texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   external_resource_texture_quad->SetNew(
-      shared_state, rect, visible_rect, needs_blending, mapped_resource8, false,
+      shared_state, rect, visible_rect, needs_blending, mapped_resource8, true,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
       false, false, gfx::ProtectedVideoType::kClear);
 

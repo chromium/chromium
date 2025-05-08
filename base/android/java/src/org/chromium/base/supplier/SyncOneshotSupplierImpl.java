@@ -53,6 +53,7 @@ public class SyncOneshotSupplierImpl<T> implements SyncOneshotSupplier<T> {
     }
 
     @Override
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
     public @Nullable T get() {
         mThreadChecker.assertOnValidThread();
         return mObject;

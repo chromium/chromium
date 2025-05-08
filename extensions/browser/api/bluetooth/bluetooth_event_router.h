@@ -55,8 +55,8 @@ class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
   void GetAdapter(device::BluetoothAdapterFactory::AdapterCallback callback);
 
   // Requests that a new device discovery session be initiated for extension
-  // with id |extension_id|. |callback| is called, if a session has been
-  // initiated. |error_callback| is called, if the adapter failed to initiate
+  // with id `extension_id`. `callback` is called, if a session has been
+  // initiated. `error_callback` is called, if the adapter failed to initiate
   // the session or if an active session already exists for the extension.
   void StartDiscoverySession(device::BluetoothAdapter* adapter,
                              const ExtensionId& extension_id,
@@ -64,8 +64,8 @@ class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
                              base::OnceClosure error_callback);
 
   // Requests that the active discovery session that belongs to the extension
-  // with id |extension_id| be terminated. |callback| is called, if the session
-  // successfully ended. |error_callback| is called, if the adapter failed to
+  // with id `extension_id` be terminated. `callback` is called, if the session
+  // successfully ended. `error_callback` is called, if the adapter failed to
   // terminate the session or if no active discovery session exists for the
   // extension.
   void StopDiscoverySession(device::BluetoothAdapter* adapter,
@@ -74,9 +74,9 @@ class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
                             base::OnceClosure error_callback);
 
   // Requests that the filter associated with discovery session that belongs
-  // to the extension with id |extension_id| be set to |discovery_filter|.
-  // |callback| is called, if the filter was successfully updated.
-  // |error_callback| is called, if filter update failed.
+  // to the extension with id `extension_id` be set to `discovery_filter`.
+  // `callback` is called, if the filter was successfully updated.
+  // `error_callback` is called, if filter update failed.
   void SetDiscoveryFilter(
       std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
       device::BluetoothAdapter* adapter,

@@ -125,14 +125,12 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
       if (IOSPasskeysM2Enabled()) {
         // Show the prompt to allow the app to be turned on as a credential
         // provider.
+        __weak __typeof(self) weakSelf = self;
         [ASSettingsHelper
             requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
                 BOOL appWasEnabledForAutoFill) {
-              // Record the user's decision.
-              RecordTurnOnCredentialProviderExtensionPromptOutcome(
-                  TurnOnCredentialProviderExtensionPromptSource::
-                      kCredentialProviderExtensionPromo,
-                  appWasEnabledForAutoFill);
+              [weakSelf recordTurnOnCredentialProviderExtensionPromptOutcome:
+                            appWasEnabledForAutoFill];
             }];
         [self recordAction:IOSCredentialProviderPromoAction::kTurnOnAutofill];
         return;
@@ -221,6 +219,15 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   GetApplicationContext()->GetLocalState()->SetInteger(
       prefs::kIosCredentialProviderPromoLastActionTaken,
       static_cast<int>(action));
+}
+
+// Records whether the user has accepted the in-app prompt to set the app as a
+// credential provider.
+- (void)recordTurnOnCredentialProviderExtensionPromptOutcome:(BOOL)outcome {
+  RecordTurnOnCredentialProviderExtensionPromptOutcome(
+      TurnOnCredentialProviderExtensionPromptSource::
+          kCredentialProviderExtensionPromo,
+      outcome);
 }
 
 @end

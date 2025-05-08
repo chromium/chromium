@@ -15,11 +15,7 @@
 #endif  // defined(TRACING_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(TRACING_IMPLEMENTATION)
 #define TRACING_EXPORT __attribute__((visibility("default")))
-#else
-#define TRACING_EXPORT
-#endif // defined(TRACING_IMPLEMENTATION)
 #endif
 
 #else  // defined(COMPONENT_BUILD)

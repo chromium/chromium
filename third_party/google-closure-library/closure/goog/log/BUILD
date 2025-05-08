@@ -9,6 +9,7 @@ closure_js_library(
     srcs = [
         "log.js",
     ],
+    lenient = True,
     deps = [
         "//closure/goog/asserts",
         "//closure/goog/debug",

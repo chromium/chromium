@@ -36,4 +36,12 @@ gfx::Vector2dF ScrollUtils::ResolveScrollPercentageToPixels(
                         std::copysign(delta_y, sign_y));
 }
 
+// static
+int ScrollUtils::CalculatePageStep(int length) {
+  const int min_page_step = length * kMinFractionToStepWhenPaging;
+  const int page_step =
+      std::max(min_page_step, length - kMaxOverlapBetweenPages);
+  return std::max(page_step, 1);
+}
+
 }  // namespace cc

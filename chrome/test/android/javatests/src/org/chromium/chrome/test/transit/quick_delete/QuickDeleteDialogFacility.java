@@ -18,7 +18,6 @@ import androidx.test.espresso.Espresso;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ConditionStatus;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.UiThreadCondition;
@@ -54,46 +53,44 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
     public QuickDeleteDialogFacility(@TimePeriod int timePeriod) {
         mTimePeriod = timePeriod;
-    }
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        ViewSpec<ModalDialogView> dialog =
-                viewSpec(ModalDialogView.class, withId(R.id.modal_dialog_view));
-        dialogElement = elements.declareView(dialog);
+        dialogElement =
+                declareView(viewSpec(ModalDialogView.class, withId(R.id.modal_dialog_view)));
         customViewElement =
-                elements.declareView(dialog.descendant(withId(R.id.custom_view_not_in_scrollable)));
-        elements.declareView(dialog.descendant(withText(R.string.quick_delete_dialog_title)));
+                declareView(dialogElement.descendant(withId(R.id.custom_view_not_in_scrollable)));
+        declareView(dialogElement.descendant(withText(R.string.quick_delete_dialog_title)));
         spinnerElement =
-                elements.declareView(
-                        dialog.descendant(Spinner.class, withId(R.id.quick_delete_spinner)));
+                declareView(
+                        dialogElement.descendant(Spinner.class, withId(R.id.quick_delete_spinner)));
         historyInfoElement =
-                elements.declareView(
-                        dialog.descendant(
+                declareView(
+                        dialogElement.descendant(
                                 TextView.class, withId(R.id.quick_delete_history_row_title)));
         tabsInfoElement =
-                elements.declareView(
-                        dialog.descendant(TextView.class, withId(R.id.quick_delete_tabs_row_title)),
+                declareView(
+                        dialogElement.descendant(
+                                TextView.class, withId(R.id.quick_delete_tabs_row_title)),
                         ViewElement.allowDisabledOption());
-        elements.declareView(
-                dialog.descendant(
+        declareView(
+                dialogElement.descendant(
                         withText(
                                 R.string
                                         .quick_delete_dialog_cookies_cache_and_other_site_data_text)));
         moreOptionsElement =
-                elements.declareView(dialog.descendant(withId(R.id.quick_delete_more_options)));
+                declareView(dialogElement.descendant(withId(R.id.quick_delete_more_options)));
         cancelButtonElement =
-                elements.declareView(
-                        dialog.descendant(withId(R.id.negative_button), withText("Cancel")));
+                declareView(
+                        dialogElement.descendant(withId(R.id.negative_button), withText("Cancel")));
         deleteButtonElement =
-                elements.declareView(
-                        dialog.descendant(withId(R.id.positive_button), withText("Delete data")));
-        elements.declareEnterCondition(new TimePeriodSelectedCondition());
+                declareView(
+                        dialogElement.descendant(
+                                withId(R.id.positive_button), withText("Delete data")));
+        declareEnterCondition(new TimePeriodSelectedCondition());
     }
 
     /** Click Cancel to close the dialog with no action. */
     public void clickCancel() {
-        mHostStation.exitFacilitySync(this, cancelButtonElement.clickTrigger());
+        mHostStation.exitFacilitySync(this, cancelButtonElement.getClickTrigger());
     }
 
     /**
@@ -106,7 +103,7 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
         QuickDeleteSnackbarFacility snackbar = new QuickDeleteSnackbarFacility(mTimePeriod);
         tabSwitcher.addInitialFacility(snackbar);
 
-        mHostStation.travelToSync(tabSwitcher, deleteButtonElement.clickTrigger());
+        mHostStation.travelToSync(tabSwitcher, deleteButtonElement.getClickTrigger());
 
         return Pair.create(tabSwitcher, snackbar);
     }
@@ -145,7 +142,7 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
     public SettingsStation<ClearBrowsingDataFragment> clickMoreOptions() {
         return mHostStation.travelToSync(
                 new SettingsStation<>(ClearBrowsingDataFragment.class),
-                moreOptionsElement.clickTrigger());
+                moreOptionsElement.getClickTrigger());
     }
 
     public SearchHistoryDisambiguiationFacility expectSearchHistoryDisambiguation(boolean shown) {
@@ -183,43 +180,25 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
     public class SearchHistoryDisambiguiationFacility
             extends Facility<Station<ChromeTabbedActivity>> {
-        private final boolean mExpectPresent;
-
         public SearchHistoryDisambiguiationFacility(boolean expectPresent) {
-            mExpectPresent = expectPresent;
-        }
-
-        @Override
-        public void declareElements(Elements.Builder elements) {
             ViewSpec<View> spec =
-                    dialogElement
-                            .getViewSpec()
-                            .descendant(withId(R.id.search_history_disambiguation));
-            if (mExpectPresent) {
-                elements.declareView(spec);
+                    dialogElement.descendant(withId(R.id.search_history_disambiguation));
+            if (expectPresent) {
+                declareView(spec);
             } else {
-                elements.declareNoView(spec);
+                declareNoView(spec);
             }
         }
     }
 
     public class SitesSubtitleFacility extends Facility<Station<ChromeTabbedActivity>> {
-        private final boolean mExpectPresent;
-
         public SitesSubtitleFacility(boolean expectPresent) {
-            mExpectPresent = expectPresent;
-        }
-
-        @Override
-        public void declareElements(Elements.Builder elements) {
             ViewSpec spec =
-                    dialogElement
-                            .getViewSpec()
-                            .descendant(withId(R.id.quick_delete_history_row_subtitle));
-            if (mExpectPresent) {
-                elements.declareView(spec);
+                    dialogElement.descendant(withId(R.id.quick_delete_history_row_subtitle));
+            if (expectPresent) {
+                declareView(spec);
             } else {
-                elements.declareNoView(spec);
+                declareNoView(spec);
             }
         }
     }

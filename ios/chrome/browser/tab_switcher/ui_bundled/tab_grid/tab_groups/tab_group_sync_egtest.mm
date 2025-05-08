@@ -20,6 +20,7 @@
 
 using chrome_test_util::CancelButton;
 using chrome_test_util::CloseGroupButton;
+using chrome_test_util::CloseTabGroupButton;
 using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::CreateTabGroupCreateButton;
 using chrome_test_util::DeleteGroupButton;
@@ -34,7 +35,6 @@ using chrome_test_util::TabGridSearchBar;
 using chrome_test_util::TabGridSearchModeToolbar;
 using chrome_test_util::TabGridSearchTabsButton;
 using chrome_test_util::TabGridTabGroupsPanelButton;
-using chrome_test_util::TabGroupBackButton;
 using chrome_test_util::TabGroupCreationView;
 using chrome_test_util::TabGroupSnackBar;
 using chrome_test_util::TabGroupSnackBarAction;
@@ -127,7 +127,6 @@ void CloseGroupAtIndex(int group_cell_index) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kTabGroupSync);
 
   // Add the flag to use FakeTabGroupSyncService.

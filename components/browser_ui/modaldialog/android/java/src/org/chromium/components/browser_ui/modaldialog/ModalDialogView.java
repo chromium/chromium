@@ -245,13 +245,12 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleView.setMaxLines(maxLines);
     }
 
-    /** @param drawable The icon drawable on the title. */
+    /**
+     * @param drawable The icon drawable on the title.
+     */
     public void setTitleIcon(Drawable drawable) {
         mTitleIcon.setImageDrawable(drawable);
         updateContentVisibility();
-        if (drawable != null) {
-            setupClickableView(mTitleIcon, ButtonType.TITLE_ICON);
-        }
     }
 
     /** @param titleScrollable Whether the title is scrollable with the message. */

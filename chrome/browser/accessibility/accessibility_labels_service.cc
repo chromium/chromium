@@ -26,7 +26,6 @@
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/google_api_keys.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/image_annotation/image_annotation_service.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -58,12 +57,6 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
   ImageAnnotatorClient& operator=(const ImageAnnotatorClient&) = delete;
 
   ~ImageAnnotatorClient() override = default;
-
-  // image_annotation::Annotator::Client implementation:
-  void BindJsonParser(mojo::PendingReceiver<data_decoder::mojom::JsonParser>
-                          receiver) override {
-    data_decoder_.GetService()->BindJsonParser(std::move(receiver));
-  }
 
   std::vector<std::string> GetAcceptLanguages() override {
     std::vector<std::string> accept_languages;
@@ -113,7 +106,6 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
 
  private:
   const raw_ptr<Profile> profile_;
-  data_decoder::DataDecoder data_decoder_;
 };
 
 }  // namespace

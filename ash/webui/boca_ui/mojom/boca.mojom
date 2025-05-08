@@ -260,19 +260,22 @@ enum UpdateSessionError{
 enum RemoveStudentError{
   // Invalid access code.
   kInvalid,
-  // Network failure.
+  // HTTP request failure.
   kHTTPError,
 };
 
 enum AddStudentsError{
   // Invalid access code.
   kInvalid,
-  // Network failure.
+  // HTTP request failure.
   kHTTPError,
 };
 
 enum SubmitAccessCodeError {
+  // Code is invalid.
   kInvalid,
+  // Enforce managed network.
+  kNetworkRestriction,
 };
 
 enum ViewStudentScreenError {
@@ -288,11 +291,18 @@ enum SetViewScreenSessionActiveError {
 };
 
 enum SpeechRecognitionInstallState {
-  kUnknown,
-  kSystemLanguageUnsupported,
-  kInProgress,
-  kFailed,
-  kReady,
+  kUnknown = 0,
+  kSystemLanguageUnsupported = 1,
+  kInProgress = 2,
+  kFailed = 3,
+  kReady = 4,
+};
+
+enum CreateSessionError {
+  // HTTP request failure.
+  kHTTPError,
+  // Enforce manged network.
+  kNetworkRestriction,
 };
 
 // Implemented by browser process for page chrome-untrusted://boca-app/
@@ -311,7 +321,7 @@ interface PageHandler {
   // Fetch a list of assignments for the courses.
   ListAssignments(string course_id) => (array<Assignment> assignments);
   // Create a session with `config`.
-  CreateSession(Config config) => (bool success);
+  CreateSession(Config config) => (CreateSessionError? error);
   // Retrieves the current session.
   GetSession() => (SessionResult result);
   // End session.
@@ -373,6 +383,10 @@ interface Page {
   OnActiveNetworkStateChanged(array<NetworkInfo> active_networks);
   // Notifies app when local captions is turned off from chrome.
   OnLocalCaptionDisabled();
+  // Notifies when Soda Installation has succeeded or failed.
+  OnSpeechRecognitionInstallStateUpdated(SpeechRecognitionInstallState state);
+  // Notifies app when session captions is turned off from chrome.
+  OnSessionCaptionDisabled(bool is_error);
 };
 
 // Implemented in browser process to set up the communication between the Page

@@ -14,6 +14,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {selectItem} from './actions.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
 import {getCss} from './item.css.js';
@@ -55,6 +56,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
       isMultiSelect_: {type: Boolean},
       isFolder_: {type: Boolean},
       lastTouchPoints_: {type: Number},
+      canUploadAsAccountBookmark_: {type: Boolean},
     };
   }
 
@@ -65,6 +67,8 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
   private accessor isMultiSelect_: boolean = false;
   private accessor isFolder_: boolean = false;
   private accessor lastTouchPoints_: number = -1;
+  // This is always false if `SyncEnableBookmarksInTransportMode` is disabled.
+  protected accessor canUploadAsAccountBookmark_: boolean = false;
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -96,6 +100,12 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
       this.isFolder_ = !!this.item_ && !this.item_.url;
       this.ariaLabel = this.item_?.title || this.item_?.url ||
           loadTimeData.getString('folderLabel');
+
+      BrowserProxyImpl.getInstance()
+          .getCanUploadBookmarkToAccountStorage(this.itemId)
+          .then((canUpload) => {
+            this.canUploadAsAccountBookmark_ = canUpload;
+          });
     }
   }
 
@@ -179,6 +189,15 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     }));
   }
 
+  protected onUploadButtonClick_() {
+    // Skip selecting the item if this item is part of a multi-selected group.
+    if (!this.isMultiSelectMenu_()) {
+      this.selectThisItem_();
+    }
+
+    BrowserProxyImpl.getInstance().onSingleBookmarkUploadClicked(this.itemId);
+  }
+
   private selectThisItem_() {
     this.dispatch(selectItem(this.itemId, this.getState(), {
       clear: true,
@@ -211,11 +230,13 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
   }
 
   private onKeydown_(e: KeyboardEvent) {
+    const cursorModifier = isMac ? e.metaKey : e.ctrlKey;
     if (e.key === 'ArrowLeft') {
       this.focus();
     } else if (e.key === 'ArrowRight') {
       this.$.menuButton.focus();
-    } else if (e.key === ' ') {
+    } else if (e.key === ' ' && !cursorModifier) {
+      // Spacebar with the modifier is handled by the list.
       this.dispatch(selectItem(this.itemId, this.getState(), {
         clear: false,
         range: false,

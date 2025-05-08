@@ -791,8 +791,8 @@ TEST_F(SoftwareImageDecodeCacheTest,
   TileTask* raster_decode_task = raster_result.task.get();
 
   ImageDecodeCache::TaskResult stand_alone_result =
-      cache_.GetOutOfRasterDecodeTaskForImageAndRef(cache_client_id_,
-                                                    draw_image);
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
   EXPECT_TRUE(stand_alone_result.need_unref);
   EXPECT_EQ(stand_alone_result.task->dependencies().size(), 1u);
   EXPECT_EQ(stand_alone_result.task->dependencies()[0].get(),
@@ -821,8 +821,8 @@ TEST_F(SoftwareImageDecodeCacheTest,
       PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
 
   ImageDecodeCache::TaskResult stand_alone_result =
-      cache_.GetOutOfRasterDecodeTaskForImageAndRef(cache_client_id_,
-                                                    draw_image);
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
   EXPECT_TRUE(stand_alone_result.need_unref);
   EXPECT_TRUE(stand_alone_result.task);
 
@@ -860,8 +860,8 @@ TEST_F(SoftwareImageDecodeCacheTest,
       PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
 
   ImageDecodeCache::TaskResult stand_alone_result =
-      cache_.GetOutOfRasterDecodeTaskForImageAndRef(cache_client_id_,
-                                                    draw_image);
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
   EXPECT_TRUE(stand_alone_result.need_unref);
   EXPECT_TRUE(stand_alone_result.task);
   TileTask* stand_alone_decode_task = stand_alone_result.task.get();
@@ -906,8 +906,8 @@ TEST_F(SoftwareImageDecodeCacheTest, ExternalDependentRasterTaskCanceled) {
       PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
 
   ImageDecodeCache::TaskResult stand_alone_result =
-      cache_.GetOutOfRasterDecodeTaskForImageAndRef(cache_client_id_,
-                                                    draw_image);
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
   EXPECT_TRUE(stand_alone_result.need_unref);
   EXPECT_TRUE(stand_alone_result.task);
   TileTask* stand_alone_decode_task = stand_alone_result.task.get();

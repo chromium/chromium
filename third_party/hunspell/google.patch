@@ -1,8 +1,8 @@
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
-index 87ab6c5..4499a06 100644
+index 5d35540..80ce539 100644
 --- a/src/hunspell/affixmgr.cxx
 +++ b/src/hunspell/affixmgr.cxx
-@@ -85,11 +85,19 @@
+@@ -87,11 +87,19 @@
  
  #include "csutil.hxx"
  
@@ -22,7 +22,7 @@ index 87ab6c5..4499a06 100644
  
    // register hash manager and load affix data from aff file
    csconv = NULL;
-@@ -163,9 +171,17 @@ AffixMgr::AffixMgr(const char* affpath,
+@@ -165,7 +173,15 @@ AffixMgr::AffixMgr(const char* affpath,
      sFlag[i] = NULL;
    }
  
@@ -33,14 +33,12 @@ index 87ab6c5..4499a06 100644
 +  const char* affpath = NULL;
 +  const char* key = NULL;
 +#else
-   for (int j = 0; j < CONTSIZE; j++) {
-     contclasses[j] = 0;
-   }
+   memset(contclasses, 0, CONTSIZE * sizeof(char));
 +#endif
  
    if (parse_file(affpath, key)) {
      HUNSPELL_WARNING(stderr, "Failure loading aff file %s\n", affpath);
-@@ -243,7 +259,44 @@ void AffixMgr::finishFileMgr(FileMgr* afflst) {
+@@ -269,7 +285,44 @@ void AffixMgr::finishFileMgr(FileMgr* afflst) {
  
  // read in aff file and build up prefix and suffix entry objects
  int AffixMgr::parse_file(const char* affpath, const char* key) {
@@ -85,7 +83,7 @@ index 87ab6c5..4499a06 100644
    // checking flag duplication
    char dupflags[CONTSIZE];
    char dupflags_ini = 1;
-@@ -258,16 +311,17 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
+@@ -284,16 +337,17 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
          stderr, "error: could not open affix description file %s\n", affpath);
      return 1;
    }
@@ -104,7 +102,7 @@ index 87ab6c5..4499a06 100644
      /* remove byte order mark */
      if (firstline) {
        firstline = 0;
-@@ -277,6 +331,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
+@@ -303,6 +357,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
          line.erase(0, 3);
        }
      }
@@ -112,7 +110,7 @@ index 87ab6c5..4499a06 100644
  
      /* parse in the keyboard string */
      if (line.compare(0, 3, "KEY", 3) == 0) {
-@@ -677,6 +732,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
+@@ -698,6 +753,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
        checksharps = 1;
      }
  
@@ -120,7 +118,7 @@ index 87ab6c5..4499a06 100644
      /* parse this affix: P - prefix, S - suffix */
      // affix type
      char ft = ' ';
-@@ -694,6 +750,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
+@@ -715,6 +771,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
          return 1;
        }
      }
@@ -128,32 +126,38 @@ index 87ab6c5..4499a06 100644
    }
  
    finishFileMgr(afflst);
-@@ -1270,6 +1327,24 @@ std::string AffixMgr::prefix_check_twosfx_morph(const char* word,
+@@ -1275,12 +1332,29 @@ std::string AffixMgr::prefix_check_twosfx_morph(const std::string& word,
+ 
  // Is word a non-compound with a REP substitution (see checkcompoundrep)?
- int AffixMgr::cpdrep_check(const char* word, int wl) {
+ int AffixMgr::cpdrep_check(const std::string& in_word, int wl) {
+-
+   if ((wl < 2) || get_reptable().empty())
+     return 0;
+ 
+   std::string word(in_word, 0, wl);
  
 +#ifdef HUNSPELL_CHROME_CLIENT
 +  const char *pattern, *pattern2;
 +  hunspell::ReplacementIterator iterator = bdict_reader->GetReplacementIterator();
 +  while (iterator.GetNext(&pattern, &pattern2)) {
-+    const char* r = word;
++    const char* r = word.c_str();
 +    const size_t lenr = strlen(pattern2);
 +    const size_t lenp = strlen(pattern);
 +
 +    // search every occurence of the pattern in the word
 +    while ((r=strstr(r, pattern)) != NULL) {
 +      std::string candidate(word);
-+      candidate.replace(r-word, lenp, pattern2);
-+      if (candidate_check(candidate.c_str(), candidate.size())) return 1;
++      candidate.replace(r - word.c_str(), lenp, pattern2);
++      if (candidate_check(candidate)) return 1;
 +      r++; // search for the next letter
 +    }
 +  }
 +
 +#else
-   if ((wl < 2) || get_reptable().empty())
-     return 0;
- 
-@@ -1288,6 +1363,7 @@ int AffixMgr::cpdrep_check(const char* word, int wl) {
+   for (const auto& i : get_reptable()) {
+     // use only available mid patterns
+     if (!i.outstrings[0].empty()) {
+@@ -1296,6 +1370,7 @@ int AffixMgr::cpdrep_check(const std::string& in_word, int wl) {
        }
      }
    }
@@ -161,24 +165,15 @@ index 87ab6c5..4499a06 100644
  
   return 0;
  }
-@@ -4359,7 +4435,7 @@ void AffixMgr::reverse_condition(std::string& piece) {
-       case '^': {
-         if (*(k - 1) == ']')
-           neg = 1;
--        else
-+        else if (neg)
-           *(k - 1) = *k;
-         break;
-       }
-@@ -4457,6 +4533,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4482,6 +4557,7 @@ bool AffixMgr::parse_affix(const std::string& line,
        case 1: {
          np++;
-         aflag = pHMgr->decode_flag(std::string(start_piece, iter).c_str());
+         aflag = pHMgr->decode_flag(std::string(start_piece, iter));
 +#ifndef HUNSPELL_CHROME_CLIENT // We don't check for duplicates.
          if (((at == 'S') && (dupflags[aflag] & dupSFX)) ||
              ((at == 'P') && (dupflags[aflag] & dupPFX))) {
            HUNSPELL_WARNING(
-@@ -4465,6 +4542,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4490,6 +4566,7 @@ bool AffixMgr::parse_affix(const std::string& line,
                af->getlinenum());
          }
          dupflags[aflag] += (char)((at == 'S') ? dupSFX : dupPFX);
@@ -186,8 +181,20 @@ index 87ab6c5..4499a06 100644
          break;
        }
        // piece 3 - is cross product indicator
+@@ -4744,9 +4821,9 @@ bool AffixMgr::parse_affix(const std::string& line,
+   auto start = affentries.begin(), end = affentries.end();
+   for (auto affentry = start; affentry != end; ++affentry) {
+     if (at == 'P') {
+-      build_pfxtree(dynamic_cast<PfxEntry*>(*affentry));
++      build_pfxtree(static_cast<PfxEntry*>(*affentry));
+     } else {
+-      build_sfxtree(dynamic_cast<SfxEntry*>(*affentry));
++      build_sfxtree(static_cast<SfxEntry*>(*affentry));
+     }
+   }
+ 
 diff --git a/src/hunspell/affixmgr.hxx b/src/hunspell/affixmgr.hxx
-index 38842a3..e03a4a3 100644
+index 0fc22a3..529077c 100644
 --- a/src/hunspell/affixmgr.hxx
 +++ b/src/hunspell/affixmgr.hxx
 @@ -89,6 +89,40 @@
@@ -249,9 +256,9 @@ index 38842a3..e03a4a3 100644
    AffixMgr(const char* affpath, const std::vector<HashMgr*>& ptr, const char* key = NULL);
 +#endif
    ~AffixMgr();
-   struct hentry* affix_check(const char* word,
-                              int len,
-@@ -334,6 +376,10 @@ class AffixMgr {
+   struct hentry* affix_check(const std::string& word,
+                              int start,
+@@ -343,6 +385,10 @@ class AffixMgr {
    int get_fullstrip() const;
  
   private:
@@ -263,7 +270,7 @@ index 38842a3..e03a4a3 100644
    bool parse_flag(const std::string& line, unsigned short* out, FileMgr* af);
    bool parse_num(const std::string& line, int* out, FileMgr* af);
 diff --git a/src/hunspell/filemgr.cxx b/src/hunspell/filemgr.cxx
-index 4a14de8..1671db8 100644
+index 10729ea..002b760 100644
 --- a/src/hunspell/filemgr.cxx
 +++ b/src/hunspell/filemgr.cxx
 @@ -75,6 +75,32 @@
@@ -299,13 +306,13 @@ index 4a14de8..1671db8 100644
  int FileMgr::fail(const char* err, const char* par) {
    fprintf(stderr, err, par);
    return -1;
-@@ -115,3 +141,4 @@ bool FileMgr::getline(std::string& dest) {
+@@ -117,3 +143,4 @@ bool FileMgr::getline(std::string& dest) {
  int FileMgr::getlinenum() {
    return linenum;
  }
 +#endif
 diff --git a/src/hunspell/filemgr.hxx b/src/hunspell/filemgr.hxx
-index 62433ae..9016822 100644
+index b933f95..6d20ad6 100644
 --- a/src/hunspell/filemgr.hxx
 +++ b/src/hunspell/filemgr.hxx
 @@ -77,6 +77,29 @@
@@ -336,18 +343,18 @@ index 62433ae..9016822 100644
 +};
 +#else
  class FileMgr {
-  private:
-   FileMgr(const FileMgr&);
-@@ -96,3 +119,4 @@ class FileMgr {
+  protected:
+   std::ifstream fin;
+@@ -94,3 +117,4 @@ class FileMgr {
    int getlinenum();
  };
  #endif
 +#endif
 diff --git a/src/hunspell/hashmgr.cxx b/src/hunspell/hashmgr.cxx
-index 7e843c3..fbebdbf 100644
+index a9ae8e0..0cb8dd8 100644
 --- a/src/hunspell/hashmgr.cxx
 +++ b/src/hunspell/hashmgr.cxx
-@@ -82,8 +82,14 @@
+@@ -85,18 +85,30 @@
  
  // build a hash table from a munched word list
  
@@ -356,31 +363,32 @@ index 7e843c3..fbebdbf 100644
 +    : bdict_reader(reader),
 +#else
  HashMgr::HashMgr(const char* tpath, const char* apath, const char* key)
--    : tablesize(0),
+-    : flag_mode(FLAG_CHAR),
 +    :
 +#endif
-+      tablesize(0),
-       tableptr(NULL),
-       flag_mode(FLAG_CHAR),
++      flag_mode(FLAG_CHAR),
        complexprefixes(0),
-@@ -97,8 +103,14 @@ HashMgr::HashMgr(const char* tpath, const char* apath, const char* key)
-       aliasm(NULL) {
-   langnum = 0;
-   csconv = 0;
+       utf8(0),
+       forbiddenword(FORBIDDENWORD), // forbidden word signing flag
+       langnum(0),
+       csconv(NULL)
+ {
 +#ifdef HUNSPELL_CHROME_CLIENT
 +  // No tables to load, just the AF lines.
 +  load_config(NULL, NULL);
 +  int ec = LoadAFLines();
 +#else
    load_config(apath, key);
+   if (!csconv)
+     csconv = get_current_cs(SPELL_ENCODING);
    int ec = load_tables(tpath, key);
 +#endif
    if (ec) {
      /* error condition - what should we do here */
      HUNSPELL_WARNING(stderr, "Hash Manager Error : %d\n", ec);
-@@ -156,14 +168,57 @@ HashMgr::~HashMgr() {
- #endif
- #endif
+@@ -137,14 +149,57 @@ HashMgr::~HashMgr() {
+     delete[] j;
+   aliasm.clear();
  
 +#ifdef HUNSPELL_CHROME_CLIENT
 +  EmptyHentryCache();
@@ -413,7 +421,7 @@ index 7e843c3..fbebdbf 100644
 +
  // lookup a root word in the hashtable
  
- struct hentry* HashMgr::lookup(const char* word) const {
+ struct hentry* HashMgr::lookup(const char* word, size_t len) const {
 +#ifdef HUNSPELL_CHROME_CLIENT
 +  int affix_ids[hunspell::BDict::MAX_AFFIXES_PER_WORD];
 +  int affix_count = bdict_reader->FindWord(word, affix_ids);
@@ -433,27 +441,27 @@ index 7e843c3..fbebdbf 100644
 +
 +  return AffixIDsToHentry(word_buf, affix_ids, affix_count);
 +#else
-   struct hentry* dp;
-   if (tableptr) {
-     dp = tableptr[hash(word)];
-@@ -175,6 +230,7 @@ struct hentry* HashMgr::lookup(const char* word) const {
-     }
+   struct hentry* dp = tableptr[hash(word, len)];
+   if (!dp)
+     return NULL;
+@@ -153,6 +208,7 @@ struct hentry* HashMgr::lookup(const char* word, size_t len) const {
+       return dp;
    }
    return NULL;
 +#endif
  }
  
  // add a word to the hash table (private)
-@@ -185,6 +241,8 @@ int HashMgr::add_word(const std::string& in_word,
-                       const std::string* in_desc,
-                       bool onlyupcase,
-                       int captype) {
+@@ -170,6 +226,8 @@ int HashMgr::add_word(const std::string& in_word,
+     return 1;
+   }
+ 
 +// TODO: The following 40 lines or so are actually new. Should they be included?
 +#ifndef HUNSPELL_CHROME_CLIENT
    const std::string* word = &in_word;
    const std::string* desc = in_desc;
  
-@@ -416,6 +474,17 @@ int HashMgr::add_word(const std::string& in_word,
+@@ -411,6 +469,17 @@ int HashMgr::add_word(const std::string& in_word,
  
    delete desc_copy;
    delete word_copy;
@@ -471,7 +479,7 @@ index 7e843c3..fbebdbf 100644
    return 0;
  }
  
-@@ -480,6 +549,12 @@ int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
+@@ -474,6 +543,12 @@ int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
  
  // remove word (personal dictionary function for standalone applications)
  int HashMgr::remove(const std::string& word) {
@@ -481,10 +489,10 @@ index 7e843c3..fbebdbf 100644
 +  if (iter != custom_word_to_affix_id_map_.end())
 +      custom_word_to_affix_id_map_.erase(iter);
 +#else
-   struct hentry* dp = lookup(word.c_str());
+   struct hentry* dp = lookup(word.c_str(), word.size());
    while (dp) {
      if (dp->alen == 0 || !TESTAFF(dp->astr, forbiddenword, dp->alen)) {
-@@ -497,6 +572,7 @@ int HashMgr::remove(const std::string& word) {
+@@ -488,6 +563,7 @@ int HashMgr::remove(const std::string& word) {
      }
      dp = dp->next_homonym;
    }
@@ -492,7 +500,7 @@ index 7e843c3..fbebdbf 100644
    return 0;
  }
  
-@@ -555,6 +631,44 @@ int HashMgr::add_with_affix(const std::string& word, const std::string& example)
+@@ -547,6 +623,44 @@ int HashMgr::add_with_affix(const std::string& word, const std::string& example)
  // walk the hash table entry by entry - null at end
  // initialize: col=-1; hp = NULL; hp = walk_hashtable(&col, hp);
  struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
@@ -536,8 +544,8 @@ index 7e843c3..fbebdbf 100644
 +#else
    if (hp && hp->next != NULL)
      return hp->next;
-   for (col++; col < tablesize; col++) {
-@@ -564,10 +678,12 @@ struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
+   for (col++; col < (int)tableptr.size(); ++col) {
+@@ -556,10 +670,12 @@ struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
    // null at end and reset to start
    col = -1;
    return NULL;
@@ -550,32 +558,33 @@ index 7e843c3..fbebdbf 100644
    // open dictionary file
    FileMgr* dict = new FileMgr(tpath, key);
    if (dict == NULL)
-@@ -698,12 +814,16 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
-   }
+@@ -700,11 +816,17 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
  
    delete dict;
+   return ret;
++#else
++  return 0;
 +#endif
-   return 0;
  }
  
  // the hash function is a simple load and rotate
  // algorithm borrowed
- int HashMgr::hash(const char* word) const {
+ int HashMgr::hash(const char* word, size_t len) const {
 +#ifdef HUNSPELL_CHROME_CLIENT
 +    return 0;
 +#else
    unsigned long hv = 0;
-   for (int i = 0; i < 4 && *word != 0; i++)
-     hv = (hv << 8) | (*word++);
-@@ -712,6 +832,7 @@ int HashMgr::hash(const char* word) const {
-     hv ^= (*word++);
+   size_t i = 0;
+   while (i < 4 && i < len)
+@@ -714,6 +836,7 @@ int HashMgr::hash(const char* word, size_t len) const {
+     hv ^= word[i++];
    }
-   return (unsigned long)hv % tablesize;
+   return (unsigned long)hv % tableptr.size();
 +#endif
  }
  
  int HashMgr::decode_flags(unsigned short** result, const std::string& flags, FileMgr* af) const {
-@@ -921,7 +1042,12 @@ int HashMgr::load_config(const char* affpath, const char* key) {
+@@ -954,7 +1077,12 @@ int HashMgr::load_config(const char* affpath, const char* key) {
    int firstline = 1;
  
    // open the affix file
@@ -588,7 +597,7 @@ index 7e843c3..fbebdbf 100644
    if (!afflst) {
      HUNSPELL_WARNING(
          stderr, "Error - could not open affix description file %s\n", affpath);
-@@ -1161,6 +1287,132 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
+@@ -1167,6 +1295,132 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
    return true;
  }
  
@@ -719,10 +728,10 @@ index 7e843c3..fbebdbf 100644
 +#endif
 +
  int HashMgr::is_aliasf() const {
-   return (aliasf != NULL);
+   return !aliasf.empty();
  }
 diff --git a/src/hunspell/hashmgr.hxx b/src/hunspell/hashmgr.hxx
-index b6eaddd..7328b4c 100644
+index 792b2f1..8590ee3 100644
 --- a/src/hunspell/hashmgr.hxx
 +++ b/src/hunspell/hashmgr.hxx
 @@ -79,6 +79,13 @@
@@ -749,10 +758,10 @@ index b6eaddd..7328b4c 100644
 +  std::map<std::string_view, int> custom_word_to_affix_id_map_;
 +  std::vector<std::string*> pointer_to_strings_;
 +#endif
-   int tablesize;
-   struct hentry** tableptr;
+   std::vector<struct hentry*> tableptr;
    flag flag_mode;
-@@ -111,7 +124,23 @@ class HashMgr {
+   int complexprefixes;
+@@ -108,7 +121,23 @@ class HashMgr {
    std::vector<replentry> reptable;
  
   public:
@@ -775,8 +784,17 @@ index b6eaddd..7328b4c 100644
 +#endif
    ~HashMgr();
  
-   struct hentry* lookup(const char*) const;
-@@ -144,6 +173,40 @@ class HashMgr {
+   struct hentry* lookup(const char* word, size_t len) const;
+@@ -116,7 +145,7 @@ class HashMgr {
+   struct hentry* walk_hashtable(int& col, struct hentry* hp) const;
+ 
+   int add(const std::string& word);
+-  int add_with_flags(const std::string& word, const std::string& flags, const std::string& desc = NULL);
++  int add_with_flags(const std::string& word, const std::string& flags, const std::string& desc);
+   int add_with_affix(const std::string& word, const std::string& pattern);
+   int remove(const std::string& word);
+   int decode_flags(unsigned short** result, const std::string& flags, FileMgr* af) const;
+@@ -142,6 +171,40 @@ class HashMgr {
                 int captype);
    int load_config(const char* affpath, const char* key);
    bool parse_aliasf(const std::string& line, FileMgr* af);
@@ -818,7 +836,7 @@ index b6eaddd..7328b4c 100644
                                    int wcl,
                                    unsigned short* flags,
 diff --git a/src/hunspell/htypes.hxx b/src/hunspell/htypes.hxx
-index 8e03a03..f96ea1d 100644
+index 2b896fb..f3fa34b 100644
 --- a/src/hunspell/htypes.hxx
 +++ b/src/hunspell/htypes.hxx
 @@ -38,6 +38,16 @@
@@ -839,10 +857,10 @@ index 8e03a03..f96ea1d 100644
  
  #define ROTATE(v, q) \
 diff --git a/src/hunspell/hunspell.cxx b/src/hunspell/hunspell.cxx
-index 35266c9..bab2ff2 100644
+index 51e0937..c4a29fc 100644
 --- a/src/hunspell/hunspell.cxx
 +++ b/src/hunspell/hunspell.cxx
-@@ -77,19 +77,28 @@
+@@ -77,21 +77,30 @@
  #include "hunspell.hxx"
  #include "suggestmgr.hxx"
  #include "hunspell.h"
@@ -865,6 +883,8 @@ index 35266c9..bab2ff2 100644
 +#else
    HunspellImpl(const char* affpath, const char* dpath, const char* key = NULL);
 +#endif
+   HunspellImpl(const HunspellImpl&) = delete;
+   HunspellImpl& operator=(const HunspellImpl&) = delete;
    ~HunspellImpl();
 +#ifndef HUNSPELL_CHROME_CLIENT
    int add_dic(const char* dpath, const char* key = NULL);
@@ -872,17 +892,26 @@ index 35266c9..bab2ff2 100644
    std::vector<std::string> suffix_suggest(const std::string& root_word);
    std::vector<std::string> generate(const std::string& word, const std::vector<std::string>& pl);
    std::vector<std::string> generate(const std::string& word, const std::string& pattern);
-@@ -127,7 +136,9 @@ private:
+@@ -108,7 +117,7 @@ public:
+   const std::vector<w_char>& get_wordchars_utf16() const;
+   const std::string& get_dict_encoding() const;
+   int add(const std::string& word);
+-  int add_with_flags(const std::string& word, const std::string& flags, const std::string& desc = NULL);
++  int add_with_flags(const std::string& word, const std::string& flags, const std::string& desc);
+   int add_with_affix(const std::string& word, const std::string& example);
+   int remove(const std::string& word);
+   const std::string& get_version_cpp() const;
+@@ -132,7 +141,9 @@ private:
    AffixMgr* pAMgr;
    std::vector<HashMgr*> m_HMgrs;
    SuggestMgr* pSMgr;
 +#ifndef HUNSPELL_CHROME_CLIENT // We are using BDict instead.
-   char* affixpath;
+   std::string affixpath;
 +#endif
    std::string encoding;
    struct cs_info* csconv;
    int langnum;
-@@ -135,6 +146,11 @@ private:
+@@ -140,6 +151,11 @@ private:
    int complexprefixes;
    std::vector<std::string> wordbreak;
  
@@ -893,30 +922,28 @@ index 35266c9..bab2ff2 100644
 +
  private:
    std::vector<std::string> analyze_internal(const std::string& word);
-   bool spell_internal(const std::string& word, int* info = NULL, std::string* root = NULL);
-@@ -169,18 +185,34 @@ private:
-   HunspellImpl& operator=(const HunspellImpl&);
+   bool spell_internal(const std::string& word, std::vector<std::string>& candidate_stack,
+@@ -174,18 +190,32 @@ private:
+   int check_xml_par(const std::string& q, std::string::size_type pos, const char* attr, const char* value);
  };
  
 +#ifdef HUNSPELL_CHROME_CLIENT
 +HunspellImpl::HunspellImpl(base::span<const unsigned char> bdict_data) {
 +#else
- HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* key) {
+ HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* key)
+   : affixpath(affpath) {
 +#endif
    csconv = NULL;
    utf8 = 0;
    complexprefixes = 0;
-+#ifndef HUNSPELL_CHROME_CLIENT
-   affixpath = mystrdup(affpath);
-+#endif
-+
+ 
 +#ifdef HUNSPELL_CHROME_CLIENT
 +  bdict_reader = new hunspell::BDictReader;
 +  bdict_reader->Init(bdict_data);
 +
 +  /* first set up the hash manager */
 +  m_HMgrs.push_back(new HashMgr(bdict_reader));
- 
++
 +  pAMgr = new AffixMgr(bdict_reader, m_HMgrs); // TODO: 'key' ?
 +#else
    /* first set up the hash manager */
@@ -929,7 +956,7 @@ index 35266c9..bab2ff2 100644
  
    /* get the preferred try string and the dictionary */
    /* encoding from the Affix Manager for that dictionary */
-@@ -194,7 +226,11 @@ HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* k
+@@ -199,7 +229,11 @@ HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* k
    wordbreak = pAMgr->get_breaktable();
  
    /* and finally set up the suggestion manager */
@@ -938,62 +965,56 @@ index 35266c9..bab2ff2 100644
 +#else
    pSMgr = new SuggestMgr(try_string, MAXSUGGESTION, pAMgr);
 +#endif
-   if (try_string)
-     free(try_string);
  }
-@@ -210,11 +246,17 @@ HunspellImpl::~HunspellImpl() {
+ 
+ HunspellImpl::~HunspellImpl() {
+@@ -213,13 +247,19 @@ HunspellImpl::~HunspellImpl() {
    delete[] csconv;
  #endif
    csconv = NULL;
 +#ifdef HUNSPELL_CHROME_CLIENT
 +    if (bdict_reader) delete bdict_reader;
 +    bdict_reader = NULL;
-+#else
-   if (affixpath)
-     free(affixpath);
-   affixpath = NULL;
 +#endif
  }
  
 +#ifndef HUNSPELL_CHROME_CLIENT
  // load extra dictionaries
  int HunspellImpl::add_dic(const char* dpath, const char* key) {
-   if (!affixpath)
-@@ -222,6 +264,7 @@ int HunspellImpl::add_dic(const char* dpath, const char* key) {
-   m_HMgrs.push_back(new HashMgr(dpath, affixpath, key));
+   m_HMgrs.push_back(new HashMgr(dpath, affixpath.c_str(), key));
    return 0;
  }
 +#endif
  
  
  // make a copy of src at dest while removing all characters
-@@ -450,6 +493,9 @@ bool HunspellImpl::spell(const std::string& word, int* info, std::string* root)
- }
+@@ -462,6 +502,9 @@ bool HunspellImpl::spell(const std::string& word, std::vector<std::string>& cand
  
- bool HunspellImpl::spell_internal(const std::string& word, int* info, std::string* root) {
+ bool HunspellImpl::spell_internal(const std::string& word, std::vector<std::string>& candidate_stack,
+                                   int* info, std::string* root) {
 +#ifdef HUNSPELL_CHROME_CLIENT
 +  if (m_HMgrs[0]) m_HMgrs[0]->EmptyHentryCache();
 +#endif
    struct hentry* rv = NULL;
  
    int info2 = 0;
-@@ -785,6 +831,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
-   if (!len)
+@@ -818,6 +861,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
+   if (word.empty())
      return NULL;
  
 +#ifdef HUNSPELL_CHROME_CLIENT
 +  // We need to check if the word length is valid to make coverity (Event
 +  // fixed_size_dest: Possible overrun of N byte fixed size buffer) happy.
-+  if ((utf8 && strlen(word) >= MAXWORDUTF8LEN) || (!utf8 && strlen(word) >= MAXWORDLEN))
++  if ((utf8 && word.size() >= MAXWORDUTF8LEN) || (!utf8 && word.size() >= MAXWORDLEN))
 +    return NULL;
 +#endif
 +
    // word reversing wrapper for complex prefixes
    if (complexprefixes) {
-     if (!usebuffer) {
-@@ -985,6 +1038,9 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
- 
- std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
+     if (utf8)
+@@ -1060,6 +1110,9 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
+         std::vector<std::string>& spell_candidate_stack,
+         std::vector<std::string>& suggest_candidate_stack,
          bool& capwords, size_t& abbv, int& captype) {
 +#ifdef HUNSPELL_CHROME_CLIENT
 +  if (m_HMgrs[0]) m_HMgrs[0]->EmptyHentryCache();
@@ -1001,7 +1022,7 @@ index 35266c9..bab2ff2 100644
    captype = NOCAP;
    abbv = 0;
    capwords = false;
-@@ -2021,18 +2077,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
+@@ -2120,18 +2173,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
    return 0;
  }
  
@@ -1026,8 +1047,8 @@ index 35266c9..bab2ff2 100644
 +#endif
  
  bool Hunspell::spell(const std::string& word, int* info, std::string* root) {
-   return m_Impl->spell(word, info, root);
-@@ -2159,22 +2222,32 @@ int Hunspell::input_conv(const char* word, char* dest, size_t destsize) {
+   std::vector<std::string> candidate_stack;
+@@ -2263,22 +2323,32 @@ int Hunspell::input_conv(const char* word, char* dest, size_t destsize) {
  }
  
  Hunhandle* Hunspell_create(const char* affpath, const char* dpath) {
@@ -1061,10 +1082,10 @@ index 35266c9..bab2ff2 100644
  int Hunspell_spell(Hunhandle* pHunspell, const char* word) {
    return reinterpret_cast<HunspellImpl*>(pHunspell)->spell(word);
 diff --git a/src/hunspell/hunspell.hxx b/src/hunspell/hunspell.hxx
-index a06bdd4..d3c2689 100644
+index 142017f..513c70c 100644
 --- a/src/hunspell/hunspell.hxx
 +++ b/src/hunspell/hunspell.hxx
-@@ -76,9 +76,14 @@
+@@ -76,6 +76,11 @@
  #include <string>
  #include <vector>
  
@@ -1075,12 +1096,8 @@ index a06bdd4..d3c2689 100644
 +
  #define SPELL_XML "<?xml?>"
  
--#define MAXSUGGESTION 15
-+#define MAXSUGGESTION 5
- #define MAXSHARPS 5
- 
- #ifndef MAXWORDLEN
-@@ -112,11 +117,17 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
+ #ifndef MAXSUGGESTION
+@@ -111,13 +116,19 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
     * long path names (without the long path prefix Hunspell will use fopen()
     * with system-dependent character encoding instead of _wfopen()).
     */
@@ -1089,6 +1106,8 @@ index a06bdd4..d3c2689 100644
 +#else
    Hunspell(const char* affpath, const char* dpath, const char* key = NULL);
 +#endif
+   Hunspell(const Hunspell&) = delete;
+   Hunspell& operator=(const Hunspell&) = delete;
    ~Hunspell();
  
 +#ifndef HUNSPELL_CHROME_CLIENT
@@ -1098,24 +1117,33 @@ index a06bdd4..d3c2689 100644
  
    /* spell(word) - spellcheck word
     * output: false = bad word, true = good word
+@@ -197,7 +208,7 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
+ 
+   int add(const std::string& word);
+ 
+-  int add_with_flags(const std::string& word, const std::string& flags, const std::string& desc = NULL);
++  int add_with_flags(const std::string& word, const std::string& flags, const std::string& desc);
+ 
+   /* add word to the run-time dictionary with affix flags of
+    * the example (a dictionary word): Hunspell will recognize
 diff --git a/src/hunspell/replist.cxx b/src/hunspell/replist.cxx
-index cabe382..a6dc708 100644
+index f3cde4d..83496a3 100644
 --- a/src/hunspell/replist.cxx
 +++ b/src/hunspell/replist.cxx
-@@ -161,6 +161,7 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
+@@ -149,6 +149,7 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
    mystrrep(r->outstrings[type], "_", " ");
-   dat[pos++] = r;
+   dat.push_back(r);
    // sort to the right place in the list
 +#if 0
-   int i;
-   for (i = pos - 1; i > 0; i--) {
+   size_t i;
+   for (i = dat.size() - 1; i > 0; --i) {
      if (strcmp(r->pattern.c_str(), dat[i - 1]->pattern.c_str()) < 0) {
-@@ -169,6 +170,15 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
+@@ -157,6 +158,15 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
        break;
    }
    dat[i] = r;
 +#else
-+  for (int i = pos - 1; i > 0; i--) {
++  for (int i = dat.size() - 1; i > 0; --i) {
 +    r = dat[i];
 +    if (r->pattern < dat[i - 1]->pattern) {
 +      dat[i] = dat[i - 1];
@@ -1127,7 +1155,7 @@ index cabe382..a6dc708 100644
  }
  
 diff --git a/src/hunspell/replist.hxx b/src/hunspell/replist.hxx
-index 1e3efa4..c35a373 100644
+index e3462b9..cd66ee3 100644
 --- a/src/hunspell/replist.hxx
 +++ b/src/hunspell/replist.hxx
 @@ -72,6 +72,12 @@
@@ -1144,12 +1172,12 @@ index 1e3efa4..c35a373 100644
  
  #include <string>
 diff --git a/src/hunspell/suggestmgr.cxx b/src/hunspell/suggestmgr.cxx
-index dba084e..a37100d 100644
+index 5f480f9..ebffdf1 100644
 --- a/src/hunspell/suggestmgr.cxx
 +++ b/src/hunspell/suggestmgr.cxx
-@@ -82,7 +82,112 @@ const w_char W_VLINE = {'\0', '|'};
- 
+@@ -84,7 +84,112 @@ const w_char W_VLINE = {'\0', '|'};
  #define MAX_CHAR_DISTANCE 4
+ #define MAXWORDUTF8LEN (MAXWORDLEN * 3)
  
 +#ifdef HUNSPELL_CHROME_CLIENT
 +namespace {
@@ -1250,18 +1278,18 @@ index dba084e..a37100d 100644
 +
 +#ifdef HUNSPELL_CHROME_CLIENT
 +SuggestMgr::SuggestMgr(hunspell::BDictReader* reader,
-+                       const char * tryme, int maxn, 
++                       const std::string& tryme, int maxn, 
 +                       AffixMgr * aptr)
 +{
 +  bdict_reader = reader;
 +#else
- SuggestMgr::SuggestMgr(const char* tryme, unsigned int maxn, AffixMgr* aptr) {
+ SuggestMgr::SuggestMgr(const std::string& tryme, unsigned int maxn, AffixMgr* aptr) {
 +#endif
    // register affix manager and check in string of chars to
    // try when building candidate suggestions
    pAMgr = aptr;
-@@ -455,6 +560,21 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
-   int wl = strlen(word);
+@@ -496,6 +601,21 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
+   int wl = word.size();
    if (wl < 2 || !pAMgr)
      return wlst.size();
 +
@@ -1270,27 +1298,27 @@ index dba084e..a37100d 100644
 +  const char *pattern, *pattern2;
 +  hunspell::ReplacementIterator iterator = bdict_reader->GetReplacementIterator();
 +  while (iterator.GetNext(&pattern, &pattern2)) {
-+    const char* r = word;
++    size_t r = 0;
 +    size_t lenr = strlen(pattern2);
 +    size_t lenp = strlen(pattern);
 +
 +    // search every occurence of the pattern in the word
-+    while ((r=strstr(r, pattern)) != NULL) {
++    while ((r = word.find(pattern, r)) != std::string::npos) {
 +      candidate = word;
-+      candidate.replace(r-word, lenp, pattern2);
++      candidate.replace(r, lenp, pattern2);
 +#else
    const std::vector<replentry>& reptable = pAMgr->get_reptable();
-   for (size_t i = 0; i < reptable.size(); ++i) {
-     const char* r = word;
-@@ -474,6 +594,7 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
-       candidate.resize(r - word);
-       candidate.append(reptable[i].outstrings[type]);
-       candidate.append(r + reptable[i].pattern.size());
+   for (const auto& entry : reptable) {
+     size_t r = 0;
+@@ -514,6 +634,7 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
+       candidate.assign(word, 0, r);
+       candidate.append(entry.outstrings[type]);
+       candidate.append(word, r + entry.pattern.size(), std::string::npos);
 +#endif
-       testsug(wlst, candidate, cpdsuggest, NULL, NULL);
-       // check REP suggestions with space
        size_t sp = candidate.find(' ');
-@@ -1131,6 +1252,9 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
+       size_t oldns = wlst.size();
+       testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
+@@ -1225,6 +1346,9 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
  
    struct hentry* hp = NULL;
    int col = -1;
@@ -1300,7 +1328,7 @@ index dba084e..a37100d 100644
    phonetable* ph = (pAMgr) ? pAMgr->get_phonetable() : NULL;
    std::string target;
    std::string candidate;
-@@ -1257,7 +1381,11 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
+@@ -1351,7 +1475,11 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
  
        if (sc > scores[lp]) {
          scores[lp] = sc;
@@ -1309,48 +1337,41 @@ index dba084e..a37100d 100644
 +#else
          roots[lp] = hp;
 +#endif
+         has_roots = true;
          lval = sc;
          for (int j = 0; j < MAX_ROOTS; j++)
-           if (scores[j] < lval) {
-@@ -2197,8 +2325,8 @@ void SuggestMgr::lcs(const char* s,
+@@ -2261,12 +2389,8 @@ char* SuggestMgr::lcs(const char* s,
      m = strlen(s);
      n = strlen(s2);
    }
--  c = (char*)malloc((m + 1) * (n + 1));
--  b = (char*)malloc((m + 1) * (n + 1));
-+  c = (char *) calloc(m + 1, n + 1);
-+  b = (char *) calloc(m + 1, n + 1);
-   if (!c || !b) {
-     if (c)
-       free(c);
-@@ -2207,10 +2335,6 @@ void SuggestMgr::lcs(const char* s,
-     *result = NULL;
-     return;
-   }
+-  char* c = new char[(m + 1) * (n + 1)];
+-  char* b = new char[(m + 1) * (n + 1)];
 -  for (i = 1; i <= m; i++)
 -    c[i * (n + 1)] = 0;
 -  for (j = 0; j <= n; j++)
 -    c[j] = 0;
++  char* c = new char[(m + 1) * (n + 1)]();
++  char* b = new char[(m + 1) * (n + 1)]();
    for (i = 1; i <= m; i++) {
      for (j = 1; j <= n; j++) {
        if (((utf8) && (su[i - 1] == su2[j - 1])) ||
 diff --git a/src/hunspell/suggestmgr.hxx b/src/hunspell/suggestmgr.hxx
-index 7137be2..237d670 100644
+index 7fa1a6b..369d6e3 100644
 --- a/src/hunspell/suggestmgr.hxx
 +++ b/src/hunspell/suggestmgr.hxx
-@@ -116,7 +116,11 @@ class SuggestMgr {
+@@ -112,7 +112,11 @@ class SuggestMgr {
    int complexprefixes;
  
   public:
 +#ifdef HUNSPELL_CHROME_CLIENT
-+  SuggestMgr(hunspell::BDictReader* reader, const char * tryme, int maxn, AffixMgr *aptr);
++  SuggestMgr(hunspell::BDictReader* reader, const std::string& tryme, int maxn, AffixMgr *aptr);
 +#else
-   SuggestMgr(const char* tryme, unsigned int maxn, AffixMgr* aptr);
+   SuggestMgr(const std::string& tryme, unsigned int maxn, AffixMgr* aptr);
 +#endif
+   SuggestMgr(const SuggestMgr&) = delete;
+   SuggestMgr& operator=(const SuggestMgr&) = delete;
    ~SuggestMgr();
- 
-   bool suggest(std::vector<std::string>& slst, const char* word, int* onlycmpdsug);
-@@ -126,6 +130,10 @@ class SuggestMgr {
+@@ -128,6 +132,10 @@ class SuggestMgr {
    std::string suggest_gen(const std::vector<std::string>& pl, const std::string& pattern);
  
   private:

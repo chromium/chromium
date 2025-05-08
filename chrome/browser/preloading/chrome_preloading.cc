@@ -36,7 +36,8 @@ TemplateURLService* GetTemplateURLServiceFromBrowserContext(
 bool HasCanonicalPreloadingOmniboxSearchURL(
     const GURL& preloading_url,
     content::BrowserContext* browser_context,
-    GURL* canonical_url) {
+    GURL* canonical_url,
+    std::u16string* search_terms) {
   const TemplateURLService* const template_url_service =
       GetTemplateURLServiceFromBrowserContext(browser_context);
   if (!template_url_service) {
@@ -52,7 +53,7 @@ bool HasCanonicalPreloadingOmniboxSearchURL(
   return default_search_provider->KeepSearchTermsInURL(
       preloading_url, template_url_service->search_terms_data(),
       /*keep_search_intent_params=*/true,
-      /*normalize_search_terms=*/true, canonical_url);
+      /*normalize_search_terms=*/true, canonical_url, search_terms);
 }
 
 bool IsSearchDestinationMatch(const GURL& canonical_preloading_search_url,

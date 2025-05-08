@@ -22,7 +22,9 @@
 #import "ios/web/public/web_state.h"
 
 WebNavigationBrowserAgent::WebNavigationBrowserAgent(Browser* browser)
-    : web_state_list_(browser->GetWebStateList()), browser_(browser) {}
+    : BrowserUserData(browser),
+      web_state_list_(browser->GetWebStateList()),
+      browser_(browser) {}
 
 WebNavigationBrowserAgent::~WebNavigationBrowserAgent() {}
 

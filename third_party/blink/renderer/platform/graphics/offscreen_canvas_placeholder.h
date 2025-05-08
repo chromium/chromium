@@ -40,8 +40,9 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
 
   void RegisterPlaceholderCanvas(unsigned placeholder_id);
   void UnregisterPlaceholderCanvas();
-  const scoped_refptr<CanvasResource>& OffscreenCanvasFrame() const {
-    return placeholder_frame_;
+  bool HasOffscreenCanvasFrame() const { return !!placeholder_frame_; }
+  CanvasResource* OffscreenCanvasFrame() const {
+    return placeholder_frame_.get();
   }
 
   bool IsOffscreenCanvasRegistered() const {

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "cc/paint/paint_op.h"
 
@@ -1307,11 +1303,11 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     }
 
     // Add a tone mapping filter to `paint` if needed.
-    if (ToneMapUtil::UseGlobalToneMapFilter(op->image)) {
-      auto dst_color_space = canvas->imageInfo().refColorSpace();
-      ToneMapUtil::AddGlobalToneMapFilterToPaint(paint, op->image,
-                                                 dst_color_space);
-      sk_image = sk_image->reinterpretColorSpace(dst_color_space);
+    if (ToneMapUtil::UseGlobalToneMapFilter(op->image.cached_sk_image_.get(),
+                                            canvas->imageInfo().colorSpace())) {
+      ToneMapUtil::AddGlobalToneMapFilterToPaint(
+          paint, op->image.cached_sk_image_.get(), op->image.hdr_metadata_,
+          op->image.target_hdr_headroom_);
     }
 
     SkTiledImageUtils::DrawImage(canvas, sk_image.get(), op->left, op->top,
@@ -1449,12 +1445,12 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
 
       // If this uses a global tone map filter, then incorporate that filter
       // into the paint.
-      if (ToneMapUtil::UseGlobalToneMapFilter(op->image)) {
+      if (ToneMapUtil::UseGlobalToneMapFilter(op->image.cached_sk_image_.get(),
+                                              c->imageInfo().colorSpace())) {
         SkPaint tonemap_paint = p;
         ToneMapUtil::AddGlobalToneMapFilterToPaint(
-            tonemap_paint, op->image, c->imageInfo().refColorSpace());
-        sk_image =
-            sk_image->reinterpretColorSpace(c->imageInfo().refColorSpace());
+            tonemap_paint, op->image.cached_sk_image_.get(),
+            op->image.hdr_metadata_, op->image.target_hdr_headroom_);
         DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling,
                       &tonemap_paint, op->constraint);
         return;

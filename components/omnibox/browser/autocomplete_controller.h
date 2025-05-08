@@ -23,6 +23,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_controller_metrics.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -33,6 +34,7 @@
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/open_tab_provider.h"
+#include "components/omnibox/browser/tab_group_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/omnibox_proto/types.pb.h"
 
@@ -205,12 +207,11 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Made virtual for mocking in tests.
   virtual void StartPrefetch(const AutocompleteInput& input);
 
-  // Cancels the current query, ensuring there will be no future notifications
-  // fired.  If new matches have come in since the most recent notification was
-  // fired, they will be discarded. If `clear_result` is true, the controller
-  // will also erase the result set. `due_to_user_inactivity` means this call
-  // was triggered by a user's idleness, i.e., not an explicit user action.
-  void Stop(bool clear_result, bool due_to_user_inactivity = false);
+  // Cancels the current query, ensuring most future updates won't fire
+  // notifications. If new matches have come in since the most recent
+  // notification was fired, they may be discarded. See
+  // `AutocompleteProvider::Stop()` & `AutocompleteStopReason`.
+  void Stop(AutocompleteStopReason stop_reason);
 
   // Asks the relevant provider to delete |match|, and ensures observers are
   // notified of resulting changes immediately.  This should only be called when
@@ -399,7 +400,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // `UpdateResult()`'s helper methods.
   struct OldResult {
     OldResult(UpdateType update_type,
-              AutocompleteInput input,
+              const AutocompleteInput& input,
               AutocompleteResult* result);
     ~OldResult();
 
@@ -562,6 +563,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<HistoryFuzzyProvider> history_fuzzy_provider_;
 
   raw_ptr<OpenTabProvider> open_tab_provider_;
+
+  raw_ptr<TabGroupProvider> tab_group_provider_;
 
   raw_ptr<FeaturedSearchProvider> featured_search_provider_;
 

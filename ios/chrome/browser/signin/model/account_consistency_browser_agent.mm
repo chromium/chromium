@@ -8,7 +8,7 @@
 
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -26,7 +26,9 @@
 AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     Browser* browser,
     UIViewController* base_view_controller)
-    : base_view_controller_(base_view_controller), browser_(browser) {
+    : BrowserUserData(browser),
+      base_view_controller_(base_view_controller),
+      browser_(browser) {
   installation_observer_ =
       std::make_unique<WebStateDependencyInstallationObserver>(
           browser->GetWebStateList(), this);
@@ -65,13 +67,13 @@ void AccountConsistencyBrowserAgent::OnRestoreGaiaCookies() {
       showSigninAccountNotificationFromViewController:base_view_controller_];
 }
 
-void AccountConsistencyBrowserAgent::OnManageAccounts() {
+void AccountConsistencyBrowserAgent::OnManageAccounts(const GURL& url) {
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())
           ->GetState());
 
   if (ShouldShowAccountMenu()) {
-    ShowAccountMenu();
+    ShowAccountMenu(url);
   } else {
     [settings_handler_
         showAccountsSettingsFromViewController:base_view_controller_
@@ -94,7 +96,7 @@ void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
   }
 }
 
-void AccountConsistencyBrowserAgent::OnAddAccount() {
+void AccountConsistencyBrowserAgent::OnAddAccount(const GURL& url) {
   if ([base_view_controller_ presentedViewController]) {
     // If the base view controller is already presenting a view, the sign-in
     // should not appear on top of it.
@@ -103,7 +105,7 @@ void AccountConsistencyBrowserAgent::OnAddAccount() {
   }
 
   if (ShouldShowAccountMenu()) {
-    ShowAccountMenu();
+    ShowAccountMenu(url);
   } else {
     ShowSigninCommand* command = [[ShowSigninCommand alloc]
         initWithOperation:AuthenticationOperation::kAddAccount
@@ -155,13 +157,11 @@ bool AccountConsistencyBrowserAgent::ShouldShowAccountMenu() const {
   return num_profiles > 1;
 }
 
-void AccountConsistencyBrowserAgent::ShowAccountMenu() {
+void AccountConsistencyBrowserAgent::ShowAccountMenu(const GURL& url) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-  // TODO(crbug.com/375605412): Adjust the account menu shown here so that it
-  // has "Manage accounts on this device" as a top-level button, and no overflow
-  // menu.
   // TODO(crbug.com/411614444): Open the account menu here instead of going
   // through the handler.
   [application_handler_
-      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb];
+      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb
+                                 URL:url];
 }

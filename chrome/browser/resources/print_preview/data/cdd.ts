@@ -110,23 +110,10 @@ export type SelectOption = {
 export type MediaSizeOption = {
   type?: string,
   vendor_id?: string, height_microns: number, width_microns: number,
-  imageable_area_left_microns?: number,
-  imageable_area_bottom_microns?: number,
-  imageable_area_right_microns?: number,
-  imageable_area_top_microns?: number,
-  has_borderless_variant?: boolean,
 }&SelectOption;
 
 export type MediaSizeCapability = {
   option: MediaSizeOption[],
-}&CapabilityWithReset;
-
-export type MediaTypeOption = {
-  vendor_id: string,
-}&SelectOption;
-
-export type MediaTypeCapability = {
-  option: MediaTypeOption[],
 }&CapabilityWithReset;
 
 export type DpiOption = {
@@ -150,7 +137,6 @@ export interface CddCapabilities {
   duplex?: DuplexCapability;
   page_orientation?: PageOrientationCapability;
   media_size?: MediaSizeCapability;
-  media_type?: MediaTypeCapability;
   dpi?: DpiCapability;
 }
 

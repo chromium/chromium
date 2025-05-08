@@ -430,9 +430,6 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadType) {
       process_.Pid(), base::PlatformThreadId::ForTest(101),
       base::ThreadType::kUtility, base::IsViaIPC(false));
   base::PlatformThread::SetThreadType(
-      process_.Pid(), base::PlatformThreadId::ForTest(102),
-      base::ThreadType::kResourceEfficient, base::IsViaIPC(false));
-  base::PlatformThread::SetThreadType(
       process_.Pid(), base::PlatformThreadId::ForTest(103),
       base::ThreadType::kDefault, base::IsViaIPC(false));
   base::PlatformThread::SetThreadType(
@@ -453,8 +450,6 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadType) {
                     resource_manager::ThreadState::kBackground),
           FieldsAre(process_.Pid(), base::PlatformThreadId::ForTest(101),
                     resource_manager::ThreadState::kUtility),
-          FieldsAre(process_.Pid(), base::PlatformThreadId::ForTest(102),
-                    resource_manager::ThreadState::kEco),
           FieldsAre(process_.Pid(), base::PlatformThreadId::ForTest(103),
                     resource_manager::ThreadState::kBalanced),
           FieldsAre(process_.Pid(), base::PlatformThreadId::ForTest(104),
@@ -471,15 +466,9 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadTypeBeforeResourcedAvailable) {
       base::ThreadType::kBackground, base::IsViaIPC(false));
   base::PlatformThread::SetThreadType(
       process_.Pid(), base::PlatformThreadId::ForTest(101),
-      base::ThreadType::kResourceEfficient, base::IsViaIPC(false));
-  base::PlatformThread::SetThreadType(
-      process_.Pid(), base::PlatformThreadId::ForTest(101),
       base::ThreadType::kUtility, base::IsViaIPC(false));
   base::Process dummy_process1 = base::Process::Open(1);
   dummy_process1.InitializePriority();
-  base::PlatformThread::SetThreadType(
-      dummy_process1.Pid(), base::PlatformThreadId::ForTest(102),
-      base::ThreadType::kResourceEfficient, base::IsViaIPC(false));
   base::PlatformThread::SetThreadType(
       dummy_process1.Pid(), base::PlatformThreadId::ForTest(103),
       base::ThreadType::kDefault, base::IsViaIPC(false));
@@ -511,22 +500,11 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadTypeBeforeResourcedAvailable) {
           FieldsAre(dummy_process1.Pid(),
                     base::PlatformThreadId(dummy_process1.Pid()),
                     resource_manager::ThreadState::kBalanced),
-          FieldsAre(dummy_process1.Pid(), base::PlatformThreadId::ForTest(102),
-                    resource_manager::ThreadState::kEco),
           FieldsAre(dummy_process1.Pid(), base::PlatformThreadId::ForTest(103),
                     resource_manager::ThreadState::kBalanced),
           FieldsAre(dummy_process2.Pid(),
                     base::PlatformThreadId(dummy_process2.Pid()),
                     resource_manager::ThreadState::kBalanced)));
-
-  base::PlatformThread::SetThreadType(
-      process_.Pid(), base::PlatformThreadId::ForTest(101),
-      base::ThreadType::kResourceEfficient, base::IsViaIPC(false));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(resourced_client_->GetThreadStateHistory().size(), 8ul);
-  EXPECT_THAT(resourced_client_->GetThreadStateHistory()[7],
-              FieldsAre(process_.Pid(), base::PlatformThreadId::ForTest(101),
-                        resource_manager::ThreadState::kEco));
 }
 
 TEST_F(DBusSchedQOSStateHandlerTest, SetThreadTypeBeforeInitialize) {
@@ -613,9 +591,6 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadTypeRetryOnDisconnect) {
                         resource_manager::ThreadState::kUtility));
 
   base::PlatformThread::SetThreadType(
-      process_.Pid(), base::PlatformThreadId::ForTest(102),
-      base::ThreadType::kResourceEfficient, base::IsViaIPC(false));
-  base::PlatformThread::SetThreadType(
       dummy_process1.Pid(), base::PlatformThreadId::ForTest(103),
       base::ThreadType::kUtility, base::IsViaIPC(false));
   base::PlatformThread::SetThreadType(
@@ -636,19 +611,17 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadTypeRetryOnDisconnect) {
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(resourced_client_->GetProcessStateHistory().size(), 6ul);
-  EXPECT_EQ(resourced_client_->GetThreadStateHistory().size(), 9ul);
+  EXPECT_EQ(resourced_client_->GetThreadStateHistory().size(), 8ul);
   EXPECT_THAT(
       absl::MakeSpan(resourced_client_->GetProcessStateHistory()).last(2),
       UnorderedElementsAre(
           Pair(process_.Pid(), resource_manager::ProcessState::kBackground),
           Pair(dummy_process2.Pid(), resource_manager::ProcessState::kNormal)));
   EXPECT_THAT(
-      absl::MakeSpan(resourced_client_->GetThreadStateHistory()).last(3),
+      absl::MakeSpan(resourced_client_->GetThreadStateHistory()).last(2),
       UnorderedElementsAre(
           FieldsAre(process_.Pid(), base::PlatformThreadId::ForTest(101),
                     resource_manager::ThreadState::kUtility),
-          FieldsAre(process_.Pid(), base::PlatformThreadId::ForTest(102),
-                    resource_manager::ThreadState::kEco),
           FieldsAre(dummy_process1.Pid(), base::PlatformThreadId::ForTest(103),
                     resource_manager::ThreadState::kUrgentBursty)));
 }

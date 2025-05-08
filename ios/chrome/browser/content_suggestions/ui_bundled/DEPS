@@ -6,7 +6,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/ui_bundled",
   "+ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h",
   "+ios/chrome/browser/toolbar/ui_bundled/buttons",
-  "+ios/chrome/browser/omnibox/ui_bundled",
+  "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/favicon/ui_bundled",

@@ -40,7 +40,7 @@ class NativeMessageHost {
     virtual void CloseChannel(const std::string& error_message) = 0;
   };
 
-  // Creates the NativeMessageHost based on the |native_host_name|.
+  // Creates the NativeMessageHost based on the `native_host_name`.
   static std::unique_ptr<NativeMessageHost> Create(
       content::BrowserContext* browser_context,
       gfx::NativeView native_view,

@@ -183,10 +183,22 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   SharedWorkerHost* host = FindMatchingSharedWorkerHost(
       info->url, info->options->name, storage_key, info->same_site_cookies);
   if (host) {
+    // TODO(crbug.com/413207418): revise ScriptLoadFailed() to use enum.
+
     // Non-secure contexts cannot connect to secure workers, and secure contexts
     // cannot connect to non-secure workers:
     if (host->instance().creation_context_type() != creation_context_type) {
       ScriptLoadFailed(std::move(client), /*error_message=*/"");
+      return;
+    }
+    // If extended_lifetime does not match, raise.
+    // See: https://github.com/whatwg/html/issues/10997#issuecomment-2791533299
+    if (host->instance().extended_lifetime() != info->extended_lifetime) {
+      ScriptLoadFailed(
+          std::move(client),
+          "Failed to connect an existing shared worker because the "
+          "extendedLifetime given on the SharedWorker constructor doesn't "
+          "match the existing shared worker's extendedLifetime.");
       return;
     }
     // Step 11.4: "If worker global scope is not null, then check if worker
@@ -217,10 +229,10 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     return;
   }
   auto partition_domain = site_instance->GetPartitionDomain(storage_partition_);
-  SharedWorkerInstance instance(info->url, info->options->type,
-                                info->options->credentials, info->options->name,
-                                storage_key, creation_context_type,
-                                info->same_site_cookies);
+  SharedWorkerInstance instance(
+      info->url, info->options->type, info->options->credentials,
+      info->options->name, storage_key, creation_context_type,
+      info->same_site_cookies, info->extended_lifetime);
   host = CreateWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
       std::move(info->outside_fetch_client_settings_object), partition_domain,

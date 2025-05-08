@@ -36,7 +36,6 @@ class MonotoneCubicSpline {
       const std::vector<double>& ys);
 
   bool operator==(const MonotoneCubicSpline& spline) const;
-  bool operator!=(const MonotoneCubicSpline& spline) const;
 
   // Returns interpolated value for |x|. If |x| is smaller|greater than
   // smallest|largest value in |xs_|, then smallest|largest value in |ys_| will

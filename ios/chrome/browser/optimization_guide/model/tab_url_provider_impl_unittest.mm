@@ -8,7 +8,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/simple_test_clock.h"
-#import "base/test/task_environment.h"
 #import "components/optimization_guide/core/tab_url_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -17,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -73,7 +73,7 @@ class TabUrlProviderImplTest : public PlatformTest {
   base::SimpleTestClock* clock() { return &clock_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ProfileIOS> profile_;
   base::SimpleTestClock clock_;
   std::unique_ptr<TestBrowser> browser_;

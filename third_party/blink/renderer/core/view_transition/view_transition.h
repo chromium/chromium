@@ -51,6 +51,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
 
     virtual void AddPendingRequest(std::unique_ptr<ViewTransitionRequest>) = 0;
     virtual void OnTransitionFinished(ViewTransition*) = 0;
+    virtual void OnSkipTransitionWithPendingCallback(ViewTransition*) = 0;
+    virtual void OnSkippedTransitionDOMCallback(ViewTransition*) = 0;
   };
 
   // Creates and starts a same-document ViewTransition initiated using the
@@ -202,6 +204,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
     return style_tracker_ && document_->documentElement() &&
            style_tracker_->IsTransitionElement(*document_->documentElement());
   }
+
+  void RecalcTransitionPseudoTreeStyle() const;
+
+  void RebuildTransitionPseudoLayoutTree() const;
 
   // In physical pixels. See comments on equivalent methods in
   // ViewTransitionStyleTracker for info.

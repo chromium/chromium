@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.WebContents;
@@ -16,9 +16,10 @@ import org.chromium.content_public.browser.WebContents;
  * WebContents. Changes to the WebContents considered active must be reflected with calls to
  * onWebContentsChanged; this class does not attempt to track these changes.
  */
+@NullMarked
 class FormFieldFocusedSupplier extends ObservableSupplierImpl<Boolean> implements ImeEventObserver {
-    private WebContents mWebContents;
-    private ImeAdapter mImeAdapter;
+    private @Nullable WebContents mWebContents;
+    private @Nullable ImeAdapter mImeAdapter;
 
     public FormFieldFocusedSupplier() {
         super(false);

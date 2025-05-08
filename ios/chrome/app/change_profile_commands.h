@@ -12,6 +12,21 @@
 
 @class SceneState;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(IOSChangeProfileReason)
+enum class ChangeProfileReason {
+  kSwitchAccounts = 0,
+  kManagedAccountSignIn = 1,
+  kManagedAccountSignOut = 2,
+  kAuthenticationError = 3,
+  kProfileDeleted = 4,
+  kHandlePushNotification = 5,
+  kMaxValue = kHandlePushNotification
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:IOSChangeProfileReason)
+
 // App-level commands related to switching profiles.
 @protocol ChangeProfileCommands
 
@@ -31,6 +46,7 @@
 // been switched for the SceneState.
 - (void)changeProfile:(std::string_view)profileName
              forScene:(SceneState*)sceneState
+               reason:(ChangeProfileReason)reason
          continuation:(ChangeProfileContinuation)continuation;
 
 // Deletes the profile named `profileName` (the data may be deleted at

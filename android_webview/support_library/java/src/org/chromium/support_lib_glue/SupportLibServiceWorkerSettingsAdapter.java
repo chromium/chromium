@@ -126,4 +126,24 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
             return mAwServiceWorkerSettings.getRequestedWithHeaderOriginAllowList();
         }
     }
+
+    @Override
+    public void setIncludeCookiesOnIntercept(boolean includeCookiesOnIntercept) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SET_INCLUDE_COOKIES_ON_INTERCEPT")) {
+            recordApiCall(ApiCall.SERVICE_WORKER_SET_INCLUDE_COOKIES_ON_INTERCEPT);
+            mAwServiceWorkerSettings.setIncludeCookiesOnIntercept(includeCookiesOnIntercept);
+        }
+    }
+
+    @Override
+    public boolean getIncludeCookiesOnIntercept() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_GET_INCLUDE_COOKIES_ON_INTERCEPT")) {
+            recordApiCall(ApiCall.SERVICE_WORKER_GET_INCLUDE_COOKIES_ON_INTERCEPT);
+            return mAwServiceWorkerSettings.getIncludeCookiesOnIntercept();
+        }
+    }
 }

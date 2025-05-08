@@ -208,7 +208,9 @@ AppearanceValue LayoutTheme::AdjustAppearanceWithElementType(
       }
       bool base_appearance_allowed = false;
       if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
-        base_appearance_allowed = !select->IsMultiple();
+        base_appearance_allowed =
+            !select->IsMultiple() ||
+            RuntimeEnabledFeatures::CustomizableSelectInPageEnabled();
       } else if (HTMLSelectElement::IsPopoverForAppearanceBase(element)) {
         base_appearance_allowed = true;
       }

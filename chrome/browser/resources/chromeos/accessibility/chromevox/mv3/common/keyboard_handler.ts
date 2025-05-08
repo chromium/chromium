@@ -8,6 +8,7 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import type {Command} from './command.js';
+import type {InternalKeyEvent} from './internal_key_event.js'
 import {KeyMap} from './key_map.js';
 import {KeyUtil} from './key_util.js';
 
@@ -28,7 +29,7 @@ export namespace ChromeVoxKbHandler {
    * @param evt The key down event to process.
    * @return True if the default action should be performed.
    */
-  export const basicKeyDownActionsListener = function(evt: KeyboardEvent):
+  export const basicKeyDownActionsListener = function(evt: InternalKeyEvent):
       boolean {
         const keySequence = KeyUtil.keyEventToKeySequence(evt);
         const functionName =

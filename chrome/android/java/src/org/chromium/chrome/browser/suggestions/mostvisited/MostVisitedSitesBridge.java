@@ -67,6 +67,13 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
         return MostVisitedSitesBridgeJni.get().hasCustomLink(mNativeMostVisitedSitesBridge, keyUrl);
     }
 
+    @Override
+    public boolean reorderCustomLink(GURL keyUrl, int newPos) {
+        if (mNativeMostVisitedSitesBridge == 0) return false;
+        return MostVisitedSitesBridgeJni.get()
+                .reorderCustomLink(mNativeMostVisitedSitesBridge, keyUrl, newPos);
+    }
+
     // MostVisitedSites implementation.
     /**
      * Cleans up the C++ side of this class. This instance must not be used after calling destroy().
@@ -200,6 +207,9 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
         boolean deleteCustomLink(long nativeMostVisitedSitesBridge, @JniType("GURL") GURL keyUrl);
 
         boolean hasCustomLink(long nativeMostVisitedSitesBridge, @JniType("GURL") GURL keyUrl);
+
+        boolean reorderCustomLink(
+                long nativeMostVisitedSitesBridge, @JniType("GURL") GURL keyUrl, int newPos);
 
         void destroy(long nativeMostVisitedSitesBridge, MostVisitedSitesBridge caller);
 

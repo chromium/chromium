@@ -220,11 +220,11 @@ This approach creates an empty Xcode project that only provides a GUI debugger:
 ### (2) Use *gn*
 
 1. Tell `gn` to generate an Xcode project for your out directory:
-   `gn gen --ide=xcode out/debug`
+   `gn gen --ide=xcode out/debug --ninja-executable=autoninja`
 2. Open *out/debug/all.xcodeproj*
 3. Have it automatically generate schemes for you
 4. You can now build targets from within Xcode, which will simply call out to
-   `ninja` via an Xcode script. But the resulting binaries are available as
+   `autoninja` via an Xcode script. But the resulting binaries are available as
    debuggable targets in Xcode.
 
 Note that any changes to the .xcodeproj will be overwritten; all changes to the

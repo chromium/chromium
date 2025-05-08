@@ -17,15 +17,6 @@ bool IsAboutThisSiteFeatureEnabled() {
       g_browser_process->GetApplicationLocale());
 }
 
-bool IsAboutThisSiteAsyncFetchingEnabled() {
-  return IsAboutThisSiteFeatureEnabled() &&
-         base::FeatureList::IsEnabled(kAboutThisSiteAsyncFetching);
-}
-
-BASE_FEATURE(kAboutThisSiteAsyncFetching,
-             "AboutThisSiteAsyncFetching",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrivacyPolicyInsights,
              "PrivacyPolicyInsights",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -25,7 +25,6 @@ class VIZ_COMMON_EXPORT ContentDrawQuadBase : public DrawQuad {
               bool needs_blending,
               const gfx::RectF& coord_rect,
               const gfx::Size& size,
-              bool premultiplied,
               bool nearest,
               bool anti_aliasing_off);
 
@@ -36,13 +35,11 @@ class VIZ_COMMON_EXPORT ContentDrawQuadBase : public DrawQuad {
               bool needs_blending,
               const gfx::RectF& coord_rect,
               const gfx::Size& size,
-              bool premultiplied,
               bool nearest,
               bool anti_aliasing_off);
 
   gfx::RectF tex_coord_rect;
   gfx::Size texture_size;
-  bool is_premultiplied = false;
   bool nearest_neighbor = false;
   bool force_anti_aliasing_off = false;
 

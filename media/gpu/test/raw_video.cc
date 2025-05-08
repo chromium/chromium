@@ -310,8 +310,7 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
   InitializeMediaLibrary();
 
   // Initialize ffmpeg with the compressed video data.
-  InMemoryUrlProtocol protocol(vp9_webm_data.data(), vp9_webm_data.size(),
-                               /*streaming=*/false);
+  InMemoryUrlProtocol protocol(vp9_webm_data, /*streaming=*/false);
   FFmpegGlue glue(&protocol);
   LOG_ASSERT(glue.OpenContext()) << "Failed to open AVFormatContext";
   // Find the first VP9 stream in the file.

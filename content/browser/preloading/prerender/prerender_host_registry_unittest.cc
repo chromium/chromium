@@ -44,6 +44,7 @@ blink::mojom::SpeculationCandidatePtr CreatePrerenderCandidate(
   candidate->url = url;
   candidate->referrer = blink::mojom::Referrer::New();
   candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidate->tags = {std::nullopt};
   return candidate;
 }
 

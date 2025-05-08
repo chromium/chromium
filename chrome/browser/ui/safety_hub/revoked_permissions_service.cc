@@ -220,7 +220,13 @@ RevokedPermissionsService::TabHelper::TabHelper(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<TabHelper>(*web_contents),
       unused_site_permission_service_(
-          unused_site_permission_service->AsWeakPtr()) {}
+          unused_site_permission_service->AsWeakPtr()) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto* host_content_settings_map_ =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  observation_.Observe(host_content_settings_map_);
+}
 
 RevokedPermissionsService::TabHelper::~TabHelper() = default;
 
@@ -342,10 +348,54 @@ int RevokedPermissionsService::RevokedPermissionsResult::
 
 void RevokedPermissionsService::TabHelper::PrimaryPageChanged(
     content::Page& page) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
+      profile, page.GetMainDocument().GetLastCommittedURL(),
+      DisruptiveNotificationPermissionsManager::FalsePositiveReason::kPageVisit,
+      page.GetMainDocument().GetPageUkmSourceId());
+
   if (unused_site_permission_service_) {
     unused_site_permission_service_->OnPageVisited(
         page.GetMainDocument().GetLastCommittedOrigin());
   }
+}
+
+void RevokedPermissionsService::TabHelper::OnContentSettingChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsTypeSet content_type_set) {
+  if (content_type_set.ContainsAllTypes() ||
+      content_type_set.GetType() != ContentSettingsType::NOTIFICATIONS) {
+    return;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!content_settings::PatternAppliesToSingleOrigin(primary_pattern,
+                                                      secondary_pattern)) {
+    return;
+  }
+
+  const GURL last_visited_url =
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+
+  // Only trigger if the user is currently visiting the URL.
+  if (!primary_pattern.Matches(last_visited_url)) {
+    return;
+  }
+
+  // Only when the notification is allowed.
+  if (hcsm->GetContentSetting(last_visited_url, last_visited_url,
+                              ContentSettingsType::NOTIFICATIONS) !=
+      CONTENT_SETTING_ALLOW) {
+    return;
+  }
+
+  DisruptiveNotificationPermissionsManager::MaybeReportUserRegrant(
+      profile, last_visited_url,
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(RevokedPermissionsService::TabHelper);
@@ -391,20 +441,20 @@ RevokedPermissionsService::RevokedPermissionsService(
 #endif
             hcsm());
 
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kSafetyHubDisruptiveNotificationRevocation)) {
-      disruptive_notification_manager_ =
-          std::make_unique<DisruptiveNotificationPermissionsManager>(
-              hcsm(),
-              site_engagement::SiteEngagementServiceFactory::GetForProfile(
-                  browser_context_));
-    }
-
     pref_change_registrar_->Add(
         prefs::kSafeBrowsingEnabled,
         base::BindRepeating(&RevokedPermissionsService::
                                 OnPermissionsAutorevocationControlChanged,
                             base::Unretained(this)));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafetyHubDisruptiveNotificationRevocation)) {
+    disruptive_notification_manager_ =
+        std::make_unique<DisruptiveNotificationPermissionsManager>(
+            hcsm(),
+            site_engagement::SiteEngagementServiceFactory::GetForProfile(
+                browser_context_));
   }
 
   bool migration_completed = pref_change_registrar_->prefs()->GetBoolean(
@@ -458,17 +508,17 @@ void RevokedPermissionsService::OnContentSettingChanged(
         should_clean_revoked_permission_data = false;
         break;
       default:
-        // If the permission is changed by users, then clean up the revoked
-        // permissions data. However if the permission is changed because of
-        // Safety Hub revocation, then the revoked permission data should not be
-        // revoked.
+        // If the permission is changed by users, then clean up the
+        // revoked permissions data. However if the permission is changed
+        // because of Safety Hub revocation, then the revoked permission
+        // data should not be revoked.
         const bool is_abusive_revocation_running =
             IsAbusiveNotificationAutoRevocationEnabled()
                 ? abusive_notification_manager_->IsRevocationRunning()
                 : false;
         const bool is_disruptive_revocation_running =
             disruptive_notification_manager_
-                ? disruptive_notification_manager_->IsRevocationRunning()
+                ? disruptive_notification_manager_->IsRunning()
                 : false;
         should_clean_revoked_permission_data =
             !is_unused_site_revocation_running &&
@@ -484,6 +534,7 @@ void RevokedPermissionsService::OnContentSettingChanged(
           ->DeletePatternFromRevokedAbusiveNotificationList(primary_pattern,
                                                             secondary_pattern);
     }
+    // TODO(crbug.com/406475122): Clean up the disruptive notification list.
   }
 }
 
@@ -496,6 +547,10 @@ void RevokedPermissionsService::RegrantPermissionsForOrigin(
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
     abusive_notification_manager_->RegrantPermissionForOriginIfNecessary(
         origin.GetURL());
+  }
+
+  if (disruptive_notification_manager_) {
+    disruptive_notification_manager_->RegrantPermissionForUrl(origin.GetURL());
   }
 
   content_settings::SettingInfo info;
@@ -574,6 +629,13 @@ void RevokedPermissionsService::UndoRegrantPermissionsForOrigin(
         permissions_data.constraints.Clone());
   }
 
+  if (disruptive_notification_manager_) {
+    disruptive_notification_manager_->UndoRegrantPermissionForUrl(
+        GURL(permissions_data.primary_pattern.ToString()),
+        permissions_data.permission_types,
+        permissions_data.constraints.Clone());
+  }
+
   // If `permissions_data` had abusive notifications revoked, remove the
   // `NOTIFICATIONS` setting from the list of permission types to handle below,
   // since these were already handled. If there are no unused site permissions
@@ -615,6 +677,10 @@ void RevokedPermissionsService::UndoRegrantPermissionsForOrigin(
 void RevokedPermissionsService::ClearRevokedPermissionsList() {
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
     abusive_notification_manager_->ClearRevokedPermissionsList();
+  }
+
+  if (disruptive_notification_manager_) {
+    disruptive_notification_manager_->ClearRevokedPermissionsList();
   }
 
   for (const auto& revoked_permissions : hcsm()->GetSettingsForOneType(
@@ -737,11 +803,12 @@ RevokedPermissionsService::UpdateOnUIThread(
       static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
           result.get());
   recently_unused_permissions_ = interim_result->GetRecentlyUnusedPermissions();
-  RevokeUnusedPermissions();
-  if (disruptive_notification_manager_) {
-    disruptive_notification_manager_->RevokeDisruptiveNotifications();
+  if (IsUnusedSiteAutoRevocationEnabled()) {
+    RevokeUnusedPermissions();
+    if (disruptive_notification_manager_) {
+      disruptive_notification_manager_->RevokeDisruptiveNotifications();
+    }
   }
-  // TODO(crbug.com/40250875): Clean up these checks.
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
     abusive_notification_manager_->CheckNotificationPermissionOrigins();
   }
@@ -900,9 +967,7 @@ RevokedPermissionsService::GetRevokedPermissions() {
 }
 
 void RevokedPermissionsService::RevokeUnusedPermissions() {
-  if (!IsUnusedSiteAutoRevocationEnabled()) {
-    return;
-  }
+  CHECK(IsUnusedSiteAutoRevocationEnabled());
 
   // Set this to true to prevent `OnContentSettingChanged` from removing
   // revoked setting values during auto-revocation.

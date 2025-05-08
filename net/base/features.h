@@ -174,19 +174,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitCodeCacheByNetworkIsolationKey);
 // See https://github.com/MattMenke2/Explainer---Partition-Network-State.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionConnectionsByNetworkIsolationKey);
 
-// Enables post-quantum key-agreements in TLS 1.3 connections. kUseMLKEM
-// controls whether ML-KEM or Kyber (its predecessor) is used. The flag is named
-// after Kyber because it was originally introduced for Kyber.
-NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumKyber);
-
-// Causes TLS 1.3 connections to use the ML-KEM standard instead of the Kyber
-// draft standard for post-quantum key-agreement. Post-quantum key-agreement
-// must be enabled (e.g. via kPostQuantumKyber) for this to have an effect.
-//
-// TODO(crbug.com/40910498): Remove this flag sometime after M131 has reached
-// stable without issues.
-NET_EXPORT BASE_DECLARE_FEATURE(kUseMLKEM);
-
 // Changes the interval between two search engine preconnect attempts.
 NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnectInterval);
 
@@ -222,10 +209,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kShortLaxAllowUnsafeThreshold);
 // methods will not be allowed at all for top-level cross-site navigations.
 // This only has an effect if the cookie defaults to SameSite=Lax.
 NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
-
-// When enabled this feature will cause same-site calculations to take into
-// account the scheme of the site-for-cookies and the request/response url.
-NET_EXPORT BASE_DECLARE_FEATURE(kSchemefulSameSite);
 
 // Enables a process-wide limit on "open" UDP sockets. See
 // udp_socket_global_limits.h for details on what constitutes an "open" socket.
@@ -378,10 +361,53 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 NET_EXPORT extern const base::FeatureParam<std::string>
     kProbabilisticRevealTokenServerPath;
 
-// If true, probabilistic reveal tokens will be attached to all proxied requests
-// regardless of whether the request domain is registered.
+// If true, the probabilistic reveal token registration check will be skipped
+// and we will consider every domain as being eligible to receive PRTs. In order
+// for PRTs to be attached to requests, the
+// `ProbabilisticRevealTokensAddHeaderToProxiedRequests` flag must also be true.
 NET_EXPORT extern const base::FeatureParam<bool>
-    kAttachProbabilisticRevealTokensOnAllProxiedRequests;
+    kBypassProbabilisticRevealTokenRegistry;
+
+// If true, the standard probabilistic reveal token registry will be ignored and
+// the custom registry will be used instead. The custom registry can be set with
+// the `CustomProbabilisticRevealTokenRegistry` flag. This will only be used if
+// `BypassProbabilisticRevealTokenRegistry` is false. This is intended to be
+// used for developer testing only.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kUseCustomProbabilisticRevealTokenRegistry;
+
+// A comma-separated list of domains (eTLD+1) which will be considered eligible
+// to receive PRTs. This will override the default PRT registry and will only be
+// used if `UseCustomProbabilisticRevealTokenRegistry` is true and
+// `BypassProbabilisticRevealTokenRegistry` is false. This is intended to be
+// used for developer testing only.
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kCustomProbabilisticRevealTokenRegistry;
+
+// If true, probabilistic reveal tokens will only be enabled in Incognito mode.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kProbabilisticRevealTokensOnlyInIncognito;
+
+// If true, probabilistic reveal tokens will only be fetched. PRTs will not be
+// randomized at request time or attached to any requests. This is intended to
+// be used for measuring issuer server load before the feature is fully enabled.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kProbabilisticRevealTokenFetchOnly;
+
+// If true, probabilistic reveal tokens can be attached to non-proxied requests
+// as well. PRTs will still only be attached to requests if the
+// `ProbabilisticRevealTokensAddHeaderToProxiedRequests` flag is true and the
+// request is being sent to a registered domain, but this flag can be used in
+//  combination with `BypassProbabilisticRevealTokenRegistry` or
+// `CustomProbabilisticRevealTokenRegistry`. This is intended to be used for
+// developer testing only.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kEnableProbabilisticRevealTokensForNonProxiedRequests;
+
+// If true, probabilistic reveal tokens header will be added to proxied
+// requests.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kProbabilisticRevealTokensAddHeaderToProxiedRequests;
 
 // Enables custom proxy configuration for the IP Protection experimental proxy.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableIpProtectionProxy);
@@ -746,6 +772,13 @@ NET_EXPORT BASE_DECLARE_FEATURE(kVerifyQWACs);
 // this flag sometime after August 2025.
 NET_EXPORT BASE_DECLARE_FEATURE(kIncludeDeprecatedClientCertLookup);
 #endif
+
+// Finch-controlled list of ports that should be blocked due to ongoing abuse.
+NET_EXPORT BASE_DECLARE_FEATURE(kRestrictAbusePorts);
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kPortsToRestrictForAbuse;
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kPortsToRestrictForAbuseMonitorOnly;
 
 }  // namespace net::features
 

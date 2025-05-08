@@ -131,10 +131,15 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     GURL login_url;
   };
 
-  struct ClientMetadata {
+  struct CONTENT_EXPORT ClientMetadata {
+    ClientMetadata();
+    ~ClientMetadata();
+    ClientMetadata(const ClientMetadata&);
+
     GURL privacy_policy_url;
     GURL terms_of_service_url;
     GURL brand_icon_url;
+    std::optional<bool> client_matches_top_frame_origin;
   };
 
   struct CONTENT_EXPORT TokenResult {
@@ -254,6 +259,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   IdpNetworkRequestManager(
       const url::Origin& relying_party,
+      const url::Origin& rp_embedding_origin,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       network::mojom::ClientSecurityStatePtr client_security_state);
@@ -332,6 +338,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   virtual void DownloadAndDecodeImage(const GURL& url, ImageCallback callback);
 
  private:
+  bool IsCrossSiteIframe() const;
+
   // Starts download request using `url_loader`. Calls `parse_json_callback`
   // when the download result has been parsed.
   void DownloadJsonAndParse(
@@ -378,6 +386,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       CredentialedResourceRequestType type) const;
 
   url::Origin relying_party_origin_;
+  url::Origin rp_embedding_origin_;
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 

@@ -48,7 +48,7 @@ namespace extensions {
 //
 // Clients of this class can cancel the disk write operation of
 // computed_hashes.json while it is ongoing. This is because it can potentially
-// take long time. This cancellation can be performed through |is_cancelled|.
+// take long time. This cancellation can be performed through `is_cancelled`.
 class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
  public:
   // The combined (network or http response) error code while fetching.
@@ -105,11 +105,11 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   ContentHash& operator=(const ContentHash&) = delete;
 
   // Factory:
-  // Returns ContentHash through |created_callback|, the returned values are:
-  //   - |hash| The content hash. This will never be nullptr, but
+  // Returns ContentHash through `created_callback`, the returned values are:
+  //   - `hash` The content hash. This will never be nullptr, but
   //     verified_contents or computed_hashes may be empty if something fails.
-  //   - |was_cancelled| Indicates whether or not the request was cancelled
-  //     through |is_cancelled|, while it was being processed.
+  //   - `was_cancelled` Indicates whether or not the request was cancelled
+  //     through `is_cancelled`, while it was being processed.
   using CreatedCallback =
       base::OnceCallback<void(scoped_refptr<ContentHash> hash,
                               bool was_cancelled)>;
@@ -119,12 +119,12 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
                      CreatedCallback created_callback);
 
   // Forces creation of computed_hashes.json. Must be called with after
-  // |verified_contents| has been successfully set.
+  // `verified_contents` has been successfully set.
   // TODO(lazyboy): Remove this once https://crbug.com/819832 is fixed.
   void ForceBuildComputedHashes(const IsCancelledCallback& is_cancelled,
                                 CreatedCallback created_callback);
 
-  // Returns the result of comparing tree hash |root| for the |relative_path| to
+  // Returns the result of comparing tree hash `root` for the `relative_path` to
   // verified_contens.json data.
   TreeHashVerificationResult VerifyTreeHashRoot(
       const base::FilePath& relative_path,
@@ -152,7 +152,7 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   const base::FilePath& extension_root() const { return extension_root_; }
 
   // Returns whether or not computed_hashes.json re-creation might be required
-  // for |this| to succeed.
+  // for `this` to succeed.
   // TODO(lazyboy): Remove this once https://crbug.com/819832 is fixed.
   bool might_require_computed_hashes_force_creation() const {
     return !succeeded() && verified_contents_ != nullptr &&
@@ -216,7 +216,7 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   static void RecordFetchResult(bool success, FetchErrorCode fetch_error);
 
   // Computes hashes for all files in |key_.extension_root|, and uses
-  // a ComputedHashes::Writer to write that information into |hashes_file|.
+  // a ComputedHashes::Writer to write that information into `hashes_file`.
   // Returns true on success.
   // The verified contents file from the webstore only contains the treehash
   // root hash, but for performance we want to cache the individual block level
@@ -237,8 +237,8 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   // of the given resource be in computes_hashes.json or not.
   bool ShouldComputeHashesForResource(const base::FilePath& relative_unix_path);
 
-  // If needed (|source_type_| is SIGNED_HASHES) checks each hash from
-  // |computed_hashes| against data from verified_contenst.json and returns list
+  // If needed (`source_type_` is SIGNED_HASHES) checks each hash from
+  // `computed_hashes` against data from verified_contenst.json and returns list
   // of mismatches. If not needed, just returns empty list.
   std::set<base::FilePath> GetMismatchedComputedHashes(
       ComputedHashes::Data* computed_hashes);
@@ -254,7 +254,7 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
 
   bool did_attempt_creating_computed_hashes_ = false;
 
-  // TODO(lazyboy): Avoid dynamic allocations here, |this| already supports
+  // TODO(lazyboy): Avoid dynamic allocations here, `this` already supports
   // move.
   std::unique_ptr<const VerifiedContents> verified_contents_;
   std::unique_ptr<const ComputedHashes> computed_hashes_;

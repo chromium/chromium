@@ -56,11 +56,11 @@ enum class ActivationError {
   kNone = 0,
   // (Deprecated) kUnenrolled = 1,
   // (Deprecated) kInitialUpmMigrationMissing = 2,
-  kLoginDbFileMoveFailed = 3,
+  // (Deprecated) kLoginDbFileMoveFailed = 3,
   kOutdatedGmsCore = 4,
   // (Deprecated) kFlagDisabled = 5,
-  kMigrationWarningUnacknowledged = 6,
-  kMaxValue = kMigrationWarningUnacknowledged,
+  // (Deprecated) kMigrationWarningUnacknowledged = 6,
+  kMaxValue = kOutdatedGmsCore,
 };
 
 // Set on startup before the local passwords migration starts.
@@ -93,34 +93,6 @@ bool IsPasswordSyncEnabled(PrefService* pref_service) {
         kDontMigrateTypeDisabled:
       return false;
   }
-}
-
-bool ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
-    PrefService* pref_service) {
-  // The migration warning is only relevant for non-stable channels.
-  version_info::Channel channel = version_info::android::GetChannel();
-  if (channel == version_info::Channel::STABLE) {
-    return false;
-  }
-  // If there are no passwords to migrate and migration is still needed for
-  // settings, there is no need to acknowledge the password migration warning.
-  if (pref_service->GetBoolean(
-          password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
-    return false;
-  }
-
-  // There is no warning shown on automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    return false;
-  }
-  return !pref_service->GetBoolean(
-      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning);
 }
 
 bool HasCustomPasswordSettings(PrefService* pref_service) {
@@ -200,16 +172,10 @@ void MaybeActivateSplitStoresAndLocalUpm(
   }
 
   UseUpmLocalAndSeparateStoresState state_to_set_on_success = kOn;
-  ActivationError error = ActivationError::kNone;
   switch (user_type) {
     case UserType::kNonSyncingAndNoMigrationNeeded:
       break;
     case UserType::kNonSyncingAndMigrationNeeded:
-      if (ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
-              pref_service)) {
-        error = ActivationError::kMigrationWarningUnacknowledged;
-        break;
-      }
       state_to_set_on_success = kOffAndMigrationPending;
       break;
     case UserType::kSyncing: {
@@ -222,32 +188,12 @@ void MaybeActivateSplitStoresAndLocalUpm(
         state_to_set_on_success = kOffAndMigrationPending;
         break;
       }
-      if (!base::FeatureList::IsEnabled(
-              password_manager::features::
-                  kDropLoginDbRenameForUpmSyncingUsers)) {
-        // Move the "profile" login DB to the "account" path, the latter is the
-        // synced one after activation. We could rely on a redownload instead,
-        // but a) this is a safety net, and b)it spares traffic.
-        base::FilePath profile_db_path = login_db_directory.Append(
-            password_manager::kLoginDataForProfileFileName);
-        if (!base::ReplaceFile(
-                profile_db_path,
-                login_db_directory.Append(
-                    password_manager::kLoginDataForAccountFileName),
-                /*error=*/nullptr)) {
-          error = ActivationError::kLoginDbFileMoveFailed;
-          break;
-        }
-      }
       break;
     }
   }
-  RecordActivationError(user_type, error);
-
-  if (error == ActivationError::kNone) {
-    pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
-                             static_cast<int>(state_to_set_on_success));
-  }
+  RecordActivationError(user_type, ActivationError::kNone);
+  pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
+                           static_cast<int>(state_to_set_on_success));
 }
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
@@ -322,7 +268,8 @@ void DeleteAutoExportedCsv(PrefService* prefs,
 // while in kOn will stay in GmsCore and become available again on the next
 // successful activation; they will not be migrated back to the LoginDB. If the
 // user is syncing, this function tries to undo [1] the Login DB file move done
-// in MaybeActivateSplitStoresAndLocalUpm(), and aborts on failure [2].
+// in MaybeActivateSplitStoresAndLocalUpm() until crrev.com/c/6012360, and
+// aborts on failure [2].
 //
 // [1] In truth, this is only an "undo" if the user was already syncing *before*
 // the activation. In rare cases, they might have been signed out with saved
@@ -363,8 +310,8 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
       login_db_directory.Append(password_manager::kLoginDataForProfileFileName);
   base::FilePath account_db_path =
       login_db_directory.Append(password_manager::kLoginDataForAccountFileName);
-  // Note: with kDropLoginDbRenameForUpmSyncingUsers enabled, some users won't
-  // have an account login db to rename, but for those who do, keep this logic.
+  // Note: users who migrated after crrev.com/c/6012360 won't have an account
+  // login db to rename, but for those who do, keep this logic.
   if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn &&
       IsPasswordSyncEnabled(pref_service) &&
       base::PathExists(account_db_path) &&

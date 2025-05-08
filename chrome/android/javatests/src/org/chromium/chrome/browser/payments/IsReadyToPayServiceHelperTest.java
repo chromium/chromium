@@ -37,17 +37,12 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.payments.intent.IsReadyToPayServiceHelper;
 
 /** Tests for IsReadyToPayServiceHelper. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IsReadyToPayServiceHelperTest {
-    @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule public final ExpectedException mExpectedExceptionRule = ExpectedException.none();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

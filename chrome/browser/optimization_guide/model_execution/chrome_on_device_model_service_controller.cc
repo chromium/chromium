@@ -5,7 +5,9 @@
 #include "chrome/browser/optimization_guide/model_execution/chrome_on_device_model_service_controller.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -51,6 +53,17 @@ ChromeOnDeviceModelServiceController::GetSingleInstanceMayBeNull() {
 ChromeOnDeviceModelServiceController::~ChromeOnDeviceModelServiceController() {
   CHECK_EQ(this, g_instance);
   g_instance = nullptr;
+}
+
+void ChromeOnDeviceModelServiceController::
+    RegisterPerformanceClassSyntheticTrial(
+        OnDeviceModelPerformanceClass perf_class) {
+  if (perf_class != OnDeviceModelPerformanceClass::kUnknown) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "SyntheticOnDeviceModelPerformanceClass",
+        SyntheticTrialGroupForPerformanceClass(perf_class),
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
 }
 
 }  // namespace optimization_guide

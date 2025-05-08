@@ -8,10 +8,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A coordinator for the feed options panel. */
+@NullMarked
 public class FeedOptionsCoordinator {
     /** Listener for change in options selection. */
     public interface OptionChangedListener {
@@ -46,7 +48,7 @@ public class FeedOptionsCoordinator {
     private final Context mContext;
     private List<PropertyModel> mChipModels;
     private PropertyModel mModel;
-    @Nullable private OptionChangedListener mOptionsListener;
+    private @Nullable OptionChangedListener mOptionsListener;
 
     public FeedOptionsCoordinator(Context context) {
         // We don't use ChipsCoordinator here because RecyclerView does not play

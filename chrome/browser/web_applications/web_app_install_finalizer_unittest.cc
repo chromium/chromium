@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/traits_bag.h"
 #include "build/build_config.h"
@@ -44,6 +45,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/sync/base/time.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -338,6 +340,13 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   base::Time old_first_install_time;
   base::Time old_latest_install_time;
 
+  base::SimpleTestClock test_clock;
+  finalizer().SetClockForTesting(&test_clock);
+  auto toProtoResolutionTime = [](base::Time time) {
+    return syncer::ProtoTimeToTime(syncer::TimeToProtoTime(time));
+  };
+  test_clock.SetNow(toProtoResolutionTime(base::Time::Now()));
+
   {
     FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -352,7 +361,9 @@ TEST_F(WebAppInstallFinalizerUnitTest,
     EXPECT_FALSE(old_first_install_time.is_null());
     EXPECT_FALSE(old_latest_install_time.is_null());
     EXPECT_EQ(old_first_install_time, old_latest_install_time);
+    EXPECT_EQ(old_first_install_time, toProtoResolutionTime(test_clock.Now()));
   }
+  test_clock.Advance(base::Hours(1));
 
   // Try reinstalling the same app again, the latest install time should be
   // updated but the first install time should still stay the same.
@@ -369,7 +380,11 @@ TEST_F(WebAppInstallFinalizerUnitTest,
     EXPECT_FALSE(installed_app->latest_install_time().is_null());
     EXPECT_EQ(installed_app->first_install_time(), old_first_install_time);
     EXPECT_NE(installed_app->latest_install_time(), old_latest_install_time);
+    EXPECT_EQ(installed_app->latest_install_time(),
+              toProtoResolutionTime(test_clock.Now()));
   }
+  // Reset the clock to the default clock, so raw_ptr issues don't happen.
+  finalizer().SetClockForTesting(base::DefaultClock::GetInstance());
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, InstallNoDesktopShortcut) {

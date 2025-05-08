@@ -334,7 +334,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * @param onTouchListener A callback for all touch events being dispatched to the popup.
      * @see PopupWindow#setTouchInterceptor(OnTouchListener)
      */
-    public void setTouchInterceptor(OnTouchListener onTouchListener) {
+    public void setTouchInterceptor(@Nullable OnTouchListener onTouchListener) {
         mTouchListener = onTouchListener;
     }
 

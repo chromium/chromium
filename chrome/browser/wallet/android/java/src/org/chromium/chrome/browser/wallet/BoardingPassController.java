@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.wallet;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -22,7 +23,7 @@ public class BoardingPassController {
     private final EmptyTabObserver mTabObserver;
     private final CurrentTabObserver mCurrentTabObserver;
 
-    public BoardingPassController(ObservableSupplier<Tab> tabSupplier) {
+    public BoardingPassController(ObservableSupplier<@Nullable Tab> tabSupplier) {
         mTabObserver = createTabObserver();
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, mTabObserver);
     }

@@ -14,6 +14,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -41,6 +43,7 @@ namespace ash::boca {
 namespace {
 constexpr char kSpotlightConnectionCode[] = "123";
 constexpr char kUserEmail[] = "cat@gmail.com";
+constexpr char kCrdResultUma[] = "Enterprise.Boca.Spotlight.Crd.Result";
 
 class MockSharedCrdSession : public policy::SharedCrdSession {
  public:
@@ -108,10 +111,16 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
 IN_PROC_BROWSER_TEST_F(
     SpotlightCrdManagerImplTest,
     InitiateSpotlightSessionWithCrdFailureShouldRunErrorCallback) {
+  base::HistogramTester histograms;
+
   TestFuture<void> error_callback_future;
   EXPECT_CALL(*crd_session_, StartCrdHost)
-      .WillOnce(WithArg<2>(
-          Invoke([&](auto callback) { error_callback_future.SetValue(); })));
+      .WillOnce(WithArg<2>(Invoke([&](auto callback) {
+        base::UmaHistogramEnumeration(
+            kCrdResultUma,
+            policy::ExtendedStartCrdSessionResultCode::kFailureCrdHostError);
+        error_callback_future.SetValue();
+      })));
 
   manager_->OnSessionStarted(kUserEmail);
   manager_->InitiateSpotlightSession(
@@ -121,6 +130,11 @@ IN_PROC_BROWSER_TEST_F(
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
 
   EXPECT_TRUE(error_callback_future.Wait());
+  EXPECT_EQ(
+      histograms.GetBucketCount(
+          kCrdResultUma,
+          policy::ExtendedStartCrdSessionResultCode::kFailureCrdHostError),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
@@ -174,24 +188,28 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
-                       HidesNotificationWidgetOnCrdSessionEnd) {
-  base::OnceClosure session_finished_callback;
-  EXPECT_CALL(*crd_session_, StartCrdHost)
-      .WillOnce(WithArg<3>(Invoke([&](auto callback) {
-        session_finished_callback = std::move(callback);
-      })));
-  EXPECT_CALL(*crd_session_, TerminateSession)
-      .WillOnce(InvokeWithoutArgs(
-          [&]() { std::move(session_finished_callback).Run(); }));
-  TestFuture<const std::string&> success_future;
-
-  manager_->OnSessionStarted(kUserEmail);
-  manager_->InitiateSpotlightSession(success_future.GetCallback());
+                       HidesNotificationWidgetOnSessionEnd) {
   manager_->ShowPersistentNotification("Teacher");
 
   manager_->OnSessionEnded();
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
   EXPECT_FALSE(notification_bubble_controller_->IsNotificationBubbleVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
+                       TerminatesCrdSessionOnSessionEnd) {
+  TestFuture<void> session_finished_future;
+  EXPECT_CALL(*crd_session_, TerminateSession)
+      .WillOnce(InvokeWithoutArgs(
+          [&]() { std::move(session_finished_future.GetCallback()).Run(); }));
+
+  TestFuture<const std::string&> success_future;
+  manager_->OnSessionStarted(kUserEmail);
+  manager_->InitiateSpotlightSession(success_future.GetCallback());
+
+  manager_->OnSessionEnded();
+  ::testing::Mock::VerifyAndClearExpectations(crd_session_);
+  EXPECT_TRUE(session_finished_future.Wait());
 }
 
 }  // namespace

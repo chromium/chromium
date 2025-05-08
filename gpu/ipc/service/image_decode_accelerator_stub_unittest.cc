@@ -78,6 +78,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_bindings.h"
 #include "url/gurl.h"
 
@@ -235,13 +236,15 @@ class MockImageDecodeAcceleratorWorker : public ImageDecodeAcceleratorWorker {
       // the SharedImage backing in these tests, the only requirement is that
       // the NativePixmapHandle has the right number of planes.
       auto decode_result = std::make_unique<DecodeResult>();
-      decode_result->handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
+      gfx::NativePixmapHandle native_pixmap_handle;
       for (size_t plane = 0; plane < gfx::NumberOfPlanesForLinearBufferFormat(
                                          format_for_decodes_);
            plane++) {
-        decode_result->handle.native_pixmap_handle.planes.emplace_back(
+        native_pixmap_handle.planes.emplace_back(
             0 /* stride */, 0 /* offset */, 0 /* size */, base::ScopedFD());
       }
+      decode_result->handle =
+          gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle));
       decode_result->visible_size = next_decode.output_size;
       decode_result->buffer_format = format_for_decodes_;
       decode_result->buffer_byte_size = kDecodedBufferByteSize;

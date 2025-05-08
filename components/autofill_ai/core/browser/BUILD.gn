@@ -13,6 +13,8 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_ai_import_utils.h",
       "autofill_ai_manager.cc",
       "autofill_ai_manager.h",
+      "autofill_ai_metrics.cc",
+      "autofill_ai_metrics.h",
       "autofill_ai_utils.cc",
       "autofill_ai_utils.h",
       "metrics/autofill_ai_logger.cc",

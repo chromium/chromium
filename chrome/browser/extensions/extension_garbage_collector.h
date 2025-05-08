@@ -13,7 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;

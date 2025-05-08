@@ -3,7 +3,7 @@ Harness Error. harness_status.status = 1 , harness_status.message = Unhandled re
 [FAIL] Test that AudioDecoder.configure() doesn't support config: Opus with more than two channels and without description
   Failed to execute 'configure' on 'AudioDecoder': Invalid config; description is required for multi-channel Opus.
 [FAIL] Test that AudioDecoder.configure() doesn't support config: Opus with more than two channels and with a description that is too short
-  assert_equals: expected "NotSupportedError" but got "OperationError"
+  assert_unreached: flush succeeded unexpectedly Reached unreachable code
 [FAIL] Test that AudioDecoder.configure() doesn't support config: vorbis requires a description
   Failed to execute 'configure' on 'AudioDecoder': Invalid config; description is required.
 [FAIL] Test that AudioDecoder.configure() doesn't support config: flac requires a description

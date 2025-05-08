@@ -47,8 +47,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
     fake_id_ = [FakeSystemIdentity fakeIdentity1];
     // TODO(b/318863934): Remove flag when enabled by default.
     feature_list_.InitWithFeatures(
-        {/*enabled=*/kContentNotificationExperiment, kIOSTipsNotifications,
-         kSafetyCheckNotifications},
+        {/*enabled=*/kContentNotificationExperiment, kSafetyCheckNotifications},
         {/*disabled=*/});
     AddTestCasesToManager(manager_, profile_attributes_storage(),
                           GaiaId(fake_id_.gaiaID), profile_name);

@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/constants",
   "+chromeos/ash/components/install_attributes",
+  "+chromeos/ash/components/policy/device_local_account",
   "+chromeos/ash/components/settings",
   "+components/account_id/account_id.h",
   "+components/pref_registry",

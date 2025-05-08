@@ -18,8 +18,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 
-constexpr char kSafetyHubNotificationInfoString[] = "notificationInfoString";
-constexpr char kSafetyHubNotificationPermissionsResultKey[] =
+inline constexpr char kSafetyHubNotificationInfoString[] =
+    "notificationInfoString";
+inline constexpr char kSafetyHubNotificationPermissionsResultKey[] =
     "notificationPermissions";
 
 struct NotificationPermissions {
@@ -158,6 +159,10 @@ class NotificationPermissionsReviewService : public SafetyHubService,
   // criteria for adding the origin to the review list.
   bool ShouldAddToNotificationPermissionReviewList(GURL url,
                                                    int notification_count);
+
+  // Whether notifications from disruptive sites are revoked. In that case, the
+  // notification permission module should be hidden.
+  bool IsDisruptiveNotificationRevocationEnabled();
 
   // Used to determine how often the user engaged with websites.
   raw_ptr<site_engagement::SiteEngagementService> engagement_service_;

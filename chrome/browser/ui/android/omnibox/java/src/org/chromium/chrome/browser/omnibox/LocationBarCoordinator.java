@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -14,8 +16,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
@@ -24,6 +24,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -78,6 +80,7 @@ import java.util.function.BooleanSupplier;
  *
  * <p>The coordinator creates and owns elements within this component.
  */
+@NullMarked
 public class LocationBarCoordinator
         implements LocationBar, NativeInitObserver, AutocompleteDelegate {
 
@@ -98,13 +101,13 @@ public class LocationBarCoordinator
          * @param tab Tab containing the page to download.
          * @param fromAppMenu Whether the download is started from the app menu.
          */
-        void downloadPage(Context context, Tab tab, boolean fromAppMenu);
+        void downloadPage(Context context, @Nullable Tab tab, boolean fromAppMenu);
     }
 
     private LocationBarLayout mLocationBarLayout;
-    @Nullable private SubCoordinator mSubCoordinator;
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Nullable private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private @Nullable SubCoordinator mSubCoordinator;
+    private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final boolean mIsToolbarPositionCustomizationEnabled;
     private UrlBarCoordinator mUrlCoordinator;
     private AutocompleteCoordinator mAutocompleteCoordinator;
@@ -112,11 +115,11 @@ public class LocationBarCoordinator
     private WindowAndroid mWindowAndroid;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
-    private View mDeleteButton;
-    private View mMicButton;
-    private View mLensButton;
-    @Nullable private View mBookmarksButton;
-    @Nullable private View mSaveOfflineButton;
+    private @Nullable View mDeleteButton;
+    private @Nullable View mMicButton;
+    private @Nullable View mLensButton;
+    private @Nullable View mBookmarksButton;
+    private @Nullable View mSaveOfflineButton;
     private CallbackController mCallbackController = new CallbackController();
     private boolean mDestroyed;
 
@@ -178,29 +181,27 @@ public class LocationBarCoordinator
             LocationBarDataProvider locationBarDataProvider,
             ActionMode.Callback actionModeCallback,
             WindowAndroid windowAndroid,
-            @NonNull Supplier<Tab> activityTabSupplier,
+            Supplier<@Nullable Tab> activityTabSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             IncognitoStateProvider incognitoStateProvider,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             BackKeyBehaviorDelegate backKeyBehavior,
-            @NonNull PageInfoAction pageInfoAction,
-            @NonNull Callback<Tab> bringTabToFrontCallback,
-            @NonNull SaveOfflineButtonState saveOfflineButtonState,
-            @NonNull OmniboxUma omniboxUma,
-            @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
-            @NonNull BookmarkState bookmarkState,
-            @NonNull BooleanSupplier isToolbarMicEnabledSupplier,
-            @Nullable
-                    Supplier<MerchantTrustSignalsCoordinator>
-                            merchantTrustSignalsCoordinatorSupplier,
-            @NonNull OmniboxActionDelegate omniboxActionDelegate,
+            PageInfoAction pageInfoAction,
+            Callback<Tab> bringTabToFrontCallback,
+            SaveOfflineButtonState saveOfflineButtonState,
+            OmniboxUma omniboxUma,
+            Supplier<TabWindowManager> tabWindowManagerSupplier,
+            BookmarkState bookmarkState,
+            BooleanSupplier isToolbarMicEnabledSupplier,
+            @Nullable Supplier<MerchantTrustSignalsCoordinator>
+                    merchantTrustSignalsCoordinatorSupplier,
+            OmniboxActionDelegate omniboxActionDelegate,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             @Nullable BackPressManager backPressManager,
-            @Nullable
-                    OmniboxSuggestionsDropdownScrollListener
-                            omniboxSuggestionsDropdownScrollListener,
+            @Nullable OmniboxSuggestionsDropdownScrollListener
+                    omniboxSuggestionsDropdownScrollListener,
             @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             LocationBarEmbedderUiOverrides uiOverrides,
             @Nullable View baseChromeLayout,
@@ -208,7 +209,7 @@ public class LocationBarCoordinator
             @Nullable OnLongClickListener onLongClickListener,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
             boolean isToolbarPositionCustomizationEnabled,
-            @NonNull OfflineDownloader offlineDownloader) {
+            OfflineDownloader offlineDownloader) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -368,6 +369,7 @@ public class LocationBarCoordinator
         // and can be instantiated on phones *or* tablets.
     }
 
+    @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
         if (mSubCoordinator != null) {
@@ -425,7 +427,7 @@ public class LocationBarCoordinator
 
     @Override
     public void onFinishNativeInitialization() {
-        mActivityLifecycleDispatcher.unregister(this);
+        assumeNonNull(mActivityLifecycleDispatcher).unregister(this);
         mActivityLifecycleDispatcher = null;
 
         mLocationBarMediator.onFinishNativeInitialization();
@@ -502,15 +504,13 @@ public class LocationBarCoordinator
     }
 
     /** Returns the {@link VoiceRecognitionHandler} associated with this LocationBar. */
-    @Nullable
     @Override
-    public VoiceRecognitionHandler getVoiceRecognitionHandler() {
+    public @Nullable VoiceRecognitionHandler getVoiceRecognitionHandler() {
         return mLocationBarMediator.getVoiceRecognitionHandler();
     }
 
-    @Nullable
     @Override
-    public OmniboxStub getOmniboxStub() {
+    public @Nullable OmniboxStub getOmniboxStub() {
         return mLocationBarMediator;
     }
 
@@ -614,7 +614,7 @@ public class LocationBarCoordinator
     /**
      * @see UrlBarCoordinator#getVisibleTextPrefixHint()
      */
-    public CharSequence getOmniboxVisibleTextPrefixHint() {
+    public @Nullable CharSequence getOmniboxVisibleTextPrefixHint() {
         return mUrlCoordinator.getVisibleTextPrefixHint();
     }
 
@@ -638,7 +638,7 @@ public class LocationBarCoordinator
      * @throws ClassCastException if this coordinator holds a {@link SubCoordinator} of a different
      *     type.
      */
-    public @NonNull LocationBarCoordinatorPhone getPhoneCoordinator() {
+    public LocationBarCoordinatorPhone getPhoneCoordinator() {
         assert mSubCoordinator != null;
         return (LocationBarCoordinatorPhone) mSubCoordinator;
     }
@@ -649,7 +649,7 @@ public class LocationBarCoordinator
      * @throws ClassCastException if this coordinator holds a {@link SubCoordinator} of a different
      *     type.
      */
-    public @NonNull LocationBarCoordinatorTablet getTabletCoordinator() {
+    public LocationBarCoordinatorTablet getTabletCoordinator() {
         assert mSubCoordinator != null;
         return (LocationBarCoordinatorTablet) mSubCoordinator;
     }
@@ -778,7 +778,7 @@ public class LocationBarCoordinator
      *
      * @param button The {@link View} of the button to hide.
      */
-    public ObjectAnimator createHideButtonAnimatorForTablet(View button) {
+    public @Nullable ObjectAnimator createHideButtonAnimatorForTablet(View button) {
         assert isTabletWindow();
 
         if (mLocationBarMediator != null) {
@@ -891,7 +891,7 @@ public class LocationBarCoordinator
      * @return The location bar's {@link OmniboxSuggestionsVisualState}.
      */
     @Override
-    public @NonNull Optional<OmniboxSuggestionsVisualState> getOmniboxSuggestionsVisualState() {
+    public Optional<OmniboxSuggestionsVisualState> getOmniboxSuggestionsVisualState() {
         return Optional.of(mAutocompleteCoordinator);
     }
 

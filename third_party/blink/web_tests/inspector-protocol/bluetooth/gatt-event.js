@@ -23,6 +23,12 @@
   });
 
   // Start the test.
+  const gattDisconnectedPromise = session.evaluateAsync(async () => {
+    const devices = await navigator.bluetooth.getDevices();
+    return new Promise((resolve) => {
+      devices[0].addEventListener('gattserverdisconnected', resolve);
+    });
+  });
   const gattConnectedPromise =
       session.evaluateAsyncWithUserGesture(async () => {
         const devices = await navigator.bluetooth.getDevices();
@@ -41,5 +47,14 @@
     }
   });
   testRunner.log(`Get primary services result: ${getPrimaryServicesResult}`);
+
+  await bp.BluetoothEmulation.simulateGATTDisconnection(
+      {address: BluetoothHelper.PRECONNECTED_PERIPHERAL_ADDRESS});
+  await gattDisconnectedPromise;
+  const gattConnectedResult = await session.evaluateAsync(async () => {
+    const devices = await navigator.bluetooth.getDevices();
+    return devices[0].gatt.connected;
+  });
+  testRunner.log(`Get GATT connected result: ${gattConnectedResult}`);
   testRunner.completeTest();
 });

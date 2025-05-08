@@ -16,7 +16,7 @@ struct TabGroupInfo;
 namespace chrome_desks_util {
 
 // Name for app not available toast.
-constexpr char kAppNotAvailableTemplateToastName[] =
+inline constexpr char kAppNotAvailableTemplateToastName[] =
     "AppNotAvailableTemplateToast";
 
 // Given a TabGroupModel that contains at least a single TabGroup this method

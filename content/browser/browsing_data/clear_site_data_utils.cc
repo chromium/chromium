@@ -144,6 +144,14 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
       remove_mask |= BrowsingDataRemover::DATA_TYPE_CACHE;
     }
 
+    if (clear_site_data_types_.Has(ClearSiteDataType::kPrefetchCache)) {
+      remove_mask |= BrowsingDataRemover::DATA_TYPE_PREFETCH_CACHE;
+    }
+
+    if (clear_site_data_types_.Has(ClearSiteDataType::kPrerenderCache)) {
+      remove_mask |= BrowsingDataRemover::DATA_TYPE_PRERENDER_CACHE;
+    }
+
     if (remove_mask) {
       std::unique_ptr<BrowsingDataFilterBuilder> origin_filter_builder(
           BrowsingDataFilterBuilder::Create(

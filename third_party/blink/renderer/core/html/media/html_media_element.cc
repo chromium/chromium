@@ -5018,7 +5018,8 @@ void HTMLMediaElement::SuspendForFrameClosed() {
 }
 
 void HTMLMediaElement::RecordAutoPictureInPictureInfo(
-    const String& auto_picture_in_picture_info) {
+    const media::PictureInPictureEventsInfo::AutoPipInfo&
+        auto_picture_in_picture_info) {
   if (web_media_player_) {
     web_media_player_->RecordAutoPictureInPictureInfo(
         auto_picture_in_picture_info);

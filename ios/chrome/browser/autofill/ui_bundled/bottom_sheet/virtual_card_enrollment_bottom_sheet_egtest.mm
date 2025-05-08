@@ -186,6 +186,10 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
 }
 
 - (void)testVirtualCardEnrollmentDismissesAfterSkipPushed {
+  // TODO(crbug.com/415027494): Test is flaky on iPad device from 18.2.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled on iPad");
+  }
   [self showVirtualCardEnrollmentBottomSheet];
 
   // Assert the header trait is set on the header label.

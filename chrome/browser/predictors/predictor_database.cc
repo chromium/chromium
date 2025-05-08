@@ -92,8 +92,7 @@ PredictorDatabaseInternal::PredictorDatabaseInternal(
     : db_path_(profile->GetPath().Append(kPredictorDatabaseName)),
       db_(std::make_unique<sql::Database>(
           sql::DatabaseOptions()
-              .set_preload(base::FeatureList::IsEnabled(
-                  sql::features::kPreOpenPreloadDatabase))
+              .set_preload(true)
               // TODO(pwnall): Add a meta table and remove this option.
               .set_mmap_alt_status_discouraged(true)
               .set_enable_views_discouraged(
@@ -133,12 +132,7 @@ void PredictorDatabaseInternal::Initialize() {
     return;
   }
 
-  bool success = db_->Open(db_path_);
-  if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
-    db_->Preload();
-  }
-
-  if (!success) {
+  if (!db_->Open(db_path_)) {
     return;
   }
 

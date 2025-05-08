@@ -76,8 +76,6 @@ bool AudioWorkletProcessor::Process(
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
-  AudioWorkletProcessorDefinition* definition =
-      global_scope_->FindDefinition(Name());
 
   // 1st JS arg `inputs_`. Compare `inputs` and `inputs_`. Then allocates the
   // data container if necessary.
@@ -148,14 +146,25 @@ bool AudioWorkletProcessor::Process(
     TRACE_EVENT0(
         TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
         "AudioWorkletProcessor::Process (author script execution)");
-    auto* process_function = definition->ProcessFunction();
-    if (!process_function) {
+
+    v8::Local<v8::Value> processor_v8 =
+        ToV8Traits<AudioWorkletProcessor>::ToV8(script_state, this);
+    v8::Local<v8::Value> process_v8_value;
+    if (!processor_v8.As<v8::Object>()
+             ->Get(context, V8AtomicString(isolate, "process"))
+             .ToLocal(&process_v8_value) ||
+        !process_v8_value->IsFunction()) {
       SetErrorState(
           AudioWorkletProcessorErrorState::kProcessMethodUndefinedError);
       return false;
     }
-
-    if (!process_function
+    if (!cached_process_callback_ ||
+        cached_process_callback_->CallbackObject() != process_v8_value)
+        [[unlikely]] {
+      cached_process_callback_ = V8BlinkAudioWorkletProcessCallback::Create(
+          process_v8_value.As<v8::Function>());
+    }
+    if (!cached_process_callback_
              ->Invoke(this, ScriptValue(isolate, inputs_.Get(isolate)),
                       ScriptValue(isolate, outputs_.Get(isolate)),
                       ScriptValue(isolate, params_.Get(isolate)))
@@ -194,6 +203,7 @@ MessagePort* AudioWorkletProcessor::port() const {
 void AudioWorkletProcessor::Trace(Visitor* visitor) const {
   visitor->Trace(global_scope_);
   visitor->Trace(processor_port_);
+  visitor->Trace(cached_process_callback_);
   visitor->Trace(inputs_);
   visitor->Trace(outputs_);
   visitor->Trace(params_);

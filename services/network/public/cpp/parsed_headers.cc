@@ -26,6 +26,8 @@
 #include "services/network/public/cpp/document_isolation_policy_parser.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/fence_event_reporting_parser.h"
+#include "services/network/public/cpp/integrity_policy.h"
+#include "services/network/public/cpp/integrity_policy_parser.h"
 #include "services/network/public/cpp/link_header_parser.h"
 #include "services/network/public/cpp/no_vary_search_header_parser.h"
 #include "services/network/public/cpp/origin_agent_cluster_parser.h"
@@ -55,6 +57,14 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
 
   parsed_headers->document_isolation_policy =
       ParseDocumentIsolationPolicy(*headers);
+
+  if (base::FeatureList::IsEnabled(network::features::kIntegrityPolicyScript)) {
+    parsed_headers->integrity_policy = ParseIntegrityPolicyFromHeaders(
+        *headers, IntegrityPolicyHeaderType::kEnforce);
+    parsed_headers->integrity_policy_report_only =
+        ParseIntegrityPolicyFromHeaders(*headers,
+                                        IntegrityPolicyHeaderType::kReportOnly);
+  }
 
   std::string origin_agent_cluster =
       headers->GetNormalizedHeader("Origin-Agent-Cluster")

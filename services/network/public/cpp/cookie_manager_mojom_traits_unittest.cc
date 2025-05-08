@@ -7,12 +7,16 @@
 #include <vector>
 
 #include "base/test/gtest_util.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 #include "services/network/public/mojom/cookie_manager.mojom-shared.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/cookie_partition_key.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -367,30 +371,28 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
   }
 }
 
-TEST(CookieManagerTraitsTest, Roundtrips_PartitionKey) {
-  auto original = net::CanonicalCookie::CreateUnsafeCookieForTesting(
-      "__Host-A", "B", "x.y", "/", base::Time(), base::Time(), base::Time(),
-      base::Time(), true, false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_LOW,
-      net::CookiePartitionKey::FromURLForTesting(
-          GURL("https://toplevelsite.com")),
-      net::CookieSourceScheme::kSecure, 8433);
+TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKey) {
+  using enum net::CookiePartitionKey::AncestorChainBit;
+  const GURL url("https://toplevelsite.com");
+  const auto nonce = base::UnguessableToken::Create();
+  for (const auto& original : {
+           net::CookiePartitionKey::FromURLForTesting(url),
+           net::CookiePartitionKey::FromURLForTesting(url, kSameSite),
+           net::CookiePartitionKey::FromURLForTesting(url, kCrossSite),
+           net::CookiePartitionKey::FromURLForTesting(url, kSameSite, nonce),
+           net::CookiePartitionKey::FromURLForTesting(url, kCrossSite, nonce),
+           net::CookiePartitionKey::FromScript(),
+       }) {
+    // `copied` is about to be overwritten so it doesn't matter what it is,
+    // but CookiePartitionKey doesn't provide a default ctor, so we have to
+    // initialize it to *some* value.
+    net::CookiePartitionKey copied =
+        net::CookiePartitionKey::FromURLForTesting(GURL());
 
-  net::CanonicalCookie copied;
-
-  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
-      *original, copied));
-  EXPECT_EQ(original->PartitionKey(), copied.PartitionKey());
-  EXPECT_FALSE(copied.PartitionKey()->from_script());
-
-  original = net::CanonicalCookie::CreateUnsafeCookieForTesting(
-      "__Host-A", "B", "x.y", "/", base::Time(), base::Time(), base::Time(),
-      base::Time(), true, false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_LOW, net::CookiePartitionKey::FromScript(),
-      net::CookieSourceScheme::kSecure, 8433);
-  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
-      *original, copied));
-  EXPECT_TRUE(copied.PartitionKey()->from_script());
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKey>(
+        original, copied));
+    EXPECT_EQ(original, copied);
+  }
 }
 
 TEST(CookieManagerTraitsTest, Roundtrips_AncestorChainBit) {

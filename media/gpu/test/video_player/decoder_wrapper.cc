@@ -22,16 +22,16 @@
 #include "media/gpu/test/video_bitstream.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
-#include "media/gpu/test/video_player/gmb_video_frame_converter.h"
+#include "media/gpu/test/video_player/mappable_video_frame_converter.h"
 #include "media/gpu/test/video_player/test_vda_video_decoder.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 namespace media {
 namespace test {
@@ -163,13 +163,13 @@ void DecoderWrapper::CreateDecoderTask(base::WaitableEvent* done) {
 
   switch (decoder_wrapper_config_.implementation) {
     case DecoderImplementation::kVD:
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
       decoder_ = VideoDecoderPipeline::CreateForTesting(
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          GmbVideoFrameConverter::CreateForTesting(),
+          MappableVideoFrameConverter::CreateForTesting(),
           std::make_unique<NullMediaLog>(),
           decoder_wrapper_config_.ignore_resolution_changes_to_smaller_vp9);
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
       break;
     case DecoderImplementation::kVDA:
     case DecoderImplementation::kVDVDA:
@@ -292,10 +292,8 @@ void DecoderWrapper::DecodeNextFragmentTask() {
   bool has_config_info = false;
   if (input_video_codec_ == media::VideoCodec::kH264 ||
       input_video_codec_ == media::VideoCodec::kHEVC) {
-    auto bitstream_buffer_span = base::span(*bitstream_buffer);
     has_config_info = media::test::EncodedDataHelper::HasConfigInfo(
-        bitstream_buffer_span.data(), bitstream_buffer_span.size(),
-        input_video_codec_);
+        *bitstream_buffer, input_video_codec_);
   }
 
   VideoDecoder::DecodeCB decode_cb = base::BindOnce(

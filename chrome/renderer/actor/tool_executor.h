@@ -22,6 +22,10 @@ namespace actor {
 //
 // This class is responsible for receiving tool request messages and invoking
 // the requested tool in the renderer.
+//
+// WARNING: This class is stack allocated but is written in a way that implies
+// that tools can be asynchronously executed. In practice the tools are
+// synchronous, and there's a lot of re-entrancy.
 class ToolExecutor {
   STACK_ALLOCATED();
 

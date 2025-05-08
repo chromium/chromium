@@ -49,6 +49,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",
+    "//chrome/test:test_support",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/install_attributes:test_support",

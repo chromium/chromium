@@ -86,7 +86,6 @@ public class GpmCredManRequestDecoratorRobolectricTest {
     @SmallTest
     public void
             testUpdateGetCredentialRequestBundle_whenIgnoreGpmFalse_thenBundleContainsBranding() {
-        when(mGetHelper.getPlayServicesAvailable()).thenReturn(true);
         when(mGetHelper.getPreferImmediatelyAvailable()).thenReturn(true);
         when(mGetHelper.getIgnoreGpm()).thenReturn(false);
         Bundle bundle = new Bundle();
@@ -107,7 +106,6 @@ public class GpmCredManRequestDecoratorRobolectricTest {
     @SmallTest
     public void
             testUpdateGetCredentialRequestBundle_whenIgnoreGpmTrue_thenBundleDoesNotContainBranding() {
-        when(mGetHelper.getPlayServicesAvailable()).thenReturn(true);
         when(mGetHelper.getPreferImmediatelyAvailable()).thenReturn(true);
         when(mGetHelper.getIgnoreGpm()).thenReturn(true);
         Bundle bundle = new Bundle();

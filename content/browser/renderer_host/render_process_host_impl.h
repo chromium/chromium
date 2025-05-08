@@ -49,6 +49,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/render_process_host.h"
+#include "media/gpu/buildflags.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-forward.h"
 #include "media/mojo/mojom/video_encoder_metrics_provider.mojom-forward.h"
@@ -985,11 +986,13 @@ class CONTENT_EXPORT RenderProcessHostImpl
     std::unique_ptr<service_manager::BinderRegistry> binders_;
     mojo::Receiver<mojom::ChildProcessHost> receiver_{this};
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     mojo::Remote<media::mojom::VideoEncodeAcceleratorProviderFactory>
         video_encode_accelerator_factory_remote_;
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     ChildThreadTypeSwitcher child_thread_type_switcher_;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif
   };
 
   // Use CreateRenderProcessHost() instead of calling this constructor

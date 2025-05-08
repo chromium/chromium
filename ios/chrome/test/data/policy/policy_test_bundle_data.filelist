@@ -78,6 +78,7 @@
 //ios/chrome/test/data/policy/pref_mapping/SyncDisabled.json
 //ios/chrome/test/data/policy/pref_mapping/SyncTypesListDisabled.json
 //ios/chrome/test/data/policy/pref_mapping/TabCompareSettings.json
+//ios/chrome/test/data/policy/pref_mapping/TabGroupSharingSettings.json
 //ios/chrome/test/data/policy/pref_mapping/TranslateEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/URLAllowlist.json
 //ios/chrome/test/data/policy/pref_mapping/URLBlocklist.json

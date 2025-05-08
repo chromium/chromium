@@ -13,9 +13,9 @@
 
 @interface TestAccountInfoBuilder : NSObject
 
-@property(nonatomic, strong) NSString* userEmail;
-@property(nonatomic, strong) NSString* userFullName;
-@property(nonatomic, strong) NSString* userGivenName;
+@property(nonatomic, copy) NSString* userEmail;
+@property(nonatomic, copy) NSString* userFullName;
+@property(nonatomic, copy) NSString* userGivenName;
 
 - (instancetype)initWithTestAccountInfo:(TestAccountInfo*)testAccountInfo
     NS_DESIGNATED_INITIALIZER;

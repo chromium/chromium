@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.containsString;
 
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,6 +36,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -95,9 +98,11 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false, 0)
                 };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
@@ -124,9 +129,11 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false, 0)
                 };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
@@ -153,9 +160,11 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false, 0)
                 };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
@@ -199,11 +208,15 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false),
-                    new InstanceInfo(3, 60, InstanceInfo.Type.OTHER, "url3", "title3", 1, 1, false),
-                    new InstanceInfo(4, 61, InstanceInfo.Type.OTHER, "url4", "title4", 1, 1, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false, 0),
+                    new InstanceInfo(
+                            3, 60, InstanceInfo.Type.OTHER, "url3", "title3", 1, 1, false, 0),
+                    new InstanceInfo(
+                            4, 61, InstanceInfo.Type.OTHER, "url4", "title4", 1, 1, false, 0)
                 };
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -234,9 +247,11 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false, 0)
                 };
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
         int itemClickCount = closeCallbackHelper.getCallCount();
@@ -278,13 +293,15 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
-    public void testBackOnConfirmDialog() throws Exception {
+    public void testCancelButton() throws Exception {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false, 0)
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -310,7 +327,11 @@ public class InstanceSwitcherCoordinatorTest {
         onView(allOf(withText(R.string.instance_switcher_close_confirm_header)))
                 .check(matches(isDisplayed()));
 
-        onView(allOf(withId(R.id.title_icon), withEffectiveVisibility(VISIBLE))).perform(click());
-        onView(allOf(withText(R.string.instance_switcher_header))).check(matches(isDisplayed()));
+        onView(withText(R.string.cancel)).perform(click());
+        // The cancel button closes the instance switcher and opens the last opened window/tab
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(false));
+                });
     }
 }

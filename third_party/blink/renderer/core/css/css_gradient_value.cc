@@ -122,10 +122,9 @@ bool CSSGradientColorStop::IsCacheable() const {
     }
   }
 
-  // TODO(crbug.com/979895): This is the result of a refactoring, which might
-  // have revealed an existing bug with calculated lengths. Investigate.
-  return !offset_ || offset_->IsMathFunctionValue() ||
-         !To<CSSNumericLiteralValue>(*offset_).IsFontRelativeLength();
+  return !offset_ ||
+         (!offset_->IsMathFunctionValue() &&
+          !To<CSSNumericLiteralValue>(*offset_).IsFontRelativeLength());
 }
 
 void CSSGradientColorStop::Trace(Visitor* visitor) const {

@@ -1709,4 +1709,14 @@ ChromeSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
       std::inserter(syncable_prefs, syncable_prefs.end()));
   return syncable_prefs;
 }
+
+bool ChromeSyncablePrefsDatabase::IsPreferenceAlwaysSyncing(
+    std::string_view pref_name) const {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (pref_name == glic::prefs::kGlicRolloutEligibility) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+  return common_syncable_prefs_database_.IsPreferenceAlwaysSyncing(pref_name);
+}
 }  // namespace browser_sync

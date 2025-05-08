@@ -229,9 +229,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
 ### Using Your Own Emulator Image
 
-By far the easiest way to set up emulator images is to use Android Studio.
-If you don't have an [Android Studio project](android_studio.md) already, you
-can create a blank one to be able to reach the Virtual Device Manager screen.
+You can also set up emulator images in Android Studio.
 
 Refer to: https://developer.android.com/studio/run/managing-avds.html
 
@@ -240,52 +238,62 @@ Where files live:
  * Emulator configs and data partition images are stored within
    `~/.android/avd/`.
 
+To get started, launch any Android Studio Project. If you don't have an [Android
+Studio project](android_studio.md) already, you can create a blank one. Go to
+the menu on the right-hand side of the window and click to launch the Device
+Manager. In the Device Manager window, click the "+" icon and **Create Virtual
+Device**.
+
 #### Creating an Image
 
-##### Choosing a Skin
+You'll see a long list of Pixel phone names. You need to 2 decisions here:
 
-Choose a skin with a small screen for better performance (unless you care about
-testing large screens).
+1. Which form factor (phone/tablet/etc.)? If you're not sure, a **phone** target
+   is usually fine for most development.
+2. Which device model skin? Any Pixel skin is usually sufficient, but pay
+   attention to the "API" column if you need a specific OS version. You can
+   refer to
+   https://developer.android.com/guide/topics/manifest/uses-sdk-element.html to
+   convert between API numbers and the OS release number (ex. API 34 refers to
+   the Android 14 release).
 
-##### Choosing an Image
+##### Device settings
 
-Android Studio's image labels roughly translate to the following:
+You need to choose 4 things on the "Device" tab:
 
-| AVD "Target" | Virtual Device Configuration tab | GMS? | Build Properties |
-| --- | --- | --- | --- |
-| Google Play | "Recommended" (the default tab) | This has GMS | `user`/`release-keys` |
-| Google APIs | "x86 Images" | This has GMS | `userdebug`/`dev-keys` |
-| No label | "x86 Images" | AOSP image, does not have GMS | `eng`/`test-keys` |
+1. Name: give this emulator a name to help you remember what this emulator is
+   for (ex. "Android 15").
+2. API: choose an API version (Android operating system version) for the emulator.
+3. Services: you'll probably want to choose **Google APIs** for most
+   development, since this gives you a `userdebug` emulator with GMS Core APIs
+   installed. See the table below if you need something different.
+4. System image: select "Google APIs Intel x86\_64" (or whichever row has the
+   ⭐ icon)
 
-*** promo
-**Tip:** if you're not sure which to use, choose **Google APIs** under the **x86
-Images** tab in the Virtual Device Configuration wizard.
-***
+Choosing different **Services** for the emulator:
 
-##### Configuration
+| Services |  GMS? | Build Properties |
+| --- | --- | --- |
+| Google Play | This has GMS and the Play Store | `user`/`release-keys` |
+| Google APIs | This has GMS | `userdebug`/`dev-keys` |
+| Android Open Source | AOSP image, does not have GMS | `eng`/`test-keys` |
 
-"Show Advanced Settings" > scroll down:
-* Set internal storage to 4000MB (component builds are really big).
-* Set SD card to 1000MB (our tests push a lot of files to /sdcard).
+![Device settings](/docs/images/android_device_manager_device_tab.png)
 
-##### Known Issues
+##### Additional settings
 
- * Our test & installer scripts do not work with pre-MR1 Jelly Bean.
- * Component builds do not work on pre-KitKat (due to the OS having a max
-   number of shared libraries).
- * Jelly Bean and KitKat images sometimes forget to mount /sdcard :(.
-   * This causes tests to fail.
-   * To ensure it's there: `adb -s emulator-5554 shell mount` (look for /sdcard)
-   * Can often be fixed by editing `~/.android/avd/YOUR_DEVICE/config.ini`.
-     * Look for `hw.sdCard=no` and set it to `yes`
- * The "Google APIs" Android L and M emulator images are configured to expect
-   the "AOSP" WebView package (`com.android.webview`). This does not resemble
-   production devices with GMS, which expect the ["Google WebView"
-   configuration](/android_webview/docs/webview-providers.md#webview-provider-options)
-   (`com.google.android.webview` on L and M). See [Removing preinstalled
-   WebView](/android_webview/docs/build-instructions.md#Removing-preinstalled-WebView)
-   if you need to install a local build or official build.
+1. Internal storage: this needs to be at least 4000 MB (4 GB)
+   (component builds are really big).
+2. Expanded storage: this needs to be at least 1000 MB (1 GB)
+   (our tests push a lot of files to /sdcard).
 
+After you have configured everything, you can click "Finish" to create the AVD
+(emulator).
+After it's been created, you can launch the AVD from Device Manager by clicking
+the play button or you can launch it from the commandline (see instructions
+below).
+
+![Additional settings](/docs/images/android_device_manager_additional_settings_tab.png)
 
 #### Starting an Emulator from the Command Line
 

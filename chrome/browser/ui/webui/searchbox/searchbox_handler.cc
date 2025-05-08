@@ -605,7 +605,11 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
       icon.name == omnibox::kJourneysChromeRefreshIcon.name) {
     return kJourneysIconResourceName;
   }
-  if (icon.name == omnibox::kPageSparkIcon.name) {
+  if (icon.name == omnibox::kPageSparkIcon.name ||
+      icon.name == omnibox::kArrowUpChromeRefreshIcon.name ||
+      icon.name == omnibox::kVerticalBarIcon.name) {
+    // TODO(crbug.com/415327679): Either select an SVG or update webui for
+    //  vertical bars on contextual search matches once the omnibox UI settles.
     return kPageSparkIconResourceName;
   }
   if (icon.name == omnibox::kPedalIcon.name ||

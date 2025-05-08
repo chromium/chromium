@@ -21,10 +21,6 @@ struct LineClampData {
     kDisabled,
     kClampByLines,
     kMeasureLinesUntilBfcOffset,
-    // The line-clamp context is enabled, but no forced truncation
-    // will happen. This is different from kDisabled in that
-    // `text-overflow: ellipsis` will not take effect inside it.
-    kDontTruncate,
   };
 
   bool IsLineClampContext() const { return state != kDisabled; }

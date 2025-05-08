@@ -4,10 +4,18 @@ class ContributeToHistogramOperation {
       privateAggregation.enableDebugMode(data.enableDebugModeArgs);
     }
     for (const contribution of data.contributions) {
-      privateAggregation.contributeToHistogram(contribution);
+      if (contribution.event) {
+        privateAggregation.contributeToHistogramOnEvent(
+            contribution.event, contribution);
+      } else {
+        privateAggregation.contributeToHistogram(contribution);
+      }
     }
     if (data.enableDebugModeAfterOp) {
       privateAggregation.enableDebugMode(data.enableDebugModeArgs);
+    }
+    if (data.exceptionToThrow) {
+      throw data.exceptionToThrow;
     }
   }
 }

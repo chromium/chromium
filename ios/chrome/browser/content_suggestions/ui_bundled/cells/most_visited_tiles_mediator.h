@@ -33,22 +33,6 @@ class PrefService;
 @protocol SnackbarCommands;
 class UrlLoadingBrowserAgent;
 
-// Delegate used to communicate events back to the owner of
-// MostVisitedTilesMediator.
-@protocol MostVisitedTilesMediatorDelegate
-
-// Logs a user Magic Stack engagement for module `type`.
-- (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
-
-// Indicates to the receiver that the initial Most Visited Tiles list has been
-// received.
-- (void)didReceiveInitialMostVistedTiles;
-
-// Indicates to the receiver to remove the MostVisitedTiles module.
-- (void)removeMostVisitedTilesModule;
-
-@end
-
 // Mediator for managing the state of the MostVisitedTiles for the Magic Stack
 // module.
 @interface MostVisitedTilesMediator
@@ -57,9 +41,6 @@ class UrlLoadingBrowserAgent;
 // The config object for the latest Most Visited Tiles.
 @property(nonatomic, strong, readonly)
     MostVisitedTilesConfig* mostVisitedConfig;
-
-// Whether the most visited tiles should be located within the magic stack.
-@property(nonatomic, readonly) BOOL inMagicStack;
 
 // Recorder for content suggestions metrics.
 @property(nonatomic, weak)
@@ -74,9 +55,6 @@ class UrlLoadingBrowserAgent;
 // Delegate used to communicate Content Suggestions events to the delegate.
 @property(nonatomic, weak) id<ContentSuggestionsDelegate>
     contentSuggestionsDelegate;
-
-// Delegate used to communicate events back to the owner of this class.
-@property(nonatomic, weak) id<MostVisitedTilesMediatorDelegate> delegate;
 
 // Delegate for reporting content suggestions actions to the NTP.
 @property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;

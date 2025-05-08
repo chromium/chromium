@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/search/ntp_features.h"
 #include "components/webui/flags/feature_entry.h"
 #include "ui/base/ui_base_features.h"
 
@@ -79,7 +80,7 @@ constexpr base::FeatureParam<PdfInfoBarTrigger> kPdfInfoBarTrigger = {
 // so that it can be shown instantly at a later time when necessary.
 BASE_FEATURE(kPreloadTopChromeWebUI,
              "PreloadTopChromeWebUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPreloadTopChromeWebUIModeName[] = "preload-mode";
 const char kPreloadTopChromeWebUIModePreloadOnWarmupName[] =
@@ -100,11 +101,11 @@ const base::FeatureParam<PreloadTopChromeWebUIMode> kPreloadTopChromeWebUIMode{
 
 const char kPreloadTopChromeWebUISmartPreloadName[] = "smart-preload";
 const base::FeatureParam<bool> kPreloadTopChromeWebUISmartPreload{
-    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUISmartPreloadName, false};
+    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUISmartPreloadName, true};
 
 const char kPreloadTopChromeWebUIDelayPreloadName[] = "delay-preload";
 const base::FeatureParam<bool> kPreloadTopChromeWebUIDelayPreload{
-    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIDelayPreloadName, false};
+    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIDelayPreloadName, true};
 
 const char kPreloadTopChromeWebUIExcludeOriginsName[] = "exclude-origins";
 const base::FeatureParam<std::string> kPreloadTopChromeWebUIExcludeOrigins{
@@ -132,6 +133,10 @@ BASE_FEATURE(KScrimForTabModal,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSideBySide, "SideBySide", base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsNtpFooterEnabledWithoutSideBySide() {
+  return (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
+          !base::FeatureList::IsEnabled(features::kSideBySide));
+}
 
 BASE_FEATURE(kSidePanelResizing,
              "SidePanelResizing",
@@ -246,6 +251,12 @@ BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
              "TearOffWebAppTabOpensWebAppWindow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kThreeButtonPasswordSaveDialog,
+             "ThreeButtonPasswordSaveDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if !defined(ANDROID)
 BASE_FEATURE(kPinnedCastButton,
              "PinnedCastButton",
@@ -277,8 +288,15 @@ BASE_FEATURE(kEnterpriseProfileBadgingPolicies,
 // On managed browsers, a building icon and "Managed by <domain>" string will be
 // shown in the footer, unless the icon and label are customized by the admin.
 BASE_FEATURE(kEnterpriseBadgingForNtpFooter,
-             "EnterpriseProfileBadgingForNtpFooter",
+             "EnterpriseBadgingForNtpFooter",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the management notice in the NTP footer if the custom policies are
+// set. This acts as a kill switch for "EnterpriseCustomLabelForBrowser" and
+// "EnterpriseLogoUrlForBrowser".
+BASE_FEATURE(kNTPFooterBadgingPolicies,
+             "NTPFooterBadgingPolicies",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables showing the EnterpriseCustomLabel` instead of the cloud policy
 // manager in the managed disclaimer "Managed by..." in the profile and app
@@ -373,6 +391,10 @@ const base::FeatureParam<bool> kPageActionsMigrationPwaInstall{
     &kPageActionsMigration, "pwa_install", false};
 const base::FeatureParam<bool> kPageActionsMigrationPriceInsights{
     &kPageActionsMigration, "price_insights", false};
+
+BASE_FEATURE(kSavePasswordsContextualUi,
+             "SavePasswordsContextualUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCompositorLoadingAnimations,
              "CompositorLoadingAnimations",

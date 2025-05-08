@@ -43,8 +43,18 @@ class InteractionTestUtilMouse {
 
   // These represent mouse gestures of different types. They are implementation
   // details; prefer to use the static factory methods below.
-  using MouseButtonGesture =
-      std::pair<ui_controls::MouseButton, ui_controls::MouseButtonState>;
+  struct MouseButtonGesture {
+    MouseButtonGesture(ui_controls::MouseButton button_,
+                       ui_controls::MouseButtonState button_state_,
+                       int modifier_keys_)
+        : button(button_),
+          button_state(button_state_),
+          modifier_keys(modifier_keys_) {}
+
+    ui_controls::MouseButton button;
+    ui_controls::MouseButtonState button_state;
+    /* ui_controls::AcceleratorState */ int modifier_keys;
+  };
   using MouseMoveGesture = gfx::Point;
   using MouseGesture = std::variant<MouseMoveGesture, MouseButtonGesture>;
   using MouseGestures = std::list<MouseGesture>;
@@ -75,9 +85,13 @@ class InteractionTestUtilMouse {
   // These factory methods create individual or compound gestures. They can be
   // chained together. Prefer these to directly constructing a MouseGesture.
   static MouseGesture MoveTo(gfx::Point point);
-  static MouseGesture MouseDown(ui_controls::MouseButton button);
-  static MouseGesture MouseUp(ui_controls::MouseButton button);
-  static MouseGestures Click(ui_controls::MouseButton button);
+  static MouseGesture MouseDown(
+      ui_controls::MouseButton button,
+      int modifier_keys = ui_controls::kNoAccelerator);
+  static MouseGesture MouseUp(ui_controls::MouseButton button,
+                              int modifier_keys = ui_controls::kNoAccelerator);
+  static MouseGestures Click(ui_controls::MouseButton button,
+                             int modifier_keys = ui_controls::kNoAccelerator);
   static MouseGestures DragAndHold(gfx::Point destination);
   static MouseGestures DragAndRelease(gfx::Point destination);
 

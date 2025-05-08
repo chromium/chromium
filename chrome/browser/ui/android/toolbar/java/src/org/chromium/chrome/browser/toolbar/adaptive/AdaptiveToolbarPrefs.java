@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * A utility class for handling adaptive toolbar customization user settings used by {@link
  * AdaptiveToolbarButtonController}.
  */
+@NullMarked
 public class AdaptiveToolbarPrefs {
     /**
      * Returns whether the customization preference toggle is enabled. Returns true if no value has

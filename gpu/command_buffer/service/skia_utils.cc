@@ -170,22 +170,30 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
 }
 
 void DumpBackgroundGraphiteMemoryStatistics(
-    const GraphiteSharedContext* context,
+    const GraphiteSharedContext* graphite_shared_context,
     const skgpu::graphite::Recorder* recorder,
     base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
   static constexpr char kNamePurgeableSize[] = "purgeable_size";
 
-  std::string context_dump_name =
-      base::StringPrintf("skia/gpu_resources/graphite_context_0x%" PRIXPTR,
-                         reinterpret_cast<uintptr_t>(context));
-  MemoryAllocatorDump* context_dump =
-      pmd->CreateAllocatorDump(context_dump_name);
-  context_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                          MemoryAllocatorDump::kUnitsBytes,
-                          context->currentBudgetedBytes());
-  context_dump->AddScalar(kNamePurgeableSize, MemoryAllocatorDump::kUnitsBytes,
-                          context->currentPurgeableBytes());
+  std::string context_dump_name = base::StringPrintf(
+      "skia/gpu_resources/graphite_shared_context_0x%" PRIXPTR,
+      reinterpret_cast<uintptr_t>(graphite_shared_context));
+
+  // Skip the second graphite context memory dump if both
+  // SharedContextStates share the same GraphiteSharedContext when DrDC is
+  // enabled. ProcessMemoryDump::AddAllocatorDumpInternal() will CHECK for a
+  // duplicate name |context_dump_name| .
+  MemoryAllocatorDump* context_dump = pmd->GetAllocatorDump(context_dump_name);
+  if (!context_dump) {
+    context_dump = pmd->CreateAllocatorDump(context_dump_name);
+    context_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                            MemoryAllocatorDump::kUnitsBytes,
+                            graphite_shared_context->currentBudgetedBytes());
+    context_dump->AddScalar(kNamePurgeableSize,
+                            MemoryAllocatorDump::kUnitsBytes,
+                            graphite_shared_context->currentPurgeableBytes());
+  }
 
   std::string recorder_dump_name = base::StringPrintf(
       "skia/gpu_resources/gpu_main_graphite_recorder_0x%" PRIXPTR,

@@ -38,7 +38,7 @@ static CallbackType RemoveHandler(
 }  // namespace
 
 PasskeyBrowserBinder::PasskeyBrowserBinder(
-    std::unique_ptr<BrowserBoundKeyStore> key_store,
+    scoped_refptr<BrowserBoundKeyStore> key_store,
     scoped_refptr<PaymentManifestWebDataService> web_data_service)
     : key_store_(std::move(key_store)),
       web_data_service_(web_data_service),
@@ -49,17 +49,25 @@ PasskeyBrowserBinder::~PasskeyBrowserBinder() = default;
 
 PasskeyBrowserBinder::UnboundKey::UnboundKey(
     std::vector<uint8_t> browser_bound_key_id,
-    std::unique_ptr<BrowserBoundKey> browser_bound_key)
+    std::unique_ptr<BrowserBoundKey> browser_bound_key,
+    scoped_refptr<BrowserBoundKeyStore> key_store)
     : browser_bound_key_id_(std::move(browser_bound_key_id)),
-      browser_bound_key_(std::move(browser_bound_key)) {}
+      browser_bound_key_(std::move(browser_bound_key)),
+      key_store_(std::move(key_store)) {}
 
 PasskeyBrowserBinder::UnboundKey::UnboundKey(UnboundKey&&) = default;
 
 PasskeyBrowserBinder::UnboundKey& PasskeyBrowserBinder::UnboundKey::operator=(
     UnboundKey&&) = default;
 
-// TODO(crbug.com/390441081) If the key has not been associated, delete it.
-PasskeyBrowserBinder::UnboundKey::~UnboundKey() = default;
+PasskeyBrowserBinder::UnboundKey::~UnboundKey() {
+  // When browser_bound_key_ is still present, then we have not yet bound the
+  // key, (in PasskeyBrowserBinder::BindKey()). To prevent this key from being
+  // orphaned we delete it now.
+  if (browser_bound_key_) {
+    key_store_->DeleteBrowserBoundKey(browser_bound_key_->GetIdentifier());
+  }
+}
 
 std::optional<PasskeyBrowserBinder::UnboundKey>
 PasskeyBrowserBinder::CreateUnboundKey(
@@ -77,7 +85,8 @@ PasskeyBrowserBinder::CreateUnboundKey(
     return std::nullopt;
   }
   return PasskeyBrowserBinder::UnboundKey(std::move(browser_bound_key_id),
-                                          std::move(browser_bound_key));
+                                          std::move(browser_bound_key),
+                                          key_store_);
 }
 
 void PasskeyBrowserBinder::BindKey(UnboundKey key,

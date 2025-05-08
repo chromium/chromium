@@ -47,22 +47,22 @@ struct MEDIA_EXPORT AudioDeviceDescription {
 
   // TODO(b/338470954): Rename to IsVirtualDefaultDevice(...)
   // Returns true if |device_id| represents the virtual default device.
-  static bool IsDefaultDevice(const std::string& device_id);
+  static bool IsDefaultDevice(std::string_view device_id);
 
   // TODO(b/338470954): Rename to IsVirtualCommunicationsDevice(...)
   // Returns true if |device_id| represents the virtual communications device.
-  static bool IsCommunicationsDevice(const std::string& device_id);
+  static bool IsCommunicationsDevice(std::string_view device_id);
 
   // Returns true if |device_id| represents a loopback audio capture device.
   // Note that this will not work if |device_id| is hashed, which may be the
   // case in the Renderer.
-  static bool IsLoopbackDevice(const std::string& device_id);
+  static bool IsLoopbackDevice(std::string_view device_id);
 
   // Returns true if |device_id| represents an application loopback audio
   // capture device.
   // Note that this will not work if |device_id| is hashed, which is the case in
   // the Renderer.
-  static bool IsApplicationLoopbackDevice(const std::string& device_id);
+  static bool IsApplicationLoopbackDevice(std::string_view device_id);
 
   // If |device_id| is not empty, |session_id| should be ignored and the output
   // device should be selected basing on |device_id|.
@@ -71,7 +71,7 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // be used.
   static bool UseSessionIdToSelectDevice(
       const base::UnguessableToken& session_id,
-      const std::string& device_id);
+      std::string_view device_id);
 
   // The functions dealing with localization are not reliable in the audio
   // service, and should be avoided there.
@@ -80,7 +80,7 @@ struct MEDIA_EXPORT AudioDeviceDescription {
 
   // Returns a localized version of name of the generic "default" device that
   // includes the given |real_device_name|.
-  static std::string GetDefaultDeviceName(const std::string& real_device_name);
+  static std::string GetDefaultDeviceName(std::string_view real_device_name);
 
   // Returns the localized name of the generic default communications device.
   // This device is not supported on all platforms.
@@ -89,7 +89,7 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // Returns a localized version of name of the generic communications device
   // that includes the given |real_device_name|.
   static std::string GetCommunicationsDeviceName(
-      const std::string& real_device_name);
+      std::string_view real_device_name);
 
   // This prepends localized "Default" or "Communications" strings to
   // default and communications device names in |device_descriptions|, and

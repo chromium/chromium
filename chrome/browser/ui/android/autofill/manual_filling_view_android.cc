@@ -161,6 +161,18 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
         value.display_text(), value.text_to_fill());
   }
 
+  for (const autofill::LoyaltyCardInfo& loyalty_card_info :
+       tab_data.loyalty_card_info_list()) {
+    Java_ManualFillingComponentBridge_addLoyaltyCardInfoToAccessorySheetData(
+        env, java_object, j_tab_data,
+        static_cast<int>(tab_data.get_sheet_type()),
+        static_cast<int>(loyalty_card_info.value().suggestion_type()),
+        loyalty_card_info.merchant_name(),
+        url::GURLAndroid::FromNativeGURL(env,
+                                         loyalty_card_info.program_logo_url()),
+        loyalty_card_info.value().display_text());
+  }
+
   for (const FooterCommand& footer_command : tab_data.footer_commands()) {
     Java_ManualFillingComponentBridge_addFooterCommandToAccessorySheetData(
         env, java_object, j_tab_data, footer_command.display_text(),

@@ -9,8 +9,8 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -29,6 +29,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  * This is the chip that shows up under the 3-dot menu informing users that this is a page
  * they can follow.
  */
+@NullMarked
 class WebFeedFollowIntroView {
     private static final int DEFAULT_SHOW_TIMEOUT_MILLIS = 8 * 1000;
 
@@ -36,10 +37,10 @@ class WebFeedFollowIntroView {
     private final AppMenuHandler mAppMenuHandler;
     private final Handler mHandler = new Handler();
     private final View mMenuButtonAnchorView;
-    @Nullable private final Tracker mFeatureEngagementTracker;
+    private final @Nullable Tracker mFeatureEngagementTracker;
     private final Runnable mIntroDismissedCallback;
 
-    private ClickableTextBubble mFollowBubble;
+    private @Nullable ClickableTextBubble mFollowBubble;
     private final int mShowTimeoutMillis;
 
     /**

@@ -250,7 +250,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS,
       id: Id.LOCAL_NETWORK_ACCESS,
       label: 'siteSettingsLocalNetworkAccess',
-      icon: 'settings:devices',
+      icon: 'settings20:router',
       enabledLabel: 'siteSettingsLocalNetworkAccessAsk',
       disabledLabel: 'siteSettingsLocalNetworkAccessBlock',
       shouldShow: () =>

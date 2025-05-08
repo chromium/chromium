@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpattern_urlpatterninit_usvstring.h"
@@ -388,14 +390,16 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
 
   Component* protocol_component = nullptr;
   absl::Status status = constructor_string_parser.Parse(
-      [=, &protocol_component, &exception_state](
-          std::string_view protocol_string) -> absl::StatusOr<bool> {
+      [=, &protocol_component,
+       &exception_state](std::string_view protocol_string)
+          -> base::expected<bool, absl::Status> {
         protocol_component = Component::Compile(
             isolate, String::FromUTF8(protocol_string),
             Component::Type::kProtocol,
             /*protocol_component=*/nullptr, *options, exception_state);
         if (exception_state.HadException()) {
-          return absl::InvalidArgumentError("Failed to compile protocol");
+          return base::unexpected(
+              absl::InvalidArgumentError("Failed to compile protocol"));
         }
         return protocol_component &&
                protocol_component->ShouldTreatAsStandardURL();
@@ -543,8 +547,7 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   if (exception_state.HadException())
     return nullptr;
 
-  Options urlpattern_options;
-  urlpattern_options.ignore_case = options->ignoreCase();
+  auto urlpattern_options = Options::FromV8URLPatternOptions(options);
 
   return MakeGarbageCollected<URLPattern>(
       protocol_component, username_component, password_component,
@@ -560,7 +563,7 @@ URLPattern::URLPattern(Component* protocol,
                        Component* pathname,
                        Component* search,
                        Component* hash,
-                       Options options,
+                       const Options& options,
                        base::PassKey<URLPattern> key)
     : protocol_(protocol),
       username_(username),

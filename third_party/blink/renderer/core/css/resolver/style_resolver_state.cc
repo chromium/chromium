@@ -383,4 +383,28 @@ bool StyleResolverState::CanAffectAnimations() const {
          StyleBuilder().CanAffectAnimations();
 }
 
+void StyleResolverState::SetComputedStyleFlagsFromAuthorFlags(
+    CSSProperty::Flags author_flags) {
+  // These three flags are only used if HasAppearance() is set
+  // (they are used for knowing whether appearance: auto is to be overridden),
+  // but we compute them nevertheless, to avoid suddenly having to compute them
+  // after-the-fact if inline style is updated incrementally.
+  if (author_flags & CSSProperty::kBackground) {
+    StyleBuilder().SetHasAuthorBackground();
+  }
+  if (author_flags & CSSProperty::kBorder) {
+    StyleBuilder().SetHasAuthorBorder();
+  }
+  if (author_flags & CSSProperty::kBorderRadius) {
+    StyleBuilder().SetHasAuthorBorderRadius();
+  }
+
+  if ((InsideLink() != EInsideLink::kInsideVisitedLink &&
+       (author_flags & CSSProperty::kHighlightColors)) ||
+      (InsideLink() == EInsideLink::kInsideVisitedLink &&
+       (author_flags & CSSProperty::kVisitedHighlightColors))) {
+    StyleBuilder().SetHasAuthorHighlightColors();
+  }
+}
+
 }  // namespace blink

@@ -87,7 +87,10 @@ class AutofillSettingsProfileEditTableViewControllerTest
 };
 
 // Default test case of no addresses or credit cards.
-TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestInitialization) {
+// TODO(crbug.com/416030990): Adapt test to
+// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
+TEST_F(AutofillSettingsProfileEditTableViewControllerTest,
+       DISABLED_TestInitialization) {
   TableViewModel* model = [controller() tableViewModel];
 
   EXPECT_EQ(1, [model numberOfSections]);
@@ -166,24 +169,30 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
 };
 
 // Adding an account address results in an address section.
+// TODO(crbug.com/416030990): Adapt test to
+// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
-       TestAccountProfileView) {
+       DISABLED_TestAccountProfileView) {
   CreateAccountProfile();
   EXPECT_EQ(2, [[controller() tableViewModel] numberOfSections]);
   TestViewData();
 }
 
 // Adding an address results in an address section.
+// TODO(crbug.com/416030990): Adapt test to
+// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
-       TestProfileView) {
+       DISABLED_TestProfileView) {
   EXPECT_EQ(1, [[controller() tableViewModel] numberOfSections]);
   TestViewData();
 }
 
 // Tests the footer text of the view controller for the address profiles with
 // source kAccount.
+// TODO(crbug.com/416030990): Adapt test to
+// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
-       TestFooterTextWithEmail) {
+       DISABLED_TestFooterTextWithEmail) {
   CreateAccountProfile();
   TableViewModel* model = [controller() tableViewModel];
 
@@ -218,8 +227,10 @@ class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
 };
 
 // Tests the number of sections and the number of items in the sections.
+// TODO(crbug.com/416030990): Adapt test to
+// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_F(AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest,
-       TestElementsInView) {
+       DISABLED_TestElementsInView) {
   TableViewModel* model = [controller() tableViewModel];
   int rowCnt = 12;
 

@@ -110,6 +110,11 @@ gfx::ImageSkia CreateTiledGooglePayLogo(int width,
                                         const ui::ColorProvider* provider);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+// Creates a view containing a label and a textfield. The view is arranged
+// vertically with the label positioned above the textfield.
+std::unique_ptr<views::View> CreateLabelAndTextfieldView(
+    const std::u16string& text);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_PAYMENTS_VIEW_UTIL_H_

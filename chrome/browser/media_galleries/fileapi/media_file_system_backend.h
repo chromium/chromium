@@ -12,7 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "components/download/public/common/quarantine_connection.h"

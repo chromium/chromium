@@ -47,7 +47,19 @@ public class TabSwitcherPaneMediator
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsDialogVisibleSupplier =
             new ObservableSupplierImpl<>();
-    private final TabActionListener mTabGridDialogOpener = this::onTabGroupClicked;
+    private final TabActionListener mTabGridDialogOpener =
+            new TabActionListener() {
+                @Override
+                public void run(View view, int tabId) {
+                    openTabGroupDialog(tabId);
+                    RecordUserAction.record("TabGridDialog.ExpandedFromSwitcher");
+                }
+
+                @Override
+                public void run(View view, String syncId) {
+                    // Intentional no-op.
+                }
+            };
     private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final Callback<Boolean> mOnDialogShowingOrAnimatingCallback =
@@ -272,6 +284,12 @@ public class TabSwitcherPaneMediator
     }
 
     @Override
+    public @Nullable TabActionListener openTabGridDialog(String syncId) {
+        // Intentional no-op.
+        return null;
+    }
+
+    @Override
     public void onTabSelecting(int tabId, boolean fromActionButton) {
         mOnTabClickCallback.onResult(tabId);
     }
@@ -360,11 +378,6 @@ public class TabSwitcherPaneMediator
             relatedTabs = null;
         }
         mTabGridDialogControllerSupplier.get().resetWithListOfTabs(relatedTabs);
-    }
-
-    private void onTabGroupClicked(View view, int tabId) {
-        openTabGroupDialog(tabId);
-        RecordUserAction.record("TabGridDialog.ExpandedFromSwitcher");
     }
 
     private void notifyBackPressStateChangedInternal() {

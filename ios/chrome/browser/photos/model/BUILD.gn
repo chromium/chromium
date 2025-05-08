@@ -70,6 +70,7 @@ source_set("unit_tests") {
     ":photos_service_factory",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }

@@ -138,6 +138,7 @@ if (!is_android && !is_ios) {
         "//components/pref_registry",
         "//components/soda",
         "//components/soda:constants",
+        "//components/soda:test_support",
         "//ui/native_theme",
         "//ui/views",
       ]

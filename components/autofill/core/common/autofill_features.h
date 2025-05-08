@@ -65,8 +65,6 @@ BASE_DECLARE_FEATURE(kAutofillDisallowSlashDotLabels);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillDisambiguateContradictingFieldTypes);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableAccountStorageForIneligibleCountries);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableAddressFieldParserNG);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillDisableFilling);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillDisableAddressImport);
@@ -108,17 +106,9 @@ BASE_DECLARE_FEATURE(kAutofillExtractOnlyNonAdFrames);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillOptimizeFormExtraction);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillAddressFieldSwapping);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillImproveAddressFieldSwapping);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillImproveCityFieldClassification);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillFixValueSemantics);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillFixInitialValueOfSelect);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillFixCurrentValueInImport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillFixSplitCreditCardImport);
 COMPONENT_EXPORT(AUTOFILL)
@@ -141,6 +131,8 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillIncludeSelectOptionsInCrowdsourcing);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillIncludeUrlInCrowdsourcing);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillNewSuggestionGeneration);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillSupportPhoneticNameForJP);
 COMPONENT_EXPORT(AUTOFILL)
@@ -258,8 +250,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillGreekRegexes);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillInferLabelFromDefaultSelectText);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillVoteWhenInactive);
 // TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kPlusAddressAcceptedFirstTimeCreateSurvey);
@@ -285,6 +275,15 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest);
+
+// Identifies different strings that can be used in the CTA button for the
+// Autofill Iph.
+enum class AutofillIphCTAVariationsStringVarations {
+  kSeeHow = 0,
+  kTurnOn = 1,
+  kTryIt = 2,
+  kMaxValue = kTryIt
+};
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)

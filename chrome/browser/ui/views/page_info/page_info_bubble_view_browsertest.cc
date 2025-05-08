@@ -210,24 +210,12 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
 
 }  // namespace
 
+// TODO(crbug.com/40231917): Clean up when PageSpecificSiteDataDialog is
+// launched. Disable features for the new version of "Cookies in use"
+// dialog. The new UI is covered by
+// PageInfoBubbleViewBrowserTestCookiesSubpage.
 class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
  public:
-  PageInfoBubbleViewBrowserTest() {
-    // TODO(crbug.com/40231917): Clean up when PageSpecificSiteDataDialog is
-    // launched. Disable features for the new version of "Cookies in use"
-    // dialog. The new UI is covered by
-    // PageInfoBubbleViewBrowserTestCookiesSubpage.
-    feature_list_.InitWithFeatures(
-        {features::kFileSystemAccessPersistentPermissions,
-         permissions::features::kOneTimePermission},
-        {});
-  }
-
-  PageInfoBubbleViewBrowserTest(const PageInfoBubbleViewBrowserTest& test) =
-      delete;
-  PageInfoBubbleViewBrowserTest& operator=(
-      const PageInfoBubbleViewBrowserTest& test) = delete;
-
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     InProcessBrowserTest::SetUp();
@@ -347,7 +335,9 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
 
  private:
   std::vector<PageInfoViewFactory::PageInfoViewID> expected_identifiers_;
-  base::test::ScopedFeatureList feature_list_;
+
+  base::test::ScopedFeatureList feature_list_{
+      features::kFileSystemAccessPersistentPermissions};
 };
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ShowBubble) {

@@ -7,8 +7,10 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -25,7 +27,10 @@ using IOS_ReaderMode_Heuristic_Result =
 class ReaderModeJavaScriptFeatureTest : public PlatformTest {
  public:
   ReaderModeJavaScriptFeatureTest() : valid_url_(GURL("https://example.com")) {
-    ReaderModeTabHelper::CreateForWebState(web_state());
+    profile_ = TestProfileIOS::Builder().Build();
+
+    ReaderModeTabHelper::CreateForWebState(
+        web_state(), DistillerServiceFactory::GetForProfile(profile_.get()));
     ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }
 
@@ -115,6 +120,7 @@ class ReaderModeJavaScriptFeatureTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
   GURL valid_url_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests that an empty url is not eligible for Reader Mode heuristics.

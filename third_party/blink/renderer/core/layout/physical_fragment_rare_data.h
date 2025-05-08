@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/gap_fragment_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/table/table_fragment_data.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -75,8 +76,9 @@ class PhysicalFragmentRareData
     kTableSectionRowOffsets,
     kPageName,
     kMargins,
+    kOffsetFromRootFragmentationContext,
 
-    kMaxValue = kMargins,
+    kMaxValue = kOffsetFromRootFragmentationContext,
   };
   static_assert(sizeof(RareBitFieldType) * CHAR_BIT >
                     static_cast<unsigned>(FieldId::kMaxValue),
@@ -99,6 +101,7 @@ class PhysicalFragmentRareData
       Vector<LayoutUnit> table_section_row_offsets;
       AtomicString page_name;
       PhysicalBoxStrut margins;
+      PhysicalOffset offset_from_root_fragmentation_context;
     };
     const FieldId type;
 

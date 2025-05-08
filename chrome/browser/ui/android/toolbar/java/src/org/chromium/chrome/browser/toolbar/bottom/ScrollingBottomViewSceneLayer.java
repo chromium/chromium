@@ -10,6 +10,8 @@ import android.view.View;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -28,6 +30,7 @@ import java.util.List;
  * scrolling.
  */
 @JNINamespace("android")
+@NullMarked
 public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements SceneOverlay {
     /** Handle to the native side of this class. */
     private long mNativePtr;
@@ -48,7 +51,7 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     private boolean mIsVisible;
 
     /** The OffsetTag indicating that this layer will be moved by viz. */
-    private OffsetTag mOffsetTag;
+    private @Nullable OffsetTag mOffsetTag;
 
     /** The {@link ViewResourceFrameLayout} that this scene layer represents. */
     private ViewResourceFrameLayout mBottomView;
@@ -153,7 +156,7 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     }
 
     @Override
-    public EventFilter getEventFilter() {
+    public @Nullable EventFilter getEventFilter() {
         return null;
     }
 
@@ -202,6 +205,6 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
                 float xOffset,
                 float yOffset,
                 boolean showShadow,
-                OffsetTag offsetTag);
+                @Nullable OffsetTag offsetTag);
     }
 }

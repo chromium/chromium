@@ -63,6 +63,7 @@ static_library("system") {
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/server_backed_state",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes",

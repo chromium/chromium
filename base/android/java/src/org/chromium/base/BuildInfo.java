@@ -9,7 +9,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.os.Process;
 
 import org.jni_zero.CalledByNative;
@@ -217,29 +216,6 @@ public class BuildInfo {
      */
     public static boolean isDebugAndroidOrApp() {
         return isDebugAndroid() || isDebugApp();
-    }
-
-    /**
-     * Checks if the application targets the T SDK or later.
-     * @deprecated Chrome callers should just remove this test - Chrome targets T or later now.
-     * WebView callers should just inline the logic below to check the target level of the embedding
-     * App when necessary.
-     */
-    @Deprecated
-    public static boolean targetsAtLeastT() {
-        int target = ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
-
-        // Now that the public SDK is upstreamed we can use the defined constant.
-        return target >= VERSION_CODES.TIRAMISU;
-    }
-
-    /**
-     * Checks if the application targets pre-release SDK U. This must be manually maintained as the
-     * SDK goes through finalization! Avoid depending on this if possible; this is only intended for
-     * WebView.
-     */
-    public static boolean targetsAtLeastU() {
-        return ApkInfo.targetsAtLeastU();
     }
 
     @NullUnmarked

@@ -107,17 +107,10 @@ class Profile : public content::BrowserContext {
     // Creates a unique OTR profile id for tests.
     static OTRProfileID CreateUniqueForTesting();
 
-    bool operator==(const OTRProfileID& other) const {
-      return profile_id_ == other.profile_id_;
-    }
-
-    bool operator!=(const OTRProfileID& other) const {
-      return profile_id_ != other.profile_id_;
-    }
-
-    bool operator<(const OTRProfileID& other) const {
-      return profile_id_ < other.profile_id_;
-    }
+    friend constexpr bool operator==(const OTRProfileID&,
+                                     const OTRProfileID&) = default;
+    friend constexpr auto operator<=>(const OTRProfileID&,
+                                      const OTRProfileID&) = default;
 
     bool AllowsBrowserWindows() const;
     bool IsDevTools() const;

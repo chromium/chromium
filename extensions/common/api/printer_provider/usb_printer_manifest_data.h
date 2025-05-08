@@ -21,11 +21,11 @@ class UsbPrinterManifestData : public Extension::ManifestData {
   UsbPrinterManifestData();
   ~UsbPrinterManifestData() override;
 
-  // Gets the UsbPrinterManifestData for |extension|, or NULL if none was
+  // Gets the UsbPrinterManifestData for `extension`, or NULL if none was
   // specified.
   static const UsbPrinterManifestData* Get(const Extension* extension);
 
-  // Parses the data stored in |value|. Sets |error| and returns an empty
+  // Parses the data stored in `value`. Sets `error` and returns an empty
   // scoped_ptr on failure.
   static std::unique_ptr<UsbPrinterManifestData> FromValue(
       const base::Value& value,

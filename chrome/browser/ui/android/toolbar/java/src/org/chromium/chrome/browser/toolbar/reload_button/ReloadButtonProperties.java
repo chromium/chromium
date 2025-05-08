@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -16,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Reload button properties set. */
+@NullMarked
 class ReloadButtonProperties {
 
     public static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();

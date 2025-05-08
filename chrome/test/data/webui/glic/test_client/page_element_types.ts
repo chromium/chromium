@@ -76,11 +76,14 @@ export interface PageElementTypes {
   scrollToTextFragmentTextStart: HTMLInputElement;
   scrollToTextFragmentTextEnd: HTMLInputElement;
   scrollToTextFragmentSearchStart: HTMLSelectElement;
+  scrollToNode: HTMLSelectElement;
   scrollToBn: HTMLButtonElement;
   fileDrop: HTMLDivElement;
   fileDropList: HTMLDivElement;
   showDirectoryPicker: HTMLButtonElement;
   failInitializationCheckbox: HTMLInputElement;
+  screenWakeLockSwitch: HTMLInputElement;
+  screenWakeLockStatus: HTMLLabelElement;
   setExperiment: HTMLButtonElement;
   trialName: HTMLInputElement;
   groupName: HTMLInputElement;
@@ -114,6 +117,9 @@ export interface PageElementTypes {
   actionUpdatedScreenshotImg: HTMLImageElement;
   macOsPermissionsFieldset: HTMLFieldSetElement;
   attachmentControlsFieldset: HTMLFieldSetElement;
+  closedCaptioningSwitch: HTMLInputElement;
+  setClosedCaptioningTrue: HTMLButtonElement;
+  setClosedCaptioningFalse: HTMLButtonElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {

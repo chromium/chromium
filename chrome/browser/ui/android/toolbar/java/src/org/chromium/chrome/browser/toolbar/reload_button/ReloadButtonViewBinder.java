@@ -12,11 +12,13 @@ import android.widget.ImageButton;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A binder that binds model changes to view state. */
+@NullMarked
 class ReloadButtonViewBinder {
     /**
      * Reflects model property change based on they key on the view.

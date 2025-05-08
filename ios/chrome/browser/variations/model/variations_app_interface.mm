@@ -24,7 +24,7 @@
       ->GetVariationsService()
       ->GetSeedStoreForTesting()
       ->GetSeedReaderWriterForTesting()
-      ->ClearSeed();
+      ->ClearSeedInfo();
   prefService->ClearPref(variations::prefs::kVariationsCountry);
   prefService->ClearPref(variations::prefs::kVariationsLastFetchTime);
   prefService->ClearPref(
@@ -39,7 +39,7 @@
       ->GetVariationsService()
       ->GetSeedStoreForTesting()
       ->GetSafeSeedReaderWriterForTesting()
-      ->ClearSeed();
+      ->ClearSeedInfo();
   prefService->ClearPref(variations::prefs::kVariationsSafeSeedDate);
   prefService->ClearPref(variations::prefs::kVariationsSafeSeedFetchTime);
   prefService->ClearPref(variations::prefs::kVariationsSafeSeedLocale);
@@ -72,28 +72,29 @@
 }
 
 + (void)setTestSafeSeedAndSignature {
-  GetApplicationContext()->GetLocalState()->SetString(
-      variations::prefs::kVariationsSafeSeedSignature,
-      variations::kTestSeedData.base64_signature);
   GetApplicationContext()
       ->GetVariationsService()
       ->GetSeedStoreForTesting()
       ->GetSafeSeedReaderWriterForTesting()
-      ->StoreValidatedSeed(variations::kTestSeedData.GetCompressedData(),
-                           variations::kTestSeedData.base64_compressed_data);
+      ->StoreValidatedSeedInfo(variations::ValidatedSeedInfo{
+          .compressed_seed_data = variations::kTestSeedData.GetCompressedData(),
+          .base64_seed_data = variations::kTestSeedData.base64_compressed_data,
+          .signature = variations::kTestSeedData.base64_signature,
+          .milestone = 92});
 }
 
 + (void)setCrashingRegularSeedAndSignature {
-  GetApplicationContext()->GetLocalState()->SetString(
-      variations::prefs::kVariationsSeedSignature,
-      variations::kCrashingSeedData.base64_signature);
   GetApplicationContext()
       ->GetVariationsService()
       ->GetSeedStoreForTesting()
       ->GetSeedReaderWriterForTesting()
-      ->StoreValidatedSeed(
-          variations::kCrashingSeedData.GetCompressedData(),
-          variations::kCrashingSeedData.base64_compressed_data);
+      ->StoreValidatedSeedInfo(variations::ValidatedSeedInfo{
+          .compressed_seed_data =
+              variations::kCrashingSeedData.GetCompressedData(),
+          .base64_seed_data =
+              variations::kCrashingSeedData.base64_compressed_data,
+          .signature = variations::kCrashingSeedData.base64_signature,
+          .milestone = 92});
 }
 
 + (int)crashStreak {

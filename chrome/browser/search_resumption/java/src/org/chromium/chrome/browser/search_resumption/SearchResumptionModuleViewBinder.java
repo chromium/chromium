@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.search_resumption;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
+@NullMarked
 class SearchResumptionModuleViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
     @Override
     public final void bind(PropertyModel model, View view, PropertyKey propertyKey) {

@@ -21,4 +21,5 @@ include_rules = [
   "+net/base",
   "+services/metrics/public/cpp",
   "+third_party/blink/public/common",
+  "+third_party/blink/public/mojom",
 ]

@@ -43,6 +43,7 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
+#include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
@@ -74,7 +75,6 @@
 #include "chrome/browser/metrics/power/battery_discharge_reporter.h"
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
-#include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -803,11 +803,12 @@ void MaybeRecordOneDriveSyncMetrics() {
   cloud_synced_folder_checker::CloudSyncStatus status =
       cloud_synced_folder_checker::EvaluateOneDriveSyncStatus();
 
-  base::UmaHistogramBoolean("Windows.OneDriveSyncState.Synced", status.synced);
+  base::UmaHistogramBoolean("Windows.OneDriveSyncState.Synced",
+                            status.synced());
   base::UmaHistogramBoolean("Windows.OneDriveSyncState.DesktopSynced",
-                            status.desktop_synced);
+                            status.desktop_synced());
   base::UmaHistogramBoolean("Windows.OneDriveSyncState.DocumentsSynced",
-                            status.documents_synced);
+                            status.documents_synced());
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -816,6 +817,31 @@ void RecordDisplayHDRStatus(const display::Display& display) {
   base::UmaHistogramBoolean("Hardware.Display.SupportsHDR",
                             display.GetColorSpaces().SupportsHDR());
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Records whether Chrome is the default PDF viewer.
+void RecordDefaultPdfViewerState() {
+#if BUILDFLAG(IS_MAC)
+  auto is_default_callback = base::BindOnce(
+      &shell_integration::IsDefaultHandlerForUTType, "com.adobe.pdf");
+#elif BUILDFLAG(IS_WIN)
+  auto is_default_callback = base::BindOnce(
+      &shell_integration::IsDefaultHandlerForFileExtension, ".pdf");
+#else
+#error Unsupported platform
+#endif
+  auto record_default_state_callback =
+      std::move(is_default_callback)
+          .Then(base::BindOnce(
+              [](shell_integration::DefaultWebClientState default_state) {
+                base::UmaHistogramEnumeration(
+                    "PDF.DefaultState", default_state,
+                    shell_integration::NUM_DEFAULT_STATES);
+              }));
+  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                             std::move(record_default_state_callback));
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // Called on a background thread, with low priority to avoid slowing down
 // startup with metrics that aren't trivial to compute.
@@ -880,6 +906,11 @@ void RecordStartupMetrics() {
                                 shell_integration::NUM_DEFAULT_STATES);
 #endif  // !BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Record whether Chrome is the default PDF viewer.
+  RecordDefaultPdfViewerState();
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_MAC)
   base::mac::ProcessRequirement::MaybeGatherMetrics();
 #endif
@@ -939,7 +970,6 @@ ChromeBrowserMainExtraPartsMetrics::~ChromeBrowserMainExtraPartsMetrics() =
     default;
 
 void ChromeBrowserMainExtraPartsMetrics::PreCreateThreads() {
-#if !BUILDFLAG(IS_ANDROID)
   // Initialize the TabStatsTracker singleton instance. Must be initialized
   // before `responsiveness::Watcher`, which happens in
   // BrowserMainLoop::PreMainMessageLoopRun(), thus the decision to use
@@ -952,7 +982,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreCreateThreads() {
         std::make_unique<metrics::TabStatsTracker>(
             g_browser_process->local_state()));
   }
-#endif
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostCreateMainMessageLoop() {
@@ -1209,7 +1238,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostDestroyThreads() {
-#if !BUILDFLAG(IS_ANDROID)
   if (metrics::TabStatsTracker::HasInstance()) {
     // responsiveness::Watcher currently outlives TabStatsTracker and
     // RemoveObserver is never called (see UsageScenarioTracker). This should be
@@ -1219,6 +1247,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostDestroyThreads() {
     metrics::TabStatsTracker::ClearInstance();
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   // Reset the pointer to `performance_intervention_metrics_reporter_` to ensure
   // that PrefService outlives the metrics reporter to prevent the reporter from
   // holding a dangling pointer.

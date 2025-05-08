@@ -151,7 +151,8 @@ base::WeakPtr<FollowBrowserAgent> FollowBrowserAgent::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-FollowBrowserAgent::FollowBrowserAgent(Browser* browser) : browser_(browser) {}
+FollowBrowserAgent::FollowBrowserAgent(Browser* browser)
+    : BrowserUserData(browser), browser_(browser) {}
 
 void FollowBrowserAgent::ShowOverlayMessage(FollowSource source,
                                             NSString* message,

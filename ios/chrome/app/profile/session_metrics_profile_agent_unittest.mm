@@ -5,7 +5,6 @@
 #import "ios/chrome/app/profile/session_metrics_profile_agent.h"
 
 #import "base/functional/bind.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -79,7 +79,7 @@ class SessionMetricsProfileAgentTest : public PlatformTest {
   ProfileState* profile_state() { return profile_state_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   ProfileState* profile_state_;

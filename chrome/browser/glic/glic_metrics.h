@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 #define CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 
+#include <memory>
 #include <set>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -133,6 +135,15 @@ class GlicWindowController;
 // convenience.
 class GlicMetrics {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() {}
+    virtual gfx::Size GetWindowSize() const = 0;
+    virtual bool IsWindowShowing() const = 0;
+    virtual bool IsWindowAttached() const = 0;
+    virtual FocusedTabData GetFocusedTabData() = 0;
+  };
+
   GlicMetrics(Profile* profile, GlicEnabling* enabling);
   GlicMetrics(const GlicMetrics&) = delete;
   GlicMetrics& operator=(const GlicMetrics&) = delete;
@@ -169,6 +180,7 @@ class GlicMetrics {
   // glic.mojom.
   void SetControllers(GlicWindowController* window_controller,
                       GlicFocusedTabManager* tab_manager);
+  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
 
   // Must be called when context is requested.
   void DidRequestContextFromFocusedTab();
@@ -218,15 +230,14 @@ class GlicMetrics {
   base::RepeatingTimer glic_window_size_timer_;
 
   // A context-free source id used when no web contents is targeted.
-  ukm::SourceId no_url_source_id_;
+  ukm::SourceId no_url_source_id_ = ukm::NoURLSourceId();
   // The source id at the time context is requested. If context was not
   // requested then this is `no_url_source_id_`.
-  ukm::SourceId source_id_;
+  ukm::SourceId source_id_ = ukm::NoURLSourceId();
 
   // The owner of this class is responsible for maintaining appropriate lifetime
   // for controller_.
-  raw_ptr<GlicWindowController> window_controller_;
-  raw_ptr<GlicFocusedTabManager> tab_manager_;
+  std::unique_ptr<Delegate> delegate_;
   raw_ptr<Profile> profile_;
   raw_ptr<GlicEnabling> enabling_;
 
@@ -250,7 +261,7 @@ class GlicMetrics {
   // The timestamp when the glic window starts to be shown.
   base::TimeTicks show_start_time_;
   // Web client's operation modes.
-  mojom::WebClientMode starting_mode_;
+  mojom::WebClientMode starting_mode_ = mojom::WebClientMode::kUnknown;
 };
 
 }  // namespace glic

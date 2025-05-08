@@ -1446,9 +1446,11 @@ void NetworkHandler::SetRenderer(int render_process_host_id,
     background_sync_restorer_->SetStoragePartition(storage_partition_);
 }
 
-Response NetworkHandler::Enable(std::optional<int> max_total_size,
-                                std::optional<int> max_resource_size,
-                                std::optional<int> max_post_data_size) {
+Response NetworkHandler::Enable(
+    std::optional<int> max_total_size,
+    std::optional<int> max_resource_size,
+    std::optional<int> max_post_data_size,
+    std::optional<bool> report_direct_socket_traffic) {
   enabled_ = true;
   return Response::FallThrough();
 }
@@ -2249,6 +2251,8 @@ String blockedReason(blink::ResourceRequestBlockedReason reason) {
       return protocol::Network::BlockedReasonEnum::Origin;
     case blink::ResourceRequestBlockedReason::kInspector:
       return protocol::Network::BlockedReasonEnum::Inspector;
+    case blink::ResourceRequestBlockedReason::kIntegrity:
+      return protocol::Network::BlockedReasonEnum::Integrity;
     case blink::ResourceRequestBlockedReason::kSubresourceFilter:
       return protocol::Network::BlockedReasonEnum::SubresourceFilter;
     case blink::ResourceRequestBlockedReason::kContentType:
@@ -3297,13 +3301,6 @@ makeCrossOriginOpenerPolicyValue(
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
       return protocol::Network::CrossOriginOpenerPolicyValueEnum::
           SameOriginPlusCoep;
-    case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
-      return protocol::Network::CrossOriginOpenerPolicyValueEnum::
-          RestrictProperties;
-    case network::mojom::CrossOriginOpenerPolicyValue::
-        kRestrictPropertiesPlusCoep:
-      return protocol::Network::CrossOriginOpenerPolicyValueEnum::
-          RestrictPropertiesPlusCoep;
     case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
       return protocol::Network::CrossOriginOpenerPolicyValueEnum::
           NoopenerAllowPopups;

@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.compositor.layouts.phone;
 
+import static org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabAnimationHostView.CROSS_FADE_DURATION_MS;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -36,14 +39,14 @@ import java.lang.annotation.RetentionPolicy;
  * The fake tab switcher button for the new background tab animation. This is used during the new
  * background tab animation to stand in for the real tab switcher button for a few reasons 1) it
  * avoids having to reach into the toolbar to manipulate it externally, 2) the animation spec calls
- * for delaying the tab count increment until partway through the animation and it is easier to fake
- * this than intercede in the real tab count supplier, 3) some variants of the animation don't have
- * a visible toolbar so this fake representation would need to exist regardless.
+ * for scaling up and down the tab switcher button and it is safer to fake this, 3) some variants of
+ * the animation don't have a visible toolbar so this fake representation would need to exist
+ * regardless.
  */
 public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implements RunOnNextLayout {
-    @VisibleForTesting /* package */ static final long ROTATE_FADE_IN_DURATION_MS = 250L;
-    @VisibleForTesting /* package */ static final long ROTATE_FADE_OUT_DURATION_MS = 400L;
-    @VisibleForTesting /* package */ static final long TRANSLATE_DURATION_MS = 300L;
+    @VisibleForTesting /* package */ static final long TRANSLATE_DURATION_MS = 200L;
+    @VisibleForTesting /* package */ static final long SHRINK_DURATION_MS = 250L;
+    @VisibleForTesting /* package */ static final long SCALE_DOWN_DURATION_MS = 50L;
 
     @IntDef({
         TranslateDirection.UP,
@@ -58,14 +61,12 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
 
     private FrameLayout mInnerContainer;
-    private ImageView mBackgroundView;
-    private ImageView mForegroundView;
+    private ImageView mTabSwitcherButtonView;
     private TabSwitcherDrawable mTabSwitcherDrawable;
 
     private @BrandedColorScheme int mBrandedColorScheme;
     private int mTabCount;
     private boolean mIsIncognito;
-    private boolean mHasOutstandingAnimator;
 
     /** Default constructor for inflation. */
     public NewBackgroundTabFakeTabSwitcherButton(Context context, AttributeSet attrs) {
@@ -88,9 +89,8 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         setNotificationIconStatus(false);
 
         mInnerContainer = findViewById(R.id.new_tab_indicator_inner_container);
-        mBackgroundView = findViewById(R.id.very_sunny_background);
-        mForegroundView = findViewById(R.id.fake_tab_switcher_button);
-        mForegroundView.setImageDrawable(mTabSwitcherDrawable);
+        mTabSwitcherButtonView = findViewById(R.id.fake_tab_switcher_button);
+        mTabSwitcherButtonView.setImageDrawable(mTabSwitcherDrawable);
     }
 
     /* package */ void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
@@ -121,37 +121,23 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         mInnerContainer.setBackgroundColor(color);
     }
 
-    /**
-     * Returns the {@link AnimatorSet} for the rotate and fade in of {@link #mBackgroundView} "very
-     * sunny" asset.
-     *
-     * @param incrementCount Whether the tab switcher drawable should increment the count.
-     */
-    /* package */ AnimatorSet getRotateFadeInAnimator(boolean incrementCount) {
-        assert !mHasOutstandingAnimator;
+    /* package */ AnimatorSet getShrinkAnimator(boolean incrementCount) {
+        mTabSwitcherButtonView.setAlpha(1f);
 
-        mHasOutstandingAnimator = true;
-        setBackgroundVisibility(true);
-        mBackgroundView.setAlpha(0f);
-        ObjectAnimator rotateAnimator =
-                ObjectAnimator.ofFloat(mBackgroundView, View.ROTATION, -20f, 0f);
         ObjectAnimator scaleXAnimator =
-                ObjectAnimator.ofFloat(mBackgroundView, View.SCALE_X, 0.2f, 1f);
+                ObjectAnimator.ofFloat(mTabSwitcherButtonView, View.SCALE_X, 1.6f, 1f);
         ObjectAnimator scaleYAnimator =
-                ObjectAnimator.ofFloat(mBackgroundView, View.SCALE_Y, 0.2f, 1f);
-        // TODO(crbug.com/40282469): This might need to do a color blend to the toolbar color
-        // instead of an alpha fade.
-        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(mBackgroundView, View.ALPHA, 0f, 1f);
+                ObjectAnimator.ofFloat(mTabSwitcherButtonView, View.SCALE_Y, 1.6f, 1f);
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(rotateAnimator, alphaAnimator, scaleXAnimator, scaleYAnimator);
+        animatorSet.playTogether(scaleXAnimator, scaleYAnimator);
         animatorSet.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
-        animatorSet.setDuration(ROTATE_FADE_IN_DURATION_MS);
+        animatorSet.setDuration(SHRINK_DURATION_MS);
+
         animatorSet.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(Animator animator) {
-                        mBackgroundView.setAlpha(1f);
                         if (incrementCount) {
                             incrementTabCount();
                         }
@@ -165,52 +151,15 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         return animatorSet;
     }
 
-    /**
-     * Returns the {@link AnimatorSet} for the rotate and fade out of {@link #mBackgroundView} "very
-     * sunny" asset. In order to work, {@link #getRotateFadeInAnimator} should be run first.
-     */
-    /* package */ AnimatorSet getRotateFadeOutAnimator() {
-        assert mHasOutstandingAnimator : "You should run #getRotateFadeInAnimator first";
-
-        // TODO(crbug.com/40282469): This might need to do a color blend to the toolbar color
-        // instead of an alpha fade.
-        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(mBackgroundView, View.ALPHA, 1f, 0f);
-        ObjectAnimator rotateAnimator =
-                ObjectAnimator.ofFloat(mBackgroundView, View.ROTATION, 0f, 80f);
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(rotateAnimator, alphaAnimator);
-        animatorSet.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
-        animatorSet.setDuration(ROTATE_FADE_OUT_DURATION_MS);
-        animatorSet.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
-                        resetState();
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        resetState();
-                    }
-                });
-        return animatorSet;
-    }
-
-    /* package */ AnimatorSet getTranslateAnimator(
-            @TranslateDirection int direction, boolean incrementCount) {
-        assert !mHasOutstandingAnimator;
-
-        mHasOutstandingAnimator = true;
-        setBackgroundVisibility(true);
-        mBackgroundView.setAlpha(1f);
-        if (incrementCount) {
-            incrementTabCount();
-        }
-        float size = getContext().getResources().getDimension(R.dimen.toolbar_height_no_shadow);
-        float distance = size * (direction == TranslateDirection.UP ? -1f : 1f);
+    /* package */ AnimatorSet getTranslateAnimator(@TranslateDirection int direction) {
+        float containerHeight = mInnerContainer.getHeight();
+        float viewHeight = mTabSwitcherButtonView.getHeight();
+        float distance =
+                (containerHeight + viewHeight)
+                        / 2f
+                        * (direction == TranslateDirection.UP ? -1f : 1f);
         ObjectAnimator translateAnimator =
-                ObjectAnimator.ofFloat(mInnerContainer, View.TRANSLATION_Y, 0f, distance);
+                ObjectAnimator.ofFloat(mTabSwitcherButtonView, View.TRANSLATION_Y, 0f, distance);
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(translateAnimator);
@@ -223,17 +172,50 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
                     public void onAnimationCancel(Animator animator) {
                         resetState();
                     }
+                });
+        return animatorSet;
+    }
 
+    /* package */ AnimatorSet getScaleFadeAnimator() {
+        ObjectAnimator fadeAnimator =
+                ObjectAnimator.ofFloat(mTabSwitcherButtonView, View.ALPHA, 0f, 1f);
+        ObjectAnimator scaleXAnimator =
+                ObjectAnimator.ofFloat(mTabSwitcherButtonView, View.SCALE_X, 0.5f, 1.15f);
+        ObjectAnimator scaleYAnimator =
+                ObjectAnimator.ofFloat(mTabSwitcherButtonView, View.SCALE_Y, 0.5f, 1.15f);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(fadeAnimator, scaleXAnimator, scaleYAnimator);
+        animatorSet.setDuration(CROSS_FADE_DURATION_MS);
+
+        animatorSet.addListener(
+                new AnimatorListenerAdapter() {
                     @Override
-                    public void onAnimationEnd(Animator animator) {
+                    public void onAnimationCancel(Animator animator) {
                         resetState();
                     }
                 });
         return animatorSet;
     }
 
-    /* package */ boolean hasOutstandingAnimator() {
-        return mHasOutstandingAnimator;
+    /* package */ AnimatorSet getScaleDownAnimator() {
+        ObjectAnimator scaleXAnimator =
+                ObjectAnimator.ofFloat(mTabSwitcherButtonView, View.SCALE_X, 1.15f, 1f);
+        ObjectAnimator scaleYAnimator =
+                ObjectAnimator.ofFloat(mTabSwitcherButtonView, View.SCALE_Y, 1.15f, 1f);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(scaleXAnimator, scaleYAnimator);
+        animatorSet.setDuration(SCALE_DOWN_DURATION_MS);
+
+        animatorSet.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+                        resetState();
+                    }
+                });
+        return animatorSet;
     }
 
     /**
@@ -247,26 +229,43 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         assert location.length == 2;
         // Difficult for test environment.
         if (!BuildConfig.IS_FOR_TEST) {
-            assert mForegroundView.getMeasuredWidth() != 0;
-            assert mForegroundView.getMeasuredHeight() != 0;
+            assert mTabSwitcherButtonView.getMeasuredWidth() != 0;
+            assert mTabSwitcherButtonView.getMeasuredHeight() != 0;
         }
 
-        mForegroundView.getLocationInWindow(location);
-        location[0] += mForegroundView.getMeasuredWidth() / 2;
-        location[1] += mForegroundView.getMeasuredHeight() / 2 - yOffset;
+        mTabSwitcherButtonView.getLocationInWindow(location);
+        location[0] += mTabSwitcherButtonView.getMeasuredWidth() / 2;
+        location[1] += mTabSwitcherButtonView.getMeasuredHeight() / 2 - yOffset;
     }
 
-    /**
-     * Returns the side padding between the fake tab switcher button ImageView and the inner
-     * container.
-     */
-    /* package */ int getInnerSidePadding() {
-        FrameLayout.LayoutParams innerContainer =
-                (FrameLayout.LayoutParams) mInnerContainer.getLayoutParams();
-        FrameLayout.LayoutParams foregroundView =
-                (FrameLayout.LayoutParams) mForegroundView.getLayoutParams();
+    /* package */ void setUpNtpAnimation(boolean incrementCount) {
+        if (incrementCount) incrementTabCount();
 
-        return (innerContainer.width - foregroundView.width) / 2;
+        Resources res = getContext().getResources();
+        mTabSwitcherButtonView.setBackgroundResource(R.drawable.new_tab_animation_rounded_rect);
+        mTabSwitcherButtonView.setElevation(
+                res.getDimension(R.dimen.new_bg_tab_animation_tab_switcher_elevation));
+        int padding = res.getDimensionPixelSize(R.dimen.new_bg_tab_animation_padding);
+        mTabSwitcherButtonView.setPadding(padding, padding, padding, padding);
+        mTabSwitcherButtonView.setAlpha(0f);
+
+        FrameLayout.LayoutParams tabSwitcherParams =
+                (FrameLayout.LayoutParams) mTabSwitcherButtonView.getLayoutParams();
+        int size = res.getDimensionPixelSize(R.dimen.new_bg_tab_animation_size);
+        tabSwitcherParams.width = size;
+        tabSwitcherParams.height = size;
+        mTabSwitcherButtonView.setLayoutParams(tabSwitcherParams);
+    }
+
+    /* package */ void setMargin(int vertical, int horizontal) {
+        FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getLayoutParams();
+        containerParams.topMargin = vertical;
+        setLayoutParams(containerParams);
+
+        FrameLayout.LayoutParams innerContainerParams =
+                (FrameLayout.LayoutParams) mInnerContainer.getLayoutParams();
+        innerContainerParams.leftMargin = horizontal;
+        mInnerContainer.setLayoutParams(innerContainerParams);
     }
 
     private void incrementTabCount() {
@@ -274,21 +273,14 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
     }
 
     private void resetState() {
-        setBackgroundVisibility(false);
-        mBackgroundView.setAlpha(0f);
-        mBackgroundView.setRotation(0f);
-        mInnerContainer.setTranslationY(0f);
-        mHasOutstandingAnimator = false;
+        mTabSwitcherButtonView.setTranslationY(0f);
+        mTabSwitcherButtonView.setScaleX(1f);
+        mTabSwitcherButtonView.setScaleY(1f);
+        mTabSwitcherButtonView.setAlpha(1f);
 
         mInnerContainer.invalidate();
-        mForegroundView.invalidate();
-        mBackgroundView.invalidate();
+        mTabSwitcherButtonView.invalidate();
         invalidate();
-    }
-
-    private void setBackgroundVisibility(boolean visible) {
-        // Use invisible to avoid the need for a measure + layout pass for the background.
-        mBackgroundView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -324,5 +316,9 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
 
     /* package */ boolean getShowIconNotificationStatusForTesting() {
         return mTabSwitcherDrawable.getShowIconNotificationStatus();
+    }
+
+    /* package */ void setTabSwitcherButtonViewAlphaForTesting(float alpha) {
+        mTabSwitcherButtonView.setAlpha(alpha);
     }
 }

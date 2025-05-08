@@ -63,6 +63,8 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="kSharedStorage"/>
   <int value="16" label="kPreflightCache"/>
   <int value="17" label="kSharedDictionary"/>
+  <int value="18" label="kPrefetchCache"/>
+  <int value="19" label="kPrerenderCache"/>
 </enum>
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.Task.Task) -->

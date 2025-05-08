@@ -9,7 +9,7 @@ namespace translate {
 
 // Histogram for recording the UI events related to the Partial Translate
 // bubble.
-constexpr char kPartialTranslateBubbleUiEventHistogramName[] =
+inline constexpr char kPartialTranslateBubbleUiEventHistogramName[] =
     "Translate.PartialTranslateBubbleUiEvent";
 
 enum class PartialTranslateBubbleUiEvent {

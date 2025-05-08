@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -25,6 +26,7 @@
 
 namespace {
 
+using ::base::test::EqualsProto;
 using ::blink::mojom::AILanguageCode;
 using ::blink::mojom::AILanguageCodePtr;
 using ::testing::_;
@@ -89,9 +91,17 @@ blink::mojom::AIRewriterCreateOptionsPtr GetDefaultOptions() {
       /*output_language=*/AILanguageCode::New(""));
 }
 
-std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
-GetDefaultExpectedOptions() {
-  return AIRewriter::ToProtoOptions(GetDefaultOptions());
+// Get a request proto matching that expected for ExecuteModel() calls.
+optimization_guide::proto::WritingAssistanceApiRequest GetExecuteRequest(
+    std::string_view context_string = kContextString,
+    std::string_view rewrite_text = kInputString) {
+  optimization_guide::proto::WritingAssistanceApiRequest request;
+  request.set_context(context_string);
+  request.set_allocated_options(
+      AIRewriter::ToProtoOptions(GetDefaultOptions()).release());
+  request.set_rewrite_text(rewrite_text);
+  request.set_shared_context(kSharedContextString);
+  return request;
 }
 
 class AIRewriterTest : public AITestUtils::AITestBase {
@@ -122,21 +132,21 @@ class AIRewriterTest : public AITestUtils::AITestBase {
   void RunSimpleRewriteTest(blink::mojom::AIRewriterTone tone,
                             blink::mojom::AIRewriterFormat format,
                             blink::mojom::AIRewriterLength length) {
+    auto expected = GetExecuteRequest();
     const auto options = blink::mojom::AIRewriterCreateOptions::New(
         kSharedContextString, tone, format, length,
         /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
         /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
         /*output_language=*/AILanguageCode::New(""));
-
+    expected.set_allocated_options(
+        AIRewriter::ToProtoOptions(options).release());
     EXPECT_CALL(session_, ExecuteModel(_, _))
         .WillOnce(testing::Invoke(
-            [&](const google::protobuf::MessageLite& request_metadata,
+            [&](const google::protobuf::MessageLite& request,
                 optimization_guide::
                     OptimizationGuideModelExecutionResultStreamingCallback
                         callback) {
-              AITestUtils::CheckWritingAssistanceApiRequest(
-                  request_metadata, kSharedContextString, kContextString,
-                  *AIRewriter::ToProtoOptions(options), kInputString);
+              EXPECT_THAT(request, EqualsProto(expected));
               callback.Run(CreateExecutionResult("Result text",
                                                  /*is_complete=*/true));
             }));
@@ -209,12 +219,12 @@ TEST_F(AIRewriterTest, CreateRewriterModelNotEligible) {
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) { return nullptr; }));
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibility(_))
-      .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature) {
-            return optimization_guide::OnDeviceModelEligibilityReason::
-                kModelNotEligible;
-          }));
+              GetOnDeviceModelEligibilityAsync(_, _))
+      .WillOnce([](auto feature, auto callback) {
+        std::move(callback).Run(
+            optimization_guide::OnDeviceModelEligibilityReason::
+                kModelNotEligible);
+      });
 
   MockCreateRewriterClient mock_create_rewriter_client;
   base::RunLoop run_loop;
@@ -255,13 +265,13 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
           }));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibility(_))
-      .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature) {
-            // Returning kConfigNotAvailableForFeature should trigger retry.
-            return optimization_guide::OnDeviceModelEligibilityReason::
-                kConfigNotAvailableForFeature;
-          }));
+              GetOnDeviceModelEligibilityAsync(_, _))
+      .WillOnce([](auto feature, auto callback) {
+        // Returning kConfigNotAvailableForFeature should trigger retry.
+        std::move(callback).Run(
+            optimization_guide::OnDeviceModelEligibilityReason::
+                kConfigNotAvailableForFeature);
+      });
 
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
       nullptr;
@@ -275,7 +285,7 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
             run_loop_for_add_observer.Quit();
           }));
 
-  EXPECT_CALL(session_, GetContextSizeInTokens(_, _))
+  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::MultimodalMessageReadView request_metadata,
               optimization_guide::OptimizationGuideModelSizeInTokenCallback
@@ -321,7 +331,7 @@ TEST_F(AIRewriterTest, CreateRewriterContextLimitExceededError) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
 
-  EXPECT_CALL(session_, GetContextSizeInTokens(_, _))
+  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
       .WillOnce(testing::Invoke(
           [](optimization_guide::MultimodalMessageReadView request_metadata,
              optimization_guide::OptimizationGuideModelSizeInTokenCallback
@@ -358,13 +368,13 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
                   config_params) { return nullptr; }));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibility(_))
-      .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature) {
-            // Returning kConfigNotAvailableForFeature should trigger retry.
-            return optimization_guide::OnDeviceModelEligibilityReason::
-                kConfigNotAvailableForFeature;
-          }));
+              GetOnDeviceModelEligibilityAsync(_, _))
+      .WillOnce([](auto feature, auto callback) {
+        // Returning kConfigNotAvailableForFeature should trigger retry.
+        std::move(callback).Run(
+            optimization_guide::OnDeviceModelEligibilityReason::
+                kConfigNotAvailableForFeature);
+      });
 
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
       nullptr;
@@ -407,9 +417,11 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
 TEST_F(AIRewriterTest, CanCreateDefaultOptions) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibility(_))
-      .WillOnce(testing::Return(
-          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+              GetOnDeviceModelEligibilityAsync(_, _))
+      .WillOnce([](auto feature, auto callback) {
+        std::move(callback).Run(
+            optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+      });
   base::MockCallback<AIManager::CanCreateRewriterCallback> callback;
   EXPECT_CALL(callback,
               Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
@@ -420,9 +432,11 @@ TEST_F(AIRewriterTest, CanCreateDefaultOptions) {
 TEST_F(AIRewriterTest, CanCreateIsLanguagesSupported) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibility(_))
-      .WillRepeatedly(testing::Return(
-          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+              GetOnDeviceModelEligibilityAsync(_, _))
+      .WillOnce([](auto feature, auto callback) {
+        std::move(callback).Run(
+            optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+      });
   auto options = GetDefaultOptions();
   options->output_language = AILanguageCode::New("en");
   options->expected_input_languages =
@@ -491,6 +505,8 @@ TEST_F(AIRewriterTest, RewriteWithOptions) {
 TEST_F(AIRewriterTest, InputLimitExceededError) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
+  auto rewriter_remote = GetAIRewriterRemote();
+
   EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
       .WillOnce(testing::Invoke(
           [](optimization_guide::MultimodalMessageReadView request_metadata,
@@ -499,8 +515,6 @@ TEST_F(AIRewriterTest, InputLimitExceededError) {
             std::move(callback).Run(
                 blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
           }));
-
-  auto rewriter_remote = GetAIRewriterRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnError(_))
@@ -522,13 +536,11 @@ TEST_F(AIRewriterTest, ModelExecutionError) {
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(testing::Invoke(
-          [](const google::protobuf::MessageLite& request_metadata,
+          [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
                      callback) {
-            AITestUtils::CheckWritingAssistanceApiRequest(
-                request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
             callback.Run(CreateExecutionErrorResult(
                 optimization_guide::OptimizationGuideModelExecutionError::
                     FromModelExecutionError(
@@ -559,13 +571,11 @@ TEST_F(AIRewriterTest, RewriteMultipleResponse) {
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(testing::Invoke(
-          [](const google::protobuf::MessageLite& request_metadata,
+          [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
                      callback) {
-            AITestUtils::CheckWritingAssistanceApiRequest(
-                request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
             callback.Run(
                 CreateExecutionResult("Result ", /*is_complete=*/false));
             callback.Run(CreateExecutionResult("text",
@@ -597,24 +607,21 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(testing::Invoke(
-          [](const google::protobuf::MessageLite& request_metadata,
+          [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
                      callback) {
-            AITestUtils::CheckWritingAssistanceApiRequest(
-                request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
             callback.Run(CreateExecutionResult("Result text",
                                                /*is_complete=*/true));
           }))
       .WillOnce(testing::Invoke(
-          [](const google::protobuf::MessageLite& request_metadata,
+          [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
                      callback) {
-            AITestUtils::CheckWritingAssistanceApiRequest(
-                request_metadata, kSharedContextString, "test context 2",
-                *GetDefaultExpectedOptions(), "input string 2");
+            auto expect = GetExecuteRequest("test context 2", "input string 2");
+            EXPECT_THAT(request, EqualsProto(expect));
             callback.Run(CreateExecutionResult("Result text 2",
                                                /*is_complete=*/true));
           }));
@@ -666,13 +673,11 @@ TEST_F(AIRewriterTest, ResponderDisconnected) {
       streaming_callback;
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(testing::Invoke(
-          [&](const google::protobuf::MessageLite& request_metadata,
+          [&](const google::protobuf::MessageLite& request,
               optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            AITestUtils::CheckWritingAssistanceApiRequest(
-                request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
             streaming_callback = std::move(callback);
             run_loop_for_callback.Quit();
           }));
@@ -702,13 +707,11 @@ TEST_F(AIRewriterTest, RewriterDisconnected) {
       streaming_callback;
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(testing::Invoke(
-          [&](const google::protobuf::MessageLite& request_metadata,
+          [&](const google::protobuf::MessageLite& request,
               optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            AITestUtils::CheckWritingAssistanceApiRequest(
-                request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
             streaming_callback = std::move(callback);
             run_loop_for_callback.Quit();
           }));
@@ -746,13 +749,13 @@ TEST_F(AIRewriterTest, MeasureUsage) {
   uint64_t expected_usage = 100;
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
+  auto rewriter_remote = GetAIRewriterRemote();
+
   EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::MultimodalMessageReadView request_metadata,
               optimization_guide::OptimizationGuideModelSizeInTokenCallback
                   callback) { std::move(callback).Run(expected_usage); }));
-
-  auto rewriter_remote = GetAIRewriterRemote();
   base::test::TestFuture<std::optional<uint64_t>> future;
   rewriter_remote->MeasureUsage(kInputString, kContextString,
                                 future.GetCallback());
@@ -762,13 +765,13 @@ TEST_F(AIRewriterTest, MeasureUsage) {
 TEST_F(AIRewriterTest, MeasureUsageFails) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
+  auto rewriter_remote = GetAIRewriterRemote();
+
   EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::MultimodalMessageReadView request_metadata,
               optimization_guide::OptimizationGuideModelSizeInTokenCallback
                   callback) { std::move(callback).Run(std::nullopt); }));
-
-  auto rewriter_remote = GetAIRewriterRemote();
   base::test::TestFuture<std::optional<uint64_t>> future;
   rewriter_remote->MeasureUsage(kInputString, kContextString,
                                 future.GetCallback());

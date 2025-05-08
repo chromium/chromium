@@ -8,4 +8,7 @@ dictionary VideoFrameMetadata {
   // Possible members are recorded in the VideoFrame Metadata Registry.
   [RuntimeEnabled="VideoFrameMetadataBackgroundBlur"]
   BackgroundBlur backgroundBlur;
+
+  [RuntimeEnabled="VideoFrameMetadataRtpTimestamp"]
+  unsigned long rtpTimestamp;
 };

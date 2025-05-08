@@ -70,20 +70,20 @@ class ScriptContext {
 
   ~ScriptContext();
 
-  // Returns whether |url| from any Extension in |extension_set| is sandboxed,
+  // Returns whether `url` from any Extension in `extension_set` is sandboxed,
   // as declared in each Extension's manifest.
   // TODO(kalman): Delete this when crbug.com/466373 is fixed.
   // See comment in HasAccessOrThrowError.
   static bool IsSandboxedPage(const GURL& url);
 
-  // Initializes |module_system| and associates it with this context.
+  // Initializes `module_system` and associates it with this context.
   void SetModuleSystem(std::unique_ptr<ModuleSystem> module_system);
 
   // Clears the WebLocalFrame for this contexts and invalidates the associated
   // ModuleSystem.
   void Invalidate();
 
-  // Registers |observer| to be run when this context is invalidated. Closures
+  // Registers `observer` to be run when this context is invalidated. Closures
   // are run immediately when Invalidate() is called, not in a message loop.
   void AddInvalidationObserver(base::OnceClosure observer);
 
@@ -139,10 +139,10 @@ class ScriptContext {
                         v8::Local<v8::Value> argv[],
                         blink::WebScriptExecutionCallback callback);
 
-  // Returns the availability of the API |api_name|.
+  // Returns the availability of the API `api_name`.
   Feature::Availability GetAvailability(const std::string& api_name);
-  // Returns the availability of the API |api_name|.
-  // |check_alias| Whether API that has an alias that is available should be
+  // Returns the availability of the API `api_name`.
+  // `check_alias` Whether API that has an alias that is available should be
   // considered available (even if the API itself is not available).
   Feature::Availability GetAvailability(const std::string& api_name,
                                         CheckAliasStatus check_alias);
@@ -186,9 +186,9 @@ class ScriptContext {
     service_worker_version_id_ = service_worker_version_id;
   }
 
-  // Returns whether the API |api| or any part of the API could be available in
+  // Returns whether the API `api` or any part of the API could be available in
   // this context without taking into account the context's extension.
-  // |check_alias| Whether the API should be considered available if it has an
+  // `check_alias` Whether the API should be considered available if it has an
   // alias that is available.
   bool IsAnyFeatureAvailableToContext(const extensions::Feature& api,
                                       CheckAliasStatus check_alias);
@@ -230,10 +230,10 @@ class ScriptContext {
 
   // Used to determine the "effective" URL in context classification, such as to
   // associate an about:blank frame in an extension context with its extension.
-  // If |document_url| is an about: or data: URL, returns the URL of the first
+  // If `document_url` is an about: or data: URL, returns the URL of the first
   // frame without an about: or data: URL that matches the initiator origin.
-  // This may not be the immediate parent. Returns |document_url| if it is not
-  // an about: URL, if |match_about_blank| is false, or if a suitable parent
+  // This may not be the immediate parent. Returns `document_url` if it is not
+  // an about: URL, if `match_about_blank` is false, or if a suitable parent
   // cannot be found.
   // Will not check parent contexts that cannot be accessed (as is the case
   // for sandboxed frames).
@@ -242,10 +242,10 @@ class ScriptContext {
                                                 bool match_about_blank);
 
   // Used to determine the "effective" URL for extension script injection.
-  // If |document_url| is an about: or data: URL, returns the URL of the first
+  // If `document_url` is an about: or data: URL, returns the URL of the first
   // frame without an about: or data: URL that matches the initiator origin.
-  // This may not be the immediate parent. Returns |document_url| if it is not
-  // an about: or data: URL, if |match_origin_as_fallback| is set to not match,
+  // This may not be the immediate parent. Returns `document_url` if it is not
+  // an about: or data: URL, if `match_origin_as_fallback` is set to not match,
   // or if a suitable parent cannot be found.
   // Considers parent contexts that cannot be accessed (as is the case for
   // sandboxed frames).
@@ -266,7 +266,7 @@ class ScriptContext {
   bool HasAPIPermission(mojom::APIPermissionID permission) const;
 
   // Throws an Error in this context's JavaScript context, if this context does
-  // not have access to |name|. Returns true if this context has access (i.e.
+  // not have access to `name`. Returns true if this context has access (i.e.
   // no exception thrown), false if it does not (i.e. an exception was thrown).
   bool HasAccessOrThrowError(const std::string& name);
 
@@ -282,8 +282,8 @@ class ScriptContext {
   // Generate a unique integer value. This is only unique within this instance.
   int32_t GetNextIdFromCounter() { return id_counter++; }
 
-  // Runs |code|, labelling the script that gets created as |name| (the name is
-  // used in the devtools and stack traces). |exception_handler| will be called
+  // Runs `code`, labelling the script that gets created as `name` (the name is
+  // used in the devtools and stack traces). `exception_handler` will be called
   // re-entrantly if an exception is thrown during the script's execution.
   v8::Local<v8::Value> RunScript(
       v8::Local<v8::String> name,

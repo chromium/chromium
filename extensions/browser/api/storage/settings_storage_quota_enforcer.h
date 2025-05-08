@@ -79,7 +79,7 @@ class SettingsStorageQuotaEnforcer : public value_store::ValueStore {
   // The delegate storage area.
   std::unique_ptr<value_store::ValueStore> const delegate_;
 
-  // Total bytes in used by |delegate_|. Includes both key lengths and
+  // Total bytes in used by `delegate_`. Includes both key lengths and
   // JSON-encoded values.
   size_t used_total_;
 

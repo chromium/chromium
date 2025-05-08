@@ -4,7 +4,7 @@
 
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 
-#include "base/metrics/histogram_macros_local.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_prefs.h"
@@ -29,7 +29,7 @@ PrefService* GetPrefs(content::WebContents* web_contents) {
 }
 
 void RecordLoginDetectionMetrics(LoginDetectionType type) {
-  LOCAL_HISTOGRAM_ENUMERATION("Login.PageLoad.DetectionType", type);
+  base::UmaHistogramEnumeration("Login.PageLoad.DetectionType", type);
 }
 
 }  // namespace

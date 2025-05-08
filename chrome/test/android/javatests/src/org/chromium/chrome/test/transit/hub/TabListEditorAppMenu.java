@@ -90,7 +90,7 @@ public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation>
         mHostStation.swapFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),
                 List.of(dialog, softKeyboard),
-                itemOnScreen.viewElement.clickTrigger());
+                itemOnScreen.viewElement.getClickTrigger());
         return dialog;
     }
 
@@ -120,7 +120,7 @@ public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation>
         mHostStation.swapFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),
                 List.of(card, undoSnackbar),
-                itemOnScreen.viewElement.clickTrigger());
+                itemOnScreen.viewElement.getClickTrigger());
         return Pair.create(card, undoSnackbar);
     }
 
@@ -142,7 +142,7 @@ public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation>
         mHostStation.exitFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),
                 Transition.conditionOption(tabCountDecreased),
-                itemOnScreen.viewElement.clickTrigger());
+                itemOnScreen.viewElement.getClickTrigger());
 
         return null;
     }

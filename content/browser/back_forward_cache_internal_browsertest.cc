@@ -3516,10 +3516,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, NoThrottlesOnCacheRestore) {
   // NavigationThrottles.
   content::ShellContentBrowserClient::Get()
       ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
-          [&did_register_throttles](content::NavigationHandle* handle)
-              -> std::vector<std::unique_ptr<content::NavigationThrottle>> {
+          [&did_register_throttles](
+              content::NavigationThrottleRegistry& registry) -> void {
             did_register_throttles = true;
-            return std::vector<std::unique_ptr<content::NavigationThrottle>>();
           }));
 
   // 2) Navigate to B.

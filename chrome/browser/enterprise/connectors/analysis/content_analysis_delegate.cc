@@ -38,10 +38,13 @@
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
@@ -52,8 +55,10 @@
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/secure_hash.h"
@@ -61,6 +66,13 @@
 #include "net/base/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/guest_util.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#endif
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"  // nogncheck
@@ -392,6 +404,29 @@ void ContentAnalysisDelegate::CreateForWebContents(
         show_fail_closed_ui ? FinalContentAnalysisResult::FAIL_CLOSED
                             : FinalContentAnalysisResult::SUCCESS;
 
+#if BUILDFLAG(ENABLE_GLIC)
+    content::WebContents* top_web_contents =
+        guest_view::GuestViewBase::GetTopLevelWebContents(
+            web_contents->GetResponsibleWebContents());
+    if (glic::IsGlicWebUI(top_web_contents)) {
+      DVLOG(1) << __func__
+               << ": Skipping web modal on glic surface. Showing glic timed "
+                  "modal instead.";
+      if (glic::GlicProfileManager::GetInstance()) {
+        if (glic::GlicKeyedService* glic_keyed_service =
+                glic::GlicProfileManager::GetInstance()->GetLastActiveGlic()) {
+          std::u16string label = l10n_util::GetPluralStringFUTF16(
+              IDS_DEEP_SCANNING_DIALOG_UPLOAD_WARNING_MESSAGE, 1);
+          base::UmaHistogramEnumeration("Glic.Modal.DeepScanAccessPoint",
+                                        access_point);
+          glic_keyed_service->window_controller().ShowGlicModal(label);
+        }
+      }
+      delegate->Cancel(/*warning=*/false);
+      return;
+    }
+#endif
+
     // This dialog is owned by the constrained_window code.
     delegate_ptr->dialog_ = new ContentAnalysisDialog(
         std::move(delegate),
@@ -492,6 +527,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
     CompletionCallback callback,
     safe_browsing::DeepScanAccessPoint access_point)
     : data_(std::move(data)),
+      tab_id_(sessions::SessionTabHelper::IdForTab(web_contents)),
       callback_(std::move(callback)),
       access_point_(access_point) {
   DCHECK(web_contents);
@@ -776,6 +812,12 @@ BinaryUploadService* ContentAnalysisDelegate::GetBinaryUploadService() {
                                                            data_.settings);
 }
 
+safe_browsing::SafeBrowsingNavigationObserverManager*
+ContentAnalysisDelegate::GetNavigationObserverManager() const {
+  return safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+      GetForBrowserContext(profile_);
+}
+
 bool ContentAnalysisDelegate::UpdateDialog() {
   // In the case of fail-closed, show the final result UI regardless of cloud or
   // local analysis. Otherwise, only show the result for cloud analysis.
@@ -937,6 +979,10 @@ const AnalysisSettings& ContentAnalysisDelegate::settings() const {
   return data_.settings;
 }
 
+signin::IdentityManager* ContentAnalysisDelegate::identity_manager() const {
+  return IdentityManagerFactory::GetForProfile(profile_);
+}
+
 int ContentAnalysisDelegate::user_action_requests_count() const {
   int count = data_.paths.size();
   if (data_.page.IsValid()) {
@@ -973,6 +1019,15 @@ const GURL& ContentAnalysisDelegate::tab_url() const {
 
 ContentAnalysisRequest::Reason ContentAnalysisDelegate::reason() const {
   return data_.reason;
+}
+
+google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+ContentAnalysisDelegate::referrer_chain() const {
+  ReferrerChain referrers;
+  GetNavigationObserverManager()->IdentifyReferrerChainByEventURL(
+      url_, tab_id_, enterprise_connectors::kReferrerUserGestureLimit,
+      &referrers);
+  return referrers;
 }
 
 }  // namespace enterprise_connectors

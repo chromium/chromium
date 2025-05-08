@@ -32,7 +32,7 @@
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
-#include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
+#include "chrome/browser/ui/plus_addresses/android/all_plus_addresses_bottom_sheet_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"

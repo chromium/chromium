@@ -86,6 +86,14 @@ export enum SubmitAccessCodeResult {
   UNKNOWN = 0,
   SUCCESS = 1,
   INVALID_CODE = 2,
+  NETWORK_RESTRICTION = 3,
+}
+
+export enum CreateSessionResult {
+  UNKNOWN = 0,
+  SUCCESS = 1,
+  HTTP_ERROR = 2,
+  NETWORK_RESTRICTION = 3,
 }
 
 export enum StudentStatusDetail {
@@ -174,6 +182,17 @@ export enum AssignmentType {
   ASSIGNMENT = 1,
   SHORT_ANSWER_QUESTION = 2,
   MULTIPLE_CHOICE_QUESTION = 3,
+}
+
+/**
+ * Declare Speech Recognition install state enum type
+ */
+export enum SpeechRecognitionInstallState {
+  UNKNOWN = 0,
+  SYSTEM_LANGUAGE_NOT_SUPPORTED = 1,
+  IN_PROGRESS = 2,
+  FAILED = 3,
+  READY = 4
 }
 
 /**
@@ -296,7 +315,7 @@ export declare interface ClientApiDelegate {
   /**
    * Create a new session.
    */
-  createSession(sessionConfig: SessionConfig): Promise<boolean>;
+  createSession(sessionConfig: SessionConfig): Promise<CreateSessionResult>;
 
   /**
    * Remove a student from the current session.
@@ -380,6 +399,12 @@ export declare interface ClientApiDelegate {
    * Refresh the workbook for students.
    */
   refreshWorkbook(): Promise<void>;
+
+  /**
+   * Gets Speech Recognition DLC installation status.
+   */
+  getSpeechRecognitionInstallationStatus():
+      Promise<SpeechRecognitionInstallState>;
 }
 
 /**
@@ -415,4 +440,16 @@ export declare interface ClientApi {
    * or outside of a session in the teacher case.
    */
   onLocalCaptionDisabled(): void;
+
+  /**
+   * Notify the app that the status for Soda Installation has changed.
+   */
+  onSpeechRecognitionInstallStateUpdated(state: SpeechRecognitionInstallState):
+      void;
+
+  /**
+   * Notify the app that the session captions has been turned off in chrome.
+   * This can be due to an error or because of an event such as device locked.
+   */
+  onSessionCaptionDisabled(isError: boolean): void;
 }

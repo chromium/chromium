@@ -168,11 +168,11 @@ bool UseGpuVsync() {
 
 bool IsAndroidFrameDeadlineEnabled() {
 #if BUILDFLAG(IS_ANDROID)
-  static bool enabled =
-      base::android::BuildInfo::GetInstance()->is_at_least_t() &&
-      gfx::AChoreographerCompat33::Get().supported &&
-      gfx::SurfaceControl::SupportsSetFrameTimeline() &&
-      gfx::SurfaceControl::SupportsSetEnableBackPressure();
+  static bool enabled = base::android::BuildInfo::GetInstance()->sdk_int() >=
+                            base::android::SDK_VERSION_T &&
+                        gfx::AChoreographerCompat33::Get().supported &&
+                        gfx::SurfaceControl::SupportsSetFrameTimeline() &&
+                        gfx::SurfaceControl::SupportsSetEnableBackPressure();
   return enabled;
 #else
   return false;

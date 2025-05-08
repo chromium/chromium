@@ -121,6 +121,16 @@ const char kWrongTypeKeyAsJWK[] =
     "  ],"
     "}";
 
+const char kKeyIdWithoutKeyAsJWK[] =
+    "{"
+    "  \"keys\": ["
+    "    {"
+    "      \"kty\": \"oct\","
+    "      \"kid\": \"\""
+    "    }"
+    "  ]"
+    "}";
+
 // Same kid as kKeyAsJWK, key to decrypt kEncryptedData2
 const char kKeyAlternateAsJWK[] =
     "{"
@@ -711,6 +721,11 @@ TEST_P(AesDecryptorTest, WrongKey) {
 TEST_P(AesDecryptorTest, WrongJwtType) {
   std::string session_id = CreateSession(key_id_);
   UpdateSessionAndExpect(session_id, kWrongTypeKeyAsJWK, REJECTED, true);
+}
+
+TEST_P(AesDecryptorTest, KeyIdWithoutKey) {
+  std::string session_id = CreateSession(key_id_);
+  UpdateSessionAndExpect(session_id, kKeyIdWithoutKeyAsJWK, REJECTED, true);
 }
 
 TEST_P(AesDecryptorTest, NoKey) {

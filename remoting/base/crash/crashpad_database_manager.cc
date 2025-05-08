@@ -11,10 +11,16 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/time_formatting.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths.h"
+#include "base/strings/utf_string_conversions.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -38,7 +44,12 @@ const size_t kMaxReportAgeDays = 7;
 namespace remoting {
 
 base::FilePath GetCrashpadDatabasePath() {
-  base::FilePath database_path = GetConfigDirectoryPath();
+  base::FilePath database_path;
+#if BUILDFLAG(IS_WIN)
+  base::PathService::Get(base::BasePathKey::DIR_ASSETS, &database_path);
+#else
+  database_path = GetConfigDirectoryPath();
+#endif
   return database_path.Append(kChromotingCrashpadDatabasePath);
 }
 
@@ -51,8 +62,13 @@ bool CrashpadDatabaseManager::InitializeCrashpadDatabase() {
   base::FilePath database_path = GetCrashpadDatabasePath();
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(database_path, &error)) {
+#if BUILDFLAG(IS_WIN)
+    logger_->LogError("Unable to get directory for crash database: " +
+                      base::WideToUTF8(database_path.value()));
+#else
     logger_->LogError("Unable to get directory for crash database: " +
                       database_path.value());
+#endif
     logger_->LogError("File Error: " + base::File::ErrorToString(error));
     return false;
   }
@@ -154,7 +170,11 @@ void CrashpadDatabaseManager::LogCrashReportInfo(
   } else {
     logger_->Log("  Crash id: " + id + " (http://go/crash/" + id + ")");
   }
+#if BUILDFLAG(IS_WIN)
+  logger_->Log("    path: " + base::WideToUTF8(report.file_path.value()));
+#else
   logger_->Log("    path: " + report.file_path.value());
+#endif
   logger_->Log("    uuid: " + report.uuid.ToString());
   logger_->Log("    created: " +
                TimeFormatHTTP(base::Time::FromTimeT(report.creation_time)));

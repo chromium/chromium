@@ -4,6 +4,11 @@
 
 #include "utils.h"
 
+#include <string>
+
+#include "chrome/browser/global_features.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
@@ -287,9 +292,13 @@ class GetEditorMenuBoundsTest
 TEST_P(GetEditorMenuBoundsTest, Verify) {
   test_screen_.set_cursor_screen_point(GetParam().cursor_point);
 
+  const std::string& locale = TestingBrowserProcess::GetGlobal()
+                                  ->GetFeatures()
+                                  ->application_locale_storage()
+                                  ->Get();
   const gfx::Rect editor_menu_bounds =
       chromeos::editor_menu::GetEditorMenuBounds(GetParam().anchor_view_bounds,
-                                                 target_.get());
+                                                 target_.get(), locale);
 
   EXPECT_EQ(editor_menu_bounds.x(), GetParam().editor_menu_bounds.x());
   EXPECT_EQ(editor_menu_bounds.y(), GetParam().editor_menu_bounds.y());

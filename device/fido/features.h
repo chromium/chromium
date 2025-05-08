@@ -145,6 +145,11 @@ BASE_DECLARE_FEATURE_PARAM(int, kWebAuthnImmediateRequestRateLimitMaxRequests);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE_PARAM(int,
                            kWebAuthnImmediateRequestRateLimitWindowSeconds);
+
+// Enables the immediate mediation for `navigator.credentials.get` requests.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnImmediateGet);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

@@ -1,9 +1,0 @@
-# Copyright 2016 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-declare_args() {
-  # Controls whether reading list support is active or not. Currently only
-  # supported on iOS (on other platforms, the feature is always disabled).
-  enable_reading_list = true
-}

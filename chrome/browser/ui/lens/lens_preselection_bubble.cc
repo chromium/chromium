@@ -11,13 +11,13 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/vector_icons/vector_icons.h"
-#include "lens_preselection_bubble.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -65,7 +65,7 @@ LensPreselectionBubble::LensPreselectionBubble(
   set_close_on_deactivate(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(48);
-  set_background_color(kColorLensOverlayToastBackground);
+  SetBackgroundColor(kColorLensOverlayToastBackground);
   SetProperty(views::kElementIdentifierKey, kLensPreselectionBubbleElementId);
   SetAccessibleWindowRole(ax::mojom::Role::kAlertDialog);
   SetCancelCallback(std::move(on_cancel_callback));

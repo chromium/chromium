@@ -8,7 +8,9 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -22,9 +24,11 @@ RegisterProtocolHandlerPermissionRequest::
         GURL url,
         base::ScopedClosureRunner fullscreen_block)
     : PermissionRequest(
-          url.DeprecatedGetOriginAsURL(),
-          permissions::RequestType::kRegisterProtocolHandler,
-          /*has_gesture=*/false,
+          std::make_unique<permissions::PermissionRequestData>(
+              std::make_unique<permissions::ContentSettingPermissionResolver>(
+                  permissions::RequestType::kRegisterProtocolHandler),
+              /*user_gesture=*/false,
+              url.DeprecatedGetOriginAsURL()),
           base::BindRepeating(
               &RegisterProtocolHandlerPermissionRequest::PermissionDecided,
               base::Unretained(this)),
@@ -65,7 +69,8 @@ RegisterProtocolHandlerPermissionRequest::GetMessageTextFragment() const {
 void RegisterProtocolHandlerPermissionRequest::PermissionDecided(
     ContentSetting result,
     bool is_one_time,
-    bool is_final_decision) {
+    bool is_final_decision,
+    const std::unique_ptr<permissions::PermissionRequestData>& request_data) {
   DCHECK(!is_one_time);
   DCHECK(is_final_decision);
   if (result == ContentSetting::CONTENT_SETTING_ALLOW) {

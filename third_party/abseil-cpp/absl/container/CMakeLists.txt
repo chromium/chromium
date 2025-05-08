@@ -41,6 +41,7 @@ absl_cc_library(
     absl::strings
     absl::throw_delegate
     absl::type_traits
+    absl::weakly_mixed_integer
 )
 
 # Internal-only target, do not depend on directly.
@@ -134,6 +135,7 @@ absl_cc_library(
     absl::iterator_traits_internal
     absl::throw_delegate
     absl::memory
+    absl::weakly_mixed_integer
   PUBLIC
 )
 
@@ -202,6 +204,7 @@ absl_cc_library(
     absl::throw_delegate
     absl::memory
     absl::type_traits
+    absl::weakly_mixed_integer
   PUBLIC
 )
 
@@ -540,6 +543,7 @@ absl_cc_library(
     absl::memory
     absl::meta
     absl::no_destructor
+    absl::random_random
     absl::strings
   TESTONLY
 )
@@ -655,6 +659,7 @@ absl_cc_test(
   DEPS
     absl::config
     absl::hashtablez_sampler
+    absl::random_random
     GTest::gmock_main
 )
 
@@ -790,6 +795,7 @@ absl_cc_library(
     absl::prefetch
     absl::raw_logging_internal
     absl::utility
+    absl::weakly_mixed_integer
   PUBLIC
 )
 
@@ -820,6 +826,7 @@ absl_cc_test(
     absl::node_hash_set
     absl::optional
     absl::prefetch
+    absl::random_random
     absl::raw_hash_set
     absl::strings
     absl::test_allocator

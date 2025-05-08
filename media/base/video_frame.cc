@@ -430,23 +430,25 @@ VideoFrame::CreateFrameForGpuMemoryBufferOrMappableSIInternal(
                                 ? gpu_memory_buffer->CloneHandle()
                                 : shared_image->CloneGpuMemoryBufferHandle();
     if (gmb_handle.is_null() ||
-        gmb_handle.native_pixmap_handle.planes.empty()) {
+        gmb_handle.native_pixmap_handle().planes.empty()) {
       DLOG(ERROR) << "Failed to clone the GpuMemoryBufferHandle";
       return nullptr;
     }
-    if (gmb_handle.native_pixmap_handle.planes.size() != num_planes) {
+    const gfx::NativePixmapHandle& native_pixmap_handle =
+        gmb_handle.native_pixmap_handle();
+    if (native_pixmap_handle.planes.size() != num_planes) {
       DLOG(ERROR) << "Invalid number of planes="
-                  << gmb_handle.native_pixmap_handle.planes.size()
+                  << native_pixmap_handle.planes.size()
                   << ", expected num_planes=" << num_planes;
       return nullptr;
     }
     for (size_t i = 0; i < num_planes; ++i) {
-      const auto& plane = gmb_handle.native_pixmap_handle.planes[i];
+      const auto& plane = native_pixmap_handle.planes[i];
       planes[i].stride = plane.stride;
       planes[i].offset = plane.offset;
       planes[i].size = plane.size;
     }
-    modifier = gmb_handle.native_pixmap_handle.modifier;
+    modifier = native_pixmap_handle.modifier;
   }
 #endif
 

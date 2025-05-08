@@ -480,9 +480,10 @@ void DOMMatrixReadOnly::SetMatrixValueFromString(
     return;
   }
 
-  if (TransformBuilder::HasRelativeLengths(To<CSSValueList>(*value))) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Lengths must be absolute, not relative");
+  if (!TransformBuilder::IsResolvableAtParseTime(To<CSSValueList>(*value))) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "Values must be resolvable at parse time");
     return;
   }
 

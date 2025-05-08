@@ -1,30 +1,25 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/indexed_db/instance/fake_transaction.h"
 
-#include <cstdint>
-#include <memory>
 #include <utility>
-#include <vector>
 
-#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom-shared.h"
-#include "content/browser/indexed_db/indexed_db_external_object_storage.h"
-#include "content/browser/indexed_db/instance/backing_store.h"
-#include "content/browser/indexed_db/status.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "base/check.h"
+#include "base/notreached.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace content::indexed_db {
 
-FakeTransaction::FakeTransaction(Status result,
-                                 blink::mojom::IDBTransactionMode mode,
-                                 BackingStore& backing_store)
-    : result_(result),
-      wrapped_transaction_(backing_store.CreateTransaction(
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          mode)) {}
+FakeTransaction::FakeTransaction(
+    Status phase_two_result,
+    std::unique_ptr<BackingStore::Transaction> wrapped)
+    : result_(phase_two_result), wrapped_transaction_(std::move(wrapped)) {}
 
 FakeTransaction::~FakeTransaction() = default;
 
@@ -48,213 +43,156 @@ void FakeTransaction::Reset() {
   wrapped_transaction_->Reset();
 }
 
-Status FakeTransaction::SetDatabaseVersion(
-    int64_t row_id,
-    int64_t version,
-    blink::IndexedDBDatabaseMetadata* metadata) {
-  return wrapped_transaction_->SetDatabaseVersion(row_id, version, metadata);
+Status FakeTransaction::SetDatabaseVersion(int64_t version) {
+  return wrapped_transaction_->SetDatabaseVersion(version);
 }
 
-Status FakeTransaction::CreateObjectStore(
-    int64_t database_id,
-    int64_t object_store_id,
-    std::u16string name,
-    blink::IndexedDBKeyPath key_path,
-    bool auto_increment,
-    blink::IndexedDBObjectStoreMetadata* metadata) {
+Status FakeTransaction::CreateObjectStore(int64_t object_store_id,
+                                          const std::u16string& name,
+                                          blink::IndexedDBKeyPath key_path,
+                                          bool auto_increment) {
   return wrapped_transaction_->CreateObjectStore(
-      database_id, object_store_id, std::move(name), std::move(key_path),
-      auto_increment, metadata);
+      object_store_id, name, std::move(key_path), auto_increment);
 }
 
-Status FakeTransaction::DeleteObjectStore(
-    int64_t database_id,
-    const blink::IndexedDBObjectStoreMetadata& object_store) {
-  return wrapped_transaction_->DeleteObjectStore(database_id, object_store);
+Status FakeTransaction::DeleteObjectStore(int64_t object_store_id) {
+  return wrapped_transaction_->DeleteObjectStore(object_store_id);
 }
 
-Status FakeTransaction::RenameObjectStore(
-    int64_t database_id,
-    std::u16string new_name,
-    std::u16string* old_name,
-    blink::IndexedDBObjectStoreMetadata* metadata) {
-  return wrapped_transaction_->RenameObjectStore(
-      database_id, std::move(new_name), old_name, metadata);
+Status FakeTransaction::RenameObjectStore(int64_t object_store_id,
+                                          const std::u16string& new_name) {
+  return wrapped_transaction_->RenameObjectStore(object_store_id, new_name);
 }
 
-Status FakeTransaction::CreateIndex(int64_t database_id,
-                                    int64_t object_store_id,
+Status FakeTransaction::ClearObjectStore(int64_t object_store_id) {
+  return wrapped_transaction_->ClearObjectStore(object_store_id);
+}
+
+Status FakeTransaction::CreateIndex(int64_t object_store_id,
                                     int64_t index_id,
-                                    std::u16string name,
+                                    const std::u16string& name,
                                     blink::IndexedDBKeyPath key_path,
                                     bool is_unique,
-                                    bool is_multi_entry,
-                                    blink::IndexedDBIndexMetadata* metadata) {
-  return wrapped_transaction_->CreateIndex(
-      database_id, object_store_id, index_id, std::move(name),
-      std::move(key_path), is_unique, is_multi_entry, metadata);
+                                    bool is_multi_entry) {
+  return wrapped_transaction_->CreateIndex(object_store_id, index_id, name,
+                                           std::move(key_path), is_unique,
+                                           is_multi_entry);
 }
 
-Status FakeTransaction::DeleteIndex(
-    int64_t database_id,
-    int64_t object_store_id,
-    const blink::IndexedDBIndexMetadata& metadata) {
-  return wrapped_transaction_->DeleteIndex(database_id, object_store_id,
-                                           metadata);
+Status FakeTransaction::DeleteIndex(int64_t object_store_id, int64_t index_id) {
+  return wrapped_transaction_->DeleteIndex(object_store_id, index_id);
 }
 
-Status FakeTransaction::RenameIndex(int64_t database_id,
-                                    int64_t object_store_id,
-                                    std::u16string new_name,
-                                    std::u16string* old_name,
-                                    blink::IndexedDBIndexMetadata* metadata) {
-  return wrapped_transaction_->RenameIndex(
-      database_id, object_store_id, std::move(new_name), old_name, metadata);
+Status FakeTransaction::RenameIndex(int64_t object_store_id,
+                                    int64_t index_id,
+                                    const std::u16string& new_name) {
+  return wrapped_transaction_->RenameIndex(object_store_id, index_id, new_name);
 }
 
-Status FakeTransaction::GetRecord(int64_t database_id,
-                                  int64_t object_store_id,
+Status FakeTransaction::GetRecord(int64_t object_store_id,
                                   const blink::IndexedDBKey& key,
                                   IndexedDBValue* record) {
-  return wrapped_transaction_->GetRecord(database_id, object_store_id, key,
-                                         record);
+  return wrapped_transaction_->GetRecord(object_store_id, key, record);
 }
 
-Status FakeTransaction::PutRecord(int64_t database_id,
-                                  int64_t object_store_id,
+Status FakeTransaction::PutRecord(int64_t object_store_id,
                                   const blink::IndexedDBKey& key,
                                   IndexedDBValue* value,
                                   BackingStore::RecordIdentifier* record) {
-  return wrapped_transaction_->PutRecord(database_id, object_store_id, key,
-                                         value, record);
+  return wrapped_transaction_->PutRecord(object_store_id, key, value, record);
 }
 
-Status FakeTransaction::ClearObjectStore(int64_t database_id,
-                                         int64_t object_store_id) {
-  return wrapped_transaction_->ClearObjectStore(database_id, object_store_id);
-}
-
-Status FakeTransaction::DeleteRecord(
-    int64_t database_id,
-    int64_t object_store_id,
-    const BackingStore::RecordIdentifier& record) {
-  return wrapped_transaction_->DeleteRecord(database_id, object_store_id,
-                                            record);
-}
-
-Status FakeTransaction::DeleteRange(int64_t database_id,
-                                    int64_t object_store_id,
+Status FakeTransaction::DeleteRange(int64_t object_store_id,
                                     const blink::IndexedDBKeyRange& key_range) {
-  return wrapped_transaction_->DeleteRange(database_id, object_store_id,
-                                           key_range);
+  return wrapped_transaction_->DeleteRange(object_store_id, key_range);
 }
 
-Status FakeTransaction::GetKeyGeneratorCurrentNumber(int64_t database_id,
-                                                     int64_t object_store_id,
+Status FakeTransaction::GetKeyGeneratorCurrentNumber(int64_t object_store_id,
                                                      int64_t* current_number) {
-  return wrapped_transaction_->GetKeyGeneratorCurrentNumber(
-      database_id, object_store_id, current_number);
+  return wrapped_transaction_->GetKeyGeneratorCurrentNumber(object_store_id,
+                                                            current_number);
 }
 
 Status FakeTransaction::MaybeUpdateKeyGeneratorCurrentNumber(
-    int64_t database_id,
     int64_t object_store_id,
     int64_t new_state,
     bool check_current) {
   return wrapped_transaction_->MaybeUpdateKeyGeneratorCurrentNumber(
-      database_id, object_store_id, new_state, check_current);
+      object_store_id, new_state, check_current);
 }
 
 Status FakeTransaction::KeyExistsInObjectStore(
-    int64_t database_id,
     int64_t object_store_id,
     const blink::IndexedDBKey& key,
     BackingStore::RecordIdentifier* found_record_identifier,
     bool* found) {
   return wrapped_transaction_->KeyExistsInObjectStore(
-      database_id, object_store_id, key, found_record_identifier, found);
-}
-
-Status FakeTransaction::ClearIndex(int64_t database_id,
-                                   int64_t object_store_id,
-                                   int64_t index_id) {
-  return wrapped_transaction_->ClearIndex(database_id, object_store_id,
-                                          index_id);
+      object_store_id, key, found_record_identifier, found);
 }
 
 Status FakeTransaction::PutIndexDataForRecord(
-    int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
     const blink::IndexedDBKey& key,
     const BackingStore::RecordIdentifier& record) {
-  return wrapped_transaction_->PutIndexDataForRecord(
-      database_id, object_store_id, index_id, key, record);
+  return wrapped_transaction_->PutIndexDataForRecord(object_store_id, index_id,
+                                                     key, record);
 }
 
 Status FakeTransaction::GetPrimaryKeyViaIndex(
-    int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
     const blink::IndexedDBKey& key,
     std::unique_ptr<blink::IndexedDBKey>* primary_key) {
-  return wrapped_transaction_->GetPrimaryKeyViaIndex(
-      database_id, object_store_id, index_id, key, primary_key);
+  return wrapped_transaction_->GetPrimaryKeyViaIndex(object_store_id, index_id,
+                                                     key, primary_key);
 }
 
 Status FakeTransaction::KeyExistsInIndex(
-    int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
     const blink::IndexedDBKey& key,
     std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
     bool* exists) {
-  return wrapped_transaction_->KeyExistsInIndex(
-      database_id, object_store_id, index_id, key, found_primary_key, exists);
+  return wrapped_transaction_->KeyExistsInIndex(object_store_id, index_id, key,
+                                                found_primary_key, exists);
 }
 
-std::unique_ptr<indexed_db::BackingStore::Cursor>
+base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
 FakeTransaction::OpenObjectStoreKeyCursor(
-    int64_t database_id,
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range,
-    blink::mojom::IDBCursorDirection direction,
-    Status* status) {
-  return wrapped_transaction_->OpenObjectStoreKeyCursor(
-      database_id, object_store_id, key_range, direction, status);
+    blink::mojom::IDBCursorDirection direction) {
+  return wrapped_transaction_->OpenObjectStoreKeyCursor(object_store_id,
+                                                        key_range, direction);
 }
 
-std::unique_ptr<indexed_db::BackingStore::Cursor>
+base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
 FakeTransaction::OpenObjectStoreCursor(
-    int64_t database_id,
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range,
-    blink::mojom::IDBCursorDirection direction,
-    Status* status) {
-  return wrapped_transaction_->OpenObjectStoreCursor(
-      database_id, object_store_id, key_range, direction, status);
+    blink::mojom::IDBCursorDirection direction) {
+  return wrapped_transaction_->OpenObjectStoreCursor(object_store_id, key_range,
+                                                     direction);
 }
 
-std::unique_ptr<indexed_db::BackingStore::Cursor>
-FakeTransaction::OpenIndexKeyCursor(int64_t database_id,
-                                    int64_t object_store_id,
-                                    int64_t index_id,
-                                    const blink::IndexedDBKeyRange& key_range,
-                                    blink::mojom::IDBCursorDirection direction,
-                                    Status* status) {
-  return wrapped_transaction_->OpenIndexKeyCursor(
-      database_id, object_store_id, index_id, key_range, direction, status);
+base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+FakeTransaction::OpenIndexKeyCursor(
+    int64_t object_store_id,
+    int64_t index_id,
+    const blink::IndexedDBKeyRange& key_range,
+    blink::mojom::IDBCursorDirection direction) {
+  return wrapped_transaction_->OpenIndexKeyCursor(object_store_id, index_id,
+                                                  key_range, direction);
 }
 
-std::unique_ptr<indexed_db::BackingStore::Cursor>
-FakeTransaction::OpenIndexCursor(int64_t database_id,
-                                 int64_t object_store_id,
+base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+FakeTransaction::OpenIndexCursor(int64_t object_store_id,
                                  int64_t index_id,
                                  const blink::IndexedDBKeyRange& key_range,
-                                 blink::mojom::IDBCursorDirection direction,
-                                 Status* status) {
-  return wrapped_transaction_->OpenIndexCursor(
-      database_id, object_store_id, index_id, key_range, direction, status);
+                                 blink::mojom::IDBCursorDirection direction) {
+  return wrapped_transaction_->OpenIndexCursor(object_store_id, index_id,
+                                               key_range, direction);
 }
 
 }  // namespace content::indexed_db

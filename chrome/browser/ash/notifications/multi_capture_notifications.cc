@@ -91,24 +91,6 @@ void MaybeShowLoginNotification(bool is_multi_capture_allowed) {
           IDS_MULTI_CAPTURE_NOTIFICATION_ON_LOGIN_MESSAGE));
 }
 
-// This function makes sure that on login all data required to check whether a
-// notification is needed is propagated from the policy to the
-// ManagedAccessToGetAllScreensMediaInSessionAllowedForUrls pref.
-void TransferGetAllScreensMediaPolicyValue(
-    content::BrowserContext* browser_context) {
-  DCHECK(browser_context);
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  PrefService* pref_service = profile->GetPrefs();
-  if (!pref_service) {
-    return;
-  }
-  const base::Value::List& allowed_origins = pref_service->GetList(
-      capture_policy::kManagedAccessToGetAllScreensMediaAllowedForUrls);
-  pref_service->SetList(
-      prefs::kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls,
-      allowed_origins.Clone());
-}
-
 void ShowLoginNotificationIfMultiCaptureAllowed() {
   auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
   if (!active_user) {
@@ -121,11 +103,8 @@ void ShowLoginNotificationIfMultiCaptureAllowed() {
     return;
   }
 
-  // TODO(b/329064666): Remove this function once the pivot to IWAs is complete.
-  TransferGetAllScreensMediaPolicyValue(browser_context);
-
   capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(
-      browser_context, base::BindOnce(&MaybeShowLoginNotification));
+      base::BindOnce(&MaybeShowLoginNotification));
 }
 
 }  // namespace

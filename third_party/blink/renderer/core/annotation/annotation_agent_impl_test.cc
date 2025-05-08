@@ -16,7 +16,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_test_utils.h"
 #include "third_party/blink/renderer/core/annotation/text_annotation_selector.h"
@@ -207,6 +209,29 @@ class AnnotationAgentImplTest : public SimTest {
 
   DocumentMarkerVector GetAllMarkers() {
     return GetDocument().Markers().Markers();
+  }
+
+  float GetAlphaForGlicMarkerAt(size_t index) {
+    const auto& markers = GetAllMarkers();
+    EXPECT_GE(markers.size(), index + 1);
+    DocumentMarker* marker = markers[index];
+    EXPECT_EQ(marker->GetType(), DocumentMarker::MarkerType::kGlic);
+    return To<GlicMarker>(marker)->BackgroundColor().Alpha();
+  }
+
+  bool GlicAnimationRunning() {
+    return GetDocument().Markers().glic_animation_state_ ==
+           DocumentMarkerController::GlicAnimationState::kRunning;
+  }
+
+  bool GlicAnimationFinished() {
+    return GetDocument().Markers().glic_animation_state_ ==
+           DocumentMarkerController::GlicAnimationState::kFinished;
+  }
+
+  bool GlicAnimationNotStarted() {
+    return GetDocument().Markers().glic_animation_state_ ==
+           DocumentMarkerController::GlicAnimationState::kNotStarted;
   }
 };
 
@@ -1619,6 +1644,139 @@ TEST_F(AnnotationAgentImplTest, GlicShouldNotAnimateLongScroll) {
   EXPECT_TRUE(ExpectInViewport(*element_foo));
 }
 
+// Tests that the device scale factor is taken into account when deciding
+// whether to smooth scroll. A device with a higher DSF will have a higher
+// threshold for smooth scrolling.
+TEST_F(AnnotationAgentImplTest, GlicScrollConsidersDeviceScaleFactor) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        font: 10px/1 Ahem;
+      }
+      #foo {
+        position: absolute;
+        top: 5000px;
+      }
+      body {
+        height: 10000px;
+        margin: 0;
+      }
+    </style>
+    <p id='foo'>FOO<p>
+  )HTML");
+  WebView().MainFrameViewWidget()->SetDeviceScaleFactorForTesting(2.0);
+
+  LoadAhem();
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo->firstChild(), 0, 3, "FOO");
+  auto* agent_foo =
+      CreateAgentForRange(range_foo, mojom::blink::AnnotationType::kGlic);
+  ASSERT_TRUE(agent_foo);
+
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+  host_foo.FlushForTesting();
+
+  // Attachment must not cause any scrolling.
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  // Invoking ScrollIntoView on the agent will trigger a scroll, but the scroll
+  // will be animated (and so will not be in the viewport immediately).
+  //
+  // The scroll distance will be ~10,000 physical pixels (due to the device
+  // scale factor), which would be above the threshold for a smooth scroll. But
+  // if we normalize the distance using the device scale factor (which we
+  // should), the scroll distance will be within the threshold.
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
+  host_foo.FlushForTesting();
+  Compositor().BeginFrame();
+  EXPECT_TRUE(ExpectNotInViewport(*element_foo));
+
+  // Start and complete the animation (which should happen within 700 ms based
+  // on kDeltaBasedMaxDuration in scroll_offset_animation_curve.cc).
+  task_environment().FastForwardBy(base::Milliseconds(16));
+  Compositor().BeginFrame();
+  task_environment().FastForwardBy(base::Milliseconds(700));
+  Compositor().BeginFrame(/*time_delta_in_seconds*/ 0.7);
+
+  // The text should now be in the viewport.
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
+}
+
+// Tests that browser zoom doesn't affect the computation of scroll behaviour
+// for mojom::blink::AnnotationType::kGlic.
+TEST_F(AnnotationAgentImplTest, GlicScrollIgnoresBrowserZoom) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        font: 10px/1 Ahem;
+      }
+      #foo {
+        position: absolute;
+        top: 5000px;
+      }
+      body {
+        height: 10000px;
+        margin: 0;
+      }
+    </style>
+    <p id='foo'>FOO<p>
+  )HTML");
+  // Sets the zoom factor to (1.2 ^ 4)x (i.e. ~2x).
+  WebView().MainFrameViewWidget()->SetZoomLevelForTesting(4.0);
+
+  LoadAhem();
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo->firstChild(), 0, 3, "FOO");
+  auto* agent_foo =
+      CreateAgentForRange(range_foo, mojom::blink::AnnotationType::kGlic);
+  ASSERT_TRUE(agent_foo);
+
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+  host_foo.FlushForTesting();
+
+  // Attachment must not cause any scrolling.
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  // Invoking ScrollIntoView on the agent will trigger an instant scroll
+  // (without any animation), as the distance exceeds the threshold for a
+  // smooth scroll. The scroll distance will be >10,000 physical pixels (due to
+  // browser zoom), which is above the threshold.
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
+  host_foo.FlushForTesting();
+  Compositor().BeginFrame();
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
+}
+
 // Ensure that a range that's valid in a flat-tree ordering but invalid in
 // regular DOM order doesn't cause a crash. https://crbug.com/410033683.
 TEST_F(AnnotationAgentImplTest, ValidFlatTreeRangeIsInvalidDOMRange) {
@@ -1704,10 +1862,18 @@ TEST_F(AnnotationAgentImplTest, GlicHighlight_SmokeTest) {
   host.BindToAgent(*agent);
   ASSERT_FALSE(host.did_finish_attachment_rect_);
 
-  // Set the first RequestAnimationFrame.
+  // Finish the attachment.
   Compositor().BeginFrame();
   host.FlushForTesting();
   ASSERT_TRUE(host.did_finish_attachment_rect_);
+  ASSERT_TRUE(agent->IsAttached());
+  EXPECT_TRUE(GlicAnimationNotStarted());
+
+  // The browser tells the renderer to scroll. Since we don't need to scroll,
+  // the highlight animation starts immediately, which queues the first
+  // RequestAnimationFrame.
+  agent->ScrollIntoView(/*applies_focus=*/false);
+  EXPECT_TRUE(GlicAnimationRunning());
 
   // Execute the first RequestAnimationFrame, which initializes the T=0.
   Compositor().BeginFrame();
@@ -1716,10 +1882,12 @@ TEST_F(AnnotationAgentImplTest, GlicHighlight_SmokeTest) {
   // `BeginFrame()`.
   task_environment().FastForwardBy(base::Milliseconds(500));
   Compositor().BeginFrame(0.5);
+  EXPECT_TRUE(GlicAnimationRunning());
 
   // T=1100ms. Submit the last frame with progress=1.
   task_environment().FastForwardBy(base::Milliseconds(600));
   Compositor().BeginFrame(0.6);
+  EXPECT_TRUE(GlicAnimationFinished());
 
   const auto& markers = GetAllMarkers();
   EXPECT_EQ(markers.size(), 1u);
@@ -1751,14 +1919,15 @@ TEST_F(AnnotationAgentImplTest, GlicHighlight_StopOnAgentRemoval) {
   MockAnnotationAgentHost host;
   host.BindToAgent(*agent);
   ASSERT_FALSE(host.did_finish_attachment_rect_);
-
-  // Set the first RequestAnimationFrame.
   Compositor().BeginFrame();
   host.FlushForTesting();
   ASSERT_TRUE(host.did_finish_attachment_rect_);
+  ASSERT_TRUE(agent->IsAttached());
 
-  // Execute the first RequestAnimationFrame.
-  Compositor().BeginFrame();
+  // The browser tells the renderer to scroll. Since we don't need to scroll,
+  // the highlight animation starts immediately, which queues the first
+  // RequestAnimationFrame.
+  agent->ScrollIntoView(/*applies_focus=*/false);
 
   EXPECT_EQ(GetAllMarkers().size(), 1u);
 
@@ -1881,21 +2050,22 @@ TEST_F(AnnotationAgentImplTest, GlicHighlight_ResetStateOnNewTextNodes) {
   ASSERT_TRUE(agent1);
   MockAnnotationAgentHost host1;
   host1.BindToAgent(*agent1);
-  host1.FlushForTesting();
-
-  // Start the animation.
   Compositor().BeginFrame();
+  host1.FlushForTesting();
+  ASSERT_TRUE(agent1->IsAttached());
+
+  // The browser tells the renderer to scroll. Since we don't need to scroll,
+  // the highlight animation starts immediately, which queues the first
+  // RequestAnimationFrame.
+  agent1->ScrollIntoView(/*applies_focus=*/false);
   // Execute the first RequestAnimationFrame with T=0.
   Compositor().BeginFrame();
   // Execute the first RequestAnimationFrame with T=0.5.
   task_environment().FastForwardBy(base::Milliseconds(500));
   Compositor().BeginFrame(0.5);
 
-  EXPECT_EQ(GetAllMarkers().size(), 1u);
-  EXPECT_EQ(GetAllMarkers()[0]->GetType(), DocumentMarker::MarkerType::kGlic);
   // Greater than 0.
-  EXPECT_GT(To<GlicMarker>(GetAllMarkers()[0].Get())->BackgroundColor().Alpha(),
-            0.f);
+  EXPECT_GT(GetAlphaForGlicMarkerAt(0u), 0.f);
 
   // Simulate that glic highlights a different text. Currently only one text
   // (agent) is highlighted at a time.
@@ -1913,18 +2083,218 @@ TEST_F(AnnotationAgentImplTest, GlicHighlight_ResetStateOnNewTextNodes) {
   ASSERT_TRUE(agent2);
   MockAnnotationAgentHost host2;
   host2.BindToAgent(*agent2);
-  host2.FlushForTesting();
-
-  // Start the animation.
   Compositor().BeginFrame();
+  host2.FlushForTesting();
+  ASSERT_TRUE(agent2->IsAttached());
+
+  // No scroll. Queues the first RequestAnimationFrame.
+  agent2->ScrollIntoView(/*applies_focus=*/false);
   // Execute the first RequestAnimationFrame with T=0.
   task_environment().FastForwardBy(base::Milliseconds(16));
   Compositor().BeginFrame();
 
-  EXPECT_EQ(GetAllMarkers().size(), 1u);
-  EXPECT_EQ(GetAllMarkers()[0]->GetType(), DocumentMarker::MarkerType::kGlic);
-  EXPECT_EQ(To<GlicMarker>(GetAllMarkers()[0].Get())->BackgroundColor().Alpha(),
-            0.f);
+  EXPECT_EQ(GetAlphaForGlicMarkerAt(0u), 0.f);
+}
+
+TEST_F(AnnotationAgentImplTest,
+       GlicHighlight_HighLightStartsAfterScrollFinishes) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #foo {
+        position: absolute;
+        top: 1000px;
+      }
+      body {
+        height: 5000px;
+        margin: 0;
+      }
+    </style>
+    <p id='foo'>FOO<p>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo->firstChild(), 0, 3, "FOO");
+  auto* agent_foo =
+      CreateAgentForRange(range_foo, mojom::blink::AnnotationType::kGlic);
+  ASSERT_TRUE(agent_foo);
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+
+  EXPECT_TRUE(GlicAnimationNotStarted());
+
+  // We need to scroll.
+  EXPECT_TRUE(ExpectNotInViewport(*element_foo));
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
+  host_foo.FlushForTesting();
+
+  Compositor().BeginFrame();
+  Compositor().BeginFrame();
+
+  EXPECT_TRUE(GlicAnimationNotStarted());
+
+  // Smooth scrolling is guaranteed to finish within 750ms.
+  task_environment().FastForwardBy(base::Seconds(1));
+  Compositor().BeginFrame(1.0);
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
+  // Since the text node is in the viewport, we must have queued the first
+  // RequestAnimationFrame.
+  EXPECT_TRUE(GlicAnimationRunning());
+  EXPECT_EQ(GetAlphaForGlicMarkerAt(0u), 0.f);
+
+  // Run the highlight animation.
+  task_environment().FastForwardBy(base::Milliseconds(16));
+  Compositor().BeginFrame();
+
+  EXPECT_TRUE(GlicAnimationRunning());
+  // The opacity is greater than 0.
+  EXPECT_GT(GetAlphaForGlicMarkerAt(0u), 0.f);
+}
+
+// Glic instant scrolls for more than 7000px of distance.
+TEST_F(AnnotationAgentImplTest, GlicHighlight_InstantStartForInstantScroll) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #foo {
+      position: absolute;
+      top: 7500px;
+    }
+    body {
+      height: 10000px;
+      margin: 0;
+    }
+    </style>
+    <p id='foo'>FOO<p>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo->firstChild(), 0, 3, "FOO");
+  auto* agent_foo =
+      CreateAgentForRange(range_foo, mojom::blink::AnnotationType::kGlic);
+  ASSERT_TRUE(agent_foo);
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+
+  EXPECT_TRUE(GlicAnimationNotStarted());
+
+  // We need to scroll.
+  EXPECT_TRUE(ExpectNotInViewport(*element_foo));
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
+  host_foo.FlushForTesting();
+
+  // Instant scroll.
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
+  EXPECT_TRUE(GlicAnimationRunning());
+
+  // Queue the first RequestAnimationFrame.
+  task_environment().FastForwardBy(base::Milliseconds(16));
+  Compositor().BeginFrame();
+  // Run the first RequestAnimationFrame.
+  task_environment().FastForwardBy(base::Milliseconds(16));
+  Compositor().BeginFrame();
+
+  EXPECT_TRUE(GlicAnimationRunning());
+  // The opacity is greater than 0.
+  EXPECT_GT(GetAlphaForGlicMarkerAt(0u), 0.f);
+}
+
+// Test that the highlight doesn't restart after subsequent scrollEnd events.
+TEST_F(AnnotationAgentImplTest,
+       GlicHighlight_AnimationDoesNotRestartAfterSubsequentScroll) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #foo {
+      position: absolute;
+      top: 2000px;
+    }
+    #bar {
+      position: absolute;
+      top: 3000px;
+    }
+    body {
+      height: 4000px;
+      margin: 0;
+    }
+    </style>
+    <p id='foo'>FOO<p>
+    <p id='bar'>BAR<p>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo->firstChild(), 0, 3, "FOO");
+  auto* agent_foo =
+      CreateAgentForRange(range_foo, mojom::blink::AnnotationType::kGlic);
+  ASSERT_TRUE(agent_foo);
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+
+  EXPECT_TRUE(GlicAnimationNotStarted());
+
+  // We need to scroll.
+  EXPECT_TRUE(ExpectNotInViewport(*element_foo));
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
+  host_foo.FlushForTesting();
+
+  Compositor().BeginFrame();
+  Compositor().BeginFrame();
+  EXPECT_TRUE(GlicAnimationNotStarted());
+
+  // Max smooth scrolling is capped at 750ms.
+  task_environment().FastForwardBy(base::Seconds(1));
+  Compositor().BeginFrame(1.0);
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
+  // Since the text node is in the viewport, we must have queued the first
+  // RequestAnimationFrame.
+  EXPECT_TRUE(GlicAnimationRunning());
+
+  // Run the highlight animation, and finish it.
+  task_environment().FastForwardBy(base::Seconds(1));
+  Compositor().BeginFrame(/*time_delta_in_seconds=*/1);
+  EXPECT_TRUE(GlicAnimationFinished());
+  EXPECT_EQ(GetAlphaForGlicMarkerAt(0u), 1.f);
+
+  // Scroll BAR into the viewport.
+  Element* element_bar = GetDocument().getElementById(AtomicString("bar"));
+  EXPECT_TRUE(ExpectNotInViewport(*element_bar));
+  ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
+  options->setBlock("start");
+  options->setBehavior("instant");
+  auto* arg =
+      MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
+  element_bar->scrollIntoView(arg);
+  Compositor().BeginFrame();
+  EXPECT_TRUE(ExpectInViewport(*element_bar));
+
+  // If we started another highlight animation for scrolling BAR, the animation
+  // should not have restarted.
+  EXPECT_TRUE(GlicAnimationFinished());
+  EXPECT_EQ(GetAlphaForGlicMarkerAt(0u), 1.f);
 }
 
 }  // namespace blink

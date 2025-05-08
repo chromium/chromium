@@ -105,13 +105,13 @@ declare_args() {
   # Use vectorization for fast path HTML parser.
   enable_vectorized_html_scanning = false
 
-  # Since with currently use -msse3 (not -mssse3), there is no pshufb
-  # instruction, so the generated code on x86 is less optimal and we enable
-  # vectorization only for NEON.
   if (current_cpu == "arm" || current_cpu == "arm64") {
     if (arm_use_neon) {
       enable_vectorized_html_scanning = true
     }
+  }
+  if (current_cpu == "x64") {
+    enable_vectorized_html_scanning = true
   }
 }
 
@@ -514,6 +514,7 @@ source_set("testing") {
     ":element_locator_proto",
     ":generated_testing_idls",
     "//components/ukm:test_support",
+    "//third_party/blink/public/test/mojom:core_test_automation_blink",
     "//third_party/blink/renderer/bindings/core/v8:testing",
     "//third_party/blink/renderer/platform:test_support",
     "//ui/base/cursor",
@@ -1799,8 +1800,7 @@ action_foreach("element_locator_test_protobuf") {
   script =
       "lcp_critical_path_predictor/generate_element_locator_binary_proto.py"
 
-  python_path_root = "${root_out_dir}/pyproto"
-  python_path_proto = "${python_path_root}/third_party/blink/renderer/core/lcp_critical_path_predictor"
+  python_path_proto = "${proto_python_root}/third_party/blink/renderer/core/lcp_critical_path_predictor"
 
   source_dir = "lcp_critical_path_predictor/test_proto"
   sources = rebase_path([ "lcp_image_id.asciipb" ], "", source_dir)
@@ -1822,7 +1822,7 @@ action_foreach("element_locator_test_protobuf") {
     "-o",
     "{{source_name_part}}.pb",
     "-p",
-    rebase_path(python_path_root, root_build_dir),
+    rebase_path(proto_python_root, root_build_dir),
     "-p",
     rebase_path(python_path_proto, root_build_dir),
   ]

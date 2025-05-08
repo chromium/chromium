@@ -176,11 +176,12 @@ BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
              "ExperimentalContentSecurityPolicyFeatures",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow specifying subsets of "name", "picture", "email" in the fields API.
-// Requires FedCmAuthz to be enabled.
-BASE_FEATURE(kFedCmFlexibleFields,
-             "FedCmFlexibleFields",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// For cross-site iframes, sends the top-level origin to the IDP and parses
+// an optional returned boolean indicating whether it is part of the same
+// client to allow for UI decisions based on the boolean.
+BASE_FEATURE(kFedCmIframeOrigin,
+             "FedCmIframeOrigin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to support the newer syntax for the "Use Other Account"
 // and account labels features.
@@ -545,6 +546,11 @@ BASE_FEATURE(kWebOTPAssertionFeaturePolicy,
 // Flag guard for fix for crbug.com/40942531.
 BASE_FEATURE(kLimitCrossOriginNonActivatedPaintHolding,
              "LimitCrossOriginNonActivatedPaintHolding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Kill switch for post OOP-C cleanup crbug.com/391648152
+BASE_FEATURE(kDisallowRasterInterfaceWithoutSkiaBackend,
+             "DisallowRasterInterfaceWithoutSkiaBackend",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Please keep features in alphabetical order.

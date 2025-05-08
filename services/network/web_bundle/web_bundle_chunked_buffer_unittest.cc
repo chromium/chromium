@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/web_bundle/web_bundle_chunked_buffer.h"
 
 #include "base/check.h"
@@ -72,7 +67,7 @@ TEST_F(WebBundleChunkedBufferTest, Chunk) {
   EXPECT_EQ(start_pos, chunk.start_pos());
   EXPECT_EQ(start_pos + kDataLength, chunk.end_pos());
   EXPECT_EQ(kDataLength, chunk.size());
-  EXPECT_EQ(0, memcmp(chunk.data(), kData, kDataLength));
+  EXPECT_EQ(base::span(chunk), base::byte_span_with_nul_from_cstring(kData));
 }
 
 TEST_F(WebBundleChunkedBufferTest, EmptyBuffer) {
@@ -291,8 +286,8 @@ TEST_F(WebBundleChunkedBufferTest, DataSource) {
                                       << " length: " << test_case.length);
     auto data = std::vector<unsigned char>(10, 'X');
     auto result = data_source->Read(
-        test_case.offset, base::span<char>(reinterpret_cast<char*>(data.data()),
-                                           test_case.length));
+        test_case.offset,
+        base::as_writable_chars(base::span(data)).first(test_case.length));
     EXPECT_EQ(test_case.expected_result, result.result);
     EXPECT_EQ(test_case.expected_bytes_read, result.bytes_read);
     EXPECT_EQ(test_case.expected_read_result,

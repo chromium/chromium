@@ -22,6 +22,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -141,9 +142,9 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
   bubble_border->set_insets(kShutdownConfirmationBubbleInsets);
-  bubble_border->SetCornerRadius(
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kHigh));
+  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
+  bubble_border->set_rounded_corners(gfx::RoundedCornersF(corner_radius));
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
   GetBubbleFrameView()->SetBackgroundColor(background_color());
 
@@ -190,7 +191,7 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
       AshColorProvider::ContentLayerType::kButtonLabelColor);
   cancel_->SetEnabledTextColors(button_color);
   confirm_->SetEnabledTextColors(button_color);
-  set_background_color(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
+  SetBackgroundColor(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
 }
 
 std::u16string ShelfShutdownConfirmationBubble::GetAccessibleWindowTitle()

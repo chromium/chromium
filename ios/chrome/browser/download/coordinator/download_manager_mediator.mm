@@ -32,9 +32,7 @@ DownloadManagerMediator::DownloadManagerMediator() : weak_ptr_factory_(this) {}
 DownloadManagerMediator::~DownloadManagerMediator() {
   DCHECK(!application_foregrounding_observer_);
   SetDownloadTask(nullptr);
-  if (identity_manager_) {
-    identity_manager_->RemoveObserver(this);
-  }
+  identity_manager_observation_.Reset();
   identity_manager_ = nullptr;
 }
 
@@ -46,12 +44,10 @@ void DownloadManagerMediator::SetIsIncognito(bool is_incognito) {
 
 void DownloadManagerMediator::SetIdentityManager(
     signin::IdentityManager* identity_manager) {
-  if (identity_manager_) {
-    identity_manager_->RemoveObserver(this);
-  }
+  identity_manager_observation_.Reset();
   identity_manager_ = identity_manager;
   if (identity_manager_) {
-    identity_manager_->AddObserver(this);
+    identity_manager_observation_.Observe(identity_manager_);
     UpdateConsumer();
   }
 }

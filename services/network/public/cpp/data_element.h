@@ -159,8 +159,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   // and replaced with a valid value as soon as possible.
   DataElement();
 
-  template <typename T,
-            typename = std::enable_if_t<std::is_constructible_v<Variant, T>>>
+  template <typename T>
+    requires(std::is_constructible_v<Variant, T>)
   explicit DataElement(T&& t) : variant_(std::forward<T>(t)) {}
   DataElement(const DataElement&) = delete;
   DataElement& operator=(const DataElement&) = delete;

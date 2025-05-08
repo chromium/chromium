@@ -11263,20 +11263,6 @@ be describing additional metrics about the same event.
     The metric is reported once per page-load, and when the page closes (e.g.
     the user closes the tab, or navigates away to a different page).
   </summary>
-  <metric name="AboveThreshold">
-    <summary>
-      The number of fixed-duration sliding windows (as a percentage) where the
-      number of dropped frames are above a threshold. The specific threshold is
-      yet to be determined.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
   <metric name="Average">
     <summary>
       This is trivially computable by counting the total number of dropped
@@ -11312,98 +11298,6 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="CompositorFocusedPercentile95">
-    <summary>
-      CompositorFocused metrics report the throughput of frames that include
-      compositor thread updates. The 95-th percentile dropped frames within a
-      fixed-duration sliding window (as a percentage). So out of all
-      PerecentDroppedFrames of sliding windows the 95th percentile will be
-      reported here.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="CompositorFocusedVariance">
-    <summary>
-      CompositorFocused metrics report the throughput of frames that include
-      compositor thread updates. The variance of percent dropped frames within a
-      fixed-duration sliding window. So out of all PerecentDroppedFrames of
-      sliding windows the variance will be reported here.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="MainFocusedMedian">
-    <summary>
-      MainFocused metrics report the throughput of frames that include main
-      thread updates. The median dropped frames within a fixed-duration sliding
-      window (as a percentage). So out of all PerecentDroppedFrames of sliding
-      windows the median will be reported here.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="MainFocusedPercentile95">
-    <summary>
-      MainFocused metrics report the throughput of frames that include main
-      thread updates. The 95-th percentile dropped frames within a
-      fixed-duration sliding window (as a percentage). So out of all
-      PerecentDroppedFrames of sliding windows the 95th percentile will be
-      reported here.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="MainFocusedVariance">
-    <summary>
-      MainFocused metrics report the throughput of frames that include main
-      thread updates. The variance of percent dropped frames within a
-      fixed-duration sliding window. So out of all PerecentDroppedFrames of
-      sliding windows the variance will be reported here.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
   <metric name="Median">
     <summary>
       The median dropped frames within a fixed-duration sliding window (as a
@@ -11421,272 +11315,50 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="Percentile95">
+</event>
+
+<event name="GroupSuggestionPromo.Suggestion">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Collects information about member tabs that are in a tab group suggestion.
+    Recorded after a suggestion is shown and user has reacted to the suggestion.
+  </summary>
+  <metric name="GroupSuggestionID">
     <summary>
-      The 95-th percentile dropped frames within a fixed-duration sliding window
-      (as a percentage). So out of all PerecentDroppedFrames of sliding windows
-      the 95th percentile will be reported here.
+      An int ID corresponding to the suggestion. This will enable joining all
+      tabs of the suggestion together.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
-  <metric name="ScrollFocusedMedian">
+  <metric name="GroupSuggestionType" enum="TabGroupSuggesiton.SuggestionType">
     <summary>
-      ScrollFocused metrics reports the throughput with highest priority on
-      scroll interactions. The median dropped frames within a fixed-duration
-      sliding window (as a percentage) with highest priority given to scroll
-      throughput. So out of all PerecentDroppedFrames of sliding windows the
-      median will be reported here.
+      Enum of the type of the suggestion. This is decided by the type of
+      heuristics used to trigger the suggestion.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
-  <metric name="ScrollFocusedPercentile95">
+  <metric name="IsActiveTab" enum="Boolean">
     <summary>
-      ScrollFocused metrics reports the throughput with highest priority on
-      scroll interactions. The 95-th percentile dropped frames within a
-      fixed-duration sliding window (as a percentage). So out of all
-      PerecentDroppedFrames of sliding windows the 95th percentile will be
-      reported here.
+      Boolean indicating whether this source is the active tab for the trigger,
+      only recorded for 1 tab within all GroupSuggestionPromo.Suggestion events
+      recorded with the same GroupSuggestionID.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
-  <metric name="ScrollFocusedVariance">
+  <metric name="RecentForegroundCount">
     <summary>
-      ScrollFocused metrics reports the throughput with highest priority on
-      scroll interactions. The variance of percent dropped frames within a
-      fixed-duration sliding window. So out of all PerecentDroppedFrames of
-      sliding windows the variance will be reported here.
+      Int recording the number of times that the tab has been foregrounded in a
+      predefined time window, currently 10 minutes.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
-  <metric name="SmoothnessBad">
+  <metric name="SecondsSinceLastActive">
     <summary>
-      The percentage of sliding windows with bad smoothness, or a
-      PercentDroppedFrames of 12% to 25%.
+      Int recording the number of seconds since the tab was last active.
+      Exponentially bucketed using GetExponentialBucketMin with a spacing of 1.3
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
-  <metric name="SmoothnessGood">
+  <metric name="UserResponseType" enum="TabGroupSuggesiton.UserResponse">
     <summary>
-      The percentage of sliding windows with good smoothness, or a
-      PercentDroppedFrames of 3% to 6%.
+      Enum of the type of user response.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="SmoothnessOkay">
-    <summary>
-      The percentage of sliding windows with okay smoothness, or a
-      PercentDroppedFrames of 6% to 12%.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="SmoothnessVeryBad25to50">
-    <summary>
-      The percentage of sliding windows with a subset of very bad smoothness, or
-      a PercentDroppedFrames of 25% to 50%.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="SmoothnessVeryBad50to75">
-    <summary>
-      The percentage of sliding windows with a subset of very bad smoothness, or
-      a PercentDroppedFrames of 50% to 75%.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="SmoothnessVeryBad75to100">
-    <summary>
-      The percentage of sliding windows with a subset of very bad smoothness, or
-      a PercentDroppedFrames of 75% to 100%.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="SmoothnessVeryGood">
-    <summary>
-      The percentage of sliding windows with very good smoothness, or a
-      PercentDroppedFrames of 0% to 3%.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Variance">
-    <summary>
-      The variance of percent dropped frames within a fixed-duration sliding
-      window. So out of all PerecentDroppedFrames of sliding windows the
-      variance will be reported here.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="WorstCase">
-    <summary>
-      The maximum number of dropped frames (as a percentage) within a
-      fixed-duration sliding window. So out of all PerecentDroppedFrames of
-      sliding windows the max percentile will be reported here.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="WorstCaseAfter1Sec">
-    <summary>
-      The same as WorstCase metric, but only the sliding windows which starts 1
-      second after first contentful paint will be taken into account.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="WorstCaseAfter2Sec">
-    <summary>
-      The same as WorstCase metric, but only the sliding windows which starts 2
-      second after first contentful paint will be taken into account.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="WorstCaseAfter5Sec">
-    <summary>
-      The same as WorstCase metric, but only the sliding windows which starts 5
-      second after first contentful paint will be taken into account.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -21211,12 +20883,17 @@ be describing additional metrics about the same event.
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
-    Recorded when an increase in site engagement score was detected for a site
-    that was previously put in a potential revocation list for disruptive
-    notification permissions. The metrics will be recorded on the first site
-    engagement increase after a revocation would have been proposed (cf. metric
-    SafetyHub.DisruptiveNotificationRevocations.Proposed).
+    Recorded when an interactation was detected for a site that was previously
+    put in a potential revocation list for disruptive notification permissions
+    or for a site for which notification permission was revoked. The metrics
+    will be recorded on either page visit or a notification click.
   </summary>
+  <metric name="DailyAverageVolume">
+    <summary>
+      Average daily volume of notifications sent by the site, measured over the
+      last 7 days.
+    </summary>
+  </metric>
   <metric name="DaysSinceRevocation">
     <summary>
       The number of days between the website was put in the potential revocation
@@ -21233,6 +20910,12 @@ be describing additional metrics about the same event.
       Site engagement score when the site marked for revocation.
     </summary>
   </metric>
+  <metric name="Reason" enum="DisruptiveNotificationFalsePositiveReason">
+    <summary>
+      The reason why the revocation was deamed a false positive: either a web
+      site visit or a notification click.
+    </summary>
+  </metric>
 </event>
 
 <event name="SafetyHub.DisruptiveNotificationRevocations.Proposed">
@@ -21244,7 +20927,9 @@ be describing additional metrics about the same event.
     from the website is displayed. Notifications are considered disruptives when
     sent by websites with both very low site engagement index and high volume of
     notifications. After a revocation is proposed, this metric will not be
-    reported anymore for the website for 30 days.
+    reported anymore for the website for 30 days. After metrics were collected,
+    during the full launch the permission will be revoked on the next Safety
+    Check run.
   </summary>
   <metric name="DailyAverageVolume">
     <summary>
@@ -21255,6 +20940,39 @@ be describing additional metrics about the same event.
   <metric name="SiteEngagement">
     <summary>
       Site engagement for the disruptive site.
+    </summary>
+  </metric>
+</event>
+
+<event name="SafetyHub.DisruptiveNotificationRevocations.UserRegrant">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Recorded when a user has granted a notification permission for a site where
+    notifications where revoked due to disruptive notifications. Recorded when
+    user is visiting a site and has allowed notification permission for a site
+    in the revoke list.
+  </summary>
+  <metric name="DailyAverageVolume">
+    <summary>
+      Average daily volume of notifications sent by the site, measured over the
+      last 7 days.
+    </summary>
+  </metric>
+  <metric name="DaysSinceRevocation">
+    <summary>
+      The number of days between the website was put in the potential revocation
+      list and the detected increase in site engagement.
+    </summary>
+  </metric>
+  <metric name="NewSiteEngagement">
+    <summary>
+      New site engagement after user interaction with the site.
+    </summary>
+  </metric>
+  <metric name="OldSiteEngagement">
+    <summary>
+      Site engagement score when the site marked for revocation.
     </summary>
   </metric>
 </event>
@@ -24088,7 +23806,7 @@ be describing additional metrics about the same event.
     instances where the user backgrounds then kills Chrome.
   </summary>
   <metric name="FinalSourceLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
-      enum="LocaleCodeISO639">
+      enum="LocaleCodeBCP47">
     <summary>
       The source language at the time the event is recorded. In most cases this
       will match the initial source language, but the user can change the source
@@ -24105,7 +23823,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="FinalTargetLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
-      enum="LocaleCodeISO639">
+      enum="LocaleCodeBCP47">
     <summary>
       The target language at the time the event is recorded. In most cases this
       will match the initial target language, but the user can change the target
@@ -24125,7 +23843,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="HTMLContentLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
-      enum="LocaleCodeISO639">
+      enum="LocaleCodeBCP47">
     <summary>
       The HTML language content attribute specified by the document. Note that
       the semantic_type attribute is included in order to remain consistent with
@@ -24133,7 +23851,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="HTMLDocumentLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
-      enum="LocaleCodeISO639">
+      enum="LocaleCodeBCP47">
     <summary>
       The HTML language attribute specified by the document. Note that the
       semantic_type attribute is included in order to remain consistent with the
@@ -24141,7 +23859,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="InitialSourceLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
-      enum="LocaleCodeISO639">
+      enum="LocaleCodeBCP47">
     <summary>
       The initial source language that Translate determines for the page. Note
       that the semantic_type attribute is included in order to remain consistent
@@ -24165,7 +23883,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="InitialTargetLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
-      enum="LocaleCodeISO639">
+      enum="LocaleCodeBCP47">
     <summary>
       The initial target language that Translate thinks it should translate to.
       Note that the semantic_type attribute is included in order to remain
@@ -24179,7 +23897,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="ModelDetectedLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
-      enum="LocaleCodeISO639">
+      enum="LocaleCodeBCP47">
     <summary>
       The language that was estimated by the language model based on the page's
       content. Note that the semantic_type attribute is included in order to

@@ -10,21 +10,23 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 
 /**
- * Updates the browser controls state based on whether the browser is in TWA mode and the page's
- * security level.
+ * Updates the browser controls state based on whether the browser is in TWA mode, the page's
+ * security level, and desktop windowing state.
  */
-public class TrustedWebActivityBrowserControlsVisibilityManager {
+public class TrustedWebActivityBrowserControlsVisibilityManager
+        implements DesktopWindowStateManager.AppHeaderObserver {
     static final @BrowserControlsState int DEFAULT_BROWSER_CONTROLS_STATE =
             BrowserControlsState.BOTH;
 
@@ -32,10 +34,12 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabToolbarCoordinator mToolbarCoordinator;
     private final CloseButtonVisibilityManager mCloseButtonVisibilityManager;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
     private boolean mInAppMode;
-    private boolean mShowBrowserControlsInAppMode;
-    private boolean mShowBrowserControlsForChildTab;
+    private final boolean mShowBrowserControlsForChildTab;
+    private boolean mIsInDesktopWindow;
 
     private @BrowserControlsState int mBrowserControlsState = DEFAULT_BROWSER_CONTROLS_STATE;
 
@@ -59,16 +63,35 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
             CustomTabActivityTabProvider tabProvider,
             CustomTabToolbarCoordinator toolbarCoordinator,
             CloseButtonVisibilityManager closeButtonVisibilityManager,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
             BrowserServicesIntentDataProvider intentDataProvider) {
         mTabObserverRegistrar = tabObserverRegistrar;
         mTabProvider = tabProvider;
         mToolbarCoordinator = toolbarCoordinator;
         mCloseButtonVisibilityManager = closeButtonVisibilityManager;
+        mDesktopWindowStateManager = desktopWindowStateManager;
+        mIntentDataProvider = intentDataProvider;
 
-        WebappExtras webappExtras = intentDataProvider.getWebappExtras();
-        mShowBrowserControlsForChildTab = (webappExtras != null);
-        mShowBrowserControlsInAppMode =
-                (webappExtras != null && webappExtras.displayMode == DisplayMode.MINIMAL_UI);
+        mShowBrowserControlsForChildTab = (mIntentDataProvider.getWebappExtras() != null);
+        mIsInDesktopWindow = AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
+
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(this);
+        }
+    }
+
+    @Override
+    public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
+        if (mIsInDesktopWindow == isInDesktopWindow) return;
+        mIsInDesktopWindow = isInDesktopWindow;
+
+        if (!shouldShowWebAppControls()) return;
+        updateBrowserControlsState();
+        updateCloseButtonVisibility();
+    }
+
+    private boolean shouldShowWebAppControls() {
+        return mInAppMode && mIntentDataProvider.getResolvedDisplayMode() == DisplayMode.MINIMAL_UI;
     }
 
     /** Should be called when the browser enters and exits TWA mode. */
@@ -123,7 +146,10 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
             return BrowserControlsState.SHOWN;
         }
 
-        if (mInAppMode && mShowBrowserControlsInAppMode) {
+        // Fallback to browser controls in fullscreen mode when running WebAPK or shortcut web app.
+        if (mIntentDataProvider.isWebappOrWebApkActivity()
+                && shouldShowWebAppControls()
+                && !mIsInDesktopWindow) {
             return BrowserControlsState.BOTH;
         }
 
@@ -134,6 +160,13 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
 
     private boolean isChildTab(@Nullable Tab tab) {
         return tab != null && tab.getParentId() != Tab.INVALID_TAB_ID;
+    }
+
+    /** Clears up current instance. Can't be used after this method is called. */
+    public void destroy() {
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
+        }
     }
 
     @ConnectionSecurityLevel

@@ -221,7 +221,7 @@ void HTMLDialogElement::close(const String& return_value,
 
 void HTMLDialogElement::requestClose(const String& return_value,
                                      ExceptionState& exception_state) {
-  if (!IsOpen()) {
+  if (!IsOpenAndActive()) {
     return;
   }
   CHECK(close_watcher_);
@@ -270,7 +270,7 @@ const HTMLDialogElement* FindNearestDialog(const Node& target_node,
   // First check if this is a click on a dialog's backdrop, which will show up
   // as a click on the dialog directly.
   if (auto* dialog = DynamicTo<HTMLDialogElement>(target_node);
-      dialog && dialog->IsOpen() && dialog->IsModal()) {
+      dialog && dialog->IsOpenAndActive() && dialog->IsModal()) {
     DOMRect* dialog_rect =
         const_cast<HTMLDialogElement*>(dialog)->GetBoundingClientRect();
     if (!dialog_rect->IsPointInside(pointer_event.clientX(),
@@ -282,7 +282,7 @@ const HTMLDialogElement* FindNearestDialog(const Node& target_node,
   for (const Node* node = &target_node; node;
        node = FlatTreeTraversal::Parent(*node)) {
     if (auto* dialog = DynamicTo<HTMLDialogElement>(node);
-        dialog && dialog->IsOpen()) {
+        dialog && dialog->IsOpenAndActive()) {
       return dialog;
     }
   }
@@ -357,7 +357,7 @@ bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
     return false;
   }
 
-  bool open = IsOpen();
+  bool open = IsOpenAndActive();
   String return_value;
 
   if (command == CommandEventType::kClose ||
@@ -492,7 +492,7 @@ class DialogCloseWatcherEventListener : public NativeEventListener {
 };
 
 void HTMLDialogElement::SetCloseWatcherEnabledState() {
-  if (!IsOpen()) {
+  if (!IsOpenAndActive()) {
     return;
   }
   CHECK(close_watcher_);
@@ -506,7 +506,7 @@ void HTMLDialogElement::CreateCloseWatcher() {
   if (!window) {
     return;
   }
-  CHECK(IsOpen());
+  CHECK(IsOpenAndActive());
   CHECK(window->GetFrame());
   close_watcher_ = CloseWatcher::Create(*window);
   CHECK(close_watcher_);
@@ -728,7 +728,7 @@ void HTMLDialogElement::Trace(Visitor* visitor) const {
 void HTMLDialogElement::AttributeChanged(
     const AttributeModificationParams& params) {
   HTMLElement::AttributeChanged(params);
-  if (params.name == html_names::kClosedbyAttr && IsOpen() && isConnected() &&
+  if (params.name == html_names::kClosedbyAttr && IsOpenAndActive() &&
       params.old_value != params.new_value) {
     SetCloseWatcherEnabledState();
   }

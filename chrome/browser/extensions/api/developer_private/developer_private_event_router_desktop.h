@@ -5,23 +5,19 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_DESKTOP_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_DESKTOP_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router_shared.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
-#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/common/command.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
 
 class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
                                     public AppWindowRegistry::Observer,
-                                    public CommandService::Observer,
                                     public ToolbarActionsModel::Observer,
                                     public AccountExtensionTracker::Observer {
  public:
@@ -38,12 +34,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   void OnAppWindowAdded(AppWindow* window) override;
   void OnAppWindowRemoved(AppWindow* window) override;
 
-  // CommandService::Observer:
-  void OnExtensionCommandAdded(const ExtensionId& extension_id,
-                               const Command& added_command) override;
-  void OnExtensionCommandRemoved(const ExtensionId& extension_id,
-                                 const Command& removed_command) override;
-
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override {}
   void OnToolbarActionRemoved(
@@ -59,8 +49,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
 
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       app_window_registry_observation_{this};
-  base::ScopedObservation<CommandService, CommandService::Observer>
-      command_service_observation_{this};
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_actions_model_observation_{this};
   base::ScopedObservation<AccountExtensionTracker,

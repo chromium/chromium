@@ -76,7 +76,7 @@ class AppWindowContents {
   // Called when the native window changes.
   virtual void NativeWindowChanged(NativeAppWindow* native_app_window) = 0;
 
-  // Called when the native window closes. |send_onclosed| is flag to indicate
+  // Called when the native window closes. `send_onclosed` is flag to indicate
   // whether the OnClosed event should be sent. It is true except when the
   // native window is closed before AppWindowCreateFunction responds.
   virtual void NativeWindowClosed(bool send_onclosed) = 0;
@@ -267,8 +267,8 @@ class AppWindow : public content::WebContentsDelegate,
   // is on startup and from within UpdateWindowTitle().
   std::u16string GetTitle() const;
 
-  // |callback| will be called when the first navigation was completed or window
-  // is closed before that. |did_finish| argument of the |callback| is set to
+  // `callback` will be called when the first navigation was completed or window
+  // is closed before that. `did_finish` argument of the `callback` is set to
   // true for the former case and false for the latter.
   using DidFinishFirstNavigationCallback =
       base::OnceCallback<void(bool did_finish)>;
@@ -292,20 +292,20 @@ class AppWindow : public content::WebContentsDelegate,
   // Specifies a url for the launcher icon.
   void SetAppIconUrl(const GURL& icon_url);
 
-  // Sets the window shape. Passing a nullptr |rects| sets the default shape.
+  // Sets the window shape. Passing a nullptr `rects` sets the default shape.
   void UpdateShape(std::unique_ptr<ShapeRects> rects);
 
   // Notify hat an app window is ready and can resume resource requests.
   void AppWindowReady();
 
-  // Updates the app image to |image|. Called internally from the image loader
+  // Updates the app image to `image`. Called internally from the image loader
   // callback.
   void UpdateAppIcon(const gfx::Image& image);
 
-  // Enable or disable fullscreen mode. |type| specifies which type of
+  // Enable or disable fullscreen mode. `type` specifies which type of
   // fullscreen mode to change (note that disabling one type of fullscreen may
   // not exit fullscreen mode because a window may have a different type of
-  // fullscreen enabled). If |type| is not FORCED, checks that the extension has
+  // fullscreen enabled). If `type` is not FORCED, checks that the extension has
   // the required permission.
   void SetFullscreen(FullscreenType type, bool enable);
 
@@ -365,7 +365,7 @@ class AppWindow : public content::WebContentsDelegate,
   // may be false if the bit is silently switched off for security reasons.
   bool IsAlwaysOnTop() const;
 
-  // Restores the always-on-top property according to |cached_always_on_top_|.
+  // Restores the always-on-top property according to `cached_always_on_top_`.
   void RestoreAlwaysOnTop();
 
   // Retrieve the current state of the app window as a dictionary, to pass to
@@ -518,7 +518,7 @@ class AppWindow : public content::WebContentsDelegate,
       override;
 
   // Starts custom app icon download. To avoid race condition with loading app
-  // itself it is started in case |app_icon_url_| is set and app window is
+  // itself it is started in case `app_icon_url_` is set and app window is
   // ready.
   void StartAppIconDownload();
 
@@ -576,7 +576,7 @@ class AppWindow : public content::WebContentsDelegate,
   // by the chrome.app.window API, not in an operating system context. For
   // example windows which are minimized are not hidden, and windows which are
   // part of a hidden app on OS X are not hidden. Windows which were created
-  // with the |hidden| flag set to true, or which have been programmatically
+  // with the `hidden` flag set to true, or which have been programmatically
   // hidden, are considered hidden.
   bool is_hidden_ = false;
 
@@ -587,13 +587,13 @@ class AppWindow : public content::WebContentsDelegate,
   // taskbar.
   bool cached_always_on_top_ = false;
 
-  // Whether |alpha_enabled| was set in the CreateParams.
+  // Whether `alpha_enabled` was set in the CreateParams.
   bool requested_alpha_enabled_ = false;
 
-  // Whether |is_ime_window| was set in the CreateParams.
+  // Whether `is_ime_window` was set in the CreateParams.
   bool is_ime_window_ = false;
 
-  // Whether |show_in_shelf| was set in the CreateParams.
+  // Whether `show_in_shelf` was set in the CreateParams.
   bool show_in_shelf_ = false;
 
   // Whether the app window is loaded and ready. It is used to resolve the

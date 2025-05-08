@@ -7,6 +7,24 @@ import "chrome_os_enterprise_options.proto";
 
 option optimize_for = LITE_RUNTIME;
 
+// Request info for a host instance running on a managed Chrome OS device.
+message GetManagedChromeOsHostRequest {
+  // The unique identifier for the host being requested.
+  optional string support_id = 1;
+
+  // The Chrome OS version this request was made from.
+  optional string client_os_version = 2;
+}
+
+// The response to a GetManagedChromeOsHostRequest.
+message GetManagedChromeOsHostResponse {
+  // The connection info for the host associated with the given support_id.
+  optional HostInfo chrome_os_host = 1;
+
+  // The set of options for this Chrome OS session.
+  optional ChromeOsEnterpriseOptions chrome_os_enterprise_options = 2;
+}
+
 // Request host info for a specific support host instance.
 message GetSupportHostRequest {
   // The unique identifier for the host being requested.

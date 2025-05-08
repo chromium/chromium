@@ -256,11 +256,11 @@ class MetricsPrivateGetHistogramFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   // Sends an asynchronous response containing data for the histogram named
-  // |name|. Passed to content::FetchHistogramsAsynchronously() to be run after
+  // `name`. Passed to content::FetchHistogramsAsynchronously() to be run after
   // new data from other processes has been collected.
   void RespondOnHistogramsFetched(const std::string& name);
 
-  // Creates a response with current data for the histogram named |name|.
+  // Creates a response with current data for the histogram named `name`.
   ResponseValue GetHistogram(const std::string& name);
 };
 

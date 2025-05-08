@@ -73,7 +73,9 @@ constexpr DataType IMPORTANT_SITES_DATA_TYPES =
 constexpr DataType FILTERABLE_DATA_TYPES =
     DATA_TYPE_SITE_DATA | content::BrowsingDataRemover::DATA_TYPE_CACHE |
     content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
-    content::BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS;
+    content::BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS |
+    content::BrowsingDataRemover::DATA_TYPE_PREFETCH_CACHE |
+    content::BrowsingDataRemover::DATA_TYPE_PRERENDER_CACHE;
 
 // Datatypes with account-scoped data that needs to be removed
 // before Google cookies are deleted.

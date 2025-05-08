@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/sync/base/data_type.h"
@@ -30,13 +31,18 @@
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "ui/base/models/tree_node_iterator.h"
 
-using syncer::EntityData;
-using syncer::UpdateResponseData;
-using syncer::UpdateResponseDataList;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
+#include "components/sync_bookmarks/bookmark_model_merger_comparison_metrics.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_CHROMEOS)
 
 namespace sync_bookmarks {
 
 namespace {
+
+using syncer::EntityData;
+using syncer::UpdateResponseData;
+using syncer::UpdateResponseDataList;
 
 static const size_t kInvalidIndex = -1;
 
@@ -58,6 +64,14 @@ static const size_t kInvalidIndex = -1;
 const char kBookmarkBarTag[] = "bookmark_bar";
 const char kMobileBookmarksTag[] = "synced_bookmarks";
 const char kOtherBookmarksTag[] = "other_bookmarks";
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
+// Enabled by default, intended as a kill switch.
+BASE_FEATURE(kSyncRecordBookmarkComparisonMetrics,
+             "SyncRecordBookmarkComparisonMetrics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_CHROMEOS)
 
 // Maximum depth to sync bookmarks tree to protect against stack overflow.
 // Keep in sync with |base::internal::kAbsoluteMaxDepth| in json_common.h.
@@ -549,7 +563,10 @@ BookmarkModelMerger::BookmarkModelMerger(
     : bookmark_model_(bookmark_model),
       favicon_service_(favicon_service),
       bookmark_tracker_(bookmark_tracker),
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
       previously_syncing_gaia_id_info_(previously_syncing_gaia_id_info),
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_CHROMEOS)
       remote_updates_size_(updates.size()),
       remote_forest_(BuildRemoteForest(std::move(updates), bookmark_tracker)),
       uuid_to_match_map_(
@@ -574,12 +591,22 @@ BookmarkModelMerger::~BookmarkModelMerger() = default;
 void BookmarkModelMerger::Merge() {
   TRACE_EVENT0("sync", "BookmarkModelMerger::Merge");
 
+  // These metrics are only recorded on desktop platforms, so there is no need
+  // to increase the binary size elsewhere.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
   if (previously_syncing_gaia_id_info_ !=
       syncer::PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified) {
+    if (base::FeatureList::IsEnabled(kSyncRecordBookmarkComparisonMetrics)) {
+      metrics::CompareBookmarkModelAndLogHistograms(
+          *bookmark_model_, remote_forest_, previously_syncing_gaia_id_info_);
+    }
+
     base::UmaHistogramEnumeration(
         "Sync.BookmarkModelMerger.PreviouslySyncingGaiaId",
         previously_syncing_gaia_id_info_);
   }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_CHROMEOS)
 
   // Algorithm description:
   // Match up the roots and recursively do the following:

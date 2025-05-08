@@ -116,9 +116,9 @@ bool PageNodeImpl::IsVisible() const {
   return is_visible_.value();
 }
 
-base::TimeDelta PageNodeImpl::GetTimeSinceLastVisibilityChange() const {
+base::TimeTicks PageNodeImpl::GetLastVisibilityChangeTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::TimeTicks::Now() - visibility_change_time_;
+  return visibility_change_time_;
 }
 
 bool PageNodeImpl::IsAudible() const {
@@ -258,7 +258,12 @@ uint64_t PageNodeImpl::EstimatePrivateFootprintSize() const {
   return total;
 }
 
-base::WeakPtr<PageNodeImpl> PageNodeImpl::GetWeakPtr() {
+base::WeakPtr<PageNode> PageNodeImpl::GetWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_factory_.GetWeakPtr();
+}
+
+base::WeakPtr<const PageNode> PageNodeImpl::GetWeakPtr() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }

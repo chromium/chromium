@@ -263,9 +263,9 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         expectation_map = data_types.WebTestTestExpectationMap()
 
         pass_map = _CreateEmptyPassMap()
-        pass_map[FULL_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+        pass_map[FULL_PASS]['chromium/ci:linux-blink-asan-rel'] = (
             common_data_types.StepBuildStatsMap())
-        pass_map[FULL_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+        pass_map[FULL_PASS]['chromium/ci:linux-blink-msan-rel'] = (
             common_data_types.StepBuildStatsMap())
         pass_map[NEVER_PASS]['Some Bot'] = (
             common_data_types.StepBuildStatsMap())
@@ -273,9 +273,9 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
             expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
 
         pass_map = _CreateEmptyPassMap()
-        pass_map[FULL_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+        pass_map[FULL_PASS]['chromium/ci:linux-blink-asan-rel'] = (
             common_data_types.StepBuildStatsMap())
-        pass_map[FULL_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+        pass_map[FULL_PASS]['chromium/ci:linux-blink-msan-rel'] = (
             common_data_types.StepBuildStatsMap())
         pass_map[PARTIAL_PASS]['Some Bot'] = (
             common_data_types.StepBuildStatsMap())
@@ -288,9 +288,9 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         expectation_map = data_types.WebTestTestExpectationMap()
 
         pass_map = _CreateEmptyPassMap()
-        pass_map[FULL_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+        pass_map[FULL_PASS]['chromium/ci:linux-blink-asan-rel'] = (
             common_data_types.StepBuildStatsMap())
-        pass_map[FULL_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+        pass_map[FULL_PASS]['chromium/ci:linux-blink-msan-rel'] = (
             common_data_types.StepBuildStatsMap())
         self.assertFalse(
             expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
@@ -300,17 +300,17 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         expectation_map = data_types.WebTestTestExpectationMap()
 
         pass_map = _CreateEmptyPassMap()
-        pass_map[FULL_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+        pass_map[FULL_PASS]['chromium/ci:linux-blink-asan-rel'] = (
             common_data_types.StepBuildStatsMap())
-        pass_map[NEVER_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+        pass_map[NEVER_PASS]['chromium/ci:linux-blink-msan-rel'] = (
             common_data_types.StepBuildStatsMap())
         self.assertTrue(
             expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
 
         pass_map = _CreateEmptyPassMap()
-        pass_map[NEVER_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+        pass_map[NEVER_PASS]['chromium/ci:linux-blink-asan-rel'] = (
             common_data_types.StepBuildStatsMap())
-        pass_map[FULL_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+        pass_map[FULL_PASS]['chromium/ci:linux-blink-msan-rel'] = (
             common_data_types.StepBuildStatsMap())
         self.assertTrue(
             expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
@@ -320,9 +320,9 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         expectation_map = data_types.WebTestTestExpectationMap()
 
         pass_map = _CreateEmptyPassMap()
-        pass_map[FULL_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+        pass_map[FULL_PASS]['chromium/ci:linux-blink-asan-rel'] = (
             common_data_types.StepBuildStatsMap())
-        pass_map[FULL_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+        pass_map[FULL_PASS]['chromium/ci:linux-blink-msan-rel'] = (
             common_data_types.StepBuildStatsMap())
         pass_map[FULL_PASS]['Foo Bot'] = common_data_types.StepBuildStatsMap()
         pass_map[NEVER_PASS]['Some Bot'] = (

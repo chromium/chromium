@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"

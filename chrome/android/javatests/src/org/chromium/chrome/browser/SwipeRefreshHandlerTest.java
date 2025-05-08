@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -63,6 +66,9 @@ public class SwipeRefreshHandlerTest {
     private OnRefreshListener mOnRefreshListener;
     private OnResetListener mOnResetListener;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private SwipeRefreshHandler mHandler;
+
     private final SwipeRefreshHandler.SwipeRefreshLayoutCreator mSwipeRefreshLayoutCreator =
             context -> {
                 mSwipeRefreshLayout = mock();
@@ -87,14 +93,18 @@ public class SwipeRefreshHandlerTest {
         when(mTab.getContext()).thenReturn(activityTestRule.getActivity());
         when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
         when(mTab.getContentView()).thenReturn(mock());
+
+        // Limited use of spy() so we can test actual object, while changing some behaviors
+        // dynamically (such as whether mouse is attached or not)
+        mHandler = spy(SwipeRefreshHandler.from(mTab, mSwipeRefreshLayoutCreator));
+        mHandler.initWebContents(mock()); // Needed to enable the overscroll refresh handler.
+        doReturn(true).when(mHandler).isRefreshOnOverscrollSupported(); // Default no mouse/touchpad
     }
 
     @Test
     @SmallTest
     public void testAccessibilityAnnouncement() {
-        var handler = SwipeRefreshHandler.from(mTab, mSwipeRefreshLayoutCreator);
-        handler.initWebContents(mock()); // Needed to enable the overscroll refresh handler.
-        triggerRefresh(handler);
+        triggerRefresh(mHandler);
 
         InOrder orderVerifier = inOrder(mSwipeRefreshLayout);
         orderVerifier
@@ -104,17 +114,25 @@ public class SwipeRefreshHandlerTest {
                 .verify(mSwipeRefreshLayout, times(1))
                 .setContentDescription(sAccessibilitySwipeRefreshString);
 
-        reset(handler);
+        reset(mHandler);
 
         orderVerifier.verify(mSwipeRefreshLayout, times(1)).setContentDescription(null);
+    }
+
+    /** Ensures that we do not trigger refresh if precision pointing device is attached */
+    @Test
+    @SmallTest
+    public void testOverscrollButNoRefresh() {
+        doReturn(false).when(mHandler).isRefreshOnOverscrollSupported(); // pointer device attached
+        triggerRefresh(mHandler);
+        // When refresh is NOT triggered, then refresh layout is NOT created
+        assertNull(mSwipeRefreshLayout);
     }
 
     @Test
     @SmallTest
     public void testAccessibilityAnnouncement_swipingASecondTime() {
-        var handler = SwipeRefreshHandler.from(mTab, mSwipeRefreshLayoutCreator);
-        handler.initWebContents(mock()); // Needed to enable the overscroll refresh handler.
-        triggerRefresh(handler);
+        triggerRefresh(mHandler);
 
         var firstSwipeRefreshLayout = mSwipeRefreshLayout;
 
@@ -126,11 +144,11 @@ public class SwipeRefreshHandlerTest {
                 .verify(firstSwipeRefreshLayout, times(1))
                 .setContentDescription(sAccessibilitySwipeRefreshString);
 
-        reset(handler);
+        reset(mHandler);
 
         orderVerifier.verify(mSwipeRefreshLayout, times(1)).setContentDescription(null);
 
-        triggerRefresh(handler);
+        triggerRefresh(mHandler);
 
         var secondSwipeRefreshLayout = mSwipeRefreshLayout;
 

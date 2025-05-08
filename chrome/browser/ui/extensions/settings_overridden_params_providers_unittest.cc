@@ -55,7 +55,7 @@ class SettingsOverriddenParamsProvidersUnitTest
                             std::move(chrome_url_overrides))
             .Build();
 
-    registrar()->AddExtension(extension.get());
+    registrar()->AddExtension(extension);
     EXPECT_EQ(extension, ExtensionWebUI::GetExtensionControllingURL(
                              GURL(chrome::kChromeUINewTabURL), profile()));
 
@@ -73,7 +73,7 @@ TEST_F(SettingsOverriddenParamsProvidersUnitTest,
   // still be no controlling extension.
   scoped_refptr<const extensions::Extension> regular_extension =
       extensions::ExtensionBuilder("regular").Build();
-  registrar()->AddExtension(regular_extension.get());
+  registrar()->AddExtension(regular_extension);
   EXPECT_EQ(std::nullopt,
             settings_overridden_params::GetNtpOverriddenParams(profile()));
 

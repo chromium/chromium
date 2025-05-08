@@ -317,8 +317,10 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
         if (!mEnableServiceGroupImportance) return;
 
         if (!connection.shouldBeInLowRankGroup()) {
-            if (connection.connection.getGroup() != NO_GROUP) {
-                connection.connection.updateGroupImportance(NO_GROUP, 0);
+            if (connection.connection.getGroup() != NO_GROUP
+                    && connection.connection.updateGroupImportance(NO_GROUP, 0)) {
+                // Rebind a service binding to apply the group importance change.
+                connection.connection.rebind();
             }
             return;
         }
@@ -349,9 +351,15 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
         // If gap is small, use average.
         // If there is no room left, reshuffle everything.
         if (gap > 2 * FROM_RIGHT) {
-            connection.connection.updateGroupImportance(LOW_RANK_GROUP, right - FROM_RIGHT);
+            if (connection.connection.updateGroupImportance(LOW_RANK_GROUP, right - FROM_RIGHT)) {
+                // Rebind a service binding to apply the group importance change.
+                connection.connection.rebind();
+            }
         } else if (gap > 2) {
-            connection.connection.updateGroupImportance(LOW_RANK_GROUP, left + gap / 2);
+            if (connection.connection.updateGroupImportance(LOW_RANK_GROUP, left + gap / 2)) {
+                // Rebind a service binding to apply the group importance change.
+                connection.connection.rebind();
+            }
         } else {
             reshuffleGroupImportance();
         }
@@ -362,11 +370,23 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
 
     private void reshuffleGroupImportance() {
         int importance = Integer.MAX_VALUE - FROM_RIGHT;
+        ConnectionWithRank lastUpdatedConnection = null;
         for (int i = mRankings.size() - 1; i >= 0; --i) {
             ConnectionWithRank connection = mRankings.get(i);
             if (!connection.shouldBeInLowRankGroup()) break;
-            connection.connection.updateGroupImportance(LOW_RANK_GROUP, importance);
+            if (connection.connection.updateGroupImportance(LOW_RANK_GROUP, importance)) {
+                if (ContentFeatureList.sGroupRebindingForGroupImportance.isEnabled()) {
+                    lastUpdatedConnection = connection;
+                } else {
+                    // Rebind a service binding to apply the group importance change.
+                    connection.connection.rebind();
+                }
+            }
             importance -= FROM_RIGHT;
+        }
+        if (lastUpdatedConnection != null) {
+            // Rebind a service connection in the group to apply the group importance changes.
+            lastUpdatedConnection.connection.rebind();
         }
     }
 

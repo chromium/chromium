@@ -4,7 +4,6 @@
 
 #include "mojo/public/cpp/bindings/lib/send_message_helper.h"
 
-#include <cstring>
 #include <tuple>
 
 #include "base/trace_event/typed_macros.h"

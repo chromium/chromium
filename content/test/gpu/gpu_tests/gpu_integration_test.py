@@ -1197,6 +1197,7 @@ class GpuIntegrationTest(
       return cls._cached_platform_tags
 
     tags = super(GpuIntegrationTest, cls).GetPlatformTags(browser)
+    AddMemoryTags(tags)
     system_info = browser.GetSystemInfo()
     if system_info:
       gpu_tags = []
@@ -1394,6 +1395,24 @@ class GpuIntegrationTest(
     expectation file lives in a third party repo.
     """
     return gpu_path_util.CHROMIUM_SRC_DIR
+
+
+def AddMemoryTags(tags: list[str]) -> None:
+  """Adds typ tags related to system memory.
+
+  Args:
+    tags: A list of existing tags. Will be modified in place.
+  """
+  # We only add memory tags for non-remote platforms.
+  if not any(t in tags for t in ('linux', 'mac', 'win')):
+    return
+
+  systemMemory = host_information.GetSystemMemoryBytes()
+  gigabyte = 1_000_000_000
+  if systemMemory >= 16 * gigabyte:
+    tags.append('memory_ge_16gb')
+  else:
+    tags.append('memory_lt_16gb')
 
 
 def _PreemptArguments(browser_options: bo.BrowserOptions,

@@ -236,12 +236,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Sign in with a managed identity.
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [SigninEarlGrey
-        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
-  } else {
-    [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
-  }
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
 
   // Turn off "Allow Chrome Sign-in" feature, which prompts the user with a

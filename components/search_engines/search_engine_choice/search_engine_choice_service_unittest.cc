@@ -683,6 +683,36 @@ TEST_F(SearchEngineChoiceServiceTest,
       kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 }
 
+// Tests if choice screen completion date is not recorded if last choice date is
+// unknown.
+TEST_F(SearchEngineChoiceServiceTest, IgnoresChoiceScreenCompletionDateRecord) {
+  base::HistogramTester histogram_tester;
+  search_engine_choice_service();
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceCompletedOnMonthHistogram, 0);
+}
+
+// Tests if choice screen completion date is recorded.
+TEST_F(SearchEngineChoiceServiceTest,
+       RecordsChoiceScreenCompletionDateHistogram) {
+  base::HistogramTester histogram_tester;
+
+  // April 18, 2025, 13:30 Europe/Warsaw. What is specific about this timestamp
+  // (in windows epoch seconds) is that in every known timezone,
+  // this was April 2025.
+  int64_t windows_epoch_timestamp = 13388103000;
+
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion, "1.0.0.0");
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      windows_epoch_timestamp);
+
+  search_engine_choice_service();
+  histogram_tester.ExpectUniqueSample(
+      kSearchEngineChoiceCompletedOnMonthHistogram, 202504, 1);
+}
+
 // Test that the user is not reprompted if the reprompt parameter is not a valid
 // JSON string.
 TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {
@@ -844,6 +874,7 @@ struct DeviceRestoreTestParam {
   bool restore_detected_in_current_session;
   bool choice_predates_restore;
   bool is_feature_enabled;
+  bool is_invalidation_retroactive;
   bool expect_choice_info_wipe;
 };
 
@@ -853,30 +884,14 @@ class SearchEngineChoiceServiceDeviceRestoreTest
  public:
   SearchEngineChoiceServiceDeviceRestoreTest() {
     if (GetParam().is_feature_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
+          {{switches::kInvalidateChoiceOnRestoreIsRetroactive.name,
+            GetParam().is_invalidation_retroactive ? "true" : "false"}});
     } else {
       scoped_feature_list_.InitAndDisableFeature(
           switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
     }
-  }
-
-  void PopulateLazyFactories(
-      SearchEnginesTestEnvironment::ServiceFactories& lazy_factories,
-      InitServiceArgs args) override {
-    lazy_factories.search_engine_choice_service_factory =
-        base::BindLambdaForTesting(
-            [args](SearchEnginesTestEnvironment& environment) {
-              return std::make_unique<SearchEngineChoiceService>(
-                  std::make_unique<FakeSearchEngineChoiceServiceClient>(
-                      args.variation_country_id,
-                      args.is_profile_eligible_for_dse_guest_propagation,
-                      GetParam().restore_detected_in_current_session,
-                      GetParam().choice_predates_restore),
-                  environment.pref_service(), &environment.local_state(),
-                  environment.regional_capabilities_service(),
-                  environment.prepopulate_data_resolver());
-            });
   }
 
   static std::string GetTestSuffix(
@@ -896,21 +911,31 @@ INSTANTIATE_TEST_SUITE_P(
                                .restore_detected_in_current_session = true,
                                .choice_predates_restore = true,
                                .is_feature_enabled = true,
+                               .is_invalidation_retroactive = false,
+                               .expect_choice_info_wipe = true},
+        DeviceRestoreTestParam{.test_suffix = "WipeForRetroactiveDetection",
+                               .restore_detected_in_current_session = false,
+                               .choice_predates_restore = true,
+                               .is_feature_enabled = true,
+                               .is_invalidation_retroactive = true,
                                .expect_choice_info_wipe = true},
         DeviceRestoreTestParam{.test_suffix = "NoWipeForLateDetection",
                                .restore_detected_in_current_session = false,
                                .choice_predates_restore = true,
                                .is_feature_enabled = true,
+                               .is_invalidation_retroactive = false,
                                .expect_choice_info_wipe = false},
         DeviceRestoreTestParam{.test_suffix = "NoWipeForNewChoice",
                                .restore_detected_in_current_session = true,
                                .choice_predates_restore = false,
                                .is_feature_enabled = true,
+                               .is_invalidation_retroactive = false,
                                .expect_choice_info_wipe = false},
         DeviceRestoreTestParam{.test_suffix = "NoWipeForFeatureDisabled",
                                .restore_detected_in_current_session = true,
                                .choice_predates_restore = true,
                                .is_feature_enabled = false,
+                               .is_invalidation_retroactive = false,
                                .expect_choice_info_wipe = false},
     }),
     &SearchEngineChoiceServiceDeviceRestoreTest::GetTestSuffix);
@@ -923,7 +948,12 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
                               {base::Time::Now(), base::Version("1.0.0.0")});
 
   // Trigger the creation of the service, which should check for the reprompt.
-  search_engine_choice_service();
+  InitService({
+      .force_reset = true,
+      .restore_detected_in_current_session =
+          GetParam().restore_detected_in_current_session,
+      .choice_predates_restore = GetParam().choice_predates_restore,
+  });
 
   if (GetParam().expect_choice_info_wipe) {
     EXPECT_FALSE(pref_service()->HasPrefPath(
@@ -1157,35 +1187,5 @@ constexpr RepromptTestParam kRepromptTestParams[] = {
 INSTANTIATE_TEST_SUITE_P(,
                          SearchEngineChoiceUtilsParamTest,
                          ::testing::ValuesIn(kRepromptTestParams));
-
-#if !BUILDFLAG(IS_ANDROID)
-
-class SearchEngineChoiceUtilsResourceIdsTest : public ::testing::Test {
- protected:
-  SearchEnginesTestEnvironment search_engine_test_environment_;
-};
-
-// Verifies that all prepopulated search engines associated with EEA countries
-// have an icon.
-TEST_F(SearchEngineChoiceUtilsResourceIdsTest, GetIconResourceId) {
-  // Make sure the country is not forced.
-  ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kSearchEngineChoiceCountry));
-
-  for (CountryId country_id : regional_capabilities::kEeaChoiceCountriesIds) {
-    search_engine_test_environment_.pref_service().SetInteger(
-        country_codes::kCountryIDAtInstall, country_id.Serialize());
-    std::vector<std::unique_ptr<TemplateURLData>> urls =
-        search_engine_test_environment_.prepopulate_data_resolver()
-            .GetPrepopulatedEngines();
-    for (const std::unique_ptr<TemplateURLData>& url : urls) {
-      EXPECT_GE(search_engines::GetIconResourceId(url->keyword()), 0)
-          << "Missing icon for " << url->keyword() << ". Try re-running "
-          << "`tools/search_engine_choice/generate_search_engine_icons.py`.";
-    }
-  }
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace search_engines

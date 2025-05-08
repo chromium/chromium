@@ -79,7 +79,7 @@ class ProbabilisticRevealTokenDataStorageTest : public testing::Test {
     static const char kCountSQL[] =
         "SELECT COUNT(*) FROM tokens WHERE public_key = ?";
     sql::Statement s(db.GetUniqueStatement(kCountSQL));
-    s.BindString(0, base::Base64Encode(public_key));
+    s.BindString(0, public_key);
     EXPECT_TRUE(s.Step());
     return s.ColumnInt(0);
   }
@@ -250,14 +250,16 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest, StoreTokenOutcome) {
 
   EXPECT_TRUE(db.Open(DbPath()));
   EXPECT_EQ(3u, CountTokenEntries(db));
-  EXPECT_EQ(1u, CountTokenEntriesOnPublicKey(db, "public_key"));
-  EXPECT_EQ(2u, CountTokenEntriesOnPublicKey(db, "public_key_2"));
+  EXPECT_EQ(1u, CountTokenEntriesOnPublicKey(
+                    db, "cHVibGljX2tleQ"));  // base64url_encode(public_key)
+  EXPECT_EQ(2u, CountTokenEntriesOnPublicKey(
+                    db, "cHVibGljX2tleV8y"));  // base64url_encode(public_key_2)
   EXPECT_EQ(1u, CountTokenEntriesWithBatchSize(db, outcome.tokens.size()));
   EXPECT_EQ(2u, CountTokenEntriesWithBatchSize(db, outcome2.tokens.size()));
-  EXPECT_EQ(
-      1u, CountTokenEntriesOnEpoch(db, "MDAwMDAwMDA"));  // base64url(00000000)
-  EXPECT_EQ(
-      2u, CountTokenEntriesOnEpoch(db, "MTExMTExMTE"));  // base64url(11111111)
+  EXPECT_EQ(1u, CountTokenEntriesOnEpoch(
+                    db, "MDAwMDAwMDA"));  // base64url_encode(00000000)
+  EXPECT_EQ(2u, CountTokenEntriesOnEpoch(
+                    db, "MTExMTExMTE"));  // base64url_encode(11111111)
   CloseDatabase();
 }
 

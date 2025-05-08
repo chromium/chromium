@@ -53,7 +53,9 @@ class CORE_EXPORT ModuleScriptFetcher : public ResourceClient {
   void Trace(Visitor*) const override;
 
  protected:
-  static bool WasModuleLoadSuccessful(
+  // The returned value is empty in case of failure, and contains
+  // the module type otherwise.
+  static std::optional<ResolvedModuleType> WasModuleLoadSuccessful(
       ScriptResource* resource,
       ModuleType expected_module_type,
       HeapVector<Member<ConsoleMessage>>* error_messages);

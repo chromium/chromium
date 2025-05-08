@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 
 namespace blink {
 
@@ -214,15 +215,14 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
     case kPseudoIdViewTransition:
       return nullptr;
     case kPseudoIdViewTransitionGroup: {
-      auto* pseudo_element = DynamicTo<PseudoElement>(node);
+      auto* pseudo_element = DynamicTo<ViewTransitionPseudoElementBase>(node);
       DCHECK(pseudo_element);
 
       // Iterate the list of IDs until we hit the entry for |node's| ID. The
       // sibling is the next ID in the list which generates a pseudo element.
       bool found = false;
-      for (const auto& view_transition_name : parent_element->GetDocument()
-                                                  .GetStyleEngine()
-                                                  .ViewTransitionTags()) {
+      for (const auto& view_transition_name :
+           pseudo_element->GetViewTransitionNames()) {
         if (!found) {
           if (view_transition_name == pseudo_element->view_transition_name())
             found = true;

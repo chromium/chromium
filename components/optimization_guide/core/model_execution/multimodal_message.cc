@@ -60,14 +60,14 @@ void MultimodalMessageEditView::Set(int tag, SkBitmap v) {
   MessageLite* nested_message = GetProtoMutableMessage(&message_.get(), tag);
   CHECK(nested_message);
   CHECK_EQ(nested_message->GetTypeName(), "optimization_guide.proto.Media");
-  overlay_->images.emplace(tag, std::move(v));
+  overlay_->images[tag] = std::move(v);
 }
 
 void MultimodalMessageEditView::Set(int tag, ml::AudioBuffer v) {
   MessageLite* nested_message = GetProtoMutableMessage(&message_.get(), tag);
   CHECK(nested_message);
   CHECK_EQ(nested_message->GetTypeName(), "optimization_guide.proto.Media");
-  overlay_->audio.emplace(tag, std::move(v));
+  overlay_->audio[tag] = std::move(v);
 }
 
 MultimodalMessageEditView MultimodalMessageEditView::GetMutableMessage(

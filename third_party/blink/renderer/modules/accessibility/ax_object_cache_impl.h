@@ -140,8 +140,10 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // aria-hidden and restore the subtree, then return the new AXObject.
   AXObject* EnsureFocusedObject();
 
-  const ui::AXMode& GetAXMode() override;
+  const ui::AXMode& GetAXMode() const override;
   void SetAXMode(const ui::AXMode&) override;
+  // Contact accessibility owners before using.
+  bool IsScreenReaderActive() const override;
 
   const AXObjectCacheLifecycle& lifecycle() const { return lifecycle_; }
 

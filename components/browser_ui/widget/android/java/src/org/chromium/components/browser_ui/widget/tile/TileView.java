@@ -130,4 +130,9 @@ public class TileView extends FrameLayout {
             mOnFocusViaSelectionListener.run();
         }
     }
+
+    /** Returns whether the tile can be moved using drag-and-drop. */
+    public boolean isDraggable() {
+        return false;
+    }
 }

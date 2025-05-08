@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.autofill.FieldType;
@@ -22,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.regex.Pattern;
 
 /** The locally stored autofill address. */
+@NullMarked
 public class AutofillAddress extends EditableOption {
     /** The pattern for a valid region code. */
     private static final String REGION_CODE_PATTERN = "^[A-Z]{2}$";
@@ -53,13 +57,13 @@ public class AutofillAddress extends EditableOption {
         int MAX_VALUE = 1 << 4;
     }
 
-    @Nullable private static Pattern sRegionCodePattern;
+    private @Nullable static Pattern sRegionCodePattern;
 
     private final Context mContext;
     private final PersonalDataManager mPersonalDataManager;
     private AutofillProfile mProfile;
-    @Nullable private String mShippingLabelWithCountry;
-    @Nullable private String mShippingLabelWithoutCountry;
+    private @Nullable String mShippingLabelWithCountry;
+    private @Nullable String mShippingLabelWithoutCountry;
 
     /**
      * Builds the autofill address.
@@ -135,7 +139,7 @@ public class AutofillAddress extends EditableOption {
         }
 
         mProfile.setLabel(mShippingLabelWithCountry);
-        updateSublabel(mProfile.getLabel());
+        updateSublabel(assumeNonNull(mProfile.getLabel()));
     }
 
     /**
@@ -152,7 +156,7 @@ public class AutofillAddress extends EditableOption {
         }
 
         mProfile.setLabel(mShippingLabelWithoutCountry);
-        updateSublabel(mProfile.getLabel());
+        updateSublabel(assumeNonNull(mProfile.getLabel()));
     }
 
     /**

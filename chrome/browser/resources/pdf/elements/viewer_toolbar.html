@@ -73,12 +73,12 @@ import {AnnotationMode} from '../constants.js';
             ?disabled="${!this.annotationAvailable}"
             title="$i18n{ink2Draw}"></cr-icon-button>
         <span class="vertical-separator"></span>
-        <cr-icon-button id="undo" ?disabled="${!this.canUndoAnnotation_}"
+        <cr-icon-button id="undo" ?disabled="${!this.computeEnableUndo_()}"
             iron-icon="pdf:undo"
             @click="${this.undo}"
             aria-label="$i18n{annotationUndo}"
             title="$i18n{annotationUndo}"></cr-icon-button>
-        <cr-icon-button id="redo" ?disabled="${!this.canRedoAnnotation_}"
+        <cr-icon-button id="redo" ?disabled="${!this.computeEnableRedo_()}"
             iron-icon="pdf:redo"
             @click="${this.redo}"
             aria-label="$i18n{annotationRedo}"

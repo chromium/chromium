@@ -84,8 +84,6 @@ class DistillerImpl : public Distiller {
 
   void SetMaxNumPagesInArticle(size_t max_num_pages);
 
-  static bool DoesFetchImages();
-
   DistillerImpl(const DistillerImpl&) = delete;
   DistillerImpl& operator=(const DistillerImpl&) = delete;
 

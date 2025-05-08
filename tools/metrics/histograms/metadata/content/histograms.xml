@@ -23,6 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="ContentAllProviderTypes">
+  <variant name="ComponentExtensionProvider"/>
   <variant name="CustomExtensionProvider"/>
   <variant name="DefaultProvider"/>
   <variant name="InstalledWebappProvider"/>
@@ -181,23 +182,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Provisional notifications were turned on from the Notifications Promo.
   </summary>
-</histogram>
-
-<histogram name="ContentNotifications.Promo.SetUpList.Action"
-    enum="ContentNotificationSetUpListPromoAction" expires_after="2026-01-20">
-  <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    The action taken by the user in response to the Set Up List Content
-    Notification promo.
-  </summary>
-</histogram>
-
-<histogram name="ContentNotifications.Promo.SetUpList.Event"
-    enum="ContentNotificationSetUpListPromoEvent" expires_after="2026-01-20">
-  <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>Log the Set Up List Content Notification promo events.</summary>
 </histogram>
 
 <histogram name="ContentNotifications.Promo.Snackbar.Event"
@@ -685,7 +669,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.{RegularProfileFiltered}DefaultRequestDesktopSiteSetting"
-    enum="ContentSetting" expires_after="2025-08-24">
+    enum="ContentSetting" expires_after="2025-10-26">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1160,7 +1144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.Duration{NetworkEvent}"
-    units="ms" expires_after="2025-08-24">
+    units="ms" expires_after="2025-10-26">
   <owner>sczs@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1321,7 +1305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UniformityFlag" enum="Boolean"
-    expires_after="2025-08-24">
+    expires_after="2025-10-26">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1738,7 +1722,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged"
-    enum="FeedSortType" expires_after="2025-08-31">
+    enum="FeedSortType" expires_after="2025-11-02">
   <owner>adamta@google.com</owner>
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>

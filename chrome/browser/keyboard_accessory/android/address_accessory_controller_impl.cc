@@ -20,8 +20,8 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
-#include "chrome/browser/ui/android/plus_addresses/plus_addresses_helper.h"
+#include "chrome/browser/ui/android/autofill/autofill_fallback_surface_launcher.h"
+#include "chrome/browser/ui/plus_addresses/android/all_plus_addresses_bottom_sheet_controller.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -205,7 +205,7 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
       }
       return;
     case AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
-      plus_addresses::ShowManagePlusAddressesPage(GetWebContents());
+      autofill::ShowManagePlusAddressesPage(GetWebContents());
       base::RecordAction(base::UserMetricsAction(
           "PlusAddresses.ManageOptionOnAddressManualFallbackSelected"));
       return;

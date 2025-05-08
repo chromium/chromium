@@ -123,14 +123,14 @@ public class AccountPickerDialogTest {
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         onView(withText(TestAccounts.ACCOUNT1.getFullName())).inRoot(isDialog()).perform(click());
-        verify(mListenerMock).onAccountSelected(TestAccounts.ACCOUNT1.getEmail());
+        verify(mListenerMock).onAccountSelected(TestAccounts.ACCOUNT1);
     }
 
     @Test
     @MediumTest
     public void testSelectNonDefaultAccount() {
         onView(withText(TestAccounts.ACCOUNT2.getEmail())).inRoot(isDialog()).perform(click());
-        verify(mListenerMock).onAccountSelected(TestAccounts.ACCOUNT2.getEmail());
+        verify(mListenerMock).onAccountSelected(TestAccounts.ACCOUNT2);
     }
 
     @Test

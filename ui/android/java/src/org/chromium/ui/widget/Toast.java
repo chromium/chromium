@@ -247,13 +247,14 @@ public class Toast {
 
     /**
      * Shows a toast anchored on a view.
+     *
      * @param context The context to use for the toast.
      * @param anchoredView The view to anchor the toast.
      * @param description The string shown in the toast.
      * @return Whether a toast has been shown successfully.
      */
     public static boolean showAnchoredToast(
-            Context context, View anchoredView, CharSequence description) {
+            Context context, View anchoredView, @Nullable CharSequence description) {
         return new Builder(context)
                 .withAnchoredView(anchoredView)
                 .withText(description)
@@ -274,7 +275,7 @@ public class Toast {
             mContext = context;
         }
 
-        public Builder withText(CharSequence text) {
+        public Builder withText(@Nullable CharSequence text) {
             mText = text;
             return this;
         }

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/chromeos/image_processor.h"
 
@@ -28,6 +24,7 @@
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -277,14 +274,16 @@ bool SupportsNecessaryGLExtension() {
   return ret;
 }
 
-scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
-                                          VideoFrame::StorageType type) {
+scoped_refptr<VideoFrame> CreateNV12Frame(
+    const gfx::Size& size,
+    VideoFrame::StorageType type,
+    gpu::TestSharedImageInterface* test_sii) {
   const gfx::Rect visible_rect(size);
   constexpr base::TimeDelta kNullTimestamp;
   if (type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    return CreateGpuMemoryBufferVideoFrame(
+    return CreateMappableVideoFrame(
         VideoPixelFormat::PIXEL_FORMAT_NV12, size, visible_rect, size,
-        kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+        kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii);
   } else {
     DCHECK(type == VideoFrame::STORAGE_DMABUFS);
     return CreatePlatformVideoFrame(VideoPixelFormat::PIXEL_FORMAT_NV12, size,
@@ -302,7 +301,8 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
             base::bits::AlignUp(static_cast<unsigned int>(size.height()),
                                 MM21_TILE_HEIGHT));
 
-  scoped_refptr<VideoFrame> ret = CreateNV12Frame(size, type);
+  scoped_refptr<VideoFrame> ret =
+      CreateNV12Frame(size, type, /*test_sii=*/nullptr);
   if (!ret) {
     LOG(ERROR) << "Failed to create MM21 frame";
     return nullptr;
@@ -741,11 +741,13 @@ TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
   scoped_refptr<VideoFrame> input_frame =
       CreateRandomMM21Frame(kTestImageSize, VideoFrame::STORAGE_DMABUFS);
   ASSERT_TRUE(input_frame) << "Error creating input frame";
-  scoped_refptr<VideoFrame> gl_output_frame =
-      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  scoped_refptr<VideoFrame> gl_output_frame = CreateNV12Frame(
+      kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii.get());
   ASSERT_TRUE(gl_output_frame) << "Error creating GL output frame";
-  scoped_refptr<VideoFrame> libyuv_output_frame =
-      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  scoped_refptr<VideoFrame> libyuv_output_frame = CreateNV12Frame(
+      kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii.get());
   ASSERT_TRUE(libyuv_output_frame) << "Error creating LibYUV output frame";
 
   int outstanding_processors = 2;

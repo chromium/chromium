@@ -423,9 +423,17 @@ void LoadStreamTask::ProcessNetworkResponse(
          feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER});
   }
 
-  loaded_new_content_from_network_ = true;
   content_ids_ =
       feedstore::GetContentIds(response_data.model_update_request->stream_data);
+
+  // Bail out if no card is received.
+  if (content_ids_.IsEmpty()) {
+    return RequestFinished(
+        {LoadStreamStatus::kNoCardReceived,
+         feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS});
+  }
+
+  loaded_new_content_from_network_ = true;
 
   stream_->GetStore().OverwriteStream(
       options_.stream_type,

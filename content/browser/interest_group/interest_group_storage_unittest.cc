@@ -2246,8 +2246,7 @@ TEST_P(InterestGroupStorageDualLifetimeTest, ViewClickStoreRetrieve_Basic) {
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_day);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_week);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
-            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_90_days);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
@@ -2340,8 +2339,7 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_day);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_week);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
-            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_90_days);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
@@ -2396,8 +2394,7 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_day);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_week);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
-            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_90_days);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
@@ -2432,8 +2429,7 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_day);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_week);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
-            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_90_days);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
@@ -2522,8 +2518,7 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_day);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_week);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
-            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_90_days);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
@@ -2594,8 +2589,7 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(2, view_and_click_counts->view_counts->past_day);
   EXPECT_EQ(2, view_and_click_counts->view_counts->past_week);
   EXPECT_EQ(2, view_and_click_counts->view_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 2 : 0,
-            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(2, view_and_click_counts->view_counts->past_90_days);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
@@ -2689,13 +2683,13 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(3, view_and_click_counts->view_counts->past_day);
   EXPECT_EQ(4, view_and_click_counts->view_counts->past_week);
   EXPECT_EQ(4, view_and_click_counts->view_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 6 : 0,
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 6 : 4,
             view_and_click_counts->view_counts->past_90_days);
   EXPECT_EQ(2, view_and_click_counts->click_counts->past_hour);
   EXPECT_EQ(4, view_and_click_counts->click_counts->past_day);
   EXPECT_EQ(4, view_and_click_counts->click_counts->past_week);
   EXPECT_EQ(6, view_and_click_counts->click_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 7 : 0,
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 7 : 6,
             view_and_click_counts->click_counts->past_90_days);
 }
 
@@ -2820,13 +2814,13 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(3, view_and_click_counts->view_counts->past_day);
   EXPECT_EQ(4, view_and_click_counts->view_counts->past_week);
   EXPECT_EQ(4, view_and_click_counts->view_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 6 : 0,
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 6 : 4,
             view_and_click_counts->view_counts->past_90_days);
   EXPECT_EQ(2, view_and_click_counts->click_counts->past_hour);
   EXPECT_EQ(4, view_and_click_counts->click_counts->past_day);
   EXPECT_EQ(4, view_and_click_counts->click_counts->past_week);
   EXPECT_EQ(6, view_and_click_counts->click_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 7 : 0,
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 7 : 6,
             view_and_click_counts->click_counts->past_90_days);
 
   // No maintenance run.
@@ -2947,14 +2941,12 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(2, view_and_click_counts->view_counts->past_day);
   EXPECT_EQ(2, view_and_click_counts->view_counts->past_week);
   EXPECT_EQ(2, view_and_click_counts->view_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 2 : 0,
-            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(2, view_and_click_counts->view_counts->past_90_days);
   EXPECT_EQ(1, view_and_click_counts->click_counts->past_hour);
   EXPECT_EQ(1, view_and_click_counts->click_counts->past_day);
   EXPECT_EQ(1, view_and_click_counts->click_counts->past_week);
   EXPECT_EQ(1, view_and_click_counts->click_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
-            view_and_click_counts->click_counts->past_90_days);
+  EXPECT_EQ(1, view_and_click_counts->click_counts->past_90_days);
 }
 
 TEST_P(InterestGroupStorageDualLifetimeTest,
@@ -3050,14 +3042,12 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
       EXPECT_EQ(view_count, view_and_click_counts->view_counts->past_day);
       EXPECT_EQ(view_count, view_and_click_counts->view_counts->past_week);
       EXPECT_EQ(view_count, view_and_click_counts->view_counts->past_30_days);
-      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? view_count : 0,
-                view_and_click_counts->view_counts->past_90_days);
+      EXPECT_EQ(view_count, view_and_click_counts->view_counts->past_90_days);
       EXPECT_EQ(click_count, view_and_click_counts->click_counts->past_hour);
       EXPECT_EQ(click_count, view_and_click_counts->click_counts->past_day);
       EXPECT_EQ(click_count, view_and_click_counts->click_counts->past_week);
       EXPECT_EQ(click_count, view_and_click_counts->click_counts->past_30_days);
-      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? click_count : 0,
-                view_and_click_counts->click_counts->past_90_days);
+      EXPECT_EQ(click_count, view_and_click_counts->click_counts->past_90_days);
     }
 
     // Now record kMaxEvents + 1 events of the second type. Only kMaxEvents get
@@ -3085,14 +3075,12 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
       EXPECT_EQ(kMaxEvents, view_and_click_counts->view_counts->past_day);
       EXPECT_EQ(kMaxEvents, view_and_click_counts->view_counts->past_week);
       EXPECT_EQ(kMaxEvents, view_and_click_counts->view_counts->past_30_days);
-      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents : 0,
-                view_and_click_counts->view_counts->past_90_days);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->view_counts->past_90_days);
       EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_hour);
       EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_day);
       EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_week);
       EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_30_days);
-      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents : 0,
-                view_and_click_counts->click_counts->past_90_days);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_90_days);
     }
 
     // (kViewClickEligibleOrigin1, kViewClickProviderOrigin1)'s currently rate
@@ -3114,14 +3102,13 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
       EXPECT_EQ(kMaxEvents + 1, view_and_click_counts->view_counts->past_week);
       EXPECT_EQ(kMaxEvents + 1,
                 view_and_click_counts->view_counts->past_30_days);
-      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents + 1 : 0,
+      EXPECT_EQ(kMaxEvents + 1,
                 view_and_click_counts->view_counts->past_90_days);
       EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_hour);
       EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_day);
       EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_week);
       EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_30_days);
-      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents : 0,
-                view_and_click_counts->click_counts->past_90_days);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_90_days);
     }
 
     {
@@ -3141,8 +3128,7 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
       EXPECT_EQ(1, view_and_click_counts->click_counts->past_day);
       EXPECT_EQ(1, view_and_click_counts->click_counts->past_week);
       EXPECT_EQ(1, view_and_click_counts->click_counts->past_30_days);
-      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
-                view_and_click_counts->click_counts->past_90_days);
+      EXPECT_EQ(1, view_and_click_counts->click_counts->past_90_days);
     }
 
     // Finally advance time. (kViewClickProviderOrigin1,
@@ -3165,14 +3151,14 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
       EXPECT_EQ(kMaxEvents + 2, view_and_click_counts->view_counts->past_week);
       EXPECT_EQ(kMaxEvents + 2,
                 view_and_click_counts->view_counts->past_30_days);
-      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents + 2 : 0,
+      EXPECT_EQ(kMaxEvents + 2,
                 view_and_click_counts->view_counts->past_90_days);
       EXPECT_EQ(kMaxEvents + 1, view_and_click_counts->click_counts->past_hour);
       EXPECT_EQ(kMaxEvents + 1, view_and_click_counts->click_counts->past_day);
       EXPECT_EQ(kMaxEvents + 1, view_and_click_counts->click_counts->past_week);
       EXPECT_EQ(kMaxEvents + 1,
                 view_and_click_counts->click_counts->past_30_days);
-      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents + 1 : 0,
+      EXPECT_EQ(kMaxEvents + 1,
                 view_and_click_counts->click_counts->past_90_days);
     }
 
@@ -3216,8 +3202,7 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(1, view_and_click_counts_cars->view_counts->past_day);
   EXPECT_EQ(1, view_and_click_counts_cars->view_counts->past_week);
   EXPECT_EQ(1, view_and_click_counts_cars->view_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
-            view_and_click_counts_cars->view_counts->past_90_days);
+  EXPECT_EQ(1, view_and_click_counts_cars->view_counts->past_90_days);
   EXPECT_EQ(0, view_and_click_counts_cars->click_counts->past_hour);
   EXPECT_EQ(0, view_and_click_counts_cars->click_counts->past_day);
   EXPECT_EQ(0, view_and_click_counts_cars->click_counts->past_week);
@@ -3235,8 +3220,7 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(1, view_and_click_counts_shoes->view_counts->past_day);
   EXPECT_EQ(1, view_and_click_counts_shoes->view_counts->past_week);
   EXPECT_EQ(1, view_and_click_counts_shoes->view_counts->past_30_days);
-  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
-            view_and_click_counts_shoes->view_counts->past_90_days);
+  EXPECT_EQ(1, view_and_click_counts_shoes->view_counts->past_90_days);
   EXPECT_EQ(0, view_and_click_counts_shoes->click_counts->past_hour);
   EXPECT_EQ(0, view_and_click_counts_shoes->click_counts->past_day);
   EXPECT_EQ(0, view_and_click_counts_shoes->click_counts->past_week);

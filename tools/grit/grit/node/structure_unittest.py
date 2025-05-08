@@ -36,7 +36,9 @@ def checkIsGzipped(filename, compress_attr):
       base_dir=test_data_root)
   node, = root.GetChildrenOfType(structure.StructureNode)
   node.RunPreSubstitutionGatherer()
-  compressed = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+  compressed = node.GetDataPackValue(lang='en',
+                                     gender=constants.DEFAULT_GENDER,
+                                     encoding=util.BINARY)
 
   decompressed_data = zlib.decompress(compressed, 16 + zlib.MAX_WBITS)
   expected = util.ReadFile(os.path.join(test_data_root, filename), util.BINARY)
@@ -57,7 +59,7 @@ class StructureUnittest(unittest.TestCase):
         </structures>''', base_dir=util.PathFromRoot('grit/testdata'))
     grd.SetOutputLanguage('fr')
     grd.RunGatherers()
-    transl = ''.join(rc.Format(grd, 'fr', '.'))
+    transl = ''.join(rc.Format(grd, 'fr', None, '.'))
     self.assertTrue(transl.count('040704') and transl.count('110978'))
     self.assertTrue(transl.count('2005",IDC_STATIC'))
 
@@ -151,7 +153,9 @@ class StructureUnittest(unittest.TestCase):
     brotli_util.SetBrotliCommand([sys.executable,
                                  os.path.join(os.path.dirname(__file__),
                                  'mock_brotli.py')])
-    compressed = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+    compressed = node.GetDataPackValue(lang='en',
+                                       gender=constants.DEFAULT_GENDER,
+                                       encoding=util.BINARY)
     # Assert that the first two bytes in compressed format is BROTLI_CONST.
     self.assertEqual(constants.BROTLI_CONST, compressed[0:2])
 
@@ -173,7 +177,9 @@ class StructureUnittest(unittest.TestCase):
         </structures>''', base_dir=test_data_root)
     node, = root.GetChildrenOfType(structure.StructureNode)
     node.RunPreSubstitutionGatherer()
-    data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+    data = node.GetDataPackValue(lang='en',
+                                 gender=constants.DEFAULT_GENDER,
+                                 encoding=util.BINARY)
 
     self.assertEqual(util.ReadFile(
         os.path.join(test_data_root, 'test_text.txt'), util.BINARY), data)
@@ -187,7 +193,9 @@ class StructureUnittest(unittest.TestCase):
                                     base_dir=test_data_root)
     node, = root.GetChildrenOfType(structure.StructureNode)
     node.RunPreSubstitutionGatherer()
-    data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+    data = node.GetDataPackValue(lang='en',
+                                 gender=constants.DEFAULT_GENDER,
+                                 encoding=util.BINARY)
 
     self.assertEqual(
         b'LOTTIE' + util.ReadFile(
@@ -202,7 +210,9 @@ class StructureUnittest(unittest.TestCase):
                                     base_dir=test_data_root)
     node, = root.GetChildrenOfType(structure.StructureNode)
     node.RunPreSubstitutionGatherer()
-    data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+    data = node.GetDataPackValue(lang='en',
+                                 gender=constants.DEFAULT_GENDER,
+                                 encoding=util.BINARY)
 
     self.assertEqual(b'LOTTIE', data[0:6])
     self.assertEqual(
@@ -224,7 +234,9 @@ class StructureUnittest(unittest.TestCase):
         sys.executable,
         os.path.join(os.path.dirname(__file__), 'mock_brotli.py')
     ])
-    data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+    data = node.GetDataPackValue(lang='en',
+                                 gender=constants.DEFAULT_GENDER,
+                                 encoding=util.BINARY)
 
     self.assertEqual(b'LOTTIE', data[0:6])
     self.assertEqual(constants.BROTLI_CONST, data[6:8])

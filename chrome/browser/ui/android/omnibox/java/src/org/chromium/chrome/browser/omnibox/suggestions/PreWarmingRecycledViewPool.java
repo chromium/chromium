@@ -62,7 +62,8 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     private boolean mStopCreatingViews;
     private final List<ViewHolder> mPrewarmedViews = new ArrayList<>(22);
 
-    PreWarmingRecycledViewPool(OmniboxSuggestionsDropdownAdapter adapter, Context context) {
+    PreWarmingRecycledViewPool(
+            @Nullable OmniboxSuggestionsDropdownAdapter adapter, Context context) {
         mAdapter = adapter;
         mHandler =
                 OmniboxFeatures.sAsyncViewInflation.isEnabled()
@@ -87,7 +88,6 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
         setMaxRecycledViews(OmniboxSuggestionUiType.HEADER, 4);
         setMaxRecycledViews(OmniboxSuggestionUiType.TILE_NAVSUGGEST, 1);
         setMaxRecycledViews(OmniboxSuggestionUiType.GROUP_SEPARATOR, 1);
-        setMaxRecycledViews(OmniboxSuggestionUiType.QUERY_TILES, 1);
     }
 
     public void destroy() {

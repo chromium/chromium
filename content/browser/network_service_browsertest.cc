@@ -77,7 +77,6 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/test/udp_socket_test_util.h"
 #include "sql/database.h"
-#include "sql/sql_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -980,11 +979,6 @@ static const base::FilePath::CharType kNetworkSubpath[] =
 class MAYBE_NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
  public:
   MAYBE_NetworkServiceDataMigrationBrowserTest() {
-    // Migration only supports non-WAL sqlite databases. If this feature is
-    // switched on by default before migration has been completed then the code
-    // in MaybeGrantSandboxAccessToNetworkContextData will need to be updated.
-    EXPECT_FALSE(
-        base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault));
 #if BUILDFLAG(IS_WIN)
     // On Windows, the network sandbox needs to be disabled. This is because the
     // code that performs the migration on Windows DCHECKs if network sandbox is

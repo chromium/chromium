@@ -59,3 +59,9 @@ bool WebViewSafeBrowsingClient::OnMainFrameUrlQueryCancellationDecided(
   // ios/web_view does not support OnMainFrameUrlQueryCancellationDecided.
   return true;
 }
+
+bool WebViewSafeBrowsingClient::ShouldForceSyncRealTimeUrlChecks() const {
+  // This setting only applies if real time lookups are supported. ios/web_view
+  // does not support real time lookups, for now.
+  return false;
+}

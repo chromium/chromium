@@ -113,6 +113,12 @@ SequenceManager::Settings::Builder::SetMessagePumpType(
 }
 
 SequenceManager::Settings::Builder&
+SequenceManager::Settings::Builder::SetShouldSampleCPUTime(bool enable) {
+  settings_.sample_cpu_time = enable;
+  return *this;
+}
+
+SequenceManager::Settings::Builder&
 SequenceManager::Settings::Builder::SetTickClock(const TickClock* clock_val) {
   settings_.clock = clock_val;
   return *this;

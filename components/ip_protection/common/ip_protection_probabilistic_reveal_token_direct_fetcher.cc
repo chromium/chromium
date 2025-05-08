@@ -28,10 +28,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
-// The ASSIGN_OR_RETURN macro is defined in the both the base::expected code and
-// the private-join-and-compute code. We need to undefine the macro here to
-// avoid compiler errors.
-#undef ASSIGN_OR_RETURN
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
 #include "components/ip_protection/get_probabilistic_reveal_token.pb.h"
 #include "net/base/features.h"
@@ -332,9 +328,12 @@ IpProtectionProbabilisticRevealTokenDirectFetcher::
       response.num_tokens_with_signal() > response.tokens_size()) {
     return TryGetProbabilisticRevealTokensStatus::kInvalidNumTokensWithSignal;
   }
-  if (auto crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-          response.public_key().y(), {});
-      !crypter.ok()) {
+  if (base::expected<
+          std::unique_ptr<IpProtectionProbabilisticRevealTokenCrypter>,
+          absl::Status> crypter =
+          IpProtectionProbabilisticRevealTokenCrypter::Create(
+              response.public_key().y(), {});
+      !crypter.has_value()) {
     return TryGetProbabilisticRevealTokensStatus::kInvalidPublicKey;
   }
   if (response.epoch_id().size() != kEpochIdSize) {

@@ -161,6 +161,9 @@ class CONTENT_EXPORT BrowserTaskQueues {
       BrowserThread::ID thread_id,
       base::sequence_manager::SequenceManager* sequence_manager);
 
+  void SetOnTaskCompletedHandler(
+      base::sequence_manager::TaskQueue::OnTaskCompletedHandler handler);
+
   // Destroys all queues.
   ~BrowserTaskQueues();
 

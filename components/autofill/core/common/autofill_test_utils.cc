@@ -314,6 +314,14 @@ FormData CreateTestIbanFormData(std::string_view value, bool is_https) {
   return form;
 }
 
+FormData CreateTestLoyaltyCardFormData() {
+  FormData form = ConstructFormWithNameRenderIdAndProtocol(/*is_https=*/true);
+  form.set_fields(
+      {CreateTestFormField("Your loyalty card:", "loyalty_card", /*value=*/"",
+                           FormControlType::kInputText)});
+  return form;
+}
+
 FormData CreateTestPasswordFormData() {
   std::vector<FormFieldData> fields;
   fields.push_back(

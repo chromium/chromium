@@ -91,14 +91,14 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   // Notifies that an RFOHelper should be removed.
   void RemoveObserver(RFOHelper* helper);
 
-  // Invalidate any pending tasks associated with |frame|.
+  // Invalidate any pending tasks associated with `frame`.
   void InvalidateForFrame(content::RenderFrame* frame);
 
-  // Starts the process to inject appropriate scripts into |frame|.
+  // Starts the process to inject appropriate scripts into `frame`.
   void StartInjectScripts(content::RenderFrame* frame,
                           mojom::RunLocation run_location);
 
-  // Actually injects the scripts into |frame|.
+  // Actually injects the scripts into `frame`.
   void InjectScripts(content::RenderFrame* frame,
                      mojom::RunLocation run_location);
 

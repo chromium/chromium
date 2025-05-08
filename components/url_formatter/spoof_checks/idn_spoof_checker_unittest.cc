@@ -9,14 +9,12 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "components/url_formatter/url_formatter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/uvernum.h"
 #include "url/gurl.h"
-#include "url/url_features.h"
 
 namespace url_formatter {
 
@@ -1166,20 +1164,9 @@ bool IsPunycode(const std::u16string& s) {
 
 }  // namespace
 
-// IDNA mode to use in tests.
-enum class IDNAMode { kTransitional, kNonTransitional };
-
-class IDNSpoofCheckerTest : public ::testing::Test,
-                            public ::testing::WithParamInterface<IDNAMode> {
+class IDNSpoofCheckerTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    if (GetParam() == IDNAMode::kNonTransitional) {
-      scoped_feature_list_.InitAndEnableFeature(
-          url::kUseIDNA2008NonTransitional);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          url::kUseIDNA2008NonTransitional);
-    }
     IDNSpoofChecker::HuffmanTrieParams trie_params{
         test::kTopDomainsHuffmanTree, sizeof(test::kTopDomainsHuffmanTree),
         test::kTopDomainsTrie, test::kTopDomainsTrieBits,
@@ -1218,15 +1205,7 @@ class IDNSpoofCheckerTest : public ::testing::Test,
                                       : base::ASCIIToUTF16(test.input));
     EXPECT_EQ(expected, output);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         IDNSpoofCheckerTest,
-                         ::testing::Values(IDNAMode::kTransitional,
-                                           IDNAMode::kNonTransitional));
 
 // Test that a domain entered as punycode is decoded to unicode if safe,
 // otherwise is left in punycode.
@@ -1236,31 +1215,19 @@ INSTANTIATE_TEST_SUITE_P(All,
 // certain unicode characters are canonicalized to other characters.
 // E.g. Mathematical Monospace Small A (U+1D68A) is canonicalized to "a" when
 // used in a domain name.
-TEST_P(IDNSpoofCheckerTest, IDNToUnicode) {
+TEST_F(IDNSpoofCheckerTest, IDNToUnicode) {
   for (const auto& test : kIdnCases) {
     RunIDNToUnicodeTest(test);
   }
 }
 
 // Same as IDNToUnicode but only tests hostnames with deviation characters.
-TEST_P(IDNSpoofCheckerTest, IDNToUnicodeDeviationCharacters) {
-  // Tests for 4 Deviation characters between IDNA 2003 and IDNA 2008. When
-  // entered in Unicode:
-  // - In Transitional mode, sharp-s and final-sigma are mapped to 'ss' and
-  //   sigma and ZWJ and ZWNJ two are mapped away. However, the punycode form
-  //   should remain in punycode.
-  // - In Non-Transitional mode, sharp-s and final-sigma shouldn't be be mapped
-  //   and hostnames containing them should be considered safe. ZWJ and ZWNJ
-  //   should still be considered unsafe.
-  bool is_non_transitional_idna = GetParam() == IDNAMode::kNonTransitional;
-
+TEST_F(IDNSpoofCheckerTest, IDNToUnicodeDeviationCharacters) {
   const IDNTestCase kTestCases[] = {
       // U+00DF(sharp-s)
-      {"xn--fu-hia.de", u"fu\u00df.de",
-       is_non_transitional_idna ? kSafe : kUnsafe},
+      {"xn--fu-hia.de", u"fu\u00df.de", kSafe},
       // U+03C2(final-sigma)
-      {"xn--mxac2c.gr", u"\u03b1\u03b2\u03c2.gr",
-       is_non_transitional_idna ? kSafe : kUnsafe},
+      {"xn--mxac2c.gr", u"\u03b1\u03b2\u03c2.gr", kSafe},
 
       // Treat ZWJ and ZWNJ explicitly unsafe, even in Non-Transitional mode.
       // U+200C(ZWNJ)
@@ -1278,7 +1245,7 @@ TEST_P(IDNSpoofCheckerTest, IDNToUnicodeDeviationCharacters) {
   }
 }
 
-TEST_P(IDNSpoofCheckerTest, GetSimilarTopDomain) {
+TEST_F(IDNSpoofCheckerTest, GetSimilarTopDomain) {
   struct TestCase {
     const char16_t* const hostname;
     const char* const expected_top_domain;
@@ -1311,7 +1278,7 @@ TEST_P(IDNSpoofCheckerTest, GetSimilarTopDomain) {
   }
 }
 
-TEST_P(IDNSpoofCheckerTest, LookupSkeletonInTopDomains) {
+TEST_F(IDNSpoofCheckerTest, LookupSkeletonInTopDomains) {
   {
     TopDomainEntry entry =
         IDNSpoofChecker().LookupSkeletonInTopDomains("d4OOO.corn");

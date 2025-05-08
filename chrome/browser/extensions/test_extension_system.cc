@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
-#include "chrome/browser/extensions/chrome_app_sorting.h"
+#include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
@@ -30,6 +30,7 @@
 #include "components/value_store/testing_value_store.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -43,6 +44,12 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_app_sorting.h"
+#else
+#include "extensions/browser/null_app_sorting.h"
 #endif
 
 using content::BrowserThread;
@@ -92,6 +99,22 @@ std::unique_ptr<KeyedService> BuildFakeCWSService(
 
 }  // namespace
 
+TestExtensionSystem::InitParams::InitParams() = default;
+
+TestExtensionSystem::InitParams::InitParams(
+    base::CommandLine* command_line,
+    base::FilePath install_directory,
+    base::FilePath unpacked_install_directory,
+    bool autoupdate_enabled,
+    bool enable_extensions)
+    : command_line(command_line),
+      install_directory(install_directory),
+      unpacked_install_directory(unpacked_install_directory),
+      autoupdate_enabled(autoupdate_enabled),
+      enable_extensions(enable_extensions) {}
+
+TestExtensionSystem::InitParams::~InitParams() = default;
+
 TestExtensionSystem::TestExtensionSystem(Profile* profile)
     : profile_(profile),
       store_factory_(
@@ -101,8 +124,12 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
                                                 StateStore::BackendType::RULES,
                                                 false)),
       management_policy_(std::make_unique<ManagementPolicy>()),
-      quota_service_(std::make_unique<QuotaService>()),
-      app_sorting_(std::make_unique<ChromeAppSorting>(profile_)) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      app_sorting_(std::make_unique<ChromeAppSorting>(profile_)),
+#else
+      app_sorting_(std::make_unique<NullAppSorting>()),
+#endif
+      quota_service_(std::make_unique<QuotaService>()) {
   management_policy_->RegisterProviders(
       ExtensionManagementFactory::GetForBrowserContext(profile_)
           ->GetProviders());
@@ -114,7 +141,27 @@ void TestExtensionSystem::Shutdown() {
   if (extension_service_) {
     extension_service_->Shutdown();
   }
+
   in_process_data_decoder_.reset();
+}
+
+void TestExtensionSystem::Init() {
+  Init(InitParams());
+}
+
+void TestExtensionSystem::Init(const InitParams& params) {
+  base::CommandLine* command_line =
+      params.command_line ? params.command_line.get()
+                          : base::CommandLine::ForCurrentProcess();
+  base::FilePath install_directory = params.install_directory.value_or(
+      profile_->GetPath().AppendASCII(kInstallDirectoryName));
+  base::FilePath unpacked_install_directory =
+      params.unpacked_install_directory.value_or(
+          profile_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
+
+  CreateExtensionService(command_line, install_directory,
+                         unpacked_install_directory, params.autoupdate_enabled,
+                         params.enable_extensions);
 }
 
 ExtensionService* TestExtensionSystem::CreateExtensionService(
@@ -166,15 +213,16 @@ void TestExtensionSystem::CreateUserScriptManager() {
 }
 
 ExtensionService* TestExtensionSystem::extension_service() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   return extension_service_.get();
+#else
+  NOTIMPLEMENTED() << "ExtensionService is not supported on desktop android.";
+  return nullptr;
+#endif
 }
 
 ManagementPolicy* TestExtensionSystem::management_policy() {
   return management_policy_.get();
-}
-
-void TestExtensionSystem::SetExtensionService(ExtensionService* service) {
-  extension_service_.reset(service);
 }
 
 ServiceWorkerManager* TestExtensionSystem::service_worker_manager() {
@@ -255,7 +303,11 @@ std::unique_ptr<KeyedService> TestExtensionSystem::Build(
 }
 
 void TestExtensionSystem::RecreateAppSorting() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   app_sorting_ = std::make_unique<ChromeAppSorting>(profile_);
+#else
+  app_sorting_ = std::make_unique<NullAppSorting>();
+#endif
 }
 
 }  // namespace extensions

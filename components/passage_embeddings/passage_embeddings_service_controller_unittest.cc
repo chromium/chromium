@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -19,11 +20,14 @@
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace passage_embeddings {
 
 namespace {
+
+using testing::ElementsAre;
 
 using GetEmbeddingsTestFuture =
     base::test::TestFuture<std::vector<mojom::PassageEmbeddingsResultPtr>,
@@ -48,10 +52,12 @@ class FakePassageEmbedder : public mojom::PassageEmbedder {
         return std::move(callback).Run({});
       }
 
-      // Otherwise just copy the inputs to the passages to provide a signal that
-      // the PassageEmbedder was executed.
-      results.push_back(mojom::PassageEmbeddingsResult::New());
-      results.back()->passage = input;
+      // Otherwise convert the string-encoded floating point inputs to provide a
+      // signal that the PassageEmbedder was executed.
+      double result = 0.0;
+      EXPECT_TRUE(base::StringToDouble(input, &result));
+      results.push_back(mojom::PassageEmbeddingsResult::New(
+          std::vector<float>{static_cast<float>(result)}));
     }
     std::move(callback).Run(std::move(results));
   }
@@ -253,14 +259,14 @@ TEST_F(PassageEmbeddingsServiceControllerTest, GetEmbeddingsNonEmpty) {
       *GetBuilderWithValidModelInfo().Build()));
 
   GetEmbeddingsTestFuture future;
-  service_controller()->GetEmbeddings({"foo", "bar"}, PassagePriority::kPassive,
+  service_controller()->GetEmbeddings({"1.0", "2.0"}, PassagePriority::kPassive,
                                       future.GetCallback());
   auto [results, status] = future.Take();
 
   EXPECT_EQ(status, ComputeEmbeddingsStatus::kSuccess);
   ASSERT_EQ(results.size(), 2u);
-  EXPECT_EQ(results[0]->passage, "foo");
-  EXPECT_EQ(results[1]->passage, "bar");
+  EXPECT_THAT(results[0]->embeddings, ElementsAre(1.0f));
+  EXPECT_THAT(results[1]->embeddings, ElementsAre(2.0f));
 }
 
 TEST_F(PassageEmbeddingsServiceControllerTest,
@@ -272,7 +278,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest,
   EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo(*builder.Build()));
 
   GetEmbeddingsTestFuture future;
-  service_controller()->GetEmbeddings({"foo", "bar"}, PassagePriority::kPassive,
+  service_controller()->GetEmbeddings({"1.0"}, PassagePriority::kPassive,
                                       future.GetCallback());
   auto [results, status] = future.Take();
 
@@ -285,8 +291,8 @@ TEST_F(PassageEmbeddingsServiceControllerTest, ReturnsExecutionFailure) {
       *GetBuilderWithValidModelInfo().Build()));
 
   GetEmbeddingsTestFuture future;
-  service_controller()->GetEmbeddings(
-      {"error", "bar"}, PassagePriority::kPassive, future.GetCallback());
+  service_controller()->GetEmbeddings({"error"}, PassagePriority::kPassive,
+                                      future.GetCallback());
   auto [results, status] = future.Take();
 
   EXPECT_EQ(status, ComputeEmbeddingsStatus::kExecutionFailure);
@@ -299,8 +305,8 @@ TEST_F(PassageEmbeddingsServiceControllerTest, EmbedderRunningStatus) {
 
   const auto get_embeddings = [this] {
     GetEmbeddingsTestFuture future;
-    service_controller()->GetEmbeddings(
-        {"foo", "bar"}, PassagePriority::kPassive, future.GetCallback());
+    service_controller()->GetEmbeddings({"1.0"}, PassagePriority::kPassive,
+                                        future.GetCallback());
     return future;
   };
 

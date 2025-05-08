@@ -1004,6 +1004,21 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN, 3), 90, 360));
     return config;
   }
+  if (kIPHMenuAddToGroup.name == feature->name) {
+    // Allows an IPH for the main app menu 'Add to Group' entry:
+    // * Only once per year.
+    // * If the user has used chrome for more than 14 days.
+    // * And only if the menu option hasn't been opened in that time.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(GREATER_THAN_OR_EQUAL, 14);
+    config.session_rate = Comparator(LESS_THAN, 1);
+    config.trigger = EventConfig("menu_add_to_group_iph_triggered",
+                                 Comparator(EQUAL, 0), 360, 360);
+    config.used = EventConfig("menu_add_to_group_clicked", Comparator(EQUAL, 0),
+                              360, 360);
+    return config;
+  }
   if (kIPHPageSummaryWebMenuFeature.name == feature->name) {
     // A config that allows the web page summary menu item IPH to be shown:
     // * Once per day. 3 times max in 90 days
@@ -1213,10 +1228,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   if (kIPHTabSwitcherAddToGroup.name == feature->name) {
     // Allows an IPH for the 'Add to Group' 3-dot menu entry:
     // * Only once per year.
+    // * If the user has used chrome for more than 14 days.
     // * And only if the menu option hasn't been opened in that time.
     FeatureConfig config;
     config.valid = true;
-    config.availability = Comparator(ANY, 0);
+    config.availability = Comparator(GREATER_THAN_OR_EQUAL, 14);
     config.session_rate = Comparator(LESS_THAN, 1);
     config.trigger = EventConfig("tab_switcher_add_to_group_iph_triggered",
                                  Comparator(EQUAL, 0), 360, 360);
@@ -1727,6 +1743,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                  Comparator(EQUAL, 0), 1, 1);
     config.event_configs.insert(
         EventConfig("read_aloud_expanded_player_shown_iph_trigger",
+                    Comparator(LESS_THAN, 3), 360, 360));
+    return config;
+  }
+
+  if (kIPHReadAloudPlaybackModeFeature.name == feature->name) {
+    // Show tooltip at most 3 times, once a day, but stop if user hit
+    // playback mode.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.used = EventConfig("read_aloud_playback_mode_clicked",
+                              Comparator(EQUAL, 0), 360, 360);
+    config.trigger = EventConfig("read_aloud_playback_mode_iph_trigger",
+                                 Comparator(EQUAL, 0), 1, 1);
+    config.event_configs.insert(
+        EventConfig("read_aloud_playback_mode_iph_trigger",
                     Comparator(LESS_THAN, 3), 360, 360));
     return config;
   }

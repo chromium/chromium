@@ -341,7 +341,7 @@ HelpBubbleView::HelpBubbleView(
           true),
       delegate_(delegate),
       event_relay_(std::move(event_relay)) {
-  set_background_color(delegate_->GetHelpBubbleBackgroundColorId());
+  SetBackgroundColor(delegate_->GetHelpBubbleBackgroundColorId());
 
   if (anchor.rect.has_value()) {
     SetForceAnchorRect(anchor.rect.value());

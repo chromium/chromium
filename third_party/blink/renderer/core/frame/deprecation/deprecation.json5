@@ -611,6 +611,15 @@
       milestone: 96,
     },
     {
+      name: "WebGPUAdapterIsFallbackAdapter",
+      message: "The GPUAdapter `isFallbackAdapter` attribute is deprecated, instead use the GPUAdapterInfo `isFallbackAdapter` attribute.",
+      translation_note: "This warning occurs when the website attempts to use the deprecated GPUAdapter `isFallbackAdapter` attribute.",
+      web_features: [
+        "kV8GPUAdapter_IsFallbackAdapter_AttributeGetter",
+      ],
+      chrome_status_feature: 4870179714236416,
+    },
+    {
       name: "XHRJSONEncodingDetection",
       message: "UTF-16 is not supported by response json in `XMLHttpRequest`",
       translation_note: "Warning displayed to developers that they are using `XMLHttpRequest` API in a way that they expect an unsupported character encoding `UTF-16` could be used in the server reply.",

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.Consumer;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,6 +33,8 @@ public class TabGroupListView extends FrameLayout {
     private View mEmptyStateContainer;
     private TextView mEmptyStateSubheading;
     private UiConfig mUiConfig;
+    // Effectively final once set.
+    private boolean mEnableContainment;
 
     /** Constructor for inflation. */
     public TabGroupListView(Context context, @Nullable AttributeSet attrs) {
@@ -81,6 +85,15 @@ public class TabGroupListView extends FrameLayout {
                 });
     }
 
+    void setEnableContainment(boolean enabled) {
+        mEnableContainment = enabled;
+
+        if (enabled) {
+            mRecyclerView.addItemDecoration(new TabGroupListItemDecoration(getContext()));
+        }
+        onDisplayStyleChanged(mUiConfig.getCurrentDisplayStyle());
+    }
+
     void setEmptyStateVisible(boolean visible) {
         mEmptyStateContainer.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         mRecyclerView.setVisibility(visible ? View.INVISIBLE : View.VISIBLE);
@@ -98,9 +111,14 @@ public class TabGroupListView extends FrameLayout {
     }
 
     private void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
+        Resources res = getResources();
         int padding =
-                SelectableListLayout.getPaddingForDisplayStyle(
-                        newDisplayStyle, mRecyclerView, getResources());
+                SelectableListLayout.getPaddingForDisplayStyle(newDisplayStyle, mRecyclerView, res);
+        if (mEnableContainment) {
+            final @Px int minPadding =
+                    res.getDimensionPixelSize(R.dimen.tab_group_recycler_view_min_padding);
+            padding = Math.max(padding, minPadding);
+        }
         mRecyclerView.setPaddingRelative(
                 padding, mRecyclerView.getPaddingTop(), padding, mRecyclerView.getPaddingBottom());
     }

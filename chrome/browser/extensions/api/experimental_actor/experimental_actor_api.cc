@@ -149,7 +149,9 @@ ExperimentalActorExecuteActionFunction::Run() {
 void ExperimentalActorExecuteActionFunction::OnResponseReceived(
     optimization_guide::proto::BrowserActionResult response) {
   std::vector<uint8_t> data_buffer(response.ByteSizeLong());
-  response.SerializeToArray(&data_buffer[0], response.ByteSizeLong());
+  if (!data_buffer.empty()) {
+    response.SerializeToArray(&data_buffer[0], response.ByteSizeLong());
+  }
   Respond(ArgumentList(api::experimental_actor::ExecuteAction::Results::Create(
       std::move(data_buffer))));
 }

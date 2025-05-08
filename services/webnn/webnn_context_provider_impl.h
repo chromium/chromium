@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/types/optional_ref.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
@@ -54,7 +55,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
     kWebNNEnabled = 3,
   };
 
-  static void CreateForTesting(
+  // Called to create a WebNNContextProviderImpl as a self-owned receiver.
+  // Optionally returns a reference to the WebNNContextProviderImpl to test
+  // interop.
+  static base::optional_ref<WebNNContextProviderImpl> CreateForTesting(
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
       WebNNStatus status = WebNNStatus::kWebNNEnabled,
       LoseAllContextsCallback lose_all_contexts_callback = base::BindOnce([]() {
@@ -69,6 +73,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // process to destroy all contexts.
   void DestroyContextsAndKillGpuProcess(std::string_view reason);
 #endif  // BUILDFLAG(IS_WIN)
+
+  // Retrieves a `WebNNContextImpl` instance created from this provider.
+  // Emits a bad message if a context with the given handle does not exist.
+  base::optional_ref<WebNNContextImpl> GetWebNNContextImplForTesting(
+      const blink::WebNNContextToken& handle);
+
   using WebNNContextImplSet = base::flat_set<
       std::unique_ptr<WebNNContextImpl>,
       WebNNObjectImpl<blink::WebNNContextToken>::Comparator<WebNNContextImpl>>;

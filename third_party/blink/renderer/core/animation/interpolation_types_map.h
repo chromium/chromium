@@ -4,9 +4,6 @@
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATION_TYPES_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATION_TYPES_MAP_H_
-
-#include <memory>
-
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -19,7 +16,7 @@ class PropertyHandle;
 class PropertyRegistry;
 class PropertyRegistration;
 
-using InterpolationTypes = Vector<std::unique_ptr<const InterpolationType>>;
+using InterpolationTypes = HeapVector<Member<const InterpolationType>>;
 
 class CORE_EXPORT InterpolationTypesMap {
   STACK_ALLOCATED();
@@ -28,10 +25,10 @@ class CORE_EXPORT InterpolationTypesMap {
   InterpolationTypesMap(const PropertyRegistry* registry,
                         const Document& document);
 
-  const InterpolationTypes& Get(const PropertyHandle&) const;
+  const InterpolationTypes* Get(const PropertyHandle&) const;
   size_t Version() const;
 
-  static InterpolationTypes CreateInterpolationTypesForCSSSyntax(
+  static InterpolationTypes* CreateInterpolationTypesForCSSSyntax(
       const AtomicString& property_name,
       const CSSSyntaxDefinition&,
       const PropertyRegistration&);

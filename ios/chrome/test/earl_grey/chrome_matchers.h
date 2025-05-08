@@ -863,8 +863,8 @@ id<GREYMatcher> TabGroupViewTitle(NSString* title);
 // Returns the matcher for the overflow menu button in the tab group view.
 id<GREYMatcher> TabGroupOverflowMenuButton();
 
-// Returns the matcher for the back button in the tab group view.
-id<GREYMatcher> TabGroupBackButton();
+// Returns the matcher for the button to close the tab group view.
+id<GREYMatcher> CloseTabGroupButton();
 
 // Returns the matcher for the activity summary cell in the tab group view.
 id<GREYMatcher> TabGroupActivitySummaryCell();

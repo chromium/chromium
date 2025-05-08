@@ -1895,6 +1895,7 @@ bool DatabaseMetaDataKey::IsValidBlobNumber(int64_t blob_number) {
   return blob_number >= kBlobNumberGeneratorInitialNumber;
 }
 
+const int64_t KeyPrefix::kInvalidId = -1;
 const int64_t DatabaseMetaDataKey::kAllBlobsNumber = 1;
 const int64_t DatabaseMetaDataKey::kBlobNumberGeneratorInitialNumber = 2;
 const int64_t DatabaseMetaDataKey::kInvalidBlobNumber = -1;

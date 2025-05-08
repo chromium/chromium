@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -20,16 +21,27 @@
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/safe_browsing/notification_content_detection/mock_notification_content_detection_service.h"
 #include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_service_factory.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/notification_database_data.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
+#include "content/public/browser/platform_notification_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/persistent_notification_status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
@@ -38,6 +50,7 @@
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -211,8 +224,11 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
       std::make_unique<NotificationPermissionContext>(profile_.get());
 
   ASSERT_EQ(permission_context
-                ->GetPermissionStatus(nullptr /* render_frame_host */, origin_,
-                                      origin_)
+                ->GetPermissionStatus(
+                    content::PermissionDescriptorUtil::
+                        CreatePermissionDescriptorForPermissionType(
+                            blink::PermissionType::NOTIFICATIONS),
+                    nullptr /* render_frame_host */, origin_, origin_)
                 .status,
             PermissionStatus::ASK);
 
@@ -247,8 +263,11 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
   PermissionStatus kExpectedDisabledStatus = PermissionStatus::DENIED;
 #endif
   ASSERT_EQ(permission_context
-                ->GetPermissionStatus(nullptr /* render_frame_host */, origin_,
-                                      origin_)
+                ->GetPermissionStatus(
+                    content::PermissionDescriptorUtil::
+                        CreatePermissionDescriptorForPermissionType(
+                            blink::PermissionType::NOTIFICATIONS),
+                    nullptr /* render_frame_host */, origin_, origin_)
                 .status,
             kExpectedDisabledStatus);
 }
@@ -328,4 +347,267 @@ TEST_P(PersistentNotificationHandlerWithNotificationContentDetection,
           blink::PlatformNotificationData(), blink::NotificationResources());
 
   run_loop.Run();
+}
+
+class
+    PersistentNotificationHandlerWithNotificationContentDetectionAndLoggingTest
+    : public PersistentNotificationHandlerTest {
+ public:
+  PersistentNotificationHandlerWithNotificationContentDetectionAndLoggingTest()
+      : manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  void SetUp() override {
+    ASSERT_TRUE(manager_.SetUp());
+
+    testing_profile_ = manager_.CreateTestingProfile("foo");
+    mock_optimization_guide_keyed_service_ = static_cast<
+        MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                testing_profile_,
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<MockOptimizationGuideKeyedService>();
+                })));
+    auto logs_uploader = std::make_unique<
+        optimization_guide::TestModelQualityLogsUploaderService>(
+        manager_.local_state()->Get());
+    mock_optimization_guide_keyed_service_
+        ->SetModelQualityLogsUploaderServiceForTesting(
+            std::move(logs_uploader));
+  }
+
+  void TearDown() override { PersistentNotificationHandlerTest::TearDown(); }
+
+  TestingProfile* profile() { return testing_profile_; }
+
+  optimization_guide::TestModelQualityLogsUploaderService* logs_uploader() {
+    return static_cast<
+        optimization_guide::TestModelQualityLogsUploaderService*>(
+        mock_optimization_guide_keyed_service_
+            ->GetModelQualityLogsUploaderService());
+  }
+
+  const std::vector<
+      std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>&
+  uploaded_logs() {
+    return logs_uploader()->uploaded_logs();
+  }
+
+  content::PlatformNotificationContext* GetPlatformNotificationContext(
+      GURL origin) {
+    return testing_profile_->GetStoragePartitionForUrl(origin)
+        ->GetPlatformNotificationContext();
+  }
+
+  void WriteNotificationDataAndMetadataToDatabase(bool is_on_global_cache_list,
+                                                  bool is_allowlisted_by_user,
+                                                  double suspicious_score) {
+    // Store notification data in `NotificationDatabase`.
+    const int64_t kFakeServiceWorkerRegistrationId = 42;
+    int notification_id = 1;
+    GURL origin(kExampleOrigin);
+    content::NotificationDatabaseData notification_database_data;
+    notification_database_data.origin = origin;
+    GetPlatformNotificationContext(origin)->WriteNotificationData(
+        notification_id, kFakeServiceWorkerRegistrationId, origin,
+        notification_database_data, base::DoNothing());
+    base::RunLoop().RunUntilIdle();
+
+    // Store metadata in `NotificationDatabase`.
+    std::string notification_id_str =
+        "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
+    std::string serialized_metadata =
+        "{\"" +
+        std::string(safe_browsing::kMetadataIsOriginAllowlistedByUserKey) +
+        "\":" + (is_allowlisted_by_user ? "true" : "false") + ",\"" +
+        std::string(safe_browsing::kMetadataIsOriginOnGlobalCacheListKey) +
+        "\":" + (is_on_global_cache_list ? "true" : "false") + ",\"" +
+        std::string(safe_browsing::kMetadataSuspiciousKey) +
+        "\":" + base::NumberToString(suspicious_score) + "}";
+    GetPlatformNotificationContext(origin)->WriteNotificationMetadata(
+        notification_id_str, origin, safe_browsing::kMetadataDictionaryKey,
+        serialized_metadata, base::DoNothing());
+  }
+
+ private:
+  TestingProfileManager manager_;
+  raw_ptr<TestingProfile> testing_profile_;
+  raw_ptr<MockOptimizationGuideKeyedService>
+      mock_optimization_guide_keyed_service_;
+};
+
+TEST_F(
+    PersistentNotificationHandlerWithNotificationContentDetectionAndLoggingTest,
+    ReportNotificationAsSafe) {
+  bool is_url_on_allowlist = true;
+  bool did_user_always_allow_url = false;
+  double suspicious_score = 70.0;
+  WriteNotificationDataAndMetadataToDatabase(
+      is_url_on_allowlist, did_user_always_allow_url, suspicious_score);
+  int notification_id = 1;
+
+  GURL origin(origin_);
+  std::string notification_id_str =
+      "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->ReportNotificationAsSafe(notification_id_str, origin_, profile());
+
+  // Check the MQLS log.
+  ASSERT_TRUE(log_uploaded_signal.Wait());
+  const auto& logs = uploaded_logs();
+  ASSERT_EQ(1u, logs.size());
+  auto* const notification_content_detection =
+      logs[0]->mutable_notification_content_detection();
+  ASSERT_TRUE(notification_content_detection->has_request());
+  ASSERT_TRUE(notification_content_detection->has_response());
+  ASSERT_TRUE(notification_content_detection->has_quality());
+  ASSERT_EQ(
+      origin.spec(),
+      notification_content_detection->request().notification_contents().url());
+  ASSERT_EQ(suspicious_score,
+            notification_content_detection->response().suspicious_score());
+  ASSERT_TRUE(notification_content_detection->quality().is_url_on_allowlist());
+  ASSERT_FALSE(
+      notification_content_detection->quality().did_user_always_allow_url());
+  ASSERT_TRUE(
+      notification_content_detection->quality().was_user_shown_warning());
+  ASSERT_FALSE(
+      notification_content_detection->quality().did_user_unsubscribe());
+  ASSERT_EQ(optimization_guide::proto::SiteEngagementScore::
+                SITE_ENGAGEMENT_SCORE_NONE,
+            notification_content_detection->quality().site_engagement_score());
+}
+
+TEST_F(
+    PersistentNotificationHandlerWithNotificationContentDetectionAndLoggingTest,
+    ReportWarnedNotificationAsSpam) {
+  bool is_url_on_allowlist = true;
+  bool did_user_always_allow_url = false;
+  double suspicious_score = 70.0;
+  WriteNotificationDataAndMetadataToDatabase(
+      is_url_on_allowlist, did_user_always_allow_url, suspicious_score);
+  int notification_id = 1;
+
+  GURL origin(origin_);
+  std::string notification_id_str =
+      "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->ReportWarnedNotificationAsSpam(notification_id_str, origin_,
+                                          profile());
+
+  // Check the MQLS log.
+  ASSERT_TRUE(log_uploaded_signal.Wait());
+  const auto& logs = uploaded_logs();
+  ASSERT_EQ(1u, logs.size());
+  auto* const notification_content_detection =
+      logs[0]->mutable_notification_content_detection();
+  ASSERT_TRUE(notification_content_detection->has_request());
+  ASSERT_TRUE(notification_content_detection->has_response());
+  ASSERT_TRUE(notification_content_detection->has_quality());
+  ASSERT_EQ(
+      origin.spec(),
+      notification_content_detection->request().notification_contents().url());
+  ASSERT_EQ(suspicious_score,
+            notification_content_detection->response().suspicious_score());
+  ASSERT_TRUE(notification_content_detection->quality().is_url_on_allowlist());
+  ASSERT_FALSE(
+      notification_content_detection->quality().did_user_always_allow_url());
+  ASSERT_TRUE(
+      notification_content_detection->quality().was_user_shown_warning());
+  ASSERT_TRUE(notification_content_detection->quality().did_user_unsubscribe());
+  ASSERT_EQ(optimization_guide::proto::SiteEngagementScore::
+                SITE_ENGAGEMENT_SCORE_NONE,
+            notification_content_detection->quality().site_engagement_score());
+}
+
+TEST_F(
+    PersistentNotificationHandlerWithNotificationContentDetectionAndLoggingTest,
+    ReportUnwarnedNotificationAsSpam) {
+  bool is_url_on_allowlist = true;
+  bool did_user_always_allow_url = false;
+  double suspicious_score = 70.0;
+  WriteNotificationDataAndMetadataToDatabase(
+      is_url_on_allowlist, did_user_always_allow_url, suspicious_score);
+  int notification_id = 1;
+
+  GURL origin(origin_);
+  std::string notification_id_str =
+      "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->ReportUnwarnedNotificationAsSpam(notification_id_str, origin_,
+                                            profile());
+
+  // Check the MQLS log.
+  ASSERT_TRUE(log_uploaded_signal.Wait());
+  const auto& logs = uploaded_logs();
+  ASSERT_EQ(1u, logs.size());
+  auto* const notification_content_detection =
+      logs[0]->mutable_notification_content_detection();
+  ASSERT_TRUE(notification_content_detection->has_request());
+  ASSERT_TRUE(notification_content_detection->has_response());
+  ASSERT_TRUE(notification_content_detection->has_quality());
+  ASSERT_EQ(
+      origin.spec(),
+      notification_content_detection->request().notification_contents().url());
+  ASSERT_EQ(suspicious_score,
+            notification_content_detection->response().suspicious_score());
+  ASSERT_TRUE(notification_content_detection->quality().is_url_on_allowlist());
+  ASSERT_FALSE(
+      notification_content_detection->quality().did_user_always_allow_url());
+  ASSERT_FALSE(
+      notification_content_detection->quality().was_user_shown_warning());
+  ASSERT_TRUE(notification_content_detection->quality().did_user_unsubscribe());
+  ASSERT_EQ(optimization_guide::proto::SiteEngagementScore::
+                SITE_ENGAGEMENT_SCORE_NONE,
+            notification_content_detection->quality().site_engagement_score());
+}
+
+class
+    PersistentNotificationHandlerWithNotificationContentDetectionLowLoggingRateTest
+    : public PersistentNotificationHandlerWithNotificationContentDetectionAndLoggingTest {
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        safe_browsing::kReportNotificationContentDetectionData,
+        {{"ReportNotificationContentDetectionDataRate", "0"}});
+    PersistentNotificationHandlerWithNotificationContentDetectionAndLoggingTest::
+        SetUp();
+  }
+};
+
+TEST_F(
+    PersistentNotificationHandlerWithNotificationContentDetectionLowLoggingRateTest,
+    NoReportSent) {
+  bool is_url_on_allowlist = true;
+  bool did_user_always_allow_url = false;
+  double suspicious_score = 70.0;
+  WriteNotificationDataAndMetadataToDatabase(
+      is_url_on_allowlist, did_user_always_allow_url, suspicious_score);
+  int notification_id = 1;
+
+  GURL origin(origin_);
+  std::string notification_id_str =
+      "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->ReportNotificationAsSafe(notification_id_str, origin_, profile());
+
+  // Check no MQLS logs.
+  const auto& logs = uploaded_logs();
+  ASSERT_EQ(0u, logs.size());
 }

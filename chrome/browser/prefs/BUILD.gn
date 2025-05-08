@@ -76,6 +76,7 @@ source_set("impl") {
     "//components/browser_sync:switches",
     "//components/browsing_data/core",
     "//components/certificate_transparency",
+    "//components/collaboration/public:prefs",
     "//components/commerce/core:pref_names",
     "//components/content_settings/core/browser",
     "//components/custom_handlers",

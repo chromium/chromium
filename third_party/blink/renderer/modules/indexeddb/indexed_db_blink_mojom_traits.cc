@@ -28,7 +28,6 @@ bool StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
                   blink::IDBDatabaseMetadata>::
     Read(blink::mojom::IDBDatabaseMetadataDataView data,
          blink::IDBDatabaseMetadata* out) {
-  out->id = data.id();
   String name;
   if (!data.ReadName(&name))
     return false;
@@ -168,7 +167,7 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
 base::span<const uint8_t>
 StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
     bits(const std::unique_ptr<blink::IDBValue>& input) {
-  return base::as_byte_span(input->Data());
+  return input->Data();
 }
 
 // static
@@ -218,8 +217,7 @@ bool StructTraits<blink::mojom::IDBValueDataView,
   }
 
   if (value_bits.empty()) {
-    *out = std::make_unique<blink::IDBValue>(std::move(value_bits),
-                                             Vector<blink::WebBlobInfo>());
+    *out = std::make_unique<blink::IDBValue>();
     return true;
   }
 
@@ -260,9 +258,10 @@ bool StructTraits<blink::mojom::IDBValueDataView,
     }
   }
 
-  *out = std::make_unique<blink::IDBValue>(
-      std::move(value_bits), std::move(value_blob_info),
-      std::move(file_system_access_tokens));
+  *out = std::make_unique<blink::IDBValue>();
+  (*out)->SetData(std::move(value_bits));
+  (*out)->SetBlobInfo(std::move(value_blob_info));
+  (*out)->SetFileSystemAccessTokens(std::move(file_system_access_tokens));
   return true;
 }
 

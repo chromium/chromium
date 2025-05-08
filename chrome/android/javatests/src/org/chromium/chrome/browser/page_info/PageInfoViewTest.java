@@ -57,7 +57,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -104,9 +103,9 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
@@ -234,15 +233,11 @@ public class PageInfoViewTest {
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
 
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
@@ -269,12 +264,12 @@ public class PageInfoViewTest {
 
     private void loadUrlAndOpenPageInfoWithPermission(
             String url, @ContentSettingsType.EnumType int highlightedPermission) {
-        sActivityTestRule.loadUrl(url);
+        mActivityTestRule.loadUrl(url);
         openPageInfo(highlightedPermission);
     }
 
     private void openPageInfo(@ContentSettingsType.EnumType int highlightedPermission) {
-        ChromeActivity activity = sActivityTestRule.getActivity();
+        ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -395,7 +390,7 @@ public class PageInfoViewTest {
 
     private String runJavascriptAsync(String type) throws TimeoutException {
         return JavaScriptUtils.runJavascriptWithAsyncResult(
-                sActivityTestRule.getWebContents(), type);
+                mActivityTestRule.getWebContents(), type);
     }
 
     private void expectHasCookies(boolean hasData) throws TimeoutException {
@@ -877,7 +872,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1510968")
     public void testShowCookiesSubpageUserBypassOn() throws IOException {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -1352,7 +1346,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     public void clearCookiesOnSubpage() throws Exception {
-        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
         expectHasCookies(false);
         createCookies();
@@ -1375,7 +1369,7 @@ public class PageInfoViewTest {
     @MediumTest
     public void clearCookiesOnSubpageUserBypass() throws Exception {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
-        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
         expectHasCookies(false);
         createCookies();
@@ -1406,7 +1400,7 @@ public class PageInfoViewTest {
     public void clearCookiesOnSubpageTrackingProtection() throws Exception {
         enableTrackingProtection();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
-        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
         expectHasCookies(false);
         createCookies();
@@ -1450,7 +1444,7 @@ public class PageInfoViewTest {
     @MediumTest
     public void a11yLiveRegionInUserBypass() throws Exception {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
-        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
         expectHasCookies(false);
         createCookies();
@@ -1488,7 +1482,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     public void testResetPermissionsOnSubpage() throws Exception {
-        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         String url = mTestServerRule.getServer().getURL("/");
         // Create permissions.
         expectHasPermissions(url, false);
@@ -1516,7 +1510,7 @@ public class PageInfoViewTest {
     @MediumTest
     public void testClearFederatedIdentityEmbargoOnSubpage() throws Exception {
         String rpUrl = mTestServerRule.getServer().getURL(sSimpleHtml);
-        sActivityTestRule.loadUrl(rpUrl);
+        mActivityTestRule.loadUrl(rpUrl);
 
         assertTrue(
                 getNonWildcardContentSettingExceptions(ContentSettingsType.FEDERATED_IDENTITY_API)
@@ -1555,7 +1549,7 @@ public class PageInfoViewTest {
     public void testPaintPreview() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    final ChromeActivity activity = sActivityTestRule.getActivity();
+                    final ChromeActivity activity = mActivityTestRule.getActivity();
                     final Tab tab = activity.getActivityTab();
                     ChromePageInfoControllerDelegate pageInfoControllerDelegate =
                             new ChromePageInfoControllerDelegate(
@@ -1573,7 +1567,7 @@ public class PageInfoViewTest {
                                 }
                             };
                     PageInfoController.show(
-                            sActivityTestRule.getActivity(),
+                            mActivityTestRule.getActivity(),
                             tab.getWebContents(),
                             null,
                             PageInfoController.OpenedFromSource.MENU,
@@ -1591,7 +1585,7 @@ public class PageInfoViewTest {
     public void testTransientPdfPage() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    final ChromeActivity activity = sActivityTestRule.getActivity();
+                    final ChromeActivity activity = mActivityTestRule.getActivity();
                     final Tab tab = activity.getActivityTab();
                     ChromePageInfoControllerDelegate pageInfoControllerDelegate =
                             new ChromePageInfoControllerDelegate(
@@ -1609,7 +1603,7 @@ public class PageInfoViewTest {
                                 }
                             };
                     PageInfoController.show(
-                            sActivityTestRule.getActivity(),
+                            mActivityTestRule.getActivity(),
                             tab.getWebContents(),
                             null,
                             PageInfoController.OpenedFromSource.MENU,
@@ -1627,7 +1621,7 @@ public class PageInfoViewTest {
     public void testInsecureTransientPdfPage() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    final ChromeActivity activity = sActivityTestRule.getActivity();
+                    final ChromeActivity activity = mActivityTestRule.getActivity();
                     final Tab tab = activity.getActivityTab();
                     ChromePageInfoControllerDelegate pageInfoControllerDelegate =
                             new ChromePageInfoControllerDelegate(
@@ -1645,7 +1639,7 @@ public class PageInfoViewTest {
                                 }
                             };
                     PageInfoController.show(
-                            sActivityTestRule.getActivity(),
+                            mActivityTestRule.getActivity(),
                             tab.getWebContents(),
                             null,
                             PageInfoController.OpenedFromSource.MENU,
@@ -1666,7 +1660,7 @@ public class PageInfoViewTest {
     public void testLocalPdfPage() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    final ChromeActivity activity = sActivityTestRule.getActivity();
+                    final ChromeActivity activity = mActivityTestRule.getActivity();
                     final Tab tab = activity.getActivityTab();
                     ChromePageInfoControllerDelegate pageInfoControllerDelegate =
                             new ChromePageInfoControllerDelegate(
@@ -1684,7 +1678,7 @@ public class PageInfoViewTest {
                                 }
                             };
                     PageInfoController.show(
-                            sActivityTestRule.getActivity(),
+                            mActivityTestRule.getActivity(),
                             tab.getWebContents(),
                             null,
                             PageInfoController.OpenedFromSource.MENU,
@@ -1801,7 +1795,7 @@ public class PageInfoViewTest {
         final CallbackHelper onDidStartNavigationHelper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    return new WebContentsObserver(sActivityTestRule.getWebContents()) {
+                    return new WebContentsObserver(mActivityTestRule.getWebContents()) {
                         @Override
                         public void didStartNavigationInPrimaryMainFrame(
                                 NavigationHandle navigationHandle) {
@@ -1873,7 +1867,7 @@ public class PageInfoViewTest {
         float cornerRadius =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            ChromeActivity activity = sActivityTestRule.getActivity();
+                            ChromeActivity activity = mActivityTestRule.getActivity();
                             BrowserControlsManager browserControlsManager =
                                     BrowserControlsManagerSupplier.getValueOrNullFrom(
                                             activity.getWindowAndroid());
@@ -1964,7 +1958,7 @@ public class PageInfoViewTest {
         ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            ChromeActivity activity = sActivityTestRule.getActivity();
+                            ChromeActivity activity = mActivityTestRule.getActivity();
                             BrowserControlsManager browserControlsManager =
                                     BrowserControlsManagerSupplier.getValueOrNullFrom(
                                             activity.getWindowAndroid());

@@ -18,6 +18,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/layout_manager.h"
+#include "ui/aura/test/aura_test_helper.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
@@ -40,6 +41,7 @@
 #include "ui/wm/core/default_activation_client.h"
 #include "ui/wm/core/focus_controller.h"
 #include "ui/wm/core/transient_window_manager.h"
+#include "ui/wm/core/window_util.h"
 
 namespace views {
 namespace {
@@ -147,6 +149,83 @@ TEST_F(NativeWidgetAuraTest, CenterWindowSmallParentNotAtOrigin) {
 
   // |window| should be no bigger than |parent|.
   EXPECT_EQ("20,40 480x320", window->GetNativeWindow()->bounds().ToString());
+}
+
+// Verifies CenterWindow() honors the transient parent unless it's bigger than
+// the transient parent.
+TEST_F(NativeWidgetAuraTest, CenterTransientWindow) {
+  aura::Window* root = aura::test::AuraTestHelper::GetInstance()->GetContext();
+  // Ensure that the root window size is larger than windows created in this
+  // test.
+  ASSERT_GT(root->bounds().width(), 600);
+  ASSERT_GT(root->bounds().height(), 400);
+
+  // Make a parent window smaller than the host represented by
+  // WindowEventDispatcher and offset it slightly from the origin.
+  auto parent = std::make_unique<aura::Window>(nullptr);
+  parent->SetType(aura::client::WINDOW_TYPE_NORMAL);
+  parent->Init(ui::LAYER_NOT_DRAWN);
+
+  gfx::Rect parent_bounds(root->bounds().width() - 450, 50, 400, 300);
+  parent->SetBounds(parent_bounds);
+
+  root->AddChild(parent.get());
+
+  auto create_widget =
+      [&](views::WidgetDelegate* delegate,
+          const gfx::Size& preferred_size) -> std::unique_ptr<views::Widget> {
+    Widget::InitParams params(Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET,
+                              Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    params.delegate = delegate;
+    params.delegate->SetContentsView(std::make_unique<views::View>())
+        ->SetPreferredSize(preferred_size);
+    params.parent = parent.get();
+    auto widget = std::make_unique<Widget>();
+    widget->Init(std::move(params));
+    return widget;
+  };
+
+  {
+    SCOPED_TRACE("small fits parent");
+    constexpr gfx::Size kTransientSize(300, 200);
+    auto delegate_owned = std::make_unique<WidgetDelegate>();
+    auto widget = create_widget(delegate_owned.get(), kTransientSize);
+
+    ASSERT_EQ(parent.get(), wm::GetTransientParent(widget->GetNativeWindow()));
+    EXPECT_EQ(kTransientSize, widget->GetWindowBoundsInScreen().size());
+    EXPECT_EQ(parent_bounds.CenterPoint(),
+              widget->GetWindowBoundsInScreen().CenterPoint());
+  }
+  {
+    SCOPED_TRACE("larger centers root");
+    constexpr gfx::Size kTransientSize(500, 400);
+    auto delegate_owned = std::make_unique<WidgetDelegate>();
+    auto widget = create_widget(delegate_owned.get(), kTransientSize);
+
+    ASSERT_EQ(parent.get(), wm::GetTransientParent(widget->GetNativeWindow()));
+    EXPECT_EQ(kTransientSize, widget->GetWindowBoundsInScreen().size());
+    EXPECT_EQ(root->bounds().CenterPoint(),
+              widget->GetWindowBoundsInScreen().CenterPoint());
+  }
+  {
+    SCOPED_TRACE("widget centers parent but fit to the root");
+    constexpr gfx::Size kTransientSize(500, 200);
+    auto delegate_owned = std::make_unique<WidgetDelegate>();
+    auto widget = create_widget(delegate_owned.get(), kTransientSize);
+
+    ASSERT_EQ(parent.get(), wm::GetTransientParent(widget->GetNativeWindow()));
+    EXPECT_EQ(kTransientSize, widget->GetWindowBoundsInScreen().size());
+    // The transient window should be within the root but it's center should
+    // be closest to the center of the parent. In this case, the transient
+    // window's right side should be attached to the root's left, but y is
+    // centered.
+    gfx::Rect expected(
+        {root->bounds().width() - kTransientSize.width(),
+         parent_bounds.CenterPoint().y() - kTransientSize.height() / 2},
+        kTransientSize);
+
+    EXPECT_EQ(expected, widget->GetWindowBoundsInScreen());
+  }
 }
 
 // View which handles both mouse and gesture events.

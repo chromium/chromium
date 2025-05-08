@@ -252,7 +252,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
 #if BUILDFLAG(IS_CHROMEOS)
   DCHECK_EQ(
       gfx::NumberOfPlanesForLinearBufferFormat(completed_decode->buffer_format),
-      completed_decode->handle.native_pixmap_handle.planes.size());
+      completed_decode->handle.native_pixmap_handle().planes.size());
   // We should notify the SharedContextState that we or Skia may have modified
   // the driver's GL state. We put this in a ScopedClosureRunner so that if we
   // return early, the SharedContextState ends up in a consistent state.
@@ -265,7 +265,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
       shared_context_state));
 
   const size_t num_planes =
-      completed_decode->handle.native_pixmap_handle.planes.size();
+      completed_decode->handle.native_pixmap_handle().planes.size();
   plane_sk_images.resize(num_planes);
 
   // Right now, we only support YUV 4:2:0 for the output of the decoder (either

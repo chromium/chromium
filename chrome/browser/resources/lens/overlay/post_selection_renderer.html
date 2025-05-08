@@ -72,6 +72,10 @@
     width: 50%;
   }
 
+  .corner-hit-box:focus-within {
+    outline: auto 5px -webkit-focus-ring-color;
+  }
+
   #topLeft {
     cursor: nw-resize;
     left: 0;
@@ -99,6 +103,14 @@
     left: 0;
     transform: translate(-25%, 25%)
   }
+
+  .slider {
+    height: inherit;
+    width: inherit;
+    pointer-events: none;
+    position: absolute;
+    opacity: 0;
+  }
 </style>
 <div id="postSelectionScrim"
     style$="[[getScrimStyleProperties(height, width)]]">
@@ -111,7 +123,13 @@
   <div id="postSelection"></div>
   <div id="selectionCorners">
     <template is="dom-repeat" items="[[cornerIds]]">
-      <div id="[[item]]" class="corner-hit-box"></div>
+      <div id="[[item]]" class="corner-hit-box">
+        <template is="dom-if" if="[[cornerSlidersEnabled]]">
+          <input id="[[item]]Slider" type="range" tabindex="0" min="-1"
+              max="101" step="1" class="slider" on-change="handleSliderChange"
+              data-corner-id$="[[item]]">
+        </template>
+      </div>
     </template>
   </div>
 </div>

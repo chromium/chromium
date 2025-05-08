@@ -264,6 +264,62 @@ String DoubleConstraint::ToString() const {
   return builder.ToString();
 }
 
+DoubleOrBooleanConstraint::DoubleOrBooleanConstraint(const char* name)
+    : DoubleConstraint(name) {}
+
+bool DoubleOrBooleanConstraint::HasMandatory() const {
+  return DoubleConstraint::HasMandatory() || HasExactBoolean();
+}
+
+bool DoubleOrBooleanConstraint::Matches(double value) const {
+  return DoubleConstraint::Matches(value) && MatchesBoolean(true);
+}
+
+bool DoubleOrBooleanConstraint::MatchesBoolean(bool value) const {
+  if (HasExactBoolean() && ExactBoolean() != value) {
+    return false;
+  }
+  if (!value && DoubleConstraint::HasMandatory()) {
+    return false;
+  }
+  return true;
+}
+
+bool DoubleOrBooleanConstraint::IsPresentAndNotFalse() const {
+  if (!IsPresent()) {
+    return false;
+  }
+  if (HasExactBoolean()) {
+    DCHECK(DoubleConstraint::IsUnconstrained());
+    DCHECK(!HasIdealBoolean());
+    return ExactBoolean();
+  }
+  if (HasIdealBoolean()) {
+    DCHECK(DoubleConstraint::IsUnconstrained());
+    DCHECK(!HasExactBoolean());
+    return IdealBoolean();
+  }
+  return true;
+}
+
+bool DoubleOrBooleanConstraint::IsUnconstrained() const {
+  return DoubleConstraint::IsUnconstrained() && !HasExactBoolean() &&
+         !HasIdealBoolean();
+}
+
+void DoubleOrBooleanConstraint::ResetToUnconstrained() {
+  *this = DoubleOrBooleanConstraint(GetName());
+}
+
+String DoubleOrBooleanConstraint::ToString() const {
+  if (DoubleConstraint::IsUnconstrained() &&
+      (HasExactBoolean() || HasIdealBoolean())) {
+    bool value = HasExactBoolean() ? ExactBoolean() : IdealBoolean();
+    return value ? "true" : "false";
+  }
+  return DoubleConstraint::ToString();
+}
+
 StringConstraint::StringConstraint(const char* name)
     : BaseConstraint(name), exact_(), ideal_() {}
 

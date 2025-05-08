@@ -76,11 +76,13 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
   source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
   int max_loading_time_ms = features::kGlicMaxLoadingTimeMs.Get();
+  int reload_max_loading_time_ms = features::kGlicReloadMaxLoadingTimeMs.Get();
   if (is_glic_dev) {
     // Bump up timeout value, as dev server may be slow.
     max_loading_time_ms *= 100;
   }
   source->AddInteger("maxLoadingTimeMs", max_loading_time_ms);
+  source->AddInteger("reloadMaxLoadingTimeMs", reload_max_loading_time_ms);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicFreUI)

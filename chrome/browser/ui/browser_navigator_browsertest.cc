@@ -711,12 +711,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 #endif
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
-// and is_tab_modal_popup = true results in a new WebContents that is a popup
-// and behaves like a tab modal.
+// and is_tab_modal_popup_deprecated = true results in a new WebContents that is
+// a popup and behaves like a tab modal.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.is_tab_modal_popup = true;
+  params.is_tab_modal_popup_deprecated = true;
   params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   // Wait for new popup to load and gain focus.
   ui_test_utils::NavigateToURL(&params);
@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
   EXPECT_TRUE(params.browser->window()->IsVisible());
 
   // Verify the popup window is set as tab model popup.
-  EXPECT_TRUE(params.browser->window()->IsTabModalPopup());
+  EXPECT_TRUE(params.browser->window()->IsTabModalPopupDeprecated());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_WINDOW
@@ -1432,22 +1432,32 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   RunDoNothingIfIncognitoIsForcedTest(GetSettingsURL());
 }
 
-// This test verifies that the bookmarks page isn't opened in the incognito
-// window.
+// This test verifies that the bookmarks page can open in incognito windows.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
-                       Disposition_Bookmarks_UseNonIncognitoWindow) {
-  RunUseNonIncognitoWindowTest(
-      GURL(chrome::kChromeUIBookmarksURL),
-      ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK);
-}
+                       Disposition_Bookmarks_UseIncognitoWindow) {
+  Browser* const incognito_browser = CreateIncognitoBrowser();
+  TabStripModel* const incognito_tab_strip_model =
+      incognito_browser->tab_strip_model();
 
-// Bookmark manager is expected to always open in normal mode regardless
-// of whether the user is trying to open it in incognito mode or not.
-// This test verifies that if incognito mode is forced (by policy), bookmark
-// manager doesn't open at all.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
-                       Disposition_Bookmarks_DoNothingIfIncognitoIsForced) {
-  RunDoNothingIfIncognitoIsForcedTest(GURL(chrome::kChromeUIBookmarksURL));
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito_tab_strip_model->count());
+
+  // Navigate to the page.
+  const GURL bookmarks_page = GURL(chrome::kChromeUIBookmarksURL);
+  NavigateParams params(MakeNavigateParams(incognito_browser));
+  params.disposition = WindowOpenDisposition::SINGLETON_TAB;
+  params.url = bookmarks_page;
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.transition = ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK;
+  Navigate(&params);
+
+  // This page should be opened in browser() window.
+  EXPECT_EQ(incognito_browser, params.browser);
+  EXPECT_NE(browser(), params.browser);
+  EXPECT_EQ(2, incognito_tab_strip_model->count());
+  EXPECT_EQ(bookmarks_page,
+            incognito_tab_strip_model->GetActiveWebContents()->GetURL());
 }
 
 // This test makes sure a crashed singleton tab reloads from a new navigation.

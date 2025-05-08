@@ -37,6 +37,9 @@ class WebContents;
 class NavigationHandle;
 }  // namespace content
 
+namespace webapps {
+class MlInstallOperationTracker;
+}
 namespace web_app {
 
 class WithAppResources;
@@ -252,6 +255,17 @@ class WebAppUiManager {
   virtual void TriggerInstallDialog(content::WebContents* web_contents,
                                     webapps::WebappInstallSource source,
                                     InstallCallback callback) = 0;
+
+  // Triggers the web app install dialog for a background install of the
+  // contents at `install_url`, with the optional `manifest_id`. The dialog will
+  // be anchored to `initiating_web_contents`. This assumes the app is not
+  // already installed. Used for the Web Install API.
+  virtual void TriggerInstallDialogForBackgroundInstall(
+      content::WebContents* initiating_web_contents,
+      std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+      const GURL& install_url,
+      const std::optional<GURL>& manifest_id,
+      InstallCallback callback) = 0;
 
   // The uninstall dialog will be modal to |parent_window|, or a non-modal if
   // |parent_window| is nullptr. Use this API if a Browser window needs to be

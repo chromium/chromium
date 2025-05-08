@@ -522,7 +522,7 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
             error = true;
           }
           if (!error) {
-            context.Count(WebDXFeature::kDRAFT_CssIf);
+            context.Count(WebDXFeature::kIf);
           }
           has_references = true;
           continue;

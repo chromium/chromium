@@ -189,7 +189,6 @@ public abstract class AsyncTask<Result extends @Nullable Object> {
      * Override this method to perform a computation on a background thread.
      *
      * @return A result, defined by the subclass of this task.
-     *
      * @see #onPreExecute()
      * @see #onPostExecute
      */

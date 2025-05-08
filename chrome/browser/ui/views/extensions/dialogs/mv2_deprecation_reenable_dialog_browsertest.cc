@@ -54,12 +54,11 @@ class Mv2DeprecationReEnableDialogBrowserTest
 
     ASSERT_TRUE(extension);
     extensions::ExtensionRegistrar::Get(browser()->profile())
-        ->AddExtension(extension.get());
+        ->AddExtension(extension);
 
     extensions::ShowMv2DeprecationReEnableDialog(
         browser()->window()->GetNativeWindow(), extension->id(),
-        extension->name(),
-        /*done_callback=*/base::DoNothing());
+        extension->name(), /*done_callback=*/base::DoNothing());
   }
 
  private:

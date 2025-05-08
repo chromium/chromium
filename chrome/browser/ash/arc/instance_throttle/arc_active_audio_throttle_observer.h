@@ -10,7 +10,7 @@
 
 namespace arc {
 
-constexpr char kArcActiveAudioThrottleObserverName[] = "ArcActiveAudio";
+inline constexpr char kArcActiveAudioThrottleObserverName[] = "ArcActiveAudio";
 
 // This class observes active audio streams from ARC and sets the state to
 // active if there is an active audio stream.

@@ -17,9 +17,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
@@ -27,6 +28,7 @@ import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
  * Draws the image at the start of a bookmark folder row. This may contains elements from the
  * folder's children bookmarks, such as thumbnail or count.
  */
+@NullMarked
 public class ImprovedBookmarkFolderView extends FrameLayout {
     private final RoundedCornerOutlineProvider mPrimaryImageOutline;
     private final RoundedCornerOutlineProvider mSecondaryImageOutline;

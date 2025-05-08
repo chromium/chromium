@@ -62,6 +62,9 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
 
   ~ReadingListDistillerPage() override;
 
+  // dom_distiller::DistillerPage implementation.
+  bool ShouldFetchOfflineData() override;
+
  protected:
   void DistillPageImpl(const GURL& url, const std::string& script) override;
   void OnDistillationDone(const GURL& page_url,

@@ -51,6 +51,17 @@ bool CreateWebAppFromManifest(
     WebAppInstalledCallback installed_callback,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 
+// Starts the background install of a WebApp at `install_url`, initiated from a
+// `navigator.install` call from within `initiating_web_contents`. This must be
+// called from a context where `WebAppProvider` exists and is supported.
+// Used for the Web Install API.
+void CreateWebAppForBackgroundInstall(
+    content::WebContents* initiating_web_contents,
+    std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+    const GURL& install_url,
+    const std::optional<GURL>& manifest_id,
+    WebAppInstalledCallback installed_callback);
+
 // Shows the PWA Install dialog for the active tab in the provided browser.
 // Records PWAInstallIcon user metric and closes the PWA install IPH
 // if it is showing.

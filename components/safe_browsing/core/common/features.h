@@ -67,6 +67,9 @@ BASE_DECLARE_FEATURE(
 // OptimizationGuide.
 BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
 
+// Killswitch for Llama forced trigger info redirect chain check.
+BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);
+
 // Expand CSPP beyond phishing and trigger when keyboard or pointer lock request
 // occurs on the page.
 BASE_DECLARE_FEATURE(kClientSideDetectionKeyboardPointerLockRequest);
@@ -154,10 +157,6 @@ BASE_DECLARE_FEATURE(kEnterprisePasswordReuseUiRefresh);
 // When on, enterprise policy EnterpriseRealTimeUrlCheckMode on Android is
 // supported.
 BASE_DECLARE_FEATURE(kEnterpriseRealTimeUrlCheckOnAndroid);
-
-// Enables string update on the enhanced protection description on
-// chrome://settings/security to mention the use of AI.
-BASE_DECLARE_FEATURE(kEsbAiStringUpdate);
 
 // Makes the Enhanced Protection a syncable setting.
 // Check the design doc (go/esb-as-a-synced-setting-dd) for further details.
@@ -263,9 +262,9 @@ BASE_DECLARE_FEATURE(kOnDeviceNotificationContentDetectionModel);
 extern const base::FeatureParam<int>
     kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate;
 
-// Enable movement of password leak toggle out of standard protection and into
-// its own section.
-BASE_DECLARE_FEATURE(kPasswordLeakToggleMove);
+// Enable the collection of Notification Telemetry to track potentially abusive
+// notifications.
+BASE_DECLARE_FEATURE(kNotificationTelemetry);
 
 // Enables HaTS surveys for users encountering red warnings.
 BASE_DECLARE_FEATURE(kRedWarningSurvey);
@@ -285,6 +284,12 @@ extern const base::FeatureParam<std::string> kRedWarningSurveyTriggerId;
 // Enables reporting notification contents and metadata to the server, upon user
 // consent.
 BASE_DECLARE_FEATURE(kReportNotificationContentDetectionData);
+// Determines how often we should log the reported notification to the server.
+// For the default rate of 100, the notification will always be reported where a
+// rate of 0 means there is no reporting. This will help limit data volume, if
+// it becomes excessive.
+extern const base::FeatureParam<int>
+    kReportNotificationContentDetectionDataRate;
 
 // Enables client side phishing daily reports limit to be configured via Finch
 // for ESB and SBER users
@@ -327,6 +332,36 @@ extern const base::FeatureParam<int>
 // `kSafetyHubDisruptiveNotificationRevocationMinNotificationCount`,
 extern const base::FeatureParam<double>
     kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore;
+
+// Timeout in seconds for the Safety Hub OS notification informing users about
+// revoked notification permissions.
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationNotificationTimeoutSeconds;
+
+// The minimum number of days since the revocation until a site can be
+// considered a false positive disruptive notification revocation. The cooldown
+// period allows to gather interactions for a period of time to understand how
+// much users have interacted with a site and whether it might have been a flake
+// (ex. accidental click on a notification).
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown;
+
+// The maximum number of days since the revocation when a site can be considered
+// a false positive disruptive notification revocation. After it runs out, the
+// revocation won't be reported as a false positive.
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod;
+
+// The minimum site engagement score delta for a website to be considered a
+// false positive disruptive notification revocation.
+extern const base::FeatureParam<double>
+    kSafetyHubDisruptiveNotificationRevocationMinSiteEngagementScoreDelta;
+
+// The maximum number of days to observe the revoked site for user regranting
+// the permission while visiting the site. The period is a number of days since
+// a false positive was detected (a page visit or a notification click).
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationUserRegrantWaitingPeriod;
 
 // Enables saving gaia password hash from the Profile Picker sign-in flow.
 BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);

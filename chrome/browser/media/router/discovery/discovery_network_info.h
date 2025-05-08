@@ -19,8 +19,8 @@ struct DiscoveryNetworkInfo {
   DiscoveryNetworkInfo(const DiscoveryNetworkInfo&);
   DiscoveryNetworkInfo& operator=(const DiscoveryNetworkInfo&);
 
-  bool operator==(const DiscoveryNetworkInfo&) const;
-  bool operator!=(const DiscoveryNetworkInfo&) const;
+  friend constexpr bool operator==(const DiscoveryNetworkInfo&,
+                                   const DiscoveryNetworkInfo&) = default;
 
   // The name of the network interface.  e.g. eth0, wlan0
   std::string name;

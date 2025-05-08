@@ -4,11 +4,15 @@
 
 #include "base/environment.h"
 
-#include <array>
+#include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 
@@ -26,7 +30,7 @@ namespace {
 
 class EnvironmentImpl : public Environment {
  public:
-  std::optional<std::string> GetVar(std::string_view variable_name) override {
+  std::optional<std::string> GetVar(cstring_view variable_name) override {
     auto result = GetVarImpl(variable_name);
     if (result.has_value()) {
       return result;
@@ -48,32 +52,30 @@ class EnvironmentImpl : public Environment {
     return GetVarImpl(alternate_case_var);
   }
 
-  bool SetVar(std::string_view variable_name,
+  bool SetVar(cstring_view variable_name,
               const std::string& new_value) override {
     return SetVarImpl(variable_name, new_value);
   }
 
-  bool UnSetVar(std::string_view variable_name) override {
+  bool UnSetVar(cstring_view variable_name) override {
     return UnSetVarImpl(variable_name);
   }
 
  private:
-  std::optional<std::string> GetVarImpl(std::string_view variable_name) {
+  std::optional<std::string> GetVarImpl(cstring_view variable_name) {
 #if BUILDFLAG(IS_WIN)
     std::wstring wide_name = UTF8ToWide(variable_name);
-    // Documented to be the maximum environment variable size.
-    std::array<wchar_t, 32767> value;
-    DWORD value_length =
-        ::GetEnvironmentVariable(wide_name.c_str(), value.data(), value.size());
-    if (value_length == 0) {
-      return std::nullopt;
+    // Documented to be the maximum environment variable size in characters.
+    static constexpr size_t kMaxLength = 32767;
+    auto value = base::HeapArray<wchar_t>::Uninit(kMaxLength);
+    const DWORD value_length =
+        ::GetEnvironmentVariable(wide_name.c_str(), value.data(), kMaxLength);
+    if (value_length == 0 || value_length >= kMaxLength) {
+      return std::nullopt;  // Ignore errors and excessively large values.
     }
-
-    CHECK_LE(value_length, value.size() - 1)
-        << "value should fit in the buffer (including the null terminator)";
     return WideToUTF8(std::wstring_view(value.data(), value_length));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-    const char* env_value = getenv(std::string(variable_name).c_str());
+    const char* env_value = getenv(variable_name.c_str());
     if (!env_value) {
       return std::nullopt;
     }
@@ -81,40 +83,29 @@ class EnvironmentImpl : public Environment {
 #endif
   }
 
-  bool SetVarImpl(std::string_view variable_name,
-                  const std::string& new_value) {
+  bool SetVarImpl(cstring_view variable_name, const std::string& new_value) {
 #if BUILDFLAG(IS_WIN)
     // On success, a nonzero value is returned.
     return !!SetEnvironmentVariable(UTF8ToWide(variable_name).c_str(),
                                     UTF8ToWide(new_value).c_str());
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     // On success, zero is returned.
-    return !setenv(variable_name.data(), new_value.c_str(), 1);
+    return !setenv(variable_name.c_str(), new_value.c_str(), 1);
 #endif
   }
 
-  bool UnSetVarImpl(std::string_view variable_name) {
+  bool UnSetVarImpl(cstring_view variable_name) {
 #if BUILDFLAG(IS_WIN)
     // On success, a nonzero value is returned.
     return !!SetEnvironmentVariable(UTF8ToWide(variable_name).c_str(), nullptr);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     // On success, zero is returned.
-    return !unsetenv(variable_name.data());
+    return !unsetenv(variable_name.c_str());
 #endif
   }
 };
 
 }  // namespace
-
-namespace env_vars {
-
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-// On Posix systems, this variable contains the location of the user's home
-// directory. (e.g, /home/username/).
-const char kHome[] = "HOME";
-#endif
-
-}  // namespace env_vars
 
 Environment::~Environment() = default;
 
@@ -123,17 +114,7 @@ std::unique_ptr<Environment> Environment::Create() {
   return std::make_unique<EnvironmentImpl>();
 }
 
-bool Environment::GetVar(std::string_view variable_name, std::string* result) {
-  std::optional<std::string> actual_result = GetVar(variable_name);
-  if (!actual_result.has_value()) {
-    return false;
-  }
-
-  *result = std::move(actual_result.value());
-  return true;
-}
-
-bool Environment::HasVar(std::string_view variable_name) {
+bool Environment::HasVar(cstring_view variable_name) {
   return GetVar(variable_name).has_value();
 }
 

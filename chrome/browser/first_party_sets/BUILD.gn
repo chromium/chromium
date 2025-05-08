@@ -15,6 +15,7 @@ source_set("first_party_sets") {
   sources = [
     "first_party_sets_overrides_policy_handler.cc",
     "first_party_sets_overrides_policy_handler.h",
+    "first_party_sets_policy_service.h",
     "first_party_sets_pref_names.cc",
     "first_party_sets_pref_names.h",
     "scoped_mock_first_party_sets_handler.cc",

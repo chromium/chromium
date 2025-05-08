@@ -111,7 +111,7 @@ bool IsSupportedCountryForFeature(const std::string& country_code,
 }
 
 const base::FeatureParam<base::TimeDelta> kAnnotatedPageContentCaptureDelay{
-    &kAnnotatedPageContentExtraction, "capture_delay", base::Seconds(1)};
+    &kAnnotatedPageContentExtraction, "capture_delay", base::Seconds(5)};
 
 const base::FeatureParam<bool> kAnnotatedPageContentIncludeGeometry{
     &kAnnotatedPageContentExtraction, "include_geometry", false};

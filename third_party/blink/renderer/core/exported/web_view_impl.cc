@@ -506,7 +506,7 @@ WebView* WebView::Create(
     scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const SessionStorageNamespaceId& session_storage_namespace_id,
     std::optional<SkColor> page_base_background_color,
-    const BrowsingContextGroupInfo& browsing_context_group_info,
+    const base::UnguessableToken& browsing_context_group_token,
     const ColorProviderColorMaps* color_provider_colors,
     blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params) {
   return WebViewImpl::Create(
@@ -516,7 +516,7 @@ WebView* WebView::Create(
       std::move(prerender_param), fenced_frame_mode, compositing_enabled,
       widgets_never_composited, To<WebViewImpl>(opener), std::move(page_handle),
       agent_group_scheduler, session_storage_namespace_id,
-      std::move(page_base_background_color), browsing_context_group_info,
+      std::move(page_base_background_color), browsing_context_group_token,
       color_provider_colors, std::move(partitioned_popin_params));
 }
 
@@ -533,7 +533,7 @@ WebViewImpl* WebViewImpl::Create(
     blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const SessionStorageNamespaceId& session_storage_namespace_id,
     std::optional<SkColor> page_base_background_color,
-    const BrowsingContextGroupInfo& browsing_context_group_info,
+    const base::UnguessableToken& browsing_context_group_token,
     const ColorProviderColorMaps* color_provider_colors,
     blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params) {
   return new WebViewImpl(
@@ -541,7 +541,7 @@ WebViewImpl* WebViewImpl::Create(
       compositing_enabled, widgets_never_composited, opener,
       std::move(page_handle), agent_group_scheduler,
       session_storage_namespace_id, std::move(page_base_background_color),
-      browsing_context_group_info, color_provider_colors,
+      browsing_context_group_token, color_provider_colors,
       std::move(partitioned_popin_params));
 }
 
@@ -605,7 +605,7 @@ WebViewImpl::WebViewImpl(
     blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const SessionStorageNamespaceId& session_storage_namespace_id,
     std::optional<SkColor> page_base_background_color,
-    const BrowsingContextGroupInfo& browsing_context_group_info,
+    const base::UnguessableToken& browsing_context_group_token,
     const ColorProviderColorMaps* color_provider_colors,
     blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params)
     : widgets_never_composited_(widgets_never_composited),
@@ -638,7 +638,7 @@ WebViewImpl::WebViewImpl(
   page_ = Page::CreateOrdinary(
       *chrome_client_, opener ? opener->GetPage() : nullptr,
       agent_group_scheduler.GetAgentGroupScheduler(),
-      browsing_context_group_info, color_provider_colors,
+      browsing_context_group_token, color_provider_colors,
       std::move(partitioned_popin_params));
   CoreInitializer::GetInstance().ProvideModulesToPage(
       *page_, session_storage_namespace_id_);
@@ -2554,19 +2554,6 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   if (restoring_from_bfcache) {
     DCHECK(dispatching_pageshow);
     DCHECK(page_restore_params);
-    // Increment the navigation counter on the main frame and all nested frames
-    // in its frame tree.
-    // Navigation Id increment should happen before a
-    // BackForwardCacheRestoration instance is created which happens inside the
-    // DispatchPageshow method.
-    for (Frame* frame = page->MainFrame(); frame;
-         frame = frame->Tree().TraverseNext()) {
-      auto* local_frame = DynamicTo<LocalFrame>(frame);
-      if (local_frame && local_frame->View()) {
-        DCHECK(local_frame->DomWindow());
-        local_frame->DomWindow()->GenerateNewNavigationId();
-      }
-    }
 
     DispatchPersistedPageshow(page_restore_params->navigation_start);
 
@@ -2718,7 +2705,7 @@ void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
   for (Frame* frame = GetPage()->MainFrame(); frame;
        frame = frame->Tree().TraverseNext()) {
     auto* local_frame = DynamicTo<LocalFrame>(frame);
-    // Record the metics.
+    // Record the metrics.
     if (local_frame && local_frame->View()) {
       Document* document = local_frame->GetDocument();
       if (document) {
@@ -2735,9 +2722,20 @@ void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
       auto pageshow_start_time = base::TimeTicks::Now();
       LocalDOMWindow* window = frame->DomWindow()->ToLocalDOMWindow();
 
+      // The new navigation ID must be generated before the
+      // back-forward-cache-restoration performance entry is added to the
+      // window's performance (see below), but also prior to dispatching the
+      // pageshow event, in case some of the event listeners want to use the
+      // new navigation ID to identify the navigation.
+      if (RuntimeEnabledFeatures::
+              BackForwardCacheRestorationPerformanceEntryEnabled(window)) {
+        window->GenerateNewNavigationId();
+      }
+
       window->DispatchPersistedPageshowEvent(navigation_start);
 
-      if (RuntimeEnabledFeatures::NavigationIdEnabled(window)) {
+      if (RuntimeEnabledFeatures::
+              BackForwardCacheRestorationPerformanceEntryEnabled(window)) {
         auto pageshow_end_time = base::TimeTicks::Now();
 
         WindowPerformance* performance =
@@ -4168,11 +4166,11 @@ scheduler::WebAgentGroupScheduler& WebViewImpl::GetWebAgentGroupScheduler() {
 }
 
 void WebViewImpl::UpdatePageBrowsingContextGroup(
-    const BrowsingContextGroupInfo& browsing_context_group_info) {
+    const base::UnguessableToken& browsing_context_group_token) {
   Page* page = GetPage();
   CHECK(page);
 
-  page->UpdateBrowsingContextGroup(browsing_context_group_info);
+  page->UpdateBrowsingContextGroup(browsing_context_group_token);
 }
 
 void WebViewImpl::SetPageAttributionSupport(

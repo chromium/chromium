@@ -33,6 +33,10 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/ca_layer_params.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/gfx/android/surface_control_frame_rate.h"
+#endif
+
 namespace viz {
 
 class Display;
@@ -91,9 +95,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   void UpdateRefreshRate(float refresh_rate) override;
   void SetAdaptiveRefreshRateInfo(
       bool has_support,
-      float suggested_normal,
       float suggested_high,
-      const std::vector<float>& supported_refresh_rates,
       float device_scale_factor) override;
   void PreserveChildSurfaceControls() override;
   void SetSwapCompletionCallbackEnabled(bool enable) override;
@@ -130,7 +132,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       SubmitCompositorFrameSyncCallback callback) override;
   void InitializeCompositorFrameSinkType(
       mojom::CompositorFrameSinkType type) override;
-  void BindLayerContext(mojom::PendingLayerContextPtr context) override;
+  void BindLayerContext(mojom::PendingLayerContextPtr context,
+                        bool draw_mode_is_gpu) override;
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const std::vector<Thread>& threads) override;
 #endif
@@ -206,6 +209,10 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   bool interval_decider_use_fixed_intervals_ = true;
   // The current display frame interval that FrameIntervalDecider decided on.
   base::TimeDelta decided_display_interval_;
+#if BUILDFLAG(IS_ANDROID)
+  gfx::SurfaceControlFrameRateCompatibility decided_display_frame_rate_compat_ =
+      gfx::SurfaceControlFrameRateCompatibility::kFixedSource;
+#endif
 
   // RootCompositorFrameSinkImpl holds a Display and a BeginFrameSource if it
   // was created with a non-null gpu::SurfaceHandle. The source can either be a
@@ -243,6 +250,10 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 #if BUILDFLAG(IS_ANDROID)
   // Let client control whether it wants `DidCompleteSwapWithSize`.
   bool enable_swap_completion_callback_ = false;
+
+  bool supports_adaptive_refresh_rate_ = false;
+  base::TimeDelta suggested_frame_interval_high_;
+  float device_scale_factor_ = 1.0f;
 #endif
 
   // Map which retains the exact supported refresh rates, keyed by their

@@ -64,6 +64,9 @@ class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
       CompletionCallback completion_callback,
       bool in_keyword_mode);
 
+  // Stops creating the request. Already created requests aren't affected.
+  void StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
+
  private:
   // Called when an access token request completes (successfully or not).
   void AccessTokenAvailable(std::unique_ptr<network::ResourceRequest> request,

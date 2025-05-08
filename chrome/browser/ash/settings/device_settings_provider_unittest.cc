@@ -22,9 +22,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1367,6 +1367,16 @@ TEST_F(DeviceSettingsProviderTest, DeviceHindiInscriptLayoutEnabled) {
   BuildAndInstallDevicePolicy();
   EXPECT_EQ(base::Value(true),
             *provider_->Get(kDeviceHindiInscriptLayoutEnabled));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceUserInitiatedFirmwareUpdatesEnabled) {
+  em::BooleanPolicyProto* proto =
+      device_policy_->payload()
+          .mutable_deviceuserinitiatedfirmwareupdatesenabled();
+  proto->set_value(true);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kDeviceUserInitiatedFirmwareUpdatesEnabled));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListUnset) {

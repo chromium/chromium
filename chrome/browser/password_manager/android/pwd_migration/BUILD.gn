@@ -41,7 +41,6 @@ android_library("java") {
   ]
 
   sources = [
-    "java/src/org/chromium/chrome/browser/pwd_migration/ExportDeletionDialogFragment.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningUtil.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetCoordinatorFactory.java",

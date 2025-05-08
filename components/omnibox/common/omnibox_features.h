@@ -37,7 +37,6 @@ BASE_DECLARE_FEATURE(kDynamicMaxAutocomplete);
 BASE_DECLARE_FEATURE(kDisambiguateTabMatchingForEntitySuggestions);
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
-BASE_DECLARE_FEATURE(kAdjustLocalHistoryZeroSuggestRelevanceScore);
 BASE_DECLARE_FEATURE(kFocusTriggersWebAndSRPZeroSuggest);
 BASE_DECLARE_FEATURE(kHideSuggestionGroupHeaders);
 BASE_DECLARE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP);

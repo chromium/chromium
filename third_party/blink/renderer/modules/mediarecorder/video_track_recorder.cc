@@ -856,6 +856,7 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
                              WrapPersistent(callback_interface)))),
       frame_buffer_pool_limit_(frame_buffer_pool_limit) {
   TRACE_EVENT("media", "VideoTrackRecorderImpl::VideoTrackRecorderImpl");
+  CHECK(main_thread_task_runner_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(track_);
   DCHECK(track_->GetSourceType() == MediaStreamSource::kTypeVideo);
@@ -905,6 +906,7 @@ void VideoTrackRecorderImpl::OnVideoFrame(
     base::TimeTicks capture_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   TRACE_EVENT("media", "VideoTrackRecorderImpl::OnVideoFrame");
+  CHECK(video_frame);
 
   // Measure how common video transformation changes are, crbug.com/391786486.
   auto frame_transformation = GetFrameTransformation(video_frame);
@@ -936,6 +938,7 @@ void VideoTrackRecorderImpl::ProcessOneVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks capture_time) {
   TRACE_EVENT("media", "VideoTrackRecorderImpl::ProcessOneVideoFrame");
+  CHECK(video_frame);
   if (!encoder_) {
     InitializeEncoder(bits_per_second_, allow_vea_encoder,
                       video_frame->storage_type(),
@@ -1045,6 +1048,7 @@ void VideoTrackRecorderImpl::InitializeEncoder(
   const bool create_vea_encoder = allow_vea_encoder && can_use_vea;
   auto encoding_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  CHECK(encoding_task_runner);
   auto encoder = CreateMediaVideoEncoder(encoding_task_runner, codec_profile,
                                          is_screencast, create_vea_encoder);
 
@@ -1101,6 +1105,7 @@ VideoTrackRecorderPassthrough::VideoTrackRecorderPassthrough(
                          callback_interface),
       track_(track),
       key_frame_processor_(key_frame_config) {
+  CHECK(main_thread_task_runner_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // HandleEncodedVideoFrame() will be called on Render Main thread.
   // Note: Adding an encoded sink internally generates a new key frame

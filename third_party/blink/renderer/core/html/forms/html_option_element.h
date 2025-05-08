@@ -129,6 +129,8 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // an HTMLOptionElement.
   static bool IsLabelContainerElement(const Element& element);
 
+  bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const override;
+
  private:
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   bool MatchesDefaultPseudoClass() const override;
@@ -146,6 +148,12 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void DefaultEventHandlerInternal(Event&);
 
   void RecalcOwnerSelectElement() const;
+
+  // Helper to choose the option for customizable select event handling in
+  // DefaultEventHandler. Depending on the state of OwnerSelectElement, it may
+  // toggle selectedness and dirtiness, deselect other options, close the
+  // select's picker, and set default handled on the event.
+  void ChooseOption(Event&);
 
   Member<OptionTextObserver> text_observer_;
 

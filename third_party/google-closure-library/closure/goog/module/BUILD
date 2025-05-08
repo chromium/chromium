@@ -7,6 +7,7 @@ licenses(["notice"])
 closure_js_library(
     name = "abstractmoduleloader",
     srcs = ["abstractmoduleloader.js"],
+    lenient = True,
     deps = [
         ":module",
         ":moduleinfo",
@@ -16,6 +17,7 @@ closure_js_library(
 closure_js_library(
     name = "basemodule",
     srcs = ["basemodule.js"],
+    lenient = True,
     deps = [
         ":module",
         "//closure/goog/disposable",
@@ -25,6 +27,7 @@ closure_js_library(
 closure_js_library(
     name = "loader",
     srcs = ["loader.js"],
+    lenient = True,
     deps = [
         ":module",
         "//closure/goog/array",
@@ -41,19 +44,21 @@ closure_js_library(
 closure_js_library(
     name = "module",
     srcs = ["module.js"],
+    lenient = True,
 )
 
 closure_js_library(
     name = "moduleinfo",
     srcs = [
         "moduleinfo.js",
-        "moduleloadfailuretype.js",
     ],
+    lenient = True,
     deps = [
         ":basemodule",
         ":module",
         ":moduleloadcallback",
-        "//closure/goog/async:nexttick",
+        ":moduleloadfailure",
+        "//closure/goog/async:throwexception",
         "//closure/goog/disposable",
         "//closure/goog/functions",
         "//closure/goog/html:trustedresourceurl",
@@ -61,8 +66,17 @@ closure_js_library(
 )
 
 closure_js_library(
+    name = "moduleloadfailure",
+    srcs = [
+        "moduleloadfailure.js",
+    ],
+    lenient = True,
+)
+
+closure_js_library(
     name = "moduleloadcallback",
     srcs = ["moduleloadcallback.js"],
+    lenient = True,
     deps = [
         ":module",
         "//closure/goog/debug:entrypointregistry",
@@ -72,6 +86,7 @@ closure_js_library(
 closure_js_library(
     name = "moduleloader",
     srcs = ["moduleloader.js"],
+    lenient = True,
     deps = [
         ":abstractmoduleloader",
         ":moduleinfo",
@@ -103,11 +118,13 @@ closure_js_library(
 closure_js_library(
     name = "modulemanager",
     srcs = ["modulemanager.js"],
+    lenient = True,
     deps = [
         ":abstractmoduleloader",
         ":module",
         ":moduleinfo",
         ":moduleloadcallback",
+        ":moduleloadfailure",
         "//closure/goog/array",
         "//closure/goog/asserts",
         "//closure/goog/debug:error",

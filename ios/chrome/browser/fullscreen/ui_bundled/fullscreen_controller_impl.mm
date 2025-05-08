@@ -13,18 +13,9 @@
 #import "ios/web/common/features.h"
 
 // static
-FullscreenController* FullscreenController::FromBrowser(Browser* browser) {
-  // TODO(crbug.com/40277656): Do not create FullscreenController and
-  // FullscreenWebStateListObserver for an inactive browser.
-  FullscreenController* fullscreen_controller =
-      static_cast<FullscreenController*>(
-          browser->GetUserData(FullscreenController::UserDataKey()));
-  if (!fullscreen_controller) {
-    fullscreen_controller = new FullscreenControllerImpl(browser);
-    browser->SetUserData(FullscreenController::UserDataKey(),
-                         base::WrapUnique(fullscreen_controller));
-  }
-  return fullscreen_controller;
+std::unique_ptr<FullscreenController> FullscreenController::Create(
+    Browser* browser) {
+  return base::WrapUnique(new FullscreenControllerImpl(browser));
 }
 
 FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)

@@ -155,3 +155,52 @@ TEST_F(ManualFillCreditCardFormAutofilliOSTest, MaskedCardCanNotFillDirectly) {
   EXPECT_TRUE(manualFillCard);
   EXPECT_FALSE(manualFillCard.canFillDirectly);
 }
+
+// Tests that the manual fill credit card build from virtual card has CVC.
+TEST_F(ManualFillCreditCardFormAutofilliOSTest,
+       ManualFillFromVirtualCardHasCVC) {
+  NSString* GUID = @"1234-5678-abcd";
+  NSString* number = @"1234";
+  NSString* CVC = @"123";
+
+  CreditCard autofillCreditCard = CreditCard();
+  autofillCreditCard.set_record_type(
+      autofill::CreditCard::RecordType::kVirtualCard);
+  autofillCreditCard.set_guid(
+      base::UTF16ToASCII(base::SysNSStringToUTF16(GUID)));
+  autofillCreditCard.SetNumber(base::SysNSStringToUTF16(number));
+  autofillCreditCard.set_cvc(base::SysNSStringToUTF16(CVC));
+
+  ManualFillCreditCard* manualFillCard =
+      [[ManualFillCreditCard alloc] initWithCreditCard:autofillCreditCard
+                                                  icon:nil];
+
+  EXPECT_NSEQ(manualFillCard.CVC, CVC);
+}
+
+// Tests that the manual fill credit card build from CardInfoRetrieval enrolled
+// card has CVC and the enrollment state set.
+TEST_F(ManualFillCreditCardFormAutofilliOSTest,
+       ManualFillFromCardInfoRetrieval) {
+  NSString* GUID = @"1234-5678-abcd";
+  NSString* number = @"1234";
+  NSString* CVC = @"123";
+
+  CreditCard autofillCreditCard = CreditCard();
+  autofillCreditCard.set_card_info_retrieval_enrollment_state(
+      autofill::CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalEnrolled);
+  autofillCreditCard.set_guid(
+      base::UTF16ToASCII(base::SysNSStringToUTF16(GUID)));
+  autofillCreditCard.SetNumber(base::SysNSStringToUTF16(number));
+  autofillCreditCard.set_cvc(base::SysNSStringToUTF16(CVC));
+
+  ManualFillCreditCard* manualFillCard =
+      [[ManualFillCreditCard alloc] initWithCreditCard:autofillCreditCard
+                                                  icon:nil];
+
+  EXPECT_NSEQ(manualFillCard.CVC, CVC);
+  EXPECT_EQ(manualFillCard.cardInfoRetrievalEnrollmentState,
+            autofill::CreditCard::CardInfoRetrievalEnrollmentState::
+                kRetrievalEnrolled);
+}

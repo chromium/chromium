@@ -4,13 +4,37 @@
 
 source_set("model") {
   sources = [
+    "distiller_service.h",
+    "distiller_service.mm",
+    "distiller_service_factory.h",
+    "distiller_service_factory.mm",
     "distiller_viewer.cc",
     "distiller_viewer.h",
   ]
   deps = [
     "//base",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//services/network/public/cpp",
     "//ui/gfx",
     "//url",
   ]
   public_deps = [ "//components/dom_distiller/core" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "distiller_service_factory_unittest.mm",
+    "distiller_service_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
 }

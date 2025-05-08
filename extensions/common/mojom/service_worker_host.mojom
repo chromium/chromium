@@ -7,6 +7,7 @@ module extensions.mojom;
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "extensions/common/mojom/event_dispatcher.mojom";
+import "extensions/common/mojom/extension_id.mojom";
 import "extensions/common/mojom/extra_response_data.mojom";
 import "extensions/common/mojom/frame.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -20,7 +21,7 @@ interface ServiceWorkerHost {
   // Tells the browser that an extension service worker context was initialized,
   // but possibly didn't start executing its top-level JavaScript.
   DidInitializeServiceWorkerContext(
-      string extension_id,
+      ExtensionId extension_id,
       int64 service_worker_version_id,
       int32 worker_thread_id,
       blink.mojom.ServiceWorkerToken service_worker_token,
@@ -47,7 +48,7 @@ interface ServiceWorkerHost {
   //     Chrome.
   // See https://crbug.com/879015#c4 for details.
   DidStartServiceWorkerContext(
-      string extension_id,
+      ExtensionId extension_id,
       mojo_base.mojom.UnguessableToken activation_token,
       url.mojom.Url service_worker_scope,
       int64 service_worker_version_id,
@@ -56,7 +57,7 @@ interface ServiceWorkerHost {
   // Tells the browser that an extension service worker context has been
   // destroyed.
   DidStopServiceWorkerContext(
-      string extension_id,
+      ExtensionId extension_id,
       mojo_base.mojom.UnguessableToken activation_token,
       url.mojom.Url service_worker_scope,
       int64 service_worker_version_id,
@@ -65,6 +66,8 @@ interface ServiceWorkerHost {
   // A service worker thread sends this message when an extension service worker
   // starts an API request. We use [UnlimitedSize] here because `params` may be
   // large with some extension function (ex. Storage API).
+  // TODO(crbug.com/404568026): Once RequestParams is converted (in
+  // crbug.com/404555668), then confirm this is converted too.
   [UnlimitedSize]
   RequestWorker(RequestParams params)
        => (bool success,

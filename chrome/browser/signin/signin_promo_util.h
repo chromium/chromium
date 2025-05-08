@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_PROMO_UTIL_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_PROMO_UTIL_H_
 
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -71,15 +72,29 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
 
 class SyncPromoIdentityPillManager {
  public:
-  SyncPromoIdentityPillManager();
+  explicit SyncPromoIdentityPillManager(Profile& profile);
   // Used only for testing.
-  SyncPromoIdentityPillManager(int max_shown_count, int max_used_count);
+  SyncPromoIdentityPillManager(Profile& profile,
+                               int max_shown_count,
+                               int max_used_count);
 
-  bool ShouldShowPromo(Profile& profile) const;
-  void RecordPromoShown(Profile& profile);
-  void RecordPromoUsed(Profile& profile);
+  SyncPromoIdentityPillManager(const SyncPromoIdentityPillManager&) = delete;
+  SyncPromoIdentityPillManager& operator=(const SyncPromoIdentityPillManager&) =
+      delete;
+
+  SyncPromoIdentityPillManager(SyncPromoIdentityPillManager&&) = delete;
+  SyncPromoIdentityPillManager& operator=(SyncPromoIdentityPillManager&&) =
+      delete;
+
+  bool ShouldShowPromo() const;
+  void RecordPromoShown();
+  void RecordPromoUsed();
 
  private:
+  bool ArePromotionsEnabled() const;
+
+  const raw_ref<Profile> profile_;
+
   const int max_shown_count_ = 0;
   const int max_used_count_ = 0;
 };

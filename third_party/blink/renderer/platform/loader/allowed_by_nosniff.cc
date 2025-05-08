@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -183,10 +184,11 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
     console_logger->AddConsoleMessage(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        "Refused to execute script from '" +
-            response.CurrentRequestUrl().ElidedString() +
-            "' because its MIME type ('" + mime_type +
-            "') is not executable, and strict MIME type checking is enabled.");
+        WTF::StrCat({"Refused to execute script from '",
+                     response.CurrentRequestUrl().ElidedString(),
+                     "' because its MIME type ('", mime_type,
+                     "') is not executable, and strict MIME type checking is "
+                     "enabled."}));
     return false;
   }
 
@@ -219,9 +221,10 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
     console_logger->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "Refused to execute script from '" +
-            response.CurrentRequestUrl().ElidedString() +
-            "' because its MIME type ('" + mime_type + "') is not executable.");
+        WTF::StrCat({"Refused to execute script from '",
+                     response.CurrentRequestUrl().ElidedString(),
+                     "' because its MIME type ('", mime_type,
+                     "') is not executable."}));
   } else if (mime_type_check_mode == MimeTypeCheck::kLaxForWorker) {
     bool strict_allow = AllowMimeTypeAsScript(mime_type, same_origin,
                                               MimeTypeCheck::kStrict, counter);
@@ -247,10 +250,11 @@ bool AllowedByNosniff::MimeTypeAsXMLExternalEntity(
   console_logger->AddConsoleMessage(
       mojom::blink::ConsoleMessageSource::kSecurity,
       mojom::blink::ConsoleMessageLevel::kError,
-      "Refused to load XML external entity from '" +
-          response.CurrentRequestUrl().ElidedString() +
-          "' because its MIME type ('" + response.HttpContentType() +
-          "') is incorrect, and strict MIME type checking is enabled.");
+      WTF::StrCat(
+          {"Refused to load XML external entity from '",
+           response.CurrentRequestUrl().ElidedString(),
+           "' because its MIME type ('", response.HttpContentType(),
+           "') is incorrect, and strict MIME type checking is enabled."}));
   return false;
 }
 

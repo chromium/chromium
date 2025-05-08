@@ -129,47 +129,41 @@ GetFeatureListConstant() {
   return *feature_list;
 }
 
-const base::flat_map<std::string, ActionType>& GetActionTypesMap() {
-  // Key will be set in server side config.
-  static const base::NoDestructor<base::flat_map<std::string, ActionType>>
-      action_types_map({
-          {kActionTypeOpenChrome, ActionType::kOpenChrome},
-          {kActionTypeOpenLauncher, ActionType::kOpenLauncher},
-          {kActionTypeOpenPersonalizationApp,
-           ActionType::kOpenPersonalizationApp},
-          {kActionTypeOpenPlayStore, ActionType::kOpenPlayStore},
-          {kActionTypeOpenGoogleDocs, ActionType::kOpenGoogleDocs},
-          {kActionTypeOpenGooglePhotos, ActionType::kOpenGooglePhotos},
-          {kActionTypeOpenSettingsPrinter, ActionType::kOpenSettingsPrinter},
-          {kActionTypeOpenPhoneHub, ActionType::kOpenPhoneHub},
-          {kActionTypeOpenYouTube, ActionType::kOpenYouTube},
-          {kActionTypeOpenFileManager, ActionType::kOpenFileManager},
-          {kActionTypeOpenHelpAppPerks, ActionType::kOpenHelpAppPerks},
-          {kActionTypeOpenChromebookPerksWeb,
-           ActionType::kOpenChromebookPerksWeb},
-          {kActionTypeOpenChromebookPerksGfnPriority2022,
-           ActionType::kOpenChromebookPerksGfnPriority2022},
-          {kActionTypeOpenChromebookPerksMinecraft2023,
-           ActionType::kOpenChromebookPerksMinecraft2023},
-          {kActionTypeOpenChromebookPerksMinecraftRealms2023,
-           ActionType::kOpenChromebookPerksMinecraftRealms2023},
-      });
-  return *action_types_map;
-}
+constexpr auto kActionTypesMap =
+    // Key will be set in server side config.
+    base::MakeFixedFlatMap<std::string_view, ActionType>({
+        {kActionTypeOpenChrome, ActionType::kOpenChrome},
+        {kActionTypeOpenLauncher, ActionType::kOpenLauncher},
+        {kActionTypeOpenPersonalizationApp,
+         ActionType::kOpenPersonalizationApp},
+        {kActionTypeOpenPlayStore, ActionType::kOpenPlayStore},
+        {kActionTypeOpenGoogleDocs, ActionType::kOpenGoogleDocs},
+        {kActionTypeOpenGooglePhotos, ActionType::kOpenGooglePhotos},
+        {kActionTypeOpenSettingsPrinter, ActionType::kOpenSettingsPrinter},
+        {kActionTypeOpenPhoneHub, ActionType::kOpenPhoneHub},
+        {kActionTypeOpenYouTube, ActionType::kOpenYouTube},
+        {kActionTypeOpenFileManager, ActionType::kOpenFileManager},
+        {kActionTypeOpenHelpAppPerks, ActionType::kOpenHelpAppPerks},
+        {kActionTypeOpenChromebookPerksWeb,
+         ActionType::kOpenChromebookPerksWeb},
+        {kActionTypeOpenChromebookPerksGfnPriority2022,
+         ActionType::kOpenChromebookPerksGfnPriority2022},
+        {kActionTypeOpenChromebookPerksMinecraft2023,
+         ActionType::kOpenChromebookPerksMinecraft2023},
+        {kActionTypeOpenChromebookPerksMinecraftRealms2023,
+         ActionType::kOpenChromebookPerksMinecraftRealms2023},
+    });
 
-const base::flat_map<std::string, BubbleIcon>& GetBubbleIconsMap() {
-  // Key will be set in server side config.
-  static const base::NoDestructor<base::flat_map<std::string, BubbleIcon>>
-      bubble_icons_map({
-          {kBubbleIconChromeIcon, BubbleIcon::kChromeIcon},
-          {kBubbleIconPlayStoreIcon, BubbleIcon::kPlayStoreIcon},
-          {kBubbleIconGoogleDocsIcon, BubbleIcon::kGoogleDocsIcon},
-          {kBubbleIconGooglePhotosIcon, BubbleIcon::kGooglePhotosIcon},
-          {kBubbleIconPrintJobsIcon, BubbleIcon::kPrintJobsIcon},
-          {kBubbleIconYouTubeIcon, BubbleIcon::kYouTubeIcon},
-      });
-  return *bubble_icons_map;
-}
+constexpr auto kBubbleIconsMap =
+    // Key will be set in server side config.
+    base::MakeFixedFlatMap<std::string_view, BubbleIcon>({
+        {kBubbleIconChromeIcon, BubbleIcon::kChromeIcon},
+        {kBubbleIconPlayStoreIcon, BubbleIcon::kPlayStoreIcon},
+        {kBubbleIconGoogleDocsIcon, BubbleIcon::kGoogleDocsIcon},
+        {kBubbleIconGooglePhotosIcon, BubbleIcon::kGooglePhotosIcon},
+        {kBubbleIconPrintJobsIcon, BubbleIcon::kPrintJobsIcon},
+        {kBubbleIconYouTubeIcon, BubbleIcon::kYouTubeIcon},
+    });
 
 constexpr auto kAppListItemActivationEventsMap =
     base::MakeFixedFlatMap<std::string_view, ScalableIph::Event>({
@@ -303,8 +297,8 @@ UiType GetUiType(Logger* logger, const base::Feature& feature) {
 }
 
 ActionType ParseActionType(const std::string& action_type_string) {
-  auto it = GetActionTypesMap().find(action_type_string);
-  if (it == GetActionTypesMap().end()) {
+  auto it = kActionTypesMap.find(action_type_string);
+  if (it == kActionTypesMap.end()) {
     // If the server side config action type cannot be parsed, will return the
     // kInvalid as the parsed result.
     return ActionType::kInvalid;
@@ -459,8 +453,8 @@ std::unique_ptr<NotificationParams> GetNotificationParams(
 }
 
 BubbleIcon ParseBubbleIcon(const std::string& icon_string) {
-  auto it = GetBubbleIconsMap().find(icon_string);
-  if (it == GetBubbleIconsMap().end()) {
+  auto it = kBubbleIconsMap.find(icon_string);
+  if (it == kBubbleIconsMap.end()) {
     // If the server side config bubble icon cannot be parsed, will return the
     // kNoIcon as the parsed result.
     return BubbleIcon::kNoIcon;

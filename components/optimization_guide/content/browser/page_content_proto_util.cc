@@ -9,8 +9,9 @@
 
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
-#include "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
@@ -52,6 +53,8 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
       return optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE;
     case blink::mojom::AIPageContentAttributeType::kSVG:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_SVG;
+    case blink::mojom::AIPageContentAttributeType::kCanvas:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_CANVAS;
     case blink::mojom::AIPageContentAttributeType::kForm:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_FORM;
     case blink::mojom::AIPageContentAttributeType::kFormControl:
@@ -112,6 +115,12 @@ void AddDocumentIdentifier(content::GlobalRenderFrameHostToken frame_token,
       serialized_server_token);
 }
 
+void ConvertSize(const gfx::Size& mojom_size,
+                 optimization_guide::proto::BoundingSize* proto_size) {
+  proto_size->set_width(mojom_size.width());
+  proto_size->set_height(mojom_size.height());
+}
+
 void ConvertRect(const gfx::Rect& mojom_rect,
                  optimization_guide::proto::BoundingRect* proto_rect) {
   proto_rect->set_x(mojom_rect.x());
@@ -130,25 +139,27 @@ void ConvertGeometry(const blink::mojom::AIPageContentGeometry& mojom_geometry,
       mojom_geometry.is_fixed_or_sticky_position);
 }
 
-void ConvertHitTestNodes(
-    const blink::mojom::AIPageContentFrameData& mojom_frame_data,
-    optimization_guide::proto::FrameData* proto_frame_data) {
-  for (const auto& hit_node : mojom_frame_data.hit_test_nodes_in_viewport) {
-    auto* proto_hit_node = proto_frame_data->add_hit_test_nodes();
-    proto_hit_node->set_dom_node_id(hit_node->dom_node_id);
-    ConvertRect(hit_node->visible_bounding_box,
-                proto_hit_node->mutable_visible_bounding_box());
-  }
+void ConvertScrollerInfo(
+    const blink::mojom::AIPageContentScrollerInfo& mojom_scroller_info,
+    optimization_guide::proto::ScrollerInfo* proto_scroller_info) {
+  ConvertSize(mojom_scroller_info.scrolling_bounds,
+              proto_scroller_info->mutable_scrolling_bounds());
+  ConvertRect(mojom_scroller_info.visible_area,
+              proto_scroller_info->mutable_visible_area());
+  proto_scroller_info->set_user_scrollable_horizontal(
+      mojom_scroller_info.user_scrollable_horizontal);
+  proto_scroller_info->set_user_scrollable_vertical(
+      mojom_scroller_info.user_scrollable_vertical);
 }
 
 void ConvertNodeInteractionInfo(
     const blink::mojom::AIPageContentNodeInteractionInfo&
         mojom_node_interaction_info,
     optimization_guide::proto::InteractionInfo* proto_interaction_info) {
-  proto_interaction_info->set_scrolls_overflow_x(
-      mojom_node_interaction_info.scrolls_overflow_x);
-  proto_interaction_info->set_scrolls_overflow_y(
-      mojom_node_interaction_info.scrolls_overflow_y);
+  if (mojom_node_interaction_info.scroller_info) {
+    ConvertScrollerInfo(*mojom_node_interaction_info.scroller_info,
+                        proto_interaction_info->mutable_scroller_info());
+  }
   proto_interaction_info->set_is_selectable(
       mojom_node_interaction_info.is_selectable);
   proto_interaction_info->set_is_editable(
@@ -163,8 +174,11 @@ void ConvertNodeInteractionInfo(
       mojom_node_interaction_info.is_draggable);
   proto_interaction_info->set_is_clickable(
       mojom_node_interaction_info.is_clickable);
-  proto_interaction_info->set_for_dom_node_id(
-      mojom_node_interaction_info.for_dom_node_id);
+
+  if (mojom_node_interaction_info.document_scoped_z_order) {
+    proto_interaction_info->set_document_scoped_z_order(
+        *mojom_node_interaction_info.document_scoped_z_order);
+  }
 }
 
 void ConvertPoint(const gfx::Point& mojom_point,
@@ -259,6 +273,13 @@ void ConvertSVGData(const blink::mojom::AIPageContentSVGData& mojom_svg_data,
   if (mojom_svg_data.inner_text) {
     proto_svg_data->set_inner_text(*mojom_svg_data.inner_text);
   }
+}
+
+void ConvertCanvasData(
+    const blink::mojom::AIPageContentCanvasData& mojom_canvas_data,
+    optimization_guide::proto::CanvasData* proto_canvas_data) {
+  proto_canvas_data->set_layout_width(mojom_canvas_data.layout_size.width());
+  proto_canvas_data->set_layout_height(mojom_canvas_data.layout_size.height());
 }
 
 optimization_guide::proto::AnchorRel ConvertAnchorRel(
@@ -465,6 +486,13 @@ bool ConvertAttributes(
     }
     ConvertSVGData(*mojom_attributes.svg_data,
                    proto_attributes->mutable_svg_data());
+  } else if (mojom_attributes.canvas_data) {
+    if (mojom_attributes.attribute_type !=
+        blink::mojom::AIPageContentAttributeType::kCanvas) {
+      return false;
+    }
+    ConvertCanvasData(*mojom_attributes.canvas_data,
+                      proto_attributes->mutable_canvas_data());
   } else if (mojom_attributes.anchor_data) {
     if (mojom_attributes.attribute_type !=
         blink::mojom::AIPageContentAttributeType::kAnchor) {
@@ -508,6 +536,16 @@ bool ConvertAttributes(
   for (const auto& annotated_role : mojom_attributes.annotated_roles) {
     proto_attributes->add_annotated_roles(ConvertAnnotatedRole(annotated_role));
   }
+
+  if (mojom_attributes.aria_role) {
+    proto_attributes->set_aria_role(AXRoleToProto(*mojom_attributes.aria_role));
+  }
+
+  if (mojom_attributes.label_for_dom_node_id) {
+    proto_attributes->set_label_for_dom_node_id(
+        *mojom_attributes.label_for_dom_node_id);
+  }
+
   return true;
 }
 
@@ -557,8 +595,6 @@ void ConvertFrameData(
     paid_content_metadata->set_contains_paid_content(
         mojom_frame_data.contains_paid_content.value());
   }
-
-  ConvertHitTestNodes(mojom_frame_data, proto_frame_data);
 }
 
 // `mojom_iframe_data` holds information about the iframe provided by the

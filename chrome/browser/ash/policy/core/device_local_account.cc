@@ -42,6 +42,7 @@ bool IsKioskType(DeviceLocalAccountType type) {
     case DeviceLocalAccountType::kKioskApp:
     case DeviceLocalAccountType::kWebKioskApp:
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
+    case DeviceLocalAccountType::kArcvmKioskApp:
       return true;
     case DeviceLocalAccountType::kPublicSession:
     case DeviceLocalAccountType::kSamlPublicSession:
@@ -63,9 +64,44 @@ WebKioskAppBasicInfo::~WebKioskAppBasicInfo() = default;
 
 IsolatedWebAppKioskBasicInfo::IsolatedWebAppKioskBasicInfo(
     std::string web_bundle_id,
-    std::string update_manifest_url)
+    std::string update_manifest_url,
+    std::string update_channel,
+    std::string pinned_version,
+    bool allow_downgrades)
     : web_bundle_id_(std::move(web_bundle_id)),
-      update_manifest_url_(std::move(update_manifest_url)) {}
+      update_manifest_url_(std::move(update_manifest_url)),
+      update_channel_(std::move(update_channel)),
+      pinned_version_(std::move(pinned_version)),
+      allow_downgrades_(allow_downgrades) {}
+
+IsolatedWebAppKioskBasicInfo::IsolatedWebAppKioskBasicInfo() = default;
+
+IsolatedWebAppKioskBasicInfo::~IsolatedWebAppKioskBasicInfo() = default;
+
+IsolatedWebAppKioskBasicInfo::IsolatedWebAppKioskBasicInfo(
+    const IsolatedWebAppKioskBasicInfo& other) = default;
+
+IsolatedWebAppKioskBasicInfo& IsolatedWebAppKioskBasicInfo::operator=(
+    const IsolatedWebAppKioskBasicInfo&) = default;
+
+ArcvmKioskAppBasicInfo::ArcvmKioskAppBasicInfo(const std::string& package_name,
+                                               const std::string& class_name,
+                                               const std::string& action,
+                                               const std::string& display_name)
+    : package_name_(package_name),
+      class_name_(class_name),
+      action_(action),
+      display_name_(display_name) {}
+
+ArcvmKioskAppBasicInfo::ArcvmKioskAppBasicInfo(
+    const ArcvmKioskAppBasicInfo& other) = default;
+
+ArcvmKioskAppBasicInfo& ArcvmKioskAppBasicInfo::operator=(
+    const ArcvmKioskAppBasicInfo&) = default;
+
+ArcvmKioskAppBasicInfo::ArcvmKioskAppBasicInfo() = default;
+
+ArcvmKioskAppBasicInfo::~ArcvmKioskAppBasicInfo() = default;
 
 DeviceLocalAccount::DeviceLocalAccount(DeviceLocalAccountType type,
                                        EphemeralMode ephemeral_mode,
@@ -98,6 +134,16 @@ DeviceLocalAccount::DeviceLocalAccount(
       account_id(account_id),
       user_id(GenerateDeviceLocalAccountUserId(account_id, type)),
       kiosk_iwa_info(kiosk_iwa_info) {}
+
+DeviceLocalAccount::DeviceLocalAccount(
+    EphemeralMode ephemeral_mode,
+    const ArcvmKioskAppBasicInfo& arcvm_kiosk_app_info,
+    const std::string& account_id)
+    : type(DeviceLocalAccountType::kArcvmKioskApp),
+      ephemeral_mode(ephemeral_mode),
+      account_id(account_id),
+      user_id(GenerateDeviceLocalAccountUserId(account_id, type)),
+      arcvm_kiosk_app_info(arcvm_kiosk_app_info) {}
 
 DeviceLocalAccount::DeviceLocalAccount(const DeviceLocalAccount& other) =
     default;
@@ -240,10 +286,59 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
           continue;
         }
 
+        std::string update_channel;
+        GetString(entry_dict,
+                  ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateChannel,
+                  &update_channel);
+
+        std::string pinned_version;
+        GetString(entry_dict,
+                  ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskPinnedVersion,
+                  &pinned_version);
+
+        bool allow_downgrades =
+            entry_dict
+                .FindBool(
+                    ash::
+                        kAccountsPrefDeviceLocalAccountsKeyIwaKioskAllowDowngrades)
+                .value_or(false);
+
         accounts.emplace_back(
             ephemeral_mode_value,
-            IsolatedWebAppKioskBasicInfo(web_bundle_id, update_manifest_url),
+            IsolatedWebAppKioskBasicInfo(web_bundle_id, update_manifest_url,
+                                         update_channel, pinned_version,
+                                         allow_downgrades),
             account_id);
+        break;
+      }
+      case DeviceLocalAccountType::kArcvmKioskApp: {
+        std::string package_name;
+        std::string class_name;
+        std::string action;
+        std::string display_name;
+        if (!GetString(
+                entry_dict,
+                ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskPackage,
+                &package_name)) {
+          LOG(ERROR) << "Missing package name in ARC kiosk type device-local "
+                        "account at index "
+                     << i << ".";
+          continue;
+        }
+        GetString(entry_dict,
+                  ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskClass,
+                  &class_name);
+        GetString(entry_dict,
+                  ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskAction,
+                  &action);
+        GetString(entry_dict,
+                  ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskDisplayName,
+                  &display_name);
+        const ArcvmKioskAppBasicInfo arcvm_kiosk_app(package_name, class_name,
+                                                     action, display_name);
+
+        accounts.emplace_back(ephemeral_mode_value, arcvm_kiosk_app,
+                              account_id);
         break;
       }
     }
@@ -295,6 +390,30 @@ void SetDeviceLocalAccountsForTesting(
                   account.kiosk_iwa_info.web_bundle_id());
         entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl,
                   account.kiosk_iwa_info.update_manifest_url());
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateChannel,
+                  account.kiosk_iwa_info.update_channel());
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskPinnedVersion,
+                  account.kiosk_iwa_info.pinned_version());
+        entry.Set(
+            ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskAllowDowngrades,
+            account.kiosk_iwa_info.allow_downgrades());
+        break;
+      case DeviceLocalAccountType::kArcvmKioskApp:
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskPackage,
+                  account.arcvm_kiosk_app_info.package_name());
+        if (!account.arcvm_kiosk_app_info.class_name().empty()) {
+          entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskClass,
+                    account.arcvm_kiosk_app_info.class_name());
+        }
+        if (!account.arcvm_kiosk_app_info.action().empty()) {
+          entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskAction,
+                    account.arcvm_kiosk_app_info.action());
+        }
+        if (!account.arcvm_kiosk_app_info.display_name().empty()) {
+          entry.Set(
+              ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskDisplayName,
+              account.arcvm_kiosk_app_info.display_name());
+        }
         break;
     }
     list.Append(std::move(entry));

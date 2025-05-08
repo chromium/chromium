@@ -361,7 +361,7 @@ SharedStorageDocumentServiceImpl::SharedStorageDocumentServiceImpl(
           rfh->GetOutermostMainFrame()->GetLastCommittedOrigin()),
       main_frame_id_(
           static_cast<RenderFrameHostImpl*>(rfh->GetOutermostMainFrame())
-              ->GetFrameTreeNodeId()) {}
+              ->GetGlobalId()) {}
 
 void SharedStorageDocumentServiceImpl::OnCreateWorkletResponseIntercepted(
     bool is_same_origin,

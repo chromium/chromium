@@ -9,7 +9,6 @@
 #import "base/functional/callback_forward.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/task_environment.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
@@ -36,6 +35,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/providers/photos/test_photos_service.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -125,6 +125,8 @@ class SaveToPhotosMediatorTest : public PlatformTest {
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
+    builder.AddTestingFactory(PhotosServiceFactory::GetInstance(),
+                              PhotosServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     web_state_ = std::make_unique<web::FakeWebState>();
@@ -207,7 +209,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
         ImageFetchTabHelper::FromWebState(web_state_.get()));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::FakeWebState> web_state_;

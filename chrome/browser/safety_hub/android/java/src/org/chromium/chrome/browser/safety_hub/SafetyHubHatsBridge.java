@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.safety_hub;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 
 /** Java equivalent of safety_hub_hats_bridge.cc */
+@NullMarked
 class SafetyHubHatsBridge {
     /** Tries to trigger the HaTS survey if the flag is enabled. */
     static boolean triggerHatsSurveyIfEnabled(

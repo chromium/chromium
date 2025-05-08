@@ -26,13 +26,13 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
 
 namespace blink {
 
-WebGLShader::WebGLShader(WebGLRenderingContextBase* ctx, GLenum type)
-    : WebGLSharedPlatform3DObject(ctx), type_(type), source_("") {
-  if (!ctx->isContextLost()) {
+WebGLShader::WebGLShader(WebGLContextObjectSupport* ctx, GLenum type)
+    : WebGLObject(ctx), type_(type), source_("") {
+  if (!ctx->IsLost()) {
     SetObject(ctx->ContextGL()->CreateShader(type));
   }
 }
@@ -40,8 +40,7 @@ WebGLShader::WebGLShader(WebGLRenderingContextBase* ctx, GLenum type)
 WebGLShader::~WebGLShader() = default;
 
 void WebGLShader::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteShader(object_);
-  object_ = 0;
+  gl->DeleteShader(Object());
 }
 
 }  // namespace blink

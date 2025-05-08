@@ -2,22 +2,56 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 assert(!is_android)
 
 source_set("new_tab_footer") {
-  sources = [ "new_tab_footer_ui.h" ]
+  sources = [
+    "new_tab_footer_handler.h",
+    "new_tab_footer_ui.h",
+  ]
   public_deps = [
-    "//chrome/common",
-    "//content/public/browser",
+    ":mojo_bindings",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//ui/webui",
   ]
 }
 
 source_set("impl") {
-  sources = [ "new_tab_footer_ui.cc" ]
+  sources = [
+    "new_tab_footer_handler.cc",
+    "new_tab_footer_ui.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     ":new_tab_footer",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles",
     "//chrome/browser/resources/new_tab_footer:resources_grit",
+    "//chrome/common",
     "//components/search:search",
-    "//ui/webui",
+    "//content/public/browser",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "new_tab_footer_handler_unittest.cc" ]
+  deps = [
+    ":new_tab_footer",
+    "//base/test:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "new_tab_footer.mojom" ]
+  webui_module_path = "/"
+
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
 }

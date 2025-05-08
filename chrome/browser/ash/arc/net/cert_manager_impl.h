@@ -20,8 +20,8 @@ namespace arc {
 
 // Certificate and private key PKCS #8 PEM headers as described in section 5 and
 // 10 respectively of RFC7468.
-constexpr char kCertificatePEMHeader[] = "CERTIFICATE";
-constexpr char kPrivateKeyPEMHeader[] = "PRIVATE KEY";
+inline constexpr char kCertificatePEMHeader[] = "CERTIFICATE";
+inline constexpr char kPrivateKeyPEMHeader[] = "PRIVATE KEY";
 
 // CertManager imports plain-text certificates and private keys into Chrome OS'
 // key store (chaps).

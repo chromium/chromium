@@ -18,11 +18,11 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,10 +81,9 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
       extension.get(),
       /*disable_reasons=*/{}, syncer::StringOrdinal::CreateInitialOrdinal(),
       std::string());
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  extension_service->AddExtension(extension.get());
-  extension_service->EnableExtension(extension->id());
+  auto* registrar = extensions::ExtensionRegistrar::Get(profile);
+  registrar->AddExtension(extension);
+  registrar->EnableExtension(extension->id());
 
   return extension;
 }

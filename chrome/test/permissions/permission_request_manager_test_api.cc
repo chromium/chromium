@@ -5,12 +5,16 @@
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 
 #include <memory>
+
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
+#include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "ui/views/widget/widget.h"
 
 namespace test {
@@ -24,9 +28,15 @@ class TestPermissionRequestOwner {
   explicit TestPermissionRequestOwner(permissions::RequestType type,
                                       GURL& origin) {
     const bool user_gesture = true;
-    auto decided = [](ContentSetting, bool, bool) {};
+    auto decided =
+        [](ContentSetting, bool, bool,
+           const std::unique_ptr<permissions::PermissionRequestData>&) {};
     request_ = std::make_unique<permissions::PermissionRequest>(
-        origin, type, user_gesture, base::BindRepeating(decided),
+        std::make_unique<permissions::PermissionRequestData>(
+            std::make_unique<permissions::ContentSettingPermissionResolver>(
+                permissions::RequestTypeToContentSettingsType(type).value()),
+            /*user_gesture=*/user_gesture, origin),
+        base::BindRepeating(decided),
         base::BindOnce(&TestPermissionRequestOwner::DeleteThis,
                        base::Unretained(this)));
   }

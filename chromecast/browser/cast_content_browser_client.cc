@@ -349,7 +349,7 @@ bool CastContentBrowserClient::EnableRemoteDebuggingImmediately() {
 std::vector<std::string> CastContentBrowserClient::GetStartupServices() {
   return {
 #if BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
-    external_mojo::BrokerService::kServiceName
+      external_mojo::BrokerService::kServiceName
 #endif
   };
 }
@@ -508,16 +508,6 @@ void CastContentBrowserClient::OverrideWebPreferences(
   DCHECK(prefs->viewport_meta_enabled);
   prefs->viewport_style = blink::mojom::ViewportStyle::kTelevision;
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  // Disable WebSQL databases by default.
-  prefs->databases_enabled = false;
-  if (web_contents) {
-    chromecast::CastWebContents* cast_web_contents =
-        chromecast::CastWebContents::FromWebContents(web_contents);
-    if (cast_web_contents && cast_web_contents->is_websql_enabled()) {
-      prefs->databases_enabled = true;
-    }
-  }
 
   prefs->preferred_color_scheme =
       static_cast<blink::mojom::PreferredColorScheme>(
@@ -809,18 +799,14 @@ CastContentBrowserClient::CreateCrashHandlerHost(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-CastContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* handle) {
-  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-
+void CastContentBrowserClient::CreateThrottlesForNavigation(
+    content::NavigationThrottleRegistry& registry) {
   if (chromecast::IsFeatureEnabled(kEnableGeneralAudienceBrowsing)) {
-    throttles.push_back(
+    registry.AddThrottle(
         std::make_unique<GeneralAudienceBrowsingNavigationThrottle>(
-            handle, general_audience_browsing_service_.get()));
+            &registry.GetNavigationHandle(),
+            general_audience_browsing_service_.get()));
   }
-
-  return throttles;
 }
 
 void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(

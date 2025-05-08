@@ -10,7 +10,7 @@
 #include <set>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/sync/model/syncable_service.h"
@@ -33,8 +33,8 @@ class SyncableSettingsStorage;
 // Lives entirely on the FILE thread.
 class SyncStorageBackend final : public syncer::SyncableService {
  public:
-  // |storage_factory| is use to create leveldb storage areas.
-  // |observers| is the list of observers to settings changes.
+  // `storage_factory` is use to create leveldb storage areas.
+  // `observers` is the list of observers to settings changes.
   SyncStorageBackend(
       scoped_refptr<value_store::ValueStoreFactory> storage_factory,
       const SettingsStorageQuotaEnforcer::Limits& quota,

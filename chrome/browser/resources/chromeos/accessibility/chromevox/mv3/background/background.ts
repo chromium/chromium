@@ -64,6 +64,7 @@ export class Background extends ChromeVoxState {
   private earcons_: AbstractEarcons;
   private isReadingContinuously_ = false;
   private talkBackEnabled_ = false;
+  private static createdOffscreenDocument_: Promise<void>|null = null;
 
   constructor() {
     super();
@@ -91,6 +92,7 @@ export class Background extends ChromeVoxState {
 
   static async init(): Promise<void> {
     // Pre-initialization.
+    await this.maybeCreateOffscreenDocument_();
     await Features.init();
     await Flags.init();
     await LocalStorage.init();
@@ -140,6 +142,36 @@ export class Background extends ChromeVoxState {
     ChromeVoxState.resolveReadyPromise_();
     ChromeVoxState.instance.onIntroduceChromeVox();
   }
+
+  static async maybeCreateOffscreenDocument_() {
+    const offscreenUrl =
+        chrome.runtime.getURL('chromevox/mv3/offscreen/offscreen.html');
+
+    const existingContexts = await chrome.runtime.getContexts({
+      contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
+      documentUrls: [offscreenUrl]
+    });
+
+    if (existingContexts.length > 0) {
+      return;
+    }
+
+    if (!this.createdOffscreenDocument_) {
+      this.createdOffscreenDocument_ = chrome.offscreen.createDocument({
+        url: offscreenUrl,
+        reasons: [chrome.offscreen.Reason.CLIPBOARD],
+        justification: 'Clipboard and responding to key events',
+      });
+    }
+    try {
+      await this.createdOffscreenDocument_;
+    } catch (error) {
+      console.error('Failed to create offscreen document: ', error);
+      throw error;
+    }
+    this.createdOffscreenDocument_ = null;
+  }
+
 
   override get isReadingContinuously(): boolean {
     return this.isReadingContinuously_;

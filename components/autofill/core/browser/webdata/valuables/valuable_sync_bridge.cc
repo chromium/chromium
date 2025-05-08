@@ -26,6 +26,17 @@ namespace {
 
 // The address of this variable is used as the user data key.
 static const int kAutofillValuableSyncBridgeUserDataKey = 0;
+
+template <class Item>
+bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
+                          const std::vector<Item>& new_data) {
+  if (old_data.size() != new_data.size()) {
+    return true;
+  }
+
+  return base::MakeFlatSet<Item>(old_data) != base::MakeFlatSet<Item>(new_data);
+}
+
 }  // namespace
 
 ValuableSyncBridge::ValuableSyncBridge(
@@ -261,9 +272,11 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
     }
   }
 
-  // TODO(crbug.com/393119606): Only trigger update if the set of loyalty cards
-  // differ.
-  if (!GetValuablesTable()->SetLoyaltyCards(std::move(loyalty_cards))) {
+  const bool valuables_data_changed = AreAnyItemsDifferent(
+      GetValuablesTable()->GetLoyaltyCards(), loyalty_cards);
+
+  if (valuables_data_changed &&
+      !GetValuablesTable()->SetLoyaltyCards(std::move(loyalty_cards))) {
     return syncer::ModelError(FROM_HERE, "Failed to set loyalty card data.");
   }
 
@@ -274,7 +287,9 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
   if (transaction) {
     transaction->Commit();
   }
-  web_data_backend_->NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE);
+  if (valuables_data_changed) {
+    web_data_backend_->NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE);
+  }
   return std::nullopt;
 }
 

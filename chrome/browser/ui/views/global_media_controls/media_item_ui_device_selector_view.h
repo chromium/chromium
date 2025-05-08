@@ -26,13 +26,13 @@ namespace {
 class ExpandDeviceSelectorLabel;
 class ExpandDeviceSelectorButton;
 
-const char kAudioDevicesCountHistogramName[] =
+inline constexpr char kAudioDevicesCountHistogramName[] =
     "Media.GlobalMediaControls.NumberOfAvailableAudioDevices";
-const char kCastDeviceCountHistogramName[] =
+inline constexpr char kCastDeviceCountHistogramName[] =
     "Media.GlobalMediaControls.CastDeviceCount";
-const char kDeviceSelectorAvailableHistogramName[] =
+inline constexpr char kDeviceSelectorAvailableHistogramName[] =
     "Media.GlobalMediaControls.DeviceSelectorAvailable";
-const char kDeviceSelectorOpenedHistogramName[] =
+inline constexpr char kDeviceSelectorOpenedHistogramName[] =
     "Media.GlobalMediaControls.DeviceSelectorOpened";
 }  // anonymous namespace
 

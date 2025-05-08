@@ -1041,7 +1041,11 @@ void WallpaperControllerImpl::OnPolicyWallpaperDecoded(
   }
   wallpaper_metrics_manager_->LogWallpaperResult(WallpaperType::kPolicy,
                                                  SetWallpaperResult::kSuccess);
-  bool is_managed_guest = (user_type == user_manager::UserType::kPublicAccount);
+  // Avoid race condition with user session being created by forcing
+  // kPublicGuest users to be considered ephemeral.
+  const bool is_managed_guest =
+      (user_type == user_manager::UserType::kPublicAccount) ||
+      IsEphemeralUser(account_id);
   SaveAndSetWallpaper(account_id, is_managed_guest, kPolicyWallpaperFile,
                       /*file_path=*/"", WallpaperType::kPolicy,
                       WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper, image);

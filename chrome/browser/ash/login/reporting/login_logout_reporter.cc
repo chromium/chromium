@@ -18,8 +18,8 @@
 #include "chrome/browser/policy/messaging_layer/proto/synced/login_logout_event.pb.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -61,6 +61,7 @@ LoginLogoutSessionType GetSessionType(const AccountId& account_id) {
     case policy::DeviceLocalAccountType::kKioskApp:
     case policy::DeviceLocalAccountType::kWebKioskApp:
     case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
+    case policy::DeviceLocalAccountType::kArcvmKioskApp:
       return LoginLogoutSessionType::KIOSK_SESSION;
   }
   NOTREACHED();

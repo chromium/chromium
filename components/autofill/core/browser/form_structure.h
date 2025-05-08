@@ -211,8 +211,8 @@ class FormStructure {
     //
     // TODO: crbug.com/40227496 - When kAutofillFixValueSemantics is launched,
     // kFormImport behaves identical to kFormCacheUpdateWithoutParsing. Consider
-    // renaming the
-    // enum constants or, better yet, removing the entire enum then.
+    // renaming the enum constants or, better yet, removing the entire enum
+    // then.
     kFormImport,
   };
 

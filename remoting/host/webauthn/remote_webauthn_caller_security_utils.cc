@@ -5,12 +5,12 @@
 #include "remoting/host/webauthn/remote_webauthn_caller_security_utils.h"
 
 #include <optional>
-#include <string_view>
 
 #include "base/environment.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
@@ -63,7 +63,7 @@ constexpr auto kAllowedCallerPrograms =
 // Names of environment variables that store the path to directories where apps
 // are installed.
 constexpr auto kAppsDirectoryEnvVars =
-    base::MakeFixedFlatSet<std::string_view>({
+    base::MakeFixedFlatSet<base::cstring_view>({
         "PROGRAMFILES",
 
         // May happen if Chrome is upgraded from a 32-bit version.
@@ -144,7 +144,7 @@ bool IsLaunchedByTrustedProcess() {
   }
 
   // Check if the caller's image path is allowlisted.
-  for (std::string_view apps_dir_env_var : kAppsDirectoryEnvVars) {
+  for (base::cstring_view apps_dir_env_var : kAppsDirectoryEnvVars) {
     std::optional<std::string> apps_dir_path_utf8 =
         environment->GetVar(apps_dir_env_var);
     if (!apps_dir_path_utf8.has_value()) {

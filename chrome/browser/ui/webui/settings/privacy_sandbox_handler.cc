@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -227,8 +226,7 @@ void PrivacySandboxHandler::HandleShouldShowPrivacySandboxAdTopicsContentParity(
 }
 
 PrivacySandboxCountries* PrivacySandboxHandler::GetPrivacySandboxCountries() {
-  static PrivacySandboxCountriesImpl instance;
-  return &instance;
+  return GetSingletonPrivacySandboxCountries();
 }
 
 PrivacySandboxService* PrivacySandboxHandler::GetPrivacySandboxService() {

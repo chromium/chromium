@@ -69,10 +69,9 @@ class CONTENT_EXPORT LevelDBCleanupScheduler {
     // Virtual for testing.
     // Returns `true` if the update was successful.
     virtual bool UpdateEarliestCompactionTime() = 0;
-    // This method is also used by `BucketContext` where it
-    // is defined as a friend class of `BackingStore`.
     virtual Status GetCompleteMetadata(
-        std::vector<blink::IndexedDBDatabaseMetadata>* output) = 0;
+        std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>*
+            output) = 0;
   };
 
   struct RunningState {
@@ -81,7 +80,8 @@ class CONTENT_EXPORT LevelDBCleanupScheduler {
     RunningState& operator=(const RunningState&) = delete;
     ~RunningState();
 
-    std::vector<blink::IndexedDBDatabaseMetadata> metadata_vector;
+    std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>
+        metadata_vector;
     std::unique_ptr<LevelDbTombstoneSweeper> tombstone_sweeper;
 
     base::TimeDelta tombstone_sweeper_duration;

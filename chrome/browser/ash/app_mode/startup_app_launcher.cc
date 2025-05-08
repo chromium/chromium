@@ -239,6 +239,9 @@ void StartupAppLauncher::OnLaunchComplete(
         OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
       }
       return;
+    case ChromeKioskAppLauncher::LaunchResult::kChromeAppDeprecated:
+      OnLaunchFailure(KioskAppLaunchError::Error::kChromeAppDeprecated);
+      return;
     case ChromeKioskAppLauncher::LaunchResult::kUnknown:
       SYSLOG(ERROR) << "Received unknown LaunchResult";
       OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);

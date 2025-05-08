@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
@@ -68,7 +69,7 @@ public class DragAndDropLauncherActivity extends Activity {
                     IntentUtils.safeGetIntExtra(
                             intent,
                             IntentHandler.EXTRA_WINDOW_ID,
-                            MultiWindowUtils.INVALID_INSTANCE_ID);
+                            TabWindowManager.INVALID_WINDOW_ID);
             MultiWindowUtils.launchIntentInInstance(intent, windowId);
         } else {
             startActivity(intent);
@@ -86,7 +87,7 @@ public class DragAndDropLauncherActivity extends Activity {
      * @param context The context used to retrieve the package name.
      * @param sourceWindowId The window ID of the Chrome window where the tab drag starts.
      * @param destWindowId The window ID of the Chrome window in which the tab or group will be
-     *     moved, |MultiWindowUtils.INVALID_INSTANCE_ID| if the tab should be moved to a new window.
+     *     moved, |TabWindowManager.INVALID_WINDOW_ID| if the tab should be moved to a new window.
      * @return An {@link Intent} configured to launch the provided tab or tab group; or null if the
      *     data type is unsupported.
      */
@@ -113,7 +114,7 @@ public class DragAndDropLauncherActivity extends Activity {
      * @param context The context used to retrieve the package name.
      * @param urlString The link URL string.
      * @param windowId The window ID of the Chrome window in which the link will be opened,
-     *     |MultiWindowUtils.INVALID_INSTANCE_ID| if there is no preference.
+     *     |TabWindowManager.INVALID_WINDOW_ID| if there is no preference.
      * @param intentSrc An enum indicating whether the intent is created by link or tab.
      * @return The intent that will be used to create a new Chrome instance from a dragged link.
      */

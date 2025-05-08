@@ -16,24 +16,29 @@ namespace blink {
 namespace {
 
 void HandleBoxFragment(const PhysicalBoxFragment& fragment,
+                       PhysicalOffset offset,
                        bool is_first_for_node,
-                       BoxFragmentDescendantsCallback callback) {
-  FragmentTraversalNextStep next_step =
-      callback(&fragment, nullptr, is_first_for_node);
-  if (next_step != FragmentTraversalNextStep::kSkipChildren) {
-    ForAllBoxFragmentDescendants(fragment, callback);
+                       PhysicalFragmentTraversalOptions options,
+                       PhysicalFragmentTraversalListener& listener) {
+  PhysicalFragmentTraversalListener::NextStep next_step =
+      listener.HandleEntry(fragment, offset, is_first_for_node);
+  if (next_step != PhysicalFragmentTraversalListener::kSkipChildren) {
+    ForAllBoxFragmentDescendants(fragment, options, listener);
+    listener.HandleExit(fragment, offset);
   }
 }
 
 }  // anonymous namespace
 
 void ForAllBoxFragmentDescendants(const PhysicalBoxFragment& fragment,
-                                  BoxFragmentDescendantsCallback callback) {
+                                  PhysicalFragmentTraversalOptions options,
+                                  PhysicalFragmentTraversalListener& listener) {
   for (const PhysicalFragmentLink& child : fragment.Children()) {
     if (const auto* child_box_fragment =
             DynamicTo<PhysicalBoxFragment>(child.get())) {
-      HandleBoxFragment(*child_box_fragment,
-                        child_box_fragment->IsFirstForNode(), callback);
+      HandleBoxFragment(*child_box_fragment, child.offset,
+                        child_box_fragment->IsFirstForNode(), options,
+                        listener);
     }
   }
 
@@ -50,30 +55,31 @@ void ForAllBoxFragmentDescendants(const PhysicalBoxFragment& fragment,
     }
     if (const PhysicalBoxFragment* child_box_fragment =
             cursor.Current().BoxFragment()) {
-      HandleBoxFragment(*child_box_fragment,
-                        cursor.Current().Item()->IsFirstForNode(), callback);
+      const FragmentItem* item = cursor.Current().Item();
+      HandleBoxFragment(*child_box_fragment, item->OffsetInContainerFragment(),
+                        item->IsFirstForNode(), options, listener);
     }
-    if (const LayoutObject* descendant = cursor.Current().GetLayoutObject()) {
-      // Look for culled inline ancestors. Due to crbug.com/406288653 we
-      // unfortunately need to do this.
-      DCHECK(descendant != container);
-      for (const LayoutObject* walker = descendant->Parent();
-           walker != container; walker = walker->Parent()) {
-        const auto* layout_inline = DynamicTo<LayoutInline>(walker);
-        if (!layout_inline || layout_inline->HasInlineFragments()) {
-          continue;
-        }
-        if (culled_inlines.insert(layout_inline).is_new_entry) {
-          // Found a culled inline that we haven't seen before in this fragment.
-          InlineCursor culled_cursor(*container);
-          culled_cursor.MoveToIncludingCulledInline(*layout_inline);
-          bool is_first_for_node =
-              BoxFragmentIndex(culled_cursor.ContainerFragment()) ==
-              BoxFragmentIndex(fragment);
-          // Ignore the return value from the callback. We found this culled
-          // inline by walking upwards in the tree (while traversing the
-          // subtree).
-          callback(nullptr, layout_inline, is_first_for_node);
+    if (options & kFragmentTraversalOptionCulledInlines) {
+      if (const LayoutObject* descendant = cursor.Current().GetLayoutObject()) {
+        // Look for culled inline ancestors. Due to crbug.com/406288653 we
+        // unfortunately need to do this.
+        DCHECK(descendant != container);
+        for (const LayoutObject* walker = descendant->Parent();
+             walker != container; walker = walker->Parent()) {
+          const auto* layout_inline = DynamicTo<LayoutInline>(walker);
+          if (!layout_inline || layout_inline->HasInlineFragments()) {
+            continue;
+          }
+          if (culled_inlines.insert(layout_inline).is_new_entry) {
+            // Found a culled inline that we haven't seen before in this
+            // fragment.
+            InlineCursor culled_cursor(*container);
+            culled_cursor.MoveToIncludingCulledInline(*layout_inline);
+            bool is_first_for_node =
+                BoxFragmentIndex(culled_cursor.ContainerFragment()) ==
+                BoxFragmentIndex(fragment);
+            listener.HandleCulledInline(*layout_inline, is_first_for_node);
+          }
         }
       }
     }

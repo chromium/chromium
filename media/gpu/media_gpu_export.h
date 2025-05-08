@@ -18,11 +18,7 @@
 #endif  // defined(MEDIA_GPU_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(MEDIA_GPU_IMPLEMENTATION)
 #define MEDIA_GPU_EXPORT __attribute__((visibility("default")))
-#else
-#define MEDIA_GPU_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

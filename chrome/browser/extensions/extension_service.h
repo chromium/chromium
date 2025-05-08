@@ -48,7 +48,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BlocklistedExtensionSyncServiceTest;
 class Profile;
@@ -92,7 +92,7 @@ class ExtensionServiceInterface {
 
   // Attempts finishing installation of an update for an extension with the
   // specified id, when installation of that extension was previously delayed.
-  // |install_immediately| - Whether the extension should be installed if it's
+  // `install_immediately` - Whether the extension should be installed if it's
   //     currently in use.
   // Returns whether the extension installation was finished.
   virtual bool FinishDelayedInstallationIfReady(const std::string& extension_id,
@@ -108,10 +108,6 @@ class ExtensionServiceInterface {
   // TODO(akalin): Remove this method (and others) once we refactor
   // themes sync to not use it directly.
   virtual void CheckForUpdatesSoon() = 0;
-
-  // Adds |extension| to this ExtensionService and notifies observers that the
-  // extension has been loaded.
-  virtual void AddExtension(const Extension* extension) = 0;
 
   // Whether a user is able to disable a given extension.
   virtual bool UserCanDisableInstalledExtension(
@@ -132,7 +128,7 @@ class ExtensionService : public ExtensionServiceInterface,
                          public ExtensionHostRegistry::Observer,
                          public ProfileManagerObserver {
  public:
-  // Constructor stores pointers to |profile| and |extension_prefs| but
+  // Constructor stores pointers to `profile` and `extension_prefs` but
   // ownership remains at caller.
   ExtensionService(Profile* profile,
                    const base::CommandLine* command_line,
@@ -152,7 +148,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // ExtensionServiceInterface implementation.
   //
-  void AddExtension(const Extension* extension) override;
   const Extension* GetPendingExtensionUpdate(
       const std::string& extension_id) const override;
   bool FinishDelayedInstallationIfReady(const std::string& extension_id,
@@ -171,10 +166,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // KeyedService two-phase shutdown.
   void Shutdown();
 
-  // Enables the extension. If the extension is already enabled, does
-  // nothing.
-  void EnableExtension(const std::string& extension_id);
-
   // Performs action based on Omaha attributes for the extension.
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
                                            const base::Value::Dict& attributes);
@@ -184,17 +175,9 @@ class ExtensionService : public ExtensionServiceInterface,
   void PerformActionBasedOnExtensionTelemetryServiceVerdicts(
       const Blocklist::BlocklistStateMap& blocklist_state_map);
 
-  // Disables the extension. If the extension is already disabled, just adds
-  // the incoming disable reason(s). If the extension cannot be disabled (due to
-  // policy), does nothing.
-  void DisableExtension(const ExtensionId& extension_id,
-                        disable_reason::DisableReason disable_reason);
-  void DisableExtension(const ExtensionId& extension_id,
-                        const DisableReasonSet& disable_reasons);
-
   // Disable non-default and non-managed extensions with ids not in
-  // |except_ids|. Default extensions are those from the Web Store with
-  // |was_installed_by_default| flag.
+  // `except_ids`. Default extensions are those from the Web Store with
+  // `was_installed_by_default` flag.
   void DisableUserExtensionsExcept(const std::vector<std::string>& except_ids);
 
   // Returns whether a user is able to disable a given extension or if that is
@@ -331,7 +314,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // Hold the set of pending extensions. Not owned.
   raw_ptr<PendingExtensionManager> pending_extension_manager_ = nullptr;
 
-  // Manages external providers. Not ownedd.
+  // Manages external providers. Not owned.
   raw_ptr<ExternalProviderManager> external_provider_manager_ = nullptr;
 
   // Signaled when all extensions are loaded.

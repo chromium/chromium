@@ -15,10 +15,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_socket_dns_query_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
@@ -39,11 +41,13 @@ UDPWritableStreamWrapper::UDPWritableStreamWrapper(
     ScriptState* script_state,
     CloseOnceCallback on_close,
     const Member<UDPSocketMojoRemote> udp_socket,
-    network::mojom::blink::RestrictedUDPSocketMode mode)
+    network::mojom::blink::RestrictedUDPSocketMode mode,
+    uint64_t inspector_id)
     : WritableStreamWrapper(script_state),
       on_close_(std::move(on_close)),
       udp_socket_(udp_socket),
-      mode_(mode) {
+      mode_(mode),
+      inspector_id_(inspector_id) {
   ScriptState::Scope scope(script_state);
 
   auto* sink = WritableStreamWrapper::MakeForwardingUnderlyingSink(this);
@@ -149,6 +153,22 @@ ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
   } else {
     udp_socket_->get()->Send(data, std::move(callback));
   }
+
+  // report to CDP
+  {
+    std::optional<String> probe_remote_addr;
+    std::optional<uint16_t> probe_remote_port;
+    if (message->hasRemoteAddress()) {
+      probe_remote_addr = message->remoteAddress();
+    }
+    if (message->hasRemotePort()) {
+      probe_remote_port = message->remotePort();
+    }
+    probe::DirectUDPSocketChunkSent(*GetScriptState(), inspector_id_, data,
+                                    std::move(probe_remote_addr),
+                                    std::move(probe_remote_port));
+  }
+
   return write_promise_resolver_->Promise();
 }
 
@@ -191,10 +211,11 @@ void UDPWritableStreamWrapper::ErrorStream(int32_t error_code) {
   // ScriptValue.
   ScriptState::Scope scope{script_state};
 
+  auto message =
+      String{"Stream aborted by the remote: " + net::ErrorToString(error_code)};
+
   auto exception = V8ThrowDOMException::CreateOrDie(
-      script_state->GetIsolate(), DOMExceptionCode::kNetworkError,
-      String{"Stream aborted by the remote: " +
-             net::ErrorToString(error_code)});
+      script_state->GetIsolate(), DOMExceptionCode::kNetworkError, message);
 
   if (write_promise_resolver_) {
     write_promise_resolver_->Reject(exception);

@@ -36,7 +36,6 @@ import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_inf
 import "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom";
 import "third_party/blink/public/mojom/navigation/system_entropy.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
-import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/permissions/permission.mojom";
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
@@ -633,7 +632,7 @@ struct CommitNavigationParams {
   // context group. Same browsing context group navigations never set this
   // because no update is required. Subframes navigations never set this,
   // because they cannot change browsing context group.
-  blink.mojom.BrowsingContextGroupInfo? browsing_context_group_info;
+  mojo_base.mojom.UnguessableToken? browsing_context_group_token;
 
   // LCP Critical Path Predictor hint data available at navigation timing.
   blink.mojom.LCPCriticalPathPredictorNavigationTimeHint? lcpp_hint;

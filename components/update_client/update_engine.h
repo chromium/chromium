@@ -124,8 +124,6 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   // Called when CRX state changes occur.
   const UpdateClient::CrxStateChangeCallback notify_observers_callback_;
 
-  scoped_refptr<CrxCache> crx_cache_;
-
   // Contains the contexts associated with each update in progress.
   UpdateContexts update_contexts_;
 };
@@ -133,7 +131,6 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
 // Describes a group of components which are installed or updated together.
 struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   UpdateContext(scoped_refptr<Configurator> config,
-                scoped_refptr<CrxCache> crx_cache,
                 bool is_foreground,
                 bool is_install,
                 const std::vector<std::string>& ids,
@@ -150,8 +147,6 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   UpdateContext& operator=(const UpdateContext&) = delete;
 
   scoped_refptr<Configurator> config;
-
-  scoped_refptr<CrxCache> crx_cache_;
 
   // True if the component is updated as a result of user interaction.
   bool is_foreground = false;

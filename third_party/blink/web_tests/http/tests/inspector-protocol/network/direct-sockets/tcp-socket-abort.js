@@ -1,6 +1,6 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startURL(
-      `https://devtools.oopif.test:8443/inspector-protocol/network/direct-sockets/resources/tcp-socket-default.php`,
+      `https://devtools.oopif.test:8443/inspector-protocol/network/direct-sockets/resources/socket-default.php`,
       `TCP DirectSockets abort`);
 
   await dp.Network.enable();

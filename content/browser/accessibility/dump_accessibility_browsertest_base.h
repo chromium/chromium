@@ -69,7 +69,10 @@ class DumpAccessibilityTestBase
 
   template <const char* type>
   void RunTypedTest(const base::FilePath::CharType* file_path,
-                    ui::AXMode mode = ui::kAXModeComplete) {
+                    ui::AXMode mode = ui::kAXModeComplete |
+                                      ui::AXMode::kScreenReader,
+                    const base::FilePath::StringType& expectations_qualifier =
+                        FILE_PATH_LITERAL("")) {
     base::FilePath test_path = GetTestFilePath("accessibility", type);
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -78,7 +81,7 @@ class DumpAccessibilityTestBase
     base::FilePath test_file = test_path.Append(base::FilePath(file_path));
 
     std::string dir(std::string() + "accessibility/" + type);
-    RunTest(mode, test_file, dir.c_str());
+    RunTest(mode, test_file, dir.c_str(), expectations_qualifier);
   }
 
   typedef std::vector<ui::AXApiType::Type> ApiTypeVector;

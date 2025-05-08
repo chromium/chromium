@@ -5,11 +5,13 @@
 #include "components/viz/service/display/occlusion_culler.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdlib>
 #include <limits>
 #include <vector>
 
 #include "base/check.h"
+#include "base/numerics/safe_conversions.h"
 #include "cc/base/math_util.h"
 #include "cc/base/region.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -22,11 +24,21 @@
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace viz {
 namespace {
 
 constexpr float kEpsilon = std::numeric_limits<float>::epsilon();
+
+base::CheckedNumeric<int> GetCheckedArea(const cc::Region& region) {
+  base::CheckedNumeric<int> checked_area = 0;
+  for (const auto rect : region) {
+    checked_area += rect.size().GetCheckedArea();
+  }
+
+  return checked_area;
+}
 
 bool Is2dAndRightAngledRotationOrPositiveScaleOrTranslation(
     const gfx::Transform& transform) {
@@ -76,20 +88,16 @@ gfx::Rect SafeConvertRectForRegion(const gfx::Rect& r) {
   return safe_rect;
 }
 
-// Returns the bounds for the largest rect that can be inscribed in a rounded
-// rect.
-gfx::RectF GetOccludingRectForRRectF(const gfx::RRectF& bounds) {
-  if (bounds.IsEmpty()) {
-    return gfx::RectF();
+cc::Region GetOccludingRegionForRRectF(
+    const gfx::RRectF& bounds,
+    bool generate_complex_occluder_for_rounded_corners,
+    int minumum_quad_size_with_rounded_corners) {
+  gfx::RectF bounds_f = bounds.rect();
+  if (bounds.GetType() == gfx::RRectF::Type::kRect ||
+      bounds.GetType() == gfx::RRectF::Type::kEmpty) {
+    return gfx::ToEnclosedRect(bounds_f);
   }
 
-  if (bounds.GetType() == gfx::RRectF::Type::kRect) {
-    return bounds.rect();
-  }
-
-  gfx::RectF occluding_rect = bounds.rect();
-
-  // Compute the radius for each corner
   const auto top_left = bounds.GetCornerRadii(gfx::RRectF::Corner::kUpperLeft);
   const auto top_right =
       bounds.GetCornerRadii(gfx::RRectF::Corner::kUpperRight);
@@ -97,6 +105,80 @@ gfx::RectF GetOccludingRectForRRectF(const gfx::RRectF& bounds) {
       bounds.GetCornerRadii(gfx::RRectF::Corner::kLowerRight);
   const auto lower_left =
       bounds.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft);
+
+  static constexpr auto union_rect(
+      [](const gfx::RectF& rect_f, cc::Region& region) {
+        region.Union(gfx::ToEnclosedRect(rect_f));
+      });
+
+  // ___________________________________________
+  // +       +                         +       +
+  // |topLefCorner        R1           |topRightCorner
+  // |       |                         |       |
+  // |       |                         |       |
+  // +-------+-------------------------+-------|
+  // |                                         |
+  // |                    R2                   |
+  // |                                         |
+  // |                                         |
+  // |                                         |
+  // |                                         |
+  // |                                         |
+  // +----------+-------------------+----------+
+  // |lowerLefCorner                |lowerRightCorner
+  // |          |         R3        |          |
+  // +____--____+___________________+__________+
+  //
+
+  const bool uniform_top_corners =
+      top_left == top_right || top_left.IsZero() || top_right.IsZero();
+  const bool uniform_bottom_corners =
+      lower_left == lower_right || lower_left.IsZero() || lower_right.IsZero();
+
+  const bool should_generate_complex_occluder =
+      features::IsComplexOccluderForQuadsWithRoundedCornersEnabled() &&
+      generate_complex_occluder_for_rounded_corners && uniform_top_corners &&
+      uniform_bottom_corners &&
+      bounds_f.size().GetArea() >= minumum_quad_size_with_rounded_corners;
+  if (should_generate_complex_occluder) {
+    cc::Region occluding_region;
+    {
+      // R1
+      float height = std::max(top_left.y(), top_right.y());
+      if (height > kEpsilon) {
+        float width = bounds_f.width() - (top_left.x() + top_right.x());
+        float x = bounds_f.x() + top_left.x();
+        float y = bounds_f.y();
+        union_rect({x, y, width, height}, occluding_region);
+      }
+    }
+    {
+      // R2
+      float height =
+          bounds_f.height() - (std::max(top_left.y(), top_right.y()) +
+                               std::max(lower_left.y(), lower_right.y()));
+      if (height > kEpsilon) {
+        float width = bounds_f.width();
+        float x = bounds_f.x();
+        float y = bounds_f.y() + std::max(top_left.y(), top_right.y());
+        union_rect({x, y, width, height}, occluding_region);
+      }
+    }
+    {
+      // R3
+      float height = std::max(lower_left.y(), lower_right.y());
+      if (height > kEpsilon) {
+        float width = bounds_f.width() - (lower_left.x() + lower_right.x());
+        float x = bounds_f.x() + lower_left.x();
+        float y = bounds_f.bottom() - std::max(lower_left.y(), lower_right.y());
+        union_rect({x, y, width, height}, occluding_region);
+      }
+    }
+
+    return occluding_region;
+  }
+
+  gfx::RectF occluding_rect = bounds_f;
 
   // Get a bounding rect that does not intersect with the rounding clip.
   // When a rect has rounded corner with radius r, then the largest rect that
@@ -109,7 +191,8 @@ gfx::RectF GetOccludingRectForRRectF(const gfx::RRectF& bounds) {
       std::max(top_left.x(), lower_left.x()) * kInsetCoefficient,
       std::max(lower_right.y(), lower_left.y()) * kInsetCoefficient,
       std::max(top_right.x(), lower_right.x()) * kInsetCoefficient));
-  return occluding_rect;
+
+  return gfx::ToEnclosedRect(occluding_rect);
 }
 
 // Attempts to consolidate rectangles that were only split because of the
@@ -260,27 +343,28 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
 
       if (last_sqs != quad->shared_quad_state) {
         if (CanContributeToOcclusion(last_sqs)) {
-          gfx::Rect sqs_rect_in_target =
+          cc::Region sqs_region_in_target(
               cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
                   last_sqs->quad_to_target_transform,
-                  last_sqs->visible_quad_layer_rect);
+                  last_sqs->visible_quad_layer_rect));
 
           // If a rounded corner is being applied then the visible rect for the
           // sqs is actually even smaller. Reduce the rect size to get a
           // rounded corner adjusted occluding region.
           if (last_sqs->mask_filter_info.HasRoundedCorners()) {
-            sqs_rect_in_target.Intersect(
-                gfx::ToEnclosedRect(GetOccludingRectForRRectF(
-                    last_sqs->mask_filter_info.rounded_corner_bounds())));
+            sqs_region_in_target.Intersect(GetOccludingRegionForRRectF(
+                last_sqs->mask_filter_info.rounded_corner_bounds(),
+                settings_.generate_complex_occluder_for_rounded_corners,
+                settings_.minumum_quad_size_with_rounded_corners));
           }
 
           if (last_sqs->clip_rect) {
-            sqs_rect_in_target.Intersect(*last_sqs->clip_rect);
+            sqs_region_in_target.Intersect(*last_sqs->clip_rect);
           }
 
-          if (sqs_rect_in_target.size().GetCheckedArea().ValueOrDefault(
-                  INT_MAX) > settings_.occluder_minium_visible_quad_size) {
-            occlusion_in_target_space.Union(sqs_rect_in_target);
+          if (GetCheckedArea(sqs_region_in_target).ValueOrDefault(INT_MAX) >
+              settings_.occluder_minium_visible_quad_size) {
+            occlusion_in_target_space.Union(sqs_region_in_target);
             MaybeReduceOccluderComplexity(
                 occlusion_in_target_space,
                 settings_.maximum_occluder_complexity);

@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/soda_installer.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
 #include "chromeos/ash/components/boca/notifications/boca_notification_handler.h"
@@ -31,8 +32,11 @@
 #include "chromeos/ash/components/boca/session_api/student_heartbeat_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash::boca {
@@ -85,6 +89,10 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
   if (user_manager::UserManager::IsInitialized()) {
     user_manager::UserManager::Get()->AddSessionStateObserver(this);
   }
+  if (session_manager::SessionManager::Get()) {
+    session_manager_observation_.Observe(
+        session_manager::SessionManager::Get());
+  }
   LoadInitialNetworkState();
   LoadCurrentSession(/*from_polling=*/false);
   StartSessionPolling(/*in_session=*/false);
@@ -116,7 +124,11 @@ void BocaSessionManager::Observer::OnSessionCaptionConfigUpdated(
 void BocaSessionManager::Observer::OnLocalCaptionConfigUpdated(
     const ::boca::CaptionsConfig& config) {}
 
+void BocaSessionManager::Observer::OnSodaStatusUpdate(SodaStatus status) {}
+
 void BocaSessionManager::Observer::OnLocalCaptionClosed() {}
+
+void BocaSessionManager::Observer::OnSessionCaptionClosed(bool is_error) {}
 
 void BocaSessionManager::Observer::OnSessionRosterUpdated(
     const ::boca::Roster& roster) {}
@@ -218,7 +230,8 @@ void BocaSessionManager::LoadCurrentSession(bool from_polling) {
       base::BindOnce(&BocaSessionManager::ParseSessionResponse,
                      weak_factory_.GetWeakPtr(), from_polling));
   request->set_device_id(BocaAppClient::Get()->GetDeviceId());
-  session_client_impl_->GetSession(std::move(request));
+  session_client_impl_->GetSession(std::move(request),
+                                   /*can_skip_duplicate_request=*/true);
 }
 
 void BocaSessionManager::ParseSessionResponse(
@@ -230,7 +243,7 @@ void BocaSessionManager::ParseSessionResponse(
   }
 
   if (from_polling) {
-    RecordPollingResult(current_session_.get(), result.value().get());
+    boca::RecordPollingResult(current_session_.get(), result.value().get());
   }
 
   UpdateCurrentSession(std::move(result.value()), true);
@@ -277,23 +290,34 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
       base::BindOnce(
           [](base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
-              // TODO: crbug.com/366316261 - Add metrics for update failure.
-              LOG(WARNING) << "[Boca]Failed to update student activity.";
+              boca::RecordUpdateStudentActivitiesErrorCode(result.error());
+              LOG(WARNING)
+                  << "[Boca]Failed to update student activity with error code: "
+                  << result.error();
             }
           }));
 
   // TODO: crbug.com/376550427 - Make a permanet fix to provide URL resource for
   // home page, and remove this after that.
-  request->set_active_tab_title(active_tab_title_.empty()
-                                    ? kHomePageTitle
-                                    : base::UTF16ToUTF8(active_tab_title_));
+  request->set_active_tab_title(
+      active_tab_title_.empty()
+          ? l10n_util::GetStringUTF8(IDS_CLASS_TOOLS_HOME_PAGE)
+          : base::UTF16ToUTF8(active_tab_title_));
   session_client_impl_->UpdateStudentActivity(std::move(request));
 }
 
 void BocaSessionManager::OnAppWindowOpened() {
   if (soda_installer_ != nullptr) {
     // TODO(378702821) Notify observers of SODA status change.
-    soda_installer_->InstallSoda(base::DoNothing());
+    soda_installer_->InstallSoda(
+        base::BindOnce(&BocaSessionManager::NotifySodaStatusListeners,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void BocaSessionManager::OnSessionStateChanged() {
+  if (session_manager::SessionManager::Get()->IsScreenLocked()) {
+    CloseAllCaptions();
   }
 }
 
@@ -403,6 +427,7 @@ void BocaSessionManager::OnIdentityManagerShutdown(
 
 void BocaSessionManager::ActiveUserChanged(user_manager::User* active_user) {
   if (!active_user || active_user->GetAccountId() != account_id_) {
+    CloseAllCaptions();
     return;
   }
   LoadCurrentSession(/*from_polling=*/false);
@@ -427,25 +452,6 @@ bool BocaSessionManager::IsSessionTakeOver(
     return false;
   }
   return previous_session->session_id() != current_session->session_id();
-}
-
-void BocaSessionManager::RecordPollingResult(
-    const ::boca::Session* previous_session,
-    const ::boca::Session* current_session) {
-  BocaPollingResult polling_result;
-  if (!previous_session && !current_session) {
-    polling_result = BocaPollingResult::kNoUpdate;
-  } else if (!previous_session) {
-    polling_result = BocaPollingResult::kSessionStart;
-  } else if (!current_session) {
-    polling_result = BocaPollingResult::kSessionEnd;
-  } else if (previous_session->SerializeAsString() !=
-             current_session->SerializeAsString()) {
-    polling_result = BocaPollingResult::kInSessionUpdate;
-  } else {
-    polling_result = BocaPollingResult::kNoUpdate;
-  }
-  base::UmaHistogramEnumeration(kPollingResultHistName, polling_result);
 }
 
 void BocaSessionManager::HandleTakeOver(
@@ -716,8 +722,8 @@ void BocaSessionManager::SendStudentHeartbeatRequest() {
 void BocaSessionManager::OnStudentHeartbeat(
     base::expected<bool, google_apis::ApiErrorCode> result) {
   if (!result.has_value()) {
-    // TODO: crbug.com/366316261 - Add metrics for update failure.
-    LOG(WARNING) << "[Boca]Failed to call student heartbeat with error code: ."
+    boca::RecordStudentHeartBeatErrorCode(result.error());
+    LOG(WARNING) << "[Boca]Failed to call student heartbeat with error code: "
                  << result.error();
     if ((result.error() >= 500 && result.error() < 600) ||
         result.error() == 429) {
@@ -752,6 +758,22 @@ void BocaSessionManager::UpdateNetworkRestriction(
       disabled_on_non_managed_network_) {
     disabled_on_non_managed_network_ = should_disable_on_non_managed_network;
     LoadCurrentSession(/*from_polling=*/false);
+  }
+}
+
+void BocaSessionManager::NotifySodaStatusListeners(SodaStatus status) {
+  for (auto& observer : observers_) {
+    observer.OnSodaStatusUpdate(status);
+  }
+}
+
+void BocaSessionManager::CloseAllCaptions() {
+  is_local_caption_enabled_ = false;
+  for (auto& observer : observers_) {
+    if (is_producer_) {
+      observer.OnSessionCaptionClosed(/*is_error=*/false);
+    }
+    observer.OnLocalCaptionClosed();
   }
 }
 

@@ -46,28 +46,21 @@ bool IsFreeTypeSystemRasterizer() {
 }
 
 sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData> data) {
-#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE))
-  if (RuntimeEnabledFeatures::FontationsFontBackendEnabled()) {
-    return SkTypeface_Make_Fontations(data, SkFontArguments());
-  }
+#if BUILDFLAG(IS_WIN)
+  return FontCache::Get().FontManager()->makeFromData(data, 0);
 #endif
 
-  sk_sp<SkFontMgr> font_manager;
-#if BUILDFLAG(IS_WIN)
-  font_manager = FontCache::Get().FontManager();
-#else
-  font_manager = skia::DefaultFontMgr();
+#if BUILDFLAG(IS_APPLE)
+  return skia::DefaultFontMgr()->makeFromData(data, 0);
 #endif
-  return font_manager->makeFromData(data, 0);
+
+#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE))
+  return SkTypeface_Make_Fontations(data, SkFontArguments());
+#endif
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 sk_sp<SkTypeface> MakeTypefaceFallback(sk_sp<SkData> data) {
-#if BUILDFLAG(ENABLE_FREETYPE)
-  if (!RuntimeEnabledFeatures::FontationsFontBackendEnabled()) {
-    return SkFontMgr_New_Custom_Empty()->makeFromData(data, 0);
-  }
-#endif
   return SkTypeface_Make_Fontations(data, SkFontArguments());
 }
 #endif

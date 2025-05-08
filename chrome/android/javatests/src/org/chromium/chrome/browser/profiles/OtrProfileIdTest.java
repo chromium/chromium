@@ -4,20 +4,25 @@
 
 package org.chromium.chrome.browser.profiles;
 
+import static org.junit.Assert.assertSame;
+
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /**
  * This test class checks if OtrProfileId works correctly for regular profile, primary
@@ -26,17 +31,20 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class OtrProfileIdTest {
     private static final String TEST_OTR_PROFILE_ID_ONE = "Test::SerializationOne";
     private static final String TEST_OTR_PROFILE_ID_TWO = "Test::SerializationTwo";
 
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    @Rule
+    public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
+            ChromeTransitTestRules.blankPageStartReusedActivityRule();
+
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
-        sActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.start();
     }
 
     @Test
@@ -45,6 +53,8 @@ public class OtrProfileIdTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
+
+                    assertSame(profile, mPage.loadedTabElement.get().getProfile());
 
                     // OtrProfileId should be null for regular profile.
                     assert profile.getOtrProfileId() == null;

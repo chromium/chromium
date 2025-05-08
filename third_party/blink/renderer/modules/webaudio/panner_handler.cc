@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/panner_handler.h"
 
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/lock.h"
@@ -230,8 +232,8 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
   float orientation_x[render_quantum_frames_expected];
   float orientation_y[render_quantum_frames_expected];
   float orientation_z[render_quantum_frames_expected];
-  double azimuth[render_quantum_frames_expected];
-  double elevation[render_quantum_frames_expected];
+  std::array<double, render_quantum_frames_expected> azimuth;
+  std::array<double, render_quantum_frames_expected> elevation;
   float total_gain[render_quantum_frames_expected];
 
   position_x_->CalculateSampleAccurateValues(

@@ -161,9 +161,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   static LayoutBlock* CreateAnonymousWithParentAndDisplay(
       const LayoutObject*,
       EDisplay = EDisplay::kBlock);
-  LayoutBlock* CreateAnonymousBlock(EDisplay display = EDisplay::kBlock) const {
+  LayoutBlock* CreateAnonymousBlock() const {
     NOT_DESTROYED();
-    return CreateAnonymousWithParentAndDisplay(this, display);
+    return CreateAnonymousWithParentAndDisplay(this, EDisplay::kBlock);
   }
 
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(

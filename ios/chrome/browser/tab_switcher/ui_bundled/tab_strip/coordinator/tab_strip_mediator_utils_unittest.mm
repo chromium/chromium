@@ -47,7 +47,7 @@ std::unique_ptr<web::WebState> CreateWebState() {
 class TabStripMediatorUtilsTest : public PlatformTest {
  public:
   TabStripMediatorUtilsTest() {
-    feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
+    feature_list_.InitWithFeatures({kTabGroupSync}, {});
     TestProfileIOS::Builder profile_builder;
     profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),

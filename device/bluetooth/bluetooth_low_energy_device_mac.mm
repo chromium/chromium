@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "crypto/hash.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 #include "device/bluetooth/bluetooth_low_energy_peripheral_delegate.h"
@@ -410,9 +411,9 @@ std::string BluetoothLowEnergyDeviceMac::GetPeripheralHashAddress(
 std::string BluetoothLowEnergyDeviceMac::GetPeripheralHashAddress(
     std::string_view device_identifier) {
   const size_t kCanonicalAddressNumberOfBytes = 6;
-  uint8_t raw[kCanonicalAddressNumberOfBytes];
-  crypto::SHA256HashString(device_identifier, raw, sizeof(raw));
-  return CanonicalizeBluetoothAddress(base::HexEncode(raw));
+  const auto hash = crypto::hash::Sha256(device_identifier);
+  return CanonicalizeBluetoothAddress(
+      base::span(hash).first<kCanonicalAddressNumberOfBytes>());
 }
 
 void BluetoothLowEnergyDeviceMac::DidConnectPeripheral() {

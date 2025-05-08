@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
@@ -51,7 +52,8 @@ constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 constexpr char kRecallHistogram[] = "TabGroups.Shared.Recall.Desktop";
 constexpr char kManageHistogram[] = "TabGroups.Shared.Manage.Desktop";
 
-class SharedTabGroupInteractiveUiTest : public InteractiveBrowserTest {
+class SharedTabGroupInteractiveUiTest
+    : public TabStripInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   SharedTabGroupInteractiveUiTest() = default;
   ~SharedTabGroupInteractiveUiTest() override = default;
@@ -64,32 +66,11 @@ class SharedTabGroupInteractiveUiTest : public InteractiveBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  MultiStep FinishTabstripAnimations() {
-    return Steps(WaitForShow(kTabStripElementId),
-                 WithView(kTabStripElementId, [](TabStrip* tab_strip) {
-                   tab_strip->StopAnimating(true);
-                 }).SetDescription("FinishTabstripAnimation"));
-  }
-
   MultiStep ShowBookmarksBar() {
     return Steps(PressButton(kToolbarAppMenuButtonElementId),
                  SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
                  SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkBarMenuItem),
                  WaitForShow(kBookmarkBarElementId));
-  }
-
-  MultiStep HoverTabAt(int index) {
-    const char kTabToHover[] = "Tab to hover";
-    return Steps(NameDescendantViewByType<Tab>(kBrowserViewElementId,
-                                               kTabToHover, index),
-                 MoveMouseTo(kTabToHover));
-  }
-
-  MultiStep HoverTabGroupHeader(TabGroupId group_id) {
-    const char kTabGroupHeaderToHover[] = "Tab group header to hover";
-    return Steps(FinishTabstripAnimations(),
-                 NameTabGroupHeaderView(group_id, kTabGroupHeaderToHover),
-                 MoveMouseTo(kTabGroupHeaderToHover));
   }
 
   MultiStep NameTabGroupHeaderView(TabGroupId group_id, std::string name) {

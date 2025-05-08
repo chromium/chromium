@@ -781,16 +781,31 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
   StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate;
   base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset =
       signin_ui_util::SetSigninUiDelegateForTesting(&mock_signin_ui_delegate);
-  EXPECT_CALL(mock_signin_ui_delegate,
-              ShowTurnSyncOnUI(
-                  browser()->profile(),
-                  signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo,
-                  signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-                  account_info_.account_id,
-                  TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                  /*is_sync_promo=*/true,
-                  /*is_sync_promo=*/false));
+  base::HistogramTester histogram_tester;
+  const signin_metrics::AccessPoint expected_access_point =
+      signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
+  EXPECT_CALL(
+      mock_signin_ui_delegate,
+      ShowTurnSyncOnUI(browser()->profile(), expected_access_point,
+                       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+                       account_info_.account_id,
+                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                       /*is_sync_promo=*/true,
+                       /*turn_sync_on_signed_profile=*/false));
   ClickSigninButton();
+  // `Signin.SyncOptIn.Offered` should NOT be recorded if the sync opt-in is
+  // not directly offered from the profile menu.
+  histogram_tester.ExpectUniqueSample("Signin.SyncOptIn.Offered",
+                                      expected_access_point,
+                                      /*expected_bucket_count=*/0);
+  // `Signin.SignIn.Offered*` should be recorded if the sign-in is offered from
+  // the profile menu.
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered",
+                                      expected_access_point,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered.WithDefault",
+                                      expected_access_point,
+                                      /*expected_bucket_count=*/1);
 }
 
 class ProfileMenuViewSigninPendingTest : public ProfileMenuViewTestBase,
@@ -1698,11 +1713,23 @@ class ProfileMenuSigninAccessPointTest : public SigninBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
                        DefaultSigninAccessPoint) {
+  base::HistogramTester histogram_tester;
+  const signin_metrics::AccessPoint default_access_point =
+      signin_metrics::AccessPoint::kAvatarBubbleSignIn;
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenuFromCoordinator());
+  // `Signin.SyncOptIn.Offered` should be recorded if the sync opt-in is
+  // offered from the profile menu.
+  histogram_tester.ExpectUniqueSample("Signin.SyncOptIn.Offered",
+                                      default_access_point,
+                                      /*expected_bucket_count=*/1);
+  // `Signin.SignIn.Offered` should NOT be recorded if the sign-in is not
+  // directly offered from the profile menu.
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered",
+                                      default_access_point,
+                                      /*expected_bucket_count=*/0);
   EXPECT_CALL(
       mock_signin_ui_delegate_,
-      ShowTurnSyncOnUI(browser()->profile(),
-                       signin_metrics::AccessPoint::kAvatarBubbleSignIn,
+      ShowTurnSyncOnUI(browser()->profile(), default_access_point,
                        signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
                        account_info_.account_id,
                        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
@@ -1713,10 +1740,21 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
 
 IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
                        ExplicitSigninAccessPoint) {
+  base::HistogramTester histogram_tester;
   const signin_metrics::AccessPoint explicit_access_point =
       signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup;
   ASSERT_NO_FATAL_FAILURE(
       OpenProfileMenuFromCoordinator(explicit_access_point));
+  // `Signin.SyncOptIn.Offered` should be recorded if the sync opt-in is
+  // offered from the profile menu.
+  histogram_tester.ExpectUniqueSample("Signin.SyncOptIn.Offered",
+                                      explicit_access_point,
+                                      /*expected_bucket_count=*/1);
+  // `Signin.SignIn.Offered` should NOT be recorded if the sign-in is not
+  // directly offered from the profile menu.
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered",
+                                      explicit_access_point,
+                                      /*expected_bucket_count=*/0);
   EXPECT_CALL(
       mock_signin_ui_delegate_,
       ShowTurnSyncOnUI(browser()->profile(), explicit_access_point,

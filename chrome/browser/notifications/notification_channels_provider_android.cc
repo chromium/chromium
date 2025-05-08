@@ -238,7 +238,8 @@ void NotificationChannelsProviderAndroid::Initialize(
 
 void NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessary(
     content_settings::ProviderInterface* pref_provider) {
-  if (pref_service_->GetBoolean(prefs::kMigratedToSiteNotificationChannels)) {
+  if (!pref_service_ ||
+      pref_service_->GetBoolean(prefs::kMigratedToSiteNotificationChannels)) {
     return;
   }
 
@@ -282,13 +283,15 @@ void NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessaryImpl(
         base::Value(), {}, content_settings::PartitionKey::WipGetDefault());
   }
 
-  pref_service_->SetBoolean(prefs::kMigratedToSiteNotificationChannels, true);
+  if (pref_service_) {
+    pref_service_->SetBoolean(prefs::kMigratedToSiteNotificationChannels, true);
+  }
 }
 
 void NotificationChannelsProviderAndroid::ClearBlockedChannelsIfNecessary(
     TemplateURLService* template_url_service) {
-  if (pref_service_->GetBoolean(
-          prefs::kClearedBlockedSiteNotificationChannels)) {
+  if (!pref_service_ || pref_service_->GetBoolean(
+                            prefs::kClearedBlockedSiteNotificationChannels)) {
     return;
   }
 
@@ -320,8 +323,10 @@ void NotificationChannelsProviderAndroid::ClearBlockedChannelsIfNecessaryImpl(
   // Reset the cache.
   cached_channels_.reset();
 
-  pref_service_->SetBoolean(prefs::kClearedBlockedSiteNotificationChannels,
-                            true);
+  if (pref_service_) {
+    pref_service_->SetBoolean(prefs::kClearedBlockedSiteNotificationChannels,
+                              true);
+  }
 }
 
 std::unique_ptr<content_settings::RuleIterator>
@@ -554,6 +559,7 @@ void NotificationChannelsProviderAndroid::ClearAllChannelsImpl(
 }
 
 void NotificationChannelsProviderAndroid::ShutdownOnUIThread() {
+  pref_service_ = nullptr;
   RemoveAllObservers();
 }
 

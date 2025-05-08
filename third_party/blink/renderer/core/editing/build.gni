@@ -379,6 +379,7 @@ blink_core_tests_editing = [
   "commands/editing_command_test.cc",
   "commands/editing_commands_utilities_test.cc",
   "commands/insert_incremental_text_command_test.cc",
+  "commands/insert_line_break_command_test.cc",
   "commands/insert_list_command_test.cc",
   "commands/insert_paragraph_separator_command_test.cc",
   "commands/insert_text_command_test.cc",

@@ -8,7 +8,6 @@
     clippy::items_after_statements,
     clippy::map_clone,
     clippy::match_bool,
-    clippy::match_on_vec_items,
     clippy::match_same_arms,
     clippy::needless_lifetimes,
     clippy::needless_pass_by_value,

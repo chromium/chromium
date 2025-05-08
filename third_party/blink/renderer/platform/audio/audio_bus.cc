@@ -705,9 +705,9 @@ void AudioBus::ClearSilentFlag() {
   }
 }
 
-scoped_refptr<AudioBus> DecodeAudioFileData(const char* data, size_t size) {
+scoped_refptr<AudioBus> DecodeAudioFileData(base::span<const char> data) {
   WebAudioBus web_audio_bus;
-  if (Platform::Current()->DecodeAudioFileData(&web_audio_bus, data, size)) {
+  if (Platform::Current()->DecodeAudioFileData(&web_audio_bus, data)) {
     return web_audio_bus.Release();
   }
   return nullptr;
@@ -726,8 +726,7 @@ scoped_refptr<AudioBus> AudioBus::GetDataResource(int resource_id,
   // to take WebData and use segmented access.
   SegmentedBuffer::DeprecatedFlatData flat_data(
       resource.operator scoped_refptr<SharedBuffer>().get());
-  scoped_refptr<AudioBus> audio_bus =
-      DecodeAudioFileData(flat_data.data(), flat_data.size());
+  scoped_refptr<AudioBus> audio_bus = DecodeAudioFileData(flat_data);
 
   if (!audio_bus.get()) {
     return nullptr;
@@ -743,12 +742,10 @@ scoped_refptr<AudioBus> AudioBus::GetDataResource(int resource_id,
 }
 
 scoped_refptr<AudioBus> AudioBus::CreateBusFromInMemoryAudioFile(
-    const void* data,
-    size_t data_size,
+    base::span<const uint8_t> data,
     bool mix_to_mono,
     float sample_rate) {
-  scoped_refptr<AudioBus> audio_bus =
-      DecodeAudioFileData(static_cast<const char*>(data), data_size);
+  scoped_refptr<AudioBus> audio_bus = DecodeAudioFileData(base::as_chars(data));
   if (!audio_bus.get()) {
     return nullptr;
   }

@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -61,7 +61,12 @@ static struct {
                {{"\\begin{displaymath}", "\\end{displaymath}"}, 0},
                {{"\\begin{equation}", "\\end{equation}"}, 0},
                {{"\\begin{equation*}", "\\end{equation*}"}, 0},
+               {{"\\begin{align}", "\\end{align}"}, 0},
+               {{"\\begin{align*}", "\\end{align*}"}, 0},
+               {{"\\begin{lstlisting}", "\\end{lstlisting}"}, 0},
                {{"\\cite", NULL}, 1},
+               {{"\\textcite", NULL}, 1},
+               {{"\\autocite", NULL}, 1},
                {{"\\nocite", NULL}, 1},
                {{"\\index", NULL}, 1},
                {{"\\label", NULL}, 1},
@@ -94,6 +99,10 @@ static struct {
                {{"\\enlargethispage", NULL}, 1},
                {{"\\begin{tabular}", NULL}, 1},
                {{"\\addcontentsline", NULL}, 2},
+               {{"\\gls", NULL}, 1},
+               {{"\\glspl", NULL}, 1},
+               {{"\\Gls", NULL}, 1},
+               {{"\\Glspl", NULL}, 1},
                {{"\\begin{thebibliography}", NULL}, 1},
                {{"\\bibliography", NULL}, 1},
                {{"\\bibliographystyle", NULL}, 1},
@@ -122,6 +131,8 @@ static struct {
                {{"\\psfig", NULL}, 1},
                {{"\\url", NULL}, 1},
                {{"\\eqref", NULL}, 1},
+               {{"\\cref", NULL}, 1},
+               {{"\\Cref", NULL}, 1},
                {{"\\vskip", NULL}, 1},
                {{"\\vglue", NULL}, 1},
                {{"\'\'", NULL}, 1}};
@@ -206,13 +217,13 @@ bool LaTeXParser::next_token(std::string& t) {
         break;
       case 1:  // wordchar
         apostrophe = 0;
-        if ((is_wordchar((char*)APOSTROPHE) ||
-             (is_utf8() && is_wordchar((char*)UTF8_APOS))) &&
+        if ((is_wordchar(APOSTROPHE) ||
+             (is_utf8() && is_wordchar(UTF8_APOS))) &&
             !line[actual].empty() && line[actual][head] == '\'' &&
             is_wordchar(line[actual].c_str() + head + 1)) {
           head++;
         } else if (is_utf8() &&
-                   is_wordchar((char*)APOSTROPHE) &&  // add Unicode apostrophe
+                   is_wordchar(APOSTROPHE) &&  // add Unicode apostrophe
                                                       // to the WORDCHARS, if
                                                       // needed
                    strncmp(line[actual].c_str() + head, UTF8_APOS, strlen(UTF8_APOS)) ==

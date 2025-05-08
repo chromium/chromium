@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_TYPE_HELPERS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_TYPE_HELPERS_H_
 
+#include <algorithm>
 #include <optional>
 #include <type_traits>
 #include <variant>
@@ -20,23 +21,17 @@ namespace internal {
 // The constant IsVariantAlternative<T, V>::value is true iff T is one of the
 // alternative types of variant V.
 template <typename T, typename V, size_t I = std::variant_size<V>::value>
-struct IsVariantAlternative
-    : std::disjunction<
-          std::is_same<T, typename std::variant_alternative<I - 1, V>::type>,
-          IsVariantAlternative<T, V, I - 1>> {};
+inline constexpr bool kIsVariantAlternative =
+    std::is_same_v<T, typename std::variant_alternative<I - 1, V>::type> ||
+    kIsVariantAlternative<T, V, I - 1>;
 
 template <typename T, typename V>
-struct IsVariantAlternative<T, V, 0> : std::false_type {};
-
-// For SFINAE, a template using EnableIfIsVariantAlternative<T, V> will only
-// match if T is one of the alternative types of variant V.
-template <typename T, typename V>
-using EnableIfIsVariantAlternative =
-    std::enable_if_t<IsVariantAlternative<T, V>::value, bool>;
+inline constexpr bool kIsVariantAlternative<T, V, 0> = false;
 
 // If `v`, a variant of type V, currently holds an alternative of type T,
 // returns that alternative. Otherwise returns nullopt.
-template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
+template <typename T, typename V>
+  requires(kIsVariantAlternative<T, V>)
 constexpr std::optional<T> GetAsOptional(const V& v) {
   return base::OptionalFromPtr(std::get_if<T>(&v));
 }
@@ -45,28 +40,21 @@ constexpr std::optional<T> GetAsOptional(const V& v) {
 // currently holds an alternative of type T.
 
 // Look up `T` in `variant<T, ...>`.
-template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
+template <typename T, typename V>
+  requires(kIsVariantAlternative<T, V>)
 constexpr bool VariantVectorContains(const std::vector<V>& vs) {
-  for (const V& v : vs) {
-    if (std::holds_alternative<T>(v)) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(
+      vs, [](const V& v) { return std::holds_alternative<T>(v); });
 }
 
 // Look up `const T` in `variant<T, ...>`.
-template <typename ConstT,
-          typename V,
-          std::enable_if_t<std::is_const_v<ConstT>, bool> = true,
-          EnableIfIsVariantAlternative<std::remove_const_t<ConstT>, V> = true>
+template <typename ConstT, typename V>
+  requires(std::is_const_v<ConstT> &&
+           kIsVariantAlternative<std::remove_const_t<ConstT>, V>)
 constexpr bool VariantVectorContains(const std::vector<V>& vs) {
-  for (const V& v : vs) {
-    if (std::holds_alternative<std::remove_const_t<ConstT>>(v)) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(vs, [](const V& v) {
+    return std::holds_alternative<std::remove_const_t<ConstT>>(v);
+  });
 }
 
 // If at least one element of `vs`, a vector of variants of type V, currently
@@ -74,7 +62,8 @@ constexpr bool VariantVectorContains(const std::vector<V>& vs) {
 // element. Otherwise returns nullopt.
 
 // Look up `T` in `variant<T, ...>`, return `optional_ref<T>`.
-template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
+template <typename T, typename V>
+  requires(kIsVariantAlternative<T, V>)
 constexpr base::optional_ref<T> GetFromVariantVector(std::vector<V>& vs) {
   for (V& v : vs) {
     T* t = std::get_if<T>(&v);
@@ -86,7 +75,8 @@ constexpr base::optional_ref<T> GetFromVariantVector(std::vector<V>& vs) {
 }
 
 // Look up `T` in `variant<T, ...>`, return `optional_ref<const T>`.
-template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
+template <typename T, typename V>
+  requires(kIsVariantAlternative<T, V>)
 constexpr base::optional_ref<const T> GetFromVariantVector(
     const std::vector<V>& vs) {
   for (const V& v : vs) {
@@ -99,10 +89,9 @@ constexpr base::optional_ref<const T> GetFromVariantVector(
 }
 
 // Look up `const T` in `variant<T, ...>`, return `optional_ref<const T>`.
-template <typename ConstT,
-          typename V,
-          std::enable_if_t<std::is_const_v<ConstT>, bool> = true,
-          EnableIfIsVariantAlternative<std::remove_const_t<ConstT>, V> = true>
+template <typename ConstT, typename V>
+  requires(std::is_const_v<ConstT> &&
+           kIsVariantAlternative<std::remove_const_t<ConstT>, V>)
 constexpr base::optional_ref<ConstT> GetFromVariantVector(
     const std::vector<V>& vs) {
   for (const V& v : vs) {
@@ -117,24 +106,16 @@ constexpr base::optional_ref<ConstT> GetFromVariantVector(
 // Extended comparators for variants, allowing a variant to be compared with any
 // alternative held in it.
 
-template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
+template <typename T, typename V>
+  requires(kIsVariantAlternative<T, V>)
 constexpr bool operator==(const T& a, const V& b) {
   return std::holds_alternative<T>(b) && a == std::get<T>(b);
 }
 
-template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
+template <typename T, typename V>
+  requires(kIsVariantAlternative<T, V>)
 constexpr bool operator==(const V& a, const T& b) {
   return std::holds_alternative<T>(a) && std::get<T>(a) == b;
-}
-
-template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
-constexpr bool operator!=(const T& a, const V& b) {
-  return !std::holds_alternative<T>(b) || a != std::get<T>(b);
-}
-
-template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
-constexpr bool operator!=(const V& a, const T& b) {
-  return !std::holds_alternative<T>(a) || std::get<T>(a) != b;
 }
 
 }  // namespace internal
@@ -142,7 +123,6 @@ constexpr bool operator!=(const V& a, const T& b) {
 // Enable extended comparators for variants defined in the resource_attribution
 // namespace.
 using internal::operator==;
-using internal::operator!=;
 
 }  // namespace resource_attribution
 

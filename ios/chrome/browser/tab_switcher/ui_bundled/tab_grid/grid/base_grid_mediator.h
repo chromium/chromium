@@ -18,11 +18,13 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 
 @class ActivityLabelData;
+@class BaseGridMediator;
 class Browser;
 @protocol GridConsumer;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsConfigurationProvider;
 @protocol GridToolbarsMutator;
+@protocol SharedTabGroupLastTabAlertCommands;
 @protocol TabCollectionConsumer;
 @protocol TabGridCommands;
 @protocol TabGridIdleStatusHandler;
@@ -38,6 +40,14 @@ class WebStateList;
 namespace web {
 class WebState;
 }
+
+@protocol BaseGridMediatorDelegate <NSObject>
+
+- (void)displayLastTabInSharedGroupAlert:(BaseGridMediator*)mediator
+                                 lastTab:(web::WebStateID)itemID
+                                   group:(const TabGroup*)group;
+
+@end
 
 // Mediates between model layer and tab grid UI layer.
 @interface BaseGridMediator : NSObject <BaseGridMediatorItemProvider,
@@ -56,6 +66,8 @@ class WebState;
 @property(nonatomic, weak) id<TabCollectionConsumer> consumer;
 // Delegate to handle presenting the action sheet.
 @property(nonatomic, weak) id<GridMediatorDelegate> delegate;
+// Delegate to handle alert.
+@property(nonatomic, weak) id<BaseGridMediatorDelegate> baseDelegate;
 // Mutator to handle toolbars modification.
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
 // The list from the browser.

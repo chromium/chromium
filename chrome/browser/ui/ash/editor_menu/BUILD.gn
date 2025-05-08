@@ -21,7 +21,6 @@ source_set("utils") {
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/crosapi/mojom",
     "//ui/aura",
@@ -94,11 +93,11 @@ source_set("views") {
     ":utils",
     "//base",
     "//build:branding_buildflags",
-    "//chrome/browser:browser_process",
     "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/constants:constants",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/vector_icons",
+    "//components/application_locale_storage",
     "//components/vector_icons",
     "//ui/aura",
     "//ui/base",

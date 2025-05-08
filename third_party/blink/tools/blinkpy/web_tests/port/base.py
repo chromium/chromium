@@ -73,6 +73,7 @@ from blinkpy.common.system.path import abspath_to_uri
 from blinkpy.w3c.wpt_manifest import (
     FuzzyRange,
     FuzzyParameters,
+    Relation,
     WPTManifest,
     MANIFEST_NAME,
 )
@@ -1079,8 +1080,10 @@ class Port(object):
                 return True
         return False
 
-    def reference_files(self, test_name):
+    def reference_files(self, test_name: str) -> list[tuple[Relation, str]]:
         """Returns a list of expectation (== or !=) and filename pairs"""
+        if match := self.WPT_REGEX.match(test_name):
+            return self._wpt_references_files(match.group(1), match.group(2))
 
         # Try to find -expected.* or -expected-mismatch.* in the same directory.
         reftest_list = []
@@ -1091,15 +1094,12 @@ class Port(object):
                                               match=(expectation == '=='))
                 if self._filesystem.exists(path):
                     reftest_list.append((expectation, path))
-        if reftest_list:
-            return reftest_list
+        return reftest_list
 
+    def _wpt_references_files(self, wpt_path: str,
+                              path_in_wpt: str) -> list[tuple[Relation, str]]:
         # Try to extract information from MANIFEST.json.
-        match = self.WPT_REGEX.match(test_name)
-        if not match:
-            return []
-        wpt_path = match.group(1)
-        path_in_wpt = match.group(2)
+        reftest_list = []
         for expectation, ref_path_in_wpt in self.wpt_manifest(
                 wpt_path).extract_reference_list(path_in_wpt):
             if ref_path_in_wpt.startswith('about:'):

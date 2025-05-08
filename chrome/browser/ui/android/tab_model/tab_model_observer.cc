@@ -16,7 +16,7 @@ void TabModelObserver::DidSelectTab(TabAndroid* tab,
 
 void TabModelObserver::WillCloseTab(TabAndroid* tab) {}
 
-void TabModelObserver::OnFinishingTabClosure(int tab_id, bool incognito) {}
+void TabModelObserver::OnFinishingTabClosure(TabAndroid* tab) {}
 
 void TabModelObserver::OnFinishingMultipleTabClosure(
     const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs,

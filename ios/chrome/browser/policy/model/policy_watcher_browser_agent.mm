@@ -32,7 +32,7 @@
 #import "ios/web/public/thread/web_task_traits.h"
 
 PolicyWatcherBrowserAgent::PolicyWatcherBrowserAgent(Browser* browser)
-    : browser_(browser) {
+    : BrowserUserData(browser), browser_(browser) {
   DCHECK(!browser->GetProfile()->IsOffTheRecord());
   prefs_change_observer_.Init(GetApplicationContext()->GetLocalState());
   profile_prefs_change_observer_.Init(browser->GetProfile()->GetPrefs());

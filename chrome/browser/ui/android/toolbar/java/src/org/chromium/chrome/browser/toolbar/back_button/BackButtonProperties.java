@@ -7,19 +7,22 @@ package org.chromium.chrome.browser.toolbar.back_button;
 import android.content.res.ColorStateList;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.ui.util.ClickWithMetaStateCallback;
 
 /**
  * A set of back button properties to reflect its state.
  *
  * @see PropertyKey
  */
+@NullMarked
 class BackButtonProperties {
-    public static final WritableObjectPropertyKey<Runnable> CLICK_LISTENER =
+    public static final WritableObjectPropertyKey<ClickWithMetaStateCallback> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<ColorStateList> TINT_COLOR_LIST =
             new WritableObjectPropertyKey<>();

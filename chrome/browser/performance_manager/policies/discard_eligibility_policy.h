@@ -54,18 +54,16 @@ enum class CanDiscardResult {
 // Caches page node properties to facilitate sorting.
 class PageNodeSortProxy {
  public:
-  PageNodeSortProxy(const PageNode* page_node,
+  PageNodeSortProxy(base::WeakPtr<const PageNode> page_node,
                     CanDiscardResult can_discard_result,
                     bool is_visible,
                     bool is_focused,
-                    base::TimeDelta last_visible)
-      : page_node_(page_node),
-        can_discard_result_(can_discard_result),
-        is_visible_(is_visible),
-        is_focused_(is_focused),
-        last_visible_(last_visible) {}
+                    base::TimeTicks last_visibility_change_time);
+  PageNodeSortProxy(PageNodeSortProxy&&);
+  PageNodeSortProxy& operator=(PageNodeSortProxy&&);
+  ~PageNodeSortProxy();
 
-  const PageNode* page_node() const { return page_node_; }
+  base::WeakPtr<const PageNode> page_node() const { return page_node_; }
   bool is_disallowed() const {
     return can_discard_result_ == CanDiscardResult::kDisallowed;
   }
@@ -74,7 +72,9 @@ class PageNodeSortProxy {
   }
   bool is_visible() const { return is_visible_; }
   bool is_focused() const { return is_focused_; }
-  base::TimeDelta last_visible() const { return last_visible_; }
+  base::TimeTicks last_visibility_change_time() const {
+    return last_visibility_change_time_;
+  }
 
   // Returns true if the rhs is more important.
   bool operator<(const PageNodeSortProxy& rhs) const {
@@ -90,16 +90,15 @@ class PageNodeSortProxy {
     if (is_protected() != rhs.is_protected()) {
       return rhs.is_protected();
     }
-    return last_visible_ > rhs.last_visible_;
+    return last_visibility_change_time_ < rhs.last_visibility_change_time_;
   }
 
  private:
-  raw_ptr<const PageNode> page_node_;
+  base::WeakPtr<const PageNode> page_node_;
   CanDiscardResult can_discard_result_;
   bool is_visible_;
   bool is_focused_;
-  // Delta between current time and last visibility change time.
-  base::TimeDelta last_visible_;
+  base::TimeTicks last_visibility_change_time_;
 };
 
 // DiscardEligibilityPolicy decides which PageNode is eligigle for tab

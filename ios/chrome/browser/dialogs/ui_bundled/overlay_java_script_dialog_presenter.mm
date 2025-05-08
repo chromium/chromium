@@ -135,7 +135,7 @@ OverlayJavaScriptDialogPresenter::~OverlayJavaScriptDialogPresenter() = default;
 
 void OverlayJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
     web::WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceClosure callback) {
   JavaScriptDialogBlockingState::CreateForWebState(web_state);
@@ -145,12 +145,9 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
     return;
   }
 
-  bool from_main_frame_origin =
-      origin_url.DeprecatedGetOriginAsURL() ==
-      web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<JavaScriptAlertDialogRequest>(
-          web_state, origin_url, from_main_frame_origin, message_text);
+          web_state, web_state->GetLastCommittedURL(), origin, message_text);
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(&HandleJavaScriptAlertDialogResponse, std::move(callback),
                      web_state->GetWeakPtr()));
@@ -160,7 +157,7 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
 
 void OverlayJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
     web::WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceCallback<void(bool success)> callback) {
   JavaScriptDialogBlockingState::CreateForWebState(web_state);
@@ -170,12 +167,9 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
     return;
   }
 
-  bool from_main_frame_origin =
-      origin_url.DeprecatedGetOriginAsURL() ==
-      web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<JavaScriptConfirmDialogRequest>(
-          web_state, origin_url, from_main_frame_origin, message_text);
+          web_state, web_state->GetLastCommittedURL(), origin, message_text);
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(&HandleJavaScriptConfirmDialogResponse,
                      std::move(callback), web_state->GetWeakPtr()));
@@ -185,7 +179,7 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
 
 void OverlayJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
     web::WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     NSString* default_prompt_text,
     base::OnceCallback<void(NSString* user_input)> callback) {
@@ -196,12 +190,9 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
     return;
   }
 
-  bool from_main_frame_origin =
-      origin_url.DeprecatedGetOriginAsURL() ==
-      web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<JavaScriptPromptDialogRequest>(
-          web_state, origin_url, from_main_frame_origin, message_text,
+          web_state, web_state->GetLastCommittedURL(), origin, message_text,
           default_prompt_text);
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(&HandleJavaScriptPromptDialogResponse, std::move(callback),

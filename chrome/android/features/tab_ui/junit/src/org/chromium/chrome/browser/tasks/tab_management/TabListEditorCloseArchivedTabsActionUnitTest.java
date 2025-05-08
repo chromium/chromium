@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Acti
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link TabListEditorCloseArchivedTabsAction}. */
@@ -36,7 +36,7 @@ public class TabListEditorCloseArchivedTabsActionUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private SelectionDelegate<Integer> mSelectionDelegate;
+    @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
     @Mock private Profile mProfile;
 
@@ -76,8 +76,9 @@ public class TabListEditorCloseArchivedTabsActionUnitTest {
 
     @Test
     public void testPerformAction() {
-        List<Tab> tabs = new ArrayList<>();
-        mAction.performAction(tabs);
+        List<Tab> tabs = Collections.emptyList();
+        List<String> tabGroupSyncIds = Collections.emptyList();
+        mAction.performAction(tabs, tabGroupSyncIds);
         verify(mArchiveDelegate).closeArchivedTabs(tabs);
     }
 }

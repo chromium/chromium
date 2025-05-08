@@ -30,12 +30,12 @@ FakeJavaScriptDialogPresenter::~FakeJavaScriptDialogPresenter() {
 
 void FakeJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
     WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceClosure callback) {
   auto dialog = std::make_unique<FakeJavaScriptAlertDialog>();
   dialog->web_state = web_state;
-  dialog->origin_url = origin_url;
+  dialog->origin = origin;
   dialog->message_text = [message_text copy];
   dialog->callback = std::move(callback);
 
@@ -48,12 +48,12 @@ void FakeJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
 
 void FakeJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
     WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceCallback<void(bool success)> callback) {
   auto dialog = std::make_unique<FakeJavaScriptConfirmDialog>();
   dialog->web_state = web_state;
-  dialog->origin_url = origin_url;
+  dialog->origin = origin;
   dialog->message_text = [message_text copy];
   dialog->callback = std::move(callback);
 
@@ -65,13 +65,13 @@ void FakeJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
 }
 void FakeJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
     WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     NSString* default_prompt_text,
     base::OnceCallback<void(NSString* user_input)> callback) {
   auto dialog = std::make_unique<FakeJavaScriptPromptDialog>();
   dialog->web_state = web_state;
-  dialog->origin_url = origin_url;
+  dialog->origin = origin;
   dialog->message_text = [message_text copy];
   dialog->default_prompt_text = [default_prompt_text copy];
   dialog->callback = std::move(callback);

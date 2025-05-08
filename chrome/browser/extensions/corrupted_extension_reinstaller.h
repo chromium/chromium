@@ -90,9 +90,9 @@ class CorruptedExtensionReinstaller : public KeyedService {
   void RecordPolicyReinstallReason(PolicyReinstallReason reason_for_uma);
 
   // Notifies the manager that we are reinstalling the policy force-installed
-  // extension with |id| because we detected corruption in the current copy.
-  // |reason_for_uma| indicates origin and details of the requires, and is used
-  // for statistics purposes (sent to UMA). |manifest_location_for_uma| is the
+  // extension with `id` because we detected corruption in the current copy.
+  // `reason_for_uma` indicates origin and details of the requires, and is used
+  // for statistics purposes (sent to UMA). `manifest_location_for_uma` is the
   // manifest location, and is used for statistics purposes (sent to UMA)
   void ExpectReinstallForCorruption(
       const ExtensionId& id,
@@ -103,7 +103,7 @@ class CorruptedExtensionReinstaller : public KeyedService {
   // and update the metrics.
   void MarkResolved(const ExtensionId& id);
 
-  // Returns true if we are expecting a reinstall of the extension with |id| due
+  // Returns true if we are expecting a reinstall of the extension with `id` due
   // to corruption?
   bool IsReinstallForCorruptionExpected(const ExtensionId& id) const;
 

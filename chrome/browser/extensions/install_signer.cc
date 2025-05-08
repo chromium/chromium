@@ -57,7 +57,7 @@ const char kContentTypeJSON[] = "application/json";
 
 // This allows us to version the format of what we write into the prefs,
 // allowing for forward migration, as well as detecting forwards/backwards
-// incompatabilities, etc.
+// incompatibilities, etc.
 const int kSignatureFormatVersion = 2;
 
 const size_t kSaltBytes = 32;
@@ -153,7 +153,7 @@ std::unique_ptr<InstallSignature> InstallSignature::FromDict(
   std::unique_ptr<InstallSignature> result =
       std::make_unique<InstallSignature>();
 
-  // For now we don't want to support any backwards compability, but in the
+  // For now we don't want to support any backwards compatibility, but in the
   // future if we do, we would want to put the migration code here.
   if (dict.FindInt(kSignatureFormatVersionKey) != kSignatureFormatVersion)
     return nullptr;

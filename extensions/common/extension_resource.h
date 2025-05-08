@@ -36,7 +36,7 @@ class ExtensionResource {
 
   // set_follow_symlinks_anywhere allows the resource to be a symlink to
   // anywhere in the filesystem. By default, resources have to be within
-  // |extension_root| after resolving symlinks.
+  // `extension_root` after resolving symlinks.
   void set_follow_symlinks_anywhere();
 
   // Returns actual path to the resource (default or locale specific). In the
@@ -50,8 +50,8 @@ class ExtensionResource {
   // ImageLoader.
   //
   // The relative path must not resolve to a location outside of
-  // |extension_root|. Iff |file_can_symlink_outside_root| is true, then the
-  // file can be a symlink that links outside of |extension_root|.
+  // `extension_root`. Iff `file_can_symlink_outside_root` is true, then the
+  // file can be a symlink that links outside of `extension_root`.
   static base::FilePath GetFilePath(const base::FilePath& extension_root,
                                     const base::FilePath& relative_path,
                                     SymlinkPolicy symlink_policy);
@@ -77,8 +77,8 @@ class ExtensionResource {
   // Relative path to resource.
   base::FilePath relative_path_;
 
-  // If |follow_symlinks_anywhere_| is true then the resource itself must be
-  // within |extension_root|, but it can be a symlink to a file that is not.
+  // If `follow_symlinks_anywhere_` is true then the resource itself must be
+  // within `extension_root`, but it can be a symlink to a file that is not.
   bool follow_symlinks_anywhere_;
 
   // Full path to extension resource. Starts empty.

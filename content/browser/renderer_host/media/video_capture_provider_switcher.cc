@@ -8,7 +8,11 @@
 
 #include "base/functional/bind.h"
 #include "content/public/browser/video_capture_device_launcher.h"
+#include "services/video_effects/public/cpp/buildflags.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#endif
 
 namespace content {
 
@@ -32,8 +36,10 @@ class VideoCaptureDeviceLauncherSwitcher : public VideoCaptureDeviceLauncher {
       base::OnceClosure connection_lost_cb,
       Callbacks* callbacks,
       base::OnceClosure done_cb,
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
           video_effects_processor,
+#endif
       mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
           readonly_video_effects_manager) override {
     if (stream_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
@@ -45,7 +51,9 @@ class VideoCaptureDeviceLauncherSwitcher : public VideoCaptureDeviceLauncher {
       return media_device_launcher_->LaunchDeviceAsync(
           device_id, stream_type, params, std::move(receiver),
           std::move(connection_lost_cb), callbacks, std::move(done_cb),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
           std::move(video_effects_processor),
+#endif
           std::move(readonly_video_effects_manager));
     }
     // Use of Unretained() is safe, because |other_types_launcher_| is owned by
@@ -56,7 +64,9 @@ class VideoCaptureDeviceLauncherSwitcher : public VideoCaptureDeviceLauncher {
     return other_types_launcher_->LaunchDeviceAsync(
         device_id, stream_type, params, std::move(receiver),
         std::move(connection_lost_cb), callbacks, std::move(done_cb),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
         std::move(video_effects_processor),
+#endif
         std::move(readonly_video_effects_manager));
   }
 

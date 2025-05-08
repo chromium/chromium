@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/bind_post_task.h"
@@ -89,12 +88,11 @@ bool PerformanceDetectionManager::DiscardTabs(
   policies::PageDiscardingHelper* const helper =
       policies::PageDiscardingHelper::GetFromGraph(graph);
   CHECK(helper);
-  std::optional<base::TimeTicks> first_discarded_at =
-      helper->ImmediatelyDiscardMultiplePages(
-          eligible_nodes, ::mojom::LifecycleUnitDiscardReason::SUGGESTED);
+  const bool had_successful_discard = helper->ImmediatelyDiscardMultiplePages(
+      eligible_nodes, ::mojom::LifecycleUnitDiscardReason::SUGGESTED);
 
   OnDiscardComplete();
-  return first_discarded_at.has_value();
+  return had_successful_discard;
 }
 
 void PerformanceDetectionManager::ForceTabCpuDataRefresh() {
@@ -174,8 +172,7 @@ PerformanceDetectionManager::PerformanceDetectionManager() {
   CHECK(!g_performance_detection_manager);
   g_performance_detection_manager = this;
 
-  const std::vector<ResourceType> resource_types =
-      base::ToVector(ResourceTypeSet::All());
+  const auto resource_types = ResourceTypeSet::All();
   current_health_status_ = base::MakeFlatMap<ResourceType, HealthLevel>(
       resource_types, {}, [](ResourceType type) {
         return std::make_pair(type, HealthLevel::kHealthy);

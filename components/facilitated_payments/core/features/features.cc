@@ -25,6 +25,12 @@ BASE_FEATURE(kDisableFacilitatedPaymentsMerchantAllowlist,
              "DisableFacilitatedPaymentsMerchantAllowlist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Chrome will prompt users without linked Pix accounts to link
+// their Pix accounts to Google Wallet.
+BASE_FEATURE(kEnablePixAccountLinking,
+             "EnablePixAccountLinking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will offer to pay with eWallet accounts if a payment
 // link is detected.
 BASE_FEATURE(kEwalletPayments,

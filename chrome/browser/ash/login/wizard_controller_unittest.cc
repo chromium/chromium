@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -24,9 +25,10 @@
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
-#include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
@@ -53,13 +55,16 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/device_settings_cache.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "components/ownership/mock_owner_key_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -177,9 +182,20 @@ void CreateExtensionServiceFor(Profile* profile) {
 // be done to run unit tests, but is not directly related to the tests.
 class WizardControllerTestBase : public ::testing::Test {
  public:
-  WizardControllerTestBase() = default;
+  WizardControllerTestBase() {
+    // Stabilizes the behavior on branded build.
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+  }
 
   void SetUp() override {
+    SessionManagerClient::InitializeFake();
+
+    DeviceSettingsService::Get()->SetSessionManager(
+        SessionManagerClient::Get(), new ownership::MockOwnerKeyUtil());
+    DeviceSettingsService::Get()->Load();
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
@@ -252,6 +268,9 @@ class WizardControllerTestBase : public ::testing::Test {
     TestingBrowserProcess::GetGlobal()->platform_part()->StartTearDown();
     profile_ = nullptr;
     profile_manager_.reset();
+
+    DeviceSettingsService::Get()->UnsetSessionManager();
+    SessionManagerClient::Shutdown();
   }
 
   void FakeInstallAttributesForDemoMode() {
@@ -263,6 +282,8 @@ class WizardControllerTestBase : public ::testing::Test {
   testing::NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher_;
 
  private:
+  base::test::ScopedCommandLine command_line_;
+
   std::unique_ptr<base::test::TaskEnvironment> task_environment_ =
       std::make_unique<content::BrowserTaskEnvironment>(
           base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
@@ -281,10 +302,10 @@ class WizardControllerTestBase : public ::testing::Test {
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
+  ash::ScopedTestDeviceSettingsService device_settings_service_;
   ScopedTestingCrosSettings settings_;
   KioskChromeAppManager kiosk_chrome_app_manager_;
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  ash::ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   std::unique_ptr<ScopedEnrollmentLauncherFactoryOverrideForTesting>
       enrollment_launcher_factory_;

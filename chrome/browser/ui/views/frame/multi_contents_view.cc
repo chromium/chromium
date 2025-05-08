@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -22,25 +24,16 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
 
-namespace {
-constexpr int kMinWebContentsWidth = 20;
-constexpr int kContentCornerRadius = 6;
-constexpr int kContentOutlineCornerRadius = 8;
-constexpr int kContentOutlineThickness = 1;
-constexpr int kSplitViewContentInset = 8;
-constexpr int kSplitViewContentPadding = 4;
-}  // namespace
-
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
                                       kMultiContentsViewElementId);
 
 MultiContentsView::MultiContentsView(
     BrowserView* browser_view,
-    WebContentsFocusedCallback inactive_view_focused_callback,
-    WebContentsResizeCallback split_tab_resize_callback)
+    WebContentsFocusedCallback inactive_contents_focused_callback,
+    WebContentsResizeCallback contents_resize_callback)
     : browser_view_(browser_view),
-      inactive_view_focused_callback_(inactive_view_focused_callback),
-      split_tab_resize_callback_(split_tab_resize_callback) {
+      inactive_contents_focused_callback_(inactive_contents_focused_callback),
+      contents_resize_callback_(contents_resize_callback) {
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(
           std::make_unique<ContentsWebView>(browser_view_->GetProfile()))));
@@ -87,7 +80,6 @@ bool MultiContentsView::IsInSplitView() {
 void MultiContentsView::SetWebContentsAtIndex(
     content::WebContents* web_contents,
     int index) {
-  CHECK(web_contents);
   CHECK(index >= 0 && index < 2);
   contents_container_views_[index]->GetContentsView()->SetWebContents(
       web_contents);
@@ -125,7 +117,6 @@ void MultiContentsView::SetActiveIndex(int index) {
   active_index_ = index;
   GetActiveContentsView()->set_is_primary_web_contents_for_window(true);
   GetInactiveContentsView()->set_is_primary_web_contents_for_window(false);
-
   UpdateContentsBorder();
 }
 
@@ -144,22 +135,9 @@ void MultiContentsView::ExecuteOnEachVisibleContentsView(
   }
 }
 
-void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
-  if (!initial_start_width_on_resize_.has_value()) {
-    initial_start_width_on_resize_ =
-        std::make_optional(contents_container_views_[0]->size().width());
-  }
-
-  double total_width = contents_container_views_[0]->size().width() +
-                       contents_container_views_[1]->size().width();
-  double start_ratio =
-      (initial_start_width_on_resize_.value() + resize_amount) / total_width;
-
-  split_tab_resize_callback_.Run(start_ratio);
-
-  if (done_resizing) {
-    initial_start_width_on_resize_ = std::nullopt;
-  }
+void MultiContentsView::OnSwap() {
+  CHECK(IsInSplitView());
+  browser_view_->SwapTabsInActiveSplit();
 }
 
 void MultiContentsView::UpdateSplitRatio(double ratio) {
@@ -169,6 +147,27 @@ void MultiContentsView::UpdateSplitRatio(double ratio) {
 
   start_ratio_ = ratio;
   InvalidateLayout();
+}
+
+void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
+  if (!initial_start_width_on_resize_.has_value()) {
+    initial_start_width_on_resize_ =
+        std::make_optional(contents_container_views_[0]->size().width());
+  }
+
+  double total_width = contents_container_views_[0]->size().width() +
+                       contents_container_views_[0]->GetInsets().width() +
+                       contents_container_views_[1]->size().width() +
+                       contents_container_views_[1]->GetInsets().width();
+  double start_ratio = (initial_start_width_on_resize_.value() +
+                        contents_container_views_[0]->GetInsets().width() +
+                        static_cast<double>(resize_amount)) /
+                       total_width;
+  contents_resize_callback_.Run(start_ratio);
+
+  if (done_resizing) {
+    initial_start_width_on_resize_ = std::nullopt;
+  }
 }
 
 // TODO(crbug.com/397777917): Consider using FlexSpecification weights and
@@ -203,10 +202,15 @@ void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
   TopContainerBackground::PaintBackground(canvas, this, browser_view_);
 }
 
+void MultiContentsView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateContentsBorder();
+}
+
 void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
   if (IsInSplitView()) {
     if (GetInactiveContentsView()->web_contents() == web_view->web_contents()) {
-      inactive_view_focused_callback_.Run(web_view->web_contents());
+      inactive_contents_focused_callback_.Run(web_view->web_contents());
     }
   }
 }
@@ -239,17 +243,23 @@ MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
 
 MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
     ViewWidths widths) {
+  const int min_percentage =
+      kMinWebContentsWidthPercentage * browser_view_->GetBounds().width();
+  const int min_fixed_value = min_contents_width_for_testing_.has_value()
+                                  ? min_contents_width_for_testing_.value()
+                                  : kMinWebContentsWidth;
+  const int min_width = std::min(min_fixed_value, min_percentage);
   if (!IsInSplitView()) {
     // Don't clamp if in a single-view state, where other views should be 0
     // width.
     return widths;
   }
-  if (widths.start_width < kMinWebContentsWidth) {
-    const double diff = kMinWebContentsWidth - widths.start_width;
+  if (widths.start_width < min_width) {
+    const double diff = min_width - widths.start_width;
     widths.start_width += diff;
     widths.end_width -= diff;
-  } else if (widths.end_width < kMinWebContentsWidth) {
-    const double diff = kMinWebContentsWidth - widths.end_width;
+  } else if (widths.end_width < min_width) {
+    const double diff = min_width - widths.end_width;
     widths.end_width += diff;
     widths.start_width -= diff;
   }

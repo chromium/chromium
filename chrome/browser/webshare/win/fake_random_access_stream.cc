@@ -214,7 +214,7 @@ class StreamData final : public base::RefCountedThreadSafe<StreamData> {
  private:
   friend class base::RefCountedThreadSafe<StreamData>;
 
-  virtual ~StreamData() {
+  ~StreamData() {
     EXPECT_FALSE(flush_async_in_progress_)
         << "StreamData destroyed while flush operation is in progress.";
     EXPECT_FALSE(read_async_in_progress_)

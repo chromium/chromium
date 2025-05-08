@@ -236,13 +236,7 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
 class SigninViewControllerBrowserTest
     : public SigninViewControllerBrowserTestBase {
  public:
-  SigninViewControllerBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {switches::kImprovedSigninUIOnDesktop,
-         features::kManagedProfileRequiredInterstitial},
-        /*disabled_features=*/{});
-  }
+  SigninViewControllerBrowserTest() = default;
 
   views::DialogDelegate* TriggerChromeSigninDialogForExtensionsPrompt(
       base::OnceClosure on_complete) {
@@ -260,7 +254,8 @@ class SigninViewControllerBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kManagedProfileRequiredInterstitial};
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -727,12 +722,6 @@ class SigninViewControllerInteractiveBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   SigninViewControllerInteractiveBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {switches::kImprovedSigninUIOnDesktop,
-         switches::kEnableExtensionsExplicitBrowserSignin},
-        /*disabled_features=*/{});
-
     base::FilePath test_data_dir;
     if (!base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir)) {
       ADD_FAILURE();
@@ -831,7 +820,8 @@ class SigninViewControllerInteractiveBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kEnableExtensionsExplicitBrowserSignin};
 
   // chrome/test/data/extensions/
   base::FilePath extension_data_dir_;

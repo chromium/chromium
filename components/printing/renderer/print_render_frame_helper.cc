@@ -58,7 +58,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/css/page_orientation.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
@@ -668,7 +667,7 @@ class HeaderAndFooterContext {
         *source_frame.GetAgentGroupScheduler(),
         /*session_storage_namespace_id=*/std::string(),
         /*page_base_background_color=*/std::nullopt,
-        blink::BrowsingContextGroupInfo::CreateUnique(),
+        /*browsing_context_group_token=*/base::UnguessableToken::Create(),
         /*color_provider_colors=*/nullptr,
         /*partitioned_popin_params=*/nullptr);
     view->GetSettings()->SetJavaScriptEnabled(true);
@@ -960,7 +959,7 @@ void PrepareFrameAndViewForPrint::CopySelection(
       *agent_group_scheduler_,
       /*session_storage_namespace_id=*/std::string(),
       /*page_base_background_color=*/std::nullopt,
-      blink::BrowsingContextGroupInfo::CreateUnique(),
+      /*browsing_context_group_token=*/base::UnguessableToken::Create(),
       /*color_provider_colors=*/nullptr,
       /*partitioned_popin_params=*/nullptr);
   blink::WebView::ApplyWebPreferences(prefs, web_view);

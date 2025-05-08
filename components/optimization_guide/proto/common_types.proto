@@ -45,6 +45,9 @@ enum RequestContext {
   // Requesting metadata when user starts glic, to determine if a page is
   // eligible for glic zero state suggestions.
   CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS = 15;
+  // Requesting metadata before glic shares page context to determine if the
+  // page is eligible for glic.
+  CONTEXT_GLIC_PAGE_CONTEXT = 16;
 }
 
 message FieldTrial {

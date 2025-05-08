@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getValuableIcon;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.ITEMS;
 
 import android.content.Context;
@@ -83,6 +84,10 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
                                         info.getOrigin()),
                                 ImageSize.SMALL,
                                 /* showCustomIcon= */ true);
+        uiConfiguration.loyaltyCardDrawableFunction =
+                (info) ->
+                        getValuableIcon(
+                                context, imageFetcher, info.getProgramLogoUrl(), ImageSize.SMALL);
         return uiConfiguration;
     }
 }

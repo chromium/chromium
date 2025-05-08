@@ -76,7 +76,7 @@ std::string AudioManagerIOS::GetAssociatedOutputDeviceID(
   return std::string();
 }
 
-const char* media::AudioManagerIOS::GetName() {
+const std::string_view media::AudioManagerIOS::GetName() {
   return "iOS";
 }
 

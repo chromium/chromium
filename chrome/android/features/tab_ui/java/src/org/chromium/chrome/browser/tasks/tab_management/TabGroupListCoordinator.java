@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListProperties.ENABLE_CONTAINMENT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListProperties.ON_IS_SCROLLED_CHANGED;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -29,6 +31,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -100,10 +103,20 @@ public class TabGroupListCoordinator {
 
         PropertyModel.Builder builder = new PropertyModel.Builder(TabGroupListProperties.ALL_KEYS);
         builder.with(ON_IS_SCROLLED_CHANGED, onIsScrolledChanged);
+        builder.with(ENABLE_CONTAINMENT, enableContainment());
         PropertyModel propertyModel = builder.build();
 
+        ViewBuilder<TabGroupRowView> innerBuilder = new LayoutViewBuilder<>(R.layout.tab_group_row);
         ViewBuilder<TabGroupRowView> tabGroupRowLayoutBuilder =
-                new LayoutViewBuilder<>(R.layout.tab_group_row);
+                new ViewBuilder<TabGroupRowView>() {
+                    @Override
+                    public TabGroupRowView buildView(ViewGroup parent) {
+                        TabGroupRowView view = innerBuilder.buildView(parent);
+                        if (enableContainment()) view.setupForContainment();
+                        return view;
+                    }
+                };
+
         mSimpleRecyclerViewAdapter.registerType(
                 RowType.TAB_GROUP, tabGroupRowLayoutBuilder, TabGroupRowViewBinder::bind);
 
@@ -165,7 +178,8 @@ public class TabGroupListCoordinator {
                         tabGroupUiActionHandler,
                         actionConfirmationManager,
                         syncService,
-                        modalDialogManager);
+                        modalDialogManager,
+                        enableContainment());
 
         if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
             mEdgeToEdgePadAdjuster =
@@ -188,5 +202,9 @@ public class TabGroupListCoordinator {
             mEdgeToEdgePadAdjuster = null;
         }
         mTabListFaviconProvider.destroy();
+    }
+
+    private static boolean enableContainment() {
+        return SurfaceColorUpdateUtils.isTabGroupListContainmentEnabled();
     }
 }

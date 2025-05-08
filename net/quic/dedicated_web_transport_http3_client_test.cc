@@ -210,7 +210,7 @@ TEST_F(DedicatedWebTransportHttp3Test, Connect) {
       GetURL("/echo"), origin_, &visitor_, anonymization_key_, context_.get(),
       WebTransportParameters());
 
-  EXPECT_CALL(visitor_, OnConnected(_)).WillOnce(StopRunning());
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
   client_->Connect();
   Run();
   ASSERT_TRUE(client_->session() != nullptr);
@@ -251,7 +251,7 @@ TEST_F(DedicatedWebTransportHttp3Test, MAYBE_CloseTimeout) {
       GetURL("/echo"), origin_, &visitor_, anonymization_key_, context_.get(),
       WebTransportParameters());
 
-  EXPECT_CALL(visitor_, OnConnected(_)).WillOnce(StopRunning());
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
   client_->Connect();
   Run();
   ASSERT_TRUE(client_->session() != nullptr);
@@ -277,7 +277,7 @@ TEST_F(DedicatedWebTransportHttp3Test, CloseReason) {
       GetURL("/session-close"), origin_, &visitor_, anonymization_key_,
       context_.get(), WebTransportParameters());
 
-  EXPECT_CALL(visitor_, OnConnected(_)).WillOnce(StopRunning());
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
   client_->Connect();
   Run();
   ASSERT_TRUE(client_->session() != nullptr);
@@ -294,6 +294,43 @@ TEST_F(DedicatedWebTransportHttp3Test, CloseReason) {
       .WillOnce(DoAll(StopRunning(), SaveArg<0>(&received_close_info)));
   Run();
   EXPECT_THAT(received_close_info, Optional(close_info));
+}
+
+// Test negotiation of the application protocol via
+// https://www.ietf.org/archive/id/draft-ietf-webtrans-http3-12.html#name-application-protocol-negoti
+TEST_F(DedicatedWebTransportHttp3Test, SubprotocolHeader) {
+  StartServer();
+  WebTransportParameters parameters;
+  parameters.application_protocols = {"first", "second", "third"};
+  // The selected-subprotocol endpoint selects the first of the offered
+  // protocols by default, and echoes it on a unidirectional stream.
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/selected-subprotocol"), origin_, &visitor_, anonymization_key_,
+      context_.get(), parameters);
+
+  bool stream_received = false;
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  EXPECT_CALL(visitor_, OnIncomingUnidirectionalStreamAvailable).WillOnce([&] {
+    stream_received = true;
+    StopRunning();
+  });
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->session() != nullptr);
+
+  EXPECT_EQ(client_->session()->GetNegotiatedSubprotocol(), "first");
+
+  if (!stream_received) {
+    Run();
+  }
+
+  quic::WebTransportStream* stream =
+      client_->session()->AcceptIncomingUnidirectionalStream();
+  ASSERT_TRUE(stream != nullptr);
+  std::string read_buffer;
+  webtransport::Stream::ReadResult read_result = stream->Read(&read_buffer);
+  ASSERT_TRUE(read_result.fin);
+  EXPECT_EQ(read_buffer, "first");
 }
 
 }  // namespace

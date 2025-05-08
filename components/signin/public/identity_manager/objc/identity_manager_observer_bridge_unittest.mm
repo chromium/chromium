@@ -25,7 +25,7 @@
 @property(nonatomic, assign)
     NSInteger onEndBatchOfRefreshTokenStateChangesCount;
 @property(nonatomic, assign) NSInteger onIdentityManagerShutdownCount;
-@property(nonatomic, assign) ProceduralBlock onIdentityManagerShutdownBlock;
+@property(nonatomic, strong) ProceduralBlock onIdentityManagerShutdownBlock;
 
 @property(nonatomic, assign) signin::PrimaryAccountChangeEvent receivedEvent;
 @property(nonatomic, assign) CoreAccountInfo receivedPrimaryAccountInfo;

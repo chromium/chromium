@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed.sections;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -14,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * View binder for {@link SectionHeaderListProperties}, {@link SectionHeaderProperties} and {@link
  * SectionHeaderView}.
  */
+@NullMarked
 public class SectionHeaderViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<
                         PropertyModel, SectionHeaderView, PropertyKey>,
@@ -107,7 +110,7 @@ public class SectionHeaderViewBinder
             SectionHeaderView view,
             int index,
             int count,
-            PropertyKey payload) {
+            @Nullable PropertyKey payload) {
         PropertyModel header = headers.get(0);
         if (payload == null
                 || payload == SectionHeaderProperties.HEADER_TEXT_KEY

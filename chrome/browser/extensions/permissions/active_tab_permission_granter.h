@@ -38,7 +38,7 @@ class ActiveTabPermissionGranter
 
   ~ActiveTabPermissionGranter() override;
 
-  // If |extension| has the activeTab or tabCapture permission, grants
+  // If `extension` has the activeTab or tabCapture permission, grants
   // tab-specific permissions to it until the next page navigation or refresh.
   void GrantIfRequested(const Extension* extension);
 

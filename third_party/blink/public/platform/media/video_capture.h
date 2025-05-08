@@ -73,6 +73,22 @@ enum VideoCaptureState {
 using VideoCaptureStateUpdateCB =
     base::RepeatingCallback<void(VideoCaptureState)>;
 
+// VideoCaptureCallbacks is a struct that holds all the callbacks
+// needed for video capturer to deliver frames to the MediaStreamVideoTrack
+// for screen content capture, e.g. getDisplayMedia.
+// `deliver_frame_cb` is called when a new video frame is available.
+// `frame_dropped_cb` is called when a video frame is dropped.
+// `sub_capture_target_version_cb` is called when the sub-capture target
+// version is updated.
+// `state_update_cb` is called when the video capturer state is updated.
+// If capturing fails to start or stopped due to an external event then
+struct VideoCaptureCallbacks {
+  VideoCaptureDeliverFrameCB deliver_frame_cb;
+  VideoCaptureNotifyFrameDroppedCB frame_dropped_cb;
+  VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_cb;
+  VideoCaptureStateUpdateCB state_update_cb;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_VIDEO_CAPTURE_H_

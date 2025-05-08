@@ -45,6 +45,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -71,6 +73,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -302,66 +305,30 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
+    @Restriction(DeviceFormFactor.TABLET)
     @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID})
-    public void testTabGroupIntent() {
-        int initialWindowCount = MultiWindowUtils.getInstanceCount();
-        Intent intent =
-                new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        intent.setClass(mActivity, ChromeTabbedActivity.class);
-        IntentHandler.setTabGroupMetadata(intent, createTabGroupMetadata());
+    public void testTabGroupIntent_collapseGroup() {
+        testTabGroupIntent(/* shouldApplyCollapse= */ true);
+    }
 
-        // The newly created ChromeTabbedActivity (created via #startActivity()) should be
-        // destroyed, and the intent should be launched in the existing ChromeTabbedActivity.
-        ApplicationTestUtils.waitForActivityWithClass(
-                ChromeTabbedActivity.class,
-                Stage.DESTROYED,
-                () -> mActivity.getApplicationContext().startActivity(intent));
-
-        Assert.assertEquals(
-                "No new window should be opened.",
-                initialWindowCount,
-                MultiWindowUtils.getInstanceCount());
-        // An individual tab and 3 grouped tabs should be opened in the existing
-        // ChromeTabbedActivity.
-        CriteriaHelper.pollUiThread(
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @Restriction(DeviceFormFactor.TABLET)
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID})
+    public void testTabGroupIntent_skipCollapseWhenStripHidden() {
+        // Hide tab strip.
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Verify 4 tabs opened in tab model.
-                    TabModel tabModel = mActivity.getCurrentTabModel();
-                    Criteria.checkThat(tabModel.getCount(), Matchers.is(4));
-
-                    // Verify urls of the grouped tabs.
-                    Criteria.checkThat(
-                            tabModel.getTabAt(1).getUrl().getSpec(),
-                            Matchers.equalTo(TAB_IDS_TO_URLS.get(1)));
-                    Criteria.checkThat(
-                            tabModel.getTabAt(2).getUrl().getSpec(),
-                            Matchers.equalTo(TAB_IDS_TO_URLS.get(2)));
-                    Criteria.checkThat(
-                            tabModel.getTabAt(3).getUrl().getSpec(),
-                            Matchers.equalTo(TAB_IDS_TO_URLS.get(3)));
-
-                    // Verify the tabs are grouped with the correct rootId and tabGroupId.
-                    Tab firstGroupedTab = tabModel.getTabAt(1);
-                    Assert.assertEquals(
-                            "tabGroupId is incorrect",
-                            TAB_GROUP_ID,
-                            firstGroupedTab.getTabGroupId());
-                    Assert.assertEquals(
-                            "rootId is incorrect", ROOT_ID, firstGroupedTab.getRootId());
-
-                    // Verify other tab group properties.
-                    TabGroupModelFilter filter =
-                            mActivity
-                                    .getTabModelSelector()
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(false);
-                    Assert.assertEquals(TAB_GROUP_TITLE, filter.getTabGroupTitle(ROOT_ID));
-                    Assert.assertEquals(0, filter.getTabGroupColor(ROOT_ID));
-                    Assert.assertFalse(filter.getTabGroupCollapsed(ROOT_ID));
+                    mActivity
+                            .getLayoutManager()
+                            .getStripLayoutHelperManager()
+                            .setStripVisibilityState(
+                                    StripVisibilityState.HIDDEN_BY_FADE, /* clear= */ false);
                 });
+
+        // Collapse group should be skipped when strip is hidden.
+        testTabGroupIntent(/* shouldApplyCollapse= */ false);
     }
 
     @Test
@@ -606,6 +573,72 @@ public class ChromeTabbedActivityTest {
         Assert.assertFalse(ret);
     }
 
+    private void testTabGroupIntent(boolean shouldApplyCollapse) {
+        int initialWindowCount = MultiWindowUtils.getInstanceCount();
+        Intent intent =
+                new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.setClass(mActivity, ChromeTabbedActivity.class);
+        IntentHandler.setTabGroupMetadata(intent, createTabGroupMetadata());
+
+        // The newly created ChromeTabbedActivity (created via #startActivity()) should be
+        // destroyed, and the intent should be launched in the existing ChromeTabbedActivity.
+        ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class,
+                Stage.DESTROYED,
+                () -> mActivity.getApplicationContext().startActivity(intent));
+
+        Assert.assertEquals(
+                "No new window should be opened.",
+                initialWindowCount,
+                MultiWindowUtils.getInstanceCount());
+
+        // An individual tab and 3 grouped tabs should be opened in the existing
+        // ChromeTabbedActivity.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    // Verify 4 tabs opened in tab model.
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(4));
+
+                    // Verify urls of the grouped tabs.
+                    Criteria.checkThat(
+                            tabModel.getTabAt(1).getUrl().getSpec(),
+                            Matchers.equalTo(TAB_IDS_TO_URLS.get(1)));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(2).getUrl().getSpec(),
+                            Matchers.equalTo(TAB_IDS_TO_URLS.get(2)));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(3).getUrl().getSpec(),
+                            Matchers.equalTo(TAB_IDS_TO_URLS.get(3)));
+
+                    // Verify the tabs are grouped with the correct rootId and tabGroupId.
+                    Tab firstGroupedTab = tabModel.getTabAt(1);
+                    Assert.assertEquals(
+                            "tabGroupId is incorrect",
+                            TAB_GROUP_ID,
+                            firstGroupedTab.getTabGroupId());
+                    Assert.assertEquals(
+                            "rootId is incorrect", ROOT_ID, firstGroupedTab.getRootId());
+
+                    // Verify other tab group properties.
+                    TabGroupModelFilter filter =
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(false);
+                    Assert.assertEquals(TAB_GROUP_TITLE, filter.getTabGroupTitle(ROOT_ID));
+                    Assert.assertEquals(0, filter.getTabGroupColor(ROOT_ID));
+                    if (shouldApplyCollapse) {
+                        Assert.assertTrue(filter.getTabGroupCollapsed(ROOT_ID));
+                    } else {
+                        Assert.assertFalse(filter.getTabGroupCollapsed(ROOT_ID));
+                    }
+                });
+    }
+
     private TabGroupMetadata createTabGroupMetadata() {
         return new TabGroupMetadata(
                 ROOT_ID,
@@ -616,7 +649,7 @@ public class ChromeTabbedActivityTest {
                 /* tabGroupColor= */ 0,
                 TAB_GROUP_TITLE,
                 /* mhtmlTabTitle= */ null,
-                /* tabGroupCollapsed= */ false,
+                /* tabGroupCollapsed= */ true,
                 /* isGroupShared= */ false,
                 /* isIncognito= */ false);
     }

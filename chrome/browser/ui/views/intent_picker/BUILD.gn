@@ -16,6 +16,7 @@ source_set("intent_picker_page_action") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/web_applications:features",

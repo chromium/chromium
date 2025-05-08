@@ -7,6 +7,7 @@ module network.mojom;
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
+import "services/network/public/mojom/integrity_policy.mojom";
 import "services/network/public/mojom/document_isolation_policy.mojom";
 import "services/network/public/mojom/link_header.mojom";
 import "services/network/public/mojom/no_vary_search.mojom";
@@ -43,6 +44,11 @@ struct ParsedHeaders {
   // The parsed value of the Document-Isolation-Policy (DIP) and
   // Document-Isolation-Policy-Report-Only headers.
   DocumentIsolationPolicy document_isolation_policy;
+
+  // The parsed value of the Integrity-Policy header.
+  IntegrityPolicy integrity_policy;
+  // The parsed value of the Integrity-Policy-Report-Only header.
+  IntegrityPolicy integrity_policy_report_only;
 
   // The parsed value of the Origin-Agent-Cluster header.
   OriginAgentClusterValue origin_agent_cluster;

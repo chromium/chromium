@@ -22,6 +22,10 @@ inline constexpr char kManagedBookmarks[] = "bookmarks.managed_bookmarks";
 // String which specifies the Managed Bookmarks folder name
 inline constexpr char kManagedBookmarksFolderName[] =
     "bookmarks.managed_bookmarks_folder_name";
+// Time pref used to trigger a metric log for the storage computation of
+// permanent nodes periodically.
+inline constexpr char kBookmarkStorageComputationLastUpdatePref[] =
+    "bookmark.storage_computation_last_update";
 // Boolean which specifies whether the apps shortcut is visible on the bookmark
 // bar.
 inline constexpr char kShowAppsShortcutInBookmarkBar[] =

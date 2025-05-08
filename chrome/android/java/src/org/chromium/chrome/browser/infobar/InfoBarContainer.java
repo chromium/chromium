@@ -224,7 +224,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
     /** A {@link BottomSheetObserver} so this view knows when to show/hide. */
     private @Nullable BottomSheetObserver mBottomSheetObserver;
 
-    /** */
     private BottomSheetController mBottomSheetController;
 
     public static InfoBarContainer from(Tab tab) {

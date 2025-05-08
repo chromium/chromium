@@ -24,6 +24,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -608,10 +609,10 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
       params->provider_id == extension_misc::kODFSExtensionId &&
       first_file_system) {
     // Get Files App window, if it exists.
-    Browser* browser =
-        FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
+    ash::BrowserDelegate* browser = FindSystemWebAppBrowser(
+        profile, ash::SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
     gfx::NativeWindow modal_parent =
-        browser ? browser->window()->GetNativeWindow() : nullptr;
+        browser ? browser->GetNativeWindow() : nullptr;
 
     // This will call into service->RequestMount() if necessary. This is 'fire
     // and forget' as Files app doesn't do anything if this succeeds or fails.

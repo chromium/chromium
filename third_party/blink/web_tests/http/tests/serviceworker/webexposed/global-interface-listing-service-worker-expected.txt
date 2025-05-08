@@ -1,12 +1,4 @@
 [INTERFACES]
-interface AI
-    attribute @@toStringTag
-    method constructor
-interface AICreateMonitor : EventTarget
-    attribute @@toStringTag
-    getter ondownloadprogress
-    method constructor
-    setter ondownloadprogress
 interface AbortController
     attribute @@toStringTag
     getter signal
@@ -200,6 +192,11 @@ interface CountQueuingStrategy
     getter highWaterMark
     getter size
     method constructor
+interface CreateMonitor : EventTarget
+    attribute @@toStringTag
+    getter ondownloadprogress
+    method constructor
+    setter ondownloadprogress
 interface CropTarget
     attribute @@toStringTag
     method constructor
@@ -664,6 +661,7 @@ interface GPUAdapterInfo
     getter description
     getter device
     getter isFallbackAdapter
+    getter subgroupMatrixConfigs
     getter subgroupMaxSize
     getter subgroupMinSize
     getter vendor
@@ -897,6 +895,14 @@ interface GPUShaderModule
     method constructor
     method getCompilationInfo
     setter label
+interface GPUSubgroupMatrixConfig
+    attribute @@toStringTag
+    getter K
+    getter M
+    getter N
+    getter componentType
+    getter resultComponentType
+    method constructor
 interface GPUSupportedFeatures
     attribute @@toStringTag
     getter size
@@ -1152,36 +1158,6 @@ interface ImageData
 interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method addRoutes
-    method constructor
-interface LanguageModel : EventTarget
-    static method availability
-    static method create
-    static method params
-    attribute @@toStringTag
-    getter inputQuota
-    getter inputUsage
-    getter onquotaoverflow
-    getter temperature
-    getter topK
-    method clone
-    method constructor
-    method destroy
-    method measureInputUsage
-    method prompt
-    method promptStreaming
-    setter onquotaoverflow
-interface LanguageModelFactory
-    attribute @@toStringTag
-    method availability
-    method constructor
-    method create
-    method params
-interface LanguageModelParams
-    attribute @@toStringTag
-    getter defaultTemperature
-    getter defaultTopK
-    getter maxTemperature
-    getter maxTopK
     method constructor
 interface Lock
     attribute @@toStringTag
@@ -1811,23 +1787,6 @@ interface Response
 interface RestrictionTarget
     attribute @@toStringTag
     method constructor
-interface Rewriter
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter tone
-    method constructor
-    method destroy
-    method measureInputUsage
-    method rewrite
-    method rewriteStreaming
 interface Scheduler
     attribute @@toStringTag
     method constructor
@@ -1932,23 +1891,6 @@ interface SubtleCrypto
     method unwrapKey
     method verify
     method wrapKey
-interface Summarizer
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter type
-    method constructor
-    method destroy
-    method measureInputUsage
-    method summarize
-    method summarizeStreaming
 interface SuppressedError : Error
     attribute message
     attribute name
@@ -2052,18 +1994,6 @@ interface TransformStreamDefaultController
     method enqueue
     method error
     method terminate
-interface Translator
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter inputQuota
-    getter sourceLanguage
-    getter targetLanguage
-    method constructor
-    method destroy
-    method measureInputUsage
-    method translate
-    method translateStreaming
 interface TrustedHTML
     static method fromLiteral
     attribute @@toStringTag
@@ -3662,23 +3592,6 @@ interface WritableStreamDefaultWriter
     method constructor
     method releaseLock
     method write
-interface Writer
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter tone
-    method constructor
-    method destroy
-    method measureInputUsage
-    method write
-    method writeStreaming
 [NAMESPACES]
 namespace GPUBufferUsage
     attribute @@toStringTag

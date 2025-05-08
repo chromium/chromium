@@ -27,6 +27,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -266,7 +267,7 @@ int BubbleFrameView::NonClientHitTest(const gfx::Point& point) {
   // Convert to RRectF to accurately represent the rounded corners of the
   // dialog and allow events to pass through the shadows.
   gfx::RRectF round_contents_bounds(gfx::RectF(GetContentsBounds()),
-                                    bubble_border_->corner_radius());
+                                    bubble_border_->rounded_corners());
   if (bubble_border_->shadow() != BubbleBorder::NO_SHADOW) {
     round_contents_bounds.Outset(BubbleBorder::kBorderThicknessDip);
   }
@@ -310,7 +311,7 @@ void BubbleFrameView::GetWindowMask(const gfx::Size& size,
   // Use a window mask roughly matching the border in the image assets.
   const int kBorderStrokeSize =
       bubble_border_->shadow() == BubbleBorder::NO_SHADOW ? 0 : 1;
-  const SkScalar kCornerRadius = SkIntToScalar(bubble_border_->corner_radius());
+  const gfx::RoundedCornersF& border_radii = bubble_border_->rounded_corners();
   const gfx::Insets border_insets = bubble_border_->GetInsets();
   SkRect rect = {
       SkIntToScalar(border_insets.left() - kBorderStrokeSize),
@@ -320,7 +321,13 @@ void BubbleFrameView::GetWindowMask(const gfx::Size& size,
                     kBorderStrokeSize)};
 
   if (bubble_border_->shadow() == BubbleBorder::NO_SHADOW) {
-    window_mask->addRoundRect(rect, kCornerRadius, kCornerRadius);
+    SkRRect rrect;
+    SkVector radii[4]{{border_radii.upper_left(), border_radii.upper_left()},
+                      {border_radii.upper_right(), border_radii.upper_right()},
+                      {border_radii.lower_right(), border_radii.lower_right()},
+                      {border_radii.lower_left(), border_radii.lower_left()}};
+    rrect.setRectRadii(rect, radii);
+    window_mask->addRRect(rrect);
   } else {
     static const int kBottomBorderShadowSize = 2;
     rect.fBottom += SkIntToScalar(kBottomBorderShadowSize);
@@ -386,8 +393,7 @@ void BubbleFrameView::UpdateWindowRoundedCorners() {
   // to the client view layer or applying a mask.  However, certain
   // implementations of the client view may need to do additional work to have a
   // rounded window.
-  GetWidget()->client_view()->UpdateWindowRoundedCorners(
-      gfx::RoundedCornersF(GetCornerRadius()));
+  GetWidget()->client_view()->UpdateWindowRoundedCorners(GetRoundedCorners());
 }
 
 bool BubbleFrameView::HasWindowTitle() const {
@@ -722,7 +728,9 @@ void BubbleFrameView::SetBubbleBorder(std::unique_ptr<BubbleBorder> border) {
   bubble_border_ = border.get();
 
   if (footnote_container_) {
-    footnote_container_->SetCornerRadius(border->corner_radius());
+    const gfx::RoundedCornersF& radii = border->rounded_corners();
+    footnote_container_->SetRoundedCorners(radii.lower_left(),
+                                           radii.lower_right());
   }
 
   // Update the background, which relies on the border. First set it to null to
@@ -759,9 +767,12 @@ void BubbleFrameView::SetFootnoteView(std::unique_ptr<View> view) {
     RemoveChildViewT(footnote_container_.ExtractAsDangling());
   }
   if (view) {
-    int radius = bubble_border_ ? bubble_border_->corner_radius() : 0;
+    const gfx::RoundedCornersF& radii = bubble_border_
+                                            ? bubble_border_->rounded_corners()
+                                            : gfx::RoundedCornersF();
     footnote_container_ = AddChildView(std::make_unique<FootnoteContainerView>(
-        footnote_margins_, std::move(view), radius));
+        footnote_margins_, std::move(view), radii.lower_left(),
+        radii.lower_right()));
   }
   InvalidateLayout();
 }
@@ -800,13 +811,15 @@ BubbleFrameView::GetPreferredArrowAdjustment() const {
   return preferred_arrow_adjustment_;
 }
 
-void BubbleFrameView::SetCornerRadius(int radius) {
-  bubble_border_->SetCornerRadius(radius);
+void BubbleFrameView::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
+  bubble_border_->set_rounded_corners(radii);
   UpdateClientLayerCornerRadius();
+  SchedulePaint();
 }
 
-int BubbleFrameView::GetCornerRadius() const {
-  return bubble_border_ ? bubble_border_->corner_radius() : 0;
+gfx::RoundedCornersF BubbleFrameView::GetRoundedCorners() const {
+  return bubble_border_ ? bubble_border_->rounded_corners()
+                        : gfx::RoundedCornersF();
 }
 
 void BubbleFrameView::SetArrow(BubbleBorder::Arrow arrow) {
@@ -843,7 +856,8 @@ void BubbleFrameView::UpdateClientViewBackground() {
     // artifacts. Make sure this isn't the case.
     const SkColor color =
         background_color().ResolveToSkColor(GetWidget()->GetColorProvider());
-    CHECK(SkColor4f::FromColor(color).isOpaque());
+    // TODO(b:414655934): Remove this assertion.
+    DCHECK(SkColor4f::FromColor(color).isOpaque());
     client_view->SetBackground(CreateSolidBackground(color));
     client_view->SchedulePaint();
   }
@@ -955,18 +969,23 @@ gfx::Rect BubbleFrameView::GetCloseButtonMirroredBounds() const {
 }
 
 gfx::RoundedCornersF BubbleFrameView::GetClientCornerRadii() const {
-  DCHECK(bubble_border_);
-  const int radius = bubble_border_->corner_radius();
+  CHECK(bubble_border_);
+
+  const gfx::RoundedCornersF& radii = bubble_border_->rounded_corners();
   const gfx::Insets insets =
       GetClientInsetsForFrameWidth(GetContentsBounds().width());
 
   // Rounded corners do not need to be applied to the client view if the client
-  // view is sufficiently inset such that its unclipped bounds will not
+  // view is sufficiently inset such that its un-clipped bounds will not
   // intersect with the corners of the containing bubble frame view.
-  if ((insets.top() > radius && insets.bottom() > radius) ||
-      (insets.left() > radius && insets.right() > radius)) {
-    return gfx::RoundedCornersF();
-  }
+  bool round_upper_left_corner =
+      insets.top() <= radii.upper_left() || insets.left() <= radii.upper_left();
+  bool round_upper_right_corner = insets.top() <= radii.upper_right() ||
+                                  insets.right() <= radii.upper_right();
+  bool round_lower_left_corner = insets.bottom() <= radii.lower_left() ||
+                                 insets.left() <= radii.lower_left();
+  bool round_lower_right_corner = insets.bottom() <= radii.lower_right() ||
+                                  insets.right() <= radii.lower_right();
 
   // We want to clip the client view to a rounded rect that's consistent with
   // the bubble's rounded border. However, if there is a header, the top of the
@@ -974,10 +993,15 @@ gfx::RoundedCornersF BubbleFrameView::GetClientCornerRadii() const {
   // a footer, the client view should be straight and flush with that. Therefore
   // we set the corner radii separately for top and bottom.
   gfx::RoundedCornersF corner_radii;
-  corner_radii.set_upper_left(header_view_ ? 0 : radius);
-  corner_radii.set_upper_right(header_view_ ? 0 : radius);
-  corner_radii.set_lower_left(footnote_container_ ? 0 : radius);
-  corner_radii.set_lower_right(footnote_container_ ? 0 : radius);
+  corner_radii.set_upper_left(
+      round_upper_left_corner && !header_view_ ? radii.upper_left() : 0);
+  corner_radii.set_upper_right(
+      round_upper_right_corner && !header_view_ ? radii.upper_right() : 0);
+  corner_radii.set_lower_left(
+      round_lower_left_corner && !footnote_container_ ? radii.lower_left() : 0);
+  corner_radii.set_lower_right(round_lower_right_corner && !footnote_container_
+                                   ? radii.lower_right()
+                                   : 0);
 
   return corner_radii;
 }
@@ -1275,7 +1299,7 @@ ADD_PROPERTY_METADATA(gfx::Insets, ContentMargins)
 ADD_PROPERTY_METADATA(gfx::Insets, FootnoteMargins)
 ADD_PROPERTY_METADATA(BubbleFrameView::PreferredArrowAdjustment,
                       PreferredArrowAdjustment)
-ADD_PROPERTY_METADATA(int, CornerRadius)
+ADD_PROPERTY_METADATA(gfx::RoundedCornersF, RoundedCorners)
 ADD_PROPERTY_METADATA(BubbleBorder::Arrow, Arrow)
 ADD_PROPERTY_METADATA(bool, DisplayVisibleArrow)
 ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)

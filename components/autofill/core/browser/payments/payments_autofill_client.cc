@@ -118,6 +118,7 @@ void PaymentsAutofillClient::CloseAutofillProgressDialog(
     base::OnceClosure no_interactive_authentication_callback) {}
 
 void PaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
+    CreditCard::RecordType card_type,
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {}
 
@@ -223,6 +224,12 @@ bool PaymentsAutofillClient::ShowTouchToFillIban(
   return false;
 }
 
+bool PaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const LoyaltyCard> loyalty_cards_to_suggest) {
+  return false;
+}
+
 void PaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
 const PaymentsDataManager& PaymentsAutofillClient::GetPaymentsDataManager()
@@ -253,7 +260,7 @@ void PaymentsAutofillClient::ShowSelectBnplIssuerDialog(
 
 void PaymentsAutofillClient::DismissSelectBnplIssuerDialog() {}
 
-bool PaymentsAutofillClient::IsTabModalPopup() const {
+bool PaymentsAutofillClient::IsTabModalPopupDeprecated() const {
   return false;
 }
 

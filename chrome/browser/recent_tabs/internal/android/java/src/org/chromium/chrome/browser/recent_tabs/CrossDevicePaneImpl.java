@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -34,6 +35,7 @@ import java.util.function.DoubleConsumer;
  * A {@link Pane} representing tabs from other devices. This feature is being migrated here from the
  * Recent Tabs page and used to exist under the foreign session tabs section.
  */
+@NullMarked
 public class CrossDevicePaneImpl implements CrossDevicePane {
     private final Context mContext;
     private final DoubleConsumer mOnToolbarAlphaChange;
@@ -48,7 +50,7 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
     private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
 
-    private CrossDeviceListCoordinator mCrossDeviceListCoordinator;
+    private @Nullable CrossDeviceListCoordinator mCrossDeviceListCoordinator;
 
     /**
      * @param context Used to inflate UI.

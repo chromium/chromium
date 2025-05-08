@@ -78,6 +78,7 @@ class BridgedNativeWidgetHostDummy
 
  private:
   void OnVisibilityChanged(bool visible) override {}
+  void OnSpaceActivationChanged(bool is_space_active) override {}
   void OnWindowNativeThemeChanged() override {}
   void OnViewSizeChanged(const gfx::Size& new_size) override {}
   void SetKeyboardAccessible(bool enabled) override {}
@@ -1047,6 +1048,7 @@ void NativeWidgetMacNSWindowHost::OnApplicationHostDestroying(
 // remote_cocoa::mojom::NativeWidgetNSWindowHost:
 
 void NativeWidgetMacNSWindowHost::OnVisibilityChanged(bool window_visible) {
+  const bool was_visible_on_screen = IsVisibleOnScreen();
   is_visible_ = window_visible;
   if (compositor_) {
     layer()->SetVisible(window_visible);
@@ -1057,8 +1059,26 @@ void NativeWidgetMacNSWindowHost::OnVisibilityChanged(bool window_visible) {
       compositor_->Suspend();
     }
   }
-  if (Widget* widget = GetWidget()) {
-    widget->OnNativeWidgetVisibilityChanged(window_visible);
+
+  Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+
+  widget->OnNativeWidgetVisibilityChanged(window_visible);
+
+  if (was_visible_on_screen != IsVisibleOnScreen()) {
+    widget->OnNativeWidgetVisibilityOnScreenChanged(IsVisibleOnScreen());
+  }
+}
+
+void NativeWidgetMacNSWindowHost::OnSpaceActivationChanged(
+    bool is_on_active_space) {
+  const bool was_visible_on_screen = IsVisibleOnScreen();
+  is_on_active_space_ = is_on_active_space;
+
+  if (was_visible_on_screen != IsVisibleOnScreen() && GetWidget()) {
+    GetWidget()->OnNativeWidgetVisibilityOnScreenChanged(IsVisibleOnScreen());
   }
 }
 
@@ -1330,6 +1350,10 @@ void NativeWidgetMacNSWindowHost::OnWindowFullscreenTransitionComplete(
 
   ui::NSWindowFullscreenNotificationWaiter::NotifyFullscreenTransitionComplete(
       native_widget_mac_->GetNativeWindow(), actual_fullscreen_state);
+
+  if (Widget* widget = GetWidget()) {
+    widget->OnNativeWidgetWindowShowStateChanged();
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowMiniaturizedChanged(
@@ -1342,6 +1366,9 @@ void NativeWidgetMacNSWindowHost::OnWindowMiniaturizedChanged(
 
 void NativeWidgetMacNSWindowHost::OnWindowZoomedChanged(bool zoomed) {
   is_zoomed_ = zoomed;
+  if (Widget* widget = GetWidget()) {
+    widget->OnNativeWidgetWindowShowStateChanged();
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(

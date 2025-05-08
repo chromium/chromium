@@ -30,7 +30,7 @@ modules_defines = {
     "HTMLparser": "LIBXML_HTML_ENABLED",
     "catalog": "LIBXML_CATALOG_ENABLED",
     "xmlreader": "LIBXML_READER_ENABLED",
-    "relaxng": "LIBXML_SCHEMAS_ENABLED",
+    "relaxng": "LIBXML_RELAXNG_ENABLED",
     "schemasInternals": "LIBXML_SCHEMAS_ENABLED",
     "xmlschemas": "LIBXML_SCHEMAS_ENABLED",
     "xmlschemastypes": "LIBXML_SCHEMAS_ENABLED",
@@ -143,9 +143,6 @@ skipped_functions = [
 "xmlParseXMLDecl", "xmlParseTextDecl", "xmlParseMisc",
 "xmlParseExternalSubset", "xmlParserHandlePEReference",
 "xmlSkipBlankChars",
-# Legacy
-"xmlCleanupPredefinedEntities", "xmlInitializePredefinedEntities",
-"xmlSetFeature", "xmlGetFeature", "xmlGetFeaturesList",
 # Shouldn't free result
 "xmlCtxtGetDict",
 ]
@@ -526,6 +523,8 @@ for enum in enums:
     #
     if (name == None) or ((name not in argtypes) and (name not in rettypes)):
         continue;
+    if name == 'xmlCharEncFlags':
+        continue
     define = 0
 
     if (name in argtypes) and is_known_param_type(name) == 0:

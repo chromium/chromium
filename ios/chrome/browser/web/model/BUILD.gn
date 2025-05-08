@@ -269,6 +269,8 @@ source_set("web_internal") {
     "//components/variations/field_trial_config",
     "//components/variations/service",
     "//components/version_info",
+    "//components/webauthn/ios",
+    "//components/webauthn/ios:features",
     "//components/webui/flags",
     "//ios/chrome/app/resources:ios_resources",
     "//ios/chrome/browser/application_context/model",

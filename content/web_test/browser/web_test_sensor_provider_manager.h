@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/sensor_provider.mojom-shared.h"
-#include "third_party/blink/public/mojom/sensor/web_sensor_provider_automation.mojom.h"
+#include "third_party/blink/public/test/mojom/sensor/web_sensor_provider_automation.test-mojom.h"
 
 namespace content {
 

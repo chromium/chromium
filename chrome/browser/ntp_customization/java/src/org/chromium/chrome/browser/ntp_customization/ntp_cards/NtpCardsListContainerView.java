@@ -11,9 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerView;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.ntp_customization.R;
 import java.util.List;
 
 /** The view holding {@link NtpCardsListItemView} in the "New tab page cards" bottom sheet. */
+@NullMarked
 public class NtpCardsListContainerView extends BottomSheetListContainerView {
     public NtpCardsListContainerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

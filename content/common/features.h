@@ -64,7 +64,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableDevToolsJsErrorReporting);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEmbeddingRequiresOptIn);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kExperimentalContentSecurityPolicyFeatures);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmFlexibleFields);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmIframeOrigin);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmUseOtherAccountAndLabelsNewSyntax);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmSameSiteLax);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFilterInstalledAppsWebAppMatching);
@@ -153,6 +153,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyDynamicTiering);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebOTPAssertionFeaturePolicy);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUIInProcessResourceLoading);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLimitCrossOriginNonActivatedPaintHolding);
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDisallowRasterInterfaceWithoutSkiaBackend);
 
 // Please keep features in alphabetical order.
 

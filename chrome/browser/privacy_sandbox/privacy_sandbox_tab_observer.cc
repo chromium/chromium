@@ -48,7 +48,7 @@ void PrivacySandboxTabObserver::DidFinishNavigation(
     auto* desktop_survey_controller =
         PrivacySandboxSurveyDesktopControllerFactory::GetForProfile(profile);
     if (desktop_survey_controller) {
-      desktop_survey_controller->MaybeShowSentimentSurvey(profile);
+      desktop_survey_controller->MaybeShowSentimentSurvey();
       desktop_survey_controller->OnNewTabPageSeen();
     }
   }

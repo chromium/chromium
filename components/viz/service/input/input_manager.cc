@@ -25,9 +25,11 @@
 #include "components/input/android/scoped_input_receiver.h"
 #include "components/input/android/scoped_input_receiver_callbacks.h"
 #include "components/input/android/scoped_input_transfer_token.h"
+#include "components/input/features.h"
 #include "components/viz/service/input/fling_scheduler_android.h"
 #include "components/viz/service/input/render_input_router_support_android.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
+#include "ui/gfx/android/achoreographer_compat.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 
@@ -89,6 +91,7 @@ constexpr char kStateProcessingResultHistogram[] =
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(CreateAndroidInputReceiverResult)
 enum class CreateAndroidInputReceiverResult {
   kSuccessfullyCreated = 0,
   kFailedUnknown = 1,
@@ -101,8 +104,11 @@ enum class CreateAndroidInputReceiverResult {
   kNullBrowserInputToken = 8,
   kNotCreatingMoreThanOneReceiver = 9,
   kRootCompositorFrameSinkDestroyed = 10,
-  kMaxValue = kRootCompositorFrameSinkDestroyed,
+  kFailedChoreographerNotSupported = 11,
+  kFailedNullChoreographer = 12,
+  kMaxValue = kFailedNullChoreographer,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:CreateAndroidInputReceiverResult)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -449,6 +455,20 @@ void InputManager::OnInvalidInputEventSource(
       ->OnInvalidInputEventSource(frame_sink_id);
 }
 
+void InputManager::RendererInputResponsivenessChanged(
+    const FrameSinkId& frame_sink_id,
+    const base::UnguessableToken& grouping_id,
+    bool is_responsive,
+    std::optional<base::TimeTicks> ack_timeout_ts) {
+  auto itr = rir_delegate_remote_map_.find(grouping_id);
+  if (itr == rir_delegate_remote_map_.end()) {
+    return;
+  }
+
+  itr->second->RendererInputResponsivenessChanged(frame_sink_id, is_responsive,
+                                                  std::move(ack_timeout_ts));
+}
+
 std::optional<bool> InputManager::IsDelegatedInkHovering(
     const FrameSinkId& frame_sink_id) {
   auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
@@ -524,6 +544,7 @@ void InputManager::NotifySiteIsMobileOptimized(
 
   auto metadata_itr = frame_sink_metadata_map_.find(frame_sink_id);
   CHECK(metadata_itr != frame_sink_metadata_map_.end());
+  metadata_itr->second.is_mobile_optimized = is_mobile_optimized;
   metadata_itr->second.rir_support->NotifySiteIsMobileOptimized(
       is_mobile_optimized);
 }
@@ -546,6 +567,24 @@ void InputManager::StopFlingingOnViz(const FrameSinkId& frame_sink_id) {
   }
 }
 
+void InputManager::RestartInputEventAckTimeoutIfNecessary(
+    const FrameSinkId& frame_sink_id) {
+  auto itr = rir_map_.find(frame_sink_id);
+  if (itr == rir_map_.end()) {
+    return;
+  }
+  itr->second->RestartInputEventAckTimeoutIfNecessary();
+}
+
+void InputManager::NotifyVisibilityChanged(const FrameSinkId& frame_sink_id,
+                                           bool is_hidden) {
+  auto itr = frame_sink_metadata_map_.find(frame_sink_id);
+  if (itr == frame_sink_metadata_map_.end()) {
+    return;
+  }
+  itr->second.rir_delegate->SetIsHidden(is_hidden);
+}
+
 void InputManager::SetupRenderInputRouterDelegateConnection(
     const base::UnguessableToken& grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
@@ -566,11 +605,11 @@ void InputManager::NotifyRendererBlockStateChanged(
     bool blocked,
     const std::vector<FrameSinkId>& rirs) {
   for (auto& frame_sink_id : rirs) {
-    auto itr = frame_sink_metadata_map_.find(frame_sink_id);
-
-    if (itr != frame_sink_metadata_map_.end()) {
-      itr->second.rir_delegate->SetIsBlocked(blocked);
+    auto itr = rir_map_.find(frame_sink_id);
+    if (itr == rir_map_.end()) {
+      continue;
     }
+    itr->second->RenderProcessBlockedStateChanged(blocked);
   }
 }
 
@@ -633,10 +672,12 @@ void InputManager::MaybeRecreateRootRenderInputRouterSupports(
     // associated with layer tree frame sinks.
     if (iter != frame_sink_metadata_map_.end() &&
         iter->second.rir_support->IsRenderInputRouterSupportChildFrame()) {
-      iter->second.rir_support.reset();
+      FrameSinkMetadata& metadata = iter->second;
+      metadata.rir_support.reset();
       auto* rir = rir_map_.find(frame_sink_id)->second.get();
-      iter->second.rir_support =
-          MakeRenderInputRouterSupport(rir, frame_sink_id);
+      metadata.rir_support = MakeRenderInputRouterSupport(rir, frame_sink_id);
+      metadata.rir_support->NotifySiteIsMobileOptimized(
+          metadata.is_mobile_optimized);
     }
   }
 }
@@ -651,6 +692,8 @@ void InputManager::RecreateRenderInputRouterSupport(
   frame_sink_metadata.rir_support.reset();
   frame_sink_metadata.rir_support =
       MakeRenderInputRouterSupport(rir, child_frame_sink_id);
+  frame_sink_metadata.rir_support->NotifySiteIsMobileOptimized(
+      frame_sink_metadata.is_mobile_optimized);
 }
 
 std::unique_ptr<RenderInputRouterSupportBase>
@@ -681,6 +724,8 @@ void InputManager::OnRIRDelegateClientDisconnected(
 void InputManager::CreateOrReuseAndroidInputReceiver(
     const FrameSinkId& frame_sink_id,
     const gpu::SurfaceHandle& surface_handle) {
+  CHECK(base::AndroidInputReceiverCompat::IsSupportAvailable());
+
   if (receiver_data_ && receiver_data_->root_frame_sink_id().is_valid()) {
     // Only allow input receiver "creation" for single root compositor frame
     // sink.
@@ -785,17 +830,54 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
           callbacks.a_input_receiver_callbacks(),
           input::AndroidInputCallback::OnMotionEventThunk);
 
-  input::ScopedInputReceiver receiver(
-      looper, browser_input_token.a_input_transfer_token(),
-      input_surface->surface(), callbacks.a_input_receiver_callbacks());
+  AInputReceiver* a_input_receiver;
+  bool batched = base::FeatureList::IsEnabled(
+      input::features::kUseAndroidBufferedInputDispatch);
+  if (batched) {
+    const gfx::AChoreographerCompat& a_choreographer_compat =
+        gfx::AChoreographerCompat::Get();
+    if (!a_choreographer_compat.supported) {
+      UMA_HISTOGRAM_ENUMERATION(
+          kInputReceiverCreationResultHistogram,
+          CreateAndroidInputReceiverResult::kFailedChoreographerNotSupported);
+      return;
+    }
 
+    // Note: This call relies on calling |ALooper_prepare| above because
+    // |AChoreographer_getInstance| "must be called on an ALooper thread". See
+    // https://developer.android.com/ndk/reference/group/choreographer#achoreographer_getinstance.
+    AChoreographer* a_choreographer =
+        a_choreographer_compat.AChoreographer_getInstanceFn();
+    if (!a_choreographer) {
+      UMA_HISTOGRAM_ENUMERATION(
+          kInputReceiverCreationResultHistogram,
+          CreateAndroidInputReceiverResult::kFailedNullChoreographer);
+      return;
+    }
+
+    a_input_receiver =
+        base::AndroidInputReceiverCompat::GetInstance()
+            .AInputReceiver_createBatchedInputReceiverFn(
+                a_choreographer, browser_input_token.a_input_transfer_token(),
+                input_surface->surface(),
+                callbacks.a_input_receiver_callbacks());
+  } else {
+    a_input_receiver =
+        base::AndroidInputReceiverCompat::GetInstance()
+            .AInputReceiver_createUnbatchedInputReceiverFn(
+                looper, browser_input_token.a_input_transfer_token(),
+                input_surface->surface(),
+                callbacks.a_input_receiver_callbacks());
+  }
+
+  input::ScopedInputReceiver receiver(a_input_receiver);
   if (!receiver) {
     UMA_HISTOGRAM_ENUMERATION(kInputReceiverCreationResultHistogram,
                               CreateAndroidInputReceiverResult::kFailedUnknown);
     return;
   }
 
-  input::ScopedInputTransferToken viz_input_token(receiver.a_input_receiver());
+  input::ScopedInputTransferToken viz_input_token(a_input_receiver);
   if (!viz_input_token) {
     UMA_HISTOGRAM_ENUMERATION(
         kInputReceiverCreationResultHistogram,

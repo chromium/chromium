@@ -20,7 +20,7 @@
 // SigninPromoViewDelegate to perform SigninPromoView actions.
 @property(nonatomic, weak) id<SigninPromoViewDelegate> delegate;
 // Text being displayed.
-@property(nonatomic, readwrite, strong) NSString* text;
+@property(nonatomic, readwrite, copy) NSString* text;
 @end
 
 // TableViewCell that contains a SignInPromoView.

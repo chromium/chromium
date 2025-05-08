@@ -171,7 +171,8 @@ static String TruncateString(const String& string,
     DCHECK_LT(keep_count, keep_count_for_smallest_known_to_not_fit);
     DCHECK_GT(keep_count, keep_count_for_largest_known_to_fit);
 
-    truncated_string = truncate_to_buffer(string, keep_count, string_buffer);
+    truncated_string = truncate_to_buffer(string, keep_count,
+      base::span(string_buffer));
 
     width = StringWidth(font, truncated_string);
     if (width <= max_width) {
@@ -188,7 +189,8 @@ static String TruncateString(const String& string,
 
   if (keep_count != keep_count_for_largest_known_to_fit) {
     keep_count = keep_count_for_largest_known_to_fit;
-    truncated_string = truncate_to_buffer(string, keep_count, string_buffer);
+    truncated_string = truncate_to_buffer(string, keep_count,
+      base::span(string_buffer));
   }
 
   return String(truncated_string);

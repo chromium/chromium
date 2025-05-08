@@ -6,7 +6,6 @@ import type {PrintPreviewDestinationDialogElement} from 'chrome://print/print_pr
 import {NativeLayerImpl, State} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -34,10 +33,8 @@ suite('DestinationDialogInteractiveTest', function() {
     // Create destination settings, so  that the user manager is created.
     const destinationSettings =
         document.createElement('print-preview-destination-settings');
-    destinationSettings.settings = model.settings;
     destinationSettings.state = State.READY;
     destinationSettings.disabled = false;
-    fakeDataBind(model, destinationSettings, 'settings');
     document.body.appendChild(destinationSettings);
 
     // Initialize

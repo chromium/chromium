@@ -102,6 +102,10 @@
   _parent->OnSystemColorsChanged();
 }
 
+- (void)onActiveSpaceChanged:(NSNotification*)notification {
+  _parent->OnSpaceActivationMayHaveChanged();
+}
+
 // NSWindowDelegate implementation.
 
 - (void)windowDidFailToEnterFullScreen:(NSWindow*)window {
@@ -185,6 +189,10 @@
   if ([NSApp isActive] && ([NSApp keyWindow] == notification.object))
     return;
   _parent->OnWindowKeyStatusChangedTo(false);
+}
+
+- (void)windowDidChangeOcclusionState:(NSNotification*)notification {
+  _parent->OnSpaceActivationMayHaveChanged();
 }
 
 - (BOOL)windowShouldClose:(id)sender {

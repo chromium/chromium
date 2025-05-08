@@ -74,21 +74,21 @@ public class ReaderModePreferencesDialog extends CarryOn {
     }
 
     public void pickColorLight(Condition condition) {
-        Condition.runAndWaitFor(lightButtonElement.clickTrigger(), condition);
+        Condition.runAndWaitFor(lightButtonElement.getClickTrigger(), condition);
     }
 
     public void pickColorDark(Condition condition) {
-        Condition.runAndWaitFor(darkButtonElement.clickTrigger(), condition);
+        Condition.runAndWaitFor(darkButtonElement.getClickTrigger(), condition);
     }
 
     public void pickColorSepia(Condition condition) {
-        Condition.runAndWaitFor(sepiaButtonElement.clickTrigger(), condition);
+        Condition.runAndWaitFor(sepiaButtonElement.getClickTrigger(), condition);
     }
 
     public void setFontSizeSliderToMin(Condition condition) {
         // Min is 50% font size.
         Condition.runAndWaitFor(
-                fontSizeSliderElement.performTrigger(
+                fontSizeSliderElement.getPerformTrigger(
                         new GeneralClickAction(
                                 Tap.SINGLE, GeneralLocation.CENTER_LEFT, Press.FINGER)),
                 condition);
@@ -96,7 +96,7 @@ public class ReaderModePreferencesDialog extends CarryOn {
 
     public void setFontSizeSliderToMax(Condition condition) {
         Condition.runAndWaitFor(
-                fontSizeSliderElement.performTrigger(
+                fontSizeSliderElement.getPerformTrigger(
                         new GeneralClickAction(
                                 Tap.SINGLE, GeneralLocation.CENTER_RIGHT, Press.FINGER)),
                 condition);

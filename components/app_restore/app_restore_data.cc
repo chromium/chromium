@@ -522,7 +522,4 @@ bool AppRestoreData::operator==(const AppRestoreData& other) const {
          status_bar_color == other.status_bar_color;
 }
 
-bool AppRestoreData::operator!=(const AppRestoreData& other) const {
-  return !(*this == other);
-}
 }  // namespace app_restore

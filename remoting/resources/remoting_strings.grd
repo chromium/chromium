@@ -760,6 +760,9 @@
       <message name="IDS_REMOTING_REMOTE_SECURITY_KEY_DESCRIPTION" desc="The file description specified in the version information of remote_security_key.exe.">
         Security Key Remoting Process
       </message>
+      <message name="IDS_REMOTING_CRASHPAD_HANDLER_DESCRIPTION" desc="The file description specified in the version information of remoting_crashpad_handler.exe.">
+        Crash Reporting
+      </message>
       <message name="IDS_REMOTING_START_HOST_DESCRIPTION" desc="The file description specified in the version information of remoting_start_host.exe.">
         Host Provisioning Utility
       </message>

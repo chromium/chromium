@@ -754,8 +754,7 @@ DocumentFragment* CreateFragmentForTransformToFragment(
     fragment->ParserAppendChild(Text::Create(output_doc, source_string));
   } else {
     bool successful_parse =
-        fragment->ParseXML(source_string, nullptr,
-                           IgnoreException(output_doc.GetAgent().isolate()),
+        fragment->ParseXML(source_string, nullptr, IGNORE_EXCEPTION,
                            kAllowScriptingContentAndDoNotMarkAlreadyStarted);
     if (!successful_parse)
       return nullptr;

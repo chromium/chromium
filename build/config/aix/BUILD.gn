@@ -29,6 +29,7 @@ config("compiler") {
     "-fdata-sections",
     "-ffunction-sections",
     "-fno-extern-tls-init",
+    "-fno-reorder-functions",
     "-O3",
 
     # "-Werror"

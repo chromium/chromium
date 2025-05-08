@@ -10,8 +10,6 @@
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 
-class Browser;
-
 namespace web_app {
 struct WebAppInstallInfo;
 }  // namespace web_app
@@ -24,7 +22,7 @@ class CameraSystemAppDelegate : public ash::SystemWebAppDelegate {
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   gfx::Size GetMinimumWindowSize() const override;
-  gfx::Rect GetDefaultBounds(Browser* browser) const override;
+  gfx::Rect GetDefaultBounds(ash::BrowserDelegate* browser) const override;
   bool UseSystemThemeColor() const override;
   base::FilePath GetLaunchDirectory(
       const apps::AppLaunchParams& params) const override;

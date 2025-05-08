@@ -411,6 +411,13 @@ message WalletMaskedCreditCard {
     RETRIEVAL_UNENROLLED_AND_ELIGIBLE = 3;
   }
 
+  enum CardBenefitSource {
+    SOURCE_UNKNOWN = 0;
+    SOURCE_AMEX = 1;
+    SOURCE_BMO = 2;
+    SOURCE_CURINOS = 3;
+  }
+
   // Server-generated unique ID string. This is opaque to the client.
   // This is the legacy version of `instrument_id`.
   optional string id = 1;
@@ -479,6 +486,10 @@ message WalletMaskedCreditCard {
   // card issuer including card number, expiry and CVC.
   optional CardInfoRetrievalEnrollmentState
       card_info_retrieval_enrollment_state = 22;
+
+  // The source of the card's benefits. eg: Curinos. Each card can only have one
+  // single benefit source, even if there are multiple benefits.
+  optional CardBenefitSource card_benefit_source = 23;
 }
 
 // Unused by the client since M121.

@@ -105,6 +105,10 @@ WebNode WebNode::ParentOrShadowHostNode() const {
       const_cast<ContainerNode*>(private_->ParentOrShadowHostNode()));
 }
 
+bool WebNode::IsInUserAgentShadowRoot() const {
+  return private_->IsInUserAgentShadowRoot();
+}
+
 WebString WebNode::NodeValue() const {
   return private_->nodeValue();
 }

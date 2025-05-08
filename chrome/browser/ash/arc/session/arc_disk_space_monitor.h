@@ -38,13 +38,14 @@ constexpr base::TimeDelta kDiskSpaceCheckIntervalLong = base::Seconds(10);
 constexpr base::TimeDelta kPreStopNotificationReshowInterval = base::Minutes(2);
 
 // Notifier ID of ArcDiskSpaceMonitor.
-const char kDiskSpaceMonitorNotifierId[] = "arc_disk_space_monitor";
+inline constexpr char kDiskSpaceMonitorNotifierId[] = "arc_disk_space_monitor";
 
 // Notification ID of the pre-stop warning notification.
-const char kLowDiskSpacePreStopNotificationId[] = "arc_low_disk_space_pre_stop";
+inline constexpr char kLowDiskSpacePreStopNotificationId[] =
+    "arc_low_disk_space_pre_stop";
 
 // Notification ID of the post-stop warning notification.
-const char kLowDiskSpacePostStopNotificationId[] =
+inline constexpr char kLowDiskSpacePostStopNotificationId[] =
     "arc_low_disk_space_post_stop";
 
 // Monitors disk usage. Requests stopping ARC and/or shows a warning

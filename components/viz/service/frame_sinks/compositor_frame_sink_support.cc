@@ -605,8 +605,10 @@ void CompositorFrameSinkSupport::InitializeCompositorFrameSinkType(
 }
 
 void CompositorFrameSinkSupport::BindLayerContext(
-    mojom::PendingLayerContext& context) {
-  layer_context_ = std::make_unique<LayerContextImpl>(this, context);
+    mojom::PendingLayerContext& context,
+    bool draw_mode_is_gpu) {
+  layer_context_ =
+      std::make_unique<LayerContextImpl>(this, context, draw_mode_is_gpu);
 }
 
 void CompositorFrameSinkSupport::SetThreads(
@@ -811,11 +813,6 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
 
   if (features::ShouldOnBeginFrameThrottleVideo() &&
       frame_sink_type_ == mojom::CompositorFrameSinkType::kVideo) {
-    ApplyPreferredFrameRate(frame.metadata.begin_frame_ack.frame_id.source_id);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kThrottleFrameRateOnManyDidNotProduceFrame) &&
-      frame_sink_type_ == mojom::CompositorFrameSinkType::kLayerTree) {
     ApplyPreferredFrameRate(frame.metadata.begin_frame_ack.frame_id.source_id);
   }
 
@@ -1474,8 +1471,7 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
     return RecordShouldSendBeginFrame("SendFrameTiming", true);
   }
 
-  if (!client_needs_begin_frame_ && !layer_context_wants_begin_frames_ &&
-      frame_timing_details_.empty()) {
+  if (!client_needs_begin_frame_ && !layer_context_wants_begin_frames_) {
     return RecordShouldSendBeginFrame("StopNotRequested", false);
   }
 

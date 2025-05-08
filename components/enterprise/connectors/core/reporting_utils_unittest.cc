@@ -6,6 +6,8 @@
 
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "net/base/network_interfaces.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -169,6 +171,26 @@ TEST(ReportingUtilsTest, TestUrlMatchingForOptInEventReturnsFalse) {
   auto url_matcher = CreateURLMatcherForOptInEvent(std::move(settings),
                                                    kKeyPasswordBreachEvent);
   EXPECT_FALSE(IsUrlMatched(url_matcher.get(), GURL("gmail.com")));
+}
+
+TEST(ReportingUtilsTest, TestAddReferrerChainToEvent) {
+  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+      referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+  base::Value::Dict event;
+  AddReferrerChainToEvent(referrer_chain, event);
+  EXPECT_EQ(event.size(), 1u);
+  EXPECT_EQ(event.FindList(kKeyReferrers)->size(), 1u);
+}
+
+TEST(ReportingUtilsTest, TestEmptyReferrerChainAdded) {
+  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+      referrer_chain;
+  base::Value::Dict event;
+  AddReferrerChainToEvent(referrer_chain, event);
+  EXPECT_EQ(event.size(), 1u);
+  EXPECT_TRUE(event.contains(kKeyReferrers));
+  EXPECT_TRUE(event.FindList(kKeyReferrers)->empty());
 }
 
 }  // namespace enterprise_connectors

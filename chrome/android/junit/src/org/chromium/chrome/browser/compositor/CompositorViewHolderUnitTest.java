@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.EventFilter.EventType;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -175,6 +176,7 @@ public class CompositorViewHolderUnitTest {
     @Mock private OnscreenContentProvider.Natives mOnscreenContentProviderJni;
     @Mock private ContentCaptureFeatures.Natives mContentCaptureFeaturesJni;
     @Mock private InputHintChecker.Natives mInputHintCheckerJni;
+    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
@@ -229,7 +231,9 @@ public class CompositorViewHolderUnitTest {
 
         BrowserControlsManager browserControlsManager =
                 new BrowserControlsManager(
-                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
+                        mActivity,
+                        BrowserControlsStateProvider.ControlsPosition.TOP,
+                        mMultiWindowModeStateDispatcher);
         mBrowserControlsManager = spy(browserControlsManager);
         mBrowserControlsManager.initialize(
                 mControlContainer,
@@ -975,6 +979,31 @@ public class CompositorViewHolderUnitTest {
         framesUntilHideBackground = 0;
         mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
         verifyBackgroundRemoved();
+    }
+
+    @Test
+    public void testFocusOnWebContent_resetsKeyboardFocus() {
+        mCompositorViewHolder.setFocusOnFirstContentViewItem();
+        verify(mCompositorViewHolder).resetKeyboardFocus();
+    }
+
+    @Test
+    public void testOnControlsOffsetChanged_NoRequestRenderIfScrolling() {
+        mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_DOWN);
+        mCompositorViewHolder.onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
+        verify(mCompositorView, never()).requestRender();
+        mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_UP);
+
+        mCompositorViewHolder.setContentViewScrollingStateForTesting(true);
+        mCompositorViewHolder.onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
+        verify(mCompositorView, never()).requestRender();
+        mCompositorViewHolder.setContentViewScrollingStateForTesting(false);
+    }
+
+    @Test
+    public void testOnControlsOffsetChanged_RequestRender() {
+        mCompositorViewHolder.onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
+        verify(mCompositorView, times(1)).requestRender();
     }
 
     private static void runCurrentTasks() {

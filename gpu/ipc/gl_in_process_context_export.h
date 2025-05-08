@@ -15,11 +15,7 @@
 #endif  // defined(GL_IN_PROCESS_CONTEXT_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(GL_IN_PROCESS_CONTEXT_IMPLEMENTATION)
 #define GL_IN_PROCESS_CONTEXT_EXPORT __attribute__((visibility("default")))
-#else
-#define GL_IN_PROCESS_CONTEXT_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

@@ -898,36 +898,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
       kFinalStatusTriggerDestroyed, 1);
 }
 
-class PrerenderSpeculationRulesTagsBrowserTest
-    : public PrerenderBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  PrerenderSpeculationRulesTagsBrowserTest() {
-    if (IsSpeculationRulesTagsEnabled()) {
-      // Explicitly enables blink::features::kSpeculationRulesTag to enable
-      // SpeculationRulesTag.
-      feature_list_.InitAndEnableFeature(blink::features::kSpeculationRulesTag);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          blink::features::kSpeculationRulesTag);
-    }
-  }
-  ~PrerenderSpeculationRulesTagsBrowserTest() override = default;
-
-  bool IsSpeculationRulesTagsEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderSpeculationRulesTagsBrowserTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "TagsEnabled" : "TagsDisabled";
-                         });
-
-IN_PROC_BROWSER_TEST_P(PrerenderSpeculationRulesTagsBrowserTest, UseCounter) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TagsUseCounter) {
   base::HistogramTester histogram_tester;
 
   histogram_tester.ExpectBucketCount(
@@ -944,13 +915,11 @@ IN_PROC_BROWSER_TEST_P(PrerenderSpeculationRulesTagsBrowserTest, UseCounter) {
 
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kSpeculationRulesTags,
-      IsSpeculationRulesTagsEnabled() ? 1 : 0);
+      blink::mojom::WebFeature::kSpeculationRulesTags, 1);
 }
 
 // Tests that if no tag is specified, then UseCounter will not increase.
-IN_PROC_BROWSER_TEST_P(PrerenderSpeculationRulesTagsBrowserTest,
-                       NoUseCountIfTagEmpty) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NoUseCountIfTagEmpty) {
   base::HistogramTester histogram_tester;
 
   histogram_tester.ExpectBucketCount(

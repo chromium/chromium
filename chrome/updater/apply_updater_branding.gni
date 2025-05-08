@@ -57,6 +57,8 @@ template("apply_updater_branding") {
     "-e",
     "UPDATE_CHECK_URL=\"$update_check_url\"",
     "-e",
+    "UPDATER_APP_ICON_PATH=\"$updater_app_icon_path\"",
+    "-e",
     "UPDATER_APPID=\"$updater_appid\"",
     "-e",
     "QUALIFICATION_APPID=\"$qualification_appid\"",

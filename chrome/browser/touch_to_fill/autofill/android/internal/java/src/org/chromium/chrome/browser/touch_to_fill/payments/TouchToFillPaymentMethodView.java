@@ -48,6 +48,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                     return true;
                 case ItemType.CREDIT_CARD:
                 case ItemType.IBAN:
+                case ItemType.LOYALTY_CARD:
                     return false;
             }
             assert false : "Undefined whether to skip setting background for item of type: " + type;
@@ -86,21 +87,25 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
 
     @Override
     public @NonNull String getSheetContentDescription(Context context) {
+        // TODO - crbug.com/: Update for loyalty cards.
         return context.getString(R.string.autofill_payment_method_bottom_sheet_content_description);
     }
 
     @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
+        // TODO - crbug.com/: Update for loyalty cards.
         return R.string.autofill_payment_method_bottom_sheet_half_height;
     }
 
     @Override
     public @StringRes int getSheetFullHeightAccessibilityStringId() {
+        // TODO - crbug.com/: Update for loyalty cards.
         return R.string.autofill_payment_method_bottom_sheet_full_height;
     }
 
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
+        // TODO - crbug.com/: Update for loyalty cards.
         return R.string.autofill_payment_method_bottom_sheet_closed;
     }
 
@@ -121,7 +126,10 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
 
     @Override
     protected Set<Integer> listedItemTypes() {
-        return Set.of(TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD, TouchToFillPaymentMethodProperties.ItemType.IBAN);
+        return Set.of(
+                TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD,
+                TouchToFillPaymentMethodProperties.ItemType.IBAN,
+                TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD);
     }
 
     @Override

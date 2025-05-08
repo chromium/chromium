@@ -15,33 +15,29 @@ namespace gpu {
 class DawnSharedTextureCache
     : public base::RefCountedThreadSafe<DawnSharedTextureCache> {
  public:
-  using WGPUTextureCache = base::flat_map<wgpu::TextureUsage, wgpu::Texture>;
-
-  struct SharedTextureData {
-    SharedTextureData();
-    ~SharedTextureData();
-    SharedTextureData(SharedTextureData&&);
-    SharedTextureData& operator=(SharedTextureData&&);
-
-    wgpu::SharedTextureMemory memory;
-    WGPUTextureCache texture_cache;
-  };
-
   DawnSharedTextureCache();
 
   // Returns a SharedTextureMemory for this device, or nullptr if there is no
   // instance.
   wgpu::SharedTextureMemory GetSharedTextureMemory(const wgpu::Device& device);
   // Inserts the SharedTextureMemory for this device, if not already present.
-  void MaybeCacheSharedTextureMemory(const wgpu::Device& device,
-                                     const wgpu::SharedTextureMemory& memory);
+  void MaybeCacheSharedTextureMemory(
+      const wgpu::Device& device,
+      const wgpu::SharedTextureMemory& shared_texture_memory);
 
   // Returns the cached Texture for this device and texture_usage.
-  wgpu::Texture GetCachedWGPUTexture(const wgpu::Device& device,
-                                     wgpu::TextureUsage texture_usage);
+  wgpu::Texture GetCachedWGPUTexture(
+      const wgpu::Device& device,
+      wgpu::TextureUsage usage,
+      wgpu::TextureUsage internal_usage,
+      const std::vector<wgpu::TextureFormat>& view_formats);
   // Cache the `texture` for given device if it is not already cached.
-  void MaybeCacheWGPUTexture(const wgpu::Device& device,
-                             const wgpu::Texture& texture);
+  void MaybeCacheWGPUTexture(
+      const wgpu::Device& device,
+      const wgpu::Texture& texture,
+      wgpu::TextureUsage usage,
+      wgpu::TextureUsage internal_usage,
+      const std::vector<wgpu::TextureFormat>& view_formats);
   // Remove the `texture` for given device from cache.
   void RemoveWGPUTextureFromCache(const wgpu::Device& device,
                                   const wgpu::Texture& texture);
@@ -55,11 +51,38 @@ class DawnSharedTextureCache
  private:
   friend class base::RefCountedThreadSafe<DawnSharedTextureCache>;
 
+  struct TextureMetadata {
+    wgpu::TextureUsage usage;
+    wgpu::TextureUsage internal_usage;
+    std::vector<wgpu::TextureFormat> view_formats;
+
+    TextureMetadata(wgpu::TextureUsage usage,
+                    wgpu::TextureUsage internal_usage,
+                    const std::vector<wgpu::TextureFormat>& view_formats);
+    ~TextureMetadata();
+    TextureMetadata(TextureMetadata&&);
+    TextureMetadata& operator=(TextureMetadata&&);
+
+    auto operator<=>(const TextureMetadata&) const = default;
+  };
+
+  using TextureCache = base::flat_map<TextureMetadata, wgpu::Texture>;
+
+  struct SharedTextureData {
+    SharedTextureData();
+    ~SharedTextureData();
+    SharedTextureData(SharedTextureData&&);
+    SharedTextureData& operator=(SharedTextureData&&);
+
+    wgpu::SharedTextureMemory shared_texture_memory;
+    TextureCache texture_cache;
+  };
+
   ~DawnSharedTextureCache();
 
   // Returns a pointer to the WGPUTextureCache instance for this device, or
   // nullptr if there is no instance.
-  WGPUTextureCache* GetWGPUTextureCache(const wgpu::Device& device);
+  TextureCache* GetTextureCache(const wgpu::Device& device);
 
   // Per-Device SharedTextureData instances used to vend WebGPU textures for
   // the underlying native texture. The cache is keyed by raw pointers to the

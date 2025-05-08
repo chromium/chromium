@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/css/layout_tree_rebuild_root.h"
 #include "third_party/blink/renderer/core/css/pending_sheet_type.h"
 #include "third_party/blink/renderer/core/css/resolver/match_request.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_utils.h"
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
 #include "third_party/blink/renderer/core/css/style_image_cache.h"
 #include "third_party/blink/renderer/core/css/style_invalidation_root.h"
@@ -749,13 +750,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   Color ForcedBackgroundColor() const { return forced_background_color_; }
   Color ColorAdjustBackgroundColor() const;
 
-  void SetViewTransitionNames(const Vector<AtomicString>& names) {
-    view_transition_names_ = names;
-  }
-  const Vector<AtomicString>& ViewTransitionTags() const {
-    return view_transition_names_;
-  }
-
   ImageResourceContent* CacheImageContent(FetchParameters& params) {
     return style_image_cache_.CacheImageContent(GetDocument().Fetcher(),
                                                 params);
@@ -1129,6 +1123,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   Member<CascadeLayerMap> user_cascade_layer_map_;
 
+  // @function rules in the user origin.
+  FunctionRuleMap user_function_rule_map_;
+
   Member<DocumentStyleEnvironmentVariables> environment_variables_;
 
   Member<StyleInitialData> initial_data_;
@@ -1191,10 +1188,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // subtree is stored here during in_dom_removal_ and is marked for whitespace
   // re-attachment after the removal.
   Member<LayoutObject> parent_for_detached_subtree_;
-
-  // The set of IDs for which ::view-transition-group pseudo elements are
-  // generated during a ViewTransition.
-  Vector<AtomicString> view_transition_names_;
 
   // The @view-transition rule currently applying to the document.
   Member<StyleRuleViewTransition> view_transition_rule_;

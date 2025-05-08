@@ -507,7 +507,7 @@ EncoderStatus NdkVideoEncodeAccelerator::Initialize(
   VideoCodec codec = VideoCodecProfileToVideoCodec(config.output_profile);
 
   // These should already be filtered out by VideoEncodeAcceleratorUtil.
-  if (codec != VideoCodec::kH264 && codec == VideoCodec::kHEVC) {
+  if (codec != VideoCodec::kH264) {
     config_.required_encoder_type = EncoderType::kHardware;
   }
 

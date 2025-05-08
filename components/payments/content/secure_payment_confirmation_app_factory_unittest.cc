@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -531,13 +532,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
 class SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest
     : public SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest {
  protected:
-  std::unique_ptr<BrowserBoundKeyStore> MakeFakeBrowserBoundKeyStore() {
-    auto key_store = std::make_unique<FakeBrowserBoundKeyStore>();
-    browser_bound_key_store_ = key_store->GetWeakPtr();
-    return key_store;
-  }
-
-  base::WeakPtr<FakeBrowserBoundKeyStore> browser_bound_key_store_;
+  scoped_refptr<FakeBrowserBoundKeyStore> browser_bound_key_store_ =
+      base::MakeRefCounted<FakeBrowserBoundKeyStore>();
 
  private:
   base::test::ScopedFeatureList feature_list_{
@@ -563,7 +559,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
   GURL icon = method_data->secure_payment_confirmation->instrument->icon;
 
   secure_payment_confirmation_app_factory_->SetBrowserBoundKeyStoreForTesting(
-      MakeFakeBrowserBoundKeyStore());
+      browser_bound_key_store_);
 
   auto mock_authenticator =
       std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);

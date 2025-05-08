@@ -2154,12 +2154,12 @@ class RemoveBtmEventsTester {
   }
 
   std::optional<StateValue> ReadStateValue(GURL url) {
-    base::test::TestFuture<BtmState> dips_state;
+    base::test::TestFuture<BtmState> btm_state;
     storage_->AsyncCall(&BtmStorage::Read)
         .WithArgs(url)
-        .Then(dips_state.GetCallback());
+        .Then(btm_state.GetCallback());
 
-    const BtmState& state = dips_state.Get();
+    const BtmState& state = btm_state.Get();
     if (!state.was_loaded()) {
       return {};
     }
@@ -2170,14 +2170,14 @@ class RemoveBtmEventsTester {
   raw_ptr<base::SequenceBound<BtmStorage>> storage_;
 };
 
-class BrowsingDataRemoverImplDipsTest : public BrowsingDataRemoverImplTest {
+class BrowsingDataRemoverImplBtmTest : public BrowsingDataRemoverImplTest {
  public:
-  BrowsingDataRemoverImplDipsTest()
+  BrowsingDataRemoverImplBtmTest()
       : BrowsingDataRemoverImplTest(
             std::make_unique<TpcBlockingBrowserClient>()) {}
 };
 
-TEST_F(BrowsingDataRemoverImplDipsTest, RemoveBtmEventsForLastHour) {
+TEST_F(BrowsingDataRemoverImplBtmTest, RemoveBtmEventsForLastHour) {
   RemoveBtmEventsTester tester(GetBrowserContext());
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
@@ -2225,7 +2225,7 @@ TEST_F(BrowsingDataRemoverImplDipsTest, RemoveBtmEventsForLastHour) {
   }
 }
 
-TEST_F(BrowsingDataRemoverImplDipsTest, RemoveBtmEventsByType) {
+TEST_F(BrowsingDataRemoverImplBtmTest, RemoveBtmEventsByType) {
   RemoveBtmEventsTester tester(GetBrowserContext());
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");

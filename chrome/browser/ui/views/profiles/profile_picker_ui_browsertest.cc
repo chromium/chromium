@@ -43,8 +43,6 @@ struct ProfilePickerTestParam {
   // Requires `use_multiple_profiles` to be enabled.
   bool has_supervised_user = false;
   bool show_kite_for_supervised_users = false;
-  // param to be removed when `kOutlineSilhouetteIcon` is enabled by default.
-  bool outline_silhouette_icon = false;
   bool disallow_profile_creation = false;
   bool use_glic_version = false;
   bool no_glic_eligible_profiles = false;
@@ -63,8 +61,10 @@ std::string ParamToTestSuffix(
 // Permutations of supported parameters.
 const ProfilePickerTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"}},
-    {.pixel_test_param = {.test_suffix = "MultipleProfiles"},
-     .use_multiple_profiles = true},
+    {
+        .pixel_test_param = {.test_suffix = "MultipleProfiles"},
+        .use_multiple_profiles = true,
+    },
     {.pixel_test_param = {.test_suffix = "PortraitModeWindow",
                           .window_size =
                               PixelTestParam::kPortraitModeWindowSize}},
@@ -78,21 +78,13 @@ const ProfilePickerTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "MultipleProfilesNoProfileCreation"},
      .use_multiple_profiles = true,
      .disallow_profile_creation = true},
-    {.pixel_test_param = {.test_suffix = "MultipleProfiles_OutlineSilhouette"},
-     .use_multiple_profiles = true,
-     .outline_silhouette_icon = true},
-    {.pixel_test_param = {.test_suffix = "DarkRtlSmallMultipleProfiles",
-                          .use_dark_theme = true,
-                          .use_right_to_left_language = true,
-                          .window_size = PixelTestParam::kSmallWindowSize},
-     .use_multiple_profiles = true},
-    {.pixel_test_param = {.test_suffix =
-                              "DarkRtlSmallMultipleProfiles_OutlineSilhouette",
-                          .use_dark_theme = true,
-                          .use_right_to_left_language = true,
-                          .window_size = PixelTestParam::kSmallWindowSize},
-     .use_multiple_profiles = true,
-     .outline_silhouette_icon = true},
+    {
+        .pixel_test_param = {.test_suffix = "DarkRtlSmallMultipleProfiles",
+                             .use_dark_theme = true,
+                             .use_right_to_left_language = true,
+                             .window_size = PixelTestParam::kSmallWindowSize},
+        .use_multiple_profiles = true,
+    },
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {.pixel_test_param = {.test_suffix = "MultipleProfiles_Kite"},
      .use_multiple_profiles = true,
@@ -240,7 +232,6 @@ class ProfilePickerUIPixelTest
     scoped_feature_list_.InitWithFeatureStates(
         {{supervised_user::kShowKiteForSupervisedUsers,
           GetParam().show_kite_for_supervised_users},
-         {kOutlineSilhouetteIcon, GetParam().outline_silhouette_icon},
          {features::kEnterpriseProfileBadgingForAvatar,
           GetParam().is_enterprise_badging_enabled}});
 #endif

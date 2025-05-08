@@ -63,7 +63,7 @@ bool CaptionController::DispatchTranscription(
     return false;
   }
   return caption_bubble_controller()->OnTranscription(
-      caption_bubble_context_.get(), result);
+      /*web_contents=*/nullptr, caption_bubble_context_.get(), result);
 }
 
 void CaptionController::OnLanguageIdentificationEvent(
@@ -72,7 +72,7 @@ void CaptionController::OnLanguageIdentificationEvent(
     return;
   }
   caption_bubble_controller()->OnLanguageIdentificationEvent(
-      caption_bubble_context_.get(), event);
+      /*web_contents=*/nullptr, caption_bubble_context_.get(), event);
 }
 
 captions::CaptionBubbleSettings* CaptionController::caption_bubble_settings() {

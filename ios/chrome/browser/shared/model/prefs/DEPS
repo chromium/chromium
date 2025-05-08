@@ -18,6 +18,7 @@ include_rules = [
   "+ios/chrome/browser/drive/model/drive_policy.h",
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
   "+ios/chrome/browser/parcel_tracking",
+  "+components/collaboration/public/pref_names.h",
   "+components/webui/chrome_urls/pref_names.h",
   "+components/saved_tab_groups/public/pref_names.h",
   "+components/lens/lens_overlay_permission_utils.h",
@@ -31,7 +32,8 @@ include_rules = [
   "+ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_prefs.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_prefs.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_prefs.h"
+  "+ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_prefs.h",
+  "+ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h",
 ]
 
 specific_include_rules = {

@@ -5,16 +5,9 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_TEST_UTIL_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_TEST_UTIL_H_
 
-#include <optional>
-#include <string_view>
-
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "ui/gfx/geometry/point.h"
-
-namespace content {
-class RenderFrameHost;
-}  // namespace content
 
 namespace actor {
 
@@ -38,10 +31,6 @@ optimization_guide::proto::BrowserAction MakeDragAndRelease(
     const gfx::Point& from_point,
     const gfx::Point& to_point);
 optimization_guide::proto::BrowserAction MakeWait();
-
-// Returns the DOMNodeId of the node matched by the given CSS query selector.
-std::optional<int> FindContentNodeId(content::RenderFrameHost& rfh,
-                                     std::string_view query_selector);
 
 void OverrideActionObservationDelay(const base::TimeDelta& delta);
 

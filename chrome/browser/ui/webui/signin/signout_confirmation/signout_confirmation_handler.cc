@@ -57,8 +57,7 @@ int ComputeDialogSubtitleId(ChromeSignoutConfirmationPromptVariant variant) {
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
       return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      // TODO(crbug.com/407942423): Add a better string for this case.
-      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY;
+      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY;
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
       return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_KIDS_BODY;
     default:
@@ -73,7 +72,7 @@ int ComputeAcceptButtonLabelId(ChromeSignoutConfirmationPromptVariant variant) {
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
       return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_DELETE_AND_SIGNOUT_BUTTON;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_SIGNOUT_BUTTON;
+      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_DELETE_AND_SIGNOUT_BUTTON;
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
       return IDS_SCREEN_LOCK_SIGN_OUT;
     default:

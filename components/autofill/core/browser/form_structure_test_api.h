@@ -66,11 +66,6 @@ class FormStructureTestApi {
                   /*server_types=*/overall_types);
   }
 
-  // Returns a vote type if a field contains a vote relating USERNAME correction
-  // (CREDENTIALS_REUSED, USERNAME_OVERWRITTEN, USERNAME_EDITED). If none,
-  // returns NO_INFORMATION.
-  AutofillUploadContents::Field::VoteType get_username_vote_type();
-
   void AssignSections() { autofill::AssignSections(form_structure_->fields_); }
 
   FieldCandidatesMap ParseFieldTypesWithPatterns(

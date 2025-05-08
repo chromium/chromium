@@ -683,6 +683,19 @@ public class PaymentRequestService
                                     != AppCreationFailureReason.ICON_DOWNLOAD_FAILED
                             && reason != PaymentErrorReason.USER_OPT_OUT
                             && !mRejectShowForUserActivation;
+
+            // A new error type `USER_CANCEL` is being experimented with to communicate back to the
+            // the merchant page that the user explicitly does not wish to continue with payment.
+            // This is different from `NOT_ALLOWED_ERROR` which is used for when the user wishes to
+            // proceed with payment but either cannot OR does not want to use the passed-in
+            // credentials to do that.
+            if (obscureRealError
+                    && reason == PaymentErrorReason.USER_CANCEL
+                    && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                            PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)) {
+                obscureRealError = false;
+            }
+
             mClient.onError(
                     obscureRealError ? PaymentErrorReason.NOT_ALLOWED_ERROR : reason,
                     obscureRealError
@@ -729,12 +742,6 @@ public class PaymentRequestService
                     break;
                 case MethodStrings.SECURE_PAYMENT_CONFIRMATION:
                     methodTypes.add(PaymentMethodCategory.SECURE_PAYMENT_CONFIRMATION);
-                    break;
-                case MethodStrings.BASIC_CARD:
-                    // Not to record requestedMethodBasicCard because JourneyLogger ignore the case
-                    // where the specified networks are unsupported.
-                    // mPaymentUiService.merchantSupportsAutofillCards() better captures this group
-                    // of interest than requestedMethodBasicCard.
                     break;
                 default:
                     // "Other" includes https url, http url(when certificate check is bypassed) and

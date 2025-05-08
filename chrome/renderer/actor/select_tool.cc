@@ -8,9 +8,11 @@
 #include <optional>
 
 #include "base/check.h"
+#include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -51,6 +53,11 @@ void SelectTool::Execute(ToolFinishedCallback callback) {
   std::move(callback).Run(true);
 }
 
+std::string SelectTool::DebugString() const {
+  return absl::StrFormat("SelectTool[%s;value(%s)]",
+                         ToDebugString(action_->target), action_->value);
+}
+
 bool SelectTool::Validate() const {
   if (!frame_->GetWebFrame()->FrameWidget()) {
     return false;
@@ -67,15 +74,18 @@ bool SelectTool::Validate() const {
 
   WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
   if (node.IsNull()) {
+    ACTOR_LOG() << "DOM Node not found for id: " << dom_node_id;
     return false;
   }
 
   WebSelectElement select = node.DynamicTo<WebSelectElement>();
   if (!select) {
+    ACTOR_LOG() << "Target element is not a <select>: " << node;
     return false;
   }
 
   if (!select.IsEnabled()) {
+    ACTOR_LOG() << "Target element is disabled.";
     return false;
   }
 
@@ -87,6 +97,8 @@ bool SelectTool::Validate() const {
     }
   }
 
+  ACTOR_LOG() << "Requested option [" << action_->value
+              << "] is not available in target: " << select;
   return false;
 }
 

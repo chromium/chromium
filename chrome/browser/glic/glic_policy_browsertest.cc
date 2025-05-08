@@ -72,14 +72,13 @@ class PanelStateObserver : public GlicWindowController::StateObserver {
   base::OnceClosure callback_;
 };
 
-class GlicAppStateObserver : public GlicWindowController::WebUiStateObserver {
+class GlicAppStateObserver : public Host::Observer {
  public:
-  explicit GlicAppStateObserver(GlicWindowController* controller)
-      : GlicAppStateObserver(controller, controller->GetWebUiState()) {}
+  explicit GlicAppStateObserver(Host* host)
+      : GlicAppStateObserver(host, host->GetPrimaryWebUiState()) {}
 
-  explicit GlicAppStateObserver(GlicWindowController* controller,
-                                mojom::WebUiState initial_state) {
-    observation_.Observe(controller);
+  explicit GlicAppStateObserver(Host* host, mojom::WebUiState initial_state) {
+    observation_.Observe(host);
     state_ = initial_state;
   }
 
@@ -104,9 +103,7 @@ class GlicAppStateObserver : public GlicWindowController::WebUiStateObserver {
   }
 
  private:
-  base::ScopedObservation<GlicWindowController,
-                          GlicWindowController::WebUiStateObserver>
-      observation_{this};
+  base::ScopedObservation<Host, Host::Observer> observation_{this};
   mojom::WebUiState state_ = mojom::WebUiState::kUninitialized;
   mojom::WebUiState waiting_for_state_ = mojom::WebUiState::kUninitialized;
   base::RunLoop run_loop_;
@@ -393,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
 
   // Navigating to chrome://glic should succeed.
   {
-    GlicAppStateObserver app_observer(&service->window_controller());
+    GlicAppStateObserver app_observer(&service->host());
     content::TestNavigationObserver observer(glic_url);
     observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
@@ -411,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
 
   // Navigate to chrome://glic. The glic page should be unavailable.
   {
-    GlicAppStateObserver app_observer(&service->window_controller());
+    GlicAppStateObserver app_observer(&service->host());
     content::TestNavigationObserver observer(glic_url);
     observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
@@ -427,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
 
   // Navigating to chrome://glic should now succeed again.
   {
-    GlicAppStateObserver app_observer(&service->window_controller());
+    GlicAppStateObserver app_observer(&service->host());
     content::TestNavigationObserver observer(glic_url);
     observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
@@ -458,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
 
   // Glic shouldn't load since it's disabled by policy from startup.
   {
-    GlicAppStateObserver app_observer(&service->window_controller());
+    GlicAppStateObserver app_observer(&service->host());
     content::TestNavigationObserver observer(glic_url);
     observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
@@ -474,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
 
   // Navigating to chrome://glic should now load the webview.
   {
-    GlicAppStateObserver app_observer(&service->window_controller());
+    GlicAppStateObserver app_observer(&service->host());
     content::TestNavigationObserver observer(glic_url);
     observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
@@ -523,10 +520,10 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
   ASSERT_EQ(kDisabledValue,
             profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return service->window_controller().GetWebUiState() ==
+    return service->host().GetPrimaryWebUiState() ==
            mojom::WebUiState::kUnavailable;
   })) << "Timed out waiting for unavailable state. Current state: "
-      << service->window_controller().GetWebUiState();
+      << service->host().GetPrimaryWebUiState();
   ASSERT_TRUE(service->window_controller().IsShowing());
 }
 

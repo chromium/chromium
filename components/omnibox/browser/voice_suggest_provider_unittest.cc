@@ -8,6 +8,7 @@
 
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +20,6 @@ class VoiceSuggestProviderTest : public testing::Test {
   VoiceSuggestProviderTest& operator=(const VoiceSuggestProviderTest&) = delete;
 
   void SetUp() override;
-  void TearDown() override;
 
  protected:
   base::test::TaskEnvironment environment_;
@@ -33,10 +33,6 @@ void VoiceSuggestProviderTest::SetUp() {
   input_ = std::make_unique<AutocompleteInput>(
       std::u16string(), metrics::OmniboxEventProto::OTHER,
       TestSchemeClassifier());
-}
-
-void VoiceSuggestProviderTest::TearDown() {
-  provider_->Stop(true, true);
 }
 
 TEST_F(VoiceSuggestProviderTest, ServesNoSuggestionsByDefault) {
@@ -74,7 +70,7 @@ TEST_F(VoiceSuggestProviderTest,
   provider_->AddVoiceSuggestion(u"Bob", 0.5f);
   provider_->AddVoiceSuggestion(u"Carol", 0.4f);
   provider_->Start(*input_, false);
-  provider_->Stop(true, false);
+  provider_->Stop(AutocompleteStopReason::kClobbered);
   provider_->Start(*input_, false);
 
   EXPECT_TRUE(provider_->matches().empty());

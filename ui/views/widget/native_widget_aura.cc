@@ -45,6 +45,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/drag_utils.h"
@@ -287,6 +288,7 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   gfx::Rect window_bounds = params.bounds;
   gfx::NativeView parent = params.parent;
   gfx::NativeView context = params.context;
+
   if (!params.child) {
     wm::TransientWindowManager::GetOrCreate(window_)->AddObserver(this);
 
@@ -501,22 +503,26 @@ void NativeWidgetAura::CenterWindow(const gfx::Size& size) {
 
   parent_bounds.Intersect(work_area);
 
+  gfx::Rect window_bounds = parent_bounds;
+
   // If |window_|'s transient parent's bounds are big enough to fit it, then we
   // center it with respect to the transient parent.
   if (wm::GetTransientParent(window_)) {
-    gfx::Rect transient_parent_rect =
-        wm::GetTransientParent(window_)->GetBoundsInRootWindow();
-    transient_parent_rect.Intersect(work_area);
-    if (transient_parent_rect.height() >= size.height() &&
+    auto* transient_parent = wm::GetTransientParent(window_);
+    gfx::Rect transient_parent_rect = transient_parent->GetBoundsInRootWindow();
+    // If the window is bigger than parent in both direction, then center to the
+    // root.
+    if (transient_parent_rect.height() >= size.height() ||
         transient_parent_rect.width() >= size.width()) {
-      parent_bounds = transient_parent_rect;
+      int top_inset =
+          transient_parent->GetProperty(aura::client::kTopViewInset);
+      window_bounds = transient_parent_rect;
+      window_bounds.Inset(gfx::Insets().set_top(top_inset));
     }
   }
 
-  gfx::Rect window_bounds(
-      parent_bounds.x() + (parent_bounds.width() - size.width()) / 2,
-      parent_bounds.y() + (parent_bounds.height() - size.height()) / 2,
-      size.width(), size.height());
+  window_bounds.ToCenteredSize(size);
+
   // Don't size the window bigger than the parent, otherwise the user may not be
   // able to close or move it.
   window_bounds.AdjustToFit(parent_bounds);
@@ -797,6 +803,11 @@ void NativeWidgetAura::Hide() {
 
 bool NativeWidgetAura::IsVisible() const {
   return window_ && window_->IsVisible();
+}
+
+bool NativeWidgetAura::IsVisibleOnScreen() const {
+  // TODO(crbug.com/410938804): implement this.
+  return IsVisible();
 }
 
 void NativeWidgetAura::Activate() {

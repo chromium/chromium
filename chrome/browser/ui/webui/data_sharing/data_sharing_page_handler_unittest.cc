@@ -8,7 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/data_sharing/public/features.h"
@@ -116,15 +115,6 @@ TEST_F(DataSharingPageHandlerUnitTest, GetTabGroupPreview) {
           });
   handler()->GetTabGroupPreview("GROUP_ID", "ACCESS_TOKEN",
                                 std::move(callback));
-}
-
-// TODO(crbug.com/381173816): This test should not run without setting sync
-// service.
-TEST_F(DataSharingPageHandlerUnitTest, DISABLED_OpenTabGroup) {
-  handler()->OpenTabGroup("FAKE_GROUP_ID");
-  DataSharingOpenGroupHelper* helper =
-      browser()->browser_window_features()->data_sharing_open_group_helper();
-  EXPECT_TRUE(helper->group_ids_for_testing().contains("FAKE_GROUP_ID"));
 }
 
 TEST_F(DataSharingPageHandlerUnitTest, OnAccessTokenFetched) {

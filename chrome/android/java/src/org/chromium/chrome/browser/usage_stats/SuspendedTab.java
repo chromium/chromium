@@ -105,6 +105,8 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
             webContents.setAudioMuted(true);
             if (MediaCaptureDevicesDispatcherAndroid.isCapturingAudio(webContents)
                     || MediaCaptureDevicesDispatcherAndroid.isCapturingVideo(webContents)
+                    || MediaCaptureDevicesDispatcherAndroid.isCapturingTab(webContents)
+                    || MediaCaptureDevicesDispatcherAndroid.isCapturingWindow(webContents)
                     || MediaCaptureDevicesDispatcherAndroid.isCapturingScreen(webContents)) {
                 MediaCaptureDevicesDispatcherAndroid.notifyStopped(webContents);
             }

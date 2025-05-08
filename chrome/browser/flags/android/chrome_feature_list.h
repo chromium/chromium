@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chrome/common/chrome_features.h"
 
 namespace chrome {
 namespace android {
@@ -17,7 +16,7 @@ namespace android {
 // Alphabetical:
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2);
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary);
-BASE_DECLARE_FEATURE(kAllowNewIncognitoTabIntents);
+BASE_DECLARE_FEATURE(kAllowTabClosingUponMinimization);
 BASE_DECLARE_FEATURE(kAndroidAppIntegration);
 BASE_DECLARE_FEATURE(kAndroidAppIntegrationV2);
 BASE_DECLARE_FEATURE(kNewTabPageCustomization);
@@ -31,17 +30,19 @@ BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
 BASE_DECLARE_FEATURE(kAndroidKeyboardA11y);
 BASE_DECLARE_FEATURE(kAndroidMetaClickHistoryNavigation);
 BASE_DECLARE_FEATURE(kAndroidNativePagesInNewTab);
+BASE_DECLARE_FEATURE(kAndroidProgressBarVisualUpdate);
 BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForDifferentTLD);
 BASE_DECLARE_FEATURE(kAndroidOmniboxFocusedNewTabPage);
 BASE_DECLARE_FEATURE(kAndroidOpenPdfInlineBackport);
 BASE_DECLARE_FEATURE(kAndroidPdfAssistContent);
 BASE_DECLARE_FEATURE(kAndroidSurfaceColorUpdate);
-BASE_DECLARE_FEATURE(kAndroidTabDeclutter);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveAllButActiveTab);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveDuplicateTabs);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveTabGroups);
+BASE_DECLARE_FEATURE(kAndroidTabDeclutterAutoDelete);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterRescueKillswitch);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch);
+BASE_DECLARE_FEATURE(kAndroidTabDeclutterPerformanceImprovements);
 BASE_DECLARE_FEATURE(kAndroidTabSkipSaveTabsKillswitch);
 BASE_DECLARE_FEATURE(kAndroidThemeModule);
 BASE_DECLARE_FEATURE(kAndroidToolbarScrollAblation);
@@ -52,8 +53,8 @@ BASE_DECLARE_FEATURE(kTinkerTankBottomSheet);
 BASE_DECLARE_FEATURE(kAsyncNotificationManager);
 BASE_DECLARE_FEATURE(kAsyncNotificationManagerForDownload);
 BASE_DECLARE_FEATURE(kAuxiliarySearchDonation);
-BASE_DECLARE_FEATURE(kAvoidSelectedTabFocusOnLayoutDoneShowing);
 BASE_DECLARE_FEATURE(kBackgroundThreadPool);
+BASE_DECLARE_FEATURE(kBatchTabRestore);
 BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
 BASE_DECLARE_FEATURE(kBookmarkPaneAndroid);
 BASE_DECLARE_FEATURE(kBottomBrowserControlsRefactor);
@@ -108,6 +109,7 @@ BASE_DECLARE_FEATURE(kContextMenuTranslateWithGoogleLens);
 BASE_DECLARE_FEATURE(kContextualSearchDisableOnlineDetection);
 BASE_DECLARE_FEATURE(kContextualSearchSuppressShortView);
 BASE_DECLARE_FEATURE(kControlsVisibilityFromNavigations);
+BASE_DECLARE_FEATURE(kCpaSpecUpdate);
 BASE_DECLARE_FEATURE(kCrossDeviceTabPaneAndroid);
 BASE_DECLARE_FEATURE(kDeviceAuthenticatorAndroidx);
 BASE_DECLARE_FEATURE(kDisableCompositedProgressBar);
@@ -135,7 +137,9 @@ BASE_DECLARE_FEATURE(kHeadlessTabModel);
 BASE_DECLARE_FEATURE(kHistoryPaneAndroid);
 BASE_DECLARE_FEATURE(kLockBackPressHandlerAtStart);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);
+BASE_DECLARE_FEATURE(kInstanceSwitcherV2);
 BASE_DECLARE_FEATURE(kImprovedA2HS);
+BASE_DECLARE_FEATURE(kKeyboardEscBackNavigation);
 BASE_DECLARE_FEATURE(kLanguagesPreference);
 BASE_DECLARE_FEATURE(kLegacyTabStateDeprecation);
 BASE_DECLARE_FEATURE(kLensOnQuickActionSearchWidget);
@@ -149,7 +153,6 @@ BASE_DECLARE_FEATURE(kMultiInstanceApplicationStatusCleanup);
 BASE_DECLARE_FEATURE(kNativePageTransitionHardwareCapture);
 BASE_DECLARE_FEATURE(kNavBarColorAnimation);
 BASE_DECLARE_FEATURE(kNavBarColorMatchesTabBackground);
-BASE_DECLARE_FEATURE(kNavigationCaptureRefactorAndroid);
 BASE_DECLARE_FEATURE(kNewTabSearchEngineUrlAndroid);
 BASE_DECLARE_FEATURE(kNewTabPageAndroidTriggerForPrerender2);
 BASE_DECLARE_FEATURE(kNotificationPermissionVariant);
@@ -180,9 +183,6 @@ BASE_DECLARE_FEATURE(kReadAloudPlayback);
 BASE_DECLARE_FEATURE(kReadAloudTapToSeek);
 BASE_DECLARE_FEATURE(kReadAloudServerExperiments);
 BASE_DECLARE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT);
-BASE_DECLARE_FEATURE(kReaderModeAutoDistill);
-BASE_DECLARE_FEATURE(kReaderModeDevEntryPoint);
-BASE_DECLARE_FEATURE(kReaderModeImprovements);
 BASE_DECLARE_FEATURE(kReengagementNotification);
 BASE_DECLARE_FEATURE(kRecordSuppressionMetrics);
 BASE_DECLARE_FEATURE(kRelatedSearchesAllLanguage);
@@ -232,6 +232,11 @@ constexpr base::FeatureParam<int> kAppIntegrationMaxDonationCountParam(
     &kAndroidAppIntegrationMultiDataSource,
     "max_donation_count",
     100);
+
+constexpr base::FeatureParam<int> kAppIntegrationCCTVisitDurationLimitSecParam(
+    &kAndroidAppIntegrationMultiDataSource,
+    "cct_visit_duration_limit_sec",
+    3);
 
 constexpr base::FeatureParam<int> kAuxiliarySearchMaxBookmarksCountParam(
     &kAuxiliarySearchDonation,

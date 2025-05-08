@@ -12,6 +12,7 @@
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -32,6 +33,7 @@ class UserContext;
 }
 
 class AccountId;
+class PrefService;
 
 // Handles method calls sent from Ash to ChromeOS.
 class InSessionAuthDialogClient
@@ -43,7 +45,7 @@ class InSessionAuthDialogClient
   using FingerprintScanDoneCallback =
       base::OnceCallback<void(bool, ash::FingerprintState)>;
 
-  InSessionAuthDialogClient();
+  explicit InSessionAuthDialogClient(PrefService* local_state);
   InSessionAuthDialogClient(const InSessionAuthDialogClient&) = delete;
   InSessionAuthDialogClient& operator=(const InSessionAuthDialogClient&) =
       delete;
@@ -138,6 +140,8 @@ class InSessionAuthDialogClient
       base::OnceCallback<void(bool)> callback,
       bool is_pin_auth_available,
       std::unique_ptr<ash::UserContext> user_context);
+
+  const raw_ref<PrefService> local_state_;
 
   // State associated with a pending authentication attempt.
   std::optional<AuthState> pending_auth_state_;

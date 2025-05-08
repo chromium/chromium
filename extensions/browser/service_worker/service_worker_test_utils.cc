@@ -246,6 +246,17 @@ void TestServiceWorkerTaskQueueObserver::WaitForWorkerStopped(
   run_loop.Run();
 }
 
+void TestServiceWorkerTaskQueueObserver::WaitForUntrackServiceWorkerState(
+    const GURL& scope) {
+  if (untracked_set_.count(scope) != 0) {
+    return;
+  }
+
+  base::RunLoop run_loop;
+  untrack_quit_closure_ = run_loop.QuitClosure();
+  run_loop.Run();
+}
+
 void TestServiceWorkerTaskQueueObserver::WaitForWorkerContextInitialized(
     const ExtensionId& extension_id) {
   if (inited_set_.count(extension_id) != 0) {
@@ -371,6 +382,14 @@ void TestServiceWorkerTaskQueueObserver::DidStopServiceWorkerContext(
   stopped_set_.insert(extension_id);
   if (quit_closure_) {
     std::move(quit_closure_).Run();
+  }
+}
+
+void TestServiceWorkerTaskQueueObserver::UntrackServiceWorkerState(
+    const GURL& scope) {
+  untracked_set_.insert(scope);
+  if (untrack_quit_closure_) {
+    std::move(untrack_quit_closure_).Run();
   }
 }
 

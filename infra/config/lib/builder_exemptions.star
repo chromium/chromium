@@ -139,9 +139,6 @@ exempted_from_description_builders = {
         "ToTiOSDevice",
         "UBSan Release",
         "UBSan vptr Release",
-        "WebKit Linux ASAN",
-        "WebKit Linux Leak",
-        "WebKit Linux MSAN",
         "WebKit Win10",
         "Win ASan Release Media",
         "Win ASan Release",
@@ -1150,10 +1147,14 @@ mega_cq_excluded_gardener_rotations = [
     # CLs on the Chromium-side. So trybots for these aren't as
     # critical.
     "chromium.clang",
-    # Some GPU trybots share the same limited pool of bots, so can't
-    # handle more than a few builds at a time. Keep them out of the
-    # mega CQ for now.
+    # Some GPU and Dawn trybots share the same limited pool of bots,
+    # so can't handle more than a few builds at a time.
+    # TODO(crbug.com/413080339): Trigger these trybots on mega CQ only on CLs
+    # that are likely to affect them, similarly to how optional GPU CQ bots
+    # like "gpu-fyi-cq-android-arm64" and "dawn-mac-x64-deps-rel" are triggered
+    # using "location_filters".
     "chromium.gpu",
+    "dawn",
     # "cft" builders are very red.
     "cft",
 ]

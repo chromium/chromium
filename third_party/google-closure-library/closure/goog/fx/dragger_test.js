@@ -19,7 +19,6 @@ const dom = goog.require('goog.dom');
 const events = goog.require('goog.events');
 const testSuite = goog.require('goog.testing.testSuite');
 const testingEvents = goog.require('goog.testing.events');
-const userAgent = goog.require('goog.userAgent');
 
 /** @suppress {visibility} suppression added to enable type checking */
 const HAS_SET_CAPTURE = Dragger.HAS_SET_CAPTURE_;
@@ -392,82 +391,6 @@ testSuite({
         'Dragger must unregistered mouseup handlers.',
         events.hasListener(dragger.document_, EventType.MOUSEUP, true));
     e.$verify();
-  },
-
-  /**
-     @bug 1714667 IE<9 built in drag and drop handling stops dragging.
-     @suppress {checkTypes} suppression added to enable type checking
-   */
-  testIeDragStartCancelling() {
-    // Testing only IE<9.
-    if (!userAgent.IE || userAgent.isVersionOrHigher(9)) {
-      return;
-    }
-
-    // Built in 'dragstart' cancelling not enabled.
-    let dragger = new Dragger(target);
-
-    let e = new GoogEvent(EventType.MOUSEDOWN);
-    /**
-     * @suppress {strictMissingProperties} suppression added to enable type
-     * checking
-     */
-    e.clientX = 1;
-    /**
-     * @suppress {strictMissingProperties} suppression added to enable type
-     * checking
-     */
-    e.clientY = 2;
-    /**
-     * @suppress {strictMissingProperties} suppression added to enable type
-     * checking
-     */
-    e.button = 1;  // IE only constant for left button.
-    /** @suppress {checkTypes} suppression added to enable type checking */
-    let be = new BrowserEvent(e);
-    dragger.startDrag(be);
-    assertTrue('The drag should have started.', dragger.isDragging());
-
-    e = new GoogEvent(EventType.DRAGSTART);
-    /** @suppress {visibility} suppression added to enable type checking */
-    e.target = dragger.document_.documentElement;
-    assertTrue(
-        'The event should not be canceled.', testingEvents.fireBrowserEvent(e));
-
-    dragger.dispose();
-
-    // Built in 'dragstart' cancelling enabled.
-    dragger = new Dragger(target);
-    dragger.setCancelIeDragStart(true);
-
-    e = new GoogEvent(EventType.MOUSEDOWN);
-    /**
-     * @suppress {strictMissingProperties} suppression added to enable type
-     * checking
-     */
-    e.clientX = 1;
-    /**
-     * @suppress {strictMissingProperties} suppression added to enable type
-     * checking
-     */
-    e.clientY = 2;
-    /**
-     * @suppress {strictMissingProperties} suppression added to enable type
-     * checking
-     */
-    e.button = 1;  // IE only constant for left button.
-    /** @suppress {checkTypes} suppression added to enable type checking */
-    be = new BrowserEvent(e);
-    dragger.startDrag(be);
-    assertTrue('The drag should have started.', dragger.isDragging());
-
-    e = new GoogEvent(EventType.DRAGSTART);
-    /** @suppress {visibility} suppression added to enable type checking */
-    e.target = dragger.document_.documentElement;
-    assertFalse(
-        'The event should be canceled.', testingEvents.fireBrowserEvent(e));
-
-    dragger.dispose();
   },
 
   /**

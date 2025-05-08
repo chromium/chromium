@@ -307,7 +307,7 @@ void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
   EXPECT_TRUE(base::PathExists(manifest_path));
 
   // Register the extension.
-  extension_registrar_->AddExtension(extension.get());
+  extension_registrar_->AddExtension(extension);
 
   extension_prefs_->UpdateExtensionPref(
       extension_id, "last_update_time",

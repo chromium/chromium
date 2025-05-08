@@ -9,7 +9,10 @@
 from grit.node import structure
 
 
-def Format(root, lang='en', output_dir='.'):
+def Format(root, lang='en', gender=None, output_dir='.'):
+  assert gender is None, "policy_templates_json doesn't support gender " \
+      f"translations, yet Format() was called with gender {gender}"
+
   policy_json = None
   for item in root.ActiveDescendants():
     with item:

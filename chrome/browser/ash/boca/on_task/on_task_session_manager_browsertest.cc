@@ -383,6 +383,59 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
+                       ShouldSkipCountdownWhenPauseInUnlockedMode) {
+  content::TestNavigationObserver navigation_observer((GURL(kTestUrl1)));
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Start OnTask session and spawn one tab outside the homepage tab.
+  GetOnTaskSessionManager()->OnSessionStarted(kSessionId,
+                                              ::boca::UserIdentity());
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  navigation_observer.Wait();
+
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  tab_strip_model->ActivateTabAt(1);
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetVisibleURL(),
+            GURL(kTestUrl1));
+
+  // Lock and pause the boca app.
+  bundle.set_locked(true);
+  bundle.set_lock_to_app_home(true);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  EXPECT_FALSE(chromeos::wm::CanFloatWindow(
+      boca_app_browser->window()->GetNativeWindow()));
+  auto* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(boca_app_browser);
+  // Wait until immersive mode is disabled in pause mode.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !browser_view->immersive_mode_controller()->IsEnabled();
+  }));
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetVisibleURL(),
+            GURL(kChromeBocaAppUntrustedIndexURL));
+
+  // Unpause the boca app.
+  bundle.set_lock_to_app_home(false);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  EXPECT_FALSE(chromeos::wm::CanFloatWindow(
+      boca_app_browser->window()->GetNativeWindow()));
+  EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
+
+  // Unlock the Boca app to unblock test teardown that involves browser window
+  // close.
+  bundle.set_locked(false);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
                        ShouldNotLockBocaSWAInAppReloadIfLockInProgress) {
   content::TestNavigationObserver navigation_observer((GURL(kTestUrl1)));
   navigation_observer.StartWatchingNewWebContents();
@@ -589,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
-                       RestoreTabsOnAppReload) {
+                       RestoreTabsSentByProviderOnAppReload) {
   content::TestNavigationObserver navigation_observer((GURL(kTestUrl1)));
   navigation_observer.StartWatchingNewWebContents();
 
@@ -614,7 +667,17 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
   EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
             GURL(kTestUrl2));
 
-  // Attempt an app reload and verify tabs are restored.
+  // Open a new tab that is not sent by the provider from Boca homepage.
+  tab_strip_model->ActivateTabAt(0);
+  const GURL new_url(embedded_test_server()->GetURL("/test/new_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      boca_app_browser, new_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            new_url);
+  ASSERT_EQ(tab_strip_model->count(), 4);
+
+  // Attempt an app reload and verify tabs sent by the provider are restored.
   GetOnTaskSessionManager()->OnAppReloaded();
   ASSERT_EQ(tab_strip_model->count(), 3);
   tab_strip_model->ActivateTabAt(1);

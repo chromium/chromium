@@ -5,6 +5,7 @@
 package org.chromium.components.webauthn;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -190,5 +191,81 @@ public class AuthenticatorImplTest {
             }
         }
         throw new AssertionError("Capability '" + name + "' not found.");
+    }
+
+    /** Test that makeCredential() throws when the renderFrameHost is not set. */
+    @Test
+    public void testMakeCredential_requiresRenderFrameHost() {
+        AuthenticatorImpl authenticator =
+                new AuthenticatorImpl(
+                        ApplicationProvider.getApplicationContext(),
+                        mWebContents,
+                        mIntentSender,
+                        /* createConfirmationUiDelegate= */ null,
+                        /* renderFrameHost= */ null,
+                        mTopOrigin);
+
+        assertThrows(
+                AssertionError.class,
+                () -> {
+                    authenticator.makeCredential(/* options= */ null, /* callback= */ null);
+                });
+    }
+
+    /** Test that makeCredential() throws when the intenSender is not set. */
+    @Test
+    public void testMakeCredential_requiresIntentSender() {
+        AuthenticatorImpl authenticator =
+                new AuthenticatorImpl(
+                        ApplicationProvider.getApplicationContext(),
+                        mWebContents,
+                        /* intentSender= */ null,
+                        /* createConfirmationUiDelegate= */ null,
+                        mRenderFrameHost,
+                        mTopOrigin);
+
+        assertThrows(
+                AssertionError.class,
+                () -> {
+                    authenticator.makeCredential(/* options= */ null, /* callback= */ null);
+                });
+    }
+
+    /** Test that getCredential() throws when the renderFrameHost is not set. */
+    @Test
+    public void testGetCredential_requiresRenderFrameHost() {
+        AuthenticatorImpl authenticator =
+                new AuthenticatorImpl(
+                        ApplicationProvider.getApplicationContext(),
+                        mWebContents,
+                        mIntentSender,
+                        /* createConfirmationUiDelegate= */ null,
+                        /* renderFrameHost= */ null,
+                        mTopOrigin);
+
+        assertThrows(
+                AssertionError.class,
+                () -> {
+                    authenticator.getCredential(/* options= */ null, /* callback= */ null);
+                });
+    }
+
+    /** Test that getCredential() throws when the intentSender is not set. */
+    @Test
+    public void testGetCredential_requiresIntentSender() {
+        AuthenticatorImpl authenticator =
+                new AuthenticatorImpl(
+                        ApplicationProvider.getApplicationContext(),
+                        mWebContents,
+                        /* intentSender= */ null,
+                        /* createConfirmationUiDelegate= */ null,
+                        mRenderFrameHost,
+                        mTopOrigin);
+
+        assertThrows(
+                AssertionError.class,
+                () -> {
+                    authenticator.getCredential(/* options= */ null, /* callback= */ null);
+                });
     }
 }

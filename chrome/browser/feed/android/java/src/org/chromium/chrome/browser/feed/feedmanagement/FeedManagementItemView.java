@@ -9,9 +9,11 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.R;
 
 /** View class for the individual line items in the feed management interstitial. */
+@NullMarked
 public class FeedManagementItemView extends LinearLayout {
     private TextView mTitle;
     private TextView mDescription;

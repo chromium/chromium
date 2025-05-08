@@ -4,6 +4,7 @@
 
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -13,12 +14,15 @@
 #include "components/location/android/location_settings_impl.h"
 #include "components/permissions/android/android_permission_util.h"
 #include "components/permissions/android/permissions_reprompt_controller_android.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -93,26 +97,25 @@ void GeolocationPermissionContextAndroid::AddDayOffsetForTesting(int days) {
 }
 
 void GeolocationPermissionContextAndroid::RequestPermission(
-    PermissionRequestData request_data,
+    std::unique_ptr<PermissionRequestData> request_data,
     BrowserPermissionCallback callback) {
   content::RenderFrameHost* const render_frame_host =
       content::RenderFrameHost::FromID(
-          request_data.id.global_render_frame_host_id());
+          request_data->id.global_render_frame_host_id());
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  request_data.embedding_origin = PermissionUtil::GetLastCommittedOriginAsURL(
+  request_data->embedding_origin = PermissionUtil::GetLastCommittedOriginAsURL(
       render_frame_host->GetMainFrame());
 
   // Relax the location access check if the request comes from a permission
   // element and still keep the whole permission process going. We'll check the
   // status later when we show a prompt and help the user fix it if they haven't
   // given us location access yet.
-  if (!request_data.embedded_permission_element_initiated &&
-      !IsLocationAccessPossible(web_contents, request_data.requesting_origin,
-                                request_data.user_gesture)) {
-    NotifyPermissionSet(request_data.id, request_data.requesting_origin,
-                        request_data.embedding_origin, std::move(callback),
+  if (!request_data->embedded_permission_element_initiated &&
+      !IsLocationAccessPossible(web_contents, request_data->requesting_origin,
+                                request_data->user_gesture)) {
+    NotifyPermissionSet(request_data, std::move(callback),
                         /*persist=*/false, CONTENT_SETTING_BLOCK,
                         /*is_one_time=*/false, /*is_final_decision=*/true);
     return;
@@ -121,10 +124,10 @@ void GeolocationPermissionContextAndroid::RequestPermission(
   DCHECK(render_frame_host);
   PermissionStatus status =
       GeolocationPermissionContext::GetPermissionStatus(
-          render_frame_host, request_data.requesting_origin,
-          request_data.embedding_origin)
+          request_data->resolver, render_frame_host,
+          request_data->requesting_origin, request_data->embedding_origin)
           .status;
-  if (!request_data.embedded_permission_element_initiated &&
+  if (!request_data->embedded_permission_element_initiated &&
       status == PermissionStatus::GRANTED &&
       ShouldRepromptUserForPermissions(web_contents,
                                        {ContentSettingsType::GEOLOCATION}) ==
@@ -137,9 +140,10 @@ void GeolocationPermissionContextAndroid::RequestPermission(
             {ContentSettingsType::GEOLOCATION}, content_settings_type(),
             base::BindOnce(&GeolocationPermissionContextAndroid::
                                HandleUpdateAndroidPermissions,
-                           weak_factory_.GetWeakPtr(), request_data.id,
-                           request_data.requesting_origin,
-                           request_data.embedding_origin, std::move(callback)));
+                           weak_factory_.GetWeakPtr(), request_data->id,
+                           request_data->requesting_origin,
+                           request_data->embedding_origin,
+                           std::move(callback)));
     return;
   }
 
@@ -159,9 +163,7 @@ void GeolocationPermissionContextAndroid::UserMadePermissionDecision(
 }
 
 void GeolocationPermissionContextAndroid::NotifyPermissionSet(
-    const PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const std::unique_ptr<PermissionRequestData>& request_data,
     BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -169,7 +171,8 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     bool is_final_decision) {
   DCHECK(is_final_decision);
 
-  bool is_default_search = IsRequestingOriginDSE(requesting_origin);
+  bool is_default_search =
+      IsRequestingOriginDSE(request_data->requesting_origin);
   if (content_setting == CONTENT_SETTING_ALLOW &&
       !location_settings_->IsSystemLocationSettingEnabled()) {
     // There is no need to check CanShowLocationSettingsDialog here again, as it
@@ -179,15 +182,17 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     // here and the content setting was ASK, the user must have accepted which
     // would reset the backoff.
     if (IsInLocationSettingsBackOff(is_default_search)) {
-      FinishNotifyPermissionSet(id, requesting_origin, embedding_origin,
-                                std::move(callback), false /* persist */,
-                                CONTENT_SETTING_BLOCK, is_one_time);
+      FinishNotifyPermissionSet(
+          request_data->id, request_data->requesting_origin,
+          request_data->embedding_origin, std::move(callback),
+          false /* persist */, CONTENT_SETTING_BLOCK, is_one_time);
       return;
     }
 
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(
-            content::RenderFrameHost::FromID(id.global_render_frame_host_id()));
+            content::RenderFrameHost::FromID(
+                request_data->id.global_render_frame_host_id()));
     if (!web_contents)
       return;
 
@@ -197,27 +202,29 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     // case can occur in split-screen multi-window.
     if (!delegate_->IsInteractable(web_contents) ||
         !location_settings_dialog_callback_.is_null()) {
-      FinishNotifyPermissionSet(id, requesting_origin, embedding_origin,
-                                std::move(callback), false /* persist */,
-                                CONTENT_SETTING_BLOCK, is_one_time);
+      FinishNotifyPermissionSet(
+          request_data->id, request_data->requesting_origin,
+          request_data->embedding_origin, std::move(callback),
+          false /* persist */, CONTENT_SETTING_BLOCK, is_one_time);
       return;
     }
 
-    location_settings_dialog_request_id_ = id;
+    location_settings_dialog_request_id_ = request_data->id;
     location_settings_dialog_callback_ = std::move(callback);
     location_settings_->PromptToEnableSystemLocationSetting(
         is_default_search ? SEARCH : DEFAULT,
         web_contents->GetTopLevelNativeWindow(),
         base::BindOnce(
             &GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown,
-            weak_factory_.GetWeakPtr(), requesting_origin, embedding_origin,
-            persist, content_setting, is_one_time));
+            weak_factory_.GetWeakPtr(), request_data->requesting_origin,
+            request_data->embedding_origin, persist, content_setting,
+            is_one_time));
     return;
   }
 
-  FinishNotifyPermissionSet(id, requesting_origin, embedding_origin,
-                            std::move(callback), persist, content_setting,
-                            is_one_time);
+  FinishNotifyPermissionSet(request_data->id, request_data->requesting_origin,
+                            request_data->embedding_origin, std::move(callback),
+                            persist, content_setting, is_one_time);
 }
 
 content::PermissionResult
@@ -363,8 +370,13 @@ void GeolocationPermissionContextAndroid::HandleUpdateAndroidPermissions(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ContentSetting new_setting =
       permissions_updated ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
-
-  NotifyPermissionSet(id, requesting_frame_origin, embedding_origin,
+  NotifyPermissionSet(std::make_unique<PermissionRequestData>(
+                          this, id,
+                          content::PermissionRequestDescription(
+                              content::PermissionDescriptorUtil::
+                                  CreatePermissionDescriptorForPermissionType(
+                                      blink::PermissionType::GEOLOCATION)),
+                          requesting_frame_origin, embedding_origin),
                       std::move(callback), false /* persist */, new_setting,
                       /*is_one_time=*/false, /*is_final_decision=*/true);
 }
@@ -425,8 +437,15 @@ void GeolocationPermissionContextAndroid::FinishNotifyPermissionSet(
     ContentSetting content_setting,
     bool is_one_time) {
   GeolocationPermissionContext::NotifyPermissionSet(
-      id, requesting_origin, embedding_origin, std::move(callback), persist,
-      content_setting, is_one_time, /*is_final_decision=*/true);
+      std::make_unique<PermissionRequestData>(
+          this, id,
+          content::PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::GEOLOCATION)),
+          requesting_origin),
+      std::move(callback), persist, content_setting, is_one_time,
+      /*is_final_decision=*/true);
 }
 
 void GeolocationPermissionContextAndroid::SetLocationSettingsForTesting(

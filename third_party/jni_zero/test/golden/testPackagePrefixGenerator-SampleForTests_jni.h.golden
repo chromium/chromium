@@ -211,7 +211,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
       env,
       jni_zero::JavaParamRef<jobject>(env, items));
   auto _ret = JNI_SampleForTests_ListTest2(env, items_converted);
-  jobject converted_ret = jni_zero::ToJniList(env, _ret).Release();
+  auto converted_ret = jni_zero::ToJniList(env, _ret).Release();
   return converted_ret;
 }
 
@@ -228,7 +228,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
       env,
       jni_zero::JavaParamRef<jobject>(env, arg0));
   auto _ret = JNI_SampleForTests_MapTest2(env, arg0_converted);
-  jobject converted_ret = jni_zero::ToJniType(env, _ret).Release();
+  auto converted_ret = jni_zero::ToJniType(env, _ret).Release();
   return converted_ret;
 }
 
@@ -310,7 +310,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
       l_converted,
       f_converted,
       d_converted);
-  jobject converted_ret = jni_zero::ToJniArray(env, _ret).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, _ret).Release();
   return converted_ret;
 }
 
@@ -323,6 +323,17 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
       env,
       jni_zero::JavaParamRef<jobject>(env, caller));
   return _ret.ReleaseLocal();
+}
+
+// Forward declaration. To be implemented by the including .cc file.
+static MyEnum JNI_SampleForTests_ReturnFromEnum(JNIEnv* env);
+
+JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1returnFromEnum(
+    JNIEnv* env,
+    jclass jcaller) {
+  auto _ret = JNI_SampleForTests_ReturnFromEnum(env);
+  auto converted_ret = jni_zero::internal::PrimitiveConvert<MyEnum, jint>::ToJniType(env, _ret);
+  return static_cast<jint>(converted_ret);
 }
 
 // Forward declaration. To be implemented by the including .cc file.

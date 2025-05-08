@@ -603,7 +603,7 @@ void SharedStorageWorklet::SelectUrlInternal(
   worklet_host_->SelectURL(
       name, std::move(converted_urls), std::move(serialized_data), keep_alive,
       std::move(private_aggregation_config), resolve_to_config,
-      options->savedQuery(),
+      options->savedQuery(), start_time,
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8SharedStorageResponse>* resolver,
              SharedStorageWorklet* shared_storage_worklet,
@@ -753,7 +753,7 @@ void SharedStorageWorklet::RunInternal(
 
   worklet_host_->Run(
       name, std::move(serialized_data), keep_alive,
-      std::move(private_aggregation_config),
+      std::move(private_aggregation_config), start_time,
       WTF::BindOnce(
           [](ScriptPromiseResolver<IDLAny>* resolver,
              SharedStorageWorklet* shared_storage_worklet,

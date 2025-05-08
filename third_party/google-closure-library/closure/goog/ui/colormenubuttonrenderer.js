@@ -120,6 +120,7 @@ goog.ui.ColorMenuButtonRenderer.setCaptionValue = function(caption, value) {
         goog.color.parse(strValue).hex :
         null;
 
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     caption.firstChild.style.borderBottomColor = hexColor || 'transparent';
   }
 };
@@ -132,6 +133,7 @@ goog.ui.ColorMenuButtonRenderer.setCaptionValue = function(caption, value) {
  * @param {goog.ui.Control} button goog.ui.ColorMenuButton whose DOM is to be
  *     initialized as it enters the document.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ColorMenuButtonRenderer.prototype.initializeDom = function(button) {
   'use strict';

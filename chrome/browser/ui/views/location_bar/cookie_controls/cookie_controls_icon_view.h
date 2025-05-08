@@ -35,7 +35,7 @@ class CookieControlsIconView : public PageActionIconView,
   // CookieControlsObserver:
   void OnCookieControlsIconStatusChanged(
       bool icon_visible,
-      bool protections_on,
+      CookieControlsState controls_state,
       CookieBlocking3pcdStatus blocking_status,
       bool should_highlight) override;
   void OnFinishedPageReloadWithChangedSettings() override;
@@ -81,7 +81,7 @@ class CookieControlsIconView : public PageActionIconView,
   void SetLabelForStatus();
 
   bool icon_visible_ = false;
-  bool protections_on_ = false;
+  CookieControlsState controls_state_ = CookieControlsState::kHidden;
   bool protections_changed_ = true;
   bool did_animate_ = false;
   // Whether we should have a visual indicator highlighting the icon.

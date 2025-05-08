@@ -28,6 +28,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 @class CRWSessionStorage;
 @class CRWWebController;
@@ -232,21 +233,21 @@ class WebStateImpl final : public WebState {
                                    base::OnceCallback<void(bool)> callback);
 
   // Notifies the delegate that a JavaScript alert dialog needs to be presented.
-  void RunJavaScriptAlertDialog(const GURL& origin_url,
+  void RunJavaScriptAlertDialog(const url::Origin& origin,
                                 NSString* message_text,
                                 base::OnceClosure callback);
 
   // Notifies the delegate that a JavaScript confirmation dialog needs to be
   // presented.
   void RunJavaScriptConfirmDialog(
-      const GURL& origin_url,
+      const url::Origin& origin,
       NSString* message_text,
       base::OnceCallback<void(bool success)> callback);
 
   // Notifies the delegate that a JavaScript prompt dialog needs to be
   // presented.
   void RunJavaScriptPromptDialog(
-      const GURL& origin_url,
+      const url::Origin& origin,
       NSString* message_text,
       NSString* default_prompt_text,
       base::OnceCallback<void(NSString* user_input)> callback);

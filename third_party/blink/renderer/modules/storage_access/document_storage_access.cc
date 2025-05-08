@@ -343,9 +343,7 @@ ScriptPromise<T> DocumentStorageAccess::RequestStorageAccessImpl(
         "requestStorageAccess not allowed"));
     return promise;
   }
-  if (RuntimeEnabledFeatures::FedCmWithStorageAccessAPIEnabled(
-          GetSupplementable()->GetExecutionContext()) &&
-      GetSupplementable()->GetExecutionContext()->IsFeatureEnabled(
+  if (GetSupplementable()->GetExecutionContext()->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     UseCounter::Count(GetSupplementable()->GetExecutionContext(),
                       WebFeature::kFedCmWithStorageAccessAPI);

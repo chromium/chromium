@@ -29,9 +29,10 @@
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
 #         amd64
-#         apple apple-apple-m1 apple-apple-m2
+#         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
+#             apple-angle-metal-renderer:-apple-m3
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
@@ -84,6 +85,8 @@
 # tags: [ clang-coverage no-clang-coverage ]
 # Skia Graphite
 # tags: [ graphite-enabled graphite-disabled ]
+# Memory capacity
+# tags: [ memory_lt_16gb memory_ge_16gb ]
 # results: [ Failure RetryOnFailure Skip Slow ]
 # END TAG HEADER
 
@@ -489,6 +492,9 @@ crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
 # Conformance expectations
 # ========================
 
+# Test needs to be revised for new mipmap/texture completeness rules.
+crbug.com/angleproject/42267266 [ passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
+
 # Failing new updated tests
 crbug.com/406187744 conformance/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
 crbug.com/406187744 conformance2/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
@@ -518,8 +524,8 @@ crbug.com/949249 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/ovr_
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
 # Persistent flaking on Windows and Mac/M1
-crbug.com/365680830 [ win angle-d3d11 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
-crbug.com/365680830 [ mac angle-metal apple ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
+crbug.com/365680830 [ amd64 angle-d3d11 graphite-enabled win ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+crbug.com/365680830 [ mac mac-arm64 angle-metal ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 
 
 ####################
@@ -528,7 +534,6 @@ crbug.com/365680830 [ mac angle-metal apple ] deqp/functional/gles3/occlusionque
 
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
-crbug.com/angleproject/389733590 [ angle-d3d11 nvidia-0x2184 nvidia_lt_535.183.01 win10 ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 ## Win / NVIDIA ##
 
@@ -546,8 +551,6 @@ crbug.com/483282 [ amd-0x7340 angle-d3d11 win10 ] conformance2/rendering/blitfra
 
 ## Win / Intel ##
 
-crbug.com/384257970 [ angle-d3d11 intel-0x9bc5 win ] conformance/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
-crbug.com/384257970 [ angle-d3d11 intel-0x9bc5 win ] conformance2/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
 
 crbug.com/401515599 [ win11 amd-0x7480 ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
 crbug.com/401515599 [ win11 amd-0x7480 ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
@@ -579,8 +582,6 @@ crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles
 crbug.com/41496352 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_float.html [ Failure ]
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_int.html [ Failure ]
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_uint.html [ Failure ]
-crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
-crbug.com/407945675 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
 crbug.com/408364836 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/data/gles3/shaders/linkage.html [ RetryOnFailure ]
 
 # Graphite
@@ -651,7 +652,7 @@ crbug.com/630800 [ angle-opengl intel mac ] conformance2/rendering/framebuffer-c
 crbug.com/630800 [ nvidia mac ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
 crbug.com/630800 [ angle-opengl intel mac ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/630800 [ nvidia mac ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
-crbug.com/1289803 [ angle-opengl mac-x86_64 sonoma ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
+crbug.com/1289803 [ angle-opengl mac-x86_64 mac ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
 crbug.com/407622671 [ mac asan graphite-disabled ] deqp/functional/gles3/clipping.html [ RetryOnFailure ]
 
 ## Mac Retina NVIDIA ##
@@ -759,6 +760,10 @@ crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/function
 crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 
+## Mac / Apple Silicon ##
+
+crbug.com/413035866 [ sequoia apple angle-opengl ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
+
 ## Mac / M1 / OpenGL ##
 
 crbug.com/angleproject/5223 [ angle-opengl apple mac mac-arm64 no-asan passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
@@ -785,8 +790,6 @@ crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/i
 
 ## Mac ASAN ##
 
-# Flaky glyph cache miss
-crbug.com/396434680 [ asan mac amd-0x7340 passthrough ] deqp/functional/gles3/fbocolorbuffer/tex2darray_02.html [ Failure ]
 
 ####################
 # Linux failures   #
@@ -838,13 +841,9 @@ crbug.com/906742 [ android-pie android-pixel-2 no-passthrough qualcomm ] conform
 crbug.com/1000354 [ android android-pixel-2 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1276186 [ android android-pixel-2 ] conformance2/glsl3/array-equality.html [ Failure ]
 crbug.com/angleproject/7421 [ android android-pixel-2 angle-disabled no-passthrough ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
-# Slow test that sometimes hits the 300s global timeout
-crbug.com/402726806 [ android android-pixel-2 angle-disabled no-passthrough ] deqp/functional/gles3/vertexarrays/multiple_attributes.stride.html [ RetryOnFailure ]
 
 ## Pixel 4 ##
 
-# Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
-crbug.com/1289303 [ android-pixel-4 android-r ] conformance/textures/misc/texture-video-transparent.html [ Failure ] # finder:disable-narrowing
 
 crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 
@@ -904,8 +903,6 @@ crbug.com/326755442 [ chromeos intel mesa_ge_21.0 passthrough ] conformance2/ext
 ## Volteer ##
 crbug.com/332743717 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/40947854 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
-crbug.com/40947856 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
-crbug.com/40947856 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 # Fragment position generation rounds incorrectly on intel line primitives.
 crbug.com/40947858 [ chromeos intel passthrough ] deqp/functional/gles3/clipping.html [ Failure ]
 
@@ -1020,10 +1017,6 @@ crbug.com/332743717 [ chromeos chromeos-board-amd64-generic ] conformance2/canva
 crbug.com/332743717 [ android android-pixel-2 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scissor.html [ Failure ]
 
-#################################################################
-# Temporary suppressions for introduction of drawingBufferStorage
-#################################################################
-crbug.com/1230619 conformance2/offscreencanvas/methods-2.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

@@ -6,6 +6,7 @@ package org.chromium.ui.base;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.hardware.input.InputManager;
 import android.net.Uri;
 import android.os.Build;
 import android.view.DragEvent;
@@ -19,9 +20,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContentUriUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -248,6 +251,17 @@ public class EventForwarder {
 
             eventAction = SPenSupport.convertSPenEventAction(eventAction);
 
+            // TODO(crbug.com/406485568): Cleanup after investigating if the events where down time
+            // is later than the event time came from system or not.
+            Boolean verifiedEvent = null;
+            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM
+                    && eventAction == MotionEvent.ACTION_DOWN
+                    && event.getDownTime() > event.getEventTime()) {
+                InputManager input_manager =
+                        ContextUtils.getApplicationContext().getSystemService(InputManager.class);
+                verifiedEvent = (input_manager.verifyInputEvent(event) != null);
+            }
+
             if (!isValidTouchEventActionForNative(eventAction)) return false;
 
             // A zero offset is quite common, in which case the unnecessary copy should be avoided.
@@ -320,7 +334,8 @@ public class EventForwarder {
                                     gestureClassification,
                                     event.getButtonState(),
                                     event.getMetaState(),
-                                    isTouchHandleEvent);
+                                    isTouchHandleEvent,
+                                    verifiedEvent);
 
             if (didOffsetEvent) event.recycle();
             return consumed;
@@ -576,7 +591,6 @@ public class EventForwarder {
         String url = null;
         if (event.getAction() == DragEvent.ACTION_DROP) {
             try {
-                StringBuilder contentBuilder = new StringBuilder("");
                 ClipData clipData = event.getClipData();
                 final int itemCount = clipData == null ? 0 : clipData.getItemCount();
                 for (int i = 0; i < itemCount; i++) {
@@ -607,7 +621,7 @@ public class EventForwarder {
                         html = temp.toString();
                     }
                 }
-                content = contentBuilder.toString();
+                content = "";
             } catch (UndeclaredThrowableException e) {
                 // When dropped item is not successful for whatever reason, catch before we crash.
                 // While ClipData.Item does capture most common failures, there could be exceptions
@@ -712,7 +726,9 @@ public class EventForwarder {
         // and ACTION_BUTTON_RELEASE respectively because they provide
         // info about the changed-button.
         if (event.getAction() == MotionEvent.ACTION_DOWN
-                || event.getAction() == MotionEvent.ACTION_UP) {
+                || event.getAction() == MotionEvent.ACTION_UP
+                || event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN
+                || event.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
             // While we use the action buttons for the changed state it is important to still
             // consume the down/up events to get the complete stream for a drag gesture, which
             // is provided using ACTION_MOVE touch events.
@@ -766,9 +782,10 @@ public class EventForwarder {
         float offsetX = 0.0f;
         float offsetY = 0.0f;
 
-        // TODO(crbug.com/405067297): support multi-finger events on the trackpad (scroll, right
-        // click & middle click)
+        // TODO(crbug.com/405067297): support multi-finger events on the trackpad (scroll)
         if (event.isFromSource(InputDevice.SOURCE_TOUCHPAD)) {
+            event = updateTrackpadButtonState(event);
+
             // Ignore calculating the offset if we don't have the previous event trackpad position
             if (mIsLastTrackpadPositionValid) {
                 // Input device is trackpad, getX & getY return the raw finger position on the
@@ -781,7 +798,17 @@ public class EventForwarder {
 
             mLastTrackpadPositionX = event.getX();
             mLastTrackpadPositionY = event.getY();
-            mIsLastTrackpadPositionValid = (event.getAction() != MotionEvent.ACTION_UP);
+
+            // Invalidate the trackpad position for these cases:
+            // ACTION_UP: No pointer on the trackpad, the position data is stale
+            // ACTION_POINTER_UP & ACTION_POINTER_DOWN: Multiple trackpad pointers causes the main
+            // pointer (pointer at idx 0) to flip from one to another, causing sudden jumps in
+            // offsets, we need to wait for a subsequent event to figure out the correct trackpad
+            // position
+            mIsLastTrackpadPositionValid =
+                    (event.getAction() != MotionEvent.ACTION_UP
+                            && event.getActionMasked() != MotionEvent.ACTION_POINTER_UP
+                            && event.getActionMasked() != MotionEvent.ACTION_POINTER_DOWN);
         } else if (event.isFromSource(InputDevice.SOURCE_MOUSE_RELATIVE)) {
             // Input device is Mouse, getX & getY return the relative change of the pointer position
             offsetX = event.getX();
@@ -798,6 +825,65 @@ public class EventForwarder {
         ret.setSource(InputDevice.SOURCE_MOUSE);
         ret.setLocation(currentPointerPositionX, currentPointerPositionY);
 
+        return ret;
+    }
+
+    private static MotionEvent updateTrackpadButtonState(MotionEvent event) {
+        if (event.getAction() != MotionEvent.ACTION_BUTTON_PRESS
+                && event.getAction() != MotionEvent.ACTION_BUTTON_RELEASE) {
+            return event;
+        }
+
+        // When the pointer is captured, all clicks on trackpad would have a BUTTON_PRIMARY state,
+        // regardless of how many pointers are on the trackpad. So, we need to correct the button
+        // state
+        int updatedButtonState;
+        if (event.getPointerCount() == 2) {
+            updatedButtonState = MotionEvent.BUTTON_SECONDARY;
+        } else if (event.getPointerCount() == 3) {
+            updatedButtonState = MotionEvent.BUTTON_TERTIARY;
+        } else {
+            // No change is made on the event
+            return event;
+        }
+
+        return MotionEvent.obtain(
+                event.getDownTime(),
+                event.getEventTime(),
+                event.getAction(),
+                event.getPointerCount(),
+                getPointerPropertiesForEvent(event),
+                getPointerCoordsForEvent(event),
+                event.getMetaState(),
+                updatedButtonState,
+                event.getXPrecision(),
+                event.getYPrecision(),
+                event.getDeviceId(),
+                event.getEdgeFlags(),
+                event.getSource(),
+                event.getFlags());
+    }
+
+    private static MotionEvent.PointerProperties[] getPointerPropertiesForEvent(MotionEvent event) {
+        MotionEvent.PointerProperties[] ret =
+                new MotionEvent.PointerProperties[event.getPointerCount()];
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
+            event.getPointerProperties(i, properties);
+
+            ret[i] = properties;
+        }
+        return ret;
+    }
+
+    private static MotionEvent.PointerCoords[] getPointerCoordsForEvent(MotionEvent event) {
+        MotionEvent.PointerCoords[] ret = new MotionEvent.PointerCoords[event.getPointerCount()];
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+            event.getPointerCoords(i, coords);
+
+            ret[i] = coords;
+        }
         return ret;
     }
 
@@ -920,7 +1006,8 @@ public class EventForwarder {
                 int gestureClassification,
                 int androidButtonState,
                 int androidMetaState,
-                boolean isTouchHandleEvent);
+                boolean isTouchHandleEvent,
+                @JniType("std::optional<bool>") @Nullable Boolean verifiedEvent);
 
         void onMouseEvent(
                 long nativeEventForwarder,

@@ -83,81 +83,6 @@ TEST_F(ReplaceSelectionCommandTest, pasteSpanInText) {
       << "'bar' should have been inserted";
 }
 
-TEST_F(ReplaceSelectionCommandTest,
-       PasteNonEditableSpanInBetweenEditableAndNonEditable) {
-  Selection().SetSelection(
-      SetSelectionTextToBody(
-          "<div contenteditable=\"true\">Editable<span "
-          "contenteditable=\"false\">Non-Editable</span>|Editable</div>"),
-      SetSelectionOptions());
-
-  Element* span_element = QuerySelector("span");
-  DocumentFragment* fragment = GetDocument().createDocumentFragment();
-  fragment->ParseHTML("<span contenteditable=\"false\">ToPaste</span>",
-                      span_element);
-
-  ReplaceSelectionCommand::CommandOptions options = 0;
-  auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
-      GetDocument(), fragment, options);
-
-  EXPECT_TRUE(command->Apply()) << "the replace command should have succeeded";
-  String expected_string;
-  String assert_comment;
-  if (RuntimeEnabledFeatures::
-          PartialCompletionNotAllowedInMoveParagraphsEnabled()) {
-    expected_string =
-        "<div contenteditable=\"true\">Editable<span "
-        "contenteditable=\"false\">Non-Editable</span><span "
-        "contenteditable=\"false\">ToPaste</span>Editable</div>";
-    assert_comment = "span should have been inserted without losing any data";
-  } else {
-    expected_string =
-        "<div contenteditable=\"true\">Editable<span "
-        "contenteditable=\"false\">Non-Editable</span><span "
-        "contenteditable=\"false\">ToPaste</span></div>";
-    assert_comment = "span would be incorrectly inserted with data loss";
-  }
-  EXPECT_EQ(expected_string, GetDocument().body()->innerHTML())
-      << assert_comment;
-}
-
-TEST_F(ReplaceSelectionCommandTest, PasteNonEditableSpanInEditableArea) {
-  Selection().SetSelection(
-      SetSelectionTextToBody(
-          "<div contenteditable=\"true\">Editable<span "
-          "contenteditable=\"false\">Non-Editable</span>Edit|able</div>"),
-      SetSelectionOptions());
-
-  Element* span_element = QuerySelector("span");
-  DocumentFragment* fragment = GetDocument().createDocumentFragment();
-  fragment->ParseHTML("<span contenteditable=\"false\">ToPaste</span>",
-                      span_element);
-
-  ReplaceSelectionCommand::CommandOptions options = 0;
-  auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
-      GetDocument(), fragment, options);
-
-  EXPECT_TRUE(command->Apply()) << "the replace command should have succeeded";
-  String expected_string;
-  String assert_comment;
-  if (RuntimeEnabledFeatures::
-          PartialCompletionNotAllowedInMoveParagraphsEnabled()) {
-    expected_string =
-        "<div contenteditable=\"true\">Editable<span "
-        "contenteditable=\"false\">Non-Editable</span>Edit<span "
-        "contenteditable=\"false\">ToPaste</span>able</div>";
-    assert_comment = "span should have been inserted without duplication";
-  } else {
-    expected_string =
-        "<div contenteditable=\"true\">Editable<span "
-        "contenteditable=\"false\">Non-Editable</span>Edit<span "
-        "contenteditable=\"false\">ToPaste</span>ToPasteable</div>";
-    assert_comment = "span would be incorrectly inserted with duplication";
-  }
-  EXPECT_EQ(expected_string, GetDocument().body()->innerHTML())
-      << assert_comment;
-}
-
 // Helper function to set autosizing multipliers on a document.
 bool SetTextAutosizingMultiplier(Document* document, float multiplier) {
   bool multiplier_set = false;
@@ -365,4 +290,30 @@ TEST_F(ReplaceSelectionCommandTest, InsertImageInNonEditableBlock2) {
       "</div></strong>",
       GetSelectionTextFromBody());
 }
+
+TEST_F(ReplaceSelectionCommandTest, InsertLineFeedsToTextArea) {
+  SetBodyContent("<textarea></textarea>");
+  Element* field = QuerySelector("textarea");
+  field->Focus();
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), "\nfoo\n"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0, InputEvent::InputType::kNone);
+
+  EXPECT_TRUE(command.Apply());
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    EXPECT_EQ(
+        "<textarea><div><br>foo|<br>"
+        "<br id=\"textarea-placeholder-break\"></div></textarea>",
+        GetSelectionTextInFlatTreeFromBody(
+            Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));
+  } else {
+    EXPECT_EQ(
+        "<textarea><div>\nfoo|\n<br></div></textarea>",
+        GetSelectionTextInFlatTreeFromBody(
+            Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));
+  }
+}
+
 }  // namespace blink

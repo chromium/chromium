@@ -403,7 +403,7 @@ TEST_F(FocusControllerTestWithIframes,
 TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      .scroller { overflow: hidden; width: 100px; height: 100px; }
+      .scroller { overflow: hidden; width: 50px; height: 100px; }
       .before { scroll-marker-group: before; }
       .after { scroll-marker-group: after; }
       .scroller::scroll-marker-group { height: 100px; }
@@ -440,6 +440,12 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
   Element* before_scroller = GetElementById("before-scroller");
   Element* after_scroller = GetElementById("after-scroller");
   Element* post_input = GetElementById("post-input");
+
+  before_scroller->setScrollTop(10);
+  before_scroller->setScrollLeft(10);
+  after_scroller->setScrollTop(10);
+  after_scroller->setScrollLeft(10);
+  UpdateAllLifecyclePhasesForTest();
 
   Element* before_block_start_button =
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
@@ -490,6 +496,7 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
                                     before_scroller,
                                     before_first_child,
                                     before_second_child,
+                                    after_first_scroll_marker,
                                     after_block_start_button,
                                     after_inline_start_button,
                                     after_inline_end_button,
@@ -497,7 +504,6 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
                                     after_scroller,
                                     after_first_child,
                                     after_last_child,
-                                    after_first_scroll_marker,
                                     post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
@@ -547,7 +553,7 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
 TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      .scroller { overflow: hidden; width: 100px; height: 100px; }
+      .scroller { overflow: hidden; width: 50px; height: 100px; }
       .scroller::scroll-button(block-start) { content: "u"; }
       .scroller::scroll-button(inline-start) { content: "l"; }
       .scroller::scroll-button(inline-end) { content: "r"; }
@@ -578,6 +584,12 @@ TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
   Element* before_scroller = GetElementById("before-scroller");
   Element* after_scroller = GetElementById("after-scroller");
   Element* post_input = GetElementById("post-input");
+
+  before_scroller->setScrollTop(10);
+  before_scroller->setScrollLeft(10);
+  after_scroller->setScrollTop(10);
+  after_scroller->setScrollLeft(10);
+  UpdateAllLifecyclePhasesForTest();
 
   Element* before_block_start_button =
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
@@ -686,8 +698,8 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrder) {
 
   std::array<Element*, 10> order = {
       pre_input,          before_first_scroll_marker, before_scroller,
-      before_first_child, before_second_child,        after_scroller,
-      after_first_child,  after_last_child,           after_first_scroll_marker,
+      before_first_child, before_second_child,        after_first_scroll_marker,
+      after_scroller,     after_first_child,          after_last_child,
       post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
@@ -791,7 +803,7 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkerGroupFocusOrder) {
 TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      .scroller { overflow: hidden; width: 100px; height: 100px; }
+      .scroller { overflow: hidden; width: 50px; height: 100px; }
       .before { scroll-marker-group: before; }
       .after { scroll-marker-group: after; }
       .scroller::after { content: "after"; }
@@ -830,6 +842,12 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
   Element* before_scroller = GetElementById("before-scroller");
   Element* after_scroller = GetElementById("after-scroller");
   Element* post_input = GetElementById("post-input");
+
+  before_scroller->setScrollTop(10);
+  before_scroller->setScrollLeft(10);
+  after_scroller->setScrollTop(10);
+  after_scroller->setScrollLeft(10);
+  UpdateAllLifecyclePhasesForTest();
 
   Element* before_block_start_button =
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
@@ -871,6 +889,7 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
                                     before_scroller,
                                     before_first_child,
                                     before_second_child,
+                                    after_first_scroll_marker,
                                     after_block_start_button,
                                     after_inline_start_button,
                                     after_inline_end_button,
@@ -878,7 +897,6 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
                                     after_scroller,
                                     after_first_child,
                                     after_last_child,
-                                    after_first_scroll_marker,
                                     post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {

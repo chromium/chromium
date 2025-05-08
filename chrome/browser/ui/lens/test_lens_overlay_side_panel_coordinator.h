@@ -16,7 +16,7 @@ class TestLensOverlaySidePanelCoordinator
     : public LensOverlaySidePanelCoordinator {
  public:
   explicit TestLensOverlaySidePanelCoordinator(
-      LensOverlayController* lens_overlay_controller);
+      LensSearchController* lens_search_controller);
   ~TestLensOverlaySidePanelCoordinator() override;
 
   void SetSidePanelIsLoadingResults(bool is_loading) override;

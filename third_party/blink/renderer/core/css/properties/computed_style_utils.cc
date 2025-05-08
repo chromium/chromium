@@ -3437,7 +3437,7 @@ const CSSValue* ComputedStyleUtils::ValueForSVGPaint(
     case SVGPaintType::kUriColor: {
       CSSValueList* values = CSSValueList::CreateSpaceSeparated();
       values->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(
-          CSSUrlData(paint.GetUrl())));
+          *MakeGarbageCollected<CSSUrlData>(paint.GetUrl())));
       values->Append(
           paint.type == SVGPaintType::kUriNone
               ? *CSSIdentifierValue::Create(CSSValueID::kNone)
@@ -3447,7 +3447,7 @@ const CSSValue* ComputedStyleUtils::ValueForSVGPaint(
     }
     case SVGPaintType::kUri:
       return MakeGarbageCollected<cssvalue::CSSURIValue>(
-          CSSUrlData(paint.GetUrl()));
+          *MakeGarbageCollected<CSSUrlData>(paint.GetUrl()));
     case SVGPaintType::kContextFill:
       return CSSIdentifierValue::Create(CSSValueID::kContextFill);
     case SVGPaintType::kContextStroke:
@@ -3459,7 +3459,7 @@ CSSValue* ComputedStyleUtils::ValueForSVGResource(
     const StyleSVGResource* resource) {
   if (resource) {
     return MakeGarbageCollected<cssvalue::CSSURIValue>(
-        CSSUrlData(resource->Url()));
+        *MakeGarbageCollected<CSSUrlData>(resource->Url()));
   }
   return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
@@ -3634,7 +3634,7 @@ CSSValue* ComputedStyleUtils::ValueForFilter(
     switch (filter_operation->GetType()) {
       case FilterOperation::OperationType::kReference:
         list->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(
-            CSSUrlData(AtomicString(
+            *MakeGarbageCollected<CSSUrlData>(AtomicString(
                 To<ReferenceFilterOperation>(filter_operation)->Url()))));
         continue;
       case FilterOperation::OperationType::kGrayscale:

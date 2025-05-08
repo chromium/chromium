@@ -31,7 +31,9 @@ import org.chromium.chrome.browser.offlinepages.evaluation.OfflinePageEvaluation
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.offlinepages.BackgroundSavePageResult;
 
 import java.io.BufferedReader;
@@ -62,7 +64,10 @@ import java.util.concurrent.TimeUnit;
 public class OfflinePageSavePageLaterEvaluationTest {
     /** Class which is used to calculate time difference. */
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    private WebPageStation mStartingPage;
 
     static class TimeDelta {
         public void setStartTime(Long startTime) {
@@ -117,7 +122,7 @@ public class OfflinePageSavePageLaterEvaluationTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mStartingPage = mActivityTestRule.startOnBlankPage();
         mRequestMetadata = new LongSparseArray<RequestMetadata>();
         mCount = 0;
     }

@@ -46,6 +46,7 @@ source_set("public") {
     "//components/strings",
     "//components/sync_device_info",
     "//components/url_deduplication",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//ui/base",
     "//url",
   ]

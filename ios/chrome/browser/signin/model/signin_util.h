@@ -80,10 +80,6 @@ base::span<const std::string_view> GetAccountCapabilityNamesForPrefetch();
 // can be cached for later usage.
 void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities);
 
-// Whether a phone backup/restore state should be simulated.
-// This can be triggered either by EG test flag or by Experimental settings.
-bool SimulatePostDeviceRestore();
-
 // Resets the data related to device restore. This is for test only.
 void ResetDeviceRestoreDataForTesting();
 

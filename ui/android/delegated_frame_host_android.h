@@ -115,7 +115,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
       const gfx::Size& output_size,
       base::OnceCallback<void(const SkBitmap&)> callback,
       bool capture_exact_surface_id,
-      viz::CopyOutputRequest::IpcPriority ipc_priority);
+      base::TimeDelta ipc_delay);
   bool CanCopyFromCompositingSurface() const;
 
   void CompositorFrameSinkChanged();

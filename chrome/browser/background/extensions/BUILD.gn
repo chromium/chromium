@@ -58,6 +58,7 @@ source_set("impl") {
     "//chrome/browser/apps/app_service:app_service",
     "//chrome/browser/background",
     "//chrome/browser/extensions:extensions",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/ui:ui",
     "//components/crx_file:crx_file",

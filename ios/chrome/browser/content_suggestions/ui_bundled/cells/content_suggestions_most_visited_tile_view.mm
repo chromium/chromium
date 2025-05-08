@@ -30,10 +30,9 @@
 
 @implementation ContentSuggestionsMostVisitedTileView
 
-- (instancetype)initWithFrame:(CGRect)frame inMagicStack:(BOOL)inMagicStack {
+- (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame
-                     tileType:ContentSuggestionsTileType::kMostVisited
-                 inMagicStack:inMagicStack];
+                     tileType:ContentSuggestionsTileType::kMostVisited];
   if (self) {
     self.imageContainerView.backgroundColor =
         [UIColor colorNamed:kGrey100Color];
@@ -78,9 +77,9 @@
   return self;
 }
 
-- (instancetype)initInMagicStack:(BOOL)inMagicStack
-               withConfiguration:(ContentSuggestionsMostVisitedItem*)config {
-  self = [self initWithFrame:CGRectZero inMagicStack:inMagicStack];
+- (instancetype)initWithConfiguration:
+    (ContentSuggestionsMostVisitedItem*)config {
+  self = [self initWithFrame:CGRectZero];
   if (self) {
     if (!config) {
       // If there is no config, then this is a placeholder tile.
@@ -110,19 +109,6 @@
   NSArray<UIMenuElement*>* elements =
       [self.menuElementsProvider defaultContextMenuElementsForItem:self.config
                                                           fromView:self];
-
-  if (self.inMagicStack) {
-    // Add the menu items for the most visited tile as well.
-    CHECK(self.magicStackModuleDelegate);
-    UIMenu* subMenu = [UIMenu menuWithTitle:@""
-                                      image:nil
-                                 identifier:nil
-                                    options:UIMenuOptionsDisplayInline
-                                   children:elements];
-    elements = [@[ subMenu ] arrayByAddingObjectsFromArray:
-                                 [self.magicStackModuleDelegate
-                                         contextMenuElementsForCurrentModule]];
-  }
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {
         return [UIMenu menuWithTitle:@"" children:elements];
@@ -147,15 +133,6 @@
       [UIBezierPath bezierPathWithRoundedRect:previewPath cornerRadius:12];
   return [[UITargetedPreview alloc] initWithView:self
                                       parameters:previewParameters];
-}
-
-- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
-       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
-                      animator:(id<UIContextMenuInteractionAnimating>)animator {
-  if (configuration) {
-    [self.magicStackModuleDelegate
-        notifyContextMenuInteractionEndWithAnimator:animator];
-  }
 }
 
 #pragma mark - AccessibilityCustomAction

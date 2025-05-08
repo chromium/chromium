@@ -23,12 +23,14 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/constants.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
@@ -137,7 +139,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // the elements after interacting with the device.
 @interface NTPHomeTestCase : ChromeTestCase
 
-@property(nonatomic, strong) NSString* defaultSearchEngine;
+@property(nonatomic, copy) NSString* defaultSearchEngine;
 
 @end
 
@@ -950,12 +952,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 - (void)testFavicons {
-  // Make sure the MVT position is consistent across bots.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_disabled.push_back(kNewFeedPositioning);
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
@@ -1101,7 +1097,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 - (void)testToggleFeedEnabled {
   // Ensure that label is visible with correct text for enabled feed, and that
   // the NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:YES];
+  [self checkFeedLabel];
   [self checkIfNTPIsScrollable];
 
   // Disable feed.
@@ -1142,7 +1138,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // scrollable.
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
-  [self checkFeedLabelForFeedVisible:YES];
+  [self checkFeedLabel];
   [self checkIfNTPIsScrollable];
 }
 
@@ -1181,18 +1177,24 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that the Magic Stack feature swipeable when the
-// kMagicStackMostVisitedModuleParam param is true. Most Visited Tiles and
-// Shortcuts should be visible.
+// Tests that the Magic Stack feature swipeable when there are multiple modules.
 - (void)testMagicStack {
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
+
+  // Enable relevant preferences for the test, and intentionally forces a Safety
+  // Check error to ensure module visibility in the Magic Stack.
+  [ChromeEarlGrey
+      setBoolValue:YES
+       forUserPref:prefs::kHomeCustomizationMagicStackSafetyCheckEnabled];
+  [ChromeEarlGrey
+         setStringValue:NameForSafetyCheckState(
+                            SafeBrowsingSafetyCheckState::kUnsafe)
+      forLocalStatePref:prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult];
+
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  std::string enable_mvt_arg = std::string(kMagicStack.name) + ":" +
-                               kMagicStackMostVisitedModuleParam + "/true";
-  config.additional_args.push_back("--enable-features=" + enable_mvt_arg);
-  config.additional_args.push_back("--test-ios-module-ranker=mvt");
+  config.additional_args.push_back("--test-ios-module-ranker=safety_check");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   id<GREYMatcher> magicStackScrollView =
@@ -1204,10 +1206,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       onElementWithMatcher:chrome_test_util::NTPCollectionView()]
       assertWithMatcher:grey_notNil()];
 
-  // Verify Most Visited Tiles module title is visible.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE))]
+  // Verify safety check module title is visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          safety_check::kSafetyCheckViewID)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Swipe to next module
@@ -1252,10 +1253,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       performAction:GREYScrollInDirectionWithStartPoint(
                         kGREYDirectionLeft, moduleSwipeAmount, 0.10, 0.5)];
 
-  // Verify Most Visited Tiles module title is visible.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE))]
+  // Verify safety check module title is visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          safety_check::kSafetyCheckViewID)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -1503,7 +1503,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
   // Ensure that label is visible with correct text for enabled feed, and that
   // the NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:YES];
+  [self checkFeedLabel];
   [self checkIfNTPIsScrollable];
 
   // Opens settings menu and ensures that Discover setting is present.
@@ -1534,7 +1534,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [SigninEarlGreyUI signOut];
 
   // The feed label should be visible on sign-out.
-  [self checkFeedLabelForFeedVisible:YES];
+  [self checkFeedLabel];
   [self checkIfNTPIsScrollable];
 
   // Opens settings menu and ensures that Discover setting is present.
@@ -1549,7 +1549,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // Tests most visited tiles visibility separately.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_disabled.push_back(kNewFeedPositioning);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self resetCustomizationPrefs];
@@ -1652,7 +1651,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       selectElementWithMatcher:
           grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
       assertWithMatcher:grey_not(grey_notVisible())];
-  [self checkFeedLabelForFeedVisible:YES];
+  [self checkFeedLabel];
 }
 
 // Tests that the toggles in the main page of the customization menu can be used
@@ -1661,7 +1660,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // Tests most visited tiles visibility separately.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_disabled.push_back(kNewFeedPositioning);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self resetCustomizationPrefs];
@@ -1832,16 +1830,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Check that feed label is visible with correct text for feed visibility.
-- (void)checkFeedLabelForFeedVisible:(BOOL)visible {
-  NSString* labelTextForVisibleFeed =
-      l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
-  NSString* labelTextForHiddenFeed =
-      [NSString stringWithFormat:@"%@ – %@", labelTextForVisibleFeed,
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
-  NSString* labelText =
-      visible ? labelTextForVisibleFeed : labelTextForHiddenFeed;
+// Check that feed label is visible with correct text.
+- (void)checkFeedLabel {
+  NSString* labelText = l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
       assertWithMatcher:grey_sufficientlyVisible()];
   UILabel* discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];

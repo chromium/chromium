@@ -7,6 +7,8 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -27,6 +29,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/sharing_message/pref_names.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/variations/service/google_groups_manager_prefs.h"
@@ -128,6 +131,8 @@ enum {
   kAutofillBnplEnabled = 81,
   kAutofillHasSeenBnpl = 82,
   kAutomaticPasskeyUpgrades = 83,
+  kSyncablePriorityPrefForTesting = 84,               // For tests.
+  kSyncableAlwaysSyncingPriorityPrefForTesting = 85,  // For tests.
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -343,6 +348,14 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           PrefSensitivity::kNone, MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+        {kSyncablePriorityPrefForTesting,
+         {syncable_prefs_ids::kSyncablePriorityPrefForTesting,
+          syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+          MergeBehavior::kNone}},
+        {kSyncableAlwaysSyncingPriorityPrefForTesting,
+         {syncable_prefs_ids::kSyncableAlwaysSyncingPriorityPrefForTesting,
+          syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+          MergeBehavior::kNone}},
     });
 
 }  // namespace
@@ -361,6 +374,20 @@ std::map<std::string_view, SyncablePrefMetadata>
 CommonSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
   return {kCommonSyncablePrefsAllowlist.begin(),
           kCommonSyncablePrefsAllowlist.end()};
+}
+
+bool CommonSyncablePrefsDatabase::IsPreferenceAlwaysSyncing(
+    std::string_view pref_name) const {
+  CHECK(base::FeatureList::IsEnabled(
+      syncer::kSyncSupportAlwaysSyncingPriorityPreferences));
+  // TODO(crbug.com/412602018): Consider renaming and using the
+  // `PrefSensitivity` enum instead, since it currently helps with something
+  // similar in regards to history opt-in and the options would be mutually
+  // exclusive.
+  static constexpr auto kAlwaysSyncingPrefsAllowlist =
+      base::MakeFixedFlatSet<std::string_view>(
+          {kSyncableAlwaysSyncingPriorityPrefForTesting});
+  return kAlwaysSyncingPrefsAllowlist.contains(pref_name);
 }
 
 }  // namespace sync_preferences

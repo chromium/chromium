@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Pokrenite novi zadatak ili primite pomoć u procesu rada.</translation>
 <translation id="1054048317165655285">Dovršite postavljanje na telefonu</translation>
 <translation id="1054153489933238809">Otvori izvornu sl&amp;iku na novoj kartici</translation>
-<translation id="1054187194995068149">Pozdrav. Ovo je pregled</translation>
 <translation id="1054502481659725522">Aplikacije, web-lokacije i usluge sustava mogu upotrebljavati vašu lokaciju</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od 1 tjedna}one{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} tjedna}few{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} tjedna}other{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} tjedana}}</translation>
 <translation id="1055606969515662982">Pomoću daljinskog upravljača zaustavite emitiranje</translation>

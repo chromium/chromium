@@ -28,10 +28,10 @@ class NativeMessagingHostListPolicyHandler : public policy::ListPolicyHandler {
  protected:
   // ListPolicyHandler methods:
 
-  // Checks whether |value| contains a valid host name (or a wildcard).
+  // Checks whether `value` contains a valid host name (or a wildcard).
   bool CheckListEntry(const base::Value& value) override;
 
-  // Sets |prefs| at pref_path() to |filtered_list|.
+  // Sets `prefs` at pref_path() to `filtered_list`.
   void ApplyList(base::Value::List filtered_list, PrefValueMap* prefs) override;
 
  private:

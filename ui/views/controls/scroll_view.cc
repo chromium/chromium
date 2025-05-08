@@ -834,6 +834,15 @@ void ScrollView::Layout(PassKey) {
   if (contents_) {
     UpdateOverflowIndicatorVisibility(CurrentOffset());
   }
+
+  // If registered, run the post-layout callback. This is used to move the
+  // scroll view contents to the appropriate position that's different from the
+  // position assigned above.
+  if (post_layout_callback_) {
+    const bool layout_needed = needs_layout();
+    post_layout_callback_.Run(this);
+    CHECK_EQ(layout_needed, needs_layout());
+  }
 }
 
 bool ScrollView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -1360,6 +1369,11 @@ void ScrollView::UpdateOverflowIndicatorVisibility(const gfx::PointF& offset) {
       more_content_right_.get(),
       !draw_border_ && IsHorizontalScrollEnabled() && !vert_sb_->GetVisible() &&
           offset.x() < horiz_sb_->GetMaxPosition() && draw_overflow_indicator_);
+}
+
+void ScrollView::RegisterPostLayoutCallback(
+    base::RepeatingCallback<void(ScrollView*)> post_layout_callback) {
+  post_layout_callback_ = post_layout_callback;
 }
 
 View* ScrollView::GetContentsViewportForTest() const {

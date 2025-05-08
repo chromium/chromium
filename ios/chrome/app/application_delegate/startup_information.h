@@ -18,7 +18,7 @@ class TimeTicks;
 @property(nonatomic, assign) BOOL isFirstRun;
 // Whether the current session began from a cold start. NO if the app has
 // entered the background at least once since start up.
-@property(nonatomic) BOOL isColdStart;
+@property(nonatomic, assign) BOOL isColdStart;
 // YES if the application is getting terminated.
 @property(nonatomic, readonly) BOOL isTerminating;
 // Start of the application, used for UMA.

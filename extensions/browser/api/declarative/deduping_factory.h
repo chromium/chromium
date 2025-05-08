@@ -19,7 +19,7 @@
 
 namespace extensions {
 
-// Factory class that stores a cache of the last |N| created objects of each
+// Factory class that stores a cache of the last `N` created objects of each
 // kind. These objects need to be immutable, refcounted objects that are derived
 // from BaseClassT. The objects do not need to be RefCountedThreadSafe. If a new
 // instance of an object is created that is identical to a pre-existing object,
@@ -35,11 +35,11 @@ namespace extensions {
 template <typename BaseClassT, typename ValueT>
 class DedupingFactory {
  public:
-  // Factory methods for BaseClass instances. |value| contains e.g. the json
-  // dictionary that describes the object to be instantiated. |error| is used
+  // Factory methods for BaseClass instances. `value` contains e.g. the json
+  // dictionary that describes the object to be instantiated. `error` is used
   // to return error messages in case the extension passed an action that was
-  // syntactically correct but semantically incorrect. |bad_message| is set to
-  // true in case |dict| does not confirm to the validated JSON specification.
+  // syntactically correct but semantically incorrect. `bad_message` is set to
+  // true in case `dict` does not confirm to the validated JSON specification.
   typedef scoped_refptr<const BaseClassT> (*FactoryMethod)(
       const std::string& instance_type,
       ValueT /* value */,
@@ -55,7 +55,7 @@ class DedupingFactory {
     IS_NOT_PARAMETERIZED
   };
 
-  // Creates a DedupingFactory with a MRU cache of size |max_number_prototypes|
+  // Creates a DedupingFactory with a MRU cache of size `max_number_prototypes`
   // per instance_type. If we find a match within the cache, the factory reuses
   // that instance instead of creating a new one. The cache size should not be
   // too large because we probe linearly whether an element is in the cache.

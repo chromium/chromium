@@ -5,10 +5,10 @@
 #include "chromeos/printing/uri.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
-#include "base/no_destructor.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/printing/uri_impl.h"
@@ -103,16 +103,13 @@ bool HasNonASCII(const std::string& str) {
 }
 
 // The map with pairs scheme -> default_port.
-const base::flat_map<std::string, int>& GetDefaultPorts() {
-  static const base::NoDestructor<base::flat_map<std::string, int>>
-      kDefaultPorts({{"ipp", 631},
-                     {"ipps", 443},
-                     {"http", 80},
-                     {"https", 443},
-                     {"lpd", 515},
-                     {"socket", 9100}});
-  return *kDefaultPorts;
-}
+constexpr auto kDefaultPorts =
+    base::MakeFixedFlatMap<std::string_view, int>({{"ipp", 631},
+                                                   {"ipps", 443},
+                                                   {"http", 80},
+                                                   {"https", 443},
+                                                   {"lpd", 515},
+                                                   {"socket", 9100}});
 
 }  //  namespace
 
@@ -139,8 +136,8 @@ Uri::Uri(std::string_view uri) : pim_(std::make_unique<Pim>()) {
 
 // static
 int Uri::GetDefaultPort(const std::string& scheme) {
-  auto it = GetDefaultPorts().find(scheme);
-  return it != GetDefaultPorts().end() ? it->second : -1;
+  auto it = kDefaultPorts.find(scheme);
+  return it != kDefaultPorts.end() ? it->second : -1;
 }
 
 Uri::Uri(const Uri& uri) : pim_(std::make_unique<Pim>(*uri.pim_)) {}
@@ -433,9 +430,10 @@ bool Uri::ShouldPrintPort(bool always_print_port) const {
   if (always_print_port)
     return true;
 
-  auto it = GetDefaultPorts().find(pim_->scheme());
-  if (it == GetDefaultPorts().end())
+  auto it = kDefaultPorts.find(pim_->scheme());
+  if (it == kDefaultPorts.end()) {
     return true;
+  }
 
   return it->second != pim_->port();
 }

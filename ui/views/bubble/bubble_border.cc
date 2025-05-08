@@ -283,10 +283,6 @@ gfx::Insets BubbleBorder::GetBorderAndShadowInsets(
              GetShadowValues(nullptr, elevation, shadow_type));
 }
 
-void BubbleBorder::SetCornerRadius(int corner_radius) {
-  corner_radius_ = corner_radius;
-}
-
 gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
                                   const gfx::Size& contents_size) const {
   const gfx::Size size(GetSizeForContentsSize(contents_size));
@@ -673,13 +669,7 @@ void BubbleBorder::CalculateVisibleArrowRect(
 SkRRect BubbleBorder::GetClientRect(const View& view) const {
   gfx::RectF bounds(view.GetLocalBounds());
   bounds.Inset(gfx::InsetsF(GetInsets()));
-
-  // Give precedence to customized rounded corners when non-empty.
-  const gfx::RoundedCornersF corners =
-      rounded_corners_.IsEmpty() ? gfx::RoundedCornersF(corner_radius_)
-                                 : rounded_corners_;
-
-  return SkRRect(gfx::RRectF(bounds, corners));
+  return SkRRect(gfx::RRectF(bounds, rounded_corners_));
 }
 
 bool BubbleBorder::ShouldDrawStroke() const {
@@ -747,13 +737,8 @@ void BubbleBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
   gfx::RectF bounds(view->GetLocalBounds());
   bounds.Inset(gfx::InsetsF(border_->GetInsets()));
 
-  // Give precedence to customized rounded corners when non-empty.
-  const gfx::RoundedCornersF corners =
-      border_->rounded_corners().IsEmpty()
-          ? gfx::RoundedCornersF(border_->corner_radius())
-          : border_->rounded_corners();
-
-  canvas->sk_canvas()->drawRRect(SkRRect(gfx::RRectF(bounds, corners)), flags);
+  canvas->sk_canvas()->drawRRect(
+      SkRRect(gfx::RRectF(bounds, border_->rounded_corners())), flags);
 }
 
 }  // namespace views

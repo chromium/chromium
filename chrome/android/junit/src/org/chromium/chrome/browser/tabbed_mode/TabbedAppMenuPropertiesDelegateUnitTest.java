@@ -114,6 +114,7 @@ import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -139,7 +140,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
-    ChromeFeatureList.READER_MODE_DEV_ENTRY_POINT
+    DomDistillerFeatures.READER_MODE_IMPROVEMENTS
 })
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.
@@ -1096,6 +1097,34 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         MenuItem item = menu.findItem(R.id.new_incognito_tab_menu_id);
         assertTrue(item.isEnabled());
+    }
+
+    @Test
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_IMPROVEMENTS + ":always_on_entry_point/false")
+    public void readerModeEntryPointDisabled() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
+
+        Menu menu = createTestMenu();
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        MenuItem item = menu.findItem(R.id.reader_mode_menu_id);
+        assertFalse(item.isVisible());
+    }
+
+    @Test
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_IMPROVEMENTS + ":always_on_entry_point/true")
+    public void readerModeEntryPointEnabled() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
+
+        Menu menu = createTestMenu();
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        MenuItem item = menu.findItem(R.id.reader_mode_menu_id);
+        assertTrue(item.isVisible());
     }
 
     private Menu setUpMenuWithIncognitoReauthPage(boolean isShowing) {

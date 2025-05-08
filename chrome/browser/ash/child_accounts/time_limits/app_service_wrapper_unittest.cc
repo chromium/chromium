@@ -107,13 +107,11 @@ class AppServiceWrapperTest : public ::testing::Test {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableDefaultApps);
 
-    extensions::TestExtensionSystem* extension_system(
-        static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(&profile_)));
-    extension_service_ = extension_system->CreateExtensionService(
+    auto* extension_system(static_cast<extensions::TestExtensionSystem*>(
+        extensions::ExtensionSystem::Get(&profile_)));
+    auto* extension_service = extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    extension_service_->Init();
-    extension_registrar_ = extensions::ExtensionRegistrar::Get(&profile_);
+    extension_service->Init();
 
     web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile_);
 
@@ -126,7 +124,8 @@ class AppServiceWrapperTest : public ::testing::Test {
     // Install Chrome.
     scoped_refptr<extensions::Extension> chrome = CreateExtension(
         app_constants::kChromeAppId, kExtensionNameChrome, kExtensionAppUrl);
-    extension_registrar_->AddComponentExtension(chrome.get());
+    extensions::ExtensionRegistrar::Get(&profile_)->AddComponentExtension(
+        chrome.get());
     task_environment_.RunUntilIdle();
   }
 
@@ -198,7 +197,7 @@ class AppServiceWrapperTest : public ::testing::Test {
 
     if (app_id.app_type() == apps::AppType::kChromeApp ||
         app_id.app_type() == apps::AppType::kWeb) {
-      extension_registrar_->RemoveExtension(
+      extensions::ExtensionRegistrar::Get(&profile_)->RemoveExtension(
           app_id.app_id(), extensions::UnloadedExtensionReason::UNINSTALL);
       task_environment_.RunUntilIdle();
       return;
@@ -227,12 +226,13 @@ class AppServiceWrapperTest : public ::testing::Test {
 
     if (app_id.app_type() == apps::AppType::kChromeApp ||
         app_id.app_type() == apps::AppType::kWeb) {
+      auto* registrar = extensions::ExtensionRegistrar::Get(&profile_);
       if (disabled) {
-        extension_service_->DisableExtension(
+        registrar->DisableExtension(
             app_id.app_id(),
-            extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY);
+            {extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY});
       } else {
-        extension_service_->EnableExtension(app_id.app_id());
+        registrar->EnableExtension(app_id.app_id());
       }
       task_environment_.RunUntilIdle();
       return;
@@ -246,9 +246,6 @@ class AppServiceWrapperTest : public ::testing::Test {
   TestingProfile profile_;
   apps::AppServiceTest app_service_test_;
   ArcAppTest arc_test_;
-
-  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
-  raw_ptr<extensions::ExtensionRegistrar> extension_registrar_ = nullptr;
 
   AppServiceWrapper tested_wrapper_{&profile_};
   MockListener test_listener_;

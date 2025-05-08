@@ -32,7 +32,14 @@ class ReauthTabHelperTest : public ChromeRenderViewHostTestHarness {
     tab_helper_ = ReauthTabHelper::FromWebContents(web_contents());
   }
 
+  void TearDown() override {
+    ClearTabHelper();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
   ReauthTabHelper* tab_helper() { return tab_helper_; }
+
+  void ClearTabHelper() { tab_helper_ = nullptr; }
 
   base::MockOnceCallback<void(signin::ReauthResult)>* mock_callback() {
     return &mock_callback_;
@@ -41,7 +48,7 @@ class ReauthTabHelperTest : public ChromeRenderViewHostTestHarness {
   const GURL& reauth_url() { return reauth_url_; }
 
  private:
-  raw_ptr<ReauthTabHelper, DanglingUntriaged> tab_helper_ = nullptr;
+  raw_ptr<ReauthTabHelper> tab_helper_;
   base::MockOnceCallback<void(signin::ReauthResult)> mock_callback_;
   const GURL reauth_url_;
 };
@@ -152,6 +159,7 @@ TEST_F(ReauthTabHelperTest, NavigationToExternalOriginFailed) {
 // Tests the WebContents deletion.
 TEST_F(ReauthTabHelperTest, WebContentsDestroyed) {
   EXPECT_CALL(*mock_callback(), Run(signin::ReauthResult::kDismissedByUser));
+  ClearTabHelper();
   DeleteContents();
 }
 

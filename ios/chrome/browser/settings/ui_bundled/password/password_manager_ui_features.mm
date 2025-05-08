@@ -12,10 +12,14 @@ BASE_FEATURE(kIOSEnablePasscodeSettings,
 
 BASE_FEATURE(kIOSEnableDeleteAllSavedCredentials,
              "IOSEnableDeleteAllSavedCredentials",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSuggestStrongPasswordInAddPassword,
              "SuggestStrongPasswordInAddPassword",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSEnablePasswordManagerTrustedVaultWidget,
+             "IOSEnablePasswordManagerTrustedVaultWidget",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPasscodeSettingsEnabled() {
@@ -24,6 +28,11 @@ bool IsPasscodeSettingsEnabled() {
 
 bool IsSuggestStrongPasswordInAddPasswordEnabled() {
   return base::FeatureList::IsEnabled(kSuggestStrongPasswordInAddPassword);
+}
+
+bool IsPasswordManagerTrustedVaultWidgetEnabled() {
+  return base::FeatureList::IsEnabled(
+      kIOSEnablePasswordManagerTrustedVaultWidget);
 }
 
 }  // namespace password_manager::features

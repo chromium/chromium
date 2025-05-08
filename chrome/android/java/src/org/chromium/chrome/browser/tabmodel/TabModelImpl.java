@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -574,10 +575,10 @@ public class TabModelImpl extends TabModelJniBridge {
             tab.setClosing(true);
         }
         allowUndo &= supportsPendingClosures();
+        for (TabModelObserver obs : mObservers) obs.willCloseMultipleTabs(allowUndo, tabs);
         if (!allowUndo) {
             notifyOnFinishingMultipleTabClosure(tabs, saveToTabRestoreService);
         }
-        for (TabModelObserver obs : mObservers) obs.willCloseMultipleTabs(allowUndo, tabs);
         for (Tab tab : tabs) {
             // Pass a null undoRunnable here as we want to attach it to the latter tab closure
             // event.
@@ -952,10 +953,17 @@ public class TabModelImpl extends TabModelJniBridge {
         switch (disposition) {
             case WindowOpenDisposition.NEW_WINDOW: // fall through
             case WindowOpenDisposition.NEW_FOREGROUND_TAB:
+                tabLaunchType =
+                        parent.getTabGroupId() == null
+                                ? TabLaunchType.FROM_LONGPRESS_FOREGROUND
+                                : TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP;
                 break;
             case WindowOpenDisposition.NEW_POPUP: // fall through
             case WindowOpenDisposition.NEW_BACKGROUND_TAB:
-                tabLaunchType = TabLaunchType.FROM_LONGPRESS_BACKGROUND;
+                tabLaunchType =
+                        parent.getTabGroupId() == null
+                                ? TabLaunchType.FROM_LONGPRESS_BACKGROUND
+                                : TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP;
                 break;
             case WindowOpenDisposition.OFF_THE_RECORD:
                 incognito = true;
@@ -995,7 +1003,7 @@ public class TabModelImpl extends TabModelJniBridge {
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         parentTab.getContext(),
-                        MultiWindowUtils.INVALID_INSTANCE_ID,
+                        TabWindowManager.INVALID_WINDOW_ID,
                         /* preferNew= */ true,
                         /* openAdjacently= */ true,
                         /* addTrustedIntentExtras= */ true);

@@ -11,6 +11,7 @@ import type {BrailleDisplayState, BrailleKeyEvent} from '../../common/braille/br
 import {BrailleKeyCommand} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {SettingsManager} from '../../common/settings_manager.js';
+import {CaptionsHandler} from '../captions_handler.js';
 
 import type {BrailleCaptionsListener} from './braille_captions_background.js';
 import {BrailleCaptionsBackground} from './braille_captions_background.js';
@@ -448,6 +449,8 @@ export class BrailleDisplayManager implements BrailleCaptionsListener {
   panLeft(): void {
     if (this.panStrategy_.previous()) {
       this.refresh_();
+    } else if (CaptionsHandler.inCaptions()) {
+      CaptionsHandler.instance.previous();
     } else {
       this.commandListener_(
           {command: BrailleKeyCommand.PAN_LEFT}, this.content_);
@@ -462,6 +465,8 @@ export class BrailleDisplayManager implements BrailleCaptionsListener {
   panRight(): void {
     if (this.panStrategy_.next()) {
       this.refresh_();
+    } else if (CaptionsHandler.inCaptions()) {
+      CaptionsHandler.instance.next();
     } else {
       this.commandListener_(
           {command: BrailleKeyCommand.PAN_RIGHT}, this.content_);

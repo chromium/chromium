@@ -32,9 +32,9 @@ class KioskDelegate;
 // this class should call ExtensionsBrowserClient::Set() with its instance.
 class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
  public:
-  // If provided, |main_context| must not be an incognito context.
+  // If provided, `main_context` must not be an incognito context.
   explicit TestExtensionsBrowserClient(content::BrowserContext* main_context);
-  // Alternate constructor allowing |main_context_| to be set later.
+  // Alternate constructor allowing `main_context_` to be set later.
   TestExtensionsBrowserClient();
   TestExtensionsBrowserClient(const TestExtensionsBrowserClient&) = delete;
   TestExtensionsBrowserClient& operator=(const TestExtensionsBrowserClient&) =
@@ -59,10 +59,10 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
       base::RepeatingCallback<update_client::UpdateClient*(void)> factory);
 
   // Sets the main browser context. Only call if a BrowserContext was not
-  // already provided. |main_context| must not be an incognito context.
+  // already provided. `main_context` must not be an incognito context.
   void SetMainContext(content::BrowserContext* main_context);
 
-  // Associates an incognito context with |main_context_|.
+  // Associates an incognito context with `main_context_`.
   void SetIncognitoContext(content::BrowserContext* incognito_context);
 
   // ExtensionsBrowserClient overrides:

@@ -27,7 +27,7 @@ suite('ButtonStripInteractiveTest', function() {
   // Tests that the print button is automatically focused when the destination
   // is ready.
   test('focus print on ready', function() {
-    const printButton = buttonStrip.shadowRoot!.querySelector('.action-button');
+    const printButton = buttonStrip.shadowRoot.querySelector('.action-button');
     assert(printButton);
     const whenFocusDone = eventToPromise('focus', printButton);
 

@@ -28,6 +28,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +41,7 @@ namespace ash {
 namespace {
 
 const base::TimeDelta kReLuanchDemoAppIdleDuration = base::Seconds(90);
+const base::TimeDelta kLogoutDelayMax = base::Minutes(90);
 
 const char kUser[] = "user@gmail.com";
 const AccountId kAccountId =
@@ -48,23 +50,17 @@ constexpr SkColor kWallpaperColor = SK_ColorMAGENTA;
 
 }  // namespace
 
-class DemoModeIdleHandlerTest : public ChromeAshTestBase {
+class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
  protected:
-  DemoModeIdleHandlerTest()
+  DemoModeIdleHandlerTestBase()
       : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME)),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     window_closer_ = std::make_unique<DemoModeWindowCloser>(
-        base::BindRepeating(&DemoModeIdleHandlerTest::MockLaunchDemoModeApp,
+        base::BindRepeating(&DemoModeIdleHandlerTestBase::MockLaunchDemoModeApp,
                             base::Unretained(this)));
-
-    // OK to unretained `this` since the life cycle of `demo_mode_idle_handler_`
-    // is the same as the tests.
-    demo_mode_idle_handler_ = std::make_unique<DemoModeIdleHandler>(
-        window_closer_.get(),
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   }
-  ~DemoModeIdleHandlerTest() override = default;
+  ~DemoModeIdleHandlerTestBase() override = default;
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
@@ -92,6 +88,12 @@ class DemoModeIdleHandlerTest : public ChromeAshTestBase {
     // to be not null. Once `metrics_recorder_` is created, it'll observe user
     // activity to set `first_user_activity_`.
     metrics_recorder_ = std::make_unique<DemoSessionMetricsRecorder>();
+
+    // OK to unretained `this` since the life cycle of `demo_mode_idle_handler_`
+    // is the same as the tests.
+    demo_mode_idle_handler_ = std::make_unique<DemoModeIdleHandler>(
+        window_closer_.get(),
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   }
 
   void TearDown() override {
@@ -122,6 +124,10 @@ class DemoModeIdleHandlerTest : public ChromeAshTestBase {
     return wallpaper_controller_;
   }
 
+  DemoModeIdleHandler* demo_mode_idle_handler() {
+    return demo_mode_idle_handler_.get();
+  }
+
  private:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
@@ -140,7 +146,19 @@ class DemoModeIdleHandlerTest : public ChromeAshTestBase {
   std::unique_ptr<DemoSessionMetricsRecorder> metrics_recorder_;
 };
 
+// DemoIdleHandler test for shopper session.
+class DemoModeIdleHandlerTest : public DemoModeIdleHandlerTestBase {
+  void SetUp() override {
+    DemoModeIdleHandlerTestBase::SetUp();
+    demo_mode::SetDoNothingWhenPowerIdle();
+  }
+};
+
 TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {
+  // Ensure MGS logout timer not started.
+  EXPECT_FALSE(
+      demo_mode_idle_handler()->GetMGSLogoutTimeoutForTest().has_value());
+
   // Initialize 2 browsers.
   std::unique_ptr<Browser> browser_1 = CreateBrowserWithTestWindowForParams(
       Browser::CreateParams(profile(), /*user_gesture=*/true));
@@ -273,6 +291,31 @@ TEST_F(DemoModeIdleHandlerTest, ReLaunchDemoApp) {
   FastForwardBy(kReLuanchDemoAppIdleDuration);
   // Expect app is not launched:
   EXPECT_EQ(get_launch_demo_app_count(), 2);
+}
+
+// DemoIdleHandler test for fallback MGS.
+class DemoModeIdleHandlerTestMGS : public DemoModeIdleHandlerTestBase {
+  void SetUp() override {
+    demo_mode::TurnOnScheduleLogoutForMGS();
+    DemoModeIdleHandlerTestBase::SetUp();
+  }
+};
+
+TEST_F(DemoModeIdleHandlerTestMGS, ScheduleLogout) {
+  // Ensure logout in `kLogoutDelayMax`.
+  FastForwardBy(kLogoutDelayMax);
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 1);
+}
+
+TEST_F(DemoModeIdleHandlerTestMGS, LogoutTimerResetOnUserActivity) {
+  // TODO(crbugs.com/355727308): `SimulateUserActivity` is not call synchronized
+  // here. Figure why.
+  demo_mode_idle_handler()->OnUserActivity(nullptr);
+  FastForwardBy(kReLuanchDemoAppIdleDuration);
+
+  // Expected the timer is reset.
+  EXPECT_FALSE(
+      demo_mode_idle_handler()->GetMGSLogoutTimeoutForTest().has_value());
 }
 
 }  // namespace ash

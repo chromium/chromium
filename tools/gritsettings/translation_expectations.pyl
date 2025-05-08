@@ -134,6 +134,7 @@
     "tools/grit/grit/testdata/buildinfo.grd": "Test data",
     "tools/grit/grit/testdata/chrome/app/generated_resources.grd": "Test data",
     "tools/grit/grit/testdata/substitute.grd": "Test data",
+    "tools/grit/grit/testdata/substitute_android.grd": "Test data",
     "tools/grit/grit/testdata/substitute_no_ids.grd": "Test data",
     "tools/grit/grit/testdata/substitute_tmpl.grd": "Test data",
     "tools/translation/testdata/not_translated.grd": "Test data",

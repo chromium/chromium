@@ -146,7 +146,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def _GetSlowTests(cls) -> expectations_parser.TestExpectations:
     if cls._slow_tests is None:
-      with open(SLOW_TESTS_FILE, 'r') as f:
+      with open(SLOW_TESTS_FILE, 'r', encoding='utf-8') as f:
         expectations = expectations_parser.TestExpectations()
         expectations.parse_tagged_list(f.read(), f.name)
         cls._slow_tests = expectations
@@ -323,12 +323,12 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls._SetClassVariablesFromOptions(options)
 
     if cls._test_list is None:
-      with open(TEST_LIST_FILE) as f:
+      with open(TEST_LIST_FILE, encoding='utf-8') as f:
         cls._test_list = [l for l in f.read().splitlines() if l]
 
     if cls._worker_type != WorkerType.NONE:
       if cls._worker_test_globs is None:
-        with open(WORKER_TEST_GLOB_FILE) as f:
+        with open(WORKER_TEST_GLOB_FILE, encoding='utf-8') as f:
           contents = f.read()
         cls._worker_test_globs = [l for l in contents.splitlines() if l]
 

@@ -224,6 +224,7 @@ public final class PrivacySandboxDialogTest {
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+    @DisabledTest(message = "https://crbug.com/414613581")
     public void renderEeaConsentV2() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
         launchDialog();
@@ -234,10 +235,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY
-    })
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS})
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     // TODO(crbug.com/381241999): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
@@ -250,25 +248,6 @@ public final class PrivacySandboxDialogTest {
         renderViewWithId(
                 R.id.privacy_sandbox_dialog,
                 "privacy_sandbox_eea_consent_dialog_v2_privacy_policy_link_shown");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
-    })
-    @DisabledTest(message = "https://crbug.com/399734809")
-    public void renderEeaConsentV2PrivacyPolicyDisabled() throws IOException {
-        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
-        launchDialog();
-        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
-        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
-        renderViewWithId(
-                R.id.privacy_sandbox_dialog,
-                "privacy_sandbox_eea_consent_dialog_v2_privacy_policy_link_not_shown");
     }
 
     @Test
@@ -292,7 +271,6 @@ public final class PrivacySandboxDialogTest {
     @Feature({"RenderTest"})
     @EnableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY,
         ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
     })
     @DisabledTest(message = "https://crbug.com/399734809")
@@ -308,25 +286,6 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
-    })
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
-    public void renderEeaConsentV2ContentParityPrivacyPolicyDisabled() throws IOException {
-        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
-        launchDialog();
-        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
-        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
-        renderViewWithId(
-                R.id.privacy_sandbox_dialog,
-                "privacy_sandbox_eea_consent_dialog_v2_content_parity_privacy_policy_link_not_shown");
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     // TODO(crbug.com/369540483): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
@@ -375,7 +334,6 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     // TODO(crbug.com/381241999): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
@@ -422,10 +380,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY
-    })
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS})
     public void renderEeaNoticeV2PrivacyPolicyEnabled() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
         launchDialog();
@@ -567,23 +522,6 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
-    public void renderEeaNoticeV2PrivacyPolicyDisabled() throws IOException {
-        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
-        launchDialog();
-        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
-        onView(withId(R.id.site_suggested_ads_dropdown_element))
-                .inRoot(isDialog())
-                .perform(scrollTo(), click());
-        renderViewWithId(
-                R.id.privacy_sandbox_dialog,
-                "privacy_sandbox_eea_notice_dialog_v2_privacy_policy_link_not_shown");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void renderEEANotice() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
@@ -653,30 +591,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
-    @DisabledTest(message = "https://crbug.com/383531831 - the test is flaky")
-    public void renderRowNoticeV2PrivacyPolicyDisabled() throws IOException {
-        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
-        launchDialog();
-        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
-        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
-        onView(withId(R.id.dropdown_container)).inRoot(isDialog()).check(matches(isDisplayed()));
-        onView(withId(R.id.privacy_sandbox_m1_notice_row_learn_more_description_5_v2))
-                .inRoot(isDialog())
-                .perform(scrollTo());
-        renderViewWithId(
-                R.id.privacy_sandbox_dialog,
-                "privacy_sandbox_row_notice_dialog_v2_privacy_policy_link_not_shown");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY
-    })
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS})
     @DisabledTest(message = "https://crbug.com/383473428 - the test is flaky")
     public void renderRowNoticeV2PrivacyPolicyEnabled() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);

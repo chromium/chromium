@@ -871,6 +871,15 @@ void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(
 
 void BluetoothDeviceFloss::OnDeviceConnectionFailed(
     FlossDBusClient::BtifStatus status) {
+  if (status == FlossDBusClient::BtifStatus::kTimeout) {
+    // If the connection failed due to timeout, avoid updating the connecting
+    // state, as the upper layers might retry the connection. Instead, wait for
+    // the connection to succeed, in which case we will record the success, or
+    // fail again, in which case the `connection_incomplete_timer_` will fire
+    // and record the same timeout failure anyway.
+    return;
+  }
+
   UpdateConnectingState(ConnectingState::kIdle,
                         FlossDBusClient::BtifStatusToConnectErrorCode(status));
 }

@@ -140,6 +140,10 @@ const CGFloat kSymbolSize = 20;
 
 - (void)disconnect {
   _identityManagerObserver = nil;
+  [_safeBrowsingEnhancedProtectionPreference stop];
+  [_safeBrowsingStandardProtectionPreference stop];
+  [_safeBrowsingExtendedReportingPreference stop];
+  [_passwordLeakCheckPreference stop];
 }
 
 #pragma mark - Properties

@@ -11,6 +11,7 @@
 
 #include <linux/input.h>
 
+#include <array>
 #include <cstring>
 
 #include "base/containers/fixed_flat_set.h"
@@ -436,12 +437,14 @@ void AssignBitset(const unsigned long* src,
 }
 
 bool IsDenylistedAbsoluteMouseDevice(const input_id& id) {
-  static constexpr struct {
+  struct USBLegacyDenyListedDevices {
     uint16_t vid;
     uint16_t pid;
-  } kUSBLegacyDenyListedDevices[] = {
-      {0x222a, 0x0001},  // ILITEK ILITEK-TP
   };
+  constexpr static auto kUSBLegacyDenyListedDevices =
+      std::to_array<USBLegacyDenyListedDevices>({
+          {0x222a, 0x0001},  // ILITEK ILITEK-TP
+      });
 
   for (size_t i = 0; i < std::size(kUSBLegacyDenyListedDevices); ++i) {
     if (id.vendor == kUSBLegacyDenyListedDevices[i].vid &&
@@ -966,26 +969,28 @@ bool EventDeviceInfo::SupportsRumble() const {
 
 // static
 ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
-  static constexpr struct {
+  struct USBInternalDevices {
     uint16_t vid;
     uint16_t pid;
-  } kUSBInternalDevices[] = {
-      {0x18d1, 0x502b},  // Google, Hammer PID (soraka)
-      {0x18d1, 0x5030},  // Google, Whiskers PID (nocturne)
-      {0x18d1, 0x503c},  // Google, Masterball PID (krane) // nocheck
-      {0x18d1, 0x503d},  // Google, Magnemite PID (kodama)
-      {0x18d1, 0x5044},  // Google, Moonball PID (kakadu)
-      {0x18d1, 0x504c},  // Google, Zed PID (coachz)
-      {0x18d1, 0x5050},  // Google, Don PID (katsu)
-      {0x18d1, 0x5052},  // Google, Star PID (homestar)
-      {0x18d1, 0x5056},  // Google, bland PID (mrbland)
-      {0x18d1, 0x5057},  // Google, eel PID (wormdingler)
-      {0x18d1, 0x505B},  // Google, Duck PID (quackingstick)
-      {0x18d1, 0x5061},  // Google, Jewel PID (starmie)
-      {0x18d1, 0x5067},  // Google, Spikyrock (wugtrio)
-      {0x18d1, 0x5074},  // Google, Whitebeard (wyrdeer)
-      {0x1fd2, 0x8103},  // LG, Internal TouchScreen PID
   };
+  constexpr static auto kUSBInternalDevices =
+      std::to_array<USBInternalDevices>({
+          {0x18d1, 0x502b},  // Google, Hammer PID (soraka)
+          {0x18d1, 0x5030},  // Google, Whiskers PID (nocturne)
+          {0x18d1, 0x503c},  // Google, Masterball PID (krane) // nocheck
+          {0x18d1, 0x503d},  // Google, Magnemite PID (kodama)
+          {0x18d1, 0x5044},  // Google, Moonball PID (kakadu)
+          {0x18d1, 0x504c},  // Google, Zed PID (coachz)
+          {0x18d1, 0x5050},  // Google, Don PID (katsu)
+          {0x18d1, 0x5052},  // Google, Star PID (homestar)
+          {0x18d1, 0x5056},  // Google, bland PID (mrbland)
+          {0x18d1, 0x5057},  // Google, eel PID (wormdingler)
+          {0x18d1, 0x505B},  // Google, Duck PID (quackingstick)
+          {0x18d1, 0x5061},  // Google, Jewel PID (starmie)
+          {0x18d1, 0x5067},  // Google, Spikyrock (wugtrio)
+          {0x18d1, 0x5074},  // Google, Whitebeard (wyrdeer)
+          {0x1fd2, 0x8103},  // LG, Internal TouchScreen PID
+      });
 
   if (id.bustype == BUS_USB) {
     for (size_t i = 0; i < std::size(kUSBInternalDevices); ++i) {

@@ -93,6 +93,10 @@ class WebUIBackgroundContextMenu : public ui::SimpleMenuModel::Delegate,
         accelerator_provider_(accelerator_provider) {}
   ~WebUIBackgroundContextMenu() override = default;
 
+  bool IsCommandIdEnabled(int command_id) const override {
+    return chrome::IsCommandEnabled(browser_, command_id);
+  }
+
   void ExecuteCommand(int command_id, int event_flags) override {
     chrome::ExecuteCommand(browser_, command_id);
   }

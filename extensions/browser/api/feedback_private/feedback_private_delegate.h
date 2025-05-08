@@ -40,7 +40,7 @@ class FeedbackPrivateDelegate {
 
   // Returns a dictionary of localized strings for the feedback component
   // extension.
-  // Set |from_crash| to customize strings when the feedback UI was initiated
+  // Set `from_crash` to customize strings when the feedback UI was initiated
   // from a "sad tab" crash.
   virtual base::Value::Dict GetStrings(content::BrowserContext* browser_context,
                                        bool from_crash) const = 0;
@@ -57,7 +57,7 @@ class FeedbackPrivateDelegate {
   // Gets logs that aren't passed to the sendFeedback function, but should be
   // included in the feedback report. These currently consist of the Intel Wi-Fi
   // debug logs (if they exist).
-  // Modifies |feedback_data| and passes it on to |callback|.
+  // Modifies `feedback_data` and passes it on to `callback`.
   virtual void FetchExtraLogs(
       scoped_refptr<feedback::FeedbackData> feedback_data,
       FetchExtraLogsCallback callback) const = 0;
@@ -76,7 +76,7 @@ class FeedbackPrivateDelegate {
   // Called if sending the feedback report was delayed.
   virtual void NotifyFeedbackDelayed() const = 0;
 
-  // Returns the uploader associated with |context| which is used to upload
+  // Returns the uploader associated with `context` which is used to upload
   // feedback reports to the feedback server.
   virtual feedback::FeedbackUploader* GetFeedbackUploaderForContext(
       content::BrowserContext* context) const = 0;

@@ -24,7 +24,6 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
       std::unique_ptr<SecurityInterstitialControllerClient> controller_client,
       const security_interstitials::https_only_mode::HttpInterstitialState&
           interstitial_state,
-      bool balanced_mode,
       MetricsCallback metrics_callback);
 
   static const SecurityInterstitialPage::TypeID kTypeForTesting;
@@ -47,7 +46,6 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
   bool user_made_decision_ = false;
   const security_interstitials::https_only_mode::HttpInterstitialState
       interstitial_state_;
-  bool new_interstitial_enabled_ = false;
   MetricsCallback metrics_callback_;
   bool ukm_recorded_ = false;
 };

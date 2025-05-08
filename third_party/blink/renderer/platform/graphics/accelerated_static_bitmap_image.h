@@ -129,12 +129,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   gfx::Size GetSize() const override { return size_; }
   SkAlphaType GetAlphaType() const override { return alpha_type_; }
-  SkColorType GetSkColorType() const override {
-    return viz::ToClosestSkColorType(format_);
-  }
-  sk_sp<SkColorSpace> GetSkColorSpace() const override {
-    return color_space_.ToSkColorSpace();
-  }
   gfx::ColorSpace GetColorSpace() const override { return color_space_; }
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return format_;

@@ -27,6 +27,7 @@ namespace ash {
 
 class SnapGroup;
 class SnapGroupObserver;
+class SplitViewDivider;
 
 // Works as the centralized place to manage the `SnapGroup`. A single instance
 // of this class will be created and owned by `Shell`. It controls the creation
@@ -92,6 +93,9 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
 
   // Returns the topmost snap group in unminimized state.
   SnapGroup* GetTopmostSnapGroup() const;
+
+  // Returns the snap group divider the `window` belongs to.
+  SplitViewDivider* GetSnapGroupDividerForWindow(const aura::Window* window);
 
   // Determines which windows can be used for snap-to-replace with keyboard
   // shortcut:

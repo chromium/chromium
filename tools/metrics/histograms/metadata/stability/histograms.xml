@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChildProcess.Launched.UtilityProcessHash"
-    enum="UtilityProcessNameHash" expires_after="2025-08-24">
+    enum="UtilityProcessNameHash" expires_after="2025-10-26">
   <owner>wfh@chromium.org</owner>
   <summary>
     Count of child utility process launches, bucketed by the hash of their
@@ -151,9 +151,9 @@ chromium-metrics-reviews@google.com.
     Details: {KillType}
   </summary>
   <token key="KillType">
-    <variant name="Intentional"
+    <variant name="IntentionalKill"
         summary="Intentionally killed by the browser process"/>
-    <variant name="Oom"
+    <variant name="OOM"
         summary="Killed because of out of memory. All the non-clean exits
                  that is neither a crash nor requested by the browser or the
                  renderer are classified as out of memory."/>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.RendererCrash" enum="Boolean"
-    expires_after="2025-08-24">
+    expires_after="2025-10-26">
   <owner>wnwen@chromium.org</owner>
   <summary>
     Counts renderer crashes including OOMs. Android only. Mirrors old stability
@@ -371,7 +371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.ChildFrameCrash.Visibility" enum="CrashVisibility"
-    expires_after="2025-08-24">
+    expires_after="2025-10-26">
   <owner>alexmos@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -615,7 +615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.OSVersion" enum="VersionComparison"
-    expires_after="2025-05-01">
+    expires_after="2025-07-27">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -699,7 +699,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.MobileSessionShutdownType2"
-    enum="MobileSessionShutdownType" expires_after="2025-08-24">
+    enum="MobileSessionShutdownType" expires_after="2025-10-26">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>

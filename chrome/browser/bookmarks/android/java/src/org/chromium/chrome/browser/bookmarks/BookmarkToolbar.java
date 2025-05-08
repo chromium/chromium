@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MenuItem;
@@ -14,6 +16,8 @@ import androidx.annotation.IdRes;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MenuCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.util.ToolbarUtils;
@@ -28,9 +32,10 @@ import java.util.function.Function;
  * Main toolbar of bookmark UI. It is responsible for displaying title and buttons associated with
  * the current context.
  */
+@NullMarked
 public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         implements OnMenuItemClickListener, OnClickListener {
-    private SelectionDelegate<BookmarkId> mSelectionDelegate;
+    private @Nullable SelectionDelegate<BookmarkId> mSelectionDelegate;
 
     private boolean mEditButtonVisible;
     private boolean mNewFolderButtonVisible;
@@ -42,12 +47,12 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private boolean mSelectionShowMarkRead;
     private boolean mSelectionShowMarkUnread;
 
-    private List<Integer> mSortMenuIds;
+    private @Nullable List<Integer> mSortMenuIds;
     private boolean mSortMenuIdsEnabled;
 
-    private Runnable mNavigateBackRunnable;
-    private Function<Integer, Boolean> mMenuIdClickedFunction;
-    private View mNextFocusableView;
+    private @Nullable Runnable mNavigateBackRunnable;
+    private @Nullable Function<Integer, Boolean> mMenuIdClickedFunction;
+    private @Nullable View mNextFocusableView;
 
     public BookmarkToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -55,7 +60,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
         inflateMenu(R.menu.bookmark_toolbar_menu_improved);
         MenuCompat.setGroupDividerEnabled(
-                getMenu().findItem(R.id.normal_options_submenu).getSubMenu(), true);
+                assumeNonNull(getMenu().findItem(R.id.normal_options_submenu).getSubMenu()), true);
 
         setOnMenuItemClickListener(this);
     }
@@ -154,7 +159,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
     void setSortMenuIdsEnabled(boolean enabled) {
         mSortMenuIdsEnabled = enabled;
-        for (Integer id : mSortMenuIds) {
+        for (Integer id : assumeNonNull(mSortMenuIds)) {
             getMenu().findItem(id).setEnabled(enabled);
         }
     }
@@ -172,7 +177,8 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     }
 
     void fakeSelectionStateChange() {
-        onSelectionStateChange(new ArrayList<>(mSelectionDelegate.getSelectedItems()));
+        onSelectionStateChange(
+                new ArrayList<>(assumeNonNull(mSelectionDelegate).getSelectedItems()));
     }
 
     void setNextFocusableView(View view) {
@@ -184,20 +190,20 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         hideOverflowMenu();
-        return mMenuIdClickedFunction.apply(menuItem.getItemId());
+        return assumeNonNull(mMenuIdClickedFunction).apply(menuItem.getItemId());
     }
 
     // SelectableListToolbar implementation.
 
     @Override
-    protected View getNextFocusForward() {
+    protected @Nullable View getNextFocusForward() {
         return mNextFocusableView;
     }
 
     @Override
     public void onNavigationBack() {
         // The navigation button shouldn't be visible unless the current folder is non-null.
-        mNavigateBackRunnable.run();
+        assumeNonNull(mNavigateBackRunnable).run();
     }
 
     @Override

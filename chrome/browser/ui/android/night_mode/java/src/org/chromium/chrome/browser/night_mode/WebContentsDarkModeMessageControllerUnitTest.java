@@ -447,20 +447,6 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     }
 
     @Test
-    public void testShowDialog_ClickTitleIcon() {
-        // Click on title icon.
-        WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
-        mModalDialogManager.clickButton(ButtonType.TITLE_ICON);
-
-        // Verify not dismissed.
-        Assert.assertNotNull(
-                "Shown dialog model should be non-null after clicking the title icon.",
-                mModalDialogManager.mShownDialogModel);
-        verify(mMockTracker, never()).dismissed(eq(OPT_OUT_FEATURE));
-    }
-
-    @Test
     public void testClickableSpan_SettingsLink() {
         AutoDarkClickableSpan clickableSpan = new AutoDarkClickableSpan(mMockActivity);
         clickableSpan.onClick(null);

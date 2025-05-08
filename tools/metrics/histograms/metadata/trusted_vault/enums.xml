@@ -33,37 +33,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Irrecoverable"/>
 </enum>
 
-<!-- LINT.IfChange(TrustedVaultDeviceRegistrationOutcome) -->
-
-<enum name="TrustedVaultDeviceRegistrationOutcome">
-  <int value="0" label="Success"/>
-  <int value="1" label="Already registered"/>
-  <int value="2" label="Local data obsolete"/>
-  <int value="3" label="Transient access token fetching error"/>
-  <int value="4" label="Persistent access token fetching error"/>
-  <int value="5" label="Primary account changed access token fetching error"/>
-  <int value="6" label="Network error"/>
-  <int value="7" label="Other error"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDeviceRegistrationOutcome) -->
-
-<!-- LINT.IfChange(TrustedVaultDeviceRegistrationState) -->
-
-<enum name="TrustedVaultDeviceRegistrationState">
-  <int value="0" label="Already registered V0. Removed on Desktop in 11/2024"/>
-  <int value="1" label="Local keys are stale"/>
-  <int value="2" label="Throttled client side"/>
-  <int value="3" label="Attempting registration with newly generated keys"/>
-  <int value="4" label="Attempting registration with preexisting keys"/>
-  <int value="5"
-      label="Attempting registration while having persistent authentication
-             error (deprecated)"/>
-  <int value="6" label="Already registered V1"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDeviceRegistrationState) -->
-
 <!-- LINT.IfChange(TrustedVaultDownloadKeysStatus) -->
 
 <enum name="TrustedVaultDownloadKeysStatus">
@@ -83,6 +52,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Corrupted local device registration"/>
   <int value="14" label="Aborted"/>
   <int value="15" label="Network error"/>
+  <int value="16" label="Key proof verification is not supported"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDownloadKeysStatus) -->
@@ -119,6 +89,50 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_connection.h:TrustedVaultRecoverabilityStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultRecoverKeysOutcome) -->
+
+<enum name="TrustedVaultRecoverKeysOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="No new keys"/>
+  <int value="2" label="Failure"/>
+  <int value="3" label="No primary account"/>
+  <int value="4" label="Aborted"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultRecoverKeysOutcome) -->
+
+<!-- LINT.IfChange(TrustedVaultRecoveryFactorRegistrationOutcome) -->
+
+<enum name="TrustedVaultRecoveryFactorRegistrationOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Already registered"/>
+  <int value="2" label="Local data obsolete"/>
+  <int value="3" label="Transient access token fetching error"/>
+  <int value="4" label="Persistent access token fetching error"/>
+  <int value="5" label="Primary account changed access token fetching error"/>
+  <int value="6" label="Network error"/>
+  <int value="7" label="Other error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultRecoveryFactorRegistrationOutcome) -->
+
+<!-- LINT.IfChange(TrustedVaultRecoveryFactorRegistrationState) -->
+
+<enum name="TrustedVaultRecoveryFactorRegistrationState">
+  <int value="0" label="Already registered V0. Removed on Desktop in 11/2024"/>
+  <int value="1" label="Local keys are stale"/>
+  <int value="2" label="Throttled client side"/>
+  <int value="3" label="Attempting registration with newly generated keys"/>
+  <int value="4" label="Attempting registration with preexisting keys"/>
+  <int value="5"
+      label="Attempting registration while having persistent authentication
+             error (deprecated)"/>
+  <int value="6" label="Already registered V1"/>
+  <int value="7" label="Registration with constant key isn't supported"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultRecoveryFactorRegistrationState) -->
 
 </enums>
 

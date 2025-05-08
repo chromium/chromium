@@ -11,7 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -24,6 +23,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_external_provider.h"
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   EXPECT_TRUE(GetUkmEntries().empty());
 
   // Re-enable the disabled extension.
-  extension_service()->EnableExtension(extension_id);
+  extension_registrar()->EnableExtension(extension_id);
 
   // The extension should be properly re-enabled, the disable reasons cleared,
   // and the extension should be marked as explicitly re-enabled.
@@ -898,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   }
 
   // Re-enable the first MV2 extension (this is allowed in this phase).
-  extension_service()->EnableExtension(extension_id1);
+  extension_registrar()->EnableExtension(extension_id1);
 
   // The first extension should be properly re-enabled, the disable reasons
   // cleared, and the extension should be marked as explicitly re-enabled.

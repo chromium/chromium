@@ -10,6 +10,7 @@ import android.util.Log;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Simple object representing the bookmark id. */
 @NullMarked
@@ -56,10 +57,10 @@ public class BookmarkId {
 
     /**
      * @param s The bookmark id string (Eg: p1 for partner bookmark id 1).
-     * @return the Bookmark id from the string which is a concatenation of
-     *         bookmark type and the bookmark id.
+     * @return the Bookmark id from the string which is a concatenation of bookmark type and the
+     *     bookmark id.
      */
-    public static BookmarkId getBookmarkIdFromString(String s) {
+    public static BookmarkId getBookmarkIdFromString(@Nullable String s) {
         long id = ROOT_FOLDER_ID;
         @BookmarkType int type = BookmarkType.NORMAL;
         if (TextUtils.isEmpty(s)) return new BookmarkId(id, type);
@@ -116,7 +117,7 @@ public class BookmarkId {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (!(o instanceof BookmarkId)) return false;
         BookmarkId item = (BookmarkId) o;
         return (item.mId == mId && item.mType == mType);

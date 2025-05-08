@@ -217,8 +217,6 @@ files. You can follow the steps below for easier review.
   Tests that fail under Chrome for Testing
 * [LeakExpectations](../../third_party/blink/web_tests/LeakExpectations):
   Tests that have memory leaks under the leak checker.
-* [MobileTestExpectations](../../third_party/blink/web_tests/MobileTestExpectations)
-  Tests that fails under Chrome Android and Chrome WebView platform.
 * [MSANExpectations](../../third_party/blink/web_tests/MSANExpectations):
   Tests that fail under MSAN.
 * [NeverFixTests](../../third_party/blink/web_tests/NeverFixTests): Tests
@@ -284,8 +282,9 @@ The syntax of a line is roughly:
   applicable to that file.
 * If specified, modifiers can be one of `Fuchsia`, `Mac`, `Mac11`,
   `Mac11-arm64`, `Mac12`, `Mac12-arm64`, `Mac13`, `Mac13-arm64`, `Mac14`,
-  `Mac14-arm64`, `Mac15`, `Mac15-arm64`, `Linux`, `Chrome`, `Win`, `Win10.20h2`,
-  `Win11`, `iOS17-Simulator`, and, optionally, `Release`, or `Debug`.
+  `Mac14-arm64`, `Mac15`, `Mac15-arm64`, `Linux`, `Win`, `Win10.20h2`,
+  `Win11`, `Win11-arm64`, `Android`, `Webview`, `iOS17-Simulator`, and,
+  optionally, `Release`, or `Debug`.
   Check the `# tags: ...` comments [at the top of each
   file](/third_party/blink/web_tests/TestExpectations#1) to see which modifiers
   that file supports.

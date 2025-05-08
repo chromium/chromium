@@ -6,11 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_NAMED_LINE_COLLECTION_H_
 
 #include "third_party/blink/renderer/core/style/grid_enums.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/core/style/named_grid_lines_map.h"
 
 namespace blink {
 
-using NamedGridLinesMap = HashMap<String, Vector<wtf_size_t>>;
 struct ComputedGridTrackList;
 
 class GridNamedLineCollection {

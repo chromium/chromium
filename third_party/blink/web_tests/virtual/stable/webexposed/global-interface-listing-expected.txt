@@ -5229,6 +5229,14 @@ interface InputEvent : UIEvent
     getter isComposing
     method constructor
     method getTargetRanges
+interface IntegrityViolationReportBody : ReportBody
+    attribute @@toStringTag
+    getter blockedURL
+    getter destination
+    getter documentURL
+    getter reportOnly
+    method constructor
+    method toJSON
 interface IntersectionObserver
     attribute @@toStringTag
     getter delay
@@ -9702,6 +9710,10 @@ interface ViewTransitionTypeSet
     method has
     method keys
     method values
+interface Viewport
+    attribute @@toStringTag
+    getter segments
+    method constructor
 interface VirtualKeyboard : EventTarget
     attribute @@toStringTag
     getter boundingRect
@@ -12132,6 +12144,7 @@ namespace console
     getter toolbar
     getter top
     getter trustedTypes
+    getter viewport
     getter visualViewport
     getter window
     method NodeFilter
@@ -12346,6 +12359,7 @@ namespace console
     setter status
     setter statusbar
     setter toolbar
+    setter viewport
     setter visualViewport
 PASS successfullyParsed is true
 

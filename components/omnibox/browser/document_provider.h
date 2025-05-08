@@ -20,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -48,7 +49,7 @@ class DocumentProvider : public AutocompleteProvider {
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
-  void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
+  void Stop(AutocompleteStopReason stop_reason) override;
   void DeleteMatch(const AutocompleteMatch& match) override;
   void AddProviderInfo(ProvidersInfo* provider_info) const override;
 
@@ -93,7 +94,7 @@ class DocumentProvider : public AutocompleteProvider {
   static bool IsInputLikelyURL(const AutocompleteInput& input);
 
   // Called by |debouncer_|, queued when |start| is called.
-  void Run();
+  void Run(const AutocompleteInput& input);
 
   // Called when the network request for suggestions has completed.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,

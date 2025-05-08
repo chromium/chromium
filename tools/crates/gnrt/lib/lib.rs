@@ -15,5 +15,8 @@ pub mod inherit;
 pub mod manifest;
 pub mod paths;
 pub mod readme;
+pub mod target_triple {
+    include!(concat!(env!("OUT_DIR"), "/target_triple.rs"));
+}
 pub mod util;
 pub mod vet;

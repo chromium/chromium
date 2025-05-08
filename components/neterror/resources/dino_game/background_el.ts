@@ -6,6 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {IS_HIDPI} from './constants.js';
 import {Runner} from './offline.js';
+import type {SpriteDefinition} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
 import {getRandomNum, getRunnerImageSprite} from './utils.js';
 
@@ -15,20 +16,15 @@ import {getRandomNum, getRunnerImageSprite} from './utils.js';
  */
 function getSpriteConfigForType(type: string): BackgroundElSpriteConfig|null {
   if ('spriteDefinition' in Runner) {
-    const spriteDefinition =
-        Runner.spriteDefinition as RunnerBackgroundElSpriteConfig;
+    const spriteDefinition = Runner.spriteDefinition as SpriteDefinition;
     if (spriteDefinition) {
-      if (spriteDefinition.BACKGROUND_EL[type]) {
-        return spriteDefinition.BACKGROUND_EL[type];
+      if (spriteDefinition.backgroundEl[type]) {
+        return spriteDefinition.backgroundEl[type];
       }
     }
   }
 
   return null;
-}
-
-interface RunnerBackgroundElSpriteConfig {
-  BACKGROUND_EL: {[key: string]: BackgroundElSpriteConfig};
 }
 
 export interface BackgroundElSpriteConfig {
@@ -37,9 +33,12 @@ export interface BackgroundElSpriteConfig {
   offset: number;
   xPos: number;
   fixed: boolean;
-  fixedXPos: number;
-  fixedYPos1: number;
-  fixedYPos2: number;
+  // Only present when fixed is true.
+  fixedXPos?: number;
+  // Only present when fixed is true.
+  fixedYPos1?: number;
+  // Only present when fixed is true.
+  fixedYPos2?: number;
 }
 
 export interface BackgroundElConfig {
@@ -117,6 +116,7 @@ export class BackgroundEl {
    */
   init() {
     if (this.spriteConfig.fixed) {
+      assert(this.spriteConfig.fixedXPos);
       this.xPos = this.spriteConfig.fixedXPos;
     }
     this.yPos = getGlobalConfig().yPos - this.spriteConfig.height +

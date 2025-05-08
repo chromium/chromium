@@ -30,6 +30,7 @@ class AssociatedInterfaceRegistry;
 
 namespace content {
 class BrowserContext;
+class NavigationThrottleRegistry;
 }
 
 namespace service_manager {
@@ -88,9 +89,8 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
   void RegisterAssociatedInterfaceBindersForRenderFrameHost(
       content::RenderFrameHost& render_frame_host,
       blink::AssociatedInterfaceRegistry& associated_registry) override;
-  std::vector<std::unique_ptr<content::NavigationThrottle>>
-  CreateThrottlesForNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void CreateThrottlesForNavigation(
+      content::NavigationThrottleRegistry& registry) override;
   std::unique_ptr<content::NavigationUIData> GetNavigationUIData(
       content::NavigationHandle* navigation_handle) override;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -159,7 +159,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
   // Appends command line switches for a renderer process.
   void AppendRendererSwitches(base::CommandLine* command_line);
 
-  // Returns the extension or app associated with |site_instance| or NULL.
+  // Returns the extension or app associated with `site_instance` or NULL.
   const Extension* GetExtension(content::SiteInstance* site_instance);
 
   // Owned by content::BrowserMainLoop.

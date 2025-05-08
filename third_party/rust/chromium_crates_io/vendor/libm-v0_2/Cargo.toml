@@ -13,13 +13,9 @@
 edition = "2021"
 rust-version = "1.63"
 name = "libm"
-version = "0.2.11"
+version = "0.2.13"
 authors = ["Jorge Aparicio <jorge@japaric.io>"]
 build = "build.rs"
-exclude = [
-    "/ci/",
-    "/.github/workflows/",
-]
 autolib = false
 autobins = false
 autoexamples = false
@@ -33,20 +29,29 @@ keywords = [
     "math",
 ]
 categories = ["no-std"]
-license = "MIT AND (MIT OR Apache-2.0)"
-repository = "https://github.com/rust-lang/libm"
+license = "MIT"
+repository = "https://github.com/rust-lang/compiler-builtins"
 
-[profile.release]
-lto = "fat"
+[features]
+arch = []
+default = ["arch"]
+force-soft-floats = []
+unstable = [
+    "unstable-intrinsics",
+    "unstable-float",
+]
+unstable-float = []
+unstable-intrinsics = []
+unstable-public-internals = []
 
 [lib]
 name = "libm"
 path = "src/lib.rs"
 
 [dev-dependencies.no-panic]
-version = "0.1.30"
+version = "0.1.35"
 
-[features]
-default = []
-force-soft-floats = []
-unstable = []
+[lints.rust.unexpected_cfgs]
+level = "warn"
+priority = 0
+check-cfg = ['cfg(feature, values("compiler-builtins"))']

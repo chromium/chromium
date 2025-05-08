@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/android_info.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "net/url_request/url_request.h"
 
 #include <stdint.h>
 
@@ -18,6 +14,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/android/android_info.h"
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/compiler_specific.h"
@@ -113,6 +110,7 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/http_util.h"
+#include "net/http/no_vary_search_cache_storage_file_operations.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_source.h"
 #include "net/log/file_net_log_observer.h"
@@ -148,7 +146,6 @@
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/storage_access_status_cache.h"
-#include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
@@ -2743,40 +2740,13 @@ TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies_Redirect) {
   }
 
   // If redirect chains are considered:
-  // Verify that the Strict cookie may or may not be sent for a cross-scheme
-  // (same-registrable-domain) redirected top level navigation, depending on the
-  // status of Schemeful Same-Site. The Lax cookie is sent regardless, because
-  // this is a top-level navigation.
+  // Verify that the Strict cookie may not be sent for a cross-scheme
+  // (same-registrable-domain) redirected top level navigation. The Lax cookie
+  // is sent regardless, because this is a top-level navigation.
   //
   // If redirect chains are not considered:
   // Verify that both cookies are sent, because this is a top-level navigation.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(features::kSchemefulSameSite);
-    TestDelegate d;
-    GURL url = http_server.GetURL(
-        kHost, "/server-redirect?" +
-                   https_server.GetURL(kHost, "/echoheader?Cookie").spec());
-    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
-        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_isolation_info(
-        IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame,
-                              kHttpOrigin, kHttpOrigin, kHttpSiteForCookies));
-    req->set_first_party_url_policy(
-        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
-    req->set_site_for_cookies(kHttpSiteForCookies);
-    req->set_initiator(kOrigin);
-    req->Start();
-    d.RunUntilComplete();
-
-    EXPECT_EQ(2u, req->url_chain().size());
-    EXPECT_NE(std::string::npos,
-              d.data_received().find("StrictSameSiteCookie=1"));
-    EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(features::kSchemefulSameSite);
     TestDelegate d;
     GURL url = http_server.GetURL(
         kHost, "/server-redirect?" +
@@ -3436,39 +3406,9 @@ TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies_Redirect) {
     EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
   }
 
-  // Verify that SameSite cookies may or may not be set for a cross-scheme
-  // (same-registrable-domain) redirected subresource request, depending on the
-  // status of Schemeful Same-Site and whether redirect chains are considered.
+  // Verify that SameSite cookies may not be set for a cross-scheme
+  // (same-registrable-domain) redirected subresource request.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(features::kSchemefulSameSite);
-    TestDelegate d;
-    GURL set_cookie_url = https_server.GetURL(
-        kHost, "/set-cookie?Strict8=1;SameSite=Strict&Lax8=1;SameSite=Lax");
-    GURL url =
-        http_server.GetURL(kHost, "/server-redirect?" + set_cookie_url.spec());
-    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
-        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_isolation_info(
-        IsolationInfo::Create(IsolationInfo::RequestType::kOther, kHttpOrigin,
-                              kHttpOrigin, kHttpSiteForCookies));
-    req->set_first_party_url_policy(
-        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
-    req->set_site_for_cookies(kHttpSiteForCookies);
-    req->set_initiator(kOrigin);
-
-    expected_cookies += 2;
-    expected_set_cookie_count += 2;
-
-    req->Start();
-    d.RunUntilComplete();
-    EXPECT_EQ(expected_cookies,
-              static_cast<int>(GetAllCookies(&default_context()).size()));
-    EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(features::kSchemefulSameSite);
     TestDelegate d;
     GURL set_cookie_url = https_server.GetURL(
         kHost, "/set-cookie?Strict9=1;SameSite=Strict&Lax9=1;SameSite=Lax");
@@ -4015,15 +3955,15 @@ class URLRequestTestHTTP : public URLRequestTest {
   void HTTPUploadDataOperationTest(const std::string& method) {
     const int kMsgSize = 20000;  // multiple of 10
     const int kIterations = 50;
-    auto uploadBytes = base::HeapArray<char>::Uninit(kMsgSize);
-    char* ptr = uploadBytes.data();
+    auto upload_bytes = base::HeapArray<char>::Uninit(kMsgSize);
     char marker = 'a';
-    for (int idx = 0; idx < kMsgSize / 10; idx++) {
-      memcpy(ptr, "----------", 10);
-      ptr += 10;
+    const size_t kStrideSize = 10;
+    for (size_t idx = 0; idx < kMsgSize / kStrideSize; idx++) {
+      auto span =
+          upload_bytes.as_span().subspan(idx * kStrideSize, kStrideSize);
+      std::ranges::fill(span, '-');
       if (idx % 100 == 0) {
-        ptr--;
-        *ptr++ = marker;
+        span[kStrideSize - 1] = marker;
         if (++marker > 'z')
           marker = 'a';
       }
@@ -4037,7 +3977,7 @@ class URLRequestTestHTTP : public URLRequestTest {
       r->set_method(method);
 
       r->set_upload(
-          CreateSimpleUploadData(base::as_bytes(uploadBytes.as_span())));
+          CreateSimpleUploadData(base::as_bytes(upload_bytes.as_span())));
 
       r->Start();
       EXPECT_TRUE(r->is_pending());
@@ -4048,7 +3988,8 @@ class URLRequestTestHTTP : public URLRequestTest {
           << "request failed. Error: " << d.request_status();
 
       EXPECT_FALSE(d.received_data_before_response());
-      EXPECT_EQ(base::as_string_view(uploadBytes.as_span()), d.data_received());
+      EXPECT_EQ(base::as_string_view(upload_bytes.as_span()),
+                d.data_received());
     }
   }
 
@@ -4824,17 +4765,17 @@ TEST_F(URLRequestTestHTTP, GetTestLoadTiming) {
 namespace {
 
 // Sends the correct Content-Length matching the compressed length.
-const char kZippedContentLengthCompressed[] = "C";
+constexpr std::string_view kZippedContentLengthCompressed = "C";
 // Sends an incorrect Content-Length matching the uncompressed length.
-const char kZippedContentLengthUncompressed[] = "U";
+constexpr std::string_view kZippedContentLengthUncompressed = "U";
 // Sends an incorrect Content-Length shorter than the compressed length.
-const char kZippedContentLengthShort[] = "S";
+constexpr std::string_view kZippedContentLengthShort = "S";
 // Sends an incorrect Content-Length between the compressed and uncompressed
 // lengths.
-const char kZippedContentLengthMedium[] = "M";
+constexpr std::string_view kZippedContentLengthMedium = "M";
 // Sends an incorrect Content-Length larger than both compressed and
 // uncompressed lengths.
-const char kZippedContentLengthLong[] = "L";
+constexpr std::string_view kZippedContentLengthLong = "L";
 
 // Sends |compressed_content| which, when decoded with deflate, should have
 // length |uncompressed_length|. The Content-Length header will be sent based on
@@ -4890,7 +4831,7 @@ TEST_F(URLRequestTestHTTP, GetZippedTest) {
   ASSERT_TRUE(http_test_server()->Start());
 
   static const struct {
-    const char* parameter;
+    std::string_view parameter;
     bool expect_success;
   } kTests[] = {
       // Sending the compressed Content-Length is correct.
@@ -4932,7 +4873,7 @@ TEST_F(URLRequestTestHTTP, GetZippedTest) {
     if (test.expect_success) {
       EXPECT_EQ(OK, d.request_status())
           << " Parameter = \"" << test_file << "\"";
-      if (strcmp(test.parameter, kZippedContentLengthShort) == 0) {
+      if (test.parameter == kZippedContentLengthShort) {
         // When content length is smaller than both compressed length and
         // uncompressed length, HttpStreamParser might not read the full
         // response body.
@@ -8858,7 +8799,8 @@ TEST_F(URLRequestTestHTTP, NetworkSuspendTest) {
         network_layer->OnSuspend();
         std::unique_ptr<HttpTransactionFactory> factory =
             std::make_unique<HttpCache>(std::move(network_layer),
-                                        HttpCache::DefaultBackend::InMemory(0));
+                                        HttpCache::DefaultBackend::InMemory(0),
+                                        /*file_operations=*/nullptr);
         return factory;
       }));
   auto context = context_builder->Build();
@@ -13743,7 +13685,6 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, Retry) {
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(pattern));
-  network_delegate.set_is_storage_access_header_enabled(true);
   if (test.expect_retry) {
     // The network delegate is only consulted for the Storage Access status
     // during a retry; it should claim that storage access is active at that
@@ -13886,7 +13827,6 @@ TEST_F(StorageAccessHeaderURLRequestTest, RedirectPrioritizesRetryHeader) {
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true, false})));
-  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -13938,7 +13878,6 @@ TEST_F(StorageAccessHeaderURLRequestTest, AuthChallengeIgnoresRetryHeader) {
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true})));
-  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -13983,7 +13922,6 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true})));
-  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -14022,7 +13960,6 @@ TEST_F(StorageAccessHeaderURLRequestTest, SurvivesPostAuthRetries) {
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true})));
-  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -14056,37 +13993,6 @@ TEST_F(StorageAccessHeaderURLRequestTest, SurvivesPostAuthRetries) {
           CookieSettingOverrides(
               {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader})));
   EXPECT_TRUE(d.auth_required_called());
-}
-
-TEST_F(StorageAccessHeaderURLRequestTest, NoRetryWhenDisabled) {
-  set_response_sequence({ResponseKind::kOk});
-
-  auto context_builder = CreateTestURLRequestContextBuilder();
-  auto& network_delegate = *context_builder->set_network_delegate(
-      std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false})));
-  network_delegate.set_is_storage_access_header_enabled(false);
-  auto context = context_builder->Build();
-  TestDelegate d;
-  base::HistogramTester histogram_tester;
-
-  std::unique_ptr<URLRequest> req(context->CreateRequest(
-      http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-
-  req->Start();
-  d.RunUntilComplete();
-
-  // This expects 2 records for 1 request, since it should not have been
-  // retried.
-  EXPECT_THAT(network_delegate.cookie_setting_overrides_records(),
-              ElementsAre(CookieSettingOverrides(), CookieSettingOverrides()));
-  histogram_tester.ExpectUniqueSample(
-      "API.StorageAccessHeader.ActivateStorageAccessRetryOutcome",
-      /*sample=*/
-      net::cookie_util::ActivateStorageAccessRetryOutcome::
-          kFailureHeaderDisabled,
-      /*expected_bucket_count=*/1);
 }
 
 }  // namespace net

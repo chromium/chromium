@@ -948,6 +948,23 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
 
   Node* parent = nullptr;
 
+  // ::scroll-button and ::scroll-marker-group elements have a node parent that
+  // is the originating element. However, they are constructed as siblings of
+  // the originating element. This matches the layout relationship. So, for
+  // these specific elements, use the layout parent's node.
+  if ((node->IsScrollButtonPseudoElement() ||
+       node->IsScrollMarkerGroupPseudoElement()) &&
+      node->GetLayoutObject()) {
+    LayoutObject* parent_object = node->GetLayoutObject()->Parent();
+    // Find the nearest non-anonymous layout object ancestor.
+    while (parent_object && parent_object->IsAnonymous()) {
+      parent_object = parent_object->Parent();
+    }
+    if (parent_object) {
+      parent = parent_object->GetNode();
+    }
+  }
+
   // Use LayoutTreeBuilderTraversal::Parent(), which handles pseudo content.
   // This can return nullptr for a node that is never visited by
   // LayoutTreeBuilderTraversal's child traversal. For example, while an element
@@ -989,6 +1006,18 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
     return AXObject::GetMapForImage(image_element) == map_element
                ? image_element
                : nullptr;
+  }
+
+  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+    if (auto* input = DynamicTo<HTMLInputElement>(node)) {
+      if (auto* select = input->FirstAncestorSelectElement()) {
+        if (input->IsFirstTextInputInAncestorSelect() && input->IsTextField()) {
+          // The first descendant <input> in a <select> is reparented to be a
+          // direct child of the <select> in the a11y tree.
+          return select;
+        }
+      }
+    }
   }
 
   return CanComputeAsNaturalParent(parent) ? parent : nullptr;
@@ -2589,6 +2618,10 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       node_data->AddIntListAttribute(
           ax::mojom::blink::IntListAttribute::kControlsIds,
           {static_cast<int32_t>(listbox->AXObjectID())});
+    } else if (AXObject* scroller = GetControlsForOverflowNavigation()) {
+      node_data->AddIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kControlsIds,
+          {static_cast<int32_t>(scroller->AXObjectID())});
     }
   }
 
@@ -2682,6 +2715,17 @@ void AXObject::SerializeComputedDetailsRelation(
         ax::mojom::blink::IntListAttribute::kDetailsIds,
         {static_cast<int32_t>(positioned_obj->AXObjectID())});
     node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kCssAnchor);
+    return;
+  }
+
+  // Add aria-details for a scroll marker pseudo-element.
+  if (AXObject* marker_target = GetScrollMarkerTarget()) {
+    node_data->AddIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kDetailsIds,
+        {static_cast<int32_t>(marker_target->AXObjectID())});
+    node_data->SetDetailsFrom(
+        ax::mojom::blink::DetailsFrom::kCssScrollMarkerPseudoElement);
+    return;
   }
 }
 
@@ -2873,6 +2917,18 @@ AXObject* AXObject::GetPositionedObjectForAnchor(ui::AXNodeData* data) const {
   return positioned_obj;
 }
 
+AXObject* AXObject::GetScrollMarkerTarget() const {
+  if (!GetElement() || !GetElement()->IsScrollMarkerPseudoElement()) {
+    return nullptr;
+  }
+
+  // The parent element of a ::scroll-marker pseudo-element is the originating
+  // element containing or preceeding the details which is scrolled into view
+  // when you interact with the pseudo-element.
+  // https://www.w3.org/TR/css-overflow-5/#scroll-navigation
+  return AXObjectCache().Get(GetElement()->parentElement());
+}
+
 // Try to get an aria-controls for an <input role="combobox">, because it
 // helps identify focusable options in the listbox using activedescendant
 // detection, even though the focus is on the textbox and not on the listbox
@@ -2940,6 +2996,22 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() const {
   }
 
   return listbox_candidate;
+}
+
+AXObject* AXObject::GetControlsForOverflowNavigation() const {
+  if (!GetElement()) {
+    return nullptr;
+  }
+  if (!GetElement()->IsScrollButtonPseudoElement() &&
+      !GetElement()->IsScrollMarkerGroupPseudoElement()) {
+    return nullptr;
+  }
+
+  // The parent element of a ::scroll-button(*) or a ::scroll-marker-group
+  // is the originating scrolling container element which is scrolled
+  // (i.e. controlled) when you interact with these pseudo-element controls.
+  // https://www.w3.org/TR/css-overflow-5/#scroll-navigation
+  return AXObjectCache().Get(GetElement()->parentElement());
 }
 
 const AtomicString& AXObject::GetRoleStringForSerialization(
@@ -3952,7 +4024,7 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
       if (ignored_reasons) {
         if (!RuntimeEnabledFeatures::CSSInertEnabled()) {
           // With CSSInert disabled, the inert attribute causes the style to be
-          // IsInert. With CSSInert enabled, the inert attribute instead has
+          // IsHTMLInert. With CSSInert enabled, the inert attribute instead has
           // a UA style rule that sets the interactivity property, which
           // cascades along interactivity declarations from other sources, so it
           // does not make sense to look for InertRoot() separately. The
@@ -3969,8 +4041,7 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
             return true;
           }
         }
-        if (style->IsInert() &&
-            style->Interactivity() == EInteractivity::kAuto) {
+        if (style->IsHTMLInert()) {
           // HTML inertness is either forced by a modal dialog or a fullscreen
           // element (see AdjustStyleForInert).
           Document& document = GetNode()->GetDocument();
@@ -4694,16 +4765,31 @@ bool AXObject::ComputeCanSetFocusAttribute() {
       << "\n* LayoutObject: " << GetLayoutObject();
 
   // Focusable: an element is focusable if it is either mouse or keyboard
-  // focusable. An element is only mouse focusable if it has negative tabindex.
-  // An element is only keyboard focusable if it a scroller without tabindex and
-  // no focusable child. In the case of a scroll element without tabindex and
+  // focusable. Most elements that are mouse focusable are also keyboard
+  // focusable, but given a negative tabindex it is only mouse focusable.
+  if (elem->IsMouseFocusable(Element::UpdateBehavior::kNoneForAccessibility)) {
+    return true;
+  }
+
+  // Most keyboard focusable elements are also mouse focusable and already
+  // covered by the above mouse focusable check. However, an element can be
+  // only keyboard focusable if it a scroller without tabindex and no focusable
+  // child. In the case of a scroll element without tabindex and
   // with focusable child, this should return false.
   // Calling Element::SupportsFocus() is not enough because scroll elements
   // support focus, but are not always focusable.
-  return elem->IsMouseFocusable(
-             Element::UpdateBehavior::kNoneForAccessibility) ||
-         elem->IsKeyboardFocusableSlow(
-             Element::UpdateBehavior::kNoneForAccessibility);
+  // This is only done for screen readers, which need exact info on the
+  // focusable state, because we only are ensured to have a fully updated
+  // style and layout subtree for the slow traversals in that case.
+  // In the other cases, optimizing for performance is more important.
+  if (AXObjectCache().IsScreenReaderActive()) {
+    if (elem->IsKeyboardFocusableSlow(
+            Element::UpdateBehavior::kNoneForAccessibility)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool AXObject::CanSetSelectedAttribute() const {
@@ -5023,12 +5109,16 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
             style->Visibility() != EVisibility::kVisible);
   }
 
+  // ---- Rules for AXObjectswith no style ------
+
   Node* node = GetNode();
   if (!node)
     return false;
 
-  // content-visibility:hidden or content-visibility: auto.
-  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(node)) {
+  // For screen readers, check for situations involving content-visibility.
+  // For non-screen readers, display locked content is already pruned.
+  if (AXObjectCache().IsScreenReaderActive() &&
+      DisplayLockUtilities::IsDisplayLockedPreventingPaint(node)) {
     // Ensure contents of head, style and script are not exposed when
     // display-locked --the only time they are ever exposed is if author
     // explicitly makes them visible.
@@ -5037,9 +5127,12 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
     DCHECK(!Traversal<HTMLStyleElement>::FirstAncestorOrSelf(*node)) << node;
     DCHECK(!Traversal<HTMLScriptElement>::FirstAncestorOrSelf(*node)) << node;
 
+    // Screen readers:
     // content-visibility: hidden subtrees are always hidden.
     // content-visibility: auto subtrees are treated as visible, as we must
-    // make a guess since computed style is not available.
+    // make a guess since computed style is not available. We need these nodes
+    // so that screen reader commands to find text or navigate to the next
+    // heading still work for all content-visibility: auto content.
     return DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
         *node, DisplayLockActivationReason::kAccessibility);
   }

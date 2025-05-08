@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A mechanism binding EntitySuggestion properties to its view. */
+@NullMarked
 public class EntitySuggestionViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)

@@ -354,6 +354,9 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     public void setContextMenuInsets(Rect insets) {}
 
     @Override
+    public void showInterestInElement(int nodeID) {}
+
+    @Override
     public void notifyRendererPreferenceUpdate() {}
 
     @Override
@@ -387,6 +390,16 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
 
     @Override
     public void setSupportsForwardTransitionAnimation(boolean supports) {}
+
+    @Override
+    public boolean hasOpener() {
+        return false;
+    }
+
+    @Override
+    public int getOriginalWindowOpenDisposition() {
+        return 0;
+    }
 
     @Override
     public <T extends UserData> @Nullable T getOrSetUserData(

@@ -99,11 +99,13 @@ interface VideoSource {
 
   // Registers a `remote` that the Video Capture Service can use to process
   // video frames. The processing will happen in Video Effects Service.
+  [EnableIf=enable_video_effects]
   RegisterVideoEffectsProcessor(
       pending_remote<video_effects.mojom.VideoEffectsProcessor> remote);
 
   // Registers a `remote` that the Video Capture Service can use to check
   // configuration state, as well as report errors.
+  [EnableIf=enable_video_effects]
   RegisterReadonlyVideoEffectsManager(
       pending_remote<media.mojom.ReadonlyVideoEffectsManager> remote);
 };

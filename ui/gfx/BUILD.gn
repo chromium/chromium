@@ -453,8 +453,6 @@ component("gfx") {
 
 component("color_space") {
   sources = [
-    "color_conversion_sk_filter_cache.cc",
-    "color_conversion_sk_filter_cache.h",
     "color_space.cc",
     "color_space.h",
     "color_space_export.h",
@@ -464,6 +462,8 @@ component("color_space") {
     "display_color_spaces.h",
     "hdr_metadata.cc",
     "hdr_metadata.h",
+    "hdr_metadata_agtm.cc",
+    "hdr_metadata_agtm.h",
     "hdr_static_metadata.cc",
     "hdr_static_metadata.h",
     "icc_profile.cc",
@@ -480,6 +480,7 @@ component("color_space") {
   deps = [
     "//skia:skcms",
     "//ui/gfx:buffer_types",
+    "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry:geometry_skia",
   ]
   public_deps = [

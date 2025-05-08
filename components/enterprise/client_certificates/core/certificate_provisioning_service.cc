@@ -110,6 +110,10 @@ class CertificateProvisioningServiceImpl
     return context_delegate_->GetPolicyPref();
   }
 
+  const std::string logging_context() const {
+    return context_delegate_->GetLoggingContext();
+  }
+
   PrefChangeRegistrar pref_observer_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<CertificateStore> certificate_store_;
@@ -226,18 +230,30 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
     LOG_POLICY(ERROR, DEVICE_TRUST)
         << "Permanent identity loading failed: "
         << StoreErrorToString(expected_permanent_identity.error());
-    OnProvisioningError(ProvisioningError::kIdentityLoadingFailed,
-                        expected_permanent_identity.error());
-    return;
+
+    // Loading the private key can fail if, somehow, the private key was lost.
+    // This can happen in some backup and restore scenarios. If that happens,
+    // simply treat the failure as if no permanent identity existed in the
+    // first place.
+    if (expected_permanent_identity.error() != StoreError::kLoadKeyFailed) {
+      OnProvisioningError(ProvisioningError::kIdentityLoadingFailed,
+                          expected_permanent_identity.error());
+      return;
+    }
+
+    LOG_POLICY(INFO, DEVICE_TRUST)
+        << "Failed to load the serialized private key, provisioning a new "
+           "identity as fallback...";
   }
 
   // Setting as certificate creation by default, more specific scenarios will
   // overwrite this value later.
   provisioning_context_->scenario = ProvisioningScenario::kCertificateCreation;
 
-  std::optional<ClientIdentity>& permanent_identity_optional =
-      expected_permanent_identity.value();
-  if (permanent_identity_optional.has_value()) {
+  if (expected_permanent_identity.has_value() &&
+      expected_permanent_identity->has_value()) {
+    std::optional<ClientIdentity>& permanent_identity_optional =
+        expected_permanent_identity.value();
     if (permanent_identity_optional->is_valid()) {
       // Already have a full identity, so cache it.
       cached_identity_ = permanent_identity_optional.value();
@@ -348,7 +364,7 @@ void CertificateProvisioningServiceImpl::OnPrivateKeyCreated(
   scoped_refptr<PrivateKey> private_key =
       std::move(expected_private_key.value());
   if (private_key) {
-    LogPrivateKeyCreationSource(private_key->GetSource());
+    LogPrivateKeyCreationSource(logging_context(), private_key->GetSource());
   }
 
   LOG_POLICY(INFO, DEVICE_TRUST) << "Fetching a certificate from the server...";
@@ -366,7 +382,7 @@ void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
     HttpCodeOrClientError upload_code,
     scoped_refptr<net::X509Certificate> certificate) {
   last_upload_code_ = upload_code;
-  LogCertificateCreationResponse(upload_code, !!certificate);
+  LogCertificateCreationResponse(logging_context(), upload_code, !!certificate);
 
   if (!certificate) {
     if (last_upload_code_->has_value()) {
@@ -445,12 +461,14 @@ void CertificateProvisioningServiceImpl::OnCertificateCommitted(
 void CertificateProvisioningServiceImpl::OnProvisioningError(
     ProvisioningError provisioning_error,
     std::optional<StoreError> store_error) {
-  LogProvisioningError(provisioning_error, std::move(store_error));
+  LogProvisioningError(logging_context(), provisioning_error,
+                       std::move(store_error));
   OnFinishedProvisioning(/*success=*/false);
 }
 
 void CertificateProvisioningServiceImpl::OnFinishedProvisioning(bool success) {
-  LogProvisioningContext(provisioning_context_.value(), success);
+  LogProvisioningContext(logging_context(), provisioning_context_.value(),
+                         success);
   provisioning_context_.reset();
 
   std::optional<ClientIdentity> identity =

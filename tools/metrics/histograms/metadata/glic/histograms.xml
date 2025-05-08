@@ -26,7 +26,7 @@ chromium-metrics-reviews@google.com.
     enum="ActInFocusedTabErrorReason" expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
-  <owner>chasej@chromium.org</owner>
+  <owner>bokan@chromium.org</owner>
   <summary>
     Recorded whenever the glic web client receives an error reason from the
     browser when attempting to act.
@@ -86,6 +86,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ResizeWindow"/>
     <variant name="ScrollTo"/>
     <variant name="SetAudioDucking"/>
+    <variant name="SetClosedCaptioningState"/>
     <variant name="SetContextAccessIndicator"/>
     <variant name="SetLocationPermissionState"/>
     <variant name="SetMicrophonePermissionState"/>
@@ -94,6 +95,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SetTabContextPermissionState"/>
     <variant name="SetWindowDraggableAreas"/>
     <variant name="ShowProfilePicker"/>
+    <variant name="StopActorTask"/>
     <variant name="WebClientCreated"/>
     <variant name="WebClientInitialized"/>
   </token>
@@ -101,7 +103,7 @@ chromium-metrics-reviews@google.com.
 
 </histogram>
 
-<histogram name="Glic.AttachToBrowser" enum="GlicAttachChangeReason"
+<histogram name="Glic.AttachedToBrowser" enum="GlicAttachChangeReason"
     expires_after="2026-01-15">
   <owner>dullweber@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -149,6 +151,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Focus.Settings.Shortcut.Customized" enum="BooleanEnabled"
+    expires_after="2026-01-15">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    After the user modifies the glic focus shortcut, logs a boolean that
+    reflects whether a shortcut is set.
+
+    Note: When setting a shortcut, 'disabled' will always be logged, then
+    'enabled'. This is because the edit process first clears the existing value.
+    If the shortcut is cleared, only a single 'disabled' log entry is generated.
+  </summary>
+</histogram>
+
 <histogram name="Glic.FrePresentationTime" units="ms"
     expires_after="2026-01-15">
   <owner>dewittj@google.com</owner>
@@ -159,6 +175,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Host.WebClientState.{Event}"
+    enum="GlicDetailedWebClientState" expires_after="2026-01-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>Records the web client state according to the host. {Event}</summary>
+  <token key="Event">
+    <variant name="AtOneMinute"
+        summary="Recorded one minute after loading the webview."/>
+    <variant name="OnCommit" summary="Recorded before commit on the webview."/>
+    <variant name="OnDestroy"
+        summary="Recorded before the webview is destroyed."/>
+  </token>
+</histogram>
+
 <histogram name="Glic.Metrics.Error" enum="GlicMetricsError"
     expires_after="2026-01-15">
   <owner>dewittj@google.com</owner>
@@ -167,6 +197,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when an unusual sequence of events is seen by glic metrics
     recorder. Usually replaces a real histogram event.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Modal.DeepScanAccessPoint" enum="DeepScanAccessPoint"
+    expires_after="2026-03-01">
+  <owner>birnie@google.com</owner>
+  <owner>dewittj@google.com</owner>
+  <summary>
+    Recorded each time a Glic modal is created as a result of an Enterprise
+    Connector deep scan trigger originating from
+    ContentAnalysisDelegate::CreateForWebContents. The specific access point
+    that triggered the scan is recorded. See the DeepScanAccessPoint enum in
+    glic/enums.xml for possible values, corresponding to
+    safe_browsing::DeepScanAccessPoint.
   </summary>
 </histogram>
 
@@ -205,6 +249,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.PageContextFetcher.GetContextEligibility" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Recorded when a page context gets context eligibility. Measure the time from
+    start.
+  </summary>
+</histogram>
+
 <histogram name="Glic.PageContextFetcher.GetEncodedScreenshot" units="ms"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
@@ -234,6 +290,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a page context gets screenshot (pre-encoding and scaling).
     Measure the time from start.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.PageContextEligible"
+    enum="BooleanEligible" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Recorded when a page context gets context eligibility and records whether
+    the page is eligible.
   </summary>
 </histogram>
 

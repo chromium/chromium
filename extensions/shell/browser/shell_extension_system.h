@@ -57,10 +57,10 @@ class ShellExtensionSystem : public ExtensionSystem {
   // Finish initialization for the shell extension system.
   void FinishInitialization();
 
-  // Launch the app with id |extension_id|.
+  // Launch the app with id `extension_id`.
   void LaunchApp(const ExtensionId& extension_id);
 
-  // Reloads the extension with id |extension_id|.
+  // Reloads the extension with id `extension_id`.
   void ReloadExtension(const ExtensionId& extension_id);
 
   // KeyedService implementation:

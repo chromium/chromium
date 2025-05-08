@@ -83,7 +83,7 @@ class CustomizeChromeUI
   void ScrollToSection(CustomizeChromeSection section);
 
   // Passthrough that calls the CustomizeChromePage's AttachedTabStateUpdated.
-  void AttachedTabStateUpdated(bool is_attached_tab_first_party_ntp);
+  void AttachedTabStateUpdated(const GURL& url);
 
   // Passthrough that calls to CustomizeChromePage's UpdateThemeEditable.
   void UpdateThemeEditable(bool is_theme_editable);
@@ -187,7 +187,7 @@ class CustomizeChromeUI
   // Caches a request to scroll to a section in case the request happens before
   // the front-end is ready to receive the request.
   std::optional<CustomizeChromeSection> section_;
-  std::optional<bool> is_source_tab_first_party_ntp_;
+  GURL source_tab_url_;
   std::optional<bool> is_theme_editable_;
 
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;

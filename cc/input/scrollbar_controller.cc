@@ -714,9 +714,22 @@ float ScrollbarController::GetScrollDistanceForScrollbarPart(
         scroll_delta = GetScrollDistanceForAbsoluteJump();
         break;
       }
-      // TODO(savella) Use snapport length instead of viewport length to match
-      // main thread behaviour. See https://crbug.com/1098383.
-      scroll_delta = GetViewportLength() * kMinFractionToStepWhenPaging;
+      int snapport_length = GetViewportLength();
+      const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
+      const ScrollNode* target_node =
+          layer_tree_host_impl_->active_tree()
+              ->property_trees()
+              ->scroll_tree()
+              .FindNodeFromElementId(scrollbar->scroll_element_id());
+      if (target_node->snap_container_data) {
+        const gfx::RectF snapport =
+            target_node->snap_container_data.value().rect();
+        snapport_length =
+            scrollbar->orientation() == ScrollbarOrientation::kHorizontal
+                ? snapport.x()
+                : snapport.y();
+      }
+      scroll_delta = ScrollUtils::CalculatePageStep(snapport_length);
       break;
     }
     default:

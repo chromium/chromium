@@ -12,9 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /** The view holding {@link BottomSheetListItemView} in a bottom sheet. */
+@NullMarked
 public class BottomSheetListContainerView extends LinearLayout {
     protected final Context mContext;
 

@@ -15,6 +15,8 @@ EnumTraits<audio::mojom::DebugRecordingStreamType,
       return audio::mojom::DebugRecordingStreamType::kInput;
     case media::AudioDebugRecordingStreamType::kOutput:
       return audio::mojom::DebugRecordingStreamType::kOutput;
+    case media::AudioDebugRecordingStreamType::kLoopback:
+      return audio::mojom::DebugRecordingStreamType::kLoopback;
   }
   NOTREACHED();
 }
@@ -29,6 +31,9 @@ bool EnumTraits<audio::mojom::DebugRecordingStreamType,
       return true;
     case audio::mojom::DebugRecordingStreamType::kOutput:
       *out = media::AudioDebugRecordingStreamType::kOutput;
+      return true;
+    case audio::mojom::DebugRecordingStreamType::kLoopback:
+      *out = media::AudioDebugRecordingStreamType::kLoopback;
       return true;
   }
   NOTREACHED();

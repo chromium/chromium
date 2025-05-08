@@ -14,21 +14,16 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "net/base/backoff_entry.h"
 
 namespace web_app {
-
-#if BUILDFLAG(IS_CHROMEOS)
-class CleanupCacheForManagedGuestSessionSuccess;
-class CleanupCacheForManagedGuestSessionError;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Controls whether we attempt to fetch latest component data before processing
 // the policy for the first time.
@@ -69,14 +64,7 @@ class IsolatedWebAppPolicyManager
   void SetPendingInitCount(int pending_count);
   void ProcessPolicy();
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
-  void OnPolicyProcessed(
-      const std::vector<IsolatedWebAppExternalInstallOptions>& apps_in_policy);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnCleanIsolatedWebAppCacheForManagedGuestSession(
-      base::expected<CleanupCacheForManagedGuestSessionSuccess,
-                     CleanupCacheForManagedGuestSessionError> result);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  void OnPolicyProcessed();
 
   void LogAddPolicyInstallSourceResult(
       web_package::SignedWebBundleId web_bundle_id);

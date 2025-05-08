@@ -49,6 +49,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -731,8 +732,8 @@ TEST_F(ProfileResetterTest, ResetExtensionsByReenablingExternalComponents) {
       extensions::Manifest::TYPE_EXTENSION, false);
   registrar()->AddExtension(ext.get());
 
-  service_->DisableExtension(ext->id(),
-                             extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      ext->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
   EXPECT_FALSE(registry()->enabled_extensions().Contains(ext->id()));
   EXPECT_TRUE(registry()->disabled_extensions().Contains(ext->id()));
 

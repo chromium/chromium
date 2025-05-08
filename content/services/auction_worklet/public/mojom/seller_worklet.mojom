@@ -157,7 +157,7 @@ interface ScoreAdClient {
 // scored. This is partly passed to JS, and can also go to trusted seller
 // signals requests.
 //
-// Compare to TrustedSignals::CreativeInfo; the owner isn't included here since
+// Compare to CreativeInfo; the owner isn't included here since
 // it's the same for everything passed to ScoreAd
 // (browser_signal_interest_group_owner)
 struct CreativeInfoWithoutOwner {

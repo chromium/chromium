@@ -93,7 +93,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("Closed about:blank", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("Closed about:blank");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -113,7 +113,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("Closed about:blank", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("Closed about:blank");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -136,7 +136,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("2 tabs closed", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("2 tabs closed");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -159,7 +159,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("2 tabs closed", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("2 tabs closed");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -196,7 +196,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("2 tabs tab group closed", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("2 tabs tab group closed");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -237,7 +237,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("My group tab group closed and saved", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("My group tab group closed and saved");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -283,7 +283,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("2 tabs tab group closed and saved", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("2 tabs tab group closed and saved");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -326,7 +326,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("2 tabs tab group deleted", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("2 tabs tab group deleted");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -366,7 +366,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("1 tab group, 2 tabs deleted", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("1 tab group, 2 tabs deleted");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -408,7 +408,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("2 tab groups, 1 tab closed and saved", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("2 tab groups, 1 tab closed and saved");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -451,7 +451,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("2 tabs closed", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("2 tabs closed");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(1, mTabModel.getCount());
 
@@ -487,7 +487,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("2 tab groups deleted", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("2 tab groups deleted");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -524,7 +524,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("2 tab groups closed and saved", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("2 tab groups closed and saved");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -740,7 +740,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertEquals("Incorrect snackbar text", "Closed about:blank", getSnackbarText());
+        assertSnackbarTextEqualsAllowingTruncation("Closed about:blank");
         assertTrue(
                 "Incorrect SnackbarController type",
                 currentSnackbar.getController() instanceof UndoBarController);
@@ -761,6 +761,28 @@ public class UndoBarControllerTest {
                 () ->
                         mSnackbarManager.dismissSnackbars(
                                 mSnackbarManager.getCurrentSnackbarForTesting().getController()));
+    }
+
+    private void assertSnackbarTextEqualsAllowingTruncation(String expected) {
+        assertEquals("Expected text should not contain ellipsis.", -1, expected.indexOf("…"));
+        String actual = getSnackbarText();
+        int index = actual.indexOf("…");
+        if (index != -1) {
+            assertEquals(
+                    "First part of truncated snackbar text mismatched",
+                    expected.substring(0, index),
+                    actual.substring(0, index));
+            // Skip the ellipsis.
+            String actualEnd = actual.substring(index + 1);
+            // End of the expected text should be present.
+            String expectedEnd = expected.substring(expected.length() - actualEnd.length());
+            assertEquals(
+                    "Last part of truncated snackbar text mismatched",
+                    expectedEnd,
+                    actualEnd);
+        } else {
+            assertEquals("Incorrect snackbar text", expected, actual);
+        }
     }
 
     private String getSnackbarText() {

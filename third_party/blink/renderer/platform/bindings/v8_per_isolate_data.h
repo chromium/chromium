@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_PER_ISOLATE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_PER_ISOLATE_DATA_H_
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -337,8 +338,9 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   bool is_handling_recursion_level_error_ = false;
 
   Persistent<ScriptRegexp> password_regexp_;
-  Persistent<UserData>
-      user_data_[static_cast<size_t>(UserData::Key::kNumberOfKeys)];
+  std::array<Persistent<UserData>,
+             static_cast<size_t>(UserData::Key::kNumberOfKeys)>
+      user_data_;
 
   Persistent<ActiveScriptWrappableManager> active_script_wrappable_manager_;
 

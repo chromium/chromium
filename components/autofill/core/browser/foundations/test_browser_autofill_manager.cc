@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -91,9 +92,10 @@ void TestBrowserAutofillManager::OnAskForValuesToFill(
     const FormData& form,
     const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    base::optional_ref<const PasswordSuggestionRequest> password_request) {
   AutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
-                                        trigger_source);
+                                        trigger_source, password_request);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
@@ -180,12 +182,13 @@ void TestBrowserAutofillManager::ClearFormStructures() {
 void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     const FormData& form,
     const FieldGlobalId& field_id,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    const std::optional<PasswordSuggestionRequest>& password_request) {
   gfx::PointF p =
       CHECK_DEREF(form.FindFieldByGlobalId(field_id)).bounds().origin();
   gfx::Rect caret_bounds(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
-  BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
-                                               trigger_source);
+  BrowserAutofillManager::OnAskForValuesToFill(
+      form, field_id, caret_bounds, trigger_source, password_request);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 

@@ -1,0 +1,10 @@
+{
+  "manifest_version": 2,
+  "name": "Test InstanceID App",
+  "version": "1.0",
+  "description": "Tests InstanceID API",
+  "background": {
+    "scripts": ["get_creation_time.js"]
+  },
+  "permissions": ["gcm"]
+}

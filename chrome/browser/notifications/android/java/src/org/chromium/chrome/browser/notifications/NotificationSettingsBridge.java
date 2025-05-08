@@ -38,8 +38,12 @@ public class NotificationSettingsBridge {
 
     @CalledByNative
     private static void getSiteChannels(final long callbackId) {
-        SiteChannel[] channels = SiteChannelsManager.getInstance().getSiteChannels();
-        NotificationSettingsBridgeJni.get().onGetSiteChannelsDone(callbackId, channels);
+        SiteChannelsManager.getInstance()
+                .getSiteChannelsAsync(
+                        (channels) -> {
+                            NotificationSettingsBridgeJni.get()
+                                    .onGetSiteChannelsDone(callbackId, channels);
+                        });
     }
 
     @CalledByNative

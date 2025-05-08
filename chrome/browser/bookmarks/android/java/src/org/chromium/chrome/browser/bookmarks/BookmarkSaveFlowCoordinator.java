@@ -8,8 +8,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -17,6 +15,8 @@ import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -41,6 +41,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinates the bottom-sheet saveflow. */
+@NullMarked
 public class BookmarkSaveFlowCoordinator {
     private static final int AUTO_DISMISS_TIME_MS = 10000;
 
@@ -52,7 +53,7 @@ public class BookmarkSaveFlowCoordinator {
     private final Profile mProfile;
 
     private BottomSheetController mBottomSheetController;
-    private BookmarkSaveFlowBottomSheetContent mBottomSheetContent;
+    private @Nullable BookmarkSaveFlowBottomSheetContent mBottomSheetContent;
     private BookmarkSaveFlowMediator mMediator;
     private View mBookmarkSaveFlowView;
     private BookmarkModel mBookmarkModel;
@@ -70,14 +71,14 @@ public class BookmarkSaveFlowCoordinator {
      * @param priceDropNotificationManager Manages price drop notifications.
      */
     public BookmarkSaveFlowCoordinator(
-            @NonNull Context context,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull ShoppingService shoppingService,
-            @NonNull UserEducationHelper userEducationHelper,
-            @NonNull Profile profile,
-            @NonNull IdentityManager identityManager,
-            @NonNull BookmarkManagerOpener bookmarkManagerOpener,
-            @NonNull PriceDropNotificationManager priceDropNotificationManager) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            ShoppingService shoppingService,
+            UserEducationHelper userEducationHelper,
+            Profile profile,
+            IdentityManager identityManager,
+            BookmarkManagerOpener bookmarkManagerOpener,
+            PriceDropNotificationManager priceDropNotificationManager) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mUserEducationHelper = userEducationHelper;
@@ -193,7 +194,7 @@ public class BookmarkSaveFlowCoordinator {
                                     new EmptyBottomSheetObserver() {
                                         @Override
                                         public void onSheetContentChanged(
-                                                BottomSheetContent newContent) {
+                                                @Nullable BottomSheetContent newContent) {
                                             if (newContent == mBottomSheetContent) {
                                                 showShoppingSaveFlowIph();
                                             }
@@ -231,6 +232,7 @@ public class BookmarkSaveFlowCoordinator {
         PostTask.postDelayedTask(TaskTraits.UI_USER_VISIBLE, this::close, AUTO_DISMISS_TIME_MS);
     }
 
+    @SuppressWarnings("NullAway")
     private void destroy() {
         mDestroyChecker.destroy();
 
@@ -259,9 +261,8 @@ public class BookmarkSaveFlowCoordinator {
             return mContentView;
         }
 
-        @Nullable
         @Override
-        public View getToolbarView() {
+        public @Nullable View getToolbarView() {
             return null;
         }
 
@@ -296,7 +297,7 @@ public class BookmarkSaveFlowCoordinator {
         }
 
         @Override
-        public @NonNull String getSheetContentDescription(Context context) {
+        public String getSheetContentDescription(Context context) {
             return context.getString(
                     R.string.bookmarks_save_flow_content_description, mMediator.getFolderName());
         }

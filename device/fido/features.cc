@@ -192,4 +192,9 @@ BASE_FEATURE_PARAM(int,
                    "window_seconds",
                    kDefaultWindowSeconds);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnImmediateGet,
+             "WebAuthenticationImmediateGet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

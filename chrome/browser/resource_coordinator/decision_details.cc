@@ -132,15 +132,6 @@ const char* DecisionDetails::Reason::ToString() const {
   return ::resource_coordinator::ToString(failure_reason_);
 }
 
-bool DecisionDetails::Reason::operator==(const Reason& rhs) const {
-  return success_reason_ == rhs.success_reason_ &&
-         failure_reason_ == rhs.failure_reason_;
-}
-
-bool DecisionDetails::Reason::operator!=(const Reason& rhs) const {
-  return !(*this == rhs);
-}
-
 DecisionDetails::DecisionDetails() : toggled_(false) {}
 
 DecisionDetails::~DecisionDetails() = default;

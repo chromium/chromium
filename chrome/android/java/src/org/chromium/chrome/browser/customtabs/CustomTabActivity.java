@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
@@ -77,11 +78,11 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     private CustomTabsOpenTimeRecorder mOpenTimeRecorder;
 
     /**
-     * The last MotionEvent object blocked due to the activity being in paused state.  We're
+     * The last MotionEvent object blocked due to the activity being in paused state. We're
      * interested in MotionEvent#ACTION_DOWN which is likely the very first event received when
-     * multi-window mode is entered. We inject this one after the activity is resumed (or
-     * it regains the focus) in order to recover the corresponding user gesture which otherwise
-     * would have gone missing.
+     * multi-window mode is entered. We inject this one after the activity is resumed (or it regains
+     * the focus) in order to recover the corresponding user gesture which otherwise would have gone
+     * missing.
      */
     private MotionEvent mBlockedEvent;
 
@@ -231,9 +232,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
-    protected void handleFinishAndClose(boolean warmupOnFinish) {
+    protected void handleFinishAndClose(@FinishReason int reason, boolean warmupOnFinish) {
         if (mOpenTimeRecorder != null) mOpenTimeRecorder.updateCloseCause();
-        super.handleFinishAndClose(warmupOnFinish);
+        super.handleFinishAndClose(reason, warmupOnFinish);
     }
 
     @Override

@@ -561,7 +561,12 @@ void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
   UpdateAttributions(group_id);
   LogEvent(TabGroupEvent::kTabRemoved, group_id, tab_id);
   model_->UpdateLastUserInteractionTimeLocally(group_id);
-  model_->RemoveTabFromGroupLocally(sync_id, tab->saved_tab_guid());
+  std::optional<GaiaId> local_gaia_id =
+      group->is_shared_tab_group()
+          ? sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge()
+          : std::nullopt;
+  model_->RemoveTabFromGroupLocally(sync_id, tab->saved_tab_guid(),
+                                    std::move(local_gaia_id));
 }
 
 void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
@@ -1068,6 +1073,25 @@ void TabGroupSyncServiceImpl::UpdateArchivalStatus(const base::Uuid& sync_id,
   model_->UpdateArchivalStatus(sync_id, archival_status);
 }
 
+void TabGroupSyncServiceImpl::UpdateTabLastSeenTime(const base::Uuid& group_id,
+                                                    const base::Uuid& tab_id,
+                                                    TriggerSource source) {
+  // Verify tab exists before updating. This method may be called from
+  // sync services, such as the MessagingBackendService which doesn't
+  // necessarily know if the tab still exists.
+  std::optional<SavedTabGroup> group = GetGroup(group_id);
+  if (!group.has_value()) {
+    return;
+  }
+
+  const SavedTabGroupTab* tab = group->GetTab(tab_id);
+  if (!tab) {
+    return;
+  }
+
+  model_->UpdateTabLastSeenTime(group_id, tab_id, base::Time::Now(), source);
+}
+
 TabGroupSyncMetricsLogger*
 TabGroupSyncServiceImpl::GetTabGroupSyncMetricsLogger() {
   return metrics_logger_.get();
@@ -1243,12 +1267,35 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
     return;
   }
 
+  UpdateLastSeenTimeForAnyFocusedTabForRemoteUpdates(saved_tab_group, source);
+
   // Post task is used here to avoid reentrancy. See crbug.com/373500807 for
   // details.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&TabGroupSyncServiceImpl::NotifyTabGroupUpdated,
                      weak_ptr_factory_.GetWeakPtr(), group_guid, source));
+}
+
+void TabGroupSyncServiceImpl::
+    UpdateLastSeenTimeForAnyFocusedTabForRemoteUpdates(
+        const SavedTabGroup* group,
+        TriggerSource source) {
+  if (source != TriggerSource::REMOTE) {
+    return;
+  }
+
+  if (!group->is_shared_tab_group()) {
+    return;
+  }
+
+  for (const LocalTabID& local_tab_id : GetSelectedTabs()) {
+    const SavedTabGroupTab* tab = group->GetTab(local_tab_id);
+    if (tab) {
+      model_->UpdateTabLastSeenTime(group->saved_guid(), tab->saved_tab_guid(),
+                                    base::Time::Now(), TriggerSource::LOCAL);
+    }
+  }
 }
 
 void TabGroupSyncServiceImpl::NotifyTabGroupAdded(const base::Uuid& guid,
@@ -1341,6 +1388,8 @@ void TabGroupSyncServiceImpl::NotifyTabGroupMigrated(
 void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
     const SavedTabGroup& removed_group,
     TriggerSource source) {
+  LogTabGroupEvent(logger_, "HandleTabGroupRemoved", &removed_group);
+
   // When a group is deleted, there's no more need to keep any "was locally
   // closed" pref entry around.
   // TODO(crbug.com/363927991): This also gets called during signout, when all

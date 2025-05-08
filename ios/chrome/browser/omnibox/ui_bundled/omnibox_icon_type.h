@@ -5,6 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_ICON_TYPE_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_ICON_TYPE_H_
 
-#import "ios/chrome/browser/omnibox/public/omnibox_icon_type.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_icon_type.h"
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_ICON_TYPE_H_

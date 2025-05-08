@@ -65,6 +65,7 @@ void WorkerOrWorkletDevToolsAgentHost::Disconnected() {
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
                                     ChildProcessHost::kInvalidUniqueID);
   std::move(destroyed_callback_).Run(this);
+  process_observation_.Reset();
   Release();  // Matches AddRef() in constructor.
 }
 
@@ -101,9 +102,7 @@ bool WorkerOrWorkletDevToolsAgentHost::Close() {
 
 void WorkerOrWorkletDevToolsAgentHost::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
-  GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
-                                    ChildProcessHost::kInvalidUniqueID);
-  process_observation_.Reset();
+  Disconnected();
 }
 
 }  // namespace content

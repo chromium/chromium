@@ -37,7 +37,6 @@ group("resources") {
     "../crash/core/browser/resources:resources",
     "../gcm_driver/resources:resources",
     "../net_log/resources",
-    "../safe_browsing/content/browser/web_ui/resources",
     "../signin/core/browser/resources",
     "../translate/translate_internals:resources",
     "../webui:resources",

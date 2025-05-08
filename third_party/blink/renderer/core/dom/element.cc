@@ -561,25 +561,6 @@ const AtomicString& V8ShadowRootModeToString(V8ShadowRootMode::Enum mode) {
   return keywords::kClosed;
 }
 
-bool IsInsideLayoutSVGHiddenContainer(const LayoutObject* object) {
-  if (!RuntimeEnabledFeatures::
-          RestrictGetBoundingClientRectForHiddenSVGElementsEnabled()) {
-    return false;
-  }
-
-  for (; object; object = object->Parent()) {
-    // Check if the Element's LayoutObject or any ancestor is a
-    // LayoutSVGHiddenContainer
-    if (object->IsSVGHiddenContainer()) {
-      return true;
-    }
-
-    if (IsA<LayoutSVGRoot>(*object)) {
-      break;
-    }
-  }
-  return false;
-}
 }  // namespace
 
 Element::Element(const QualifiedName& tag_name,
@@ -670,7 +651,10 @@ const HeapVector<Member<Node>> Element::ReadingFlowChildren() const {
     }
   }
   // Add all non-reading flow items at the end of the reading flow.
-  for (Node& child : FlatTreeTraversal::ChildrenOf(*this)) {
+  // We use LayoutTreeBuilder traversal to make sure all pseudo elements
+  // (including scroll markers) are accounted for.
+  for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*this); child;
+       child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
     // TODO(dizhangg) this check is O(n^2)
     if (!children.Contains(child)) {
       children.push_back(child);
@@ -1173,29 +1157,36 @@ Element* Element::getElementByIdIncludingDisconnected(
 Element* Element::GetElementAttribute(const QualifiedName& name) const {
   GCedHeapLinkedHashSet<WeakMember<Element>>* element_attribute_vector =
       GetExplicitlySetElementsForAttr(name);
+  Element* element = nullptr;
+
   if (element_attribute_vector) {
     DCHECK_EQ(element_attribute_vector->size(), 1u);
-    Element* explicitly_set_element = *(element_attribute_vector->begin());
-    DCHECK_NE(explicitly_set_element, nullptr);
+    element = *(element_attribute_vector->begin());
+    DCHECK_NE(element, nullptr);
 
     // Only return the explicit element if it still exists within a valid scope.
-    if (!ElementIsDescendantOfShadowIncludingAncestor(
-            *this, *explicitly_set_element)) {
+    if (!ElementIsDescendantOfShadowIncludingAncestor(*this, *element)) {
+      return nullptr;
+    }
+  } else {
+    // Compute the attr-associated element from the content attribute if
+    // present, id can be null.
+    AtomicString id = getAttribute(name);
+    if (id.IsNull()) {
       return nullptr;
     }
 
-    return explicitly_set_element;
+    element = getElementByIdIncludingDisconnected(*this, id);
   }
 
-  // Compute the attr-associated element from the content attribute if present,
-  // id can be null.
-  AtomicString id = getAttribute(name);
-  if (id.IsNull()) {
+  // Don't return the element if it has an invalid reference target.
+  if (RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetExecutionContext()) &&
+      element && !element->GetShadowReferenceTargetOrSelf(name)) {
     return nullptr;
   }
 
-  // Will return null if the id is empty.
-  return getElementByIdIncludingDisconnected(*this, id);
+  return element;
 }
 
 Element* Element::GetElementAttributeResolvingReferenceTarget(
@@ -1208,8 +1199,7 @@ Element* Element::GetElementAttributeResolvingReferenceTarget(
 }
 
 GCedHeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
-    const QualifiedName& name,
-    bool resolve_reference_target) const {
+    const QualifiedName& name) const {
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-elements
   // 1. Let elements be an empty list.
   GCedHeapVector<Member<Element>>* result_elements =
@@ -1222,12 +1212,13 @@ GCedHeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
       // 3.1. If attrElement is not a descendant of any of element's
       // shadow-including ancestors, then continue.
       if (ElementIsDescendantOfShadowIncludingAncestor(*this, *attr_element)) {
-        if (resolve_reference_target) {
-          // 3.NEW. Resolve the referenceTarget of attr_element
-          attr_element = attr_element->GetShadowReferenceTargetOrSelf(name);
-        }
+        // 3.NEW. Resolve the referenceTarget of attr_element
+        attr_element = attr_element->GetShadowReferenceTargetOrSelf(name);
+
         // 3.2. Append attrElement to elements.
-        result_elements->push_back(attr_element);
+        if (attr_element) {
+          result_elements->push_back(attr_element);
+        }
       }
     }
   } else {
@@ -1267,12 +1258,13 @@ GCedHeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
       Element* candidate =
           getElementByIdIncludingDisconnected(*this, AtomicString(id));
       if (candidate) {
-        if (resolve_reference_target) {
-          // 4.3.NEW. Resolve the referenceTarget of the candidate element
-          candidate = candidate->GetShadowReferenceTargetOrSelf(attr);
-        }
+        // 4.3.NEW. Resolve the referenceTarget of the candidate element
+        candidate = candidate->GetShadowReferenceTargetOrSelf(attr);
+
         // 4.3.2. Append candidate to elements.
-        result_elements->push_back(candidate);
+        if (candidate) {
+          result_elements->push_back(candidate);
+        }
       }
     }
   }
@@ -1285,8 +1277,19 @@ FrozenArray<Element>* Element::GetElementArrayAttribute(
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-3
 
   // 1. Let elements be this's attr-associated elements.
-  GCedHeapVector<Member<Element>>* elements =
-      GetAttrAssociatedElements(name, /*resolve_reference_target=*/false);
+  GCedHeapVector<Member<Element>>* elements = GetAttrAssociatedElements(name);
+
+  // Due to reference target it's possible that attr-associated elements could
+  // be in non-ancestor shadow trees. We don't want to leak references into
+  // those scopes, so retarget the elements.
+  if (RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetExecutionContext()) &&
+      elements) {
+    std::transform(elements->begin(), elements->end(), elements->begin(),
+                   [this](Element* element) {
+                     return &this->GetTreeScope().Retarget(*element);
+                   });
+  }
 
   CachedAttrAssociatedElementsMap* cached_attr_associated_elements_map =
       GetDocument().GetCachedAttrAssociatedElementsMap(this);
@@ -2844,8 +2847,14 @@ void Element::ClientQuads(Vector<gfx::QuadF>& quads) const {
     // TODO(pdr): ObjectBoundingBox does not include stroke and the spec is not
     // clear (see: https://github.com/w3c/svgwg/issues/339, crbug.com/529734).
     // If stroke is desired, we can update this to use AbsoluteQuads, below.
-    if (IsA<SVGGraphicsElement>(svg_element) &&
-        !IsInsideLayoutSVGHiddenContainer(element_layout_object)) {
+    if (const auto* svg_graphics_element =
+            DynamicTo<SVGGraphicsElement>(this)) {
+      if (RuntimeEnabledFeatures::
+              RestrictGetBoundingClientRectForHiddenSVGElementsEnabled() &&
+          svg_graphics_element->IsNonRendered(element_layout_object)) {
+        return;
+      }
+
       quads.push_back(element_layout_object->LocalToAbsoluteQuad(
           gfx::QuadF(element_layout_object->ObjectBoundingBox())));
     }
@@ -3205,16 +3214,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     }
   } else if (name == html_names::kSlotAttr) {
     if (params.old_value != params.new_value) {
-      if (Element* parent = parentElement()) {
-        if (ShadowRoot* root = parent->GetShadowRoot()) {
-          root->DidChangeHostChildSlotName(params.old_value, params.new_value);
-          if (parent->ChildrenAffectedByBackwardPositionalRules()) {
-            // sibling-index()/sibling-count() may change for children,
-            // as slot assignments may change.
-            GetDocument().GetStyleEngine().ScheduleNthPseudoInvalidations(
-                *parent);
-          }
-        }
+      if (ShadowRoot* root = ShadowRootOfParent()) {
+        root->DidChangeHostChildSlotName(params.old_value, params.new_value);
       }
     }
   } else if (name == html_names::kFocusgroupAttr) {
@@ -3283,6 +3284,9 @@ void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
     GetElementData()->SetClass(new_class_string);
   }
   const SpaceSplitString& new_classes = GetElementData()->ClassNames();
+  for (const AtomicString& class_name : new_classes) {
+    attribute_or_class_bloom_ |= FilterForString(class_name);
+  }
   GetDocument().GetStyleEngine().ClassChangedForElement(old_classes,
                                                         new_classes, *this);
 }
@@ -3354,9 +3358,11 @@ void Element::ParserSetAttributes(
           ShareableElementData::CreateWithAttributes(attribute_vector);
     }
 
-    attribute_bloom_ = 0;
+    // NOTE: AttributeChanged() will add back the class names (if any),
+    // so it is safe to reset the filter here.
+    attribute_or_class_bloom_ = 0;
     for (const Attribute& attribute : attribute_vector) {
-      attribute_bloom_ |= FilterForAttribute(attribute.GetName());
+      attribute_or_class_bloom_ |= FilterForAttribute(attribute.GetName());
     }
   }
 
@@ -5629,8 +5635,7 @@ void Element::ClearTargetedSnapAreaIdsForSnapContainers() {
 GCedHeapVector<Member<Element>>* Element::ElementsFromAttributeOrInternals(
     const QualifiedName& attribute) const {
   GCedHeapVector<Member<Element>>* attr_associated_elements =
-      GetAttrAssociatedElements(attribute,
-                                /*resolve_reference_target=*/true);
+      GetAttrAssociatedElements(attribute);
   if (attr_associated_elements) {
     if (attr_associated_elements->empty()) {
       return nullptr;
@@ -6682,7 +6687,7 @@ void Element::RemoveAttributeInternal(wtf_size_t index,
     DidRemoveAttribute(name, value_being_removed);
   }
 
-  // TODO(sesse): Consider recalculating attribute_bloom_ filter here,
+  // TODO(sesse): Consider recalculating attribute_or_class_bloom_ filter here,
   // so that it reflects the removal (but beware of pathological cases
   // where removing all attributes send us into O(n²)).
 }
@@ -6690,7 +6695,7 @@ void Element::RemoveAttributeInternal(wtf_size_t index,
 void Element::AppendAttributeInternal(const QualifiedName& name,
                                       const AtomicString& value,
                                       AttributeModificationReason reason) {
-  attribute_bloom_ |= FilterForAttribute(name);
+  attribute_or_class_bloom_ |= FilterForAttribute(name);
 
   if (reason !=
       AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
@@ -7317,6 +7322,15 @@ bool Element::IsInPartialInterestPopover() const {
   return false;
 }
 
+void Element::ShowInterestNow() {
+  Element* target = InterestTargetElement();
+  LOG(ERROR) << "Interest in element " << this << ", with target " << target;
+  if (!target) {
+    return;
+  }
+  GainOrLoseInterest(this, target, InterestState::kFullInterest);
+}
+
 bool Element::IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const {
   FocusableState focusable_state = Element::IsFocusableState(update_behavior);
   if (focusable_state == FocusableState::kNotFocusable) {
@@ -7401,7 +7415,7 @@ FocusableState Element::SupportsFocus(UpdateBehavior update_behavior) const {
   }
   if (HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
       IsRootEditableElementWithCounting(*this) ||
-      IsScrollControlPseudoElement() || SupportsSpatialNavigationFocus()) {
+      IsScrollMarkerPseudoElement() || SupportsSpatialNavigationFocus()) {
     return FocusableState::kFocusable;
   }
   if (CanBeKeyboardFocusableScroller(update_behavior)) {
@@ -9000,7 +9014,7 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
     return nullptr;
   }
 
-  if (pseudo_id == kPseudoIdBackdrop) {
+  if (pseudo_id == kPseudoIdBackdrop && IsInTopLayer()) {
     GetDocument().AddToTopLayer(pseudo_element, this);
   }
 
@@ -9036,6 +9050,11 @@ PseudoElement* Element::GetPseudoElement(
 bool Element::HasViewTransitionGroupChildren() const {
   ElementRareDataVector* data = GetElementRareData();
   return data && data->HasViewTransitionGroupPseudoElement();
+}
+
+bool Element::HasScrollButtonOrMarkerGroupPseudos() const {
+  ElementRareDataVector* data = GetElementRareData();
+  return data && data->HasScrollButtonOrMarkerGroupPseudos();
 }
 
 Element* Element::GetStyledPseudoElement(
@@ -9351,7 +9370,7 @@ const ComputedStyle* Element::StyleForSearchTextPseudoElement(
 
 bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   if (pseudo_id == kPseudoIdViewTransition) {
-    return !!ViewTransitionUtils::GetTransition(*this);
+    return !!ViewTransitionUtils::GetTransition(*this) && !!GetComputedStyle();
   }
   if (pseudo_id == kPseudoIdFirstLetter && IsSVGElement()) {
     return false;
@@ -9362,7 +9381,11 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     auto is_option_in_appearance_base_select = [](const Element* e) {
       if (const auto* option = DynamicTo<HTMLOptionElement>(e)) {
         if (const HTMLSelectElement* select = option->OwnerSelectElement()) {
-          return select->IsAppearanceBasePicker();
+          if (select->UsesMenuList()) {
+            return select->IsAppearanceBasePicker();
+          } else {
+            return select->IsAppearanceBase();
+          }
         }
       }
       return false;
@@ -10181,7 +10204,7 @@ void Element::CloneAttributesFrom(const Element& other) {
     setNonce(other.nonce());
   }
 
-  attribute_bloom_ = other.attribute_bloom_;
+  attribute_or_class_bloom_ = other.attribute_or_class_bloom_;
 }
 
 void Element::CreateUniqueElementData() {
@@ -10822,9 +10845,6 @@ void Element::ScheduleInterestGainedTask(InterestState new_state) {
 }
 
 void Element::ScheduleInterestLostTask() {
-  // This should be called on an interest invoker only.
-  auto* target = InterestTargetElement();
-  CHECK(target);
   const ComputedStyle* style =
       ComputedStyle::NullifyEnsured(GetComputedStyle());
   if (!style) {
@@ -10847,7 +10867,8 @@ void Element::ScheduleInterestLostTask() {
           [](Element* invoker, Element* target) {
             GainOrLoseInterest(invoker, target, InterestState::kNoInterest);
           },
-          WrapWeakPersistent(this), WrapWeakPersistent(target)),
+          WrapWeakPersistent(this),
+          WrapWeakPersistent(InterestTargetElement())),
       base::Seconds(hide_delay_seconds)));
 }
 
@@ -10950,13 +10971,14 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
   } else {
     DCHECK(source == InterestTargetSource::kDeHover ||
            source == InterestTargetSource::kBlurElementChain);
-    if (invoker_data && invoker_data->GetInterestState() !=
-                            InterestState::kNoInterest) [[unlikely]] {
-      // This is an active interest invoker which was just de-hovered or
-      // blurred. Cancel any pending InterestGained tasks, and schedule an
-      // InterestLost task if needed.
+    if (invoker_data) [[unlikely]] {
+      // This is an interest invoker which was just de-hovered or blurred.
+      // Cancel any pending InterestGained tasks, and (if the invoker already
+      // has interest) schedule an InterestLost task.
       invoker_data->CancelInterestGainedTask();
-      ScheduleInterestLostTask();
+      if (invoker_data->GetInterestState() != InterestState::kNoInterest) {
+        ScheduleInterestLostTask();
+      }
     }
     if (upstream_invoker) [[unlikely]] {
       // This is the target of an interest invoker, which was just de-hovered or

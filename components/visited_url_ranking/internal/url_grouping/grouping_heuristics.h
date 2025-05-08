@@ -48,13 +48,24 @@ class GroupingHeuristics {
   GroupingHeuristics(const GroupingHeuristics&) = delete;
   GroupingHeuristics& operator=(const GroupingHeuristics&) = delete;
 
-  using SuggestionsCallback =
-      base::OnceCallback<void(std::optional<GroupSuggestions>)>;
+  struct SuggestionsResult {
+    SuggestionsResult();
+    ~SuggestionsResult();
+    SuggestionsResult(SuggestionsResult&& suggestion);
+    SuggestionsResult& operator=(SuggestionsResult&& suggestion);
+
+    // Suggestions from computation.
+    std::optional<GroupSuggestions> suggestions;
+    // Inputs used for suggestion computing.
+    std::vector<scoped_refptr<segmentation_platform::InputContext>> inputs;
+  };
+
+  using SuggestionResultCallback = base::OnceCallback<void(SuggestionsResult)>;
 
   // Runs heuristics on the `candidates` and returns a list of grouping
   // suggestions in `callback`.
   void GetSuggestions(std::vector<URLVisitAggregate> candidates,
-                      SuggestionsCallback callback);
+                      SuggestionResultCallback callback);
 
  private:
   friend class GroupingHeuristicsTest;
@@ -64,7 +75,7 @@ class GroupingHeuristics {
   void GetSuggestions(
       std::vector<URLVisitAggregate> candidates,
       const std::vector<GroupSuggestion::SuggestionReason>& heuristics_priority,
-      SuggestionsCallback callback);
+      SuggestionResultCallback callback);
 
   base::flat_map<GroupSuggestion::SuggestionReason, std::unique_ptr<Heuristic>>
       heuristics_;

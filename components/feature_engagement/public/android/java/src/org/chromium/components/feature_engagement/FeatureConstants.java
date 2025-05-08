@@ -93,6 +93,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.PAGE_ZOOM_FEATURE,
     FeatureConstants.READ_ALOUD_APP_MENU_FEATURE,
     FeatureConstants.READ_ALOUD_EXPANDED_PLAYER_FEATURE,
+    FeatureConstants.READ_ALOUD_PLAYBACK_MODE_FEATURE,
     FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE,
     FeatureConstants.READ_LATER_APP_MENU_BOOKMARKS_FEATURE,
     FeatureConstants.READ_LATER_BOTTOM_SHEET_FEATURE,
@@ -145,6 +146,10 @@ public @interface FeatureConstants {
             "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Web";
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_PAGE_SUMMARY_PDF_FEATURE =
             "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Pdf";
+
+    /** An IPH feature to prompt users to select the 'Add to group' option in the App 3-Dot menu. */
+    String MENU_ADD_TO_GROUP = "IPH_MenuAddToGroup";
+
     String PAGE_SUMMARY_WEB_MENU_FEATURE = "IPH_PageSummaryWebMenu";
     String PAGE_SUMMARY_PDF_MENU_FEATURE = "IPH_PageSummaryPdfMenu";
     String ANDROID_TAB_DECLUTTER_FEATURE = "IPH_AndroidTabDeclutter";
@@ -195,6 +200,7 @@ public @interface FeatureConstants {
     String TRANSLATE_MENU_BUTTON_FEATURE = "IPH_TranslateMenuButton";
     String READ_ALOUD_APP_MENU_FEATURE = "IPH_ReadAloudAppMenuFeature";
     String READ_ALOUD_EXPANDED_PLAYER_FEATURE = "IPH_ReadAloudExpandedPlayerFeature";
+    String READ_ALOUD_PLAYBACK_MODE_FEATURE = "IPH_ReadAloudPlaybackModeFeature";
 
     String READ_LATER_CONTEXT_MENU_FEATURE = "IPH_ReadLaterContextMenu";
     String READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE = "IPH_ReadLaterAppMenuBookmarkThisPage";

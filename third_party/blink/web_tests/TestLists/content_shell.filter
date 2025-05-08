@@ -509,7 +509,6 @@ external/wpt/editing/other/editable-state-and-focus-in-shadow-dom-in-designMode.
 external/wpt/editing/other/empty-elements-insertion.html
 external/wpt/editing/other/exec-command-without-editable-element.tentative.html
 external/wpt/editing/other/exec-command-with-text-editor.tentative.html*
-external/wpt/editing/other/fire-selection-change-on-deleting-empty-element.html
 external/wpt/editing/other/insertparagraph-in-non-splittable-element.html
 external/wpt/editing/other/join-pre-and-other-block.html*
 external/wpt/editing/other/no-beforeinput-when-no-selection.html
@@ -588,7 +587,6 @@ external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property
 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-postmessage-2.https.html
 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-self.https.html
 external/wpt/html/cross-origin-opener-policy/reporting/document-reporting/reporting-redirect-with-unsafe-none.https.html
-external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html*
 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/nested-sharedworker-success.https.html
 external/wpt/html/interaction/focus/focusgroup/tentative/grid-navigation/rowspan.html
 external/wpt/html/interaction/focus/the-autofocus-attribute/first-reconnected.html
@@ -907,8 +905,6 @@ virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-vis
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/ttwf-css-3d-polygon-cycle.html
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation*
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-transition*
-virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html*
-virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html*
 virtual/css-gap-decorations/external/wpt/css/css-ui/compute-kind-widget-no-fallback-props-001.html
 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/reset-algorithm-rendering.html
 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html
@@ -921,9 +917,8 @@ virtual/direct-sockets/external/wpt/direct-sockets/udp_socket.https.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-024.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-025.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-036.html
-virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/shared-workers.tentative.https.html
-virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html
-virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html
+external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html
+external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html
 virtual/fedcm-register/external/wpt/fedcm/fedcm-register/fedcm-no-registered-idps.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-fenced-navigations-replace-do-not-contribute-to-joint.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced.https.html

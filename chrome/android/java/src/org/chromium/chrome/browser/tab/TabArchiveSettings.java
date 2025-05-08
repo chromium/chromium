@@ -27,6 +27,14 @@ public class TabArchiveSettings {
         void onSettingChanged();
     }
 
+    // The default time to consider a tab as inactive.
+    static final int DEFAULT_ARCHIVE_TIME_HOURS = 21 * 24; // 21 days.
+    // The default time interval between same-session declutter passes.
+    private static final int DEFAULT_DECLUTTER_INTERVAL_TIME_HOURS = 7 * 24; // 7 days.
+    // The default allowable times we can show an IPH.
+    private static final int DEFAULT_ALLOWED_IPH_SHOWS = 3;
+    // The default max simultaneous archives to allow in a single pass.
+    static final int DEFAULT_MAX_SIMULTANEOUS_ARCHIVES = 150;
     private static boolean sIphShownThisSession;
 
     /** Sets whether the iph was shown this session. */
@@ -92,10 +100,7 @@ public class TabArchiveSettings {
         // are created, and tabs disappearing from tests is very unexpected. For archive tests,
         // this will need to be turned on manually.
         return mPrefsManager.readBoolean(
-                ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_ENABLED,
-                BuildConfig.IS_FOR_TEST
-                        ? false
-                        : ChromeFeatureList.sAndroidTabDeclutterArchiveEnabled.getValue());
+                ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_ENABLED, !BuildConfig.IS_FOR_TEST);
     }
 
     /** Sets whether archive is enabled in settings. */
@@ -107,17 +112,12 @@ public class TabArchiveSettings {
     public int getArchiveTimeDeltaHours() {
         return mPrefsManager.readInt(
                 ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS,
-                ChromeFeatureList.sAndroidTabDeclutterArchiveTimeDeltaHours.getValue());
+                DEFAULT_ARCHIVE_TIME_HOURS);
     }
 
     /** Similar to above, but the return value is in days. */
     public int getArchiveTimeDeltaDays() {
-        return (int)
-                TimeUnit.HOURS.toDays(
-                        mPrefsManager.readInt(
-                                ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS,
-                                ChromeFeatureList.sAndroidTabDeclutterArchiveTimeDeltaHours
-                                        .getValue()));
+        return (int) TimeUnit.HOURS.toDays(getArchiveTimeDeltaHours());
     }
 
     /** Sets the time delta (in hours) used to determine if a tab is eligible for archive. */
@@ -136,7 +136,7 @@ public class TabArchiveSettings {
         return getArchiveEnabled()
                 && mPrefsManager.readBoolean(
                         ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED,
-                        ChromeFeatureList.sAndroidTabDeclutterAutoDeleteEnabled.getValue());
+                        ChromeFeatureList.sAndroidTabDeclutterAutoDelete.isEnabled());
     }
 
     /** Sets whether auto deletion for archived tabs is enabled in settings. */
@@ -169,12 +169,7 @@ public class TabArchiveSettings {
 
     /** Similar to above, but the return value is in days. */
     public int getAutoDeleteTimeDeltaDays() {
-        return (int)
-                TimeUnit.HOURS.toDays(
-                        mPrefsManager.readInt(
-                                ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
-                                ChromeFeatureList.sAndroidTabDeclutterAutoDeleteTimeDeltaHours
-                                        .getValue()));
+        return (int) TimeUnit.HOURS.toDays(getAutoDeleteTimeDeltaHours());
     }
 
     /** Sets the time delta used to determine if an archived tab is eligible for auto deletion. */
@@ -185,13 +180,13 @@ public class TabArchiveSettings {
 
     /** Returns the interval to perform declutter in hours. */
     public int getDeclutterIntervalTimeDeltaHours() {
-        return ChromeFeatureList.sAndroidTabDeclutterIntervalTimeDeltaHours.getValue();
+        return DEFAULT_DECLUTTER_INTERVAL_TIME_HOURS;
     }
 
     /** Returns whether the dialog iph should be shown. */
     public boolean shouldShowDialogIph() {
         return mPrefsManager.readInt(ChromePreferenceKeys.TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT, 0)
-                < ChromeFeatureList.sAndroidTabDeclutterIphMessageDismissThreshold.getValue();
+                < DEFAULT_ALLOWED_IPH_SHOWS;
     }
 
     /** Sets whether the dialog iph should be shown. */
@@ -205,10 +200,11 @@ public class TabArchiveSettings {
     public void setShouldShowDialogIphForTesting(boolean shouldShow) {
         mPrefsManager.writeInt(
                 ChromePreferenceKeys.TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT,
-                shouldShow
-                        ? 0
-                        : ChromeFeatureList.sAndroidTabDeclutterIphMessageDismissThreshold
-                                .getValue());
+                shouldShow ? 0 : DEFAULT_ALLOWED_IPH_SHOWS);
+    }
+
+    public int getMaxSimultaneousArchives() {
+        return DEFAULT_MAX_SIMULTANEOUS_ARCHIVES;
     }
 
     // Private methods.

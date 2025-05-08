@@ -38,16 +38,15 @@ class PriorityAndReason {
   base::TaskPriority priority() const { return priority_; }
   const char* reason() const { return reason_; }
 
-  // Returns -1, 0 or 1 indicating the outcome of a comparison of this value
-  // and |other|.
-  int Compare(const PriorityAndReason& other) const;
-
-  bool operator==(const PriorityAndReason& other) const;
-  bool operator!=(const PriorityAndReason& other) const;
-  bool operator<=(const PriorityAndReason& other) const;
-  bool operator>=(const PriorityAndReason& other) const;
-  bool operator<(const PriorityAndReason& other) const;
-  bool operator>(const PriorityAndReason& other) const;
+  friend bool operator==(const PriorityAndReason& lhs,
+                         const PriorityAndReason& rhs);
+  friend auto operator<=>(const PriorityAndReason& lhs,
+                          const PriorityAndReason& rhs) {
+    if (lhs.priority_ != rhs.priority_) {
+      return lhs.priority_ <=> rhs.priority_;
+    }
+    return ReasonCompare(lhs.reason_, rhs.reason_) <=> 0;
+  }
 
  private:
   base::TaskPriority priority_ = base::TaskPriority::LOWEST;

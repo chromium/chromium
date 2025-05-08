@@ -65,8 +65,7 @@ struct FullHashInfo {
   FullHashInfo(const FullHashInfo& other);
   ~FullHashInfo();
 
-  bool operator==(const FullHashInfo& other) const;
-  bool operator!=(const FullHashInfo& other) const;
+  friend bool operator==(const FullHashInfo&, const FullHashInfo&) = default;
 
  private:
   FullHashInfo();

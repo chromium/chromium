@@ -28,8 +28,10 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -57,7 +59,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class PasswordSavingIntegrationTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
@@ -77,6 +80,7 @@ public class PasswordSavingIntegrationTest {
     private static final String CHANGE_PASSWORD_BUTTON_ID = "chg_submit_button";
     private static final String PASSWORD_MANAGER_ANNOTATION = "pm_parser_annotation";
 
+    private WebPageStation mStartingPage;
     private PasswordStoreBridge mPasswordStoreBridge;
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mBottomSheetTestSupport;
@@ -85,7 +89,7 @@ public class PasswordSavingIntegrationTest {
 
     @Before
     public void setup() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mStartingPage = mActivityTestRule.startOnBlankPage();
         PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
         PasswordManagerTestUtilsBridge.disableServerPredictions();
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -100,7 +104,7 @@ public class PasswordSavingIntegrationTest {
                             new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                 });
 
-        mWebContents = mActivityTestRule.getWebContents();
+        mWebContents = mStartingPage.webContentsElement.get();
         ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(mWebContents);
         mInputMethodManagerWrapper = TestInputMethodManagerWrapper.create(imeAdapter);
         imeAdapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);

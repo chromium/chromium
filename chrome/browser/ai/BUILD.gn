@@ -19,6 +19,7 @@ source_set("ai") {
     "ai_language_model.h",
     "ai_manager.h",
     "ai_on_device_model_component_observer.h",
+    "ai_on_device_session.h",
     "ai_rewriter.h",
     "ai_summarizer.h",
     "ai_utils.h",
@@ -45,8 +46,8 @@ source_set("ai") {
   ]
   if (enable_glic) {
     public_deps += [
-      "//chrome/browser/glic:glic",
       "//chrome/browser/actor:actor",
+      "//chrome/browser/glic:glic",
     ]
   }
 }
@@ -61,6 +62,7 @@ source_set("impl") {
     "ai_language_model.cc",
     "ai_manager.cc",
     "ai_on_device_model_component_observer.cc",
+    "ai_on_device_session.cc",
     "ai_rewriter.cc",
     "ai_summarizer.cc",
     "ai_utils.cc",
@@ -91,6 +93,7 @@ source_set("impl") {
   ]
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/tabs:tab_strip",
     ]

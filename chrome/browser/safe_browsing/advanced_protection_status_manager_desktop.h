@@ -69,7 +69,7 @@ class AdvancedProtectionStatusManagerDesktop
   ~AdvancedProtectionStatusManagerDesktop() override;
 
   // AdvancedProtectionManager:
-  Type GetAdvancedProtectionType() const override;
+  bool IsUnderAdvancedProtection() const override;
   void SetAdvancedProtectionStatusForTesting(bool enrolled) override;
 
   // KeyedService:

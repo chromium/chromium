@@ -1298,6 +1298,8 @@ class NET_EXPORT SpdySession
   // TODO(crbug.com/405934874): Remove once we identify the cause of the bug.
   std::optional<Error> drain_error_;
   std::string drain_description_;
+  std::optional<spdy::SpdyErrorCode> go_away_error_;
+  std::string go_away_debug_data_;
 
   // Represents how this session is created.
   const MultiplexedSessionCreationInitiator session_creation_initiator_;

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
 # TODO(nparker): reduce the duplication between these two, somehow.
 
 # Generate the binary proto form of "file_types" from the ascii proto.
@@ -14,9 +16,8 @@ action("make_file_types_protobuf") {
   input_filename = "download_file_types.asciipb"
   output_dir = target_gen_dir
   output_basename = "download_file_types.pb"
-  python_path_root = "$root_out_dir/pyproto"
   python_path_safe_browsing =
-      "$python_path_root/components/safe_browsing/content/common/proto"
+      "$proto_python_root/components/safe_browsing/content/common/proto"
 
   # Pick an architecture to generate for. These string match those
   # in the python script.
@@ -55,7 +56,7 @@ action("make_file_types_protobuf") {
     "-o",
     output_basename,
     "-p",
-    rebase_path(python_path_root, root_build_dir),
+    rebase_path(proto_python_root, root_build_dir),
     "-p",
     rebase_path(python_path_safe_browsing, root_build_dir),
   ]
@@ -78,9 +79,8 @@ action("make_all_file_types_protobuf") {
 
     # LINT.ThenChange(gen_file_type_proto.py:PlatformTypes)
   ]
-  python_path_root = "$root_build_dir/pyproto"
   python_path_safe_browsing =
-      "$python_path_root/components/safe_browsing/content/common/proto"
+      "$proto_python_root/components/safe_browsing/content/common/proto"
 
   inputs = [ input_filename ]
 
@@ -99,7 +99,7 @@ action("make_all_file_types_protobuf") {
     "-o",
     "download_file_types.pb",
     "-p",
-    rebase_path(python_path_root, root_build_dir),
+    rebase_path(proto_python_root, root_build_dir),
     "-p",
     rebase_path(python_path_safe_browsing, root_build_dir),
   ]

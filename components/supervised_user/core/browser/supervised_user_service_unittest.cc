@@ -28,6 +28,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -41,19 +42,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
-
 namespace {
 
 const char kExampleUrl0[] = "http://www.example0.com";
 const char kExampleUrl1[] = "http://www.example1.com/123";
 
-}  // namespace
 
 class SupervisedUserServiceTestBase : public ::testing::Test {
  public:
   explicit SupervisedUserServiceTestBase(bool is_supervised) {
     settings_service_.Init(syncable_pref_service_.user_prefs_store());
     supervised_user::RegisterProfilePrefs(syncable_pref_service_.registry());
+    supervised_user_sync_data_fake_.Init(syncable_pref_service_);
+
     if (is_supervised) {
       syncable_pref_service_.SetString(prefs::kSupervisedUserId,
                                        kChildAccountSUID);
@@ -84,6 +85,7 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
 
   syncer::MockSyncService sync_service_;
   sync_preferences::TestingPrefServiceSyncable syncable_pref_service_;
+  SupervisedUserSyncDataFake supervised_user_sync_data_fake_;
   SupervisedUserSettingsService settings_service_;
 
   std::unique_ptr<SupervisedUserService> service_;
@@ -97,52 +99,54 @@ class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
 
 // Tests that web approvals are enabled for supervised users.
 TEST_F(SupervisedUserServiceTest, ApprovalRequestsEnabled) {
-  ASSERT_TRUE(
+  EXPECT_TRUE(
       service_->remote_web_approvals_manager().AreApprovalRequestsEnabled());
 }
 
 // Tests that restricting all site navigation is applied to supervised users.
 TEST_F(SupervisedUserServiceTest, UrlIsBlockedForUser) {
   // Set "only allow certain sites" filter.
-  syncable_pref_service_.SetInteger(
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kBlock));
-  service_->GetURLFilter()->SetDefaultFilteringBehavior(
-      FilteringBehavior::kBlock);
-
-  ASSERT_TRUE(service_->IsBlockedURL(GURL("http://google.com")));
+      base::Value(static_cast<int>(FilteringBehavior::kBlock)));
+  EXPECT_TRUE(service_->IsBlockedURL(GURL("http://google.com")));
 }
 
 // Tests that allowing all site navigation is applied to supervised users.
 TEST_F(SupervisedUserServiceTest, UrlIsAllowedForUser) {
-  // Set "allow all sites" filter.
-  syncable_pref_service_.SetInteger(
+  // This configuration sets URL Filter in WebFilterType::kAllowAllSites mode.
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kAllow));
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
+      base::Value(static_cast<int>(FilteringBehavior::kAllow)));
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(false));
 
-  ASSERT_FALSE(service_->IsBlockedURL(GURL("http://google.com")));
+  EXPECT_FALSE(service_->IsBlockedURL(GURL("http://google.com")));
 }
 
 // Tests that changes in parent configuration for web filter types are recorded.
 TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
   base::HistogramTester histogram_tester;
 
-  // Tests filter "try to block mature sites".
-  syncable_pref_service_.SetInteger(
+  // This configuration sets URL Filter in WebFilterType::kTryToBlockMatureSites
+  // mode.
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kAllow));
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+      base::Value(static_cast<int>(FilteringBehavior::kAllow)));
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(true));
 
-  // This should not increase since only changes from the default are recorded.
+  // This should not increase since setting user pref `kSupervisedUserSafeSites`
+  // true won't take precedence over SupervisedUserPrefStore.
   histogram_tester.ExpectUniqueSample(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
       WebFilterType::kTryToBlockMatureSites,
       /*expected_bucket_count=*/0);
 
-  // Tests filter "allow all sites".
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
+  // This configuration sets URL Filter in WebFilterType::kAllowAllSites mode.
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(false));
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
@@ -150,17 +154,14 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
       /*expected_count=*/1);
 
   // Tests filter "only allow certain sites".
-  syncable_pref_service_.SetInteger(
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kBlock));
-  service_->GetURLFilter()->SetDefaultFilteringBehavior(
-      FilteringBehavior::kBlock);
+      base::Value(static_cast<int>(FilteringBehavior::kBlock)));
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
       WebFilterType::kCertainSites,
       /*expected_count=*/1);
-
   histogram_tester.ExpectTotalCount(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
       /*expected_count=*/2);
@@ -171,15 +172,12 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
 TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   base::HistogramTester histogram_tester;
 
-  // Overriding the value of prefs::kSupervisedUserSafeSites and
-  // prefs::kDefaultSupervisedUserFilteringBehavior in default storage is
-  // needed, otherwise no report could be triggered by policies change. Since
-  // the default values are the same of override values, the WebFilterType
-  // doesn't change and no report here.
-  syncable_pref_service_.SetInteger(
+  // This configuration sets URL Filter in WebFilterType::kAllowAllSites mode.
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kAllow));
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+      base::Value(static_cast<int>(FilteringBehavior::kAllow)));
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(false));
 
   // Blocks `kExampleUrl0`.
   {
@@ -261,20 +259,17 @@ class SupervisedUserServiceTestUnsupervised
 
 // Tests that web approvals are not enabled for unsupervised users.
 TEST_F(SupervisedUserServiceTestUnsupervised, ApprovalRequestsDisabled) {
-  ASSERT_FALSE(
+  EXPECT_FALSE(
       service_->remote_web_approvals_manager().AreApprovalRequestsEnabled());
 }
 
 // Tests that supervision restrictions do not apply to unsupervised users.
 TEST_F(SupervisedUserServiceTestUnsupervised, UrlIsAllowedForUser) {
   // Set "only allow certain sites" filter.
-  syncable_pref_service_.SetInteger(
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kBlock));
-  service_->GetURLFilter()->SetDefaultFilteringBehavior(
-      FilteringBehavior::kBlock);
-
-  ASSERT_FALSE(service_->IsBlockedURL(GURL("http://google.com")));
+      base::Value(static_cast<int>(FilteringBehavior::kBlock)));
+  EXPECT_FALSE(service_->IsBlockedURL(GURL("http://google.com")));
 }
 
 // TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg
@@ -288,9 +283,10 @@ TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
   ASSERT_EQ(syncable_pref_service_.GetInteger(
                 prefs::kDefaultSupervisedUserFilteringBehavior),
             static_cast<int>(FilteringBehavior::kAllow));
-  EXPECT_DCHECK_DEATH(syncable_pref_service_.SetInteger(
+  EXPECT_DCHECK_DEATH(syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      /* SupervisedUserURLFilter::WARN */ 1));
+      /* SupervisedUserURLFilter::WARN */ base::Value(1)));
 }
 
+}  // namespace
 }  // namespace supervised_user

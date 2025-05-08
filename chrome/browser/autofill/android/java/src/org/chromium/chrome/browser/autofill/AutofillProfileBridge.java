@@ -10,6 +10,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
 import org.chromium.components.autofill.DropdownKeyValue;
 
@@ -24,6 +25,7 @@ import java.util.Locale;
  * Static methods to fetch information needed to create the address fields for the autofill profile
  * form.
  */
+@NullMarked
 @JNINamespace("autofill")
 public final class AutofillProfileBridge {
     /**

@@ -7,6 +7,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -16,11 +17,19 @@
 UpgradeNotificationController::~UpgradeNotificationController() = default;
 
 void UpgradeNotificationController::OnOutdatedInstall() {
-  ShowOutdatedUpgradeBubble(&GetBrowser(), true);
+  ui::ElementContext element_context =
+      views::ElementTrackerViews::GetContextForView(
+          BrowserView::GetBrowserViewForBrowser(&GetBrowser()));
+
+  ShowOutdatedUpgradeBubble(element_context, &GetBrowser(), true);
 }
 
 void UpgradeNotificationController::OnOutdatedInstallNoAutoUpdate() {
-  ShowOutdatedUpgradeBubble(&GetBrowser(), false);
+  ui::ElementContext element_context =
+      views::ElementTrackerViews::GetContextForView(
+          BrowserView::GetBrowserViewForBrowser(&GetBrowser()));
+
+  ShowOutdatedUpgradeBubble(element_context, &GetBrowser(), false);
 }
 
 void UpgradeNotificationController::OnCriticalUpgradeInstalled() {

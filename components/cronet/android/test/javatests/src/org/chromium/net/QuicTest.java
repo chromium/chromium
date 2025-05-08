@@ -5,9 +5,9 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.chromium.net.CronetTestRule.getTestStorage;
+import static org.chromium.net.CronetTestUtil.assertIsQuic;
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import android.os.Build;
@@ -347,13 +347,5 @@ public class QuicTest {
             assertThat(trafficInfo.getFailureReason())
                     .isEqualTo(CronetTrafficInfo.RequestFailureReason.NETWORK);
         }
-    }
-
-    // Helper method to assert that the request is negotiated over QUIC.
-    private void assertIsQuic(UrlResponseInfo responseInfo) {
-        String protocol = responseInfo.getNegotiatedProtocol();
-        assertWithMessage("Expected the negotiatedProtocol to be QUIC but was " + protocol)
-                .that(protocol.startsWith("http/2+quic") || protocol.startsWith("h3"))
-                .isTrue();
     }
 }

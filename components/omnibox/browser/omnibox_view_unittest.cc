@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/test_omnibox_popup_view.h"
 #include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/template_url_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -45,6 +46,7 @@ using testing::_;
 using testing::DoAll;
 using testing::Return;
 using testing::SaveArg;
+using testing::SaveArgPointee;
 
 namespace {
 
@@ -243,6 +245,38 @@ TEST_F(OmniboxViewTest, DISABLED_GetIcon_BookmarkIcon) {
   EXPECT_EQ(expected_icon, icon);
 }
 
+// Tests GetIcon returns the keyword search provider favicon when the match is a
+// non-Google search query.
+TEST_F(OmniboxViewTest, GetIcon_NonGoogleKeywordSearch) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image expected_image =
+      gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+
+  EXPECT_CALL(*client(), GetFaviconForKeywordSearchProvider(_, _))
+      .WillOnce(Return(expected_image));
+
+  TemplateURLData data;
+  data.SetKeyword(u"foo");
+  data.SetURL("https://foo.com");
+  TemplateURL* turl =
+      view()->controller()->client()->GetTemplateURLService()->Add(
+          std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(turl);
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+  match.keyword = u"foo";
+  model()->SetCurrentMatchForTest(match);
+
+  ui::ImageModel image = view()->GetIcon(
+      gfx::kFaviconSize, gfx::kPlaceholderColor, gfx::kPlaceholderColor,
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor, base::DoNothing(), false);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.GetImage().ToSkBitmap()->getColor(0, 0));
+}
+
 // Tests GetIcon returns the website's favicon when the match is a website.
 TEST_F(OmniboxViewTest, GetIcon_Favicon) {
   const GURL kUrl("https://woahDude.com");
@@ -261,6 +295,42 @@ TEST_F(OmniboxViewTest, GetIcon_Favicon) {
                   gfx::kPlaceholderColor, base::DoNothing(), false);
 
   EXPECT_EQ(page_url, kUrl);
+}
+
+// Tests GetIcon returns the search aggregator's favicon by bitmap when the
+// match is a non-Google search query with search aggregator keyword.
+TEST_F(OmniboxViewPopupTest, GetIcon_SearchAggregatorKeywordSearch) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image expected_image =
+      gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+
+  EXPECT_CALL(*client(), GetFaviconForKeywordSearchProvider(_, _)).Times(0);
+
+  TemplateURLData data;
+  data.SetKeyword(u"foo");
+  data.SetURL("https://foo.com");
+  data.favicon_url = GURL("https://foo.com/icon.png");
+  data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
+  TemplateURL* turl =
+      view()->controller()->client()->GetTemplateURLService()->Add(
+          std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(turl);
+
+  // Sets the icon bitmap for search aggregator.
+  model()->SetIconBitmap(GURL("https://foo.com/icon.png"), bitmap);
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+  match.keyword = u"foo";
+  model()->SetCurrentMatchForTest(match);
+
+  ui::ImageModel image = view()->GetIcon(
+      gfx::kFaviconSize, gfx::kPlaceholderColor, gfx::kPlaceholderColor,
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor, base::DoNothing(), false);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.GetImage().ToSkBitmap()->getColor(0, 0));
 }
 
 // Tests GetIcon returns the website's favicon when the match is a website.

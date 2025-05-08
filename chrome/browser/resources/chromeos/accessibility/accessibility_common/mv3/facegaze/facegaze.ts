@@ -28,16 +28,14 @@ export class FaceGaze {
   private actionsEnabled_ = false;
   private cursorControlEnabled_ = false;
   private initialized_ = false;
+  // isFaceLandmarkerResultValid_ is initialized to true to ensure the correct
+  // UI messages are shown on startup.
+  private isFaceLandmarkerResultValid_ = true;
+  private isCameraMuted_ = false;
   private onInitCallbackForTest_: (() => void)|undefined;
   private prefsListener_: (prefs: PrefObject[]) => void;
 
   constructor(isDictationActive: () => boolean) {
-    this.webCamFaceLandmarker_ = new WebCamFaceLandmarker(
-        (resultWithLatency: FaceLandmarkerResultWithLatency) => {
-          const {result, latency} = resultWithLatency;
-          this.processFaceLandmarkerResult_(result, latency);
-        });
-
     this.bubbleController_ = new BubbleController(() => {
       return {
         paused: this.gestureHandler_.isPaused() ?
@@ -56,8 +54,18 @@ export class FaceGaze {
         precision: this.mouseController_.isPrecisionActive() ?
             this.gestureHandler_.getGestureForPrecision() :
             undefined,
+        isFaceLandmarkerResultValid: this.isFaceLandmarkerResultValid_,
+        isCameraMuted: this.isCameraMuted_,
       };
     });
+
+    this.webCamFaceLandmarker_ = new WebCamFaceLandmarker(
+        this.bubbleController_,
+        (resultWithLatency: FaceLandmarkerResultWithLatency) => {
+          const {result, latency} = resultWithLatency;
+          this.processFaceLandmarkerResult_(result, latency);
+        },
+        () => this.onCameraFeedMuted_(), () => this.onCameraFeedUnmuted_());
 
     this.mouseController_ = new MouseController(this.bubbleController_);
     this.gestureHandler_ = new GestureHandler(
@@ -228,6 +236,20 @@ export class FaceGaze {
       return;
     }
 
+    if (result.faceBlendshapes.length === 0 &&
+        result.faceLandmarks.length === 0 &&
+        result.facialTransformationMatrixes.length === 0) {
+      // In practice, we can get results that are empty. Typically this happens
+      // when the camera is obstructed, blocked by permissions, if the user is
+      // out of frame, or if the user's face can't be detected for any other
+      // reason. In all of these cases, the camera feed is active but either
+      // gives us empty frames or frames where a face cannot be recognized,
+      // which causes the FaceLandmarker to return this type of result.
+      this.updateIsFaceLandmarkerResultValid_(/*valid=*/ false);
+      return;
+    }
+
+    this.updateIsFaceLandmarkerResultValid_(/*valid=*/ true);
     if (latency !== undefined) {
       this.metricsUtils_.addFaceLandmarkerResultLatency(latency);
     }
@@ -261,6 +283,33 @@ export class FaceGaze {
     }
   }
 
+  private updateIsFaceLandmarkerResultValid_(valid: boolean): void {
+    if (valid === this.isFaceLandmarkerResultValid_) {
+      return;
+    }
+
+    this.isFaceLandmarkerResultValid_ = valid;
+    this.bubbleController_.resetBubble();
+  }
+
+  private onCameraFeedMuted_(): void {
+    if (this.isCameraMuted_) {
+      return;
+    }
+
+    this.isCameraMuted_ = true;
+    this.bubbleController_.resetBubble();
+  }
+
+  private onCameraFeedUnmuted_(): void {
+    if (!this.isCameraMuted_) {
+      return;
+    }
+
+    this.isCameraMuted_ = false;
+    this.bubbleController_.resetBubble();
+  }
+
   /** Destructor to remove any listeners. */
   onFaceGazeDisabled(): void {
     this.mouseController_.reset();
@@ -270,7 +319,7 @@ export class FaceGaze {
   }
 
   /** Allows tests to wait for FaceGaze to be fully initialized. */
-  setOnInitCallbackForTest(callback: () => void): void {
+  setOnInitCallbackForTest(callback: VoidFunction): void {
     if (!this.initialized_) {
       this.onInitCallbackForTest_ = callback;
       return;

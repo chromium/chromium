@@ -66,7 +66,6 @@ import java.util.concurrent.TimeUnit;
     ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
 })
-@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
 public class TabsSettingsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -184,16 +183,6 @@ public class TabsSettingsUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
-    public void testArchiveSettingsHiddenWhenFeatureOff() {
-        TabsSettings tabsSettings = launchFragment();
-        Preference archiveSettinsEntryPoint =
-                tabsSettings.findPreference(TabsSettings.PREF_TAB_ARCHIVE_SETTINGS);
-        assertFalse(archiveSettinsEntryPoint.isVisible());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
     public void testArchiveSettingsTitleAndSummary() {
         TabArchiveSettings archiveSettings =
                 new TabArchiveSettings(ChromeSharedPreferences.getInstance());

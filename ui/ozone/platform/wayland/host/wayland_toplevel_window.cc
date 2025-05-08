@@ -420,15 +420,27 @@ void WaylandToplevelWindow::UpdateActivationState() {
   bool prev_is_active = is_active_;
 
   // Determine active state from keyboard focus. If keyboard is unavailable,
-  // determine it from xdg-shell "activated" state as that's the only hint the
-  // compositor provides us on whether our window is considered active.
-  // TODO(crbug.com/369574355): utilize zwp_text_input_v3::{enter,leave}
-  // eventually
+  // determine it from zwp_text_input_v3::{enter,leave}.
+  // If neither of those are available, use xdg-shell "activated" state as
+  // that's the only other hint the compositor provides us on whether our window
+  // is considered active.
   if (connection()->IsKeyboardAvailable()) {
     auto* keyboard_focused_window =
         connection()->window_manager()->GetCurrentKeyboardFocusedWindow();
     is_active_ = keyboard_focused_window &&
                  keyboard_focused_window->GetRootParentWindow() == this;
+  } else if (connection()->SupportsTextInputFocus()) {
+    // Note: Some compositors (sway, niri, cosmic etc.) may not send
+    // text-input-v3 enter/leave events if an IM framework is not
+    // installed/running. So text input focus cannot be used always instead of
+    // keyboard focus above. However, if there is no physical keyboard, there
+    // should be an IM framework to facilitate inputting text in some way, e.g.
+    // using a virtual keyboard, and so it should be okay to expect focus to be
+    // received from text-input in that case if text-input-v3 is available.
+    auto* text_input_focused_window =
+        connection()->window_manager()->GetCurrentTextInputFocusedWindow();
+    is_active_ = text_input_focused_window &&
+                 text_input_focused_window->GetRootParentWindow() == this;
   } else {
     is_active_ = is_xdg_active_;
   }
@@ -483,13 +495,17 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   is_suspended_ = window_states.is_suspended;
 
   // The tiled state affects the window geometry, so apply it here.
-  if (window_states.tiled_edges != tiled_state_) {
+  // TODO(crbug.com/414831391): Remove this and notify in
+  // WindowTreeHostPlatform::OnStateUpdate instead like all other state changes.
+  // The only issue there is when doing that a regression was seen in kwin. See
+  // the bug description for additional details.
+  if (window_states.tiled_edges != applied_state().tiled_edges) {
     // This configure changes the decoration insets.  We should adjust the
     // bounds appropriately.
-    tiled_state_ = window_states.tiled_edges;
     delegate()->OnWindowTiledStateChanged(window_states.tiled_edges);
   }
 
+  pending_configure_state_.tiled_edges = window_states.tiled_edges;
   pending_configure_state_.window_state = window_state;
 
   // Width or height set to 0 means that we should decide on width and height by

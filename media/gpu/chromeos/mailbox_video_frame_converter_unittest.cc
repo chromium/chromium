@@ -67,20 +67,18 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandle(const gfx::Size& size,
   auto data = std::vector<uint8_t>(
       VideoFrame::AllocationSize(*video_pixel_format, size));
 
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::NATIVE_PIXMAP;
-
-  static base::AtomicSequenceNumber buffer_id_generator;
-  handle.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
-
+  gfx::NativePixmapHandle native_pixmap_handle;
   for (size_t i = 0; i < VideoFrame::NumPlanes(*video_pixel_format); i++) {
     const gfx::Size plane_size_in_bytes =
         VideoFrame::PlaneSize(*video_pixel_format, i, size);
-    handle.native_pixmap_handle.planes.emplace_back(
-        plane_size_in_bytes.width(), 0, plane_size_in_bytes.GetArea(),
-        GetDummyFD());
+    native_pixmap_handle.planes.emplace_back(plane_size_in_bytes.width(), 0,
+                                             plane_size_in_bytes.GetArea(),
+                                             GetDummyFD());
   }
-  handle.native_pixmap_handle.modifier = gfx::NativePixmapHandle::kNoModifier;
+  native_pixmap_handle.modifier = gfx::NativePixmapHandle::kNoModifier;
+  gfx::GpuMemoryBufferHandle handle(std::move(native_pixmap_handle));
+  static base::AtomicSequenceNumber buffer_id_generator;
+  handle.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
   return handle;
 }
 

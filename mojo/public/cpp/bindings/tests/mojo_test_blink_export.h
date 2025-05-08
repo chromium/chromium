@@ -15,11 +15,7 @@
 #endif  // defined(MOJO_TEST_BLINK_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(MOJO_TEST_BLINK_IMPLEMENTATION)
 #define MOJO_TEST_BLINK_EXPORT __attribute__((visibility("default")))
-#else
-#define MOJO_TEST_BLINK_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

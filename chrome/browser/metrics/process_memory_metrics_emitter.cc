@@ -258,6 +258,15 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      MetricSize::kLarge, kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/dawn/textures/msaa", "DawnSharedContext.MSAA", MetricSize::kLarge,
      kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/dawn/textures/msaa",
+     "DawnSharedContext.MSAA.Count",
+     MetricSize::kCustom,
+     MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly,
+     nullptr,
+     {0, 10000}},
+    {"gpu/dawn/textures/msaa", "DawnSharedContext.MSAA.Largest",
+     MetricSize::kLarge, "biggest_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/dawn/buffers", "DawnSharedContext.Buffers", MetricSize::kLarge,
      kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/discardable_cache", "ServiceDiscardableManager", MetricSize::kCustom,
@@ -1731,6 +1740,7 @@ ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
     base::flat_set<const performance_manager::PageNode*> page_nodes =
         performance_manager::GraphOperations::GetAssociatedPageNodes(
             process_node);
+    const base::TimeTicks now = base::TimeTicks::Now();
     for (const performance_manager::PageNode* page_node : page_nodes) {
       if (page_node->GetUkmSourceID() == ukm::kInvalidSourceId)
         continue;
@@ -1750,7 +1760,7 @@ ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
       page_info.hosts_main_frame = HostsMainFrame(process_node, page_node);
       page_info.is_visible = page_node->IsVisible();
       page_info.time_since_last_visibility_change =
-          page_node->GetTimeSinceLastVisibilityChange();
+          now - page_node->GetLastVisibilityChangeTime();
       page_info.time_since_last_navigation =
           page_node->GetTimeSinceLastNavigation();
     }

@@ -73,7 +73,7 @@ class UserspaceSwapPolicy : public GraphOwned,
   virtual bool IsPageNodeVisible(const PageNode* page_node);
   virtual bool IsPageNodeAudible(const PageNode* page_node);
   virtual bool IsPageNodeLoadingOrBusy(const PageNode* page_node);
-  virtual base::TimeDelta GetTimeSinceLastVisibilityChange(
+  virtual base::TimeTicks GetLastVisibilityChangeTime(
       const PageNode* page_node);
 
   // IsEligibleToSwap will return true if the |page_node| belonging to the

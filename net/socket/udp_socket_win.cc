@@ -28,6 +28,7 @@
 #include "base/task/thread_pool.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
+#include "net/base/ip_address_util.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_activity_monitor.h"
@@ -1269,8 +1270,7 @@ int UDPSocketWin::JoinGroup(const IPAddress& group_address) const {
       }
       ip_mreq mreq;
       mreq.imr_interface.s_addr = htonl(multicast_interface_);
-      memcpy(&mreq.imr_multiaddr, group_address.bytes().data(),
-             IPAddress::kIPv4AddressSize);
+      mreq.imr_multiaddr = ToInAddr(group_address);
       int rv = setsockopt(socket_, IPPROTO_IP, IP_ADD_MEMBERSHIP,
                           reinterpret_cast<const char*>(&mreq), sizeof(mreq));
       if (rv) {
@@ -1284,8 +1284,7 @@ int UDPSocketWin::JoinGroup(const IPAddress& group_address) const {
       }
       ipv6_mreq mreq;
       mreq.ipv6mr_interface = multicast_interface_;
-      memcpy(&mreq.ipv6mr_multiaddr, group_address.bytes().data(),
-             IPAddress::kIPv6AddressSize);
+      mreq.ipv6mr_multiaddr = ToIn6Addr(group_address);
       int rv = setsockopt(socket_, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP,
                           reinterpret_cast<const char*>(&mreq), sizeof(mreq));
       if (rv) {
@@ -1311,8 +1310,7 @@ int UDPSocketWin::LeaveGroup(const IPAddress& group_address) const {
       }
       ip_mreq mreq;
       mreq.imr_interface.s_addr = htonl(multicast_interface_);
-      memcpy(&mreq.imr_multiaddr, group_address.bytes().data(),
-             IPAddress::kIPv4AddressSize);
+      mreq.imr_multiaddr = ToInAddr(group_address);
       int rv = setsockopt(socket_, IPPROTO_IP, IP_DROP_MEMBERSHIP,
                           reinterpret_cast<const char*>(&mreq), sizeof(mreq));
       if (rv) {
@@ -1326,8 +1324,7 @@ int UDPSocketWin::LeaveGroup(const IPAddress& group_address) const {
       }
       ipv6_mreq mreq;
       mreq.ipv6mr_interface = multicast_interface_;
-      memcpy(&mreq.ipv6mr_multiaddr, group_address.bytes().data(),
-             IPAddress::kIPv6AddressSize);
+      mreq.ipv6mr_multiaddr = ToIn6Addr(group_address);
       int rv = setsockopt(socket_, IPPROTO_IPV6, IP_DROP_MEMBERSHIP,
                           reinterpret_cast<const char*>(&mreq), sizeof(mreq));
       if (rv) {

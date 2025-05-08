@@ -459,6 +459,25 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Regenerate contents for all pages that need it due to Ink strokes.
   void RegenerateContents();
 
+  // Extends the current text selection to the nearest page and character to
+  // `point`. Returns whether any text is being selected after extending.
+  // `point` must be in device coordinates. Virtual to support testing.
+  virtual bool ExtendSelectionByPoint(const gfx::PointF& point);
+
+  // Returns all current text selection rects in screen coordinates. Virtual to
+  // support testing.
+  virtual std::vector<gfx::Rect> GetSelectionRects();
+
+  // Returns whether `point` is within a selectable text area or within a link
+  // area, excluding form fields. `point` must be in device coordinates. Virtual
+  // to support testing.
+  virtual bool IsSelectableTextOrLinkArea(const gfx::PointF& point);
+
+  // Handles a text or link area being clicked at `point`, `click_count` times.
+  // The area must selectable, otherwise a crash occurs. `point` must be in
+  // device coordinates. Virtual to support testing.
+  virtual void OnTextOrLinkAreaClick(const gfx::PointF& point, int click_count);
+
   const std::map<InkModeledShapeId, FPDF_PAGEOBJECT>&
   ink_modeled_shape_map_for_testing() const {
     return ink_modeled_shape_map_;
@@ -482,9 +501,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 #endif  // defined(PDF_ENABLE_XFA)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Starts the searchify process and passes a callback to a function that
-  // performs OCR. This function is expected to be called only once.
-  void StartSearchify(PerformOcrCallbackAsync perform_ocr_callback);
+  // Starts the searchify process and passes two callbacks to functions that
+  // return the maximum image dimension and performs OCR.
+  // This function is expected to be called only once.
+  void StartSearchify(GetOcrMaxImageDimensionCallbackAsync get_max_dimension,
+                      PerformOcrCallbackAsync perform_ocr_callback);
 
   // Returns a function to pass OCR disconnection events to the searchifier.
   base::RepeatingClosure GetOcrDisconnectHandler();
@@ -810,6 +831,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   void OnSingleClick(int page_index, int char_index);
   void OnMultipleClick(int click_count, int page_index, int char_index);
+  // Internal version of `OnTextOrLinkAreaClick()` that takes a PointData
+  // instead of a point.
+  void OnTextOrLinkAreaClickInternal(const PointData& point_data,
+                                     int click_count);
+
   bool OnLeftMouseDown(const blink::WebMouseEvent& event);
   bool OnMiddleMouseDown(const blink::WebMouseEvent& event);
   bool OnRightMouseDown(const blink::WebMouseEvent& event);

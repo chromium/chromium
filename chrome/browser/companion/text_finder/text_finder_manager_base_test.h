@@ -31,7 +31,7 @@ class MockAnnotationAgentContainer
                void(mojo::PendingRemote<blink::mojom::AnnotationAgentHost>,
                     mojo::PendingReceiver<blink::mojom::AnnotationAgent>,
                     blink::mojom::AnnotationType,
-                    const std::string& /*serialized_selector*/,
+                    blink::mojom::SelectorPtr,
                     std::optional<int> /*search_range_start_node_id*/));
 
   MOCK_METHOD2(CreateAgentFromSelection,

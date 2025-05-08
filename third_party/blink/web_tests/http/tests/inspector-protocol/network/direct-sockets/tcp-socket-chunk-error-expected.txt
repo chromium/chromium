@@ -1,9 +1,0 @@
-TCP DirectSockets chunk error
-socket created
-   remoteAddr: 127.0.0.1
-socket opened
-   remoteAddr: 127.0.0.1
-   localAddr: 127.0.0.1
-socket chunk error
-   errorMessage: Create buffer source error
-

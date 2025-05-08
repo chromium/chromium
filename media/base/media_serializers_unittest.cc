@@ -74,10 +74,10 @@ TEST(MediaSerializersTest, AutoPipInfo) {
   // Verify the full serialized string for the basic case.
   ASSERT_EQ(
       ToString(MediaSerialize(base_info)),
-      R"({"Reason":"MediaPlayback","blocked_due_to_content_setting":false,)"
-      R"("has_audio_focus":false,"has_safe_url":false,"is_playing":false,)"
-      R"("meets_media_engagement_conditions":false,"was_recently_audible":)"
-      R"(false})");
+      R"({"blocked_due_to_content_setting":false,"has_audio_focus":false,)"
+      R"("has_safe_url":false,"is_playing":false,)"
+      R"("meets_media_engagement_conditions":false,"reason":"MediaPlayback",)"
+      R"("was_recently_audible":false})");
 
   auto set_and_verify_flag = [&base_info](bool AutoPipInfo::* member_ptr,
                                           std::string_view expected_json) {

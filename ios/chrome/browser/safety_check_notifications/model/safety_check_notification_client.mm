@@ -143,11 +143,9 @@ SafetyCheckNotificationClient::SafetyCheckNotificationClient(
 SafetyCheckNotificationClient::SafetyCheckNotificationClient(
     ProfileIOS* profile,
     const scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : PushNotificationClient(PushNotificationClientId::kSafetyCheck,
-                             PushNotificationClientScope::kPerProfile),
-      profile_(profile),
+    : PushNotificationClient(PushNotificationClientId::kSafetyCheck, profile),
       task_runner_(task_runner) {
-  CHECK(profile_);
+  CHECK(profile);
   CHECK(task_runner);
   CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
 }
@@ -349,20 +347,6 @@ void SafetyCheckNotificationClient::GetPendingRequests(
       getPendingNotificationRequestsWithCompletionHandler:callback];
 }
 
-Browser* SafetyCheckNotificationClient::GetActiveForegroundBrowser() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
-    // When multi-Profile handling is enabled, `profile_` should be set.
-    // This invariant is checked in the constructor used for this mode.
-    CHECK(profile_);
-
-    return GetSceneLevelForegroundActiveBrowserForProfile(profile_);
-  } else {
-    return GetSceneLevelForegroundActiveBrowser();
-  }
-}
-
 bool SafetyCheckNotificationClient::IsPermitted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -458,10 +442,13 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
         prefs::kIosSafetyCheckNotificationsLastSent,
         static_cast<int>(SafetyCheckNotificationType::kPasswords));
 
-    if (IsIOSMultiProfilePushNotificationHandlingEnabled() && profile_) {
-      ScheduleProfileNotification(
-          password_request.value(), std::move(schedule_completion_callback),
-          profile_->GetOriginalProfile()->GetProfileName());
+    if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+      ProfileIOS* current_profile = GetProfile();
+      CHECK(current_profile);
+
+      ScheduleProfileNotification(password_request.value(),
+                                  std::move(schedule_completion_callback),
+                                  current_profile->GetProfileName());
     } else {
       UNNotificationRequest* notification_request =
           CreateNotificationRequestFromScheduledRequest(
@@ -493,11 +480,13 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
         prefs::kIosSafetyCheckNotificationsLastSent,
         static_cast<int>(SafetyCheckNotificationType::kSafeBrowsing));
 
-    if (IsIOSMultiProfilePushNotificationHandlingEnabled() && profile_) {
-      ScheduleProfileNotification(
-          safe_browsing_request.value(),
-          std::move(schedule_completion_callback),
-          profile_->GetOriginalProfile()->GetProfileName());
+    if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+      ProfileIOS* current_profile = GetProfile();
+      CHECK(current_profile);
+
+      ScheduleProfileNotification(safe_browsing_request.value(),
+                                  std::move(schedule_completion_callback),
+                                  current_profile->GetProfileName());
     } else {
       UNNotificationRequest* notification_request =
           CreateNotificationRequestFromScheduledRequest(

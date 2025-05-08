@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<style>
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+
+<select id=s1>
+  <span class=input></span>
+  <option>one</option>
+  <option>two</option>
+</select>
+
+<select id=s2>
+  <option>one</option>
+  <span class=input></span>
+  <option>two</option>
+</select>
+
+<select id=s3>
+  <span class=input data-type=radio></span>
+  <option>one</option>
+  <option>two</option>
+</select>
+
+<select id=s4>
+  <span class=input></span>
+  <span class=input></span>
+  <option>one</option>
+  <option>two</option>
+</select>
+
+<script>
+  document.querySelectorAll('.input').forEach(container => {
+    const input = document.createElement('input');
+    input.type = container.getAttribute('data-type');
+    container.appendChild(input);
+  });
+</script>

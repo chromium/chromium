@@ -367,6 +367,7 @@
 //media/test/data/four-colors.png
 //media/test/data/four-colors.y4m
 //media/test/data/frame_size_change-av_enc-v.webm
+//media/test/data/front-discard.mp4
 //media/test/data/gbrp-av1.mp4
 //media/test/data/gbrp-h264.mp4
 //media/test/data/gbrp-h265.mp4
@@ -404,6 +405,7 @@
 //media/test/data/media_foundation_fallback.html
 //media/test/data/media_source_player.html
 //media/test/data/media_suspend_test.html
+//media/test/data/mid-file-start-time.mp4
 //media/test/data/midstream_config_change.mp3
 //media/test/data/mono_cpe.adts
 //media/test/data/mse_config_change.html

@@ -352,8 +352,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const QualifiedName& name) const;
   void SetElementAttribute(const QualifiedName&, Element*);
   GCedHeapVector<Member<Element>>* GetAttrAssociatedElements(
-      const QualifiedName& name,
-      bool resolve_reference_target) const;
+      const QualifiedName& name) const;
 
   // If treescope_element is connected, then we will search treescope_element's
   // TreeScope for an element with the id. If treescope_element is disconnected,
@@ -751,13 +750,21 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     return CouldHaveAttributeWithPrecomputedFilter(
         FilterForAttribute(attribute_name));
   }
+  bool CouldHaveClass(const AtomicString& class_name) const {
+    return CouldHaveClassWithPrecomputedFilter(FilterForString(class_name));
+  }
 
-  // A variant of CouldHaveAttribute() that allows you to compute
+  // A variant of CouldHave{Attribute,Class}() that allows you to compute
   // the filter ahead-of-time; useful if you want to test many elements
-  // against the same attribute name.
-  static uint32_t FilterForAttribute(const QualifiedName& attribute_name) {
-    unsigned hash = attribute_name.LocalNameUpper().Hash();
-    uint32_t filter = 0;
+  // against the same attribute/class name.
+  using TinyBloomFilter = uint32_t;
+  static TinyBloomFilter FilterForAttribute(
+      const QualifiedName& attribute_name) {
+    return FilterForString(attribute_name.LocalNameUpper());
+  }
+  static TinyBloomFilter FilterForString(const AtomicString& str) {
+    unsigned hash = str.Hash();
+    TinyBloomFilter filter = 0;
     // Build a 32-bit Bloom filter, with k=2. We extract the two
     // (5-bit) hashes that we need from non-overlapping parts of the
     // (24-bit) String hash, which should be independent.
@@ -765,11 +772,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     filter |= 1u << ((hash >> 5) & 31);
     return filter;
   }
-  bool CouldHaveAttributeWithPrecomputedFilter(uint32_t filter) const {
-    return (attribute_bloom_ & filter) == filter;
+  bool CouldHaveAttributeWithPrecomputedFilter(TinyBloomFilter filter) const {
+    return (attribute_or_class_bloom_ & filter) == filter;
+  }
+  bool CouldHaveClassWithPrecomputedFilter(TinyBloomFilter filter) const {
+    return (attribute_or_class_bloom_ & filter) == filter;
   }
 #if DCHECK_IS_ON()
-  uint32_t AttributeBloomFilterForDebug() const { return attribute_bloom_; }
+  TinyBloomFilter AttributeOrClassBloomFilterForDebug() const {
+    return attribute_or_class_bloom_;
+  }
 #endif
 
   // Step 5 of https://dom.spec.whatwg.org/#concept-node-clone
@@ -1153,6 +1165,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // popover that is the target of an interest invoker that has partial
   // interest.
   bool IsInPartialInterestPopover() const;
+  // Used in some situations (e.g. mobile device context menu activation) to
+  // immediately show interest in an element, ignoring any show delays that may
+  // be set on the element. If the element is not an interest invoker, nothing
+  // happens.
+  void ShowInterestNow();
 
   // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
   // found in "element_inner_text.cc".
@@ -1234,6 +1251,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Returns true if this element has ::view-transition-group children.
   bool HasViewTransitionGroupChildren() const;
+
+  // Returns true if this element contains any ::scroll-button or
+  // ::scroll-marker-group pseudos.
+  bool HasScrollButtonOrMarkerGroupPseudos() const;
 
   bool PseudoElementStylesAffectCounters() const;
 
@@ -2230,11 +2251,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   subtle::UncompressedMember<const ComputedStyle> computed_style_;
   Member<ElementData> element_data_;
 
-  // A tiny Bloom filter for which attribute names we have; saves going to
-  // ElementData if the attribute doesn't exist. May have false positives,
-  // of course. We do not currently update this when attributes are removed,
-  // only when they are added. Attribute _values_ are not part of this filter.
-  uint32_t attribute_bloom_ = 0;
+  // A tiny Bloom filter for which attribute names and class names we have;
+  // saves going to ElementData if the attribute/class doesn't exist. May have
+  // false positives, of course. We do not currently update this when
+  // attributes/classes are removed, only when they are added. Attribute
+  // _values_ are not part of this filter, except for the values of class="".
+  uint32_t attribute_or_class_bloom_ = 0;
 };
 
 template <>

@@ -33,19 +33,20 @@ uint8_t LinearToSrgb(float cl) {
   return static_cast<uint8_t>(255.0f * cs + 0.5f);
 }
 
-void Rgba16fToSrgba8(base::span<const device::RgbaTupleF16> input,
+void Rgba16fToSrgba8(base::span<const uint16_t> input,
                      base::span<uint8_t> output) {
-  DCHECK_EQ(input.size() * 4, output.size());
+  CHECK_EQ(input.size(), output.size());
+  CHECK_EQ(input.size() % 4, 0u);
 
   for (size_t i = 0; i < input.size(); ++i) {
-    const auto& in = input[i];
-    auto [out_pixel, rest] = output.split_at<4>();
-    out_pixel[0] = LinearToSrgb(HalfFloatToFloat(in.red()));
-    out_pixel[1] = LinearToSrgb(HalfFloatToFloat(in.green()));
-    out_pixel[2] = LinearToSrgb(HalfFloatToFloat(in.blue()));
-    // We won't support non-opaque alpha to make the conversion a bit faster.
-    out_pixel[3] = 255;
-    output = rest;
+    // Every fourth input element is the alpha channel, which should remain in
+    // standard space.
+    if ((i + 1) % 4 == 0) {
+      // We won't support non-opaque alpha to make the conversion a bit faster.
+      output[i] = 255;
+    } else {
+      output[i] = LinearToSrgb(HalfFloatToFloat(input[i]));
+    }
   }
 }
 
@@ -59,17 +60,20 @@ XRCubeMap::XRCubeMap(const device::mojom::blink::XRCubeMap& cube_map) {
   static_assert(kNumComponentsPerPixel == 4,
                 "XRCubeMaps are expected to be in the RGBA16F format");
 
-  // Cube map sides must all be a power-of-two image
+  // Cube map sides must all be a power-of-two image. Note that we can skip the
+  // division by |kNumComponentsPerPixel| at this time, since it is *also* a
+  // power-of-two.
   bool valid = std::has_single_bit(cube_map.width_and_height);
-  const size_t expected_size =
-      cube_map.width_and_height * cube_map.width_and_height;
+  const size_t expected_size = cube_map.width_and_height *
+                               cube_map.width_and_height *
+                               kNumComponentsPerPixel;
   valid &= cube_map.positive_x.size() == expected_size;
   valid &= cube_map.negative_x.size() == expected_size;
   valid &= cube_map.positive_y.size() == expected_size;
   valid &= cube_map.negative_y.size() == expected_size;
   valid &= cube_map.positive_z.size() == expected_size;
   valid &= cube_map.negative_z.size() == expected_size;
-  DCHECK(valid);
+  CHECK(valid);
 
   width_and_height_ = cube_map.width_and_height;
   positive_x_ = cube_map.positive_x;
@@ -91,7 +95,6 @@ WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
   DCHECK(texture);
   DCHECK(!texture->HasEverBeenBound() ||
          texture->GetTarget() == GL_TEXTURE_CUBE_MAP);
-  DCHECK(texture->ContextGroup() == context->ContextGroup());
 
   auto* gl = context->ContextGL();
   texture->SetTarget(GL_TEXTURE_CUBE_MAP);
@@ -101,7 +104,7 @@ WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
   gl->TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   gl->TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  const std::array<base::span<const device::RgbaTupleF16>, 6> cubemap_images = {
+  const std::array<base::span<const uint16_t>, 6> cubemap_images = {
       positive_x_, negative_x_, positive_y_,
       negative_y_, positive_z_, negative_z_,
   };

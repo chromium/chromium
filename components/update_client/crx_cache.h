@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -77,7 +78,12 @@ class CrxCache : public base::RefCountedThreadSafe<CrxCache> {
           callback);
 
   // Removes all entries associated with a particular app ID. O(N) time.
-  void RemoveAll(const std::string& app_id);
+  void RemoveAll(const std::string& app_id, base::OnceClosure callback);
+
+  // Removes all entries that are not associated with any of the listed
+  // app IDs. O(N+M) time.
+  void RemoveIfNot(const std::vector<std::string>& app_ids,
+                   base::OnceClosure callback);
 
  private:
   friend class base::RefCountedThreadSafe<CrxCache>;

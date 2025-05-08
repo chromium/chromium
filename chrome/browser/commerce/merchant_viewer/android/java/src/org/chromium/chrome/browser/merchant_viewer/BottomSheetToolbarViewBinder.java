@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for BottomSheetToolbarView. */
+@NullMarked
 public class BottomSheetToolbarViewBinder {
     public static void bind(
             PropertyModel model, BottomSheetToolbarView view, PropertyKey propertyKey) {

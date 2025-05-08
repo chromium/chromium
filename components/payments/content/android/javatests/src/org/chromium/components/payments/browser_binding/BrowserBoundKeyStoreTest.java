@@ -4,6 +4,8 @@
 
 package org.chromium.components.payments.browser_binding;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
@@ -110,5 +112,26 @@ public class BrowserBoundKeyStoreTest {
                         Arrays.asList(createCredentialParameters(/* algorithmIdentifier= */ 0)));
 
         assertNull(bbk);
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void testDeletesAKey() throws Exception {
+        assumeTrue(isStrongBoxAvailable());
+        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
+        byte[] bbkId = new byte[] {0x0a, 0x0b, 0x0c, 0x0d};
+        BrowserBoundKey bbk =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        bbkId, ALLOWED_ALGORITHMS);
+        assertNotNull(bbk);
+
+        browserBoundKeyStore.deleteBrowserBoundKey(bbkId);
+        BrowserBoundKey bbkAfter =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        bbkId, ALLOWED_ALGORITHMS);
+
+        assertNotNull(bbkAfter);
+        // Assert a new bbk was created by comparing the public keys.
+        assertFalse(Arrays.equals(bbk.getPublicKeyAsCoseKey(), bbkAfter.getPublicKeyAsCoseKey()));
     }
 }

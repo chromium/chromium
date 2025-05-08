@@ -138,9 +138,7 @@ class TabDragContext : public TabDragContextBase {
   // Invoked when TabDragController detaches a set of tabs.
   virtual void DraggedTabsDetached() = 0;
 
-  // Used by TabDragController when the user stops dragging. `completed` is
-  // true if the drag operation completed successfully, false if it was
-  // reverted.
+  // Used by TabDragController when the user stops dragging.
   virtual void StoppedDragging() = 0;
 
   // Invoked during drag to layout the views being dragged in `views` at

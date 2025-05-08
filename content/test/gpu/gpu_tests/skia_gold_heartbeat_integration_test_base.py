@@ -338,7 +338,7 @@ def PageHasViewportInitialScaling(test_path: str) -> float:
   # Some test paths include URL arguments, so strip those off.
   test_path = test_path.split('?', 1)[0]
   filepath = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, test_path)
-  with open(filepath) as infile:
+  with open(filepath, encoding='utf-8') as infile:
     contents = infile.read()
   soup = bs4.BeautifulSoup(contents, 'html.parser')
   for meta_tag in soup.find_all('meta'):

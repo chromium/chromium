@@ -12,6 +12,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/trace_event/memory_pressure_level_proto.h"
+#include "base/trace_event/named_trigger.h"
+#include "base/trace_event/typed_macros.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy_helpers.h"
 #include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
@@ -95,6 +98,11 @@ BackgroundTabLoadingPolicy::PageNodeData::~PageNodeData() = default;
 
 void ScheduleLoadForRestoredTabs(
     std::vector<content::WebContents*> web_contents_vector) {
+  // Trigger a slow-reports and collect a session restore trace if needed.
+  base::trace_event::EmitNamedTrigger("session-restore-config");
+  TRACE_EVENT("browser", "ScheduleLoadForRestoredTabs", "tabs_count",
+              web_contents_vector.size());
+
   DCHECK(!web_contents_vector.empty());
 
   std::vector<BackgroundTabLoadingPolicy::PageNodeData> page_node_data_vector;
@@ -171,6 +179,7 @@ void BackgroundTabLoadingPolicy::OnTakenFromGraph(Graph* graph) {
 void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
     const PageNode* page_node,
     PageNode::LoadingState previous_state) {
+  TRACE_EVENT("browser", "BackgroundTabLoadingPolicy::OnLoadingStateChanged");
   DCHECK_EQ(has_restored_tabs_to_load_, HasRestoredTabsToLoad());
 
   switch (page_node->GetLoadingState()) {
@@ -232,6 +241,7 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
 
 void BackgroundTabLoadingPolicy::OnBeforePageNodeRemoved(
     const PageNode* page_node) {
+  TRACE_EVENT("browser", "BackgroundTabLoadingPolicy::OnBeforePageNodeRemoved");
   RemovePageNode(page_node);
 
   // There may be free loading slots, check and load more tabs if that's the
@@ -377,8 +387,10 @@ bool BackgroundTabLoadingPolicy::ShouldLoad(
     return false;
 
   // Enforce a max time since last use.
-  if (page_node_data.page_node->GetTimeSinceLastVisibilityChange() >
-      kMaxTimeSinceLastUseToLoad) {
+  const base::TimeDelta time_since_last_visibility_change =
+      base::TimeTicks::Now() -
+      page_node_data.page_node->GetLastVisibilityChangeTime();
+  if (time_since_last_visibility_change > kMaxTimeSinceLastUseToLoad) {
     return false;
   }
 
@@ -400,6 +412,8 @@ bool BackgroundTabLoadingPolicy::ShouldLoad(
 
 void BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable(
     base::WeakPtr<PageNode> page_node) {
+  TRACE_EVENT("browser",
+              "BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable");
   if (!page_node) {
     // Ignore the value if the PageNode was deleted.
     return;
@@ -427,6 +441,7 @@ void BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable(
 }
 
 void BackgroundTabLoadingPolicy::StopLoadingTabs() {
+  TRACE_EVENT("browser", "BackgroundTabLoadingPolicy::StopLoadingTabs");
   // Clear out the remaining tabs to load and clean ourselves up.
   page_nodes_to_load_.clear();
   tabs_scored_ = 0;
@@ -439,6 +454,14 @@ void BackgroundTabLoadingPolicy::StopLoadingTabs() {
 
 void BackgroundTabLoadingPolicy::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel new_level) {
+  TRACE_EVENT_INSTANT(
+      "browser", "BackgroundTabLoadingPolicy::OnMemoryPressure",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(
+            base::trace_event::MemoryPressureLevelToTraceEnum(new_level));
+      });
   switch (new_level) {
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
       break;
@@ -471,9 +494,10 @@ void BackgroundTabLoadingPolicy::ScoreTab(
 
   // Refine the score using the age of the tab. More recently used tabs have
   // higher scores.
-  score += CalculateAgeScore(
-      page_node_to_load_data->page_node->GetTimeSinceLastVisibilityChange()
-          .InSecondsF());
+  const base::TimeDelta time_since_last_visibility_change =
+      base::TimeTicks::Now() -
+      page_node_to_load_data->page_node->GetLastVisibilityChangeTime();
+  score += CalculateAgeScore(time_since_last_visibility_change.InSecondsF());
 
   ++tabs_scored_;
   page_node_to_load_data->score = score;
@@ -511,6 +535,7 @@ void BackgroundTabLoadingPolicy::NotifyAllTabsScored() {
 }
 
 void BackgroundTabLoadingPolicy::InitiateLoad(const PageNode* page_node) {
+  TRACE_EVENT("browser", "BackgroundTabLoadingPolicy::InitiateLoad");
   // The page shouldn't already be loading.
   DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
   DCHECK(!base::Contains(page_nodes_loading_, page_node));
@@ -536,6 +561,7 @@ void BackgroundTabLoadingPolicy::RemovePageNode(const PageNode* page_node) {
 }
 
 void BackgroundTabLoadingPolicy::MaybeLoadSomeTabs() {
+  TRACE_EVENT("browser", "BackgroundTabLoadingPolicy::MaybeLoadSomeTabs");
   // Continue to load tabs while possible. This is in a loop with a
   // recalculation of GetMaxNewTabLoads() as reentrancy can cause conditions
   // to change as each tab load is initiated.
@@ -572,6 +598,7 @@ size_t BackgroundTabLoadingPolicy::GetMaxNewTabLoads() const {
 }
 
 void BackgroundTabLoadingPolicy::LoadNextTab() {
+  TRACE_EVENT("browser", "BackgroundTabLoadingPolicy::LoadNextTab");
   DCHECK(!page_nodes_to_load_.empty());
   DCHECK_EQ(tabs_scored_, page_nodes_to_load_.size());
 

@@ -88,10 +88,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
   static scoped_refptr<BlobDataItem> CreateBytesDescription(size_t length);
   static scoped_refptr<BlobDataItem> CreateFile(
       base::FilePath path,
-      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
-          file_access = base::NullCallback());
-  static scoped_refptr<BlobDataItem> CreateFile(
-      base::FilePath path,
       uint64_t offset,
       uint64_t length,
       base::Time expected_modification_time = base::Time(),

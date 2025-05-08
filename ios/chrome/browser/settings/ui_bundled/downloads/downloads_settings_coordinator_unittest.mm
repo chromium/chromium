@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_coordinator.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/test/task_environment.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
@@ -30,6 +29,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/test/fakes/fake_ui_navigation_controller.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -135,7 +135,7 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
     }
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeUINavigationController* base_navigation_controller_;

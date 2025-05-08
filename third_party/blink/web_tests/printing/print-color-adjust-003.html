@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>print-color-adjust inheritance and nesting</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-color-adjust-1/#print-color-adjust">
+<script>
+  if (window.testRunner) {
+    testRunner.setPrinting();
+    if (window.internals)
+      internals.settings.setShouldPrintBackgrounds(false);
+  }
+</script>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div style="width:110px; height:110px; print-color-adjust:economy; background:red;">
+  <div style="float:left; width:50px; height:100px; print-color-adjust:exact; background:green;"></div>
+  <div style="display:flow-root; width:50px; print-color-adjust:exact;">
+    <div style="width:50px; height:100px; background:green;"></div>
+    <div style="height:10px; print-color-adjust:economy; background:red;"></div>
+  </div>
+</div>

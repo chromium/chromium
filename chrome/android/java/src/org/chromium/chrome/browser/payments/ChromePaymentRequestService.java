@@ -358,12 +358,18 @@ public class ChromePaymentRequestService
 
             Callback<Boolean> responseCallback =
                     (response) -> {
-                        // TODO(crbug.com/408026839): Return AbortError and differentiate the
-                        // JourneyLogger based on the response.
                         mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-                        disconnectFromClientWithDebugMessage(
-                                ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
-                                PaymentErrorReason.NOT_ALLOWED_ERROR);
+
+                        // User wishes to proceed with payment but not through SPC.
+                        if (response) {
+                            disconnectFromClientWithDebugMessage(
+                                    ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                    PaymentErrorReason.NOT_ALLOWED_ERROR);
+                        } else {
+                            disconnectFromClientWithDebugMessage(
+                                    ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+                        }
+
                         mSpcAuthnUiController = null;
                     };
 

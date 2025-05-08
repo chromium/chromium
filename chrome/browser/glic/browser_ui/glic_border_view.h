@@ -26,6 +26,8 @@ class GpuDataManager;
 
 namespace glic {
 
+class GlicKeyedService;
+
 class GlicBorderView : public views::View,
                        public ui::CompositorAnimationObserver,
                        public ui::CompositorObserver,
@@ -125,6 +127,8 @@ class GlicBorderView : public views::View,
   base::TimeTicks GetCreationTime() const;
 
   bool ForceSimplifiedShader() const;
+
+  GlicKeyedService* GetGlicService() const;
 
   // A utility class that subscribe to `GlicKeyedService` for various browser UI
   // status change.

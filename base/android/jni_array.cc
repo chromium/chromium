@@ -13,11 +13,12 @@
 
 namespace base::android {
 
-UNSAFE_BUFFER_USAGE ScopedJavaLocalRef<jbyteArray>
-ToJavaByteArray(JNIEnv* env, const uint8_t* bytes, size_t len) {
+ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(JNIEnv* env,
+                                               const uint8_t* bytes,
+                                               size_t len) {
   return ToJavaByteArray(
       env,
-      // SAFETY: The caller must provide a valid pointer and length.
+      // SAFETY: required from caller, see UNSAFE_BUFFER_USAGE in header.
       UNSAFE_BUFFERS(base::span(bytes, len)));
 }
 

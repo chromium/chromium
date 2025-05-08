@@ -187,7 +187,7 @@ See the COPYING file for details.
               'target': 'demo'
             }, node.name));
             // Need to prevent BaseNode.onClick_ from calling preventDefault.
-            childNode.onClick_ = goog.nullFunction;
+            childNode.onClick_ = () => {};
           } else if (node.childNodes) {
             childNode.setText(node.name);
             buildNode(childNode, node.childNodes);

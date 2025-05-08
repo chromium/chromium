@@ -46,6 +46,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -58,6 +59,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  * Provides functions that map {@link FacilitatedPaymentsPaymentMethodsProperties} changes in a
  * {@link PropertyModel} to the suitable method in {@link FacilitatedPaymentsPaymentMethodsView}.
  */
+@NullMarked
 class FacilitatedPaymentsPaymentMethodsViewBinder {
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.

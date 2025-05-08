@@ -265,7 +265,7 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
                             mScrollView.scrollTo(0, mDropdownElement.getTop());
                         });
                 handleAdsApiUxEnhancementsDropdown();
-                handlePrivacyPolicyFeature();
+                handlePrivacyPolicyLink();
             }
 
             mExpandArrowView.setChecked(isDropdownExpanded());
@@ -314,53 +314,47 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
         }
     }
 
-    private void handlePrivacyPolicyFeature() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)) {
-            mLearnMoreDescription5V2 =
-                    mContentView.findViewById(
-                            R.id.privacy_sandbox_m1_notice_row_learn_more_description_5_v2);
-            mLearnMoreDescription5V2.setText(
-                    SpanApplier.applySpans(
-                            getContext()
-                                    .getString(
-                                            R.string
-                                                    .privacy_sandbox_m1_notice_row_learn_more_description_5_v2_clank),
-                            new SpanApplier.SpanInfo(
-                                    "<link>",
-                                    "</link>",
-                                    new ChromeClickableSpan(
-                                            getContext(), this::onPrivacyPolicyClicked))));
-            mLearnMoreDescription5V2.setMovementMethod(LinkMovementMethod.getInstance());
-            if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
-                mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
-                mWebContentsObserver =
-                        new WebContentsObserver(mWebContents) {
-                            @Override
-                            public void didFirstVisuallyNonEmptyPaint() {
-                                if (!mIsPrivacyPageLoaded) {
-                                    RecordHistogram.recordTimesHistogram(
-                                            "PrivacySandbox.PrivacyPolicy.LoadingTime",
-                                            System.currentTimeMillis()
-                                                    - mPrivacyPolicyClickedTimestamp);
-                                    mIsPrivacyPageLoaded = true;
-                                }
+    private void handlePrivacyPolicyLink() {
+        mLearnMoreDescription5V2 =
+                mContentView.findViewById(
+                        R.id.privacy_sandbox_m1_notice_row_learn_more_description_5_v2);
+        mLearnMoreDescription5V2.setText(
+                SpanApplier.applySpans(
+                        mLearnMoreDescription5V2.getText().toString(),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(
+                                        getContext(), this::onPrivacyPolicyClicked))));
+        mLearnMoreDescription5V2.setMovementMethod(LinkMovementMethod.getInstance());
+        if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
+            mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
+            mWebContentsObserver =
+                    new WebContentsObserver(mWebContents) {
+                        @Override
+                        public void didFirstVisuallyNonEmptyPaint() {
+                            if (!mIsPrivacyPageLoaded) {
+                                RecordHistogram.recordTimesHistogram(
+                                        "PrivacySandbox.PrivacyPolicy.LoadingTime",
+                                        System.currentTimeMillis()
+                                                - mPrivacyPolicyClickedTimestamp);
+                                mIsPrivacyPageLoaded = true;
                             }
+                        }
 
-                            @Override
-                            public void didFailLoad(
-                                    boolean isInPrimaryMainFrame,
-                                    int errorCode,
-                                    GURL failingUrl,
-                                    @LifecycleState int rfhLifecycleState) {
-                                RecordHistogram.recordSparseHistogram(
-                                        "PrivacySandbox.PrivacyPolicy.FailedLoadErrorCode",
-                                        errorCode);
-                            }
-                        };
-                mThinWebView =
-                        PrivacySandboxDialogController.createPrivacyPolicyThinWebView(
-                                mWebContents, mProfile, mActivityWindowAndroid);
-            }
+                        @Override
+                        public void didFailLoad(
+                                boolean isInPrimaryMainFrame,
+                                int errorCode,
+                                GURL failingUrl,
+                                @LifecycleState int rfhLifecycleState) {
+                            RecordHistogram.recordSparseHistogram(
+                                    "PrivacySandbox.PrivacyPolicy.FailedLoadErrorCode", errorCode);
+                        }
+                    };
+            mThinWebView =
+                    PrivacySandboxDialogController.createPrivacyPolicyThinWebView(
+                            mWebContents, mProfile, mActivityWindowAndroid);
         }
     }
 

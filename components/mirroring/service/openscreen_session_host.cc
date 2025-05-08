@@ -92,10 +92,8 @@ constexpr char kLogPrefix[] = "OpenscreenSessionHost";
 // Note: listed in order of priority. Support must also be determined using
 // the encoding_support logic.
 constexpr std::array kSupportedVideoCodecs{
-    media::VideoCodec::kAV1,
-    media::VideoCodec::kVP9,
-    media::VideoCodec::kH264,
-    media::VideoCodec::kVP8,
+    media::VideoCodec::kHEVC, media::VideoCodec::kAV1, media::VideoCodec::kVP9,
+    media::VideoCodec::kH264, media::VideoCodec::kVP8,
 };
 
 int NumberOfEncodeThreads() {

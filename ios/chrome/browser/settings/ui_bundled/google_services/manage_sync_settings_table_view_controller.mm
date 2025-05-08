@@ -219,9 +219,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                                            name:name
                                           email:email
                           managementDescription:managementDescription
-                                useLargeMargins:YES
-                     addManageYourAccountButton:NO
-                  manageYourAccountButtonAction:nil];
+                                useLargeMargins:YES];
   self.tableView.tableHeaderView = identityAccountItem;
   [self.tableView reloadData];
 }

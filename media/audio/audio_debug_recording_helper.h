@@ -23,7 +23,11 @@ namespace media {
 
 class AudioBus;
 
-enum class AudioDebugRecordingStreamType { kInput = 0, kOutput = 1 };
+enum class AudioDebugRecordingStreamType {
+  kInput = 0,
+  kOutput = 1,
+  kLoopback = 2
+};
 
 // Interface for feeding data to a recorder.
 class AudioDebugRecorder {

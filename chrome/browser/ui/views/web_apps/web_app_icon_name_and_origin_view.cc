@@ -11,12 +11,20 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
+
+namespace web_app {
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogAppTitle);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogIconView);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogOriginLabel);
+}  // namespace web_app
 
 std::unique_ptr<WebAppIconNameAndOriginView>
 WebAppIconNameAndOriginView::Create(const gfx::ImageSkia& icon_image,
@@ -41,6 +49,8 @@ WebAppIconNameAndOriginView::WebAppIconNameAndOriginView(
 
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetImage(ui::ImageModel::FromImageSkia(icon_image));
+  icon_view->SetProperty(views::kElementIdentifierKey,
+                         web_app::kSimpleInstallDialogIconView);
   AddChildViewRaw(icon_view.release());
 
   views::View* labels = new views::View();
@@ -48,9 +58,16 @@ WebAppIconNameAndOriginView::WebAppIconNameAndOriginView(
   labels->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  labels->AddChildViewRaw(web_app::CreateNameLabel(app_title).release());
-  labels->AddChildViewRaw(
-      web_app::CreateOriginLabelFromStartUrl(start_url, false).release());
+  auto name_label = web_app::CreateNameLabel(app_title);
+  name_label->SetProperty(views::kElementIdentifierKey,
+                          web_app::kSimpleInstallDialogAppTitle);
+  labels->AddChildView(std::move(name_label));
+
+  auto origin_label = web_app::CreateOriginLabelFromStartUrl(
+      start_url, /*is_primary_text=*/false);
+  origin_label->SetProperty(views::kElementIdentifierKey,
+                            web_app::kSimpleInstallDialogOriginLabel);
+  labels->AddChildView(std::move(origin_label));
 }
 
 BEGIN_METADATA(WebAppIconNameAndOriginView)

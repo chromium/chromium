@@ -31,20 +31,26 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_ref.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_shared_storage_host.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
+#include "content/browser/interest_group/group_by_origin_key.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -80,6 +86,18 @@ GetAuctionWorkletPermissionsPolicyState(RenderFrameHostImpl* auction_runner_rfh,
           worklet_origin));
 }
 
+auction_worklet::mojom::InProgressAuctionDownloadPtr StartDownload(
+    network::mojom::URLLoaderFactory& url_loader_factory,
+    auction_worklet::mojom::AuctionNetworkEventsHandler& network_events_handler,
+    base::optional_ref<const GURL> url,
+    auction_worklet::AuctionDownloader::MimeType mime_type) {
+  if (url) {
+    return auction_worklet::AuctionDownloader::StartDownload(
+        url_loader_factory, url.value(), mime_type, network_events_handler);
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 const size_t AuctionWorkletManager::kBatchSize;
@@ -92,15 +110,15 @@ class AuctionWorkletManager::WorkletOwner
     : public base::RefCounted<AuctionWorkletManager::WorkletOwner>,
       public auction_worklet::mojom::LoadSellerWorkletClient {
  public:
+  WorkletOwner(AuctionWorkletManager* worklet_manager, WorkletKey worklet_info);
+
   // Attempts to immediately create a worklet. If that fails, the WorkletOwner
   // will immediately start waiting for a process to be available, and once one
   // is, create a worklet, informing all associated WorkletHandles.
   //
-  // If this is for a bidder workelt, `number_of_bidder_threads` specifies
+  // If this is for a bidder worklet, `number_of_bidder_threads` specifies
   // the number of threads to allocate to the bidder.
-  WorkletOwner(AuctionWorkletManager* worklet_manager,
-               WorkletKey worklet_info,
-               size_t number_of_bidder_threads);
+  void RequestWorkletService(size_t number_of_bidder_threads);
 
   // Registers/unregisters a WorkletHandle for the worklet `this` owns.
   void RegisterHandle(HandleKey handle);
@@ -127,6 +145,10 @@ class AuctionWorkletManager::WorkletOwner
       return nullptr;
     }
     return &url_loader_factory_proxy_->subresource_url_authorizations();
+  }
+
+  GroupByOriginKeyMapper& group_by_origin_key_mapper() {
+    return group_by_origin_key_mapper_;
   }
 
   std::vector<std::string> ComputeDevtoolsAuctionIds();
@@ -224,6 +246,10 @@ class AuctionWorkletManager::WorkletOwner
 
   AuctionProcessManager::ProcessHandle process_handle_;
 
+  // Assignment of integer IDs for things that can share contexts in
+  // group-by-origin mode for this worklet.
+  GroupByOriginKeyMapper group_by_origin_key_mapper_;
+
   std::set<HandleKey> handles_waiting_for_process_assignment_;
 
   // These are handles that have not yet been notified of having a process,
@@ -294,10 +320,12 @@ class AuctionWorkletManager::WorkletOwner
 
 AuctionWorkletManager::WorkletOwner::WorkletOwner(
     AuctionWorkletManager* worklet_manager,
-    WorkletKey worklet_info,
-    size_t number_of_bidder_threads)
+    WorkletKey worklet_info)
     : worklet_manager_(worklet_manager),
-      worklet_info_(std::move(worklet_info)) {
+      worklet_info_(std::move(worklet_info)) {}
+
+void AuctionWorkletManager::WorkletOwner::RequestWorkletService(
+    size_t number_of_bidder_threads) {
   // If `trusted_signals_coordinator` in `worklet_info_` has a value and
   // `kFledgeTrustedSignalsKVv2Support` is enabled, call
   // `GetBiddingAndAuctionServerKey` to fetch `trusted_signals_kvv2_public_key_`
@@ -313,7 +341,7 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
     // pass to the worklet process.
     if (!base::FeatureList::IsEnabled(features::kFledgeUseKVv2SignalsCache)) {
       waiting_on_trusted_signals_kvv2_public_key_ = true;
-      worklet_manager->delegate()->GetTrustedKeyValueServerKey(
+      worklet_manager_->delegate()->GetTrustedKeyValueServerKey(
           url::Origin::Create(worklet_info_.signals_url.value_or(GURL())),
           std::move(worklet_info_.trusted_signals_coordinator),
           base::BindOnce(&AuctionWorkletManager::WorkletOwner::
@@ -624,13 +652,24 @@ void AuctionWorkletManager::WorkletOwner::LoadWorkletIfReady(
                 delegate->GetFrame(),
                 url::Origin::Create(worklet_info_.script_url)));
       }
-
+      auction_worklet::mojom::InProgressAuctionDownloadPtr script_load =
+          StartDownload(
+              *url_loader_factory_proxy_,
+              *worklet_manager_->auction_network_events_proxy_,
+              worklet_info_.script_url,
+              auction_worklet::AuctionDownloader::MimeType::kJavascript);
+      auction_worklet::mojom::InProgressAuctionDownloadPtr wasm_load =
+          StartDownload(
+              *url_loader_factory_proxy_,
+              *worklet_manager_->auction_network_events_proxy_,
+              worklet_info_.wasm_url,
+              auction_worklet::AuctionDownloader::MimeType::kWebAssembly);
       process_handle_.GetService()->LoadBidderWorklet(
           std::move(worklet_receiver), std::move(shared_storage_hosts),
           worklet_debugs_[0]->should_pause_on_start(),
           std::move(url_loader_factory),
-          std::move(auction_network_events_handler), worklet_info_.script_url,
-          worklet_info_.wasm_url, worklet_info_.signals_url,
+          std::move(auction_network_events_handler), std::move(script_load),
+          std::move(wasm_load), worklet_info_.signals_url,
           worklet_info_.trusted_bidding_signals_slot_size_param,
           worklet_manager_->top_window_origin(),
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
@@ -699,11 +738,17 @@ void AuctionWorkletManager::WorkletOwner::LoadWorkletIfReady(
               load_seller_worklet_client_receiver_.BindNewPipeAndPassRemote();
         }
       }
+      auction_worklet::mojom::InProgressAuctionDownloadPtr script_load =
+          StartDownload(
+              *url_loader_factory_proxy_,
+              *worklet_manager_->auction_network_events_proxy_,
+              worklet_info_.script_url,
+              auction_worklet::AuctionDownloader::MimeType::kJavascript);
       process_handle_.GetService()->LoadSellerWorklet(
           std::move(worklet_receiver), std::move(shared_storage_hosts),
           worklet_debugs_[0]->should_pause_on_start(),
           std::move(url_loader_factory),
-          std::move(auction_network_events_handler), worklet_info_.script_url,
+          std::move(auction_network_events_handler), std::move(script_load),
           worklet_info_.signals_url, worklet_manager_->top_window_origin(),
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
                                                   worklet_info_.script_url),
@@ -911,6 +956,11 @@ bool AuctionWorkletManager::WorkletHandle::TrustedScoringSignalsUrlAllowed()
 const auction_worklet::mojom::TrustedSignalsPublicKey*
 AuctionWorkletManager::WorkletHandle::GetTrustedSignalsPublicKey() const {
   return worklet_owner_->GetTrustedSignalsPublicKey();
+}
+
+GroupByOriginKeyMapper&
+AuctionWorkletManager::WorkletHandle::GetGroupByOriginKeyMapper() {
+  return worklet_owner_->group_by_origin_key_mapper();
 }
 
 const SubresourceUrlAuthorizations& AuctionWorkletManager::WorkletHandle::
@@ -1123,14 +1173,15 @@ void AuctionWorkletManager::RequestWorkletByKey(
 
   auto worklet_it = worklets_.find(worklet_info);
   scoped_refptr<WorkletOwner> worklet;
+  bool created_new_worklet = false;
   if (worklet_it != worklets_.end()) {
     worklet = worklet_it->second;
   } else {
     // Can't just insert in the map and put a reference in `worklet_it`, since
     // need to keep a live reference.
-    worklet = base::MakeRefCounted<WorkletOwner>(this, worklet_info,
-                                                 number_of_bidder_threads);
+    worklet = base::MakeRefCounted<WorkletOwner>(this, worklet_info);
     worklets_.emplace(std::pair(std::move(worklet_info), worklet.get()));
+    created_new_worklet = true;
   }
 
   if (trace_id) {
@@ -1142,9 +1193,14 @@ void AuctionWorkletManager::RequestWorkletByKey(
     worklet->NotifyAuctionMetricsRecorderWhenReady(auction_metrics_recorder);
   }
   out_worklet_handle.reset(new WorkletHandle(
-      std::move(devtools_auction_id), std::move(worklet),
+      std::move(devtools_auction_id), worklet,
       std::move(process_assigned_callback),
       std::move(worklet_available_callback), std::move(fatal_error_callback)));
+  if (created_new_worklet) {
+    // We need to RequestWorkletService after creating the WorkletHandle so that
+    // the worklet can access the `devtools_auction_id` now associated with it.
+    worklet->RequestWorkletService(number_of_bidder_threads);
+  }
 }
 
 void AuctionWorkletManager::MaybeStartAnticipatoryProcess(

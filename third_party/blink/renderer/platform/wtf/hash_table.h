@@ -2076,7 +2076,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
 
 // iterator adapters
 
-template <typename HashTableType, typename Traits, typename Enable = void>
+template <typename HashTableType, typename Traits>
 struct HashTableConstIteratorAdapter {
   static_assert(!IsTraceable<typename Traits::TraitType>::value);
 
@@ -2124,11 +2124,8 @@ struct HashTableConstIteratorAdapter {
 };
 
 template <typename HashTableType, typename Traits>
-struct HashTableConstIteratorAdapter<
-    HashTableType,
-    Traits,
-    typename std::enable_if_t<IsTraceable<typename Traits::TraitType>::value>> {
-  static_assert(IsTraceable<typename Traits::TraitType>::value);
+  requires(IsTraceable<typename Traits::TraitType>::value)
+struct HashTableConstIteratorAdapter<HashTableType, Traits> {
   STACK_ALLOCATED();
 
  public:
@@ -2175,14 +2172,14 @@ struct HashTableConstIteratorAdapter<
   typename HashTableType::const_iterator impl_;
 };
 
-template <typename HashTable, typename Traits, typename Enable>
+template <typename HashTable, typename Traits>
 std::ostream& operator<<(
     std::ostream& stream,
-    const HashTableConstIteratorAdapter<HashTable, Traits, Enable>& iterator) {
+    const HashTableConstIteratorAdapter<HashTable, Traits>& iterator) {
   return stream << iterator.impl_;
 }
 
-template <typename HashTableType, typename Traits, typename Enable = void>
+template <typename HashTableType, typename Traits>
 struct HashTableIteratorAdapter {
   static_assert(!IsTraceable<typename Traits::TraitType>::value);
 
@@ -2225,7 +2222,7 @@ struct HashTableIteratorAdapter {
     return copy;
   }
 
-  operator HashTableConstIteratorAdapter<HashTableType, Traits, Enable>() {
+  operator HashTableConstIteratorAdapter<HashTableType, Traits>() {
     typename HashTableType::const_iterator i = impl_;
     return i;
   }
@@ -2234,11 +2231,8 @@ struct HashTableIteratorAdapter {
 };
 
 template <typename HashTableType, typename Traits>
-struct HashTableIteratorAdapter<
-    HashTableType,
-    Traits,
-    typename std::enable_if_t<IsTraceable<typename Traits::TraitType>::value>> {
-  static_assert(IsTraceable<typename Traits::TraitType>::value);
+  requires(IsTraceable<typename Traits::TraitType>::value)
+struct HashTableIteratorAdapter<HashTableType, Traits> {
   STACK_ALLOCATED();
 
  public:
@@ -2281,7 +2275,7 @@ struct HashTableIteratorAdapter<
     return copy;
   }
 
-  operator HashTableConstIteratorAdapter<HashTableType, Traits, void>() {
+  operator HashTableConstIteratorAdapter<HashTableType, Traits>() {
     typename HashTableType::const_iterator i = impl_;
     return i;
   }
@@ -2289,10 +2283,10 @@ struct HashTableIteratorAdapter<
   typename HashTableType::iterator impl_;
 };
 
-template <typename HashTable, typename Traits, typename Enable>
+template <typename HashTable, typename Traits>
 std::ostream& operator<<(
     std::ostream& stream,
-    const HashTableIteratorAdapter<HashTable, Traits, Enable>& iterator) {
+    const HashTableIteratorAdapter<HashTable, Traits>& iterator) {
   return stream << iterator.impl_;
 }
 

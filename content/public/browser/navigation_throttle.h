@@ -9,8 +9,10 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/safety_checks.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "net/base/net_errors.h"
 
 namespace content {
@@ -140,7 +142,12 @@ class CONTENT_EXPORT NavigationThrottle {
     std::optional<std::string> error_page_content_;
   };
 
-  NavigationThrottle(NavigationHandle* navigation_handle);
+  // Note: This legacy constructor will be removed soon. New code should use the
+  // other constructor that takes a NavigationThrottleRegistry&.
+  // TODO(https://crbug.com/412524375): Remove this constructor.
+  explicit NavigationThrottle(NavigationHandle* navigation_handle);
+
+  explicit NavigationThrottle(NavigationThrottleRegistry& registry);
   virtual ~NavigationThrottle();
 
   // Called when a network request is about to be made for this navigation.
@@ -237,6 +244,10 @@ class CONTENT_EXPORT NavigationThrottle {
   virtual void CancelDeferredNavigation(ThrottleCheckResult result);
 
  private:
+  // TODO(https://crbug.com/412524375): Once all subclasses are migrated to
+  // construct this instance with a NavigationThrottleRegistry*, remove
+  // `navigation_handle_` and replace it with
+  // `const raw_ref<NavigationThrottleRegistry> registry_`.
   const raw_ptr<NavigationHandle> navigation_handle_;
 
   // Used in tests.

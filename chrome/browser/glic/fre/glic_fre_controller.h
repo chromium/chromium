@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/views/widget/widget.h"
 
 class Browser;
 class Profile;
@@ -65,6 +66,10 @@ class GlicFreController {
   // showing the dialog.
   bool CanShowFreDialog(Browser* browser);
 
+  // Open the new tab page in the browser and show the FRE in that tab if
+  // possible.
+  void OpenFreDialogInNewTab(BrowserWindowInterface* bwi);
+
   // Shows the FRE dialog. This should only be called if `ShouldShowFreDialog`
   // and `CanShowFreDialog` are both satisfied.
   void ShowFreDialog(Browser* browser);
@@ -78,6 +83,9 @@ class GlicFreController {
 
   // Closes the FRE dialog.
   void DismissFre();
+
+  // Used when the native window is closed directly.
+  void CloseWithReason(views::Widget::ClosedReason reason);
 
   // Re-sync cookies to FRE webview.
   void PrepareForClient(base::OnceCallback<void(bool)> callback);
@@ -140,7 +148,7 @@ class GlicFreController {
   AuthController auth_controller_;
 
   // The invocation source browser.
-  base::WeakPtr<Browser> source_browser_;
+  raw_ptr<Browser> source_browser_ = nullptr;
 
   // Tracks the tab that the FRE dialog is shown on.
   raw_ptr<tabs::TabInterface> tab_showing_modal_;

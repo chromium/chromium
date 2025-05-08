@@ -95,8 +95,6 @@ class RecentActivityRowView : public HoverButton {
   void ButtonPressed();
 
   RecentActivityRowImageView* image_view() const { return image_view_; }
-  const std::u16string& activity_text() const { return activity_text_; }
-  const std::u16string& metadata_text() const { return metadata_text_; }
 
   // RecentActivityAction handlers.
   // Focuses the open tab in the tab strip.
@@ -109,8 +107,6 @@ class RecentActivityRowView : public HoverButton {
   void ManageSharing();
 
  private:
-  std::u16string activity_text_;
-  std::u16string metadata_text_;
   raw_ptr<RecentActivityRowImageView> image_view_ = nullptr;
   ActivityLogItem item_;
   const raw_ptr<Profile> profile_ = nullptr;

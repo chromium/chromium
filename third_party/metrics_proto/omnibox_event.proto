@@ -705,21 +705,29 @@ message OmniboxEventProto {
   // Whether the Omnibox was in keyword mode, however it was entered.
   optional bool in_keyword_mode = 19;
 
-  // The type of keyword used in keyword mode. Not present if not in keyword
-  // mode.
+  // The type of keyword used in keyword mode. The field storing this enum is
+  // not present if not in keyword mode.
   enum KeywordType {
     KEYWORD_TYPE_UNSPECIFIED = 0;
-    STARTER_PACK = 1;                           // Starter pack keyword.
-    FEATURED_POLICY_SET_SEARCH_AGGREGATOR = 2;  // Featured keyword set by
-                                                // enterprise search
-                                                // aggregator policy.
-    FEATURED_POLICY_SET_SITE_SEARCH = 3;        // Featured policy-set
-                                                // site search keyword.
-    NON_FEATURED_POLICY_SET_SITE_SEARCH = 4;    // Non-featured policy-set
-                                                // site search keyword.
-    USER_CREATED_SITE_SEARCH = 5;               // User-created site
-                                                // search keyword.
-    PREPOPULATED = 6;                           // Prepopulated keyword.
+    STARTER_PACK = 1;                              // Starter pack keyword.
+    PREPOPULATED = 2;                              // Prepopulated keyword.
+    EXTENSION = 3;                                 // Keyword set by extension.
+    SEARCH_AGGREGATOR_SET_BY_POLICY = 4;           // Keyword set by search
+                                                   // aggregator policy.
+    FEATURED_SITE_SEARCH_SET_BY_POLICY = 5;        // Featured site search
+                                                   // keyword set by policy.
+    NON_FEATURED_SITE_SEARCH_SET_BY_POLICY = 6;    // Non-featured site search
+                                                   // keyword set by policy.
+    DEFAULT_SEARCH_ENGINE_SET_BY_POLICY = 7;       // Default search engine
+                                                   // keyword set by policy.
+    NON_SUBSTITUTING_SITE_SEARCH_SET_BY_USER = 8;  // Site search keyword
+                                                   // without substitution
+                                                   // set by user.
+    SUBSTITUTING_SITE_SEARCH_SET_BY_USER = 9;      // Site search keyword
+                                                   // with substitution
+                                                   // set by user.
+    DEFAULT_SEARCH_ENGINE_SET_BY_USER = 10;        // Default search engine
+                                                   // keyword set by user.
   }
 
   optional KeywordType keyword_type = 28;

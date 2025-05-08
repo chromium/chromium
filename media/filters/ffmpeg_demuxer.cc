@@ -671,13 +671,11 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
 
   // Save the timestamp of the first non-discarded frame, to calculate duration
   // below. Only the first buffer should have discard padding.
-  if (last_packet_timestamp_ == kNoTimestamp) {
-    // Some packets marked for total discard have their `start_padding` set to
-    // kInfiniteDuration. If that's the case, don't propagate this value here,
-    // limit it to the duration.
-    const auto start_time_adjustment =
-        start_padding == kInfiniteDuration ? buffer->duration() : start_padding;
-    first_valid_frame_timestamp_ = buffer->timestamp() + start_time_adjustment;
+  // Note: Some packets marked for total discard have their `start_padding` set
+  // to kInfiniteDuration. Ignore these packets.
+  if (!initial_start_padding_.has_value() &&
+      start_padding != kInfiniteDuration) {
+    initial_start_padding_ = start_padding;
   }
 
   last_packet_timestamp_ = buffer->timestamp();
@@ -687,7 +685,9 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   const bool is_padding = buffer->duration() == start_padding + end_padding;
 
   const base::TimeDelta new_duration =
-      last_packet_timestamp_ - first_valid_frame_timestamp_;
+      last_packet_timestamp_ -
+      initial_start_padding_.value_or(base::TimeDelta());
+
   if ((!is_padding && new_duration > duration_) || duration_ == kNoTimestamp) {
     duration_ = new_duration;
   }

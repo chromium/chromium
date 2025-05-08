@@ -24,6 +24,10 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 class GURL;
 class Profile;
 class Browser;
@@ -74,8 +78,10 @@ struct WebAppIconDiagnosticResult;
 struct WebAppInstallInfo;
 
 #if BUILDFLAG(IS_CHROMEOS)
-class CleanupCacheForManagedGuestSessionSuccess;
-class CleanupCacheForManagedGuestSessionError;
+class CleanupBundleCacheSuccess;
+class CleanupBundleCacheError;
+class CopyBundleToCacheSuccess;
+enum class CopyBundleToCacheError;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The command scheduler is the main API to access the web app system. The
@@ -192,6 +198,19 @@ class WebAppCommandScheduler {
       ManifestUpdateCheckCompletedCallback callback,
       const base::Location& location = FROM_HERE);
 
+  // Schedule a command that performs fetching data from the manifest
+  // for a manifest update. This is part of the predicatable app updating
+  // algorithm that will be implemented. After implementation, this should
+  // replace the current ScheduleManifestUpdateCheck.
+  // For more details, go/predictable-app-updating-design-doc.
+  void ScheduleManifestUpdateCheckV2(
+      const GURL& url,
+      const webapps::AppId& app_id,
+      base::Time check_time,
+      base::WeakPtr<content::WebContents> contents,
+      ManifestUpdateCheckCompletedCallback callback,
+      const base::Location& location = FROM_HERE);
+
   // Schedules a command that performs the data writes into the DB for
   // completion of the manifest update. `install_info` must be non-null.
   void ScheduleManifestUpdateFinalize(
@@ -281,14 +300,22 @@ class WebAppCommandScheduler {
       const base::Location& call_location = FROM_HERE);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Cleans all IWA cached bundles for Managed Guest Session which are not in
-  // the `iwas_to_keep_in_cache`. This function will CHECK that
-  // `ShouldCleanupManagedGuestSessionCache` is true.
-  void CleanupIsolatedWebAppCacheForManagedGuestSession(
+  //  Copies IWA bundle file to the cache for `session_type`.
+  void CopyIsolatedWebAppBundleToCache(
+      const IsolatedWebAppUrlInfo& url_info,
+      IwaCacheClient::SessionType session_type,
+      base::OnceCallback<void(base::expected<CopyBundleToCacheSuccess,
+                                             CopyBundleToCacheError>)> callback,
+      const base::Location& call_location = FROM_HERE);
+
+  // Cleans all IWA cached bundles for `session_type` which are not in the
+  // `iwas_to_keep_in_cache`.
+  void CleanupIsolatedWebAppBundleCache(
       const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
+      IwaCacheClient::SessionType session_type,
       base::OnceCallback<void(
-          base::expected<CleanupCacheForManagedGuestSessionSuccess,
-                         CleanupCacheForManagedGuestSessionError>)> callback,
+          base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>)>
+          callback,
       const base::Location& call_location = FROM_HERE);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -558,11 +585,14 @@ class WebAppCommandScheduler {
       WebAppIconDiagnosticResultCallback result_callback,
       const base::Location& location = FROM_HERE);
 
-  // Installs the web content at `install_url`, verifying that it has the
-  // given resolved `manifest_id`. Returns the `InstallResultCode` and the
-  // computed manifest id if successful. Used by Web Install API.
+  // User initiated install uses the shared web contents to install the content
+  // at `install_url`, with optional `manifest_id`.
+  // Calls `installed_callback` with the `InstallResultCode` and the computed
+  // manifest id if successful. Used by Web Install API.
   void InstallAppFromUrl(const GURL& install_url,
                          const std::optional<GURL>& manifest_id,
+                         base::WeakPtr<content::WebContents> web_contents,
+                         WebAppInstallDialogCallback dialog_callback,
                          WebInstallFromUrlCommandCallback installed_callback,
                          const base::Location& location = FROM_HERE);
 

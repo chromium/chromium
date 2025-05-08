@@ -187,5 +187,9 @@ const char kAlwaysOnVpnPreConnectUrlAllowlist[] =
 // Boolean value for the FloatingWorkspaceEnabled policy
 const char kFloatingWorkspaceEnabled[] = "ash.floating_workspace_enabled";
 #endif
+
+// A boolean value indicating whether the built-in AI APIs are enabled.
+const char kBuiltInAIAPIsEnabled[] = "policy.built_in_ai_apis_enabled";
+
 }  // namespace policy_prefs
 }  // namespace policy

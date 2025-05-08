@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
 
 #import "base/memory/raw_ptr.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -70,7 +69,7 @@ class AllWebStateListObservationRegistrarTest : public PlatformTest {
     browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   // Unique pointer to an observer moved into the registrar under test.
   std::unique_ptr<TestRegisteredWebStateListObserver> owned_observer_;
   // Weak pointer to the the moved observer

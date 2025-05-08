@@ -1260,7 +1260,7 @@ inline constexpr char kHasResetFirst7DaysSettingsUsedCount[] =
 // the user grants consent again, we will not record their metric in the
 // histogram
 // "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.{Time}".
-const char kHasEverRevokedMetricsConsent[] =
+inline constexpr char kHasEverRevokedMetricsConsent[] =
     "settings.has_ever_revoked_metrics_consent";
 
 // A boolean to store that an admin user accessed the host device remotely when
@@ -1955,9 +1955,6 @@ inline constexpr char kGoogleSearchSidePanelEnabled[] =
 inline constexpr char kTabSearchRightAligned[] = "tab_search.is_right_aligned";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
-    "managed_private_network_access_restrictions_enabled";
-
 #if BUILDFLAG(ENABLE_COMPOSE)
 // Boolean indicating whether or not the Compose FRE has been completed.
 inline constexpr char kPrefHasCompletedComposeFRE[] =
@@ -2107,6 +2104,15 @@ inline constexpr char kBrowserSuppressDefaultBrowserPrompt[] =
 // Used to implement the sticky experiment tracking.
 inline constexpr char kDefaultBrowserPromptRefreshStudyGroup[] =
     "browser.default_browser_prompt_refresh_study_group";
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// The time at which the default-PDF-viewer infobar was last shown.
+inline constexpr char kPdfInfoBarLastShown[] = "browser.pdf_infobar_last_shown";
+
+// How many times the default-PDF-viewer infobar has been shown.
+inline constexpr char kPdfInfoBarTimesShown[] =
+    "browser.pdf_infobar_times_shown";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // A collection of position, size, and other data relating to the browser
 // window to restore on startup.
@@ -2454,6 +2460,8 @@ inline constexpr char kNtpWallpaperSearchHistory[] =
 // panel across NTP tabs. Incremented at most once per NTP tab.
 inline constexpr char kSeedColorChangeCount[] =
     "colorpicker.SeedColorChangeCount";
+// Whether the NTP footer is visible.
+inline constexpr char kNtpFooterVisible[] = "NewTabPage.FooterVisible";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // A private RSA key for ADB handshake.
@@ -2925,10 +2933,6 @@ inline constexpr char kSameOriginTabCaptureAllowedByOrigins[] =
     "hardware.same_origin_tab_capture_allowed_by_origins";
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Dictionary for transient storage of settings that should go into device
-// settings storage before owner has been assigned.
-inline constexpr char kDeviceSettingsCache[] = "signed_settings_cache";
-
 // The hardware keyboard layout of the device. This should look like
 // "xkb:us::eng".
 inline constexpr char kHardwareKeyboardLayout[] = "intl.hardware_keyboard";
@@ -4106,10 +4110,6 @@ inline constexpr char kHoverCardMemoryUsageEnabled[] =
 inline constexpr char kCompressionDictionaryTransportEnabled[] =
     "net.compression_dictionary_transport_enabled";
 
-// Boolean that specifies whether Zstd Content-Encoding is enabled.
-inline constexpr char kZstdContentEncodingEnabled[] =
-    "net.zstd_content_encoding_enabled";
-
 // Boolean that specifies whether Happy Eyeballs V3 is enabled.
 inline constexpr char kHappyEyeballsV3Enabled[] =
     "net.happy_eyeballs_v3_enabled";
@@ -4215,9 +4215,21 @@ inline constexpr char kEnterpriseCustomLabelForProfile[] =
 inline constexpr char kEnterpriseProfileBadgeToolbarSettings[] =
     "enterprise.profile_badging.toolbar_settings";
 
+// Boolean value that determine whether the management notice on the NTP footer
+// is enabled. This is false when disabled by the
+// `NTPFooterTManagementNoticeEnabled` policy.
+inline constexpr char kNTPFooterManagementNoticeEnabled[] =
+    "ntp_footer.settings.management_notice";
+
+// Boolean value that determine whether the NTP theme attribution on the NTP
+// footer is enabled. This is false when disabled by the
+// `NTPFooterThemeAttributionEnabled` policy.
+inline constexpr char kNTPFooterThemeAttributionEnabled[] =
+    "ntp_footer.settings.theme_attribution";
+
 #if BUILDFLAG(IS_ANDROID)
-// An integer count of how many account-level breached credentials were detected
-// by GMSCore.
+// An integer count of how many account-level breached credentials were
+// detected by GMSCore.
 inline constexpr char kBreachedCredentialsCount[] =
     "profile.safety_hub_breached_credentials_count";
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -4247,6 +4259,11 @@ inline constexpr char kServiceWorkerToControlSrcdocIframeEnabled[] =
 // is set as a SharedWorker script URL.
 inline constexpr char kSharedWorkerBlobURLFixEnabled[] =
     "worker.shared_worker_blob_url_fix_enabled";
+
+// Boolean indicating whether clearing window.name when the navigation is
+// top-level, cross-site and swaps BrowsingContextGroup is allowed or not.
+inline constexpr char kClearWindowNameForNewBrowsingContextGroup[] =
+    "profile.content_settings.clear_window_name_for_new_browsing_context_group";
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

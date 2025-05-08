@@ -7,13 +7,56 @@ package org.chromium.components.data_sharing.configs;
 import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Config class for the Data Sharing UI. */
 @NullMarked
 public class DataSharingUiConfig {
+
+    /** Enum for user actions. */
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(DataSharingUserAction)
+    @IntDef({
+        DataSharingUserAction.SHARE_FLOW_SHARE_LINK,
+        DataSharingUserAction.SHARE_FLOW_OPEN_LEARN_MORE,
+        DataSharingUserAction.JOIN_FLOW_JOIN_AND_OPEN,
+        DataSharingUserAction.JOIN_FLOW_OPEN_LEARN_MORE,
+        DataSharingUserAction.MANAGE_FLOW_SHARE_LINK,
+        DataSharingUserAction.MANAGE_FLOW_LEAVE_GROUP,
+        DataSharingUserAction.MANAGE_FLOW_BLOCK_PERSON,
+        DataSharingUserAction.MANAGE_FLOW_BLOCK_AND_LEAVE_GROUP,
+        DataSharingUserAction.MANAGE_FLOW_REMOVE_PERSON,
+        DataSharingUserAction.MANAGE_FLOW_STOP_SHARING,
+        DataSharingUserAction.MANAGE_FLOW_OPEN_LEARN_MORE,
+        DataSharingUserAction.MANAGE_FLOW_SHOW_ACTIVITY_LOGS,
+        DataSharingUserAction.COUNT,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DataSharingUserAction {
+        int SHARE_FLOW_SHARE_LINK = 0;
+        int SHARE_FLOW_OPEN_LEARN_MORE = 1;
+        int JOIN_FLOW_JOIN_AND_OPEN = 2;
+        int JOIN_FLOW_OPEN_LEARN_MORE = 3;
+        int MANAGE_FLOW_SHARE_LINK = 4;
+        int MANAGE_FLOW_LEAVE_GROUP = 5;
+        int MANAGE_FLOW_BLOCK_PERSON = 6;
+        int MANAGE_FLOW_BLOCK_AND_LEAVE_GROUP = 7;
+        int MANAGE_FLOW_REMOVE_PERSON = 8;
+        int MANAGE_FLOW_STOP_SHARING = 9;
+        int MANAGE_FLOW_OPEN_LEARN_MORE = 10;
+        int MANAGE_FLOW_SHOW_ACTIVITY_LOGS = 11;
+        int COUNT = 12;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/data_sharing/enums.xml:DataSharingUserAction)
 
     // --- Form Factor Config ---
     private boolean mIsTablet;
@@ -31,6 +74,8 @@ public class DataSharingUiConfig {
     /** Callback interface for common data sharing UI events. */
     public interface DataSharingCallback {
         default void onClickOpenChromeCustomTab(Context context, GURL url) {}
+
+        default void recordUserActionClicks(@DataSharingUserAction int dataSharingUserAction) {}
     }
 
     private DataSharingUiConfig(Builder builder) {

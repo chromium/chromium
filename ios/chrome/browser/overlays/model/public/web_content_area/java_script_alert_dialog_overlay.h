@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 // Configuration object for OverlayRequests for JavaScript alert dialogs.
 class JavaScriptAlertDialogRequest
@@ -18,23 +19,25 @@ class JavaScriptAlertDialogRequest
   ~JavaScriptAlertDialogRequest() override;
 
   web::WebState* web_state() const { return weak_web_state_.get(); }
-  const GURL& url() const { return url_; }
-  bool is_main_frame() const { return is_main_frame_; }
+  const GURL& main_frame_url() const { return main_frame_url_; }
+  const url::Origin& alerting_frame_origin() const {
+    return alerting_frame_origin_;
+  }
   NSString* message() const { return message_; }
 
  private:
   friend class OverlayUserData<JavaScriptAlertDialogRequest>;
   JavaScriptAlertDialogRequest(web::WebState* web_state,
-                               const GURL& url,
-                               bool is_main_frame,
+                               const GURL& main_frame_url,
+                               const url::Origin& alerting_frame_origin,
                                NSString* message);
 
   // OverlayUserData:
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
 
   base::WeakPtr<web::WebState> weak_web_state_;
-  const GURL url_;
-  bool is_main_frame_;
+  const GURL main_frame_url_;
+  const url::Origin alerting_frame_origin_;
   NSString* message_ = nil;
 };
 

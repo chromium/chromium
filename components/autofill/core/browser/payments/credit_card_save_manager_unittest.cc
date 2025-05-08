@@ -5614,6 +5614,68 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_ClearStrikesOnAdd) {
   EXPECT_EQ(0, credit_card_save_strike_database.GetStrikes("1111"));
 }
 
+#if !BUILDFLAG(IS_IOS)
+TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_WithCvc_PrefOn) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), true);
+  credit_card_save_manager_->SetCreditCardUploadEnabled(false);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+  ExpectFillableFormParsedUkm(1 /* num_fillable_forms_parsed */);
+
+  // Edit the data, and submit.
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form)
+      .field(2)
+      .set_value(ASCIIToUTF16(test::NextMonth()));
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"123");
+
+  FormSubmitted(credit_card_form);
+
+  EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
+  EXPECT_EQ(
+      1u, personal_data().payments_data_manager().GetLocalCreditCards().size());
+  EXPECT_EQ(u"123", personal_data()
+                        .payments_data_manager()
+                        .GetLocalCreditCards()
+                        .front()
+                        ->cvc());
+}
+
+TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_WithCvc_PrefOff) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), false);
+  credit_card_save_manager_->SetCreditCardUploadEnabled(false);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+  ExpectFillableFormParsedUkm(1 /* num_fillable_forms_parsed */);
+
+  // Edit the data, and submit.
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form)
+      .field(2)
+      .set_value(ASCIIToUTF16(test::NextMonth()));
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"123");
+
+  FormSubmitted(credit_card_form);
+
+  EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
+  EXPECT_EQ(
+      1u, personal_data().payments_data_manager().GetLocalCreditCards().size());
+  EXPECT_EQ(u"", personal_data()
+                     .payments_data_manager()
+                     .GetLocalCreditCards()
+                     .front()
+                     ->cvc());
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 // Tests that adding a card clears all strikes for that card.
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ClearStrikesOnAdd) {
   TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =

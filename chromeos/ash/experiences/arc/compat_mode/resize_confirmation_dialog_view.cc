@@ -22,6 +22,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -111,7 +112,7 @@ void ResizeConfirmationDialogView::AddedToWidget() {
   const int kCornerRadius = 20;
   auto* const frame = GetBubbleFrameView();
   if (frame) {
-    frame->SetCornerRadius(kCornerRadius);
+    frame->SetRoundedCorners(gfx::RoundedCornersF(kCornerRadius));
   }
 
   widget_observation_.Observe(GetWidget());

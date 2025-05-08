@@ -7,17 +7,9 @@
 
 #import "ios/chrome/app/application_delegate/observing_app_state_agent.h"
 
-@protocol DiscoverFeedProfileHelper;
-
-// This agent manages refreshing the Discover feed when Chrome enters the
+// This agent manages refreshing the Discover feed when the app switch to
 // background.
 @interface DiscoverFeedAppAgent : SceneObservingAppAgent
-
-// Adds a per-Profile helper.
-- (void)addHelper:(id<DiscoverFeedProfileHelper>)helper;
-
-// Removes a per-Profile helper.
-- (void)removeHelper:(id<DiscoverFeedProfileHelper>)helper;
 
 @end
 

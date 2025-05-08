@@ -4,18 +4,21 @@
 
 package org.chromium.chrome.browser.feed.webfeed;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
@@ -34,6 +37,7 @@ import org.chromium.url.GURL;
  * Controls showing the follow accelerator upon navigation to pages from a Following Feed
  * recommendation (a recommendation card within the feed).
  */
+@NullMarked
 public class WebFeedRecommendationFollowAcceleratorController {
     /** We use UserData to put the web feed name into the tab and the NavigationHandle. */
     @VisibleForTesting
@@ -53,7 +57,7 @@ public class WebFeedRecommendationFollowAcceleratorController {
 
     private final Activity mActivity;
     private final WebFeedFollowIntroView mWebFeedFollowIntroView;
-    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
     private final WebFeedSnackbarController mWebFeedSnackbarController;
 
     /**
@@ -70,7 +74,7 @@ public class WebFeedRecommendationFollowAcceleratorController {
     public WebFeedRecommendationFollowAcceleratorController(
             Activity activity,
             AppMenuHandler appMenuHandler,
-            Supplier<Tab> tabSupplier,
+            Supplier<@Nullable Tab> tabSupplier,
             View menuButtonAnchorView,
             FeedLauncher feedLauncher,
             ModalDialogManager dialogManager,
@@ -173,7 +177,7 @@ public class WebFeedRecommendationFollowAcceleratorController {
         FeedServiceBridge.reportOtherUserAction(
                 StreamKind.UNKNOWN,
                 FeedUserActionType.TAPPED_FOLLOW_ON_RECOMMENDATION_FOLLOW_ACCELERATOR);
-        GURL url = currentTab.getUrl();
+        GURL url = assumeNonNull(currentTab).getUrl();
         WebFeedBridge.followFromId(
                 webFeedId,
                 /* isDurable= */ true,
@@ -196,7 +200,7 @@ public class WebFeedRecommendationFollowAcceleratorController {
                                                 results,
                                                 webFeedId,
                                                 url,
-                                                results.metadata.title,
+                                                assumeNonNull(results.metadata).title,
                                                 WebFeedBridge
                                                         .CHANGE_REASON_RECOMMENDATION_WEB_PAGE_ACCELERATOR);
                                     }
@@ -207,15 +211,15 @@ public class WebFeedRecommendationFollowAcceleratorController {
         return mWebFeedFollowIntroView;
     }
 
-    public static byte[] getWebFeedNameIfPageIsRecommended(Tab tab) {
+    public static byte @Nullable [] getWebFeedNameIfPageIsRecommended(Tab tab) {
         UserDataHost userDataHost = tab.getUserDataHost();
         if (userDataHost == null) return null;
         AssociatedWebFeedData userData = userDataHost.getUserData(AssociatedWebFeedData.class);
         return userData != null ? userData.mWebFeedName : null;
     }
 
-    @Nullable
-    public static byte[] getWebFeedNameIfNavigationIsForRecommendation(NavigationHandle handle) {
+    public static byte @Nullable [] getWebFeedNameIfNavigationIsForRecommendation(
+            NavigationHandle handle) {
         UserDataHost userDataHost = handle.getUserDataHost();
         if (userDataHost == null) return null;
         AssociatedWebFeedData userData = userDataHost.getUserData(AssociatedWebFeedData.class);
@@ -232,7 +236,7 @@ public class WebFeedRecommendationFollowAcceleratorController {
     }
 
     @VisibleForTesting
-    public static byte[] getWebFeedNameIfInLoadUrlParams(LoadUrlParams params) {
+    public static byte @Nullable [] getWebFeedNameIfInLoadUrlParams(LoadUrlParams params) {
         AssociatedWebFeedData userData =
                 params.getNavigationHandleUserData().getUserData(AssociatedWebFeedData.class);
         return userData != null ? userData.mWebFeedName : null;

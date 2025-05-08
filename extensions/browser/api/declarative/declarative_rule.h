@@ -50,11 +50,11 @@ namespace extensions {
 //       const base::Value& definition,
 //       std::string* error);
 //   // If the Condition needs to be filtered by some URLMatcherConditionSets,
-//   // append them to |condition_sets|.
+//   // append them to `condition_sets`.
 //   // DeclarativeConditionSet::GetURLMatcherConditionSets forwards here.
 //   void GetURLMatcherConditionSets(
 //       URLMatcherConditionSet::Vector* condition_sets);
-//   // |match_data| passed through from DeclarativeConditionSet::IsFulfilled.
+//   // `match_data` passed through from DeclarativeConditionSet::IsFulfilled.
 //   bool IsFulfilled(const ConditionT::MatchData& match_data);
 template<typename ConditionT>
 class DeclarativeConditionSet {
@@ -65,9 +65,9 @@ class DeclarativeConditionSet {
   DeclarativeConditionSet(const DeclarativeConditionSet&) = delete;
   DeclarativeConditionSet& operator=(const DeclarativeConditionSet&) = delete;
 
-  // Factory method that creates a DeclarativeConditionSet for |extension|
-  // according to the JSON array |conditions| passed by the extension API. Sets
-  // |error| and returns NULL in case of an error.
+  // Factory method that creates a DeclarativeConditionSet for `extension`
+  // according to the JSON array `conditions` passed by the extension API. Sets
+  // `error` and returns NULL in case of an error.
   static std::unique_ptr<DeclarativeConditionSet> Create(
       const Extension* extension,
       url_matcher::URLMatcherConditionFactory* url_matcher_condition_factory,
@@ -81,15 +81,15 @@ class DeclarativeConditionSet {
   const_iterator begin() const { return conditions_.begin(); }
   const_iterator end() const { return conditions_.end(); }
 
-  // If |url_match_trigger| is not -1, this function looks for a condition
+  // If `url_match_trigger` is not -1, this function looks for a condition
   // with this URLMatcherConditionSet, and forwards to that condition's
-  // IsFulfilled(|match_data|). If there is no such condition, then false is
-  // returned. If |url_match_trigger| is -1, this function returns whether any
+  // IsFulfilled(`match_data`). If there is no such condition, then false is
+  // returned. If `url_match_trigger` is -1, this function returns whether any
   // of the conditions without URL attributes is satisfied.
   bool IsFulfilled(base::MatcherStringPattern::ID url_match_trigger,
                    const typename ConditionT::MatchData& match_data) const;
 
-  // Appends the URLMatcherConditionSet from all conditions to |condition_sets|.
+  // Appends the URLMatcherConditionSet from all conditions to `condition_sets`.
   void GetURLMatcherConditionSets(
       url_matcher::URLMatcherConditionSet::Vector* condition_sets) const;
 
@@ -149,8 +149,8 @@ class DeclarativeActionSet {
   DeclarativeActionSet(const DeclarativeActionSet&) = delete;
   DeclarativeActionSet& operator=(const DeclarativeActionSet&) = delete;
 
-  // Factory method that instantiates a DeclarativeActionSet for |extension|
-  // according to |actions| which represents the array of actions received from
+  // Factory method that instantiates a DeclarativeActionSet for `extension`
+  // according to `actions` which represents the array of actions received from
   // the extension API.
   static std::unique_ptr<DeclarativeActionSet> Create(
       content::BrowserContext* browser_context,
@@ -205,8 +205,8 @@ class DeclarativeRule {
   using JsonRule = extensions::api::events::Rule;
   using Tags = std::vector<std::string>;
 
-  // Checks whether the set of |conditions| and |actions| are consistent.
-  // Returns true in case of consistency and MUST set |error| otherwise.
+  // Checks whether the set of `conditions` and `actions` are consistent.
+  // Returns true in case of consistency and MUST set `error` otherwise.
   using ConsistencyChecker =
       base::OnceCallback<bool(const ConditionSet* conditions,
                               const ActionSet* actions,
@@ -222,13 +222,13 @@ class DeclarativeRule {
   DeclarativeRule(const DeclarativeRule&) = delete;
   DeclarativeRule& operator=(const DeclarativeRule&) = delete;
 
-  // Creates a DeclarativeRule for |extension| given a json definition.  The
+  // Creates a DeclarativeRule for `extension` given a json definition.  The
   // format of each condition and action's json is up to the specific ConditionT
-  // and ActionT.  |extension| may be NULL in tests.
+  // and ActionT.  `extension` may be NULL in tests.
   //
   // Before constructing the final rule, calls check_consistency(conditions,
   // actions, error) and returns NULL if it fails.  Pass NULL if no consistency
-  // check is needed.  If |error| is empty, the translation was successful and
+  // check is needed.  If `error` is empty, the translation was successful and
   // the returned rule is internally consistent.
   static std::unique_ptr<DeclarativeRule> Create(
       url_matcher::URLMatcherConditionFactory* url_matcher_condition_factory,

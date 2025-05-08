@@ -6,15 +6,17 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "ui/base/accelerators/command.h"
 
 namespace glic {
 std::string GetHotkeyString() {
+  std::vector<std::u16string> hotkey_tokens =
+      glic::GlicLauncherConfiguration::GetGlobalHotkey()
+          .GetShortcutVectorRepresentation();
   // If the hotkey is unset, return an empty string as its representation.
-  std::string hotkey_string = ui::Command::AcceleratorToString(
-      glic::GlicLauncherConfiguration::GetGlobalHotkey());
-  if (hotkey_string.empty()) {
+  if (hotkey_tokens.empty()) {
     return "";
   }
 
@@ -22,15 +24,13 @@ std::string GetHotkeyString() {
   // as a URL query parameter. Specifically, each component of the accelerator
   // will be demarked with the '<' and '>' characters, and all components will
   // then be joined with the '-' character.
-  std::vector<std::string> hotkey_tokens = base::SplitString(
-      hotkey_string, "+", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (std::string& token : hotkey_tokens) {
-    token = "<" + token + ">";
+  for (std::u16string& token : hotkey_tokens) {
+    token = u"<" + token + u">";
   }
 
   // Build the formatted string starting with the first token. There should
   // always be at least two tokens in the accelerator.
-  return base::JoinString(hotkey_tokens, "-");
+  return base::UTF16ToUTF8(base::JoinString(hotkey_tokens, u"-"));
 }
 
 }  // namespace glic

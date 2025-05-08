@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -16,20 +17,21 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "third_party/abseil-cpp/absl/status/statusor.h"
+#include "base/types/expected.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/liburlpattern/pattern.h"
 
 namespace liburlpattern {
 namespace {
-absl::StatusOr<std::string> PassThrough(std::string_view input) {
+base::expected<std::string, absl::Status> PassThrough(std::string_view input) {
   return std::string(input);
 }
 
 std::optional<std::string> ParseAndCanonicalize(std::string_view s) {
-  absl::StatusOr<Pattern> pattern = Parse(s, &PassThrough);
-  if (!pattern.ok()) {
-    LOG(INFO) << "Parse failed with status: " << pattern.status();
+  base::expected<Pattern, absl::Status> pattern = Parse(s, &PassThrough);
+  if (!pattern.has_value()) {
+    LOG(INFO) << "Parse failed with status: " << pattern.error();
     return std::nullopt;
   }
   return pattern->GeneratePatternString();

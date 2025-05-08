@@ -17,7 +17,9 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/features.h"
+#include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/custom_metrics_recorder.h"
+#include "cc/metrics/frame_sorter.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_frame_info.h"
 #include "cc/test/fake_picture_layer.h"
@@ -304,10 +306,10 @@ class DroppedFrameCounterTest : public testing::Test {
   explicit DroppedFrameCounterTest(SmoothnessStrategy smoothness_strategy =
                                        SmoothnessStrategy::kDefaultStrategy)
       : smoothness_strategy_(smoothness_strategy) {
-    scoped_feature_list_.InitAndDisableFeature(features::kStopExportDFCMetrics);
     dropped_frame_counter_ = std::make_unique<DroppedFrameCounter>();
     dropped_frame_counter_->set_total_counter(&total_frame_counter_);
     dropped_frame_counter_->OnFirstContentfulPaintReceived();
+    frame_sorter_.AddObserver(dropped_frame_counter_.get());
   }
   ~DroppedFrameCounterTest() override = default;
 
@@ -316,9 +318,10 @@ class DroppedFrameCounterTest : public testing::Test {
     for (int i = 0; i < repeat; i++) {
       for (auto is_dropped : frame_states) {
         viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
-        dropped_frame_counter_->OnBeginFrame(args_);
-        dropped_frame_counter_->OnEndFrame(args_,
-                                           CreateStubFrameInfo(is_dropped));
+        if (dropped_frame_counter_->first_contentful_paint_received()) {
+          frame_sorter_.AddNewFrame(args_);
+          frame_sorter_.AddFrameResult(args_, CreateStubFrameInfo(is_dropped));
+        }
         sequence_number_++;
         frame_time_ += interval_;
       }
@@ -339,7 +342,9 @@ class DroppedFrameCounterTest : public testing::Test {
     std::vector<viz::BeginFrameArgs> args(repeat);
     for (int i = 0; i < repeat; i++) {
       args[i] = SimulateBeginFrameArgs();
-      dropped_frame_counter_->OnBeginFrame(args[i]);
+      if (dropped_frame_counter_->first_contentful_paint_received()) {
+        frame_sorter_.AddNewFrame(args[i]);
+      }
       sequence_number_++;
       frame_time_ += interval_;
     }
@@ -349,18 +354,19 @@ class DroppedFrameCounterTest : public testing::Test {
   // Simulate a main and impl thread update on the same frame.
   void SimulateForkedFrame(bool main_dropped, bool impl_dropped) {
     viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
-    dropped_frame_counter_->OnBeginFrame(args_);
-    dropped_frame_counter_->OnBeginFrame(args_);
-
+    if (dropped_frame_counter_->first_contentful_paint_received()) {
+      frame_sorter_.AddNewFrame(args_);
+      frame_sorter_.AddNewFrame(args_);
+    }
     // End the 'main thread' arm of the fork.
     auto main_info = CreateStubFrameInfo(main_dropped);
     main_info.main_thread_response = FrameInfo::MainThreadResponse::kIncluded;
-    dropped_frame_counter_->OnEndFrame(args_, main_info);
+    frame_sorter_.AddFrameResult(args_, main_info);
 
     // End the 'compositor thread' arm of the fork.
     auto impl_info = CreateStubFrameInfo(impl_dropped);
     impl_info.main_thread_response = FrameInfo::MainThreadResponse::kMissing;
-    dropped_frame_counter_->OnEndFrame(args_, impl_info);
+    frame_sorter_.AddFrameResult(args_, impl_info);
 
     sequence_number_++;
     frame_time_ += interval_;
@@ -368,36 +374,6 @@ class DroppedFrameCounterTest : public testing::Test {
 
   void AdvancetimeByIntervals(int interval_count) {
     frame_time_ += interval_ * interval_count;
-  }
-
-  double MaxPercentDroppedFrame() {
-    return dropped_frame_counter_->sliding_window_max_percent_dropped();
-  }
-
-  double MaxPercentDroppedFrameAfter1Sec() {
-    auto percent_dropped =
-        dropped_frame_counter_->max_percent_dropped_After_1_sec();
-    EXPECT_NE(features::StopExportDFCMetrics(), percent_dropped.has_value());
-    return percent_dropped.value_or(0.0);
-  }
-
-  double MaxPercentDroppedFrameAfter2Sec() {
-    auto percent_dropped =
-        dropped_frame_counter_->max_percent_dropped_After_2_sec();
-    EXPECT_NE(features::StopExportDFCMetrics(), percent_dropped.has_value());
-    return percent_dropped.value_or(0.0);
-  }
-
-  double MaxPercentDroppedFrameAfter5Sec() {
-    auto percent_dropped =
-        dropped_frame_counter_->max_percent_dropped_After_5_sec();
-    EXPECT_NE(features::StopExportDFCMetrics(), percent_dropped.has_value());
-    return percent_dropped.value_or(0.0);
-  }
-
-  double PercentDroppedFrame95Percentile() {
-    return dropped_frame_counter_->SlidingWindow95PercentilePercentDropped(
-        smoothness_strategy_);
   }
 
   double PercentDroppedFrameMedian() {
@@ -422,33 +398,9 @@ class DroppedFrameCounterTest : public testing::Test {
 
   base::TimeTicks GetNextFrameTime() const { return frame_time_ + interval_; }
 
-  // Wrap calls with EXPECT_TRUE. Logs the buckets and returns false if they
-  // don't match (within a given epsilon).
-  bool CheckSmoothnessBuckets(std::vector<double> expected_buckets) {
-    constexpr double epsilon = 0.001;
-    bool buckets_match = true;
-    std::vector<double> buckets =
-        GetSlidingWindowHistogram()->GetPercentDroppedFrameBuckets();
-    if (buckets.size() != expected_buckets.size()) {
-      buckets_match = false;
-    } else {
-      for (size_t i = 0; i < buckets.size(); i++) {
-        if (std::abs(buckets[i] - expected_buckets[i]) > epsilon) {
-          buckets_match = false;
-          break;
-        }
-      }
-    }
-    if (!buckets_match) {
-      LOG(ERROR) << "Smoothness buckets do not match!";
-      LOG(ERROR) << "Expected: " << testing::PrintToString(expected_buckets);
-      LOG(ERROR) << "  Actual: " << testing::PrintToString(buckets);
-    }
-    return buckets_match;
-  }
-
  public:
   std::unique_ptr<DroppedFrameCounter> dropped_frame_counter_;
+  FrameSorter frame_sorter_;
 
  private:
   uint64_t sequence_number_ = 1;
@@ -491,24 +443,16 @@ class SmoothnessStrategyDroppedFrameCounterTest
 std::vector<SmoothnessStrategy> GetSmoothnessStrategyParams() {
   return std::vector<SmoothnessStrategy>{
       SmoothnessStrategy::kDefaultStrategy,
-      SmoothnessStrategy::kCompositorFocusedStrategy,
-      SmoothnessStrategy::kMainFocusedStrategy,
-      SmoothnessStrategy::kScrollFocusedStrategy};
+      SmoothnessStrategy::kCompositorFocusedStrategy};
 }
 
 std::string SmoothnessStrategyToString(const SmoothnessStrategy& s) {
-  switch (s) {
-    case SmoothnessStrategy::kDefaultStrategy:
-      return "DefaultStrategy";
-    case SmoothnessStrategy::kScrollFocusedStrategy:
-      return "ScrollFocusedStrategy";
-    case SmoothnessStrategy::kMainFocusedStrategy:
-      return "MainFocusedStrategy";
-    case SmoothnessStrategy::kCompositorFocusedStrategy:
-      return "CompositorFocusedStrategy";
-    case SmoothnessStrategy::kStrategyCount:
-      return "INVALID";
+  if (s == SmoothnessStrategy::kDefaultStrategy) {
+    return "DefaultStrategy";
+  } else if (s == SmoothnessStrategy::kCompositorFocusedStrategy) {
+    return "CompositorFocusedStrategy";
   }
+  return "INVALID";
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -524,10 +468,6 @@ TEST_P(SmoothnessStrategyDroppedFrameCounterTest, SimplePattern1) {
 
   // The max is the following window:
   //    16 * <sequence> + {true, true, true, false
-  // Which means a max of 67 dropped frames.
-  EXPECT_EQ(std::round(MaxPercentDroppedFrame()), 67);
-  EXPECT_EQ(PercentDroppedFrame95Percentile(), 67);  // all values are in the
-  // 65th-67th bucket, and as a result 95th percentile is also 67.
   EXPECT_EQ(PercentDroppedFrameMedian(), 65);
   EXPECT_LE(PercentDroppedFrameVariance(), 1);
 }
@@ -536,10 +476,6 @@ TEST_P(SmoothnessStrategyDroppedFrameCounterTest, SimplePattern2) {
   // 1 out of every 5 frames are dropped (In total 24 frames out of 120).
   SimulateFrameSequence({false, false, false, false, true}, 24);
 
-  double expected_percent_dropped_frame = (12 / GetTotalFramesInWindow()) * 100;
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame);
-  EXPECT_EQ(PercentDroppedFrame95Percentile(),
-            20);  // all values are in the
   // 20th bucket, and as a result 95th percentile is also 20.
   EXPECT_EQ(PercentDroppedFrameMedian(), 20);
   EXPECT_LE(PercentDroppedFrameVariance(), 1);
@@ -549,62 +485,8 @@ TEST_P(SmoothnessStrategyDroppedFrameCounterTest, IncompleteWindow) {
   // There are only 5 frames submitted, so Max, 95pct, median and variance
   // should report zero.
   SimulateFrameSequence({false, false, false, false, true}, 1);
-  EXPECT_EQ(MaxPercentDroppedFrame(), 0.0);
-  EXPECT_EQ(PercentDroppedFrame95Percentile(), 0);
   EXPECT_EQ(PercentDroppedFrameMedian(), 0);
   EXPECT_LE(PercentDroppedFrameVariance(), 1);
-}
-
-TEST_P(SmoothnessStrategyDroppedFrameCounterTest, MaxPercentDroppedChanges) {
-  // First 60 frames have 20% dropped.
-  SimulateFrameSequence({false, false, false, false, true}, 12);
-
-  double expected_percent_dropped_frame1 =
-      (12 / GetTotalFramesInWindow()) * 100;
-  EXPECT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame1);
-  EXPECT_FLOAT_EQ(PercentDroppedFrame95Percentile(),
-                  20);  // There is only one
-  // element in the histogram and that is 20.
-  EXPECT_EQ(PercentDroppedFrameMedian(), 20);
-  EXPECT_LE(PercentDroppedFrameVariance(), 1);
-
-  // 30 new frames are added that have 18 dropped frames.
-  // and the 30 frame before that had 6 dropped frames.
-  // So in total in the window has 24 frames dropped out of 60 frames.
-  SimulateFrameSequence({false, false, true, true, true}, 6);
-  double expected_percent_dropped_frame2 =
-      (24 / GetTotalFramesInWindow()) * 100;
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame2);
-
-  // 30 new frames are added that have 24 dropped frames.
-  // and the 30 frame before that had 18 dropped frames.
-  // So in total in the window has 42 frames dropped out of 60 frames.
-  SimulateFrameSequence({false, true, true, true, true}, 6);
-  double expected_percent_dropped_frame3 =
-      (42 / GetTotalFramesInWindow()) * 100;
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame3);
-
-  // Percent dropped frame of window increases gradually to 70%.
-  // 1 value exist when we reach 60 frames and 1 value thereafter for each
-  // frame added. So there 61 values in histogram. Last value is 70 (2 sampels)
-  // and then 67 with 1 sample, which would be the 95th percentile.
-  EXPECT_EQ(PercentDroppedFrame95Percentile(), 67);
-}
-
-TEST_F(DroppedFrameCounterTest, MaxPercentDroppedWithIdleFrames) {
-  // First 20 frames have 4 frames dropped (20%).
-  SimulateFrameSequence({false, false, false, false, true}, 4);
-
-  // Then no frames are added for 20 intervals.
-  AdvancetimeByIntervals(20);
-
-  // Then 20 frames have 16 frames dropped (60%).
-  SimulateFrameSequence({false, false, true, true, true}, 4);
-
-  // So in total, there are 40 frames in the 1 second window with 16 dropped
-  // frames (40% in total).
-  double expected_percent_dropped_frame = (16 / GetTotalFramesInWindow()) * 100;
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame);
 }
 
 TEST_F(DroppedFrameCounterTest, NoCrashForIntervalLargerThanWindow) {
@@ -713,188 +595,6 @@ TEST_P(SmoothnessStrategyDroppedFrameCounterTest,
   EXPECT_GT(histogram->GetPercentDroppedFramePercentile(0.97), 0u);
 }
 
-// Tests that when ResetPendingFrames updates the sliding window, that the max
-// PercentDroppedFrames is also updated accordingly. (https://crbug.com/1225307)
-TEST_P(SmoothnessStrategyDroppedFrameCounterTest,
-       ResetPendingFramesUpdatesMaxPercentDroppedFrames) {
-  // This tests a scenario where gaps in frame production lead to having
-  // leftover frames in the sliding window for calculations of
-  // ResetPendingFrames.
-  //
-  // Testing for when those frames are sufficient to change the current maximum
-  // PercentDroppedFrames.
-  //
-  // This has been first seen in GpuCrash_InfoForDualHardwareGpus which forces
-  // a GPU crash. Introducing long periods of idle while the Renderer waits for
-  // a new GPU Process. (https://crbug.com/1164647)
-
-  // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::Milliseconds(10);
-  constexpr int kFps = base::Seconds(1).IntDiv(kInterval);
-  SetInterval(kInterval);
-
-  // One good frame
-  SimulateFrameSequence({false}, 1);
-  // Advance 1s so that when we process the first window, we go from having
-  // enough frames in the interval, to no longer having enough.
-  AdvancetimeByIntervals(kFps);
-
-  // The first frame should fill up the sliding window. It isn't dropped, so
-  // there should be 0 dropped frames. This will pop the first reported frame.
-  // The second frame is dropped, however we are now tracking less frames than
-  // the 1s window. So we won't use it in calculations yet.
-  SimulateFrameSequence({false, true}, 1);
-  EXPECT_EQ(dropped_frame_counter_->sliding_window_max_percent_dropped(), 0u);
-
-  // Advance 1s so that we will attempt to update the window when resetting the
-  // pending frames. The pending dropped frame above should be calculated here,
-  // and the max percentile should be updated.
-  AdvancetimeByIntervals(kFps);
-  dropped_frame_counter_->ResetPendingFrames(GetNextFrameTime());
-  EXPECT_GT(dropped_frame_counter_->sliding_window_max_percent_dropped(), 0u);
-
-  // There should be enough sliding windows reported with 0 dropped frames that
-  // the 95th percentile stays at 0.
-  EXPECT_EQ(PercentDroppedFrame95Percentile(), 0u);
-}
-
-TEST_F(DroppedFrameCounterTest, ResetPendingFramesAccountingForPendingFrames) {
-  // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::Milliseconds(10);
-  constexpr int kFps = base::Seconds(1).IntDiv(kInterval);
-  SetInterval(kInterval);
-
-  // First 2 seconds with 20% dropped frames.
-  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 2);
-
-  // Have a pending frame which would hold the frames in queue.
-  SimulatePendingFrame(1);
-
-  // One second with 40% dropped frames.
-  SimulateFrameSequence({false, false, false, true, true}, (kFps / 5));
-
-  // On the first 2 seconds are accounted for and pdf is 20%.
-  EXPECT_EQ(MaxPercentDroppedFrame(), 20);
-
-  dropped_frame_counter_->ResetPendingFrames(GetNextFrameTime());
-
-  // After resetting the pending frames, the pdf would be 40%.
-  EXPECT_EQ(MaxPercentDroppedFrame(), 40);
-}
-
-TEST_F(DroppedFrameCounterTest, Reset) {
-  // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::Milliseconds(10);
-  constexpr int kFps = base::Seconds(1).IntDiv(kInterval);
-  SetInterval(kInterval);
-
-  // First 2 seconds with 20% dropped frames.
-  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 2);
-
-  // Have a pending frame which would hold the frames in queue.
-  SimulatePendingFrame(1);
-
-  // Another 2 seconds with 40% dropped frames.
-  SimulateFrameSequence({false, false, false, true, true}, (kFps / 5) * 2);
-
-  EXPECT_EQ(MaxPercentDroppedFrame(), 20u);
-
-  dropped_frame_counter_->Reset();  // Simulating gpu thread crash
-
-  // After reset the max percent dropped frame would be 0 and frames in queue
-  // behind the pending frame would not affect it.
-  EXPECT_EQ(MaxPercentDroppedFrame(), 0u);
-}
-
-TEST_F(DroppedFrameCounterTest, ConsistentSmoothnessRatings) {
-  // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::Milliseconds(10);
-  constexpr int kFps = base::Seconds(1).IntDiv(kInterval);
-  static_assert(kFps == 100,
-                "kFps must be 100 because this test depends on it.");
-  SetInterval(kInterval);
-
-  // Add 5 seconds with 2% dropped frames. This should be in the first bucket.
-  SimulateFrameSequence(MakeFrameSequence(1, 50), (kFps / 50) * 5);
-  EXPECT_TRUE(CheckSmoothnessBuckets({100, 0, 0, 0, 0, 0, 0}));
-
-  // Add 5 seconds with 5% dropped frames. This should be in the second bucket.
-  dropped_frame_counter_->Reset();
-  dropped_frame_counter_->OnFirstContentfulPaintReceived();
-  SimulateFrameSequence(MakeFrameSequence(1, 20), (kFps / 20) * 5);
-  EXPECT_TRUE(CheckSmoothnessBuckets({0, 100, 0, 0, 0, 0, 0}));
-
-  // Add 5 seconds with 10% dropped frames. This should be in the third bucket.
-  dropped_frame_counter_->Reset();
-  dropped_frame_counter_->OnFirstContentfulPaintReceived();
-  SimulateFrameSequence(MakeFrameSequence(1, 10), (kFps / 10) * 5);
-  EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 100, 0, 0, 0, 0}));
-
-  // Add 5 seconds with 20% dropped frames. This should be in the fourth bucket.
-  dropped_frame_counter_->Reset();
-  dropped_frame_counter_->OnFirstContentfulPaintReceived();
-  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 5);
-  EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 0, 100, 0, 0, 0}));
-
-  // Add 5 seconds with 40% dropped frames. This should be in the fifth bucket.
-  dropped_frame_counter_->Reset();
-  dropped_frame_counter_->OnFirstContentfulPaintReceived();
-  SimulateFrameSequence({false, false, false, true, true}, (kFps / 5) * 5);
-  EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 0, 0, 100, 0, 0}));
-
-  // Add 5 seconds with 60% dropped frames. This should be in the sixth bucket.
-  dropped_frame_counter_->Reset();
-  dropped_frame_counter_->OnFirstContentfulPaintReceived();
-  SimulateFrameSequence({false, false, true, true, true}, (kFps / 5) * 5);
-  EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 0, 0, 0, 100, 0}));
-
-  // Add 5 seconds with 80% dropped frames. This should be in the last bucket.
-  dropped_frame_counter_->Reset();
-  dropped_frame_counter_->OnFirstContentfulPaintReceived();
-  SimulateFrameSequence({false, true, true, true, true}, (kFps / 5) * 5);
-  EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 0, 0, 0, 0, 100}));
-}
-
-TEST_F(DroppedFrameCounterTest, MovingSmoothnessRatings) {
-  // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::Milliseconds(10);
-  constexpr int kFps = base::Seconds(1).IntDiv(kInterval);
-  static_assert(kFps == 100,
-                "kFps must be 100 because this test depends on it.");
-  SetInterval(kInterval);
-
-  // Add a second with 40% dropped frames. Nothing should be added to the
-  // histogram yet.
-  SimulateFrameSequence({false, false, false, true, true}, kFps / 5);
-  EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 0, 0, 0, 0, 0}));
-
-  // Add a second with 80% dropped frames. All very bad buckets should have some
-  // entries.
-  SimulateFrameSequence({false, true, true, true, true}, kFps / 5);
-  EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 0, 0, 22, 64, 14}));
-
-  // Add a second with 10% dropped frames. Should be mostly very bad, with a few
-  // bad and okay windows.
-  SimulateFrameSequence(MakeFrameSequence(1, 10), kFps / 10);
-  EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 1, 9, 29, 50, 11}));
-
-  // Add a second with 5% dropped frames, and a second with no dropped frames.
-  // The sliding window should shift from ok to very good over time.
-  SimulateFrameSequence(MakeFrameSequence(1, 20), kFps / 20);
-  SimulateFrameSequence({false}, kFps);
-  EXPECT_TRUE(CheckSmoothnessBuckets({15, 12.5, 23, 4.5, 14.5, 25, 5.5}));
-
-  // Clear the counter, then add a second with 100% dropped frames and a second
-  // with 0% dropped frames. As the sliding window shifts each integer percent
-  // (other than 100%) should be reported once, exactly matching the size of
-  // each bucket.
-  dropped_frame_counter_->Reset();
-  dropped_frame_counter_->OnFirstContentfulPaintReceived();
-  SimulateFrameSequence({true}, kFps);
-  SimulateFrameSequence({false}, kFps);
-  EXPECT_TRUE(CheckSmoothnessBuckets({3, 3, 6, 13, 25, 25, 25}));
-}
-
 TEST_F(DroppedFrameCounterTest, FramesInFlightWhenFcpReceived) {
   // Start five frames in flight.
   std::vector<viz::BeginFrameArgs> pending_frames = SimulatePendingFrame(5);
@@ -908,7 +608,7 @@ TEST_F(DroppedFrameCounterTest, FramesInFlightWhenFcpReceived) {
   // End each of the frames as dropped. The first three should not count for
   // smoothness, only the last two.
   for (const auto& frame : pending_frames) {
-    dropped_frame_counter_->OnEndFrame(frame, CreateStubFrameInfo(true));
+    frame_sorter_.AddFrameResult(frame, CreateStubFrameInfo(true));
   }
   EXPECT_EQ(dropped_frame_counter_->total_smoothness_dropped(), 2u);
 }
@@ -929,56 +629,6 @@ TEST_F(DroppedFrameCounterTest, ForkedCompositorFrameReporter) {
   EXPECT_EQ(dropped_frame_counter_->total_smoothness_dropped(), 3u);
 }
 
-TEST_F(DroppedFrameCounterTest, WorstSmoothnessTiming) {
-  // Set an interval that rounds up nicely with 1 second.
-  constexpr auto kInterval = base::Milliseconds(10);
-  constexpr int kFps = base::Seconds(1).IntDiv(kInterval);
-  static_assert(
-      kFps % 5 == 0,
-      "kFps must be a multiple of 5 because this test depends on it.");
-  SetInterval(kInterval);
-
-  // Prepare a second of pending frames, and send FCP after the last of these
-  // frames.
-  dropped_frame_counter_->Reset();
-  std::vector<viz::BeginFrameArgs> pending_frames = SimulatePendingFrame(kFps);
-  const auto& last_frame = pending_frames.back();
-  base::TimeTicks time_fcp_sent =
-      last_frame.frame_time + last_frame.interval / 2;
-  dropped_frame_counter_->OnFirstContentfulPaintReceived();
-  dropped_frame_counter_->SetTimeFirstContentfulPaintReceivedForTesting(
-      time_fcp_sent);
-
-  // End each of the pending frames as dropped. These shouldn't affect any of
-  // the metrics.
-  for (const auto& frame : pending_frames) {
-    dropped_frame_counter_->OnEndFrame(frame, CreateStubFrameInfo(true));
-  }
-
-  // After FCP time, add a second each of 80% and 60%, and three seconds of 40%
-  // dropped frames. This should be five seconds total.
-  SimulateFrameSequence({false, true, true, true, true}, kFps / 5);
-  SimulateFrameSequence({false, false, true, true, true}, kFps / 5);
-  SimulateFrameSequence({false, false, false, true, true}, (kFps / 5) * 3);
-
-  // Next two seconds are 20% dropped frames.
-  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 2);
-
-  // The first 1, 2, and 5 seconds shouldn't be recorded in the corresponding
-  // max dropped after N seconds metrics.
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), 80);
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter1Sec(), 60);
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter2Sec(), 40);
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter5Sec(), 20);
-
-  // Next second is 100% dropped frames, all metrics should include this.
-  SimulateFrameSequence({true}, kFps);
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), 100);
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter1Sec(), 100);
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter2Sec(), 100);
-  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter5Sec(), 100);
-}
-
 TEST_F(DroppedFrameCounterTest, ReportOnEveryFrameForUI) {
   constexpr auto kInterval = base::Milliseconds(10);
   constexpr int kFps = base::Seconds(1).IntDiv(kInterval);
@@ -995,7 +645,12 @@ TEST_F(DroppedFrameCounterTest, ReportOnEveryFrameForUI) {
 
   // Recorded (kFps * 3) samples of 20% dropped frame percentage. Only 3 seconds
   // of frames reported because there is no reports for the very 1st second.
-  EXPECT_EQ(recorder.report_count(), kFps * 3);
+  // Off-by-one introduced by FrameSorter refactor.
+  // We have inverted the order in which we call DFC::AddSortedFrame and
+  // DFC::OnEndFrame, meaning that DFC's sliding_window_current_percent_dropped_
+  // is set after OnEndFrame has been called at the 1s second threshold.
+  // Therefore, we expect one less call to the frame recorder.
+  EXPECT_EQ(recorder.report_count(), (kFps * 3) - 1);
   EXPECT_FLOAT_EQ(recorder.last_percent_dropped_frames(), 20.0f);
 
   recorder.Reset();
@@ -1018,9 +673,11 @@ class DroppedFrameCounterLegacyMetricsTest : public DroppedFrameCounterTest {
 };
 
 DroppedFrameCounterLegacyMetricsTest::DroppedFrameCounterLegacyMetricsTest() {
-  scoped_feature_list_.InitAndEnableFeature(features::kStopExportDFCMetrics);
+  frame_sorter_.RemoveObserver(dropped_frame_counter_.get());
   dropped_frame_counter_ = std::make_unique<DroppedFrameCounter>();
+  frame_sorter_.Reset();
   dropped_frame_counter_->OnFirstContentfulPaintReceived();
+  frame_sorter_.AddObserver(dropped_frame_counter_.get());
 }
 
 TEST_F(DroppedFrameCounterLegacyMetricsTest, DoesNotReportLegacyMetrics) {
@@ -1036,7 +693,11 @@ TEST_F(DroppedFrameCounterLegacyMetricsTest, DoesNotReportLegacyMetrics) {
 
   // 5 seconds with 20% dropped frames.
   SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 6);
-  EXPECT_EQ(recorder.report_count(), 5 * kFps);
+  // We have inverted the order in which we call DFC::AddSortedFrame and
+  // DFC::OnEndFrame, meaning that DFC's sliding_window_current_percent_dropped_
+  // is set after OnEndFrame has been called at the 1s second threshold.
+  // Therefore, we expect one less call to the frame recorder.
+  EXPECT_EQ(recorder.report_count(), (5 * kFps) - 1);
 
   // The following metrics should report data.
   // Average calculation
@@ -1046,50 +707,6 @@ TEST_F(DroppedFrameCounterLegacyMetricsTest, DoesNotReportLegacyMetrics) {
   // Compositor-focused median calculation
   EXPECT_GT(dropped_frame_counter_->SlidingWindowMedianPercentDropped(
                 SmoothnessStrategy::kCompositorFocusedStrategy),
-            0.0);
-  // The following have data, but only because they share an
-  // underlying data structure with the median calculations.
-  // 95th percentile
-  EXPECT_EQ(dropped_frame_counter_->SlidingWindow95PercentilePercentDropped(
-                SmoothnessStrategy::kCompositorFocusedStrategy),
-            0.0);
-
-  // The following metrics should not report any data.
-  // Variance
-  EXPECT_EQ(PercentDroppedFrameVariance(), 0.0);
-  // 95th Percentile
-  EXPECT_EQ(PercentDroppedFrame95Percentile(), 0.0);
-  // Worst Smoothness Metrics
-  EXPECT_EQ(MaxPercentDroppedFrame(), 0.0);
-  EXPECT_EQ(MaxPercentDroppedFrameAfter1Sec(), 0.0);
-  EXPECT_EQ(MaxPercentDroppedFrameAfter2Sec(), 0.0);
-  EXPECT_EQ(MaxPercentDroppedFrameAfter5Sec(), 0.0);
-  // Main-focused median, p95, variance
-  EXPECT_EQ(dropped_frame_counter_->SlidingWindowMedianPercentDropped(
-                SmoothnessStrategy::kMainFocusedStrategy),
-            0.0);
-  EXPECT_EQ(dropped_frame_counter_->SlidingWindow95PercentilePercentDropped(
-                SmoothnessStrategy::kMainFocusedStrategy),
-            0.0);
-  EXPECT_EQ(dropped_frame_counter_->SlidingWindowPercentDroppedVariance(
-                SmoothnessStrategy::kMainFocusedStrategy),
-            0.0);
-  // Compositor-focused variance, p95
-  EXPECT_EQ(dropped_frame_counter_->SlidingWindow95PercentilePercentDropped(
-                SmoothnessStrategy::kCompositorFocusedStrategy),
-            0.0);
-  EXPECT_EQ(dropped_frame_counter_->SlidingWindowPercentDroppedVariance(
-                SmoothnessStrategy::kCompositorFocusedStrategy),
-            0.0);
-  // Scroll-focused median, p95, variance
-  EXPECT_EQ(dropped_frame_counter_->SlidingWindowMedianPercentDropped(
-                SmoothnessStrategy::kScrollFocusedStrategy),
-            0.0);
-  EXPECT_EQ(dropped_frame_counter_->SlidingWindow95PercentilePercentDropped(
-                SmoothnessStrategy::kScrollFocusedStrategy),
-            0.0);
-  EXPECT_EQ(dropped_frame_counter_->SlidingWindowPercentDroppedVariance(
-                SmoothnessStrategy::kScrollFocusedStrategy),
             0.0);
 }
 

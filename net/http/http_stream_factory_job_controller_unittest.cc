@@ -1248,6 +1248,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   const ProxyChain kNestedProxyChain2 =
       ProxyChain::ForIpProtection({{kBadProxyServer2, kGoodProxyServer}});
 
+  base::HistogramTester histogram_tester;
   for (GURL dest_url :
        {GURL("http://www.example.com"), GURL("https://www.example.com")}) {
     SCOPED_TRACE(dest_url);
@@ -1441,6 +1442,32 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
     }
   }
+  // Check that the errors were logged.
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_PROXY_CERTIFICATE_INVALID),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_PROXY_CONNECTION_FAILED),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_SSL_PROTOCOL_ERROR),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_TIMED_OUT),
+            0);
+  // Check the number of buckets.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0"),
+              SizeIs(4));
+  // Check that no other proxy chains were logged.
+  const base::HistogramTester::CountsMap counts =
+      histogram_tester.GetTotalCountsForPrefix(
+          "Net.IpProtection.CanFalloverToNextProxy.Error.Chain");
+  EXPECT_THAT(counts, SizeIs(1));
 }
 
 // Same as above but using a multi-proxy chain, with errors encountered by the
@@ -1488,6 +1515,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   const ProxyChain kNestedProxyChain2 =
       ProxyChain::ForIpProtection({{kGoodProxyServer, kBadProxyServer2}});
 
+  base::HistogramTester histogram_tester;
   for (GURL dest_url :
        {GURL("http://www.example.com"), GURL("https://www.example.com")}) {
     SCOPED_TRACE(dest_url);
@@ -1696,6 +1724,28 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
     }
   }
+  // Check that the errors were logged.
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_PROXY_CERTIFICATE_INVALID),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_SSL_PROTOCOL_ERROR),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_TIMED_OUT),
+            0);
+  // Check the number of buckets.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0"),
+              SizeIs(3));
+  // Check that no other proxy chains were logged.
+  const base::HistogramTester::CountsMap counts =
+      histogram_tester.GetTotalCountsForPrefix(
+          "Net.IpProtection.CanFalloverToNextProxy.Error.Chain");
+  EXPECT_THAT(counts, SizeIs(1));
 }
 
 // Test proxy fallback logic for an IP Protection request.
@@ -2009,6 +2059,8 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
   url::SchemeHostPort proxy_server(url::kHttpsScheme, "badproxy", 99);
   url::SchemeHostPort proxy_server2(url::kHttpsScheme, "badfallbackproxy", 98);
+
+  base::HistogramTester histogram_tester;
   for (const auto& mock_error : kRetriableErrors) {
     SCOPED_TRACE(ErrorToString(mock_error.error));
 
@@ -2150,6 +2202,56 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
     }
     EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
   }
+  // Check that the errors were logged.
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_ADDRESS_UNREACHABLE),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_CONNECTION_CLOSED),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_CONNECTION_RESET),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_CONNECTION_REFUSED),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_CONNECTION_ABORTED),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_NAME_NOT_RESOLVED),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_CONNECTION_TIMED_OUT),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_MSG_TOO_BIG),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_QUIC_PROTOCOL_ERROR),
+            0);
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0",
+                Error::ERR_QUIC_HANDSHAKE_FAILED),
+            0);
+  // Check the number of buckets.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0"),
+              SizeIs(10));
+  // Check that no other proxy chains were logged.
+  const base::HistogramTester::CountsMap counts =
+      histogram_tester.GetTotalCountsForPrefix(
+          "Net.IpProtection.CanFalloverToNextProxy.Error.Chain");
+  EXPECT_THAT(counts, SizeIs(1));
 }
 
 // Same as test above except that this is testing the retry behavior for
@@ -6853,7 +6955,8 @@ class HttpStreamFactoryJobControllerPoolTest
 };
 
 TEST_F(HttpStreamFactoryJobControllerPoolTest, Preconnect) {
-  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("127.0.0.1").endpoint())
       .CompleteStartSynchronously(OK);

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//chrome/common/features.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
@@ -119,6 +118,7 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/CreditCardAccessorySheetViewBinder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/DynamicInfoViewBottomSpacer.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/IbanAccessoryInfoView.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/LoyaltyCardInfoView.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessoryInfoView.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetMediator.java",
@@ -144,13 +144,12 @@ android_resources("java_resources") {
     "java/res/layout/keyboard_accessory_sheet_tab_address_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_credit_card_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_iban_info.xml",
+    "java/res/layout/keyboard_accessory_sheet_tab_loyalty_card_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_option_toggle.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_password_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_plus_address_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_promo_code_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_title.xml",
-    "java/res/layout/keyboard_accessory_suggestion.xml",
-    "java/res/layout/keyboard_accessory_suggestion_large.xml",
     "java/res/layout/password_accessory_passkey_chip.xml",
     "java/res/layout/password_accessory_sheet.xml",
     "java/res/layout/password_accessory_sheet_option.xml",
@@ -168,7 +167,4 @@ android_resources("java_resources") {
 java_strings_grd("java_strings_grd") {
   defines = chrome_grit_defines
   grd_file = "java/strings/android_keyboard_accessory_strings.grd"
-  outputs = [ "values/android_keyboard_accessory_strings.xml" ] + process_file_template(
-                android_bundle_locales_as_resources,
-                [ "values-{{source_name_part}}/android_keyboard_accessory_strings.xml" ])
 }

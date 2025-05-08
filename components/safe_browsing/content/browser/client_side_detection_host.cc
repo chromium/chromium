@@ -178,6 +178,25 @@ void RecordPreClassificationCheckResultWithAndWithoutSuffix(
       result, PreClassificationCheckResult::NO_CLASSIFY_MAX);
 }
 
+void LogLlamaForcedTriggerInfoFields(
+    LlamaForcedTriggerInfo llama_forced_trigger_info) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.LlamaForcedTriggerInfo.IntelligentScan",
+      llama_forced_trigger_info.intelligent_scan());
+  size_t rule_infos_size =
+      llama_forced_trigger_info.llama_trigger_rule_infos().size();
+  base::UmaHistogramCounts100(
+      "SBClientPhishing.LlamaForcedTriggerInfo.LlamaTriggerRuleInfosSize",
+      rule_infos_size);
+  for (size_t i = 0; i < rule_infos_size; i++) {
+    base::UmaHistogramCounts1000(
+        "SBClientPhishing.LlamaForcedTriggerInfo.LlamaTriggerRuleId",
+        llama_forced_trigger_info.llama_trigger_rule_infos()
+            .at(i)
+            .llama_trigger_rule_id());
+  }
+}
+
 bool ShouldShowScamWarning(std::optional<IntelligentScanVerdict> verdict) {
   if (!verdict.has_value() ||
       *verdict ==
@@ -1081,6 +1100,36 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
                 current_url_, &llama_forced_trigger_info)) {
           verdict->mutable_llama_forced_trigger_info()->Swap(
               &llama_forced_trigger_info);
+        } else if (
+            !base::FeatureList::IsEnabled(
+                kClientSideDetectionForcedLlamaRedirectChainKillswitch)) {
+          std::vector<GURL> redirect_chain = web_contents()
+                                                 ->GetController()
+                                                 .GetLastCommittedEntry()
+                                                 ->GetRedirectChain();
+
+          // We pop the last element because if the redirect chain is not empty,
+          // the last element will be the current URL.
+          if (!redirect_chain.empty()) {
+            redirect_chain.pop_back();
+          }
+
+          bool redirect_chain_contains_forced_trigger_info = false;
+          for (GURL url : redirect_chain) {
+            if (cache_manager->GetCachedRealTimeLlamaForcedTriggerInfo(
+                    url, &llama_forced_trigger_info)) {
+              redirect_chain_contains_forced_trigger_info = true;
+              verdict->mutable_llama_forced_trigger_info()->Swap(
+                  &llama_forced_trigger_info);
+              break;
+            }
+          }
+
+          if (!redirect_chain.empty()) {
+            base::UmaHistogramBoolean(
+                "SBClientPhishing.RedirectChainContainsForcedTriggerInfo",
+                redirect_chain_contains_forced_trigger_info);
+          }
         }
       }
     }
@@ -1210,6 +1259,10 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
       verdict->has_llama_forced_trigger_info() &&
       verdict->llama_forced_trigger_info().intelligent_scan();
 
+  if (verdict->has_llama_forced_trigger_info()) {
+    LogLlamaForcedTriggerInfoFields(verdict->llama_forced_trigger_info());
+  }
+
   if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
       (is_keyboard_lock_requested || is_intelligent_scan_requested)) {
     if (is_keyboard_lock_requested &&
@@ -1229,6 +1282,10 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
 
     base::UmaHistogramBoolean(
         "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
+        on_device_model_available);
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime." +
+            GetRequestTypeName(verdict->client_side_detection_type()),
         on_device_model_available);
 
     if (!on_device_model_available) {
@@ -1262,6 +1319,10 @@ void ClientSideDetectionHost::OnInnerTextComplete(
     std::string inner_text) {
   base::UmaHistogramCounts100000("SBClientPhishing.OnDeviceModelInnerTextSize",
                                  inner_text.size());
+  base::UmaHistogramCounts100000(
+      "SBClientPhishing.OnDeviceModelInnerTextSize." +
+          GetRequestTypeName(verdict->client_side_detection_type()),
+      inner_text.size());
   if (inner_text.empty()) {
     IntelligentScanInfo intelligent_scan_info;
     intelligent_scan_info.set_no_info_reason(IntelligentScanInfo::EMPTY_TEXT);
@@ -1286,7 +1347,10 @@ void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
   base::UmaHistogramBoolean(
       "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
       response.has_value());
-
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelHasSuccessfulResponse." +
+          GetRequestTypeName(verdict->client_side_detection_type()),
+      response.has_value());
   if (response.has_value()) {
     IntelligentScanInfo intelligent_scan_info;
     intelligent_scan_info.set_brand(response->brand());

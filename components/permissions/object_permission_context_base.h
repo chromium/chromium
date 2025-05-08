@@ -88,7 +88,7 @@ class ObjectPermissionContextBase : public KeyedService {
 
   // Checks whether |origin| can request permission to access objects. This is
   // done by checking |guard_content_settings_type_| is in the "ask" state.
-  bool CanRequestObjectPermission(const url::Origin& origin);
+  virtual bool CanRequestObjectPermission(const url::Origin& origin) const;
 
   // Returns the object corresponding to |key| that |origin| has been granted
   // permission to access. This method should only be called if

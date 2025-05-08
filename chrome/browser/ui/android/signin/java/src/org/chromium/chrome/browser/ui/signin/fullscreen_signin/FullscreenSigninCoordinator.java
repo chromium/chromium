@@ -8,11 +8,13 @@ import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -22,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The coordinator handles the update and interaction of the fullscreen sign-in screen. */
+@NullMarked
 @MainThread
 public class FullscreenSigninCoordinator {
     /** Delegate for the fullscreen signin MVC. */
@@ -166,7 +169,7 @@ public class FullscreenSigninCoordinator {
         }
     }
 
-    public void onAccountAdded(String accountName) {
+    public void onAccountAdded(@NonNull String accountName) {
         mMediator.onAccountAdded(accountName);
     }
 

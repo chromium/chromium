@@ -298,6 +298,10 @@ void GetDawnTogglesForSkiaGraphite(
 #endif  // BUILDFLAG(IS_WIN)
   if (backend_type == wgpu::BackendType::Vulkan) {
     force_enabled_toggles->push_back("vulkan_monolithic_pipeline_cache");
+#if BUILDFLAG(IS_ANDROID)
+    force_enabled_toggles->push_back(
+        "ignore_imported_ahardwarebuffer_vulkan_image_size");
+#endif
   }
 #endif  // DCHECK_IS_ON()
 }
@@ -939,7 +943,9 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       wgpu::AdapterInfo info = {};
       adapter.GetInfo(&info);
       if (featureLevel == wgpu::FeatureLevel::Compatibility &&
-          info.backendType != wgpu::BackendType::OpenGLES) {
+          adapter.HasFeature(wgpu::FeatureName::CoreFeaturesAndLimits)) {
+        // If this adapter also supports Core feature level, then skip listing it as Compat
+        // mode adapter.
         continue;
       }
 

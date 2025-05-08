@@ -16,7 +16,7 @@
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
-#include "components/soda/soda_installer.h"
+#include "components/soda/mock_soda_installer.h"
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
@@ -132,7 +132,7 @@ TEST_P(CrosSpeechRecognitionRecognizerImplMaskOffensiveWordsTest,
   fake_service_connection.Initialize();
   chromeos::machine_learning::ServiceConnection::
       UseFakeServiceConnectionForTesting(&fake_service_connection);
-  content::MockSodaInstaller soda_installer;
+  speech::MockSodaInstaller soda_installer;
   FakeSpeechRecognitionRecognizerClient recognizer_client;
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient> receiver_{
       &recognizer_client};

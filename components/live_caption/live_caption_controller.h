@@ -96,8 +96,8 @@ class LiveCaptionController : public KeyedService,
 
   void MaybeSetLiveCaptionLanguage();
 
-  raw_ptr<PrefService> global_prefs_;
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<PrefService> global_prefs_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
   const std::unique_ptr<LiveCaptionBubbleSettings> caption_bubble_settings_;
 
   // Whether Live Caption is enabled.

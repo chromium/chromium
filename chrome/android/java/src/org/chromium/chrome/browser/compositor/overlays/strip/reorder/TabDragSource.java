@@ -58,7 +58,7 @@ import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
-import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropTabResult;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
@@ -387,9 +387,10 @@ public class TabDragSource implements View.OnDragListener {
                 if (didOccurInTabStrip(dragEvent.getY())) {
                     res = onDrop(dragEvent);
                 } else {
-                    DragDropMetricUtils.recordTabDragDropResult(
-                            DragDropTabResult.IGNORED_TOOLBAR,
-                            AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
+                    DragDropMetricUtils.recordDragDropResult(
+                            DragDropResult.IGNORED_TOOLBAR,
+                            AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
+                            isTabGroupDrop());
                     res = false;
                 }
                 break;
@@ -484,7 +485,8 @@ public class TabDragSource implements View.OnDragListener {
         StripLayoutHelper helper = mStripLayoutHelperSupplier.get();
         helper.stopReorderMode();
         if (isDragSource()) {
-            DragDropMetricUtils.recordTabReorderStripWithDragDrop(mUmaState.mDragEverLeftStrip);
+            DragDropMetricUtils.recordReorderStripWithDragDrop(
+                    mUmaState.mDragEverLeftStrip, isTabGroupDrop());
             return true;
         }
 
@@ -530,14 +532,14 @@ public class TabDragSource implements View.OnDragListener {
                     tabIndex,
                     /* isCollapsed= */ false);
         }
-        DragDropMetricUtils.recordTabDragDropType(
+        DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
-                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
+                /* isTabGroup= */ false);
         mUmaState.mTabLeavingDestStripSystemElapsedTime = SystemClock.elapsedRealtime();
         return true;
     }
 
-    // TODO(crbug.com/384979079): record metrics for tab group drop.
     private boolean handleGroupDrop(DragEvent dropEvent, StripLayoutHelper helper) {
         @Nullable
         TabGroupMetadata tabGroupMetadata =
@@ -567,6 +569,11 @@ public class TabDragSource implements View.OnDragListener {
             int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
             mMultiInstanceManager.moveTabGroupToWindow(getActivity(), tabGroupMetadata, tabIndex);
         }
+        DragDropMetricUtils.recordDragDropType(
+                DragDropType.TAB_STRIP_TO_TAB_STRIP,
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
+                /* isTabGroup= */ true);
+        mUmaState.mTabLeavingDestStripSystemElapsedTime = SystemClock.elapsedRealtime();
         return true;
     }
 
@@ -583,7 +590,7 @@ public class TabDragSource implements View.OnDragListener {
                                 - mUmaState.mTabEnteringDestStripSystemElapsedTime;
                 assert duration >= 0
                         : "Duration when the drag is within the destination strip is invalid";
-                DragDropMetricUtils.recordTabDurationWithinDestStrip(duration);
+                DragDropMetricUtils.recordDurationWithinDestStrip(duration, isTabGroupDrop());
             }
             return false;
         }
@@ -607,6 +614,7 @@ public class TabDragSource implements View.OnDragListener {
         int sourceInstanceId =
                 DragDropGlobalState.getState(sDragTrackerToken).getDragSourceInstance();
 
+        boolean isTabGroupDrop = isTabGroupDrop();
         mStripLayoutHelperSupplier.get().stopReorderMode();
         mHandler.removeCallbacks(mOnDragExitRunnable);
         if (mShadowView != null) {
@@ -622,22 +630,23 @@ public class TabDragSource implements View.OnDragListener {
 
         // Only record for source strip to avoid duplicate.
         if (dropHandled) {
-            DragDropMetricUtils.recordTabDragDropResult(
-                    DragDropTabResult.SUCCESS,
-                    AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
-            DragDropMetricUtils.recordTabDragDropClosedWindow(didCloseWindow);
+            DragDropMetricUtils.recordDragDropResult(
+                    DragDropResult.SUCCESS,
+                    AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
+                    isTabGroupDrop);
+            DragDropMetricUtils.recordDragDropClosedWindow(didCloseWindow, isTabGroupDrop);
         } else if (MultiWindowUtils.getInstanceCount() == MultiWindowUtils.getMaxInstances()) {
             Toast.makeText(
                             mWindowAndroid.getContext().get(),
                             R.string.max_number_of_windows,
                             Toast.LENGTH_LONG)
                     .show();
-            ChromeDragDropUtils.recordTabDragToCreateInstanceFailureCount();
-            DragDropMetricUtils.recordTabDragDropResult(
-                    DragDropTabResult.IGNORED_MAX_INSTANCES,
-                    AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
+            ChromeDragDropUtils.recordTabOrGroupDragToCreateInstanceFailureCount();
+            DragDropMetricUtils.recordDragDropResult(
+                    DragDropResult.IGNORED_MAX_INSTANCES,
+                    AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
+                    isTabGroupDrop);
         }
-
         return true;
     }
 
@@ -713,6 +722,12 @@ public class TabDragSource implements View.OnDragListener {
         return tab != null;
     }
 
+    private boolean isTabGroupDrop() {
+        return ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(
+                        getDragDropGlobalState(/* dragEvent= */ null))
+                != null;
+    }
+
     public static void setDragTrackerTokenForTesting(TrackerToken token) {
         sDragTrackerToken = token;
         ResettersForTesting.register(() -> sDragTrackerToken = null);
@@ -735,11 +750,14 @@ public class TabDragSource implements View.OnDragListener {
      * @param tabTitle The title of the tab that cannot be moved. If null, no toast is shown.
      * @return {@code true} if the toast was shown, {@code false} otherwise.
      */
-    // TODO(crbug.com/384979079): Record metrics.
     private boolean disallowDragWithMhtmlTab(Context context, @Nullable String tabTitle) {
         if (tabTitle == null) return false;
         String text = context.getString(R.string.tab_cannot_be_moved, tabTitle);
         Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+        DragDropMetricUtils.recordDragDropResult(
+                DragDropResult.IGNORED_MHTML_TAB,
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
+                /* isTabGroup= */ true);
         return true;
     }
 
@@ -839,6 +857,10 @@ public class TabDragSource implements View.OnDragListener {
 
     private boolean hasMultipleTabs(TabModelSelector tabModelSelector) {
         return tabModelSelector != null && tabModelSelector.getTotalTabCount() > 1;
+    }
+
+    void createUmaStateForTesting() {
+        mUmaState = new DragLocalUmaState();
     }
 
     View getShadowViewForTesting() {

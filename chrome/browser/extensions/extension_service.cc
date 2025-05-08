@@ -54,8 +54,6 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/installed_loader.h"
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
-#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/omaha_attributes_handler.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/profile_util.h"
@@ -67,7 +65,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
-#include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -120,6 +117,15 @@
 #include "chrome/browser/ash/extensions/install_limiter.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/constants/chromeos_features.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #endif
 
 using content::BrowserContext;
@@ -232,7 +238,11 @@ ExtensionService::ExtensionService(
     profile_manager_observation_.Observe(g_browser_process->profile_manager());
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/413455412): Find another way to report Chrome updates to
+  // extensions on Android, which uses the Play Store for updates.
   UpgradeDetector::GetInstance()->AddObserver(this);
+#endif
 
   cws_info_service_observation_.Observe(CWSInfoService::Get(profile_));
 
@@ -277,7 +287,9 @@ base::WeakPtr<ExtensionServiceInterface> ExtensionService::AsWeakPtr() {
 }
 
 ExtensionService::~ExtensionService() {
+#if !BUILDFLAG(IS_ANDROID)
   UpgradeDetector::GetInstance()->RemoveObserver(this);
+#endif
 }
 
 void ExtensionService::Shutdown() {
@@ -448,23 +460,6 @@ void ExtensionService::PerformActionBasedOnExtensionTelemetryServiceVerdicts(
   error_controller_->ShowErrorIfNeeded();
 }
 
-void ExtensionService::EnableExtension(const std::string& extension_id) {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  extension_registrar_->EnableExtension(extension_id);
-}
-
-void ExtensionService::DisableExtension(
-    const ExtensionId& extension_id,
-    disable_reason::DisableReason disable_reason) {
-  DisableExtension(extension_id, DisableReasonSet({disable_reason}));
-}
-
-void ExtensionService::DisableExtension(
-    const ExtensionId& extension_id,
-    const DisableReasonSet& disable_reasons) {
-  extension_registrar_->DisableExtension(extension_id, disable_reasons);
-}
-
 void ExtensionService::DisableUserExtensionsExcept(
     const std::vector<std::string>& except_ids) {
   ManagementPolicy* management_policy = system_->management_policy();
@@ -491,7 +486,8 @@ void ExtensionService::DisableUserExtensionsExcept(
     }
     const std::string& id = extension->id();
     if (!base::Contains(except_ids, id)) {
-      DisableExtension(id, disable_reason::DISABLE_USER_ACTION);
+      extension_registrar_->DisableExtension(
+          id, {disable_reason::DISABLE_USER_ACTION});
     }
   }
 }
@@ -527,8 +523,10 @@ void ExtensionService::CheckManagementPolicy() {
     PermissionsUpdater(profile()).ApplyPolicyHostRestrictions(*extension);
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   ManifestV2ExperimentManager* mv2_experiment_manager =
       ManifestV2ExperimentManager::Get(profile_);
+#endif
 
   // Loop through the disabled extension list, find extensions to re-enable
   // automatically. These extensions are exclusive from the |to_disable| list
@@ -581,6 +579,7 @@ void ExtensionService::CheckManagementPolicy() {
       to_remove.insert(disable_reason::DISABLE_BLOCKED_BY_POLICY);
     }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     // Note: `mv2_experiment_manager` may be null for certain types of profiles
     // (such as the sign-in profile). We can ignore this check in this case,
     // since users can't install extensions in these profiles.
@@ -593,6 +592,7 @@ void ExtensionService::CheckManagementPolicy() {
         !mv2_experiment_manager->ShouldBlockExtensionEnable(*extension)) {
       to_remove.insert(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
     }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
     // If this profile is not supervised, then remove any supervised user
     // related disable reasons.
@@ -633,13 +633,13 @@ void ExtensionService::CheckManagementPolicy() {
   }
 
   for (const auto& i : to_disable) {
-    DisableExtension(i.first, i.second);
+    extension_registrar_->DisableExtension(i.first, {i.second});
   }
 
   // No extension is getting re-enabled here after disabling because |to_enable|
   // is mutually exclusive to |to_disable|.
   for (const std::string& id : to_enable) {
-    EnableExtension(id);
+    extension_registrar_->EnableExtension(id);
   }
 
   if (updater_ && updater_->enabled()) {
@@ -712,10 +712,6 @@ void ExtensionService::SetReadyAndNotifyListeners() {
   TRACE_EVENT0("browser,startup",
                "ExtensionService::SetReadyAndNotifyListeners");
   ready_->Signal();
-}
-
-void ExtensionService::AddExtension(const Extension* extension) {
-  extension_registrar_->AddExtension(extension);
 }
 
 void ExtensionService::OnExtensionManagementSettingsChanged() {
@@ -912,7 +908,7 @@ void ExtensionService::OnInstalledExtensionsLoaded() {
     }
   }
   for (const auto& extension : to_enable) {
-    EnableExtension(extension->id());
+    extension_registrar_->EnableExtension(extension->id());
   }
 
   // Check installed extensions against the blocklist if and only if the

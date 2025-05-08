@@ -448,8 +448,7 @@ std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
       if (site.has_value() && primary.has_value() && site_type.has_value()) {
         entries.emplace_back(
             site.value(),
-            net::FirstPartySetEntry(primary.value(), site_type.value(),
-                                    /*site_index=*/std::nullopt));
+            net::FirstPartySetEntry(primary.value(), site_type.value()));
         validator.Update(site.value(), primary.value());
       }
     }
@@ -646,11 +645,10 @@ FirstPartySetsDatabase::FetchPolicyConfigurations(
         entry_override =
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                 maybe_primary_site.value(),
-                // TODO(crbug.com/40186153): May change to use the
-                // real site_type and site_index in the future, depending on
-                // the design details. Use kAssociated as default site type
-                // and null site index for now.
-                net::SiteType::kAssociated, std::nullopt));
+                // TODO(crbug.com/40186153): May change to use the real
+                // site_type in the future, depending on the design details. Use
+                // kAssociated as default site type for now.
+                net::SiteType::kAssociated));
       }
       results.emplace_back(std::move(site).value(), std::move(entry_override));
     }
@@ -725,11 +723,7 @@ FirstPartySetsDatabase::FetchManualConfiguration(
       if (maybe_primary_site.has_value() && maybe_site_type.has_value()) {
         entry_override =
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                maybe_primary_site.value(),
-                // TODO(crbug.com/40186153): May change to use the
-                // real site_index in the future, depending on the design
-                // details. Use null site index for now.
-                maybe_site_type.value(), std::nullopt));
+                maybe_primary_site.value(), maybe_site_type.value()));
       }
       results.emplace_back(std::move(site).value(), std::move(entry_override));
     }
@@ -751,7 +745,7 @@ bool FirstPartySetsDatabase::LazyInit() {
   CHECK_EQ(db_.get(), nullptr);
   db_ = std::make_unique<sql::Database>(
       sql::DatabaseOptions().set_page_size(4096).set_cache_size(32).set_preload(
-          base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)),
+          true),
       sql::Database::Tag("FirstPartySets"));
   // base::Unretained is safe here because this FirstPartySetsDatabase owns
   // the sql::Database instance that stores and uses the callback. So,
@@ -773,13 +767,7 @@ bool FirstPartySetsDatabase::LazyInit() {
 
 bool FirstPartySetsDatabase::OpenDatabase() {
   CHECK(db_);
-  if (db_->is_open() || db_->Open(db_path_)) {
-    if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
-      db_->Preload();
-    }
-    return true;
-  }
-  return false;
+  return db_->is_open() || db_->Open(db_path_);
 }
 
 void FirstPartySetsDatabase::DatabaseErrorCallback(int extended_error,

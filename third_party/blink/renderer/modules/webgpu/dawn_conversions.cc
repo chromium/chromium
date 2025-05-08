@@ -212,27 +212,6 @@ const char* ValidateTexelCopyBufferLayout(
   return nullptr;
 }
 
-wgpu::TextureFormat AsDawnType(SkColorType color_type) {
-  switch (color_type) {
-    case SkColorType::kRGBA_8888_SkColorType:
-      return wgpu::TextureFormat::RGBA8Unorm;
-    case SkColorType::kBGRA_8888_SkColorType:
-      return wgpu::TextureFormat::BGRA8Unorm;
-    case SkColorType::kRGBA_1010102_SkColorType:
-      return wgpu::TextureFormat::RGB10A2Unorm;
-    case SkColorType::kRGBA_F16_SkColorType:
-      return wgpu::TextureFormat::RGBA16Float;
-    case SkColorType::kRGBA_F32_SkColorType:
-      return wgpu::TextureFormat::RGBA32Float;
-    case SkColorType::kR8G8_unorm_SkColorType:
-      return wgpu::TextureFormat::RG8Unorm;
-    case SkColorType::kR16G16_float_SkColorType:
-      return wgpu::TextureFormat::RG16Float;
-    default:
-      return wgpu::TextureFormat::Undefined;
-  }
-}
-
 wgpu::PipelineLayout AsDawnType(
     V8UnionGPUAutoLayoutModeOrGPUPipelineLayout* webgpu_layout) {
   DCHECK(webgpu_layout);

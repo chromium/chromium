@@ -75,7 +75,9 @@ PerformanceEntryType PerformanceObserver::supportedEntryTypeMask(
   }
 
   PerformanceEntryType mask = types_supported_on_window;
-  if (RuntimeEnabledFeatures::NavigationIdEnabled(execution_context)) {
+  if (RuntimeEnabledFeatures::
+          BackForwardCacheRestorationPerformanceEntryEnabled(
+              execution_context)) {
     mask |= PerformanceEntry::kBackForwardCacheRestoration;
   }
   if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(

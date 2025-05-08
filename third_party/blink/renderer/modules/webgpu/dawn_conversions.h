@@ -30,7 +30,6 @@ class V8UnionGPUAutoLayoutModeOrGPUPipelineLayout;
 // These conversions are used multiple times and are declared here. Conversions
 // used only once, for example for object construction, are defined
 // individually.
-wgpu::TextureFormat AsDawnType(SkColorType color_type);
 wgpu::PipelineLayout AsDawnType(
     V8UnionGPUAutoLayoutModeOrGPUPipelineLayout* webgpu_layout);
 

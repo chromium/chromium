@@ -47,6 +47,12 @@ class GlicWidget : public views::Widget, public ThemeServiceObserver {
   // Gets the minimum size a user can resize to for the widget.
   gfx::Size GetMinimumSize() const override;
 
+  // Convert bounds rects between the visible on-screen bounds, and the actual
+  //  widget bounds, which may require additional space for an invisible border
+  // on Windows, when the widget is resizable.
+  gfx::Rect VisibleToWidgetBounds(gfx::Rect visible_bounds);
+  gfx::Rect WidgetToVisibleBounds(gfx::Rect widget_bounds);
+
  private:
   GlicWidget(ThemeService* theme_service, InitParams params);
 

@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
 import android.app.Activity;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -24,10 +26,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** An address editor. Can be used for either shipping or billing address editing. */
+@NullMarked
 public class AddressEditorCoordinator {
     private final AddressEditorMediator mMediator;
     private EditorDialogView mEditorDialog;
-    @Nullable private PropertyModel mEditorModel;
+    private @Nullable PropertyModel mEditorModel;
 
     /** Delegate used to subscribe to AddressEditor user interactions. */
     public static interface Delegate {
@@ -112,7 +115,7 @@ public class AddressEditorCoordinator {
                 new AddressEditorMediator(
                         activity,
                         delegate,
-                        IdentityServicesProvider.get().getIdentityManager(profile),
+                        assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile)),
                         SyncServiceFactory.getForProfile(profile),
                         PersonalDataManagerFactory.getForProfile(profile),
                         addressToEdit,

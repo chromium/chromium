@@ -83,13 +83,18 @@ InterpolationValue CSSPercentageInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSPercentageInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (!primitive_value || !primitive_value->IsPercentage()) {
     return nullptr;
   }
-  return CreatePercentageValue(primitive_value->GetDoubleValue());
+  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
+  // and sibling-count() if necessary.
+  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
+  // if necessary.
+  return CreatePercentageValue(
+      primitive_value->ComputePercentage(state.CssToLengthConversionData()));
 }
 
 InterpolationValue

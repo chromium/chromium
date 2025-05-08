@@ -28,6 +28,9 @@
           },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "value": 0
+          },
+          "browser.gemini_settings": {
+            "value": 0
           }
         }
       },
@@ -53,6 +56,9 @@
           },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "value": 1
+          },
+          "browser.gemini_settings": {
+            "value": 0
           }
         }
       },
@@ -78,6 +84,9 @@
           },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "value": 2
+          },
+          "browser.gemini_settings": {
+            "value": 1
           }
         }
       },
@@ -101,6 +110,9 @@
           },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "default_value": 0
+          },
+          "browser.gemini_settings": {
+            "default_value": 0
           }
         }
       },
@@ -112,7 +124,8 @@
           "DevToolsGenAiSettings": 2,
           "HelpMeWriteSettings": 2,
           "HistorySearchSettings": 2,
-          "TabCompareSettings": 2
+          "TabCompareSettings": 2,
+          "GeminiSettings": 1
         },
         "prefs": {
           "devtools.gen_ai_settings": {
@@ -132,6 +145,9 @@
           },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "value": 2
+          },
+          "browser.gemini_settings": {
+            "value": 1
           }
         }
       }
@@ -188,6 +204,9 @@
           },
           "settings.lobster.enterprise_settings": {
             "value": 0
+          },
+          "browser.gemini_settings": {
+            "value": 0
           }
         }
       },
@@ -235,6 +254,9 @@
           },
           "settings.lobster.enterprise_settings": {
             "value": 1
+          },
+          "browser.gemini_settings": {
+            "value": 0
           }
         }
       },
@@ -253,7 +275,8 @@
           "HelpMeReadSettings": 2,
           "HelpMeWriteSettings": 2,
           "HistorySearchSettings": 2,
-          "TabCompareSettings": 2
+          "TabCompareSettings": 2,
+          "GeminiSettings": 1
         },
         "prefs": {
           "ash.gen_ai_photo_editing_settings": {
@@ -297,6 +320,9 @@
           },
           "settings.lobster.enterprise_settings": {
             "value": 2
+          },
+          "browser.gemini_settings": {
+            "value": 1
           }
         }
       }

@@ -643,9 +643,6 @@
                   '|third_party/blink/renderer/core/css/mediaControl' \
                   '|third_party/blink/web_tests/media/track/'
     },
-    'blink_use_counter': {
-      'filepath': 'third_party/blink/public/mojom/use_counter',
-    },
     'blink_viewport_interaction': {
       'filepath': 'third_party/blink/renderer/core/css/.*viewport' \
                   '|third_party/blink/renderer/core/dom/viewport_arguments' \
@@ -682,6 +679,14 @@
     },
     'bottombar': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/',
+    },
+    'bounce_tracking_mitigations': {
+      'filepath': 'chrome/browser/btm/' \
+                  '|content/browser/btm/' \
+                  '|content/public/common/btm_.*' \
+                  '|content/public/browser/btm_.*' \
+                  '|content/public/test/btm_.*' \
+                  '|content/test/data/btm/'
     },
     'bound_session_credentials': {
       'filepath': 'chrome/renderer/bound_session_credentials/' \
@@ -1077,6 +1082,10 @@
                   'chrome/browser/ui/webui/user_education_internals/|'\
                   'chrome/browser/ui/webui/whats_new/',
     },
+    'desktop_whats_new': {
+      'filepath': 'chrome/browser/resources/whats_new/|'\
+                  'chrome/browser/ui/webui/whats_new/',
+    },
     'device_bluetooth': {
       'filepath': 'device/.*bluetooth'
     },
@@ -1105,9 +1114,6 @@
     },
     'diagnostics_ui': {
       'filepath': 'ash/webui/diagnostics_ui/',
-    },
-    'dips': {
-      'filepath': 'chrome/browser/dips/',
     },
     'discardable_memory': {
         'filepath': 'components/discardable_memory/',
@@ -1221,7 +1227,7 @@
                   'chrome/test/data/extensions/api_test/file_system_provider'
     },
     'fuchsia': {
-      'filepath': 'fuchsia',
+      'filepath': 'fuchsia.*$(?<!sdk_override.txt)',
     },
     'fuzzing': {
       'filepath': 'fuzz|Fuzz',
@@ -2733,7 +2739,6 @@
                     'glenn@chromium.org',
                     'silviapf@chromium.org',
                     'srirama.m@samsung.com'],
-    'blink_use_counter': ['chrome-galaxy-chromium@google.com'],
     'blink_viewport_interaction': ['kenneth.christiansen@gmail.com',
                                    'bokan@chromium.org'],
     'blink_w3ctests': ['blink-reviews-w3ctests@chromium.org'],
@@ -2751,6 +2756,12 @@
     'borealis': ['borealis-reviews+watch@google.com'],
     'bottombar': ['donnd+watch@chromium.org',
                   'mdjones+watch@chromium.org'],
+    'bounce_tracking_mitigations': ['amaliev+watch-btm@chromium.org',
+                                    'jdh+watch-btm@chromium.org',
+                                    'liu+watch-btm@chromium.org',
+                                    'njeunje+watch-btm@chromium.org',
+                                    'ortuno+watch-btm@chromium.org',
+                                    'svend+watch-btm@chromium.org'],
     'bound_session_credentials': ['drubery+watch@chromium.org'],
     'browser_components': ['browser-components-watch@chromium.org'],
     'browser_compositor': ['vollick@chromium.org'],
@@ -2897,8 +2908,8 @@
     'data_decoder': ['mbarowsky+watch-data-decoder@chromium.org'],
     'dbus': ['hashimoto+watch@chromium.org'],
     'desktop_in_product_help': ['dfried+watch@chromium.org',
-                                'mickeyburks+watch@chromium.org',
                                 'estalin+watch@chromium.org'],
+    'desktop_whats_new': ['mickeyburks+watch@chromium.org'],
     'device_bluetooth': ['mattreynolds+watch@chromium.org'],
     'device_bound_sessions': ['drubery+watch@chromium.org'],
     'device_chooser': ['mattreynolds+watch@chromium.org',
@@ -2913,11 +2924,6 @@
                        'gavindodd+diagnostics-watch@google.com',
                        'ashleydp+diagnostics-watch@google.com',
                        'zhangwenyu+diagnostics-watch@google.com'],
-    'dips': ['jdh+watch-dips@chromium.org',
-             'njeunje+watch-dips@chromium.org',
-             'amaliev+watch-dips@chromium.org',
-             'rtarpine+watch-dips@chromium.org',
-             'wanderview+watch-dips@chromium.org'],
     'discardable_memory': ['thiabaud+watch-discardable-memory@google.com'],
     'disk_cache': ['gavinp+disk@chromium.org'],
     'display': ['zhangwenyu+watch@google.com'],

@@ -4663,20 +4663,23 @@ void DoIncrementViewClickCounts(base::Time now,
                                 int32_t count) {
   base::TimeDelta event_age = now - base::Time::FromDeltaSinceWindowsEpoch(
                                         base::Microseconds(int_timestamp));
+  if (event_age > max_window) {
+    return;
+  }
 
-  if (max_window >= base::Hours(1) && event_age <= base::Hours(1)) {
+  if (event_age <= base::Hours(1)) {
     view_or_click_counts->past_hour += count;
   }
-  if (max_window >= base::Days(1) && event_age <= base::Days(1)) {
+  if (event_age <= base::Days(1)) {
     view_or_click_counts->past_day += count;
   }
-  if (max_window >= base::Days(7) && event_age <= base::Days(7)) {
+  if (event_age <= base::Days(7)) {
     view_or_click_counts->past_week += count;
   }
-  if (max_window >= base::Days(30) && event_age <= base::Days(30)) {
+  if (event_age <= base::Days(30)) {
     view_or_click_counts->past_30_days += count;
   }
-  if (max_window >= base::Days(90) && event_age <= base::Days(90)) {
+  if (event_age <= base::Days(90)) {
     view_or_click_counts->past_90_days += count;
   }
   // Older expired events may exist -- maintenance will eventually remove them.

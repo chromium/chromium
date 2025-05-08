@@ -199,8 +199,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public String getChannelIdForOrigin(String origin) {
-        return SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);
+    public void getChannelIdForOrigin(String origin, Callback<String> callback) {
+        SiteChannelsManager.getInstance().getChannelIdForOriginAsync(origin, callback);
     }
 
     @Override

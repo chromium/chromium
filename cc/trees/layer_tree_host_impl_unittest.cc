@@ -14464,6 +14464,7 @@ TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
       host_impl_->total_frame_counter_for_testing();
   DroppedFrameCounter* dropped_frame_counter =
       host_impl_->dropped_frame_counter_for_testing();
+  FrameSorter* frame_sorter = host_impl_->frame_sorter_for_testing();
   EXPECT_EQ(total_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
   total_frame_counter->set_total_frames_for_testing(1u);
@@ -14478,7 +14479,9 @@ TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
       BEGINFRAME_FROM_HERE, 1u /*source_id*/, 2u /*sequence_number*/, now,
       deadline, interval, viz::BeginFrameArgs::NORMAL);
 
-  dropped_frame_counter->OnEndFrame(
+  frame_sorter->AddNewFrame(args);
+  // Delegates to DFC::AddSortedFrame, which calls DFC::OnEndFrame.
+  frame_sorter->AddFrameResult(
       args, CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped));
   // FCP not received, so the total_smoothness_dropped_ won't increase.
   EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 0u);
@@ -14489,7 +14492,9 @@ TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
                             &begin_frame_metrics, /*commit_timeout=*/false);
   dropped_frame_counter->SetTimeFirstContentfulPaintReceivedForTesting(
       args.frame_time);
-  dropped_frame_counter->OnEndFrame(
+  frame_sorter->AddNewFrame(args);
+  // Delegates to DFC::AddSortedFrame, which calls DFC::OnEndFrame.
+  frame_sorter->AddFrameResult(
       args, CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped));
   EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 1u);
 
@@ -14662,7 +14667,10 @@ TEST_P(LayerTreeHostImplTest, JumpOnScrollbarClick) {
     InputHandlerPointerResult result = GetInputHandler().MouseDown(
         gfx::PointF(350, 400), /*jump_key_modifier*/ false);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
-    EXPECT_EQ(result.scroll_delta.y(), 525);
+    EXPECT_EQ(result.scroll_delta.y(),
+              std::max(viewport_size.height() * kMinFractionToStepWhenPaging,
+                       static_cast<float>(viewport_size.height() -
+                                          kMaxOverlapBetweenPages)));
     result = GetInputHandler().MouseUp(gfx::PointF(350, 400));
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
     EXPECT_EQ(result.scroll_delta.y(), 0);
@@ -14701,7 +14709,10 @@ TEST_P(LayerTreeHostImplTest, JumpOnScrollbarClick) {
     InputHandlerPointerResult result = GetInputHandler().MouseDown(
         gfx::PointF(350, 400), /*jump_key_modifier*/ true);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
-    EXPECT_EQ(result.scroll_delta.y(), 525);
+    EXPECT_EQ(result.scroll_delta.y(),
+              std::max(viewport_size.height() * kMinFractionToStepWhenPaging,
+                       static_cast<float>(viewport_size.height() -
+                                          kMaxOverlapBetweenPages)));
     result = GetInputHandler().MouseUp(gfx::PointF(350, 400));
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
     EXPECT_EQ(result.scroll_delta.y(), 0);
@@ -15125,7 +15136,10 @@ TEST_P(LayerTreeHostImplTest, MainThreadFallback) {
       GetInputHandler().MouseDown(gfx::PointF(350, 500),
                                   /*jump_key_modifier*/ false);
   GetInputHandler().MouseUp(gfx::PointF(350, 500));
-  EXPECT_EQ(compositor_threaded_scrolling_result.scroll_delta.y(), 525u);
+  EXPECT_EQ(compositor_threaded_scrolling_result.scroll_delta.y(),
+            std::max(viewport_size.height() * kMinFractionToStepWhenPaging,
+                     static_cast<float>(viewport_size.height() -
+                                        kMaxOverlapBetweenPages)));
   EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
 
   // Assign a main_thread_scrolling_reason to the scroll node.
@@ -15136,7 +15150,10 @@ TEST_P(LayerTreeHostImplTest, MainThreadFallback) {
   GetInputHandler().MouseUp(gfx::PointF(350, 500));
   // A scrollbar layer track click applies the scroll on the compositor thread
   // even though it has a main thread scrolling reason.
-  EXPECT_EQ(compositor_threaded_scrolling_result.scroll_delta.y(), 525u);
+  EXPECT_EQ(compositor_threaded_scrolling_result.scroll_delta.y(),
+            std::max(viewport_size.height() * kMinFractionToStepWhenPaging,
+                     static_cast<float>(viewport_size.height() -
+                                        kMaxOverlapBetweenPages)));
 
   // Tear down the LayerTreeHostImpl before the InputHandlerClient.
   host_impl_->ReleaseLayerTreeFrameSink();

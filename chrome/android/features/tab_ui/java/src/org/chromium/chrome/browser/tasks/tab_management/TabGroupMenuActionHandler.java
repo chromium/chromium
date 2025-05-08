@@ -94,6 +94,7 @@ public class TabGroupMenuActionHandler {
                             mContext,
                             mProfile,
                             this::onTabGroupCreation,
+                            /* tabMovedCallback= */ null,
                             mFilter,
                             mBottomSheetController,
                             true,

@@ -46,7 +46,7 @@ const CGFloat kMinimumSizeChange = 0.5;
 #pragma mark - Accessors
 
 - (CGRect)bannerFrame {
-  DCHECK(self.bannerPositioner);
+  CHECK(self.bannerPositioner);
   UIWindow* window = self.containerView.window;
   CGRect bannerFrame = CGRectZero;
 
@@ -92,6 +92,9 @@ const CGFloat kMinimumSizeChange = 0.5;
 }
 
 - (void)presentationTransitionWillBegin {
+  if (!self.bannerPositioner) {
+    return;
+  }
   UIView* containerView = self.containerView;
   containerView.frame =
       [containerView.superview convertRect:self.bannerFrame
@@ -99,6 +102,10 @@ const CGFloat kMinimumSizeChange = 0.5;
 }
 
 - (void)containerViewWillLayoutSubviews {
+  if (!self.bannerPositioner) {
+    [super containerViewWillLayoutSubviews];
+    return;
+  }
   CGRect bannerFrame = self.bannerFrame;
   UIView* containerView = self.containerView;
   UIWindow* window = containerView.window;

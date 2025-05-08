@@ -98,7 +98,10 @@ message Event {
     // A type for prototyping events that forwards a string payload from chrome.
     bytes prototype_raw_event = 119 [deprecated = true];
 
-    // Next ID: 120
+    // A telomere event.
+    TelomereEvent telomere_event = 120;
+
+    // Next ID: 121
   }
 }
 

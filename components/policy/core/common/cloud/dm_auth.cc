@@ -42,14 +42,6 @@ DMAuth DMAuth::NoAuth() {
 DMAuth::DMAuth(const std::string& token, DMAuthTokenType token_type)
     : token_(token), token_type_(token_type) {}
 
-bool DMAuth::operator==(const DMAuth& other) const {
-  return token_ == other.token_ && token_type_ == other.token_type_;
-}
-
-bool DMAuth::operator!=(const DMAuth& other) const {
-  return !(*this == other);
-}
-
 DMAuth DMAuth::Clone() const {
   return DMAuth(token_, token_type_);
 }

@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
@@ -24,6 +25,7 @@ import org.chromium.components.feature_engagement.Tracker;
  * Optional toolbar button which opens the current Custom Tab in BrApp. May be used by {@link
  * AdaptiveToolbarButtonController}.
  */
+@NullMarked
 public class OpenInBrowserButtonController extends BaseButtonDataProvider {
 
     private final Runnable mOpenInBrowserRunnable;

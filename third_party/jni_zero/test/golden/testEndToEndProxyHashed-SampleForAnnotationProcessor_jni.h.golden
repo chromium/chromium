@@ -90,7 +90,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
     jclass jcaller,
     jobject __arrayClazz) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(env);
-  jobject converted_ret = jni_zero::ToJniArray(env, _ret, static_cast<jclass>(__arrayClazz)).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, _ret, static_cast<jclass>(__arrayClazz)).Release();
   return converted_ret;
 }
 
@@ -101,7 +101,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedInts(env);
-  jobject converted_ret = jni_zero::ToJniArray(env, _ret).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, _ret).Release();
   return converted_ret;
 }
 
@@ -112,7 +112,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedString(env);
-  jobject converted_ret = jni_zero::ToJniType(env, _ret).Release();
+  auto converted_ret = jni_zero::ToJniType(env, _ret).Release();
   return converted_ret;
 }
 
@@ -124,7 +124,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(env);
-  jobject converted_ret = jni_zero::ToJniArray(env, _ret, jni_zero::g_string_class).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, _ret, jni_zero::g_string_class).Release();
   return converted_ret;
 }
 
@@ -323,7 +323,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
       jni_zero::JavaParamRef<jfloatArray>(env, static_cast<jfloatArray>(floats)),
       zbool,
       jni_zero::JavaParamRef<jbooleanArray>(env, static_cast<jbooleanArray>(bools)));
-  jobject converted_ret = jni_zero::ToJniArray(env, _ret).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, _ret).Release();
   return converted_ret;
 }
 

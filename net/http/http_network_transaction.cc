@@ -164,20 +164,6 @@ void RecordWebSocketFallbackResult(int result,
                                        connection_info));
 }
 
-const std::string_view NegotiatedProtocolToHistogramSuffix(
-    NextProto next_proto) {
-  switch (next_proto) {
-    case NextProto::kProtoHTTP11:
-      return "H1";
-    case NextProto::kProtoHTTP2:
-      return "H2";
-    case NextProto::kProtoQUIC:
-      return "H3";
-    case NextProto::kProtoUnknown:
-      return "Unknown";
-  }
-}
-
 }  // namespace
 
 const int HttpNetworkTransaction::kDrainBodyBufferSize;
@@ -1293,10 +1279,24 @@ int HttpNetworkTransaction::BuildRequestHeaders(
     auth_controllers_[HttpAuth::AUTH_SERVER]->AddAuthorizationHeader(
         &request_headers_);
 
+  bool is_proxied_request =
+      proxy_info_.is_for_ip_protection() && !proxy_info_.is_direct();
   if (features::kIpPrivacyAddHeaderToProxiedRequests.Get() &&
-      proxy_info_.is_for_ip_protection()) {
-    if (!proxy_info_.is_direct()) {
-      request_headers_.SetHeader("IP-Protection", "1");
+      is_proxied_request) {
+    request_headers_.SetHeader("IP-Protection", "1");
+  }
+
+  if (bool is_prt_eligible =
+          features::kEnableProbabilisticRevealTokensForNonProxiedRequests
+              .Get() ||
+          is_proxied_request;
+      features::kProbabilisticRevealTokensAddHeaderToProxiedRequests.Get() &&
+      is_prt_eligible) {
+    if (std::optional<std::string> maybe_prt_header_value =
+            proxy_info_.prt_header_value();
+        maybe_prt_header_value.has_value()) {
+      request_headers_.SetHeader("Sec-Probabilistic-Reveal-Token",
+                                 std::move(maybe_prt_header_value.value()));
     }
   }
 

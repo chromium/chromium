@@ -286,8 +286,6 @@ class WebIdlSchemaTest(unittest.TestCase):
         }, function_parameters[1])
 
   # Tests that API events are processed as expected.
-  # TODO(crbug.com/379052294): Add description testing when it is added to the
-  # processor.
   def testEvents(self):
     schema = self.idl_basics
 
@@ -296,22 +294,32 @@ class WebIdlSchemaTest(unittest.TestCase):
     # the object and raises a KeyError if it is not found.
     self.assertEqual('onTestOne', event_one.get('name'))
     self.assertEqual('function', event_one.get('type'))
-    self.assertEqual([{
-        'name': 'argument1',
-        'type': 'string'
-    }, {
-        'name': 'argument2',
-        'optional': True,
-        'type': 'number'
-    }], event_one['parameters'])
+    self.assertEqual(
+        'Comment that acts as a description for onTestOne. Parameter specific'
+        ' comments are down below before the associated callback definition.',
+        event_one.get('description'))
+    self.assertEqual(
+        [{
+            'name': 'argument1',
+            'type': 'string',
+            'description': 'Parameter description for argument1.'
+        }, {
+            'name': 'argument2',
+            'optional': True,
+            'type': 'number',
+            'description': 'Another description, this time for argment2.'
+        }], event_one['parameters'])
 
     event_two = getEvent(schema, 'onTestTwo')
     self.assertEqual('onTestTwo', event_two.get('name'))
     self.assertEqual('function', event_two.get('type'))
-    self.assertEqual([{
-        'name': 'customType',
-        '$ref': 'ExampleType'
-    }], event_two['parameters'])
+    self.assertEqual('Comment for onTestTwo.', event_two.get('description'))
+    self.assertEqual(
+        [{
+            'name': 'customType',
+            '$ref': 'ExampleType',
+            'description': 'An ExampleType passed to the event listener.'
+        }], event_two['parameters'])
 
   # Tests that Dictionaries defined on the top level of the IDL file are
   # processed into types on the resulting namespace.
@@ -442,6 +450,53 @@ class WebIdlSchemaTest(unittest.TestCase):
         'test/web_idl/missing_event_interface.idl',
     )
 
+  # Various tests that ensure validation on event interface definitions.
+  # Specifically checks that not defining any of the required add/remove/has
+  # Operations or forgetting the ExtensionEvent inheritance will throw an error.
+  def testMissingEventInheritance(self):
+    expected_error_regex = (
+        r'.* Error processing node Interface\(OnMissingInheritanceEvent\):'
+        r' Event Interface missing ExtensionEvent Inheritance.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/missing_event_inheritance.idl',
+    )
+
+  def testMissingEventAddListener(self):
+    expected_error_regex = (
+        r'.* Error processing node Interface\(OnMissingAddListenerEvent\):'
+        r' Event Interface missing addListener Operation definition.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/missing_event_add_listener.idl',
+    )
+
+  def testMissingEventRemoveListener(self):
+    expected_error_regex = (
+        r'.* Error processing node Interface\(OnMissingRemoveListenerEvent\):'
+        r' Event Interface missing removeListener Operation definition.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/missing_event_remove_listener.idl',
+    )
+
+  def testMissingEventHasListener(self):
+    expected_error_regex = (
+        r'.* Error processing node Interface\(OnMissingHasListenerEvent\):'
+        r' Event Interface missing hasListener Operation definition.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/missing_event_has_listener.idl',
+    )
+
   # Tests that if description parsing from file comments reaches the top of the
   # file, a schema compiler error is thrown (as the top of the file should
   # always be copyright lines and not part of the description).
@@ -533,12 +588,24 @@ class WebIdlSchemaTest(unittest.TestCase):
     expected = ['chromeos']
     self.assertEqual(expected, platforms_schema[0]['platforms'])
 
-  # Tests that the platforms attribute is None if not specified on in the
-  # extended attributes of a namespace.
-  def testNonSpecifiedPlatformsOnNamespace(self):
-    basic_schema = self.idl_basics
-    expected = None
-    self.assertEqual(expected, basic_schema['platforms'])
+  # Tests a variety of default values that are set on an API namespace when they
+  # are not specified in the source IDL file.
+  def testNonSpecifiedDefaultValues(self):
+    defaults_schema = web_idl_schema.Load('test/web_idl/defaults.idl')[0]
+    self.assertEqual(
+        {
+            'compiler_options': {},
+            'deprecated': None,
+            'description': '',
+            'events': [],
+            'functions': [],
+            'manifest_keys': None,
+            'namespace': 'defaultsOnlyWebIdl',
+            'nodoc': False,
+            'platforms': None,
+            'properties': {},
+            'types': [],
+        }, defaults_schema)
 
 
 if __name__ == '__main__':

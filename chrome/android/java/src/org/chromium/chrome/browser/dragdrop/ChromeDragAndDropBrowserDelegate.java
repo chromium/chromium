@@ -24,6 +24,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.dragdrop.DragAndDropBrowserDelegate;
@@ -115,7 +116,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
                     buildClipDataForTabOrGroupTearing(
                             chromeDropDataAndroid,
                             chromeDropDataAndroid.windowId,
-                            /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID);
+                            /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
             if (clipData != null) return clipData;
         }
 

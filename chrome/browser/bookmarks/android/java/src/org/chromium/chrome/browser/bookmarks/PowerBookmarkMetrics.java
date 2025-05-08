@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.bookmarks;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /** Metrics utils for use in power bookmarks. */
+@NullMarked
 public class PowerBookmarkMetrics {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused. Keep up-to-date with the PriceTrackingState enum in

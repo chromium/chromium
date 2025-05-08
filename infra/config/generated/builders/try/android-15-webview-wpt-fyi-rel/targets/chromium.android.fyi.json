@@ -3,6 +3,8 @@
     "isolated_scripts": [
       {
         "args": [
+          "--skipped",
+          "always",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--use-upstream-wpt"
         ],
@@ -13,7 +15,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "system_webview_wpt",
+        "name": "android_webview_wpt_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -28,8 +30,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.avd"
           },
-          "expiration": 18000,
-          "hard_timeout": 14400,
           "named_caches": [
             {
               "name": "android_35_google_apis_x64",
@@ -42,10 +42,10 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 25
+          "shards": 36
         },
-        "test": "system_webview_wpt",
-        "test_id_prefix": "ninja://android_webview/test:system_webview_wpt/"
+        "test": "trichrome_webview_wpt_64",
+        "test_id_prefix": "ninja://android_webview/test:trichrome_webview_wpt_64/"
       }
     ]
   }

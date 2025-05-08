@@ -521,6 +521,11 @@ void PlusAddressServiceImpl::OnWebDataServiceRequestDone(
   }
 }
 
+void PlusAddressServiceImpl::Shutdown() {
+  identity_manager_observation_.Reset();
+  PlusAddressService::Shutdown();
+}
+
 void PlusAddressServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   signin::PrimaryAccountChangeEvent::Type type =
@@ -543,6 +548,12 @@ void PlusAddressServiceImpl::OnErrorStateOfRefreshTokenUpdatedForAccount(
   if (error.state() != GoogleServiceAuthError::NONE) {
     HandleSignout();
   }
+}
+
+void PlusAddressServiceImpl::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  // Needs to be shutdown before IdentityManager.
+  NOTREACHED(base::NotFatalUntil::M142);
 }
 
 void PlusAddressServiceImpl::HandleSignout() {

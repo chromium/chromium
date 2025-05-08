@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/structured_shared_memory.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory.h"
+#include "components/performance_manager/scenario_api/performance_scenario_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_scenarios {
@@ -60,8 +61,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(InputScenarios::All()));
 
 TEST(PerformanceScenariosTest, MappedScenarioState) {
-  auto shared_memory = base::StructuredSharedMemory<ScenarioState>::Create();
-  ASSERT_TRUE(shared_memory.has_value());
+  auto test_helper = PerformanceScenarioTestHelper::CreateWithoutMapping();
+  ASSERT_TRUE(test_helper);
 
   // Before the shared memory is mapped in, GetLoadingScenario should return
   // default values.
@@ -75,14 +76,15 @@ TEST(PerformanceScenariosTest, MappedScenarioState) {
   {
     // Map the shared memory as the global state.
     ScopedReadOnlyScenarioMemory mapped_global_memory(
-        ScenarioScope::kGlobal, shared_memory->DuplicateReadOnlyRegion());
+        ScenarioScope::kGlobal,
+        test_helper->GetReadOnlyScenarioRegion(ScenarioScope::kGlobal));
     EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
                   ->load(std::memory_order_relaxed),
               LoadingScenario::kNoPageLoading);
 
     // Updates should be visible in the global state only.
-    shared_memory->WritableRef().loading.store(
-        LoadingScenario::kFocusedPageLoading, std::memory_order_relaxed);
+    test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                    LoadingScenario::kFocusedPageLoading);
     EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
                   ->load(std::memory_order_relaxed),
               LoadingScenario::kFocusedPageLoading);
@@ -93,14 +95,14 @@ TEST(PerformanceScenariosTest, MappedScenarioState) {
     // Map the same shared memory as the per-process state.
     ScopedReadOnlyScenarioMemory mapped_current_memory(
         ScenarioScope::kCurrentProcess,
-        shared_memory->DuplicateReadOnlyRegion());
+        test_helper->GetReadOnlyScenarioRegion(ScenarioScope::kGlobal));
     EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                   ->load(std::memory_order_relaxed),
               LoadingScenario::kFocusedPageLoading);
 
     // Updates should be visible in both mappings.
-    shared_memory->WritableRef().loading.store(
-        LoadingScenario::kVisiblePageLoading, std::memory_order_relaxed);
+    test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                    LoadingScenario::kVisiblePageLoading);
     EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
                   ->load(std::memory_order_relaxed),
               LoadingScenario::kVisiblePageLoading);
@@ -121,11 +123,11 @@ TEST(PerformanceScenariosTest, MappedScenarioState) {
 
 TEST(PerformanceScenariosTest, SharedAtomicRef) {
   // Create and map shared memory.
-  auto shared_memory = base::StructuredSharedMemory<ScenarioState>::Create();
-  ASSERT_TRUE(shared_memory.has_value());
+  auto test_helper = PerformanceScenarioTestHelper::CreateWithoutMapping();
+  ASSERT_TRUE(test_helper);
   auto read_only_mapping =
       base::StructuredSharedMemory<ScenarioState>::MapReadOnlyRegion(
-          shared_memory->DuplicateReadOnlyRegion());
+          test_helper->GetReadOnlyScenarioRegion(ScenarioScope::kGlobal));
   ASSERT_TRUE(read_only_mapping.has_value());
 
   // Store pointers to the atomics in the shared memory for later comparison.
@@ -145,10 +147,9 @@ TEST(PerformanceScenariosTest, SharedAtomicRef) {
 
   // The SharedAtomicRef's should keep the mapping alive.
   mapping_ptr.reset();
-  shared_memory->WritableRef().loading.store(
-      LoadingScenario::kBackgroundPageLoading, std::memory_order_relaxed);
-  shared_memory->WritableRef().input.store(InputScenario::kNoInput,
-                                           std::memory_order_relaxed);
+  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                  LoadingScenario::kBackgroundPageLoading);
+  test_helper->SetInputScenario(ScenarioScope::kGlobal, InputScenario::kTyping);
 
   // get()
   EXPECT_EQ(loading_ref.get(), loading_ptr);
@@ -161,8 +162,7 @@ TEST(PerformanceScenariosTest, SharedAtomicRef) {
   // operator->
   EXPECT_EQ(loading_ref->load(std::memory_order_relaxed),
             LoadingScenario::kBackgroundPageLoading);
-  EXPECT_EQ(input_ref->load(std::memory_order_relaxed),
-            InputScenario::kNoInput);
+  EXPECT_EQ(input_ref->load(std::memory_order_relaxed), InputScenario::kTyping);
 }
 
 TEST_P(PerformanceScenariosAllLoadingScenariosTest, EmptyScenarioPattern) {

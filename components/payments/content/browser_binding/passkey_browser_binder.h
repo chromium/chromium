@@ -74,7 +74,7 @@ class BrowserBoundKey;
 class PasskeyBrowserBinder : public WebDataServiceConsumer {
  public:
   PasskeyBrowserBinder(
-      std::unique_ptr<BrowserBoundKeyStore> key_store,
+      scoped_refptr<BrowserBoundKeyStore> key_store,
       scoped_refptr<PaymentManifestWebDataService> web_data_service);
   PasskeyBrowserBinder(const PasskeyBrowserBinder&) = delete;
   PasskeyBrowserBinder& operator=(const PasskeyBrowserBinder&) = delete;
@@ -86,7 +86,8 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
   class UnboundKey {
    public:
     UnboundKey(std::vector<uint8_t> browser_bound_key_id,
-               std::unique_ptr<BrowserBoundKey> browser_bound_key);
+               std::unique_ptr<BrowserBoundKey> browser_bound_key,
+               scoped_refptr<BrowserBoundKeyStore> key_store);
     UnboundKey(const UnboundKey&) = delete;
     UnboundKey& operator=(const UnboundKey&) = delete;
     UnboundKey(UnboundKey&&);
@@ -102,6 +103,7 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
     friend PasskeyBrowserBinder;
     std::vector<uint8_t> browser_bound_key_id_;
     std::unique_ptr<BrowserBoundKey> browser_bound_key_;
+    scoped_refptr<BrowserBoundKeyStore> key_store_;
   };
 
   // Creates a browser bound key that is not yet associated to a passkey. The
@@ -151,7 +153,7 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
       base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
       std::vector<uint8_t> existing_browser_bound_key_id);
 
-  std::unique_ptr<BrowserBoundKeyStore> key_store_;
+  scoped_refptr<BrowserBoundKeyStore> key_store_;
   scoped_refptr<PaymentManifestWebDataService> web_data_service_;
   std::map<WebDataServiceBase::Handle, base::OnceCallback<void(bool)>>
       set_browser_bound_key_handlers_;

@@ -45,7 +45,6 @@
   E_CPONLY(kColorAvatarButtonHighlightIncognitoForeground) \
   E_CPONLY(kColorAvatarButtonIncognitoHover) \
   E_CPONLY(kColorAvatarButtonNormalRipple) \
-  E_CPONLY(kColorAvatarStrokeLight) \
   E_CPONLY(kColorAvatarStroke) \
   E_CPONLY(kColorAvatarFillForContrast) \
   /* Bookmark bar colors. */ \
@@ -201,6 +200,8 @@
   E_CPONLY(kColorIntentPickerItemBackgroundSelected) \
   /* Glic colors */ \
   E_CPONLY(kColorGlicBackground) \
+  E_CPONLY(kColorGlicModalBackground) \
+  E_CPONLY(kColorGlicModalForeground) \
   /* Hover Button colors */ \
   E_CPONLY(kColorHoverButtonBackgroundHovered) \
   /* Lens overlay colors. */ \
@@ -322,6 +323,9 @@
   /* New Tab Page Colors for Doodle Share Button. */ \
   E_CPONLY(kColorNewTabPageDoodleShareButtonBackground) \
   E_CPONLY(kColorNewTabPageDoodleShareButtonIcon) \
+  /* New Tab Footer colors. */ \
+  E_CPONLY(kColorNewTabFooterBackground) \
+  E_CPONLY(kColorNewTabFooterText) \
   /* Omnibox colors. */ \
   E_CPONLY(kColorOmniboxActionIcon) \
   E_CPONLY(kColorOmniboxActionIconHover) \

@@ -96,6 +96,7 @@ public class ObservableSupplierImpl<E extends @Nullable Object> implements Obser
     }
 
     @Override
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
     public @Nullable E get() {
         // Allow instrumentation thread access since tests often access variables for asserts.
         // https://crbug.com/1173814

@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/compositor/compositor_metrics_tracker.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
@@ -33,7 +34,7 @@ class GlanceablesProgressBarView;
 // `GlanceableTrayChildBubble`.
 class ASH_EXPORT GlanceablesTimeManagementBubbleView
     : public views::FlexLayoutView,
-      public gfx::AnimationDelegate {
+      public views::AnimationDelegateViews {
   METADATA_HEADER(GlanceablesTimeManagementBubbleView, views::FlexLayoutView)
 
  public:
@@ -82,7 +83,7 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  // gfx::AnimationDelegate:
+  // views::AnimationDelegateViews:
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;

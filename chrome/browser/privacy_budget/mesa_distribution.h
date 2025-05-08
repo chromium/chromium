@@ -67,8 +67,8 @@
 // Parameters:
 //   pivot_point: T as described above. Any value bigger than 0.
 //   dist_ratio : τ as described above. Must be in (0,1).
-template <typename ResultType,
-          std::enable_if_t<std::is_integral<ResultType>::value, int> = 0>
+template <typename ResultType>
+  requires(std::is_integral_v<ResultType>)
 class MesaDistribution {
  public:
   MesaDistribution(ResultType pivot_point,

@@ -423,8 +423,6 @@ public class Fido2CredentialRequest
             RecordOutcomeCallback recordingCallback) {
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         assert frameHost != null;
-        assert payment == null || frameHost != null;
-        assert options.mediation != Mediation.CONDITIONAL || frameHost != null;
         assert mGetAssertionCallback == null && mErrorCallback == null;
         mGetAssertionCallback = callback;
         mErrorCallback = errorCallback;
@@ -435,6 +433,26 @@ public class Fido2CredentialRequest
             returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
+
+        if (options.mediation == Mediation.IMMEDIATE) {
+            WebContents webContents = mAuthenticationContextProvider.getWebContents();
+            // TODO(https://crbug.com/393055190): Implement Immediate Mediation for when CredMan is
+            // not available.
+            if (!isChrome(webContents) || getBarrierMode() == Barrier.Mode.ONLY_FIDO_2_API) {
+                returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
+                return;
+            }
+            if (options.allowCredentials != null && options.allowCredentials.length != 0) {
+                mGetAssertionErrorOutcome = GetAssertionOutcome.SECURITY_ERROR;
+                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                return;
+            }
+            if (webContents != null && webContents.isIncognito()) {
+                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                return;
+            }
+        }
+
         @Nullable Origin remoteDesktopOrigin = null;
         if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
                 && options.extensions.remoteDesktopClientOverride != null
@@ -556,8 +574,12 @@ public class Fido2CredentialRequest
         }
 
         // Payments should still go through Google Play Services.
+        // TODO(https://crbug.com/393055190): Immediate mediation should work with parallel mode
+        // when it is made to work with Chrome UI.
         final byte[] finalClientDataHash = clientDataHash;
-        if (payment == null && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
+        if (payment == null
+                && (getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN
+                        || options.mediation == Mediation.IMMEDIATE)) {
             if (options.mediation == Mediation.CONDITIONAL) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_CRED_MAN);
                 mCredManHelper.startPrefetchRequest(
@@ -583,8 +605,16 @@ public class Fido2CredentialRequest
                 }
                 checkForMatchingCredentials(options, origin, clientDataHash);
             } else {
-                // WebauthnMode.CHROME_3PP_ENABLED will keep using CredMan's no credentials UI.
-                if (is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.CHROME)) {
+                if (options.mediation == Mediation.IMMEDIATE) {
+                    // TODO(https://crbug.com/408002783): This should have a distinct
+                    // GetAssertionOutcome for logging.
+                    mCredManHelper.setNoCredentialsFallback(
+                            () ->
+                                    this.returnErrorAndResetCallback(
+                                            AuthenticatorStatus.NOT_ALLOWED_ERROR));
+                } else if (is(
+                        mAuthenticationContextProvider.getWebContents(), WebauthnMode.CHROME)) {
+                    // WebauthnMode.CHROME_3PP_ENABLED will keep using CredMan's no credentials UI.
                     mCredManHelper.setNoCredentialsFallback(
                             () ->
                                     this.maybeDispatchGetAssertionRequest(
@@ -1301,7 +1331,7 @@ public class Fido2CredentialRequest
                     frameHost.notifyWebAuthnAssertionRequestSucceeded();
                 }
                 r.extensions.echoAppidExtension = mAppIdExtensionUsed;
-                mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS, r);
+                mGetAssertionCallback.onSignResponse(r, /* passwordCredential= */ null);
                 mGetAssertionCallback = null;
                 return;
             }

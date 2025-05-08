@@ -325,6 +325,9 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PrintSettings {
     print_scaling_ = print_scaling;
   }
   mojom::PrintScalingType print_scaling() const { return print_scaling_; }
+
+  void set_quality(mojom::Quality quality) { quality_ = quality; }
+  mojom::Quality quality() const { return quality_; }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
@@ -458,7 +461,7 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PrintSettings {
 
   // True if the user selects to print to a different printer than the original
   // destination shown when Print Preview opens.
-  bool printer_manually_selected_;
+  bool printer_manually_selected_ = false;
 
   // The printer status reason shown for the selected printer at the time print
   // is requested. Only local CrOS printers set printer statuses.
@@ -467,6 +470,9 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PrintSettings {
   // Print scaling type.
   mojom::PrintScalingType print_scaling_ =
       mojom::PrintScalingType::kUnknownPrintScalingType;
+
+  // Print qulity for the printer to use.
+  mojom::Quality quality_ = mojom::Quality::kUnknownQuality;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

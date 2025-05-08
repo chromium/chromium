@@ -282,7 +282,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
                                TranslateArrow(params.arrow),
                                views::BubbleBorder::STANDARD_SHADOW),
       id_(id) {
-  set_background_color(cros_tokens::kCrosSysDialogContainer);
+  SetBackgroundColor(cros_tokens::kCrosSysDialogContainer);
   SetCanActivate(true);
 
   // When hosted within a `views::ScrollView`, the anchor view may be
@@ -901,7 +901,7 @@ void HelpBubbleViewAsh::UpdateRoundedCorners() {
   const float lower_left = dx < 0 && dy > 0 ? kSmall : kDefault;
 
   // Update rounded corners.
-  GetBubbleFrameView()->bubble_border()->set_rounded_corners(
+  GetBubbleFrameView()->SetRoundedCorners(
       gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left));
 }
 

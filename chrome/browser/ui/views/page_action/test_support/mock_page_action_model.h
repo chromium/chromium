@@ -86,12 +86,15 @@ class MockPageActionModel : public PageActionModelInterface {
               SetShouldHidePageAction,
               (base::PassKey<PageActionController>, bool should_hide),
               (override));
+  MOCK_METHOD(bool, IsEphemeral, (), (const, override));
 };
 
 template <typename PageActionModelType>
 class FakePageActionModelFactory : public PageActionModelFactory {
  public:
-  std::unique_ptr<PageActionModelInterface> Create(int action_id) override {
+  std::unique_ptr<PageActionModelInterface> Create(
+      int action_id,
+      bool /*is_ephemeral*/) override {
     auto model = std::make_unique<PageActionModelType>();
     model_map_.emplace(action_id, model.get());
     return model;

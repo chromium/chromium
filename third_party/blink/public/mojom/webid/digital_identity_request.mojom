@@ -16,10 +16,17 @@ union RequestData {
 };
 
 // The specification of the request to digital credentials.
-struct DigitalCredentialRequest {
+struct DigitalCredentialGetRequest {
   string protocol;
   RequestData data;
 };
+
+// The specification of the creation request to digital credentials.
+struct DigitalCredentialCreateRequest {
+  string protocol;
+  mojo_base.mojom.Value data;
+};
+
 
 // Represents the format of the request that should be used when communicating
 // with the digital wallet via the Android platform. Renderer picks a format
@@ -47,7 +54,7 @@ enum RequestDigitalIdentityStatus {
 // This interface is called from a renderer process and is implemented in the
 // browser process.
 interface DigitalIdentityRequest {
-  // Requests a token to be generated, given a DigitalCredentialRequest.
+  // Requests a token to be generated, given an array of DigitalCredentialGetRequest's.
   // Returns:
   // - Status of the request.
   // - Raw content of the token.
@@ -55,20 +62,20 @@ interface DigitalIdentityRequest {
   //
   // Does not support concurrent requests. Throws an error on a new request if
   // there is a pending request.
-  Get(array<DigitalCredentialRequest> digital_credential_requests, GetRequestFormat format) =>
+  Get(array<DigitalCredentialGetRequest> digital_credential_requests, GetRequestFormat format) =>
       (RequestDigitalIdentityStatus status,
       string? protocol,
       mojo_base.mojom.Value? token);
 
-  // Requests a token to be generated, given a DigitalCredentialRequest.
+  // Requests an issuance of digital credentials, given an array of DigitalCredentialCreateRequests.
   // Returns:
   // - Status of the request.
-  // - Raw content of the token.
-  // - Protocol of the selected provider.
+  // - Protocol-specific response.
+  // - Protocol of the selected request.
   //
   // Does not support concurrent requests. Throws an error on a new request if
   // there is a pending request.
-  Create(DigitalCredentialRequest digital_credential_request) =>
+  Create(array<DigitalCredentialCreateRequest> digital_credential_requests) =>
       (RequestDigitalIdentityStatus status,
       string? protocol,
       mojo_base.mojom.Value? token);

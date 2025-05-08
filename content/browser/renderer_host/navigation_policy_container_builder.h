@@ -105,6 +105,9 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // This must be called before `ComputePolicies()`.
   void SetDocumentIsolationPolicy(const network::DocumentIsolationPolicy& dip);
 
+  void SetIntegrityPolicy(network::IntegrityPolicy ip);
+  void SetIntegrityPolicyReportOnly(network::IntegrityPolicy ip);
+
   // Sets the IP address space of the delivered policies of the new document.
   //
   // This must be called before `ComputePolicies()`.
@@ -116,10 +119,6 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   //
   // This must be called before `ComputePolicies()`.
   void SetIsOriginPotentiallyTrustworthy(bool value);
-
-  // Sets whether COOP origins allow the document to be crossOriginIsolated.
-  // This must be called before `ComputePolicies()`.
-  void SetAllowCrossOriginIsolation(bool value);
 
   // Sets whether crossOriginIsolation is enabled by DocumentIsolationPolicy.
   // This must be called after `ComputePolicies()`.

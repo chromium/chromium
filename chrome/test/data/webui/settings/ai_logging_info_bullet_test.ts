@@ -14,15 +14,19 @@ type PrefObject = chrome.settingsPrivate.PrefObject;
 suite('LoggingInfoBullet', function() {
   let row: SettingsAiLoggingInfoBullet;
 
-  function createRow(pref: PrefObject) {
+  function createRow(
+      pref: PrefObject, loggingManagedDisabledCustomLabel: string|null = null) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     row = document.createElement('settings-ai-logging-info-bullet');
     row.pref = pref;
+    if (loggingManagedDisabledCustomLabel) {
+      row.loggingManagedDisabledCustomLabel = loggingManagedDisabledCustomLabel;
+    }
     document.body.appendChild(row);
     return flushTasks();
   }
 
-  test('infoBullet', async () => {
+  test('infoBulletPolicyAllow', async () => {
     const pref: PrefObject = {
       key: 'some_ai_feature_enterprise_pref',
       type: chrome.settingsPrivate.PrefType.NUMBER,
@@ -33,12 +37,31 @@ suite('LoggingInfoBullet', function() {
     const li = row.shadowRoot!.querySelector('li');
     assertTrue(!!li);
     assertEquals(
-        li.innerText, loadTimeData.getString('aiSubpageSublabelReviewers'));
+        loadTimeData.getString('aiSubpageSublabelReviewers'), li.textContent);
     assertTrue(!!li.querySelector('cr-icon'));
     assertFalse(!!li.querySelector('cr-policy-pref-indicator'));
   });
 
-  test('infoBulletManagedWhenPolicyAllowedWithoutLogging', async () => {
+  test('infoBulletPolicyAllowCustomLabel', async () => {
+    const pref: PrefObject = {
+      key: 'some_ai_feature_enterprise_pref',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: ModelExecutionEnterprisePolicyValue.ALLOW,
+    };
+    await createRow(
+        pref,
+        loadTimeData.getString(
+            'autofillAiSubpageSublabelLoggingManagedDisabled'));
+
+    const li = row.shadowRoot!.querySelector('li');
+    assertTrue(!!li);
+    // The custom label is not used since it only applies when logging is
+    // disabled.
+    assertEquals(
+        loadTimeData.getString('aiSubpageSublabelReviewers'), li.textContent);
+  });
+
+  test('infoBulletPolicyAllowWithoutLogging', async () => {
     const pref: PrefObject = {
       key: 'some_ai_feature_enterprise_pref',
       type: chrome.settingsPrivate.PrefType.NUMBER,
@@ -51,13 +74,30 @@ suite('LoggingInfoBullet', function() {
     const li = row.shadowRoot!.querySelector('li');
     assertTrue(!!li);
     assertEquals(
-        li.innerText,
-        loadTimeData.getString('aiSubpageSublabelLoggingManagedDisabled'));
+        loadTimeData.getString('aiSubpageSublabelLoggingManagedDisabled'),
+        li.textContent);
     assertFalse(!!li.querySelector('cr-icon'));
     assertTrue(!!li.querySelector('cr-policy-pref-indicator'));
   });
 
-  test('infoBulletManagedWhenPolicyDisabled', async () => {
+  test('infoBulletPolicyAllowWithoutLoggingCustomLabel', async () => {
+    const pref: PrefObject = {
+      key: 'some_ai_feature_enterprise_pref',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    };
+    const customLabel = loadTimeData.getString(
+        'autofillAiSubpageSublabelLoggingManagedDisabled');
+    await createRow(pref, customLabel);
+
+    const li = row.shadowRoot!.querySelector('li');
+    assertTrue(!!li);
+    assertEquals(customLabel, li.textContent);
+  });
+
+  test('infoBulletPolicyDisabled', async () => {
     const pref: PrefObject = {
       key: 'some_ai_feature_enterprise_pref',
       type: chrome.settingsPrivate.PrefType.NUMBER,
@@ -70,8 +110,27 @@ suite('LoggingInfoBullet', function() {
     const li = row.shadowRoot!.querySelector('li');
     assertTrue(!!li);
     assertEquals(
-        li.innerText,
-        loadTimeData.getString('aiSubpageSublabelLoggingManagedDisabled'));
+        loadTimeData.getString('aiSubpageSublabelLoggingManagedDisabled'),
+        li.textContent);
+    assertFalse(!!li.querySelector('cr-icon'));
+    assertTrue(!!li.querySelector('cr-policy-pref-indicator'));
+  });
+
+  test('infoBulletPolicyDisabledCustomLabel', async () => {
+    const pref: PrefObject = {
+      key: 'some_ai_feature_enterprise_pref',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: ModelExecutionEnterprisePolicyValue.DISABLE,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    };
+    const customLabel = loadTimeData.getString(
+        'autofillAiSubpageSublabelLoggingManagedDisabled');
+    await createRow(pref, customLabel);
+
+    const li = row.shadowRoot!.querySelector('li');
+    assertTrue(!!li);
+    assertEquals(customLabel, li.textContent);
     assertFalse(!!li.querySelector('cr-icon'));
     assertTrue(!!li.querySelector('cr-policy-pref-indicator'));
   });

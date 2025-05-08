@@ -478,8 +478,6 @@ PrivateAggregationBindings::TakePrivateAggregationRequests(
                           contribution) {
                  return auction_worklet::mojom::PrivateAggregationRequest::New(
                      std::move(contribution),
-                     // TODO(alexmt): consider allowing this to be set
-                     blink::mojom::AggregationServiceMode::kDefault,
                      debug_mode_details_.Clone());
                });
   private_aggregation_contributions_.clear();

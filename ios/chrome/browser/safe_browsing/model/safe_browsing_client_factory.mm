@@ -81,6 +81,7 @@ SafeBrowsingClientFactory::SafeBrowsingClientFactory()
   DependsOn(PrerenderServiceFactory::GetInstance());
   DependsOn(ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance());
   DependsOn(RealTimeUrlLookupServiceFactory::GetInstance());
+  DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -97,5 +98,6 @@ SafeBrowsingClientFactory::BuildServiceInstanceFor(
       profile->GetPrefs(), hash_real_time_service, prerender_service,
       // base::Unretained is safe because the RealTimeUrlLookupServiceBase will
       // be destroyed before the profile it is attached to.
-      base::BindRepeating(&GetUrlLookupService, base::Unretained(profile)));
+      base::BindRepeating(&GetUrlLookupService, base::Unretained(profile)),
+      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile));
 }

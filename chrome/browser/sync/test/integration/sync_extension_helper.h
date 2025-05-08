@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/common/manifest.h"

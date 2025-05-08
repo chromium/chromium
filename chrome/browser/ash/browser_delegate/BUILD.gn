@@ -10,11 +10,15 @@ static_library("browser_delegate") {
     "browser_controller.cc",
     "browser_controller.h",
     "browser_delegate.h",
+    "browser_type.h",
   ]
 
   public_deps = [
     "//base",
     "//components/sessions:session_id",
+    "//components/webapps/common",
+    "//ui/gfx/geometry",
+    "//url",
   ]
 }
 
@@ -24,12 +28,15 @@ static_library("impl") {
     "browser_controller_impl.h",
     "browser_delegate_impl.cc",
     "browser_delegate_impl.h",
+    "browser_type_conversion.cc",
+    "browser_type_conversion.h",
   ]
 
   public_deps = [
     ":browser_delegate",
     "//base",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/browser_window",
   ]
 
   deps = [
@@ -37,6 +44,7 @@ static_library("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/web_applications",
     "//chromeos/ash/components/browser_context_helper",
     "//components/sessions:session_id",
   ]

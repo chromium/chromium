@@ -100,6 +100,7 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -110,7 +111,6 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/ownership/mock_owner_key_util.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -859,7 +859,11 @@ class DeviceStatusCollectorTest : public testing::Test {
             DeviceLocalAccount::EphemeralMode::kUnset,
             fake_web_kiosk_app_basic_info_,
             kWebKioskAccountId),
-        fake_iwa_kiosk_basic_info_(kIwaKioskWebBundleId, kIwaKioskUpdateUrl),
+        fake_iwa_kiosk_basic_info_(kIwaKioskWebBundleId,
+                                   kIwaKioskUpdateUrl,
+                                   /*update_channel=*/std::string(),
+                                   /*pinned_version=*/std::string(),
+                                   /*allow_downgrades=*/false),
         fake_iwa_kiosk_device_local_account_(
             DeviceLocalAccount::EphemeralMode::kUnset,
             fake_iwa_kiosk_basic_info_,

@@ -76,10 +76,11 @@ public interface SiteSettingsDelegate {
     boolean isPermissionSiteSettingsRadioButtonFeatureEnabled();
 
     /**
-     * @return The id of the notification channel associated with the given origin.
+     * Get the id of the notification channel associated with the given origin.
+     *
+     * @param callback Callback to be invoked with the Id of the channel.
      */
-    // TODO(crbug.com/40126121): Remove this once WebLayer supports notifications.
-    String getChannelIdForOrigin(String origin);
+    void getChannelIdForOrigin(String origin, Callback<String> callback);
 
     /**
      * @return The name of the app the settings are associated with.

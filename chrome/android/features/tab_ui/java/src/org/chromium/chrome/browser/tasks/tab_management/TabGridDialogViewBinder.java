@@ -42,6 +42,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOW_IMAGE_TILES;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOW_SEND_FEEDBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOW_SHARE_BUTTON;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SUPPRESS_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TAB_GROUP_COLOR_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TINT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TITLE_CURSOR_VISIBILITY;
@@ -280,6 +281,12 @@ class TabGridDialogViewBinder {
             viewHolder.dialogView.setSendFeedbackRunnable(model.get(SEND_FEEDBACK_RUNNABLE));
         } else if (PAGE_KEY_LISTENER == propertyKey) {
             viewHolder.contentView.setPageKeyListenerCallback(model.get(PAGE_KEY_LISTENER));
+        } else if (SUPPRESS_ACCESSIBILITY == propertyKey) {
+            int important =
+                    model.get(SUPPRESS_ACCESSIBILITY)
+                            ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                            : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+            viewHolder.dialogView.setImportantForAccessibility(important);
         }
     }
 

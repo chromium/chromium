@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Offsets for position-area: top center
+  assert_equals: Check expected offsetLeft expected 150 but got 145
+[FAIL] Offsets for position-area: center left
+  assert_equals: Check expected offsetTop expected 140 but got 145
+[FAIL] Offsets for position-area: center center
+  assert_equals: Check expected offsetLeft expected 150 but got 145
+[FAIL] Offsets for position-area: center right
+  assert_equals: Check expected offsetTop expected 140 but got 145
+[FAIL] Offsets for position-area: bottom center
+  assert_equals: Check expected offsetLeft expected 150 but got 145
+Harness: the test ran to completion.
+

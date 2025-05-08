@@ -22,6 +22,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -351,7 +352,8 @@ std::unique_ptr<NonClientFrameView> DialogDelegate::CreateDialogFrameView(
   DialogDelegate* delegate = widget->widget_delegate()->AsDialogDelegate();
   if (delegate) {
     if (delegate->GetParams().round_corners) {
-      border->SetCornerRadius(delegate->GetCornerRadius());
+      border->set_rounded_corners(
+          gfx::RoundedCornersF(delegate->GetCornerRadius()));
     }
     frame->SetFootnoteView(delegate->DisownFootnoteView());
   }

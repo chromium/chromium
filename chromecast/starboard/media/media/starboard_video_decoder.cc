@@ -147,6 +147,14 @@ StarboardVideoDecoder::GetVideoSampleInfo() {
   return video_sample_info_;
 }
 
+std::optional<EncryptionScheme> StarboardVideoDecoder::GetEncryptionScheme() {
+  if (video_sample_info_.has_value()) {
+    // The config is populated when video_sample_info_ is populated.
+    return config_.encryption_scheme;
+  }
+  return std::nullopt;
+}
+
 bool StarboardVideoDecoder::SetConfig(const VideoConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

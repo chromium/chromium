@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/udp_socket.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -121,8 +117,7 @@ class HangingUDPSocket : public SocketWrapperTestImpl {
       const net::IPEndPoint& address,
       net::CompletionOnceCallback callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    EXPECT_EQ(expected_data_,
-              std::vector<unsigned char>(buf->data(), buf->data() + buf_len));
+    EXPECT_EQ(expected_data_, buf->first(base::checked_cast<size_t>(buf_len)));
     if (should_complete_requests_)
       return net::OK;
     pending_io_buffers_.push_back(buf);
@@ -354,8 +349,7 @@ TEST_F(UDPSocketTest, TestBufferValid) {
   // and that buffer still contains the exact same data.
   net::IOBuffer* buf = socket_raw_ptr->pending_io_buffers()[0];
   int buf_len = socket_raw_ptr->pending_io_buffer_lengths()[0];
-  EXPECT_EQ(test_msg,
-            std::vector<unsigned char>(buf->data(), buf->data() + buf_len));
+  EXPECT_EQ(test_msg, buf->first(base::checked_cast<size_t>(buf_len)));
 }
 
 // Test that exercises the queuing of send requests and makes sure

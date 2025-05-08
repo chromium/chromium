@@ -7,7 +7,6 @@
 
 #include <type_traits>
 
-#include "base/functional/bind_internal.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

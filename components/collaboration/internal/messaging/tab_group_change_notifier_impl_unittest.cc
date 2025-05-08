@@ -1015,4 +1015,43 @@ TEST_F(TabGroupChangeNotifierImplTest, OpenAndCloseTabGroup) {
   notifier_->OnTabGroupOpenedOrClosed(tab_group.saved_guid(), std::nullopt);
 }
 
+// Tests a case that a tab is removed by remote, but OnTabGroupUpdated is
+// called with a LOCAL trigger source due to pending NTP tab.
+TEST_F(TabGroupChangeNotifierImplTest,
+       TestTabRemovedByRmoteButTabGroupUpdatedLocally) {
+  // Initialize the notifier with an empty set of tab groups available on
+  // startup and on init.
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>());
+
+  tab_groups::SavedTabGroup tab_group = CreateTestSharedTabGroupWithNoTabs();
+  tab_groups::SavedTabGroupTab tab1 = CreateSavedTabGroupTab(
+      "https://www.example.com/", u"title", tab_group.saved_guid());
+  tab_group.AddTabFromSync(tab1);
+
+  // First add the group.
+  EXPECT_CALL(*notifier_observer_, OnTabGroupAdded);
+  tgss_observer_->OnTabGroupAdded(tab_group, tab_groups::TriggerSource::REMOTE);
+
+  // Add a new tab to the group and update it.
+  tab_groups::SavedTabGroupTab tab2 =
+      CreateSavedTabGroupTab("url3", u"title2", tab_group.saved_guid());
+  tab_group.AddTabFromSync(tab2);
+  // Remove a tab from the group and update it.
+  GaiaId removed_by("user_id");
+  tab_group.RemoveTabFromSync(tab1.saved_tab_guid(), removed_by);
+  // This tab will be overridden by the callback.
+  tab_groups::SavedTabGroupTab tab_received =
+      CreateSavedTabGroupTab("N/A", u"N/A", tab_group.saved_guid());
+  EXPECT_CALL(*notifier_observer_,
+              OnTabRemoved(TabGuidEq(tab1),
+                           Eq(tab_groups::TriggerSource::LOCAL), Eq(false)))
+      .WillOnce(SaveArg<0>(&tab_received));
+  UpdateTabGroup(tab_group, tab_groups::TriggerSource::LOCAL);
+
+  // The removed tab should have the correct user that removed it.
+  EXPECT_EQ(tab_received.shared_attribution().updated_by, removed_by);
+}
+
 }  // namespace collaboration::messaging

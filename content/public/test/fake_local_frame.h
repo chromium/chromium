@@ -54,6 +54,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       blink::mojom::UserActivationNotificationType notification_type) override;
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect&) override;
   void NotifyContextMenuInsetsObservers(const gfx::Rect&) override;
+  void ShowInterestInElement(int) override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message,
                            bool discard_duplicates) override;

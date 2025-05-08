@@ -76,4 +76,15 @@ const base::FeatureParam<bool>
         "ZSSExtractAnnotatedPageContent",
         false);
 
+const base::FeatureParam<base::TimeDelta>
+    kPageContentExtractionDelayForSameDocumentNavigation(
+        &kGlicZeroStateSuggestions,
+        "ZSSPageContentExtractionDelayForSameDocumentNavigation",
+        base::Seconds(3));
+
+const base::FeatureParam<bool> kReturnEmptyForSameDocumentNavigation(
+    &kGlicZeroStateSuggestions,
+    "ZSSReturnEmptyForSameDocumentNavigation",
+    false);
+
 }  // namespace contextual_cueing

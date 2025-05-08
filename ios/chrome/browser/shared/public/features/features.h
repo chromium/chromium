@@ -489,10 +489,6 @@ BASE_DECLARE_FEATURE(kIOSManageAccountStorage);
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);
 
-// Feature flag to enable the Following feed in the NTP.
-// Use IsWebChannelsEnabled() instead of this constant directly.
-BASE_DECLARE_FEATURE(kEnableWebChannels);
-
 // Feature flag to deprecate the "Discover / Follow" toggle from the header of
 // the feed. When this feature is enabled, there would not be a separate
 // following feed.
@@ -501,9 +497,6 @@ bool ShouldDeprecateFeedHeader();
 
 // Feature flag to disable the feed.
 BASE_DECLARE_FEATURE(kEnableFeedAblation);
-
-// Feature flag to enable the Follow UI update.
-BASE_DECLARE_FEATURE(kEnableFollowUIUpdate);
 
 // Content Push Notifications Variations.
 extern const char kContentPushNotificationsExperimentType[];
@@ -529,9 +522,6 @@ extern const char kDeliveredNAUMaxPerSession[];
 
 // Feature flag to enable a more stable fullscreen.
 BASE_DECLARE_FEATURE(kFullscreenImprovement);
-
-// Feature flag to enable Tab Groups on iPad.
-BASE_DECLARE_FEATURE(kTabGroupsIPad);
 
 // Whether the Tab Groups should be enabled in the Grid.
 bool IsTabGroupInGridEnabled();
@@ -705,22 +695,6 @@ extern const char kTabResumptionImagesTypesSalient[];
 // images images for tab resumption.
 extern const char kTabResumptionImagesTypesThumbnails[];
 
-// A parameter to indicate whether the Most Visited Tiles should be in the Magic
-// Stack.
-extern const char kMagicStackMostVisitedModuleParam[];
-
-// A parameter representing how much to reduce the NTP top space margin. If it
-// is negative, it will increase the top space margin.
-extern const char kReducedSpaceParam[];
-
-// A parameter representing whether modules should not be added to the Magic
-// Stack if their content is irrelevant.
-extern const char kHideIrrelevantModulesParam[];
-
-// A parameter representing how many days before showing the compacted Set Up
-// List module in the Magic Stack.
-extern const char kSetUpListCompactedTimeThresholdDays[];
-
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 // TODO(crbug.com/40246814): Remove this.
@@ -741,55 +715,9 @@ bool IsTabResumptionImagesThumbnailsEnabled();
 // X-Devices tabs only.
 const base::TimeDelta TabResumptionForXDevicesTimeThreshold();
 
-// Whether the Most Visited Sites should be put into the Magic Stack based on
-// `feed_activity_bucket`.
-bool ShouldPutMostVisitedSitesInMagicStack(
-    FeedActivityBucket feed_activity_bucket);
-
-// How much the NTP top margin should be reduced by for the Magic Stack design.
-double ReducedNTPTopMarginSpaceForMagicStack();
-
-// Whether modules should not be added to the Magic Stack if their content is
-// irrelevant.
-bool ShouldHideIrrelevantModules();
-
-// How many days before showing the Compacted Set Up List module configuration
-// in the Magic Stack.
-int TimeUntilShowingCompactedSetUpList();
-
 // Kill switch for disabling the navigations when the application is in
 // foreground inactive state after opening an external app.
 BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);
-
-// Feature flag to enable Tips Notifications.
-BASE_DECLARE_FEATURE(kIOSTipsNotifications);
-
-// Feature param to specify how much time should elapse before a Tip
-// notification should trigger for an unclassified user.
-extern const char kIOSTipsNotificationsUnknownTriggerTimeParam[];
-// Feature param to specify how much time should elapse before a Tip
-// notification should trigger, for an "Active Seeker" user.
-extern const char kIOSTipsNotificationsActiveSeekerTriggerTimeParam[];
-// Feature param to specify how much time should elapse before a Tip
-// notification should trigger, for a "Less Engaged" user.
-extern const char kIOSTipsNotificationsLessEngagedTriggerTimeParam[];
-
-// Feature param containing a bitfield to specify which notifications should be
-// enabled. Bits are assigned based on the enum `TipsNotificationType`.
-extern const char kIOSTipsNotificationsEnabledParam[];
-
-// Feature param containing an integer that chooses from a few options for
-// the order that the notifications would be sent in.
-extern const char kIOSTipsNotificationsOrderParam[];
-
-// Feature param containing an integer that configures the
-// `TipsNotificationClient` to stop requesting notifications if the user
-// dismisses this number of notifications in a row. Setting this to zero will
-// disable this limit.
-extern const char kIOSTipsNotificationsDismissLimitParam[];
-
-// Helper for whether Tips Notifications are enabled.
-bool IsIOSTipsNotificationsEnabled();
 
 // Convenience method for determining if Pinned Tabs is enabled.
 // The Pinned Tabs feature is fully enabled on iPhone and disabled on iPad.
@@ -869,6 +797,10 @@ BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccounts);
 // DO NOT CHECK DIRECTLY, use AreSeparateProfilesForManagedAccountsEnabled()!
 BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccountsKillSwitch);
 
+// Feature flag to have widgets per account.
+// DO NOT CHECK DIRECTLY, use IsWidgetsForMultiprofileEnabled().
+BASE_DECLARE_FEATURE(kWidgetsForMultiprofile);
+
 // Feature to control resyncing the omaha ping timer on foregrounding.
 BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
 
@@ -930,20 +862,22 @@ extern const char kIOSReactivationNotificationsOrderParam[];
 // Returns whether `kIOSReactivationNotifications` is enabled.
 bool IsIOSReactivationNotificationsEnabled();
 
+// Feature flag to enable Expanded Tips.
+BASE_DECLARE_FEATURE(kIOSExpandedTips);
+
+// Feature param containing a comma separated list of integers that represent
+// cases of the `TipsNotificationType` enum.
+extern const char kIOSExpandedTipsOrderParam[];
+
+// Returns whether `kIOSExpandTips` is enabled.
+bool IsIOSExpandedTipsEnabled();
+
 // Feature flag to show an alert to the user when only provisiona notifications
 // are allowed.
 BASE_DECLARE_FEATURE(kProvisionalNotificationAlert);
 
 // Returns whether `kIOSReactivationNotifications` is enabled.
 bool IsProvisionalNotificationAlertEnabled();
-
-// Feature and parameters for the feed positioning experiment, which will
-// determine two things: 1) whether the MVT should be combined with the magic
-// stack 2) whether homestack should be enabled.
-BASE_DECLARE_FEATURE(kNewFeedPositioning);
-extern const char kNewFeedPositioningCombinedMVTForHighEngaged[];
-extern const char kNewFeedPositioningCombinedMVTForMidEngaged[];
-extern const char kNewFeedPositioningCombinedMVTForLowEngaged[];
 
 // Feature flag to control whether the Default Browser banner promo is enabled.
 BASE_DECLARE_FEATURE(kDefaultBrowserBannerPromo);
@@ -1128,5 +1062,8 @@ BASE_DECLARE_FEATURE(kBestOfAppFRE);
 // Whether the feature to highlight the app's features during the FRE is
 // enabled.
 bool IsBestOfAppFREEnabled();
+
+// Whether the Guided Tour variant of `kBestOfAppFRE` is enabled.
+bool IsBestOfAppGuidedTourEnabled();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

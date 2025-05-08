@@ -661,6 +661,8 @@ class MockResumableUploadRequestForAsync : public MockResumableUploadRequest {
     if (!verdict_received_callback_.is_null()) {
       std::move(verdict_received_callback_)
           .Run(/*success=*/true, net::HTTP_OK, /*response=*/"");
+    } else {
+      ASSERT_EQ(GetUploadInfo(), "Resumable - Async content upload");
     }
   }
 };

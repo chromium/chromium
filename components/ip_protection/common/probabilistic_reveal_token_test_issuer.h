@@ -70,9 +70,6 @@ class ProbabilisticRevealTokenTestIssuer {
       const std::vector<ProbabilisticRevealToken>& tokens);
 
  private:
-  static absl::StatusOr<std::unique_ptr<ProbabilisticRevealTokenTestIssuer>>
-  CreateInternal(uint64_t private_key);
-
   ProbabilisticRevealTokenTestIssuer(
       std::unique_ptr<private_join_and_compute::Context> context,
       std::unique_ptr<private_join_and_compute::ECGroup> group,
@@ -80,19 +77,10 @@ class ProbabilisticRevealTokenTestIssuer {
       std::unique_ptr<private_join_and_compute::ElGamalDecrypter> decrypter,
       std::string serialized_public_key);
 
-  absl::StatusOr<std::string> DecryptSerializeEncodeInternal(
-      const ProbabilisticRevealToken& token);
-
-  absl::StatusOr<std::vector<std::string>> DecryptSerializeEncodeInternal(
-      const std::vector<ProbabilisticRevealToken>& tokens);
-
-  absl::StatusOr<std::string> RevealTokenInternal(
-      const ProbabilisticRevealToken& token) const;
-
-  absl::StatusOr<ProbabilisticRevealToken> IssueInternal(
+  base::expected<ProbabilisticRevealToken, absl::Status> IssueInternal(
       const std::string& plaintext) const;
 
-  absl::StatusOr<private_join_and_compute::ECPoint> Decrypt(
+  base::expected<private_join_and_compute::ECPoint, absl::Status> Decrypt(
       const ProbabilisticRevealToken& token) const;
 
   std::unique_ptr<private_join_and_compute::Context> context_;

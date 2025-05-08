@@ -266,6 +266,11 @@ BASE_FEATURE(kBocaExtensionConsumer,
 // Enables or disables Spotlight for Boca on ChromeOS.
 BASE_FEATURE(kBocaSpotlight, "BocaSpotlight", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// The url to use when connecting to spotlight
+constexpr base::FeatureParam<std::string> kBocaSpotlightUrlTemplate{
+    &kBocaSpotlight, "spotlight-url-template",
+    "https://remotedesktop.google.com/support/session/{sessionCode}"};
+
 // Enables or disables Boca network restriction for Boca on ChromeOS.
 BASE_FEATURE(kBocaNetworkRestriction,
              "BocaNetworkRestriction",
@@ -275,6 +280,17 @@ BASE_FEATURE(kBocaNetworkRestriction,
 // on ChromeOS.
 BASE_FEATURE(kBocaClientTypeForSpeechRecognition,
              "BocaClientTypeForSpeechRecognition",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables using a specific app name for speech recognition for Boca
+// on ChromeOS.
+BASE_FEATURE(kBocaAdjustCaptionBubbleOnExpand,
+             "BocaAdjustCaptionBubbleOnExpand",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables enforcing sequential execution for Boca Session load.
+BASE_FEATURE(kBocaSequentialSessionLoad,
+             "BocaSequentialSessionLoad",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -819,14 +835,6 @@ BASE_FEATURE(kEnterpriseReportingUI,
 BASE_FEATURE(kEphemeralNetworkPolicies,
              "kEphemeralNetworkPolicies",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether the DeviceEphemeralNetworkPoliciesEnabled policy is
-// respected.
-// This is on-by-default, only intended to be used as a kill switch in case we
-// find some issue with the policy processing.
-BASE_FEATURE(kEphemeralNetworkPoliciesEnabledPolicy,
-             "EphemeralNetworkPoliciesEnabledPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Device End Of Lifetime incentive notifications.
 BASE_FEATURE(kEolIncentive, "EolIncentive", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1421,15 +1429,15 @@ BASE_FEATURE(kHealthdInternalsTabs,
              "HealthdInternalsTabs",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the Help app will render the App Detail Page and entry point.
-BASE_FEATURE(kHelpAppAppDetailPage,
-             "HelpAppAppDetailPage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Kiosk session for the Helium android app.
 BASE_FEATURE(kHeliumArcvmKiosk,
              "HeliumArcvmKiosk",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the Help app will render the App Detail Page and entry point.
+BASE_FEATURE(kHelpAppAppDetailPage,
+             "HelpAppAppDetailPage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the Help app will render the Apps List page and entry point.
 BASE_FEATURE(kHelpAppAppsList,
@@ -1579,6 +1587,11 @@ BASE_FEATURE(kImeUsEnglishModelUpdate,
 // Enable or disable proto-based communication for IME Service.
 BASE_FEATURE(kImeServiceProto,
              "ImeServiceProto",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable or disable system emoji picker GIF support
+BASE_FEATURE(kImeManifestV3,
+             "ImeManifestV3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable or disable system emoji picker GIF support
@@ -1825,7 +1838,7 @@ BASE_FEATURE(kLobsterRightClickMenu,
 // returned from the server.
 BASE_FEATURE(kLobsterUseRewrittenQuery,
              "LobsterUseRewrittenQuery",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables / Disables the lobster feature from the feature management module.
 BASE_FEATURE(kFeatureManagementLobster,
@@ -2528,11 +2541,6 @@ BASE_FEATURE(kPromiseIconsForWebApps,
 // Controls whether the quick dim prototype is enabled.
 BASE_FEATURE(kQuickDim, "QuickDim", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to readahead files on login screen.
-BASE_FEATURE(kReadaheadForLogin,
-             "ReadaheadForLogin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kQuickAppAccessTestUI,
              "QuickAppAccessTestUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2783,7 +2791,7 @@ BASE_FEATURE(kShowSharingUserInLauncherContinueSection,
 // Shows the spatial audio toggle in audio settings page.
 BASE_FEATURE(kShowSpatialAudioToggle,
              "ShowSpatialAudioToggle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Only collect metrics for the server certificate verification failure in
 // EAP networks.
@@ -2948,6 +2956,12 @@ BASE_FEATURE(kUnmanagedDeviceDeviceTrustConnectorEnabled,
 // Use the Android staging SM-DS server when fetching pending eSIM profiles.
 BASE_FEATURE(kUseAndroidStagingSmds,
              "UseAndroidStagingSmds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the new `TokenHandleStoreImpl` will be used instead of
+// `TokenHandleUtil`.
+BASE_FEATURE(kUseTokenHandleStore,
+             "UseTokenHandleStore",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use the AnnotatedAccountId for mapping between User and BrowserContext
@@ -3321,6 +3335,11 @@ BASE_FEATURE(kEnableDozeModePowerScheduler,
              "EnableDozeModePowerScheduler",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables fwupd developer mode, disabling all firmware authentication checks.
+BASE_FEATURE(kFwupdDeveloperMode,
+             "FwupdDeveloperMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreDesksTemplatesEnabled() {
@@ -3495,6 +3514,14 @@ bool IsBocaNetworkRestrictionEnabled() {
 
 bool IsBocaClientTypeForSpeechRecognitionEnabled() {
   return base::FeatureList::IsEnabled(kBocaClientTypeForSpeechRecognition);
+}
+
+bool IsBocaAdjustCaptionBubbleOnExpandEnabled() {
+  return base::FeatureList::IsEnabled(kBocaAdjustCaptionBubbleOnExpand);
+}
+
+bool IsBocaSequentialSessionLoadEnabled() {
+  return base::FeatureList::IsEnabled(kBocaSequentialSessionLoad);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
@@ -4150,10 +4177,6 @@ bool IsEcheShorterScanningDutyCycleEnabled() {
 
 bool AreEphemeralNetworkPoliciesEnabled() {
   return base::FeatureList::IsEnabled(kEphemeralNetworkPolicies);
-}
-
-bool CanEphemeralNetworkPoliciesBeEnabledByPolicy() {
-  return base::FeatureList::IsEnabled(kEphemeralNetworkPoliciesEnabledPolicy);
 }
 
 bool IsNearbyPresenceEnabled() {
@@ -4814,6 +4837,14 @@ bool UseMixedFileLauncherContinueSection() {
           base::GetFieldTrialParamByFeatureAsBool(
               features::kLauncherContinueSectionWithRecentsRollout,
               "mix_local_and_drive", false));
+}
+
+bool IsUseTokenHandleStoreEnabled() {
+  return base::FeatureList::IsEnabled(kUseTokenHandleStore);
+}
+
+bool IsFwupdDeveloperModeEnabled() {
+  return base::FeatureList::IsEnabled(kFwupdDeveloperMode);
 }
 
 }  // namespace ash::features

@@ -43,7 +43,7 @@ class ExtensionTelemetryServiceVerdictHandler {
   // possible that the action is already performed for a verdict, in this case,
   // nothing is done.
   //
-  // |state_map| represents the converted blocklist states from verdicts. For
+  // `state_map` represents the converted blocklist states from verdicts. For
   // each state, the following action is performed:
   // MALWARE - Unloads the extension and adds it to the Extension Telemetry
   // service malware blocklist.

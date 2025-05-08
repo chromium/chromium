@@ -44,13 +44,15 @@ enum class DismissReason {
   SCOPE_DESTROYED = 8,
   // A message was dismissed explicitly in feature code.
   DISMISSED_BY_FEATURE = 9,
+  // A message was dismissed by a close button click.
+  CLOSE_BUTTON = 10,
 
   // Insert new values before this line.
   COUNT,
 
   kMaxValue = COUNT,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:DismissReason)
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MessageDismissReason)
 
 // "Urgent" means the user should take actions ASAP, such as responding to
 // permissions or safety warnings.

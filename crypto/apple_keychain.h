@@ -26,12 +26,15 @@ namespace crypto {
 // through directly to their Keychain Services equivalents (Foo ->
 // SecKeychainFoo).
 //
-// The underlying API was deprecated as of the macOS 13 SDK.
-// Removal of its use is tracked in https://crbug.com/1348251
 // New code should use AppleKeychainV2.
 class CRYPTO_EXPORT AppleKeychain {
  public:
-  AppleKeychain();
+  // Returns an object suitable for accessing the platform's default type of
+  // keychain.
+  //
+  // On macOS, this will access the default file-based keychain. On
+  // iOS, this will access the application's data protection keychain.
+  static std::unique_ptr<AppleKeychain> DefaultKeychain();
 
   AppleKeychain(const AppleKeychain&) = delete;
   AppleKeychain& operator=(const AppleKeychain&) = delete;
@@ -43,11 +46,15 @@ class CRYPTO_EXPORT AppleKeychain {
   // std::vector<uint8_t> arm is populated instead.
   virtual base::expected<std::vector<uint8_t>, OSStatus> FindGenericPassword(
       std::string_view service_name,
-      std::string_view account_name) const;
+      std::string_view account_name) const = 0;
 
-  virtual OSStatus AddGenericPassword(std::string_view service_name,
-                                      std::string_view account_name,
-                                      base::span<const uint8_t> password) const;
+  virtual OSStatus AddGenericPassword(
+      std::string_view service_name,
+      std::string_view account_name,
+      base::span<const uint8_t> password) const = 0;
+
+ protected:
+  AppleKeychain();
 };
 
 #if BUILDFLAG(IS_MAC)
@@ -70,6 +77,9 @@ class CRYPTO_EXPORT ScopedKeychainUserInteractionAllowed {
   ~ScopedKeychainUserInteractionAllowed();
 
  private:
+  // The previous value of whether user interaction was allowed, for
+  // restoration. If this is nullopt, this scoper did not succeed in its
+  // constructor, so it must not attempt to restore the value.
   std::optional<Boolean> was_allowed_;
 };
 

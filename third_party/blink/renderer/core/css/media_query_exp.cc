@@ -233,6 +233,30 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     }
   }
 
+  if (RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) {
+    if (media_feature == media_feature_names::kScrollDirectionMediaFeature) {
+      switch (ident) {
+        case CSSValueID::kNone:
+        case CSSValueID::kAny:
+        case CSSValueID::kTop:
+        case CSSValueID::kLeft:
+        case CSSValueID::kBottom:
+        case CSSValueID::kRight:
+        case CSSValueID::kBlockStart:
+        case CSSValueID::kBlockEnd:
+        case CSSValueID::kInlineStart:
+        case CSSValueID::kInlineEnd:
+        case CSSValueID::kBlock:
+        case CSSValueID::kInline:
+        case CSSValueID::kX:
+        case CSSValueID::kY:
+          return true;
+        default:
+          return false;
+      }
+    }
+  }
+
   return false;
 }
 
@@ -775,6 +799,9 @@ MediaQueryExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
   } else if (exp_.MediaFeature() ==
              media_feature_names::kScrollableMediaFeature) {
     return kFeatureScrollable;
+  } else if (exp_.MediaFeature() ==
+             media_feature_names::kScrollDirectionMediaFeature) {
+    return kFeatureScrollDirection;
   } else if (exp_.IsInlineSizeDependent()) {
     return kFeatureInlineSize;
   } else if (exp_.IsBlockSizeDependent()) {

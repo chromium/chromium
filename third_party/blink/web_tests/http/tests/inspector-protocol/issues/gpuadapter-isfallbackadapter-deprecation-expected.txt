@@ -1,0 +1,3 @@
+Tests that GPUAdapter isFallbackAdapter deprecation issues are reported
+No adapter
+

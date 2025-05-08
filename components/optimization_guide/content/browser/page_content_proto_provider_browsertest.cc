@@ -52,6 +52,12 @@ void AssertRectsEqual(const optimization_guide::proto::BoundingRect& proto_rect,
   EXPECT_EQ(proto_rect.y(), rect.y());
 }
 
+void AssertSizesEqual(const optimization_guide::proto::BoundingSize& proto_size,
+                      gfx::Size size) {
+  EXPECT_EQ(proto_size.width(), size.width());
+  EXPECT_EQ(proto_size.height(), size.height());
+}
+
 void AssertRectsEqual(const optimization_guide::proto::BoundingRect& a,
                       const optimization_guide::proto::BoundingRect& b) {
   EXPECT_EQ(a.width(), b.width());
@@ -72,6 +78,15 @@ void AssertValidOrigin(
     EXPECT_TRUE(actual.IsSameOriginWith(expected))
         << "actual: " << actual << ", expected: " << expected;
   }
+}
+
+blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
+  auto request = blink::mojom::AIPageContentOptions::New();
+  request->include_geometry = true;
+  request->on_critical_path = true;
+  request->include_hidden_searchable_content = true;
+
+  return request;
 }
 
 class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
@@ -126,7 +141,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   }
 
   void LoadData(blink::mojom::AIPageContentOptionsPtr request =
-                    DefaultAIPageContentOptions()) {
+                    GetAIPageContentOptions()) {
     base::RunLoop run_loop;
     GetAIPageContent(
         web_contents(), std::move(request),
@@ -233,11 +248,56 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(main_frame_origin.value(), iframe_origin.value());
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ScrollerInfo) {
+  const gfx::Size window_bounds(web_contents()->GetSize());
+
+  LoadPage(https_server()->GetURL("a.com", "/scroller.html"));
+
+  const auto& root = page_content().root_node();
+  EXPECT_TRUE(root.content_attributes().has_interaction_info());
+  EXPECT_TRUE(root.content_attributes().interaction_info().has_scroller_info());
+
+  const auto& root_scroller =
+      root.content_attributes().interaction_info().scroller_info();
+  AssertSizesEqual(
+      root_scroller.scrolling_bounds(),
+      gfx::Size(window_bounds.width() + 50, window_bounds.height() + 30));
+  AssertRectsEqual(root_scroller.visible_area(), gfx::Rect(window_bounds));
+
+  ASSERT_EQ(root.children_nodes().size(), 1);
+  const auto& child = root.children_nodes().at(0);
+  EXPECT_TRUE(child.content_attributes().has_interaction_info());
+  EXPECT_TRUE(
+      child.content_attributes().interaction_info().has_scroller_info());
+
+  const auto& sub_scroller =
+      child.content_attributes().interaction_info().scroller_info();
+  AssertSizesEqual(
+      sub_scroller.scrolling_bounds(),
+      gfx::Size(2 * window_bounds.width(), 3 * window_bounds.height()));
+  AssertRectsEqual(
+      sub_scroller.visible_area(),
+      gfx::Rect(200, 100, window_bounds.width(), window_bounds.height()));
+
+  EXPECT_TRUE(sub_scroller.user_scrollable_horizontal());
+  EXPECT_TRUE(sub_scroller.user_scrollable_vertical());
+}
+
 class PageContentProtoProviderBrowserTestActionableElements
     : public PageContentProtoProviderBrowserTest {
  public:
   PageContentProtoProviderBrowserTestActionableElements()
       : features_(features::kAnnotatedPageContentWithActionableElements) {}
+
+  const optimization_guide::proto::ContentNode& ContentRootNode() {
+    EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+    const auto& html = page_content().root_node().children_nodes().at(0);
+
+    EXPECT_EQ(html.children_nodes().size(), 1);
+    const auto& body = html.children_nodes().at(0);
+
+    return body;
+  }
 
  private:
   base::test::ScopedFeatureList features_;
@@ -245,14 +305,13 @@ class PageContentProtoProviderBrowserTestActionableElements
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
                        AIPageContent) {
-  LoadPage(https_server()->GetURL("/simple.html"));
+  LoadPage(https_server()->GetURL("/actionable_elements.html"));
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
-  AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
-  EXPECT_TRUE(
-      page_content().root_node().content_attributes().has_interaction_info());
+  const auto& child = page_content().root_node().children_nodes().at(0);
+  EXPECT_TRUE(child.content_attributes().has_interaction_info());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
@@ -261,17 +320,64 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
-  EXPECT_EQ(page_content().root_node().children_nodes().size(), 2);
 
-  const auto& input = page_content().root_node().children_nodes()[0];
+  EXPECT_EQ(ContentRootNode().children_nodes().size(), 2);
+
+  const auto& input = ContentRootNode().children_nodes()[0];
   ASSERT_TRUE(input.content_attributes().has_interaction_info());
   EXPECT_TRUE(input.content_attributes().interaction_info().is_clickable());
 
-  const auto& label = page_content().root_node().children_nodes()[1];
+  const auto& label = ContentRootNode().children_nodes()[1];
   ASSERT_TRUE(label.content_attributes().has_interaction_info());
   EXPECT_TRUE(label.content_attributes().interaction_info().is_clickable());
-  EXPECT_EQ(label.content_attributes().interaction_info().for_dom_node_id(),
+  EXPECT_EQ(label.content_attributes().label_for_dom_node_id(),
             input.content_attributes().common_ancestor_dom_node_id());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
+                       LabelNotActionable) {
+  LoadPage(https_server()->GetURL("/label_not_actionable.html"));
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+
+  EXPECT_EQ(ContentRootNode().children_nodes().size(), 2);
+
+  const auto& input = ContentRootNode().children_nodes()[0];
+  ASSERT_TRUE(input.content_attributes().has_interaction_info());
+  EXPECT_TRUE(input.content_attributes().interaction_info().is_clickable());
+
+  const auto& label = ContentRootNode().children_nodes()[1];
+  EXPECT_FALSE(label.content_attributes().has_interaction_info());
+  EXPECT_EQ(label.content_attributes().label_for_dom_node_id(),
+            input.content_attributes().common_ancestor_dom_node_id());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
+                       AriaRole) {
+  LoadPage(https_server()->GetURL("/aria_role.html"));
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+
+  EXPECT_EQ(ContentRootNode().children_nodes().size(), 1);
+  const auto& button = ContentRootNode().children_nodes()[0];
+  ASSERT_TRUE(button.content_attributes().has_interaction_info());
+  EXPECT_TRUE(button.content_attributes().interaction_info().is_clickable());
+  EXPECT_EQ(button.content_attributes().aria_role(),
+            optimization_guide::proto::AXRole::AX_ROLE_BUTTON);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
+                       ZOrder) {
+  LoadPage(https_server()->GetURL("/simple.html"));
+
+  EXPECT_EQ(page_content()
+                .root_node()
+                .content_attributes()
+                .interaction_info()
+                .document_scoped_z_order(),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -288,30 +394,6 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_FALSE(page_content().root_node().content_attributes().has_geometry());
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, HitTestNodes) {
-  LoadPage(https_server()->GetURL("/paragraph.html"));
-
-  const auto& hit_test_nodes =
-      page_content().main_frame_data().hit_test_nodes();
-  EXPECT_EQ(hit_test_nodes.size(), 5);
-
-  // The paragraph node is sized to occlude the root, document and body nodes.
-  const auto& p = page_content().root_node().children_nodes()[0];
-  for (int i = 0; i < 4; i++) {
-    SCOPED_TRACE(i);
-    AssertRectsEqual(hit_test_nodes[i].visible_bounding_box(),
-                     p.content_attributes().geometry().visible_bounding_box());
-  }
-  EXPECT_EQ(hit_test_nodes[3].dom_node_id(),
-            p.content_attributes().common_ancestor_dom_node_id());
-
-  const auto& text = p.children_nodes()[0];
-  EXPECT_EQ(hit_test_nodes[4].dom_node_id(),
-            text.content_attributes().common_ancestor_dom_node_id());
-  AssertRectsEqual(hit_test_nodes[4].visible_bounding_box(),
-                   text.content_attributes().geometry().visible_bounding_box());
-}
-
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        AIPageContentNoCriticalPath) {
   LoadPage(https_server()->GetURL("/simple.html"),
@@ -319,6 +401,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 
   auto request = blink::mojom::AIPageContentOptions::New();
   request->on_critical_path = false;
+  request->include_geometry = true;
   LoadData(std::move(request));
 
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
@@ -349,6 +432,17 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, SVG) {
   ASSERT_TRUE(svg.content_attributes().has_svg_data());
   EXPECT_EQ(svg.content_attributes().svg_data().inner_text(),
             "Hello SVG Text!");
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, Canvas) {
+  LoadPage(https_server()->GetURL("/canvas.html"));
+
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+
+  const auto& canvas = page_content().root_node().children_nodes().at(0);
+  ASSERT_TRUE(canvas.content_attributes().has_canvas_data());
+  EXPECT_EQ(canvas.content_attributes().canvas_data().layout_width(), 200);
+  EXPECT_EQ(canvas.content_attributes().canvas_data().layout_height(), 300);
 }
 
 namespace {

@@ -54,6 +54,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Mock private OptionsMenuSheetContent mOptionsMenu;
     @Mock private SpeedMenuSheetContent mSpeedMenu;
     @Mock private View.OnClickListener mOnClickListener;
+    @Mock private PlaybackModeIphController mPlaybackModeIphController;
 
     private Context mContext;
     private Drawable mPlayDrawable;
@@ -96,7 +97,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mContent =
                 new ExpandedPlayerSheetContent(
-                        mActivity, mBottomSheetController, mContentView, mModel);
+                        mActivity, mBottomSheetController, mContentView, mModel, mPlaybackModeIphController);
         mContent.setOptionsMenuSheetContent(mOptionsMenu);
         mContent.setSpeedMenuSheetContent(mSpeedMenu);
         // PlayerMediator is responsible for setting initial speed.

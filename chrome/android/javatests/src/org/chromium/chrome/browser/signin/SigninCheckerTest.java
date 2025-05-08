@@ -20,7 +20,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -28,7 +27,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 
@@ -68,15 +66,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void signinWhenChildAccountIsTheOnlyAccountWithCapabilities() {
-        signinWhenChildAccountIsTheOnlyAccount();
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
-    public void signinWhenChildAccountIsTheOnlyAccountWithUsm() {
         signinWhenChildAccountIsTheOnlyAccount();
     }
 
@@ -99,15 +89,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowedWithCapabilities() {
-        noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed();
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
-    public void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowedWithUsm() {
         noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed();
     }
 
@@ -133,15 +115,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void noSigninWhenChildAccountIsTheSecondaryAccountWithCapabilities() {
-        noSigninWhenChildAccountIsTheSecondaryAccount();
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
-    public void noSigninWhenChildAccountIsTheSecondaryAccountWithUsm() {
         noSigninWhenChildAccountIsTheSecondaryAccount();
     }
 
@@ -165,15 +139,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void signinWhenChildAccountIsFirstAccountWithCapabilities() {
-        signinWhenChildAccountIsFirstAccount();
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
-    public void signinWhenChildAccountIsFirstAccountWithUsm() {
         signinWhenChildAccountIsFirstAccount();
     }
 }

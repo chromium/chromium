@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** This class is used to show the {@link SelectableListLayout} in a {@link PopupWindow}. */
-class TabListEditorLayout extends SelectableListLayout<Integer> {
+class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectionId> {
     private TabListEditorToolbar mToolbar;
     private ViewGroup mRootView;
     private ViewGroup mParentView;
@@ -62,7 +62,7 @@ class TabListEditorLayout extends SelectableListLayout<Integer> {
             ViewGroup parentView,
             RecyclerView recyclerView,
             RecyclerView.Adapter adapter,
-            SelectionDelegate<Integer> selectionDelegate) {
+            SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate) {
         mIsInitialized = true;
         initializeRecyclerView(adapter, recyclerView);
         mToolbar =

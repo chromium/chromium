@@ -62,8 +62,9 @@ int32_t FakeTimestampToBitstreamId(base::TimeDelta timestamp) {
 std::vector<ColorPlaneLayout> ExtractColorPlaneLayout(
     const gfx::GpuMemoryBufferHandle& gmb_handle) {
   std::vector<ColorPlaneLayout> planes;
-  for (const auto& plane : gmb_handle.native_pixmap_handle.planes)
+  for (const auto& plane : gmb_handle.native_pixmap_handle().planes) {
     planes.emplace_back(plane.stride, plane.offset, plane.size);
+  }
   return planes;
 }
 
@@ -514,7 +515,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
     CHECK(media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size_,
                                              gmb_handle));
     const uint64_t modifier = gmb_handle.type == gfx::NATIVE_PIXMAP
-                                  ? gmb_handle.native_pixmap_handle.modifier
+                                  ? gmb_handle.native_pixmap_handle().modifier
                                   : gfx::NativePixmapHandle::kNoModifier;
 
     std::vector<ColorPlaneLayout> planes = ExtractColorPlaneLayout(gmb_handle);
@@ -569,7 +570,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
           base::TimeDelta(), gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
           base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
               layout_->coded_size(), *buffer_format,
-              std::move(gmb_handle.native_pixmap_handle)));
+              std::move(gmb_handle).native_pixmap_handle()));
 
   // Ensures that the tracking token is unique for frames in the frame pool.
   frame_tracking_token_helper_.SetUniqueTrackingToken(origin_frame->metadata());

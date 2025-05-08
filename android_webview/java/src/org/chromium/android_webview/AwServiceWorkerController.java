@@ -6,35 +6,34 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.GuardedBy;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.build.annotations.DoNotInline;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /** Manages clients and settings for Service Workers. */
 @Lifetime.Profile
+@NullMarked
 public class AwServiceWorkerController {
 
     private final Object mLock = new Object();
 
     @GuardedBy("mLock")
+    @Nullable
     private AwServiceWorkerClient mServiceWorkerClient;
 
     @DoNotInline // Native stores this as a weak reference.
-    @NonNull
     private final AwContentsIoThreadClient mServiceWorkerIoThreadClient;
 
-    @NonNull private final ShouldInterceptRequestMediator mShouldInterceptRequestMediator;
-    @NonNull private final AwServiceWorkerSettings mServiceWorkerSettings;
-    @NonNull private final AwBrowserContext mBrowserContext;
+    private final ShouldInterceptRequestMediator mShouldInterceptRequestMediator;
+    private final AwServiceWorkerSettings mServiceWorkerSettings;
+    private final AwBrowserContext mBrowserContext;
 
-    public AwServiceWorkerController(
-            @NonNull Context applicationContext, @NonNull AwBrowserContext browserContext) {
+    public AwServiceWorkerController(Context applicationContext, AwBrowserContext browserContext) {
         mBrowserContext = browserContext;
         mServiceWorkerSettings = new AwServiceWorkerSettings(applicationContext, mBrowserContext);
         mShouldInterceptRequestMediator = new ServiceWorkerShouldInterceptRequestMediator();
@@ -106,17 +105,11 @@ public class AwServiceWorkerController {
         public boolean getSafeBrowsingEnabled() {
             return AwSafeBrowsingConfigHelper.getSafeBrowsingEnabledByManifest();
         }
-    }
 
-    @AnyThread
-    public void setAsyncShouldInterceptRequestCallback(
-            AsyncShouldInterceptRequestCallback callback) {
-        mShouldInterceptRequestMediator.setAsyncCallback(callback);
-    }
-
-    @AnyThread
-    public void clearAsyncShouldInterceptRequestCallback() {
-        mShouldInterceptRequestMediator.setAsyncCallback(null);
+        @Override
+        public boolean shouldIncludeCookiesInIntercept() {
+            return mServiceWorkerSettings.getIncludeCookiesOnIntercept();
+        }
     }
 
     private class ServiceWorkerShouldInterceptRequestMediator
@@ -124,23 +117,16 @@ public class AwServiceWorkerController {
         // All methods are called on the background thread.
         @Override
         public void shouldInterceptRequest(
-                AwWebResourceRequest request,
-                WebResponseCallback callback,
-                @Nullable AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
+                AwWebResourceRequest request, WebResponseCallback callback) {
             // TODO: Consider analogy with AwContentsClient, i.e.
             //  - do we need an onloadresource callback?
             //  - do we need to post an error if the response data == null?
             synchronized (mLock) {
-                if (asyncShouldInterceptRequestCallback == null) {
-                    WebResourceResponseInfo response = null;
-                    if (mServiceWorkerClient != null) {
-                        response = mServiceWorkerClient.shouldInterceptRequest(request);
-                    }
-                    callback.intercept(response);
-                } else {
-                    asyncShouldInterceptRequestCallback.shouldInterceptRequestAsync(
-                            request, callback);
+                WebResourceResponseInfo response = null;
+                if (mServiceWorkerClient != null) {
+                    response = mServiceWorkerClient.shouldInterceptRequest(request);
                 }
+                callback.intercept(response);
             }
         }
     }

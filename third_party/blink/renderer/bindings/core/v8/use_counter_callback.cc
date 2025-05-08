@@ -452,7 +452,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       webdx_feature = WebDXFeature::kWeakReferences;
       break;
     case v8::Isolate::kErrorIsError:
-      webdx_feature = WebDXFeature::kDRAFT_ErrorIsError;
+      webdx_feature = WebDXFeature::kIsError;
       break;
     case v8::Isolate::kRegExpEscape:
       webdx_feature = WebDXFeature::kRegexpEscape;
@@ -465,6 +465,9 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kExplicitResourceManagement:
       webdx_feature = WebDXFeature::kDRAFT_ExplicitResourceManagement;
+      break;
+    case v8::Isolate::kUint8ArrayToFromBase64AndHex:
+      webdx_feature = WebDXFeature::kDRAFT_Uint8ArrayToFromBase64AndHex;
       break;
     default:
       // This can happen if V8 has added counters that this version of Blink

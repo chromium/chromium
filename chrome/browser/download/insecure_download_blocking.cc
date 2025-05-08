@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -352,6 +353,10 @@ struct InsecureDownloadData {
            !download_delivered_securely) &&
           !net::IsLocalhost(dl_url);
     }
+
+    is_user_initiated_on_webui_ =
+        item->GetTabUrl().SchemeIs(content::kChromeUIScheme) &&
+        download_source == DownloadSource::CONTEXT_MENU;
   }
 
   std::optional<url::Origin> initiator_;
@@ -364,6 +369,8 @@ struct InsecureDownloadData {
   bool is_mixed_content_;
   // Was the download initiated by an insecure origin or delivered insecurely?
   bool is_insecure_download_;
+  // Was the download initiated by a user on a chrome:// WebUI?
+  bool is_user_initiated_on_webui_;
 };
 
 // Check if |extension| is contained in the comma separated |extension_list|.
@@ -402,6 +409,10 @@ void PrintConsoleMessage(const InsecureDownloadData& data) {
             data.item_->GetURL().spec().c_str(),
             (data.is_redirect_chain_secure_ ? "loaded over"
                                             : "redirected through")));
+    return;
+  }
+
+  if (data.is_user_initiated_on_webui_) {
     return;
   }
 

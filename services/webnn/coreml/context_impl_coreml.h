@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_COREML_CONTEXT_IMPL_COREML_H_
 
 #include "base/memory/weak_ptr.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
@@ -44,7 +45,7 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
       CreateGraphImplCallback callback) override;
 

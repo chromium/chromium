@@ -1294,6 +1294,13 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   CheckCorrectForwardingResultMetric(
       histogram_tester,
       StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
+
+  content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ(
+      "navigational-prefetch",
+      content::EvalJs(
+          frame, "performance.getEntriesByType('navigation')[0].deliveryType"));
+
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -1318,6 +1325,35 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         << content::test::ActualVsExpectedUkmEntriesToString(
                attempt_ukm_entries, expected_attempt_entries);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       DuplicateSearchTermMetricsAreRecorded) {
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
+      SearchPrefetchEligibilityReason::kPrefetchStarted, 1);
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kComplete);
+
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", 0);
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", 1);
 }
 
 // Tests used for integrating to No-Vary-Search Disk Cache.
@@ -1449,6 +1485,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete",
       expected_count);
+  histogram_tester.ExpectTotalCount(
+        "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
@@ -2253,6 +2291,11 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       "Omnibox.SearchPrefetch.ReceivedServableResponse2.Fallback."
       "SuggestionPrefetch",
       /*can_be_served*/ true, 1);
+  content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ(
+      "",
+      content::EvalJs(
+          frame, "performance.getEntriesByType('navigation')[0].deliveryType"));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
@@ -3433,6 +3476,54 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
+
+// Tests DuplicateSearchTermsAgeAheadOfNavigationalPrefetch is recorded as
+// expected.
+IN_PROC_BROWSER_TEST_F(
+    SearchPrefetchServiceNavigationPrefetchBrowserTest,
+    RecordDuplicateSearchTermsAgeAheadOfNavigationalPrefetch) {
+  SetDSEWithURL(
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
+  base::HistogramTester histogram_tester;
+
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = "terms of service";
+  std::string user_input = "terms";
+
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
+
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  SearchPrefetchServiceFactory::GetForProfile(browser()->profile())
+      ->OnNavigationLikely(1, autocomplete_match,
+                           NavigationPredictor::kMouseDown, GetWebContents());
+
+  WaitUntilStatusChangesTo(
+      GetCanonicalSearchURL(autocomplete_match.destination_url),
+      SearchPrefetchStatus::kComplete);
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(autocomplete_match.destination_url));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+  // Navigate.
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
+
+  auto inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch."
+      "DuplicateSearchTermsAgeAheadOfNavigationalPrefetch",
+      1);
+}
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
                        NavigationPrefetchIsServedMouseDown) {

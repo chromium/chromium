@@ -29,7 +29,6 @@ build_webui("build") {
     "ui/destination_list.ts",
     "ui/destination_list_item.ts",
     "ui/destination_select.ts",
-    "ui/destination_settings.ts",
     "ui/dpi_settings.ts",
     "ui/duplex_settings.ts",
     "ui/header.ts",
@@ -39,7 +38,6 @@ build_webui("build") {
     "ui/margin_control_container.ts",
     "ui/margins_settings.ts",
     "ui/media_size_settings.ts",
-    "ui/media_type_settings.ts",
     "ui/more_settings.ts",
     "ui/number_settings_section.ts",
     "ui/other_options_settings.ts",
@@ -55,6 +53,7 @@ build_webui("build") {
 
   ts_files = [
     "dark_mode_mixin.ts",
+    "dark_mode_mixin_lit.ts",
     "data/cdd.ts",
     "data/coordinate2d.ts",
     "data/destination.ts",
@@ -75,6 +74,8 @@ build_webui("build") {
     "print_preview.ts",
     "print_preview_utils.ts",
     "ui/debouncer.ts",
+    "ui/destination_settings.html.ts",
+    "ui/destination_settings.ts",
     "ui/highlight_utils.ts",
     "ui/input_mixin.ts",
     "ui/input_mixin_lit.ts",
@@ -87,17 +88,34 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "ui/advanced_options_settings.css",
+    "ui/advanced_settings_dialog.css",
+    "ui/advanced_settings_item.css",
+    "ui/button_strip.css",
     "ui/copies_settings.css",
     "ui/destination_dialog_style.css",
     "ui/destination_list_item_style.css",
     "ui/destination_select_style.css",
     "ui/dpi_settings.css",
+    "ui/duplex_settings.css",
+    "ui/header.css",
+    "ui/link_container.css",
+    "ui/margin_control.css",
+    "ui/margin_control_container.css",
+    "ui/media_size_settings.css",
+    "ui/more_settings.css",
+    "ui/number_settings_section.css",
+    "ui/other_options_settings.css",
     "ui/pages_settings.css",
+    "ui/print_preview_search_box.css",
     "ui/print_preview_shared.css",
     "ui/print_preview_shared_lit.css",
     "ui/print_preview_vars.css",
+    "ui/settings_section.css",
     "ui/settings_select.css",
+    "ui/sidebar.css",
     "ui/throbber.css",
+    "ui/throbber_lit.css",
   ]
 
   icons_html_files = [ "ui/icons.html" ]

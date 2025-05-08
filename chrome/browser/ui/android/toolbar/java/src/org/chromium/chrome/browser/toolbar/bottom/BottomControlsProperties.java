@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.toolbar.bottom;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
+@NullMarked
 class BottomControlsProperties {
     /** The height of the Android View in px. */
     static final WritableIntPropertyKey ANDROID_VIEW_HEIGHT = new WritableIntPropertyKey();

@@ -25,6 +25,13 @@ BASE_DECLARE_FEATURE(kAutofillAllowDefaultPreventedSubmission);
 // instead of using true by default.
 BASE_DECLARE_FEATURE(kAutofillCorrectUserEditedBitInParsedField);
 
+// Dedupes form submission by only allowing one submission per form element.
+// This feature is meant to be used when preventDefault()ed submit events are
+// allowed (i.e. AutofillAllowDefaultPreventedSubmission enabled) which can
+// allow submitting the form multiple times as post-submit navigation can be
+// prevented.
+BASE_DECLARE_FEATURE(kAutofillDedupeFormSubmission);
+
 // Controls whether to dynamically load the address input fields in the save
 // flow and settings based on the country value.
 // TODO(crbug.com/40281788): Remove once launched.
@@ -53,6 +60,10 @@ BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV2Ios);
 // directly pick the Autofill suggestions provider instead of intermediating via
 // the FormSuggestionController.
 BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV3Ios);
+
+// Enables the refill functionality to allow autofilling of dynamically
+// expanding forms.
+BASE_DECLARE_FEATURE(kAutofillRefillForFormsIos);
 
 // Makes the autofill and password infobars sticky on iOS. The sticky infobar
 // sticks there until navigating from an explicit user gesture (e.g. reload or

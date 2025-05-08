@@ -20,4 +20,4 @@
 
 # *** START OF LIST ***
 ../build.gradle:main
-../../../third_party/androidx/build.gradle:androidx
+../../androidx/build.gradle:androidx

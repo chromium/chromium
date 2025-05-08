@@ -273,9 +273,9 @@ void PermissionManager::RequestPermissionsInternal(
     }
 
     context->RequestPermission(
-        PermissionRequestData(
+        std::make_unique<PermissionRequestData>(
             context, request_id, request_description,
-            canonical_requesting_origin.DeprecatedGetOriginAsURL()),
+            canonical_requesting_origin.DeprecatedGetOriginAsURL(), GURL(), i),
         base::BindOnce(
             &PermissionResponseCallback::OnPermissionsRequestResponseStatus,
             std::move(response_callback)));
@@ -631,7 +631,8 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
   GURL canonical_requesting_origin = PermissionUtil::GetCanonicalOrigin(
       content_settings_type, requesting_origin, embedding_origin);
   content::PermissionResult result = context->GetPermissionStatus(
-      render_frame_host, canonical_requesting_origin.DeprecatedGetOriginAsURL(),
+      permission_descriptor, render_frame_host,
+      canonical_requesting_origin.DeprecatedGetOriginAsURL(),
       embedding_origin.DeprecatedGetOriginAsURL());
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);

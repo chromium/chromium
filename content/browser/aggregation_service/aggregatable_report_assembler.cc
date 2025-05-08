@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -72,11 +71,8 @@ AggregatableReportAssembler::~AggregatableReportAssembler() = default;
 
 AggregatableReportAssembler::PendingRequest::PendingRequest(
     AggregatableReportRequest report_request,
-    AggregatableReportAssembler::AssemblyCallback callback,
-    size_t num_processing_urls)
-    : report_request(std::move(report_request)),
-      callback(std::move(callback)),
-      processing_url_keys(num_processing_urls) {
+    AggregatableReportAssembler::AssemblyCallback callback)
+    : report_request(std::move(report_request)), callback(std::move(callback)) {
   CHECK(this->callback);
 }
 
@@ -111,11 +107,6 @@ AggregatableReportAssembler::CreateForTesting(
 void AggregatableReportAssembler::AssembleReport(
     AggregatableReportRequest report_request,
     AssemblyCallback callback) {
-  CHECK(std::ranges::is_sorted(report_request.processing_urls()));
-  const size_t num_processing_urls = report_request.processing_urls().size();
-  CHECK(AggregatableReport::IsNumberOfProcessingUrlsValid(
-      num_processing_urls, report_request.payload_contents().aggregation_mode));
-
   const AggregationServicePayloadContents& contents =
       report_request.payload_contents();
 
@@ -137,22 +128,18 @@ void AggregatableReportAssembler::AssembleReport(
   const PendingRequest& pending_request =
       pending_requests_
           .emplace(id, PendingRequest(std::move(report_request),
-                                      std::move(callback), num_processing_urls))
+                                      std::move(callback)))
           .first->second;
 
-  for (size_t i = 0; i < num_processing_urls; ++i) {
-    // `fetcher_` is owned by `this`, so `base::Unretained()` is safe.
-    fetcher_->GetPublicKey(
-        pending_request.report_request.processing_urls()[i],
-        base::BindOnce(&AggregatableReportAssembler::OnPublicKeyFetched,
-                       base::Unretained(this), /*report_id=*/id,
-                       /*processing_url_index=*/i));
-  }
+  // `fetcher_` is owned by `this`, so `base::Unretained()` is safe.
+  fetcher_->GetPublicKey(
+      pending_request.report_request.processing_url(),
+      base::BindOnce(&AggregatableReportAssembler::OnPublicKeyFetched,
+                     base::Unretained(this), /*report_id=*/id));
 }
 
 void AggregatableReportAssembler::OnPublicKeyFetched(
     int64_t report_id,
-    size_t processing_url_index,
     std::optional<PublicKey> key,
     AggregationServiceKeyFetcher::PublicKeyFetchStatus status) {
   CHECK_EQ(key.has_value(),
@@ -164,36 +151,19 @@ void AggregatableReportAssembler::OnPublicKeyFetched(
 
   // TODO(crbug.com/40199738): Consider implementing some retry logic.
 
-  ++pending_request.num_returned_key_fetches;
-  pending_request.processing_url_keys[processing_url_index] = std::move(key);
+  if (!key.has_value()) {
+    RecordAssemblyStatus(AssemblyStatus::kPublicKeyFetchFailed);
 
-  if (pending_request.num_returned_key_fetches ==
-      pending_request.report_request.processing_urls().size()) {
-    OnAllPublicKeysFetched(report_id, pending_request);
-  }
-}
-
-void AggregatableReportAssembler::OnAllPublicKeysFetched(
-    int64_t report_id,
-    PendingRequest& pending_request) {
-  std::vector<PublicKey> public_keys;
-  for (std::optional<PublicKey> elem : pending_request.processing_url_keys) {
-    if (!elem.has_value()) {
-      RecordAssemblyStatus(AssemblyStatus::kPublicKeyFetchFailed);
-
-      std::move(pending_request.callback)
-          .Run(std::move(pending_request.report_request), std::nullopt,
-               AssemblyStatus::kPublicKeyFetchFailed);
-      pending_requests_.erase(report_id);
-      return;
-    }
-
-    public_keys.push_back(std::move(elem.value()));
+    std::move(pending_request.callback)
+        .Run(std::move(pending_request.report_request), std::nullopt,
+             AssemblyStatus::kPublicKeyFetchFailed);
+    pending_requests_.erase(report_id);
+    return;
   }
 
   std::optional<AggregatableReport> assembled_report =
-      report_provider_->CreateFromRequestAndPublicKeys(
-          pending_request.report_request, std::move(public_keys));
+      report_provider_->CreateFromRequestAndPublicKey(
+          pending_request.report_request, *std::move(key));
   AssemblyStatus assembly_status =
       assembled_report ? AssemblyStatus::kOk : AssemblyStatus::kAssemblyFailed;
   RecordAssemblyStatus(assembly_status);

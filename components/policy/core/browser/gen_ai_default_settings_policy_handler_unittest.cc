@@ -145,4 +145,199 @@ TEST_F(GenAiDefaultSettingsPolicyHandlerTest, NoDefaultControlWarning) {
             u"policies.");
 }
 
+TEST_F(GenAiDefaultSettingsPolicyHandlerTest, IntToIntMapping_FeatureDisabled) {
+  // Disable the feature.
+  scoped_feature_list_.InitFromCommandLine(
+      /* enable_features= */ "",
+      /* disable_features= */ "GenAiPolicyDefaultsUsePrefMap");
+
+  // Create a mapping: 0 -> 1, 1 -> 2, 2->3.
+  GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap
+      policy_value_to_pref_map;
+  policy_value_to_pref_map.emplace(0, 1);
+  policy_value_to_pref_map.emplace(1, 2);
+  policy_value_to_pref_map.emplace(2, 3);
+
+  // Set up handler with a policy that uses the policy_value_to_pref_map.
+  std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
+      gen_ai_default_policies;
+  gen_ai_default_policies.emplace_back(kGenAiPolicy4Name, kGenAiPolicy4PrefPath,
+                                       std::move(policy_value_to_pref_map));
+  handler_ = std::make_unique<GenAiDefaultSettingsPolicyHandler>(
+      std::move(gen_ai_default_policies));
+
+  // Set default value to 0.
+  SetGenAiDefaultPolicy(base::Value(0));
+
+  // Since feature is disabled, `GenAiPolicy4` should not be controlled by
+  // metapolicy.
+  policy::PolicyErrorMap errors;
+  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(errors.GetErrorMessages(key::kGenAiDefaultSettings,
+                                    policy::PolicyMap::MessageType::kInfo),
+            u"This policy is not controlling the default behavior of any other "
+            u"policies.");
+
+  // Check that prefs do not have Policy4 set.
+  ApplyPolicies();
+  const base::Value* value = nullptr;
+  EXPECT_FALSE(prefs_.GetValue(kGenAiPolicy4PrefPath, &value));
+  EXPECT_FALSE(value);
+}
+
+TEST_F(GenAiDefaultSettingsPolicyHandlerTest, IntToIntMapping_FeaturedEnabled) {
+  // Enable the feature.
+  scoped_feature_list_.InitFromCommandLine(
+      /* enable_features= */ "GenAiPolicyDefaultsUsePrefMap",
+      /* disable_features= */ "");
+
+  // Create a mapping: 0 -> 1, 1 -> 2, 2->3.
+  GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap
+      policy_value_to_pref_map;
+  policy_value_to_pref_map.emplace(0, 1);
+  policy_value_to_pref_map.emplace(1, 2);
+  policy_value_to_pref_map.emplace(2, 3);
+
+  // Set up handler with a policy that uses the policy_value_to_pref_map.
+  std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
+      gen_ai_default_policies;
+  gen_ai_default_policies.emplace_back(kGenAiPolicy4Name, kGenAiPolicy4PrefPath,
+                                       std::move(policy_value_to_pref_map));
+  handler_ = std::make_unique<GenAiDefaultSettingsPolicyHandler>(
+      std::move(gen_ai_default_policies));
+
+  // Set default value to 0, which should map to true for `GenAiPolicy4`.
+  SetGenAiDefaultPolicy(base::Value(0));
+
+  // Since feature is enabled, `GenAiPolicy4` should be controlled by
+  // metapolicy.
+  policy::PolicyErrorMap errors;
+  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(errors.GetErrorMessages(key::kGenAiDefaultSettings,
+                                    policy::PolicyMap::MessageType::kInfo),
+            u"This policy is controlling the default behavior of the following "
+            u"policies: GenAiPolicy4");
+
+  // Check that prefs match the expected map value.
+  ApplyPolicies();
+  int pref_value;
+  EXPECT_TRUE(prefs_.GetInteger(kGenAiPolicy4PrefPath, &pref_value));
+  EXPECT_EQ(1, pref_value);
+}
+
+TEST_F(GenAiDefaultSettingsPolicyHandlerTest,
+       IntToIntMappingUnsupportedKey_FeaturedEnabled) {
+  // Enable the feature.
+  scoped_feature_list_.InitFromCommandLine(
+      /* enable_features= */ "GenAiPolicyDefaultsUsePrefMap",
+      /* disable_features= */ "");
+
+  // Create a mapping: 0 -> 1, 1 -> 2, 2->3.
+  GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap
+      policy_value_to_pref_map;
+  policy_value_to_pref_map.emplace(0, 1);
+  policy_value_to_pref_map.emplace(1, 2);
+  policy_value_to_pref_map.emplace(2, 3);
+
+  // Set up handler with a policy that uses the policy_value_to_pref_map.
+  std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
+      gen_ai_default_policies;
+  gen_ai_default_policies.emplace_back(kGenAiPolicy4Name, kGenAiPolicy4PrefPath,
+                                       std::move(policy_value_to_pref_map));
+  handler_ = std::make_unique<GenAiDefaultSettingsPolicyHandler>(
+      std::move(gen_ai_default_policies));
+
+  // Set default value to 3, which does not exist in the map for `GenAiPolicy4`
+  // and is not yet supported.
+  SetGenAiDefaultPolicy(base::Value(3));
+
+  // Since feature is enabled, `GenAiPolicy4` should be controlled by
+  // metapolicy.
+  policy::PolicyErrorMap errors;
+  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(errors.GetErrorMessages(key::kGenAiDefaultSettings,
+                                    policy::PolicyMap::MessageType::kInfo),
+            u"This policy is controlling the default behavior of the following "
+            u"policies: GenAiPolicy4");
+
+  // Check that prefs do not have Policy4 set.
+  ApplyPolicies();
+  const base::Value* value = nullptr;
+  EXPECT_FALSE(prefs_.GetValue(kGenAiPolicy4PrefPath, &value));
+  EXPECT_FALSE(value);
+}
+
+TEST_F(GenAiDefaultSettingsPolicyHandlerTest,
+       IntToIntMappingMissingKey_FeatureDisabled) {
+  // Enable the feature.
+  scoped_feature_list_.InitFromCommandLine(
+      /* enable_features= */ "",
+      /* disable_features= */ "GenAiPolicyDefaultsUsePrefMap");
+
+  // Create a mapping: 0 -> 1, 1 -> 2. Policy value 2 is not mapped.
+  GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap
+      policy_value_to_pref_map;
+  policy_value_to_pref_map.emplace(0, 1);
+  policy_value_to_pref_map.emplace(1, 2);
+
+  // Try to set up handler with a policy that uses the policy_value_to_pref_map.
+  // Do not expect a crash since the feature is disabled.
+  std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
+      gen_ai_default_policies;
+  gen_ai_default_policies.emplace_back(kGenAiPolicy4Name, kGenAiPolicy4PrefPath,
+                                       std::move(policy_value_to_pref_map));
+  handler_ = std::make_unique<GenAiDefaultSettingsPolicyHandler>(
+      std::move(gen_ai_default_policies));
+
+  // Set default value to 0.
+  SetGenAiDefaultPolicy(base::Value(0));
+
+  // Since feature is disabled, `GenAiPolicy4` should not be controlled by
+  // metapolicy and should not crash.
+  policy::PolicyErrorMap errors;
+  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(errors.GetErrorMessages(key::kGenAiDefaultSettings,
+                                    policy::PolicyMap::MessageType::kInfo),
+            u"This policy is not controlling the default behavior of any other "
+            u"policies.");
+}
+
+TEST_F(GenAiDefaultSettingsPolicyHandlerTest,
+       IntToIntMappingEmptyMap_FeatureDisabled) {
+  // Enable the feature.
+  scoped_feature_list_.InitFromCommandLine(
+      /* enable_features= */ "",
+      /* disable_features= */ "GenAiPolicyDefaultsUsePrefMap");
+
+  // Create an empty mapping.
+  GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap
+      policy_value_to_pref_map;
+
+  // Try to set up handler with a policy that uses the policy_value_to_pref_map.
+  std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
+      gen_ai_default_policies;
+  gen_ai_default_policies.emplace_back(kGenAiPolicy4Name, kGenAiPolicy4PrefPath,
+                                       std::move(policy_value_to_pref_map));
+  handler_ = std::make_unique<GenAiDefaultSettingsPolicyHandler>(
+      std::move(gen_ai_default_policies));
+
+  // Set default value to 0.
+  SetGenAiDefaultPolicy(base::Value(0));
+
+  // Since the map is empty, `GenAiPolicy4` should be controlled by
+  // metapolicy, similar to a policy without a map.
+  policy::PolicyErrorMap errors;
+  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(errors.GetErrorMessages(key::kGenAiDefaultSettings,
+                                    policy::PolicyMap::MessageType::kInfo),
+            u"This policy is controlling the default behavior of the following "
+            u"policies: GenAiPolicy4");
+
+  // Check that prefs match the expected map value.
+  ApplyPolicies();
+  int pref_value;
+  EXPECT_TRUE(prefs_.GetInteger(kGenAiPolicy4PrefPath, &pref_value));
+  EXPECT_EQ(0, pref_value);
+}
+
 }  // namespace policy

@@ -17,7 +17,7 @@ namespace extensions {
 // A map of context ids to sets of extension ids. An extension id being present
 // in the set indicates the user scripts API is allowed for the extension (in
 // that context only).
-using CurrentUserScriptAllowedMap = std::map<int, std::set<ExtensionId>>;
+using CurrentUserScriptAllowedMap = std::map<int, std::map<ExtensionId, bool>>;
 
 namespace {
 
@@ -37,12 +37,25 @@ CurrentUserScriptAllowedMap& GetUserScriptAllowedMap() {
 
 }  // namespace
 
-bool GetCurrentUserScriptAllowedState(int context_id,
-                                      const ExtensionId& extension_id) {
+std::optional<bool> GetCurrentUserScriptAllowedState(
+    int context_id,
+    const ExtensionId& extension_id) {
   base::AutoLock lock(GetUserScriptAllowedMapLock());
   CurrentUserScriptAllowedMap& map = GetUserScriptAllowedMap();
-  auto iter = map.find(context_id);
-  return iter != map.end() && iter->second.contains(extension_id);
+  auto context_id_iter = map.find(context_id);
+
+  if (context_id_iter == map.end()) {
+    return std::nullopt;
+  }
+
+  auto extension_id_map = context_id_iter->second;
+  auto extension_id_iter = extension_id_map.find(extension_id);
+
+  if (extension_id_iter == extension_id_map.end()) {
+    return std::nullopt;
+  }
+
+  return extension_id_iter->second;
 }
 
 void SetCurrentUserScriptAllowedState(int context_id,
@@ -50,28 +63,7 @@ void SetCurrentUserScriptAllowedState(int context_id,
                                       bool user_script_allowed_state) {
   base::AutoLock lock(GetUserScriptAllowedMapLock());
   CurrentUserScriptAllowedMap& map = GetUserScriptAllowedMap();
-
-  // Adding an extension.
-  if (user_script_allowed_state) {
-    map[context_id].insert(extension_id);
-    return;
-  }
-
-  // Removing an extension.
-  auto iter = map.find(context_id);
-
-  // If key not found then the extension isn't allowed so there's nothing to do.
-  if (iter == map.end()) {
-    return;
-  }
-
-  // Delete the extension so it is no longer allowed.
-  iter->second.erase(extension_id);
-
-  // If no more extensions to track delete the (now unused) key.
-  if (iter->second.empty()) {
-    map.erase(iter);
-  }
+  map[context_id][extension_id] = user_script_allowed_state;
 }
 
 }  // namespace extensions

@@ -38,6 +38,23 @@ bool IsTypeSupportedInternal(
                                       base::UTF8ToWide(content_type).c_str());
 }
 
+bool IsTypeSupportedInternalEx(const std::string& key_system,
+                               const std::string& content_type) {
+  ComPtr<IMFExtendedDRMTypeSupport> mf_type_support;
+  HRESULT hr =
+      CoCreateInstance(CLSID_MFMediaEngineClassFactory, nullptr,
+                       CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&mf_type_support));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << __func__
+                << ": Failed to create class factory for IsTypeSupportedEx. hr="
+                << hr;
+    return false;
+  }
+
+  return IsMediaFoundationContentTypeSupported(mf_type_support, key_system,
+                                               content_type);
+}
+
 crash_reporter::CrashKeyString<256> g_origin_crash_key("cdm-origin");
 
 }  // namespace
@@ -169,6 +186,16 @@ void MediaFoundationCdmFactory::IsTypeSupported(
     const std::string& key_system,
     const std::string& content_type,
     IsTypeSupportedResultCB is_type_supported_result_cb) {
+  // Note that IsTypeSupported may take up to 10s, so run it on a separate
+  // thread to unblock the main thread.
+  if (MediaFoundationCdmModule::GetInstance()->IsOsCdm()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&IsTypeSupportedInternalEx, key_system, content_type),
+        std::move(is_type_supported_result_cb));
+    return;
+  }
+
   ComPtr<IMFContentDecryptionModuleFactory> cdm_factory;
   HRESULT hr = GetCdmFactory(key_system, cdm_factory);
   if (FAILED(hr)) {
@@ -177,8 +204,6 @@ void MediaFoundationCdmFactory::IsTypeSupported(
     return;
   }
 
-  // Note that IsTypeSupported may take up to 10s, so run it on a separate
-  // thread to unblock the main thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&IsTypeSupportedInternal, cdm_factory, key_system,

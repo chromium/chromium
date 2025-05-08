@@ -78,8 +78,6 @@ source_set("identity_manager") {
       "account_capabilities_fetcher_android.h",
       "account_capabilities_fetcher_factory_android.cc",
       "account_capabilities_fetcher_factory_android.h",
-      "child_account_info_fetcher_android.cc",
-      "child_account_info_fetcher_android.h",
       "profile_oauth2_token_service_delegate_android.cc",
       "profile_oauth2_token_service_delegate_android.h",
     ]

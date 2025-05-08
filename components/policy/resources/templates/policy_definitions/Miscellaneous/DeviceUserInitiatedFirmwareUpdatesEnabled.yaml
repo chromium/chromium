@@ -1,0 +1,30 @@
+owners:
+- skend@google.com
+- chromeos-flex-eng@google.com
+caption: Allow users to initiate firmware updates
+desc: |-
+  This policy allows users to initiate any kind of firmware update.
+
+        Setting the policy to Enabled allows users such as device owner to initiate firmware updates.
+
+        Setting the policy to Disabled or leaving it unset prevents all users from applying firmware updates.
+
+        This policy applies to firmware for external peripheral firmware updates and internal component firmware updates for <ph name="PRODUCT_OS_FLEX_NAME">Google ChromeOS Flex</ph> devices. Internal component firmware updates for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices are not affected by this policy.
+future_on:
+- chrome_os
+device_only: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+type: main
+schema:
+  type: boolean
+items:
+- caption: Users may initiate firmware updates
+  value: true
+- caption: Users may not initiate firmware updates
+  value: false
+default: false
+example_value: true
+tags: ['google-sharing']
+generate_device_proto: True

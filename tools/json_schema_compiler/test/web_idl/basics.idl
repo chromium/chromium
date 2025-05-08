@@ -57,19 +57,34 @@ interface TestWebIdl {
   // |arg2|: This second argument uses a custom type.
   static undefined parameterComments(boolean arg1, ExampleType arg2);
 
+  // Comment that acts as a description for onTestOne. Parameter specific
+  // comments are down below before the associated callback definition.
   static attribute OnTestOneEvent onTestOne;
+
+  // Comment for onTestTwo.
   static attribute OnTestTwoEvent onTestTwo;
 };
 
+// Comment for parameter descriptions on the onTestOne event. The first part of
+// this comment is actually disregarded and all that is consumed is the
+// parameter comments below.
+// |argument1|: Parameter description for argument1.
+// |argument2|: Another description, this time for argment2.
 callback OnTestOneListener = undefined (
     DOMString argument1, optional double argument2);
+// Callback listener for onTestTwo.
+// |customType|: An ExampleType passed to the event listener.
 callback OnTestTwoListener = undefined (ExampleType customType);
 
-interface OnTestOneEvent {
+interface OnTestOneEvent : ExtensionEvent {
   static void addListener(OnTestOneListener listener);
+  static void removeListener(OnTestOneListener listener);
+  static void hasListener(OnTestOneListener listener);
 };
-interface OnTestTwoEvent {
+interface OnTestTwoEvent : ExtensionEvent {
   static void addListener(OnTestTwoListener listener);
+  static void removeListener(OnTestTwoListener listener);
+  static void hasListener(OnTestTwoListener listener);
 };
 
 dictionary ExampleType {

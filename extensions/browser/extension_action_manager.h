@@ -35,7 +35,7 @@ class ExtensionActionManager : public KeyedService,
   explicit ExtensionActionManager(content::BrowserContext* browser_context);
   ~ExtensionActionManager() override;
 
-  // Returns this |browser_context|'s ExtensionActionManager. One instance is
+  // Returns this `browser_context`'s ExtensionActionManager. One instance is
   // shared between a BrowserContext and its off-the-record version.
   static ExtensionActionManager* Get(content::BrowserContext* browser_context);
 

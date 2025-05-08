@@ -50,7 +50,7 @@ namespace {
 // Checks that current user is a web kiosk.
 bool IsWebKiosk() {
   return user_manager::UserManager::IsInitialized() &&
-         user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp();
+         user_manager::UserManager::Get()->IsLoggedInAsKioskWebApp();
 }
 
 // Checks that current user is an IWA kiosk.

@@ -294,7 +294,9 @@ bool AXRelationCache::IsAriaOwned(const AXObject* child, bool check) const {
           << "\n* Child: " << child << "\n* Actual parent: " << parent
           << "\n* Natural ax parent: " << object_cache_->Get(natural_parent)
           << "\n* Natural dom parent: " << natural_parent << " #"
-          << natural_parent->GetDomNodeId() << "\n* Owners to update:";
+          << natural_parent->GetDomNodeId()
+          << "\n* parent->GetNode(): " << parent->GetNode()
+          << "\n* Owners to update:";
       for (AXID id : owner_axids_to_update_) {
         msg << " " << id;
       }
@@ -455,10 +457,11 @@ void AXRelationCache::UpdateReverseElementAttributeRelations(
   }
 }
 
-base::span<std::pair<QualifiedName, uint32_t>>
+base::span<std::pair<QualifiedName, Element::TinyBloomFilter>>
 AXRelationCache::GetTextRelationAttributes() {
   // Avoid issues with commas within the type name in DEFINE_STATIC_LOCAL().
-  using QualifiedNameArray = std::array<std::pair<QualifiedName, uint32_t>, 3>;
+  using QualifiedNameArray =
+      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 3>;
   DEFINE_STATIC_LOCAL(
       QualifiedNameArray, text_attributes,
       ({{html_names::kAriaLabelledbyAttr,
@@ -561,10 +564,11 @@ void AXRelationCache::UpdateReverseOwnsRelations(Element& source) {
   }
 }
 
-base::span<std::pair<QualifiedName, uint32_t>>
+base::span<std::pair<QualifiedName, Element::TinyBloomFilter>>
 AXRelationCache::GetOtherRelationAttributes() {
   // Avoid issues with commas within the type name in DEFINE_STATIC_LOCAL().
-  using QualifiedNameArray = std::array<std::pair<QualifiedName, uint32_t>, 5>;
+  using QualifiedNameArray =
+      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 5>;
   DEFINE_STATIC_LOCAL(
       QualifiedNameArray, attributes,
       ({{html_names::kAriaControlsAttr,
@@ -923,10 +927,7 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
                             html_names::kAriaOwnsAttr)) {
     // TODO (crbug.com/41469336): Also check ElementInternals here.
     UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
-        owner,
-        // TODO (crbug.com/353750122): Set resolve_reference_target to false.
-        *element->GetAttrAssociatedElements(html_names::kAriaOwnsAttr,
-                                            /*resolve_reference_target*/ true),
+        owner, *element->GetAttrAssociatedElements(html_names::kAriaOwnsAttr),
         owned_children, force);
   } else {
     // Figure out the ids that actually correspond to children that exist

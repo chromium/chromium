@@ -57,13 +57,6 @@ namespace viz {
 
 namespace {
 
-// Allow skipping Begin/EndDraw on the shared image backing for non-root render
-// passes if the computed update rect would mean nothing would be drawn.
-// This is a kill switch in case something depends on an empty update.
-BASE_FEATURE(kAllowSkipEmptyNonrootRenderPassDraws,
-             "AllowSkipEmptyNonrootRenderPassDraws",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enum used for UMA histogram. These enum values must not be changed or
 // reused.
 enum class RenderPassDrawRectAssign {
@@ -131,10 +124,10 @@ gfx::Rect DirectRenderer::MoveFromDrawToWindowSpace(
   return window_rect;
 }
 
-const DrawQuad* DirectRenderer::CanPassBeDrawnDirectly(
+std::optional<const DrawQuad*> DirectRenderer::CanPassBeDrawnDirectly(
     const AggregatedRenderPass* pass,
     const RenderPassRequirements& requirements) {
-  return nullptr;
+  return std::nullopt;
 }
 
 void DirectRenderer::SetOutputSurfaceClipRect(const gfx::Rect& clip_rect) {
@@ -196,11 +189,11 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
     // If there's a copy request, we need an explicit renderpass backing so
     // only try to draw directly if there are no copy requests.
     if (!is_root && pass->copy_requests.empty()) {
-      if (const DrawQuad* quad =
+      if (std::optional<const DrawQuad*> quad =
               CanPassBeDrawnDirectly(pass.get(), requirements)) {
         // If the render pass is drawn directly, it will not be drawn from as
         // a render pass so it's not added to the map.
-        render_pass_bypass_quads_[pass->id] = quad;
+        render_pass_bypass_quads_[pass->id] = quad.value();
         continue;
       }
     }
@@ -727,8 +720,7 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
     render_pass_scissor_in_draw_space.Intersect(*output_surface_clip_rect_);
   }
 
-  if (!is_root_render_pass && render_pass_scissor_in_draw_space.IsEmpty() &&
-      base::FeatureList::IsEnabled(kAllowSkipEmptyNonrootRenderPassDraws)) {
+  if (!is_root_render_pass && render_pass_scissor_in_draw_space.IsEmpty()) {
     // If the scissor rect is empty, we will end up skipping all the draw quads,
     // so there is no work to do.
     return;

@@ -49,12 +49,13 @@ MockRuntime.prototype._injectAdditionalFrameData = function(options, frameData) 
     reflectionProbe: {
       cubeMap: {
         widthAndHeight: 16,
-        positiveX: new Array(16 * 16).fill({ red: 0, green: 0, blue: 0, alpha: 0 }),
-        negativeX: new Array(16 * 16).fill({ red: 0, green: 0, blue: 0, alpha: 0 }),
-        positiveY: new Array(16 * 16).fill({ red: 0, green: 0, blue: 0, alpha: 0 }),
-        negativeY: new Array(16 * 16).fill({ red: 0, green: 0, blue: 0, alpha: 0 }),
-        positiveZ: new Array(16 * 16).fill({ red: 0, green: 0, blue: 0, alpha: 0 }),
-        negativeZ: new Array(16 * 16).fill({ red: 0, green: 0, blue: 0, alpha: 0 }),
+        // Arrays should be widthAndHeight^2 * 4 channels per pixel (r, g, b, a).
+        positiveX: new Array(16 * 16 * 4).fill(0),
+        negativeX: new Array(16 * 16 * 4).fill(0),
+        positiveY: new Array(16 * 16 * 4).fill(0),
+        negativeY: new Array(16 * 16 * 4).fill(0),
+        positiveZ: new Array(16 * 16 * 4).fill(0),
+        negativeZ: new Array(16 * 16 * 4).fill(0),
       },
     },
   };

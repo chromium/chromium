@@ -17,14 +17,30 @@
 namespace {
 
 // Default delay between each call to `PollActiveFindSession`.
-auto kPollActiveFindSessionDelay = base::Milliseconds(100);
+constexpr base::TimeDelta kPollActiveFindSessionDelay = base::Milliseconds(100);
 
 }  // namespace
 
 namespace web {
 
-FindInPageManagerImpl::FindInPageManagerImpl(web::WebState* web_state)
-    : poll_active_find_session_delay_(kPollActiveFindSessionDelay),
+// static
+std::unique_ptr<FindInPageManager> FindInPageManager::Create(
+    WebState* web_state) {
+  return FindInPageManager::Create(web_state, kPollActiveFindSessionDelay);
+}
+
+// static
+std::unique_ptr<FindInPageManager> FindInPageManager::Create(
+    WebState* web_state,
+    base::TimeDelta poll_active_find_session_delay) {
+  return std::make_unique<FindInPageManagerImpl>(
+      web_state, poll_active_find_session_delay);
+}
+
+FindInPageManagerImpl::FindInPageManagerImpl(
+    web::WebState* web_state,
+    base::TimeDelta poll_active_find_session_delay)
+    : poll_active_find_session_delay_(poll_active_find_session_delay),
       web_state_(web_state),
       weak_factory_(this) {
   web_state_->AddObserver(this);

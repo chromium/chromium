@@ -82,9 +82,6 @@ class ImportNotifier:
 
         self.finder = path_finder.PathFinder(host.filesystem)
         self.default_port = host.port_factory.get()
-        self.default_port.set_option_default('additional_expectations', [
-            self.finder.path_from_web_tests('MobileTestExpectations'),
-        ])
         self.default_port.set_option_default('test_types',
                                              typing.get_args(TestType))
         self.owners_extractor = DirectoryOwnersExtractor(host)

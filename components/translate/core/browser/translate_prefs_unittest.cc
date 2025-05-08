@@ -44,13 +44,13 @@ using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAreArray;
 
 static void ExpectEqualLanguageLists(
-    const base::Value::List& language_values,
-    const std::vector<std::string>& languages) {
-  const int input_size = languages.size();
-  ASSERT_EQ(input_size, static_cast<int>(language_values.size()));
+    const base::Value::List& pref_values,
+    const std::vector<std::string>& expected_languages) {
+  const int input_size = expected_languages.size();
+  ASSERT_EQ(input_size, static_cast<int>(pref_values.size()));
   for (int i = 0; i < input_size; ++i) {
-    ASSERT_TRUE(language_values[i].is_string());
-    EXPECT_EQ(languages[i], language_values[i].GetString());
+    ASSERT_TRUE(pref_values[i].is_string());
+    EXPECT_EQ(expected_languages[i], pref_values[i].GetString());
   }
 }
 
@@ -79,10 +79,10 @@ class TranslatePrefsTest : public testing::Test {
   }
 
   void ExpectBlockedLanguageListContent(
-      const std::vector<std::string>& list) const {
+      const std::vector<std::string>& expected_languages) const {
     const base::Value::List& never_prompt_list =
         prefs_.GetList(prefs::kBlockedLanguages);
-    ExpectEqualLanguageLists(never_prompt_list, list);
+    ExpectEqualLanguageLists(never_prompt_list, expected_languages);
   }
 
   // Returns a vector of language codes from the elements of the given
@@ -289,6 +289,26 @@ TEST_F(TranslatePrefsTest, BlockLanguage) {
   translate_prefs_->BlockLanguage("zh-TW");
   translate_prefs_->BlockLanguage("zh-HK");
   ExpectBlockedLanguageListContent({"en", "zh-TW"});
+}
+
+TEST_F(TranslatePrefsTest, BlockDifferentTranslateCodes) {
+  // `en` is a default blocked language, it should be present already.
+  ExpectBlockedLanguageListContent({"en"});
+
+  translate_prefs_->BlockLanguage("he");
+  translate_prefs_->BlockLanguage("fil");
+  translate_prefs_->BlockLanguage("mni-Mtei");
+  ExpectBlockedLanguageListContent({"en", "iw", "tl", "mni-Mtei"});
+}
+
+TEST_F(TranslatePrefsTest, BlockNonAcceptLanguage) {
+  // `en` is a default blocked language, it should be present already.
+  ExpectBlockedLanguageListContent({"en"});
+
+  // Blocked languages must be on the accept language list.
+  translate_prefs_->BlockLanguage("aa");
+  translate_prefs_->BlockLanguage("bb");
+  ExpectBlockedLanguageListContent({"en"});
 }
 
 TEST_F(TranslatePrefsTest, UnblockLanguage) {
@@ -1163,6 +1183,13 @@ TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
   translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("tl");
 
   // AlwaysTranslateList should be empty now
+  EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+}
+
+TEST_F(TranslatePrefsTest, AlwaysTranslateLanguagesMustBeTranslatable) {
+  EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("bb", "es");
   EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
 }
 

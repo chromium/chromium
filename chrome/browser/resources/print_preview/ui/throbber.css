@@ -7,9 +7,5 @@
  * #import=./print_preview_vars.css.js
  * #css_wrapper_metadata_end */
 
-.throbber {
-  background: url(chrome://resources/images/throbber_small.svg) no-repeat;
-  display: inline-block;
-  height: var(--throbber-size);
-  width: var(--throbber-size);
-}
+/* Intentionally left empty as it is generated at build time from the equivalent
+ * Lit version. */

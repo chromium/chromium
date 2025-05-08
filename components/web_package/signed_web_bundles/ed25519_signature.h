@@ -34,8 +34,8 @@ class Ed25519Signature {
   Ed25519Signature& operator=(const Ed25519Signature&) = default;
   Ed25519Signature& operator=(Ed25519Signature&&) = default;
 
-  bool operator==(const Ed25519Signature& other) const;
-  bool operator!=(const Ed25519Signature& other) const;
+  friend bool operator==(const Ed25519Signature&,
+                         const Ed25519Signature&) = default;
 
   [[nodiscard]] bool Verify(base::span<const uint8_t> message,
                             const Ed25519PublicKey& public_key) const;

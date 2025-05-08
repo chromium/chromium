@@ -50,7 +50,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 // The on-going download task if any.
 @property(nonatomic, strong, nullable) CWVDownloadTask* downloadTask;
 // The path to a local file which the download task is writing to.
-@property(nonatomic, strong, nullable) NSString* downloadFilePath;
+@property(nonatomic, copy, nullable) NSString* downloadFilePath;
 // A controller to show a "Share" menu for the downloaded file.
 @property(nonatomic, strong, nullable)
     UIDocumentInteractionController* documentInteractionController;

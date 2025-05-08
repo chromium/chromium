@@ -235,7 +235,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
       // Input is xHE-AAC / USAC.
       CHECK_EQ(config.profile(), AudioCodecProfile::kXHE_AAC);
       input_format.mFormatID = kAudioFormatMPEGD_USAC;
-      magic_cookie = mp4::ESDescriptor::CreateEsds(config.aac_extra_data());
+      magic_cookie = mp4::ESDescriptor::CreateEsds(config.extra_data());
 
       // Have macOS fill in the rest of the input_format for us.
       UInt32 format_size = sizeof(input_format);

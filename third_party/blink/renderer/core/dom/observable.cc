@@ -2744,7 +2744,7 @@ Observable* Observable::from(ScriptState* script_state,
   // signals conversion failure, so we must (and can safely) ignore it and let
   // other conversion attempts below continue.
   if (Observable* converted = NativeValueTraits<Observable>::NativeValue(
-          isolate, v8_value, IgnoreException(isolate))) {
+          isolate, v8_value, IGNORE_EXCEPTION)) {
     return converted;
   }
 

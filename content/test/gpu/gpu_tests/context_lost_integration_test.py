@@ -202,10 +202,11 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
 
   # Can be changed to functools.cache on Python 3.9+.
+  @classmethod
   @functools.lru_cache(maxsize=None)
-  def _GetWaitTimeout(self):
+  def _GetWaitTimeout(cls):
     timeout = 60
-    if self._is_asan or self.browser.browser_type == 'debug':
+    if cls._is_asan or cls.browser.browser_type == 'debug':
       timeout *= 2
     return timeout
 

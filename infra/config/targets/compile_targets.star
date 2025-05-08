@@ -469,3 +469,10 @@ targets.compile_target(
     # All references have been moved to starlark
     skip_usage_check = True,
 )
+
+targets.compile_target(
+    name = "ipc_fuzzer",
+    label = "//tools/ipc_fuzzer/fuzzer:ipc_fuzzer",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+)

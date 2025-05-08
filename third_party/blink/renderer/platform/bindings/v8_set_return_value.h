@@ -213,11 +213,10 @@ void V8SetReturnValue(const CallbackInfo& info, double value) {
 template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo,
           typename BlinkType,
           typename IdlType>
-inline typename std::enable_if_t<std::is_arithmetic<BlinkType>::value ||
-                                 std::is_enum<BlinkType>::value>
-V8SetReturnValue(const CallbackInfo& info,
-                 BlinkType value,
-                 V8ReturnValue::PrimitiveType<IdlType>) {
+  requires(std::is_arithmetic_v<BlinkType> || std::is_enum_v<BlinkType>)
+inline void V8SetReturnValue(const CallbackInfo& info,
+                             BlinkType value,
+                             V8ReturnValue::PrimitiveType<IdlType>) {
   V8SetReturnValue(info, IdlType(value));
 }
 

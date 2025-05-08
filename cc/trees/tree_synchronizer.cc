@@ -227,7 +227,7 @@ void TreeSynchronizer::PushLayerProperties(
   for (auto it = source_layers_begin; it != source_layers_end; ++it) {
     auto* source_layer = *it;
     LayerImpl* target_layer = impl_tree->LayerById(source_layer->id());
-    DCHECK(target_layer);
+    CHECK(target_layer);
     source_layer->PushPropertiesTo(target_layer, commit_state, unsafe_state);
   }
 }

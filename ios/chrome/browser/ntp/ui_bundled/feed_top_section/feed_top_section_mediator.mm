@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
-#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -52,20 +52,27 @@ using base::UserMetricsAction;
 
 @end
 
-@implementation FeedTopSectionMediator
+@implementation FeedTopSectionMediator {
+  raw_ptr<ProvisionalPushNotificationService>
+      _provisionalPushNotificationService;
+}
 
 // FeedTopSectionViewControllerDelegate
 @synthesize signinPromoConfigurator = _signinPromoConfigurator;
 
 - (instancetype)initWithConsumer:(id<FeedTopSectionConsumer>)consumer
-                 identityManager:(signin::IdentityManager*)identityManager
-                     authService:(AuthenticationService*)authenticationService
-                       incognito:(BOOL)incognito
-                     prefService:(PrefService*)prefService {
+                       identityManager:(signin::IdentityManager*)identityManager
+                           authService:
+                               (AuthenticationService*)authenticationService
+    provisionalPushNotificationService:
+        (ProvisionalPushNotificationService*)provisionalPushNotificationService
+                             incognito:(BOOL)incognito
+                           prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
     _authenticationService = authenticationService;
     _identityManager = identityManager;
+    _provisionalPushNotificationService = provisionalPushNotificationService;
     _identityObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(_identityManager, self));
     _incognito = incognito;
@@ -85,6 +92,7 @@ using base::UserMetricsAction;
 
 - (void)shutdown {
   _identityObserverBridge.reset();
+  _provisionalPushNotificationService = nullptr;
   self.authenticationService = nullptr;
   self.identityManager = nullptr;
   self.prefService = nullptr;
@@ -329,14 +337,14 @@ using base::UserMetricsAction;
 - (void)enrollUserToProvisionalNotificationsFromEntrypoint:
     (ContentNotificationPromoProvisionalEntrypoint)entrypoint {
   [self logHistogramForEntrypoint:entrypoint];
-  [ProvisionalPushNotificationUtil
-      enrollUserToProvisionalNotificationsForClientIds:
-          {PushNotificationClientId::kContent,
-           PushNotificationClientId::kSports}
-                           clientEnabledForProvisional:YES
-                                       withAuthService:
-                                           self.authenticationService
-                                 deviceInfoSyncService:nil];
+  if (_provisionalPushNotificationService) {
+    _provisionalPushNotificationService->EnrollUserToProvisionalNotifications(
+        ProvisionalPushNotificationService::ClientIdState::kEnabled,
+        {
+            PushNotificationClientId::kContent,
+            PushNotificationClientId::kSports,
+        });
+  }
 }
 
 #pragma mark - Metrics

@@ -5,9 +5,8 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import type {AnnotationBrush, AnnotationText, Color, TextBoxRect, TextStyles} from './constants.js';
-import {AnnotationBrushType, TextAlignment, TextStyle} from './constants.js';
-import type {MessageData} from './controller.js';
+import type {AnnotationBrush, Color, Point, TextAnnotation, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
+import {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
 import {PluginController, PluginControllerEventType} from './controller.js';
 import type {Viewport} from './viewport.js';
 
@@ -17,43 +16,120 @@ export interface ViewportParams {
   zoom: number;
 }
 
+export interface TextBoxInit {
+  annotation: TextAnnotation;
+  pageCoordinates: Point;
+}
+
+export const DEFAULT_TEXTBOX_WIDTH: number = 200;
+export const DEFAULT_TEXTBOX_HEIGHT: number = 100;
+
+export function colorsEqual(color1: Color, color2: Color): boolean {
+  return color1.r === color2.r && color1.g === color2.g &&
+      color1.b === color2.b;
+}
+
+export function stylesEqual(style1: TextStyles, style2: TextStyles): boolean {
+  return style1.bold === style2.bold && style1.italic === style2.italic;
+}
+
 export class Ink2Manager extends EventTarget {
   private brush_: AnnotationBrush = {type: AnnotationBrushType.PEN};
-  private text_: AnnotationText = {
-    font: '',
+  // Map from page numbers to annotations on that page.
+  // The annotations on each page are stored in a map from id to TextAnnotation.
+  private annotations_: Map<number, Map<number, TextAnnotation>> = new Map();
+  // The attributes selected by the user for new annotations.
+  private attributes_: TextAttributes = {
+    typeface: TextTypeface.SANS_SERIF,
     size: 12,
     color: {r: 0, g: 0, b: 0},
     alignment: TextAlignment.LEFT,
     styles: {
       [TextStyle.BOLD]: false,
       [TextStyle.ITALIC]: false,
-      [TextStyle.UNDERLINE]: false,
-      [TextStyle.STRIKETHROUGH]: false,
     },
   };
   private brushResolver_: PromiseResolver<void>|null = null;
-  private fontsResolver_: PromiseResolver<string[]>|null = null;
+  // Holds text attributes pre-populated from an existing annotation that the
+  // user is editing. Null if the user is not editing an annotation or is
+  // creating a new annotation using |attributes_|.
+  private existingAnnotationAttributes_: TextAttributes|null = null;
+  private pageNumber_: number = -1;
   private pluginController_: PluginController = PluginController.getInstance();
   private viewport_: Viewport|null = null;
   private viewportParams_: ViewportParams = {pageX: 0, pageY: 0, zoom: 1.0};
-
-  constructor() {
-    super();
-    this.pluginController_.getEventTarget().addEventListener(
-        PluginControllerEventType.PLUGIN_MESSAGE,
-        (e: Event) => this.handlePluginMessage_(e as CustomEvent<MessageData>));
-  }
+  private nextAnnotationId_: number = 0;
 
   setViewport(viewport: Viewport) {
     this.viewport_ = viewport;
   }
 
-  private handlePluginMessage_(e: CustomEvent<MessageData>) {
-    const data = e.detail;
-    if (data.type.toString() === 'updateTextAnnotTextBoxRect') {
-      const detail = data as unknown as TextBoxRect;
-      this.dispatchEvent(new CustomEvent('update-text-box', {detail}));
+  // Initialize a text annotation at `location` in screen coordinates.
+  // No-op if there is no PDF page at `location`.
+  initializeTextAnnotation(location: Point) {
+    assert(this.viewport_);
+    const page = this.viewport_.getPageAtPoint(location);
+    if (page === -1) {
+      return;
     }
+
+    const zoom = this.viewport_.getZoom();
+    const pageDimensions = this.viewport_.getPageScreenRect(page);
+    // Is the click in an existing box?
+    let existing = null;
+    // Get the annotations for the current page.
+    const annotationsMap = this.annotations_.get(page);
+    const annotations =
+        annotationsMap ? Array.from(annotationsMap.values()) : [];
+    for (const annotation of annotations) {
+      // Convert box to screen coordinates.
+      const x = annotation.textBoxRect.locationX * zoom + pageDimensions.x;
+      const width = annotation.textBoxRect.width * zoom;
+      const y = annotation.textBoxRect.locationY * zoom + pageDimensions.y;
+      const height = annotation.textBoxRect.height * zoom;
+      if (location.x >= x && location.x <= (x + width) && location.y >= y &&
+          location.y <= (y + height)) {
+        // Don't update the original. Create a new object and update its
+        // rectangle to use the computed screen coordinates.
+        existing = structuredClone(annotation);
+        existing.textBoxRect = {height, locationX: x, locationY: y, width};
+        break;
+      }
+    }
+
+    this.pageNumber_ = page;
+    const annotation = existing ? existing : {
+      text: '',
+      id: this.nextAnnotationId_,
+      pageNumber: page,
+      textAttributes: structuredClone(this.attributes_),
+      textBoxRect: {
+        height: DEFAULT_TEXTBOX_HEIGHT,
+        locationX: location.x,
+        locationY: location.y,
+        width: DEFAULT_TEXTBOX_WIDTH,
+      },
+    };
+
+    if (existing) {
+      this.pluginController_.startTextAnnotation(existing.id);
+      this.existingAnnotationAttributes_ = annotation.textAttributes;
+    } else {
+      this.nextAnnotationId_++;
+      this.existingAnnotationAttributes_ = null;
+    }
+
+    this.dispatchEvent(new CustomEvent('initialize-text-box', {
+      detail: {
+        annotation,
+        pageCoordinates: {x: pageDimensions.x, y: pageDimensions.y},
+      },
+    }));
+
+    // Notify other listeners of any changes to the viewport and/or attributes,
+    // since these may change with the annotation.
+    this.viewportChanged();
+    this.fireAttributesChanged_();
   }
 
   getViewportParams(): ViewportParams {
@@ -62,9 +138,10 @@ export class Ink2Manager extends EventTarget {
 
   viewportChanged() {
     assert(this.viewport_, 'Must call setViewport() before viewportChanged()');
-    const visiblePage = this.viewport_.getMostVisiblePage();
-    const visiblePageDimensions = this.viewport_.getPageScreenRect(visiblePage);
     const zoom = this.viewport_.getZoom();
+    const page = this.pageNumber_ !== -1 ? this.pageNumber_ :
+                                           this.viewport_.getMostVisiblePage();
+    const visiblePageDimensions = this.viewport_.getPageScreenRect(page);
     if (visiblePageDimensions.x === this.viewportParams_.pageX &&
         visiblePageDimensions.y === this.viewportParams_.pageY &&
         zoom === this.viewportParams_.zoom) {
@@ -94,8 +171,10 @@ export class Ink2Manager extends EventTarget {
     return this.brush_;
   }
 
-  getCurrentText(): AnnotationText {
-    return this.text_;
+  getCurrentTextAttributes(): TextAttributes {
+    return this.existingAnnotationAttributes_ ?
+        this.existingAnnotationAttributes_ :
+        this.attributes_;
   }
 
   initializeBrush(): Promise<void> {
@@ -140,72 +219,102 @@ export class Ink2Manager extends EventTarget {
     this.setAnnotationBrushInPlugin_();
   }
 
-  getTextAnnotationFonts(): Promise<string[]> {
-    if (this.fontsResolver_ === null) {
-      this.fontsResolver_ = new PromiseResolver();
-      this.pluginController_.getTextAnnotFontNames().then(fontsMessage => {
-        assert(this.fontsResolver_);
-        this.fontsResolver_.resolve(fontsMessage.data);
-        assert(fontsMessage.data.length > 0);
-        this.setTextFont(fontsMessage.data[0]!);
-      });
-    }
-    return this.fontsResolver_.promise;
-  }
-
-  setTextFont(font: string) {
-    if (this.text_.font === font) {
+  setTextTypeface(typeface: TextTypeface) {
+    const current = this.getCurrentTextAttributes();
+    if (current.typeface === typeface) {
       return;
     }
 
-    this.text_.font = font;
-    this.updatedText_();
+    current.typeface = typeface;
+    this.fireAttributesChanged_();
   }
 
   setTextSize(size: number) {
-    if (this.text_.size === size) {
+    const current = this.getCurrentTextAttributes();
+    if (current.size === size) {
       return;
     }
 
-    this.text_.size = size;
-    this.updatedText_();
+    current.size = size;
+    this.fireAttributesChanged_();
   }
 
   setTextColor(color: Color) {
-    if (this.text_.color.r === color.r && this.text_.color.g === color.g &&
-        this.text_.color.b === color.b) {
+    const current = this.getCurrentTextAttributes();
+    if (colorsEqual(current.color, color)) {
       return;
     }
 
-    this.text_.color = color;
-    this.updatedText_();
+    current.color = color;
+    this.fireAttributesChanged_();
   }
 
   setTextAlignment(alignment: TextAlignment) {
-    if (this.text_.alignment === alignment) {
+    const current = this.getCurrentTextAttributes();
+    if (current.alignment === alignment) {
       return;
     }
 
-    this.text_.alignment = alignment;
-    this.updatedText_();
+    current.alignment = alignment;
+    this.fireAttributesChanged_();
   }
 
   setTextStyles(styles: TextStyles) {
-    if (this.text_.styles[TextStyle.BOLD] === styles[TextStyle.BOLD] &&
-        this.text_.styles[TextStyle.ITALIC] === styles[TextStyle.ITALIC] &&
-        this.text_.styles[TextStyle.UNDERLINE] ===
-            styles[TextStyle.UNDERLINE] &&
-        this.text_.styles[TextStyle.STRIKETHROUGH] ===
-            styles[TextStyle.STRIKETHROUGH]) {
+    const current = this.getCurrentTextAttributes();
+    if (stylesEqual(current.styles, styles)) {
       return;
     }
 
-    this.text_.styles = styles;
-    this.updatedText_();
+    current.styles = styles;
+    this.fireAttributesChanged_();
   }
 
-  setTextBoxRect(update: TextBoxRect) {
-    this.pluginController_.setTextAnnotTextBoxRect(update);
+  private screenToPageCoordinates_(pageNumber: number, screenRect: TextBoxRect):
+      TextBoxRect {
+    assert(this.viewport_);
+    const pageDimensions = this.viewport_.getPageScreenRect(pageNumber);
+    const zoom = this.viewport_.getZoom();
+    return {
+      height: screenRect.height / zoom,
+      locationX: (screenRect.locationX - pageDimensions.x) / zoom,
+      locationY: (screenRect.locationY - pageDimensions.y) / zoom,
+      width: screenRect.width / zoom,
+    };
+  }
+
+  /**
+   * Updates the stored annotation and notifies the plugin of the new or
+   * modified annotation.
+   */
+  commitTextAnnotation(annotation: TextAnnotation, edited: boolean) {
+    annotation.textBoxRect = this.screenToPageCoordinates_(
+        annotation.pageNumber, annotation.textBoxRect);
+
+    let pageAnnotations = this.annotations_.get(annotation.pageNumber);
+    if (!pageAnnotations) {
+      // Adding a new annotation, on a page that doesn't have any existing ones.
+      // Create and add the new map.
+      pageAnnotations = new Map();
+      this.annotations_.set(annotation.pageNumber, pageAnnotations);
+    }
+
+    if (pageAnnotations.has(annotation.id) && annotation.text === '') {
+      // Delete an existing annotation.
+      pageAnnotations.delete(annotation.id);
+    } else {
+      pageAnnotations.set(annotation.id, annotation);
+    }
+    this.pluginController_.finishTextAnnotation(annotation);
+    this.existingAnnotationAttributes_ = null;
+
+    if (edited) {
+      // Using PluginController's event target to dispatch this event, even
+      // though it originates here, because PluginController dispatches this
+      // event for normal ink strokes and this way clients only need to listen
+      // on one instance.
+      this.pluginController_.getEventTarget().dispatchEvent(
+          new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
+    }
   }
 
   /**
@@ -227,23 +336,10 @@ export class Ink2Manager extends EventTarget {
     this.dispatchEvent(new CustomEvent('brush-changed', {detail: this.brush_}));
   }
 
-  private updatedText_(): void {
-    this.setAnnotationTextInPlugin_();
-    this.fireTextChanged_();
-  }
-
-  private setAnnotationTextInPlugin_(): void {
-    this.pluginController_.setTextAnnotationFont({
-      typeface: this.text_.font,
-      fontSize: this.text_.size,
-      alignment: this.text_.alignment,
-      style: this.text_.styles,
-      color: this.text_.color,
-    });
-  }
-
-  private fireTextChanged_() {
-    this.dispatchEvent(new CustomEvent('text-changed', {detail: this.text_}));
+  private fireAttributesChanged_() {
+    this.dispatchEvent(new CustomEvent(
+        'attributes-changed',
+        {detail: structuredClone(this.getCurrentTextAttributes())}));
   }
 
   static getInstance(): Ink2Manager {

@@ -5,9 +5,11 @@
 #include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/common/pref_names.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
@@ -24,7 +26,10 @@ using extensions::mojom::ManifestLocation;
 
 namespace apps::chrome_app_deprecation {
 
-class DeprecationControllerTest : public extensions::ExtensionServiceTestBase {
+constexpr std::string_view kHistogram =
+    "Apps.AppLaunch.ChromeAppsDeprecationCheck";
+
+class ChromeAppDeprecationTest : public extensions::ExtensionServiceTestBase {
  protected:
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
@@ -64,39 +69,171 @@ class DeprecationControllerTest : public extensions::ExtensionServiceTestBase {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<const Extension> app_;
+
+  base::HistogramTester histogram_tester_;
 };
 
-TEST_F(DeprecationControllerTest, HandleDeprecationDefaultFeatureFlag) {
+TEST_F(ChromeAppDeprecationTest, DefaultFeatureFlag) {
   scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
   ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 
   EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
             DeprecationStatus::kLaunchAllowed);
 
-  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
-            DeprecationStatus::kLaunchAllowed);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kUserInstalledAllowedByFlag*/ 0, 1)));
 }
 
-TEST_F(DeprecationControllerTest, HandleDeprecationDisabledFeatureFlag) {
+TEST_F(ChromeAppDeprecationTest, DefaultFeatureFlagNotChromeApp) {
+  scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
+
+  EXPECT_EQ(HandleDeprecation("Not a Chrome App id", profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kAllowedNotChromeApp*/ 11, 1)));
+}
+
+TEST_F(ChromeAppDeprecationTest, DisabledFeatureFlag) {
   scoped_feature_list_.InitAndDisableFeature(kAllowUserInstalledChromeApps);
   ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 
   EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
             DeprecationStatus::kLaunchBlocked);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kUserInstalledBlocked*/ 2, 1)));
 }
 
-TEST_F(DeprecationControllerTest, HandleDeprecationEnabledFeatureFlag) {
+TEST_F(ChromeAppDeprecationTest, DisabledFeatureFlagNotChromeApp) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowUserInstalledChromeApps);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
+
+  EXPECT_EQ(HandleDeprecation("Not a Chrome App id", profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kAllowedNotChromeApp*/ 11, 1)));
+}
+
+TEST_F(ChromeAppDeprecationTest, EnabledFeatureFlag) {
   scoped_feature_list_.InitAndEnableFeature(kAllowUserInstalledChromeApps);
   ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 
   EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
             DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kUserInstalledAllowedByFlag*/ 0, 1)));
 }
 
-class DeprecationControllerAllowlistTest : public DeprecationControllerTest {
+TEST_F(ChromeAppDeprecationTest, EnabledFeatureFlagNotChromeApp) {
+  scoped_feature_list_.InitAndEnableFeature(kAllowUserInstalledChromeApps);
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
+
+  EXPECT_EQ(HandleDeprecation("Not a Chrome App id", profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kAllowedNotChromeApp*/ 11, 1)));
+}
+
+class ChromeAppDeprecationKioskTest : public ChromeAppDeprecationTest {
  protected:
   void SetUp() override {
-    DeprecationControllerTest::SetUp();
+    ChromeAppDeprecationTest::SetUp();
+
+    SetKioskSessionForTesting();
+  }
+
+  void TearDown() override {
+    SetKioskSessionForTesting(false);
+
+    ChromeAppDeprecationTest::TearDown();
+  }
+};
+
+TEST_F(ChromeAppDeprecationKioskTest, DefaultFeatureFlag) {
+  scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kKioskModeAllowedByFlag*/ 3, 1)));
+}
+
+TEST_F(ChromeAppDeprecationKioskTest, DisabledFeatureFlag) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowChromeAppsInKioskSessions);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchBlocked);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kKioskModeBlocked*/ 6, 1)));
+}
+
+TEST_F(ChromeAppDeprecationKioskTest, EnabledFeatureFlag) {
+  scoped_feature_list_.InitAndEnableFeature(kAllowChromeAppsInKioskSessions);
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kKioskModeAllowedByFlag*/ 3, 1)));
+}
+
+TEST_F(ChromeAppDeprecationKioskTest, DisabledFeatureFlagDefaultPolicy) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowChromeAppsInKioskSessions);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
+  ASSERT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kKioskChromeAppsForceAllowed));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchBlocked);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kKioskModeBlocked*/ 6, 1)));
+}
+
+TEST_F(ChromeAppDeprecationKioskTest, DisabledFeatureFlagOverridenByPolicy) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowChromeAppsInKioskSessions);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kKioskChromeAppsForceAllowed, true);
+  ASSERT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kKioskChromeAppsForceAllowed));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kKioskModeAllowedByAdminPolicy*/ 5, 1)));
+}
+
+class ChromeAppDeprecationUserInstalledAllowlistTest
+    : public ChromeAppDeprecationTest {
+ protected:
+  void SetUp() override {
+    ChromeAppDeprecationTest::SetUp();
 
     AddAppToAllowlistForTesting(app_->id());
   }
@@ -104,34 +241,102 @@ class DeprecationControllerAllowlistTest : public DeprecationControllerTest {
   void TearDown() override {
     ResetAllowlistForTesting();
 
-    DeprecationControllerTest::TearDown();
+    ChromeAppDeprecationTest::TearDown();
   }
 };
 
-TEST_F(DeprecationControllerAllowlistTest,
-       HandleDeprecationDefaultFeatureFlag) {
+TEST_F(ChromeAppDeprecationUserInstalledAllowlistTest, DefaultFeatureFlag) {
   scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
   ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 
   EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
             DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1, 1)));
 }
 
-TEST_F(DeprecationControllerAllowlistTest,
-       HandleDeprecationDisabledFeatureFlag) {
+TEST_F(ChromeAppDeprecationUserInstalledAllowlistTest, DisabledFeatureFlag) {
   scoped_feature_list_.InitAndDisableFeature(kAllowUserInstalledChromeApps);
   ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 
   EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
             DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1, 1)));
 }
 
-TEST_F(DeprecationControllerAllowlistTest,
-       HandleDeprecationEnabledFeatureFlag) {
+TEST_F(ChromeAppDeprecationUserInstalledAllowlistTest, EnabledFeatureFlag) {
   scoped_feature_list_.InitAndEnableFeature(kAllowUserInstalledChromeApps);
   ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 
   EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
             DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1, 1)));
 }
+
+class ChromeAppDeprecationKioskAllowlistTest
+    : public ChromeAppDeprecationKioskTest {
+ protected:
+  void SetUp() override {
+    ChromeAppDeprecationKioskTest::SetUp();
+
+    AddAppToAllowlistForTesting(app_->id());
+  }
+
+  void TearDown() override {
+    ResetAllowlistForTesting();
+
+    ChromeAppDeprecationKioskTest::TearDown();
+  }
+};
+
+TEST_F(ChromeAppDeprecationKioskAllowlistTest, DefaultFeatureFlag) {
+  scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kKioskModeAllowedByAllowlist*/ 4, 1)));
+}
+
+TEST_F(ChromeAppDeprecationKioskAllowlistTest, DisabledFeatureFlag) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowUserInstalledChromeApps);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kKioskModeAllowedByAllowlist*/ 4, 1)));
+}
+
+TEST_F(ChromeAppDeprecationKioskAllowlistTest, EnabledFeatureFlag) {
+  scoped_feature_list_.InitAndEnableFeature(kAllowUserInstalledChromeApps);
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kKioskModeAllowedByAllowlist*/ 4, 1)));
+}
+
 }  // namespace apps::chrome_app_deprecation

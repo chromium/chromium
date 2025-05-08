@@ -93,8 +93,8 @@ public class TabGroupsPane implements Pane {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
-            TabGroupCreationUiFlow flow =
-                    new TabGroupCreationUiFlow(
+            TabGroupCreationUiDelegate flow =
+                    new TabGroupCreationUiDelegate(
                             context,
                             modalDialogManagerSupplier,
                             paneManagerSupplier,
@@ -103,8 +103,8 @@ public class TabGroupsPane implements Pane {
             mActionButtonSupplier.set(
                     new DelegateButtonData(
                             new ResourceButtonData(
-                                    R.string.button_new_tab,
-                                    R.string.button_new_tab,
+                                    R.string.button_new_tab_group,
+                                    R.string.button_new_tab_group,
                                     R.drawable.new_tab_icon),
                             flow::newTabGroupFlow));
         }

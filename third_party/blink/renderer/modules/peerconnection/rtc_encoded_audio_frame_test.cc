@@ -50,7 +50,6 @@ void MockMetadata(MockTransformableAudioFrame* frame) {
   ON_CALL(*frame, GetContributingSources()).WillByDefault(Return(csrcs));
   ON_CALL(*frame, GetPayloadType()).WillByDefault(Return(13));
   ON_CALL(*frame, SequenceNumber()).WillByDefault(Return(20));
-  ON_CALL(*frame, AbsoluteCaptureTimestamp()).WillByDefault(Return(70050));
   ON_CALL(*frame, GetTimestamp()).WillByDefault(Return(17));
   ON_CALL(*frame, GetMimeType()).WillByDefault(Return("image"));
 }
@@ -62,7 +61,6 @@ void MockReceiverMetadata(MockTransformableAudioFrame* frame,
   ON_CALL(*frame, GetContributingSources()).WillByDefault(Return(csrcs));
   ON_CALL(*frame, GetPayloadType()).WillByDefault(Return(13));
   ON_CALL(*frame, SequenceNumber()).WillByDefault(Return(20));
-  ON_CALL(*frame, AbsoluteCaptureTimestamp()).WillByDefault(Return(70050));
   ON_CALL(*frame, GetTimestamp()).WillByDefault(Return(17));
   ON_CALL(*frame, GetMimeType()).WillByDefault(Return("image"));
   if (window) {
@@ -84,7 +82,6 @@ RTCEncodedAudioFrameMetadata* CreateAudioMetadata() {
   new_metadata->setPayloadType(13);
   new_metadata->setMimeType("image");
   new_metadata->setSequenceNumber(20);
-  new_metadata->setAbsCaptureTime(70050);
   new_metadata->setRtpTimestamp(110);
   return new_metadata;
 }
@@ -108,7 +105,6 @@ TEST_F(RTCEncodedAudioFrameTest, GetMetadataReturnsCorrectMetadata) {
   EXPECT_EQ(13, retrieved_metadata->payloadType());
   EXPECT_EQ("image", retrieved_metadata->mimeType());
   EXPECT_EQ(20u, retrieved_metadata->sequenceNumber());
-  EXPECT_EQ(70050u, retrieved_metadata->absCaptureTime());
   EXPECT_EQ(17u, retrieved_metadata->rtpTimestamp());
   EXPECT_TRUE(retrieved_metadata->hasReceiveTime());
   // The precision for DOMHighResTimestamp is 0.1ms. Test equality by making
@@ -204,7 +200,6 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorOnEmptyFrameHasEmptyMetadata) {
   EXPECT_FALSE(new_frame->getMetadata(execution_context)->hasPayloadType());
   EXPECT_FALSE(new_frame->getMetadata(execution_context)->hasMimeType());
   EXPECT_FALSE(new_frame->getMetadata(execution_context)->hasSequenceNumber());
-  EXPECT_FALSE(new_frame->getMetadata(execution_context)->hasAbsCaptureTime());
   EXPECT_EQ(new_frame->getMetadata(execution_context)->rtpTimestamp(), 0u);
   EXPECT_FALSE(new_frame->getMetadata(execution_context)->hasReceiveTime());
 }
@@ -329,7 +324,6 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorCopiesMetadata) {
   EXPECT_EQ(13, new_frame_metadata->payloadType());
   EXPECT_EQ("image", new_frame_metadata->mimeType());
   EXPECT_EQ(20u, new_frame_metadata->sequenceNumber());
-  EXPECT_EQ(70050u, new_frame_metadata->absCaptureTime());
   EXPECT_EQ(17u, new_frame_metadata->rtpTimestamp());
   EXPECT_FALSE(new_frame_metadata->hasReceiveTime());
 }
@@ -369,8 +363,6 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorWithMetadataCopiesMetadata) {
   EXPECT_EQ(new_metadata->mimeType(), new_frame_metadata->mimeType());
   EXPECT_EQ(new_metadata->sequenceNumber(),
             new_frame_metadata->sequenceNumber());
-  EXPECT_EQ(new_metadata->absCaptureTime(),
-            new_frame_metadata->absCaptureTime());
   EXPECT_EQ(new_metadata->rtpTimestamp(), new_frame_metadata->rtpTimestamp());
   EXPECT_FALSE(new_metadata->hasReceiveTime());
 }

@@ -250,4 +250,20 @@ testSuite({
         'Expect grandchildDiv to still be contained in childDiv.', childDiv,
         grandchildDiv.parentElement);
   },
+
+  testRenderAsText() {
+    // RenderText works on string templates.
+    assertEquals('<b>XSS</b>', soy.renderAsText(example.stringTemplate));
+    // RenderText on non-text template fails.
+    assertEquals(
+        'Assertion failed: ' +
+            'renderText was called with a template of kind other than "text"',
+        assertThrows(/**
+                      * @suppress {checkTypes} suppression added to enable type
+                      * checking.
+                      */
+                     () => void soy.renderAsText(
+                         example.sanitizedHtmlTemplate, {}))
+            .message);
+  },
 });

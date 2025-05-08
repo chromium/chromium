@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registry_test_helper.h"
 #include "extensions/common/features/feature_channel.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -66,8 +67,14 @@ IN_PROC_BROWSER_TEST_P(AccessibilityCommonTest, ToggleFeatures) {
   {
     extensions::ExtensionHostTestHelper host_helper(
         manager->profile(), extension_misc::kAccessibilityCommonExtensionId);
+    extensions::ExtensionRegistryTestHelper observer(
+        extension_misc::kAccessibilityCommonExtensionId, manager->profile());
     pref_service->SetBoolean(prefs::kAccessibilityAutoclickEnabled, true);
-    host_helper.WaitForHostCompletedFirstLoad();
+    if (observer.WaitForManifestVersion() == 3) {
+      observer.WaitForServiceWorkerStart();
+    } else {
+      host_helper.WaitForHostCompletedFirstLoad();
+    }
   }
 
   EXPECT_EQ(1U, enabled_features.size());
@@ -161,8 +168,14 @@ IN_PROC_BROWSER_TEST_P(AccessibilityCommonFaceGazeTest, ToggleFaceGaze) {
   // to load.
   extensions::ExtensionHostTestHelper host_helper(
       manager->profile(), extension_misc::kAccessibilityCommonExtensionId);
+  extensions::ExtensionRegistryTestHelper observer(
+      extension_misc::kAccessibilityCommonExtensionId, manager->profile());
   pref_service->SetBoolean(prefs::kAccessibilityFaceGazeEnabled, true);
-  host_helper.WaitForHostCompletedFirstLoad();
+  if (observer.WaitForManifestVersion() == 3) {
+    observer.WaitForServiceWorkerStart();
+  } else {
+    host_helper.WaitForHostCompletedFirstLoad();
+  }
 
   EXPECT_EQ(1U, enabled_features.size());
   EXPECT_EQ(1U, enabled_features.count(prefs::kAccessibilityFaceGazeEnabled));

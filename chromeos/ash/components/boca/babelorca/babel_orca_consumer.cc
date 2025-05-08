@@ -206,6 +206,9 @@ void BabelOrcaConsumer::OnLocalCaptionConfigUpdated(
   StartReceiving();
 }
 
+bool BabelOrcaConsumer::IsProducer() {
+  return false;
+}
 
 void BabelOrcaConsumer::DispatchTranscription(
     const media::SpeechRecognitionResult& result) {

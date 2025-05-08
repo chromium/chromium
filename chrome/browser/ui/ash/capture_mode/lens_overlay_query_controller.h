@@ -119,11 +119,11 @@ class LensOverlayQueryController {
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.
-  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher> CreateEndpointFetcher(
       lens::LensOverlayServerRequest* request,
       const GURL& fetch_url,
-      const HttpMethod& http_method,
-      const base::TimeDelta& timeout,
+      endpoint_fetcher::HttpMethod http_method,
+      base::TimeDelta timeout,
       const std::vector<std::string>& request_headers,
       const std::vector<std::string>& cors_exempt_headers);
 
@@ -206,7 +206,7 @@ class LensOverlayQueryController {
   // tried, just without the server session id.
   void ClusterInfoFetchResponseHandler(
       base::TimeTicks query_start_time,
-      std::unique_ptr<EndpointResponse> response);
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Processes the screenshot and fetches a full image request.
   void PrepareAndFetchFullImageRequest();
@@ -255,7 +255,7 @@ class LensOverlayQueryController {
   // Handles the endpoint fetch response for the full image request.
   void FullImageFetchResponseHandler(
       int request_sequence_id,
-      std::unique_ptr<EndpointResponse> response);
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Runs the full image callback with empty response data, for errors.
   void RunFullImageCallbackForError();
@@ -324,7 +324,7 @@ class LensOverlayQueryController {
   // Handles the endpoint fetch response for an interaction request.
   void InteractionFetchResponseHandler(
       int sequence_id,
-      std::unique_ptr<EndpointResponse> response);
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Runs the interaction callback with empty response data, for errors.
   void RunInteractionCallbackForError();
@@ -336,10 +336,11 @@ class LensOverlayQueryController {
   void PerformFetchRequest(
       lens::LensOverlayServerRequest* request,
       std::vector<std::string>* request_headers,
-      const base::TimeDelta& timeout,
-      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+      base::TimeDelta timeout,
+      base::OnceCallback<
+          void(std::unique_ptr<endpoint_fetcher::EndpointFetcher>)>
           fetcher_created_callback,
-      EndpointFetcherCallback response_received_callback);
+      endpoint_fetcher::EndpointFetcherCallback response_received_callback);
 
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();
@@ -377,11 +378,11 @@ class LensOverlayQueryController {
 
   // Callback for when the full image endpoint fetcher is created.
   void OnFullImageEndpointFetcherCreated(
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher);
 
   // Callback for when the interaction endpoint fetcher is created.
   void OnInteractionEndpointFetcherCreated(
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher);
 
   const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
@@ -459,15 +460,18 @@ class LensOverlayQueryController {
   std::unique_ptr<LensServerFetchRequest> latest_interaction_request_data_;
 
   // The endpoint fetcher used for the cluster info request.
-  std::unique_ptr<EndpointFetcher> cluster_info_endpoint_fetcher_;
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+      cluster_info_endpoint_fetcher_;
 
   // The endpoint fetcher used for the full image request.
-  std::unique_ptr<EndpointFetcher> full_image_endpoint_fetcher_;
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+      full_image_endpoint_fetcher_;
 
   // The endpoint fetcher used for the interaction request. Only the last
   // endpoint fetcher is kept; additional fetch requests will discard
   // earlier unfinished requests.
-  std::unique_ptr<EndpointFetcher> interaction_endpoint_fetcher_;
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+      interaction_endpoint_fetcher_;
 
   // Task runner used to encode/downscale the JPEG images on a separate thread.
   scoped_refptr<base::TaskRunner> encoding_task_runner_;

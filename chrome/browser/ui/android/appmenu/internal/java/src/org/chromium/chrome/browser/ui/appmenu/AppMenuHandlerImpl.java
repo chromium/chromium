@@ -15,7 +15,10 @@ import android.graphics.Rect;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewStub;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -443,15 +446,12 @@ class AppMenuHandlerImpl
         return mDelegate;
     }
 
-    private void registerViewBinders(
-            @Nullable List<CustomViewBinder> customViewBinders,
-            Map<CustomViewBinder, Integer> customViewTypeOffsetMap,
-            ModelListAdapter adapter,
-            boolean iconBeforeItem) {
-        int standardItemResId = R.layout.menu_item;
-        if (iconBeforeItem) {
-            standardItemResId = R.layout.menu_item_start_with_icon;
-        }
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void registerDefaultViewBinders(
+            ModelListAdapter adapter, boolean iconBeforeItem) {
+        @LayoutRes
+        int standardItemResId =
+                iconBeforeItem ? R.layout.menu_item_start_with_icon : R.layout.menu_item;
 
         adapter.registerType(
                 AppMenuItemType.STANDARD,
@@ -459,12 +459,29 @@ class AppMenuHandlerImpl
                 AppMenuItemViewBinder::bindStandardItem);
         adapter.registerType(
                 AppMenuItemType.TITLE_BUTTON,
-                new LayoutViewBuilder(R.layout.title_button_menu_item),
+                new LayoutViewBuilder<ViewGroup>(R.layout.title_button_menu_item) {
+                    @Override
+                    protected ViewGroup postInflationInit(ViewGroup view) {
+                        ViewStub stub = view.findViewById(R.id.menu_item_container_stub);
+                        stub.setLayoutResource(standardItemResId);
+                        View inflatedView = stub.inflate();
+                        inflatedView.setDuplicateParentStateEnabled(true);
+                        return view;
+                    }
+                },
                 AppMenuItemViewBinder::bindTitleButtonItem);
         adapter.registerType(
                 AppMenuItemType.BUTTON_ROW,
                 new LayoutViewBuilder(R.layout.icon_row_menu_item),
                 AppMenuItemViewBinder::bindIconRowItem);
+    }
+
+    private void registerViewBinders(
+            @Nullable List<CustomViewBinder> customViewBinders,
+            Map<CustomViewBinder, Integer> customViewTypeOffsetMap,
+            ModelListAdapter adapter,
+            boolean iconBeforeItem) {
+        registerDefaultViewBinders(adapter, iconBeforeItem);
 
         if (customViewBinders == null) return;
         for (int i = 0; i < customViewBinders.size(); i++) {
@@ -519,8 +536,8 @@ class AppMenuHandlerImpl
                 model.set(
                         AppMenuItemProperties.HIGHLIGHTED,
                         model.get(AppMenuItemProperties.MENU_ITEM_ID) == highlightedId);
-                if (model.get(AppMenuItemProperties.SUBMENU) != null) {
-                    ModelList subList = model.get(AppMenuItemProperties.SUBMENU);
+                if (model.get(AppMenuItemProperties.ADDITIONAL_ICONS) != null) {
+                    ModelList subList = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
                     for (int j = 0; j < subList.size(); j++) {
                         PropertyModel subModel = subList.get(j).model;
                         subModel.set(AppMenuItemProperties.CLICK_HANDLER, appMenuClickHandler);
@@ -603,6 +620,7 @@ class AppMenuHandlerImpl
         if (mDelegate.shouldShowHeader(appRect.height())) {
             headerResourceId = mDelegate.getHeaderResourceId();
         }
+
         mAppMenu.show(
                 wrapper,
                 anchorView,
@@ -615,11 +633,17 @@ class AppMenuHandlerImpl
                 mHighlightMenuId,
                 customViewBinders,
                 mDelegate.isMenuIconAtStart(),
-                mBrowserControlsStateProvider.getControlsPosition());
+                mBrowserControlsStateProvider.getControlsPosition(),
+                addTopPaddingBeforeFirstRow());
         assumeNonNull(mAppMenuDragHelper);
         mAppMenuDragHelper.onShow(startDragging);
         clearMenuHighlight();
         RecordUserAction.record("MobileMenuShow");
         mDelegate.onMenuShown();
+    }
+
+    private boolean addTopPaddingBeforeFirstRow() {
+        if (mModelList == null || mModelList.isEmpty()) return false;
+        return mModelList.get(0).type != AppMenuItemType.BUTTON_ROW;
     }
 }

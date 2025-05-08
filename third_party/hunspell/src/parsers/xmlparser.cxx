@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -135,14 +135,14 @@ bool XMLParser::next_token(const char* PATTERN[][2],
       case ST_WORD:  // wordchar
         if ((latin1 = get_latin1(line[actual].c_str() + head))) {
           head += strlen(latin1);
-        } else if ((is_wordchar((char*)APOSTROPHE) ||
-                    (is_utf8() && is_wordchar((char*)UTF8_APOS))) &&
+        } else if ((is_wordchar(APOSTROPHE) ||
+                    (is_utf8() && is_wordchar(UTF8_APOS))) &&
                    strncmp(line[actual].c_str() + head, ENTITY_APOS,
                            strlen(ENTITY_APOS)) == 0 &&
                    is_wordchar(line[actual].c_str() + head + strlen(ENTITY_APOS))) {
           head += strlen(ENTITY_APOS) - 1;
         } else if (is_utf8() &&
-                   is_wordchar((char*)APOSTROPHE) &&  // add Unicode apostrophe
+                   is_wordchar(APOSTROPHE) &&  // add Unicode apostrophe
                                                       // to the WORDCHARS, if
                                                       // needed
                    strncmp(line[actual].c_str() + head, UTF8_APOS, strlen(UTF8_APOS)) ==

@@ -112,6 +112,10 @@ class SyncablePrefsDatabase {
   // Return true if `pref_name` is a mergeable syncable preference.
   // Note: `pref_name` must be syncable.
   bool IsPreferenceMergeable(std::string_view pref_name) const;
+
+  // Returns whether `pref_name` is part of the allowlist of preferences that
+  // are always synced, irrespective of the preference sync user toggle.
+  virtual bool IsPreferenceAlwaysSyncing(std::string_view pref_name) const = 0;
 };
 
 }  // namespace sync_preferences

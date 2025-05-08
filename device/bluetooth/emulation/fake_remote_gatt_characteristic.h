@@ -24,6 +24,8 @@ class BluetoothRemoteGattDescriptor;
 
 namespace bluetooth {
 
+class FakeRemoteGattService;
+
 // Implements device::BluetoothRemoteGattCharacteristics. Meant to be used
 // by FakeRemoteGattService to keep track of the characteristic's state and
 // attributes.
@@ -32,10 +34,12 @@ namespace bluetooth {
 class FakeRemoteGattCharacteristic
     : public device::BluetoothRemoteGattCharacteristic {
  public:
+  using ResponseCallback = base::OnceCallback<void(uint16_t gatt_code)>;
+
   FakeRemoteGattCharacteristic(const std::string& characteristic_id,
                                const device::BluetoothUUID& characteristic_uuid,
                                mojom::CharacteristicPropertiesPtr properties,
-                               device::BluetoothRemoteGattService* service);
+                               FakeRemoteGattService* service);
   ~FakeRemoteGattCharacteristic() override;
 
   // Adds a fake descriptor with |descriptor_uuid| to this characteristic.
@@ -65,6 +69,15 @@ class FakeRemoteGattCharacteristic
   // call its error callback.
   void SetNextUnsubscribeFromNotificationsResponse(uint16_t gatt_code);
 
+  void SimulateReadResponse(uint16_t gatt_code,
+                            const std::optional<std::vector<uint8_t>>& value);
+
+  void SimulateWriteResponse(uint16_t gatt_code);
+
+  void SimulateSubscribeToNotificationsResponse(uint16_t gatt_code);
+
+  void SimulateUnsubscribeFromNotificationsResponse(uint16_t gatt_code);
+
   // Returns true if there are no pending responses for this characteristc or
   // any of its descriptors.
   bool AllResponsesConsumed();
@@ -78,6 +91,8 @@ class FakeRemoteGattCharacteristic
   // Returns the write type of the last successfully written value to the
   // characteristic. Returns kNone if no value has been written yet.
   mojom::WriteType last_write_type() { return last_write_type_; }
+
+  FakeRemoteGattService& fake_service() const { return fake_service_.get(); }
 
   // device::BluetoothGattCharacteristic overrides:
   std::string GetIdentifier() const override;
@@ -134,12 +149,15 @@ class FakeRemoteGattCharacteristic
   void DispatchUnsubscribeFromNotificationsResponse(
       base::OnceClosure callback,
       ErrorCallback error_callback);
+  void DispatchCharacteristicOperationEvent(
+      mojom::CharacteristicOperationType type,
+      const std::optional<std::vector<uint8_t>>& data,
+      const std::optional<mojom::WriteType> write_type);
 
   const std::string characteristic_id_;
   const device::BluetoothUUID characteristic_uuid_;
   Properties properties_;
-  raw_ptr<device::BluetoothRemoteGattService> service_;
-  std::vector<uint8_t> value_;
+  const raw_ref<FakeRemoteGattService> fake_service_;
 
   // Last successfully written value to the characteristic.
   std::optional<std::vector<uint8_t>> last_written_value_;
@@ -164,6 +182,11 @@ class FakeRemoteGattCharacteristic
   std::optional<uint16_t> next_unsubscribe_from_notifications_response_;
 
   size_t last_descriptor_id_ = 0;
+
+  std::vector<ValueCallback> read_callbacks_;
+  std::vector<ResponseCallback> write_callbacks_;
+  std::vector<ResponseCallback> subscribe_to_notifications_callbacks_;
+  std::vector<ResponseCallback> unsubscribe_from_notifications_callbacks_;
 
   base::WeakPtrFactory<FakeRemoteGattCharacteristic> weak_ptr_factory_{this};
 };

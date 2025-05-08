@@ -7,10 +7,10 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 
 ExtensionControlHandler::ExtensionControlHandler() = default;
@@ -27,10 +27,8 @@ void ExtensionControlHandler::HandleDisableExtension(
     const base::Value::List& args) {
   CHECK_EQ(args.size(), 1u);
   const std::string& extension_id = args[0].GetString();
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(Profile::FromWebUI(web_ui()))
-          ->extension_service();
-  DCHECK(extension_service);
-  extension_service->DisableExtension(
-      extension_id, extensions::disable_reason::DISABLE_USER_ACTION);
+  auto* extension_registrar =
+      extensions::ExtensionRegistrar::Get(Profile::FromWebUI(web_ui()));
+  extension_registrar->DisableExtension(
+      extension_id, {extensions::disable_reason::DISABLE_USER_ACTION});
 }

@@ -33,7 +33,7 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
 // confirmation state when VoiceOver is running. This is slightly greater than
 // `kConfirmationStateDuration` to give VoiceOver enough time to read the
 // required content.
-// TODO(crbug.com/339887700): When VO is running do not use this and listen for
+// TODO(crbug.com/413009143): When VO is running do not use this and listen for
 // VO announcement to finish before auto-closing the modal in confirmation
 // state.
 static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =

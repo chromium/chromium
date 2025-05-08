@@ -1612,8 +1612,8 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
 }
 
 // Test if unscoped suggestions send in zero suggest.
-// TODO(crbug.com/409601761): Test is flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/409601761): Test is flaky on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_UnscopedExtensionZeroSuggest DISABLED_UnscopedExtensionZeroSuggest
 #else
 #define MAYBE_UnscopedExtensionZeroSuggest UnscopedExtensionZeroSuggest
@@ -1775,36 +1775,49 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
   // Check if the suggestion is received (+1 for the IPH).
   ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
 
-  // Each extension suggestion header should match the extension name that
-  // it came from. Extension suggestions should also be grouped together.
+  // Suggestions from the same extension should be grouped together and their
+  // group id header should match the extension name.
   std::set<std::u16string> extension_names = {u"alpha", u"dog"};
+  std::set<omnibox::GroupId> extension_group_ids = {
+      omnibox::GROUP_UNSCOPED_EXTENSION_1, omnibox::GROUP_UNSCOPED_EXTENSION_2};
   {
-    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
-              result.match_at(0).provider->type());
-    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_1,
-              result.match_at(0).suggestion_group_id);
+    EXPECT_THAT(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+                testing::Eq(result.match_at(0).provider->type()));
+    EXPECT_THAT(extension_group_ids,
+                testing::Contains(result.match_at(0).suggestion_group_id));
     EXPECT_THAT(extension_names,
                 testing::Contains(result.GetHeaderForSuggestionGroup(
-                    *result.match_at(1).suggestion_group_id)));
-    extension_names.erase(result.GetHeaderForSuggestionGroup(
-        *result.match_at(1).suggestion_group_id));
+                    result.match_at(0).suggestion_group_id.value())));
+
+    EXPECT_THAT(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+                testing::Eq(result.match_at(1).provider->type()));
+    EXPECT_THAT(extension_group_ids,
+                testing::Contains(result.match_at(1).suggestion_group_id));
+    EXPECT_THAT(extension_names,
+                testing::Contains(result.GetHeaderForSuggestionGroup(
+                    result.match_at(1).suggestion_group_id.value())));
   }
-  // The third and fourth match should be from the other extension.
+
+  extension_group_ids.erase(result.match_at(1).suggestion_group_id.value());
+  extension_names.erase(result.GetHeaderForSuggestionGroup(
+      result.match_at(1).suggestion_group_id.value()));
+
   {
-    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
-              result.match_at(2).provider->type());
-    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_2,
-              result.match_at(2).suggestion_group_id);
+    EXPECT_THAT(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+                testing::Eq(result.match_at(2).provider->type()));
+    EXPECT_THAT(extension_group_ids,
+                testing::Contains(result.match_at(2).suggestion_group_id));
     EXPECT_THAT(extension_names,
                 testing::Contains(result.GetHeaderForSuggestionGroup(
-                    *result.match_at(2).suggestion_group_id)));
-    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
-              result.match_at(3).provider->type());
-    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_2,
-              result.match_at(3).suggestion_group_id);
+                    result.match_at(2).suggestion_group_id.value())));
+
+    EXPECT_THAT(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+                testing::Eq(result.match_at(3).provider->type()));
+    EXPECT_THAT(extension_group_ids,
+                testing::Contains(result.match_at(3).suggestion_group_id));
     EXPECT_THAT(extension_names,
                 testing::Contains(result.GetHeaderForSuggestionGroup(
-                    *result.match_at(3).suggestion_group_id)));
+                    result.match_at(3).suggestion_group_id.value())));
   }
 }
 }  // namespace extensions

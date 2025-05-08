@@ -10,9 +10,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/test_syncable_prefs_database.h"
@@ -35,6 +37,8 @@ constexpr char kMergeableListPref[] = "mergeable.list.pref";
 constexpr char kMergeableDictPref1[] = "mergeable.dict.pref1";
 constexpr char kMergeableDictPref2[] = "mergeable.dict.pref2";
 constexpr char kCustomMergePref[] = "custom.merge.pref";
+constexpr char kAlwaysSyncingPriorityPrefName[] =
+    "always.syncing.priority.pref";
 
 // Assigning an id of 0 to all the test prefs.
 const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
@@ -63,7 +67,13 @@ const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
       MergeBehavior::kMergeableDict}},
     {kCustomMergePref,
      {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kCustom}},
+    {kAlwaysSyncingPriorityPrefName,
+     {0, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kNone}},
 };
+
+const std::set<std::string_view> kAlwaysSyncingPrefs = {
+    kAlwaysSyncingPriorityPrefName};
 
 base::Value MakeDict(
     const std::vector<std::pair<std::string, std::string>>& values) {
@@ -135,7 +145,10 @@ class MockReadErrorDelegate : public PersistentPrefStore::ReadErrorDelegate {
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
   TestPrefModelAssociatorClient()
-      : syncable_prefs_database_(kSyncablePrefsDatabase) {}
+      : syncable_prefs_database_(kSyncablePrefsDatabase) {
+    syncable_prefs_database_.SetAlwaysSyncingPrefs(
+        {kAlwaysSyncingPriorityPrefName});
+  }
 
   // PrefModelAssociatorClient implementation.
   base::Value MaybeMergePreferenceValues(
@@ -168,6 +181,9 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
       local_store_->NotifyInitializationCompleted();
       account_store_->NotifyInitializationCompleted();
     }
+    // Set preferences user selected type by default.
+    dual_layer_store_->SetUserSelectedTypesForTest(
+        {syncer::UserSelectableType::kPreferences});
   }
 
   TestingPrefStore* local_store() { return local_store_.get(); }
@@ -2783,6 +2799,106 @@ TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
 
   EXPECT_TRUE(
       ValueInStoreIsAbsent(*account_store(), kHistorySensitivePrefName));
+
+  store()->RemoveObserver(&observer);
+}
+
+class DualLayerUserPrefStorePriorityPrefDecoupleTest
+    : public DualLayerUserPrefStoreTest {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kSyncSupportAlwaysSyncingPriorityPreferences};
+};
+
+TEST_F(DualLayerUserPrefStorePriorityPrefDecoupleTest,
+       ShouldGetAllowlistedPrefFromAccountStoreIfUserToggleIsOff) {
+  store()->SetUserSelectedTypesForTest(syncer::UserSelectableTypeSet());
+  account_store()->SetValueSilently(kPriorityPrefName,
+                                    base::Value("account value"), 0);
+  // Allowlisted pref.
+  account_store()->SetValueSilently(kAlwaysSyncingPriorityPrefName,
+                                    base::Value("account value"), 0);
+
+  // Check GetValue().
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPriorityPrefName));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kAlwaysSyncingPriorityPrefName,
+                             "account value"));
+
+  // Check GetMutableValue().
+  EXPECT_FALSE(store()->GetMutableValue(kPriorityPrefName, nullptr));
+  base::Value* value = nullptr;
+  EXPECT_TRUE(store()->GetMutableValue(kAlwaysSyncingPriorityPrefName, &value));
+  EXPECT_THAT(value, testing::Pointee(testing::Eq("account value")));
+
+  // Check GetValues().
+  base::Value::Dict values = store()->GetValues();
+  EXPECT_FALSE(values.FindByDottedPath(kPriorityPrefName));
+  EXPECT_THAT(values.FindByDottedPath(kAlwaysSyncingPriorityPrefName),
+              testing::Pointee(testing::Eq("account value")));
+}
+
+TEST_F(DualLayerUserPrefStorePriorityPrefDecoupleTest,
+       ShouldGetRegularPrefFromAccountStoreIfUserToggleIsOn) {
+  store()->SetUserSelectedTypesForTest(syncer::UserSelectableTypeSet(
+      {syncer::UserSelectableType::kPreferences}));
+  account_store()->SetValueSilently(kPriorityPrefName,
+                                    base::Value("account value"), 0);
+  // Allowlisted pref.
+  account_store()->SetValueSilently(kAlwaysSyncingPriorityPrefName,
+                                    base::Value("account value"), 0);
+
+  // Check GetValue().
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPriorityPrefName, "account value"));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kAlwaysSyncingPriorityPrefName,
+                             "account value"));
+
+  // Check GetMutableValue().
+  base::Value* value = nullptr;
+  EXPECT_TRUE(store()->GetMutableValue(kPriorityPrefName, &value));
+  EXPECT_THAT(value, testing::Pointee(testing::Eq("account value")));
+  EXPECT_TRUE(store()->GetMutableValue(kAlwaysSyncingPriorityPrefName, &value));
+  EXPECT_THAT(value, testing::Pointee(testing::Eq("account value")));
+
+  // Check GetValues().
+  base::Value::Dict values = store()->GetValues();
+  EXPECT_THAT(values.FindByDottedPath(kPriorityPrefName),
+              testing::Pointee(testing::Eq("account value")));
+  EXPECT_THAT(values.FindByDottedPath(kAlwaysSyncingPriorityPrefName),
+              testing::Pointee(testing::Eq("account value")));
+}
+
+TEST_F(DualLayerUserPrefStorePriorityPrefDecoupleTest,
+       ShouldObserverUserToggleChange) {
+  syncer::TestSyncService sync_service;
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+  store()->OnSyncServiceInitialized(&sync_service);
+
+  account_store()->SetValueSilently(kPriorityPrefName,
+                                    base::Value("account value"), 0);
+  // Allowlisted pref.
+  account_store()->SetValueSilently(kAlwaysSyncingPriorityPrefName,
+                                    base::Value("account value"), 0);
+
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPriorityPrefName));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kAlwaysSyncingPriorityPrefName,
+                             "account value"));
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnPrefValueChanged(kPriorityPrefName));
+  EXPECT_CALL(observer, OnPrefValueChanged(kAlwaysSyncingPriorityPrefName))
+      .Times(0);
+
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      syncer::UserSelectableTypeSet(
+          {syncer::UserSelectableType::kPreferences}));
+  sync_service.FireStateChanged();
+
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPriorityPrefName, "account value"));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kAlwaysSyncingPriorityPrefName,
+                             "account value"));
 
   store()->RemoveObserver(&observer);
 }

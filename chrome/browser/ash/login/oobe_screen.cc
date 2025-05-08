@@ -22,10 +22,6 @@ bool OobeScreenId::operator==(const OobeScreenId& rhs) const {
   return name == rhs.name;
 }
 
-bool OobeScreenId::operator!=(const OobeScreenId& rhs) const {
-  return name != rhs.name;
-}
-
 bool OobeScreenId::operator<(const OobeScreenId& rhs) const {
   return name < rhs.name;
 }

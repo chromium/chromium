@@ -3,7 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/smart_card/smart_card_permission_request.h"
+
 #include "base/strings/utf_string_conversions.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_request_data.h"
+#include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -13,13 +18,16 @@ SmartCardPermissionRequest::SmartCardPermissionRequest(
     const std::string& reader_name,
     ResultCallback result_callback)
     : permissions::PermissionRequest(
-          requesting_origin.GetURL(),
-          permissions::RequestType::kSmartCard,
-          /*has_gesture=*/false,
+          std::make_unique<permissions::PermissionRequestData>(
+              std::make_unique<permissions::ContentSettingPermissionResolver>(
+                  ContentSettingsType::SMART_CARD_DATA),
+              /*user_gesture=*/false,
+              requesting_origin.GetURL()),
           base::BindRepeating(&SmartCardPermissionRequest::OnPermissionDecided,
                               base::Unretained(this)),
           base::BindOnce(&SmartCardPermissionRequest::DeleteRequest,
-                         base::Unretained(this))),
+                         base::Unretained(this)),
+          /*uses_automatic_embargo=*/true),
       reader_name_(reader_name),
       result_callback_(std::move(result_callback)) {}
 
@@ -51,7 +59,8 @@ std::optional<std::u16string> SmartCardPermissionRequest::GetBlockText() const {
 void SmartCardPermissionRequest::OnPermissionDecided(
     ContentSetting content_setting_result,
     bool is_one_time,
-    bool is_final_decision) {
+    bool is_final_decision,
+    const std::unique_ptr<permissions::PermissionRequestData>& request_data) {
   if (!is_final_decision) {
     return;
   }

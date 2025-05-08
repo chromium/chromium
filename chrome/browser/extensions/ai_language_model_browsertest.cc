@@ -79,6 +79,11 @@ static constexpr char kServiceWorkerScript[] =
           );
           chrome.test.succeed();
         },
+        function verifyLanguageModel() {
+          const expectLanguageModel = %s;
+          chrome.test.assertEq(expectLanguageModel, !!self.LanguageModel);
+          chrome.test.succeed();
+        },
       ]);
     )JS";
 
@@ -240,11 +245,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionAILanguageModelBrowserTest,
        IsExtensionParticipatingInOriginTrial(GetParam())) &&
       IsExtensionPermissionRequested(GetParam()) &&
       !IsPromptAPIForExtensionKillSwitchTriggered(GetParam());
-  test_dir.WriteFile(
-      FILE_PATH_LITERAL("sw.js"),
-      base::StringPrintf(kServiceWorkerScript,
-                         base::ToString(is_self_ai_accessible),
-                         base::ToString(is_chrome_ai_accessible)));
+  bool is_global_accessible = is_self_ai_accessible || is_chrome_ai_accessible;
+  test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"),
+                     base::StringPrintf(kServiceWorkerScript,
+                                        base::ToString(is_self_ai_accessible),
+                                        base::ToString(is_chrome_ai_accessible),
+                                        base::ToString(is_global_accessible)));
   ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);

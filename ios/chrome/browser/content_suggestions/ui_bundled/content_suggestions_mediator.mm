@@ -120,7 +120,7 @@
   }
   MostVisitedTilesConfig* mvtConfig =
       self.mostVisitedTilesMediator.mostVisitedConfig;
-  if (mvtConfig && !mvtConfig.inMagicStack) {
+  if (mvtConfig) {
     [self.consumer setMostVisitedTilesConfig:mvtConfig];
   }
 }

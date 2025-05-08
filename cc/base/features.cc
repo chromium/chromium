@@ -106,10 +106,6 @@ BASE_FEATURE(kEvictionThrottlesDraw,
              "EvictionThrottlesDraw",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAdjustFastMainThreadThreshold,
-             "AdjustFastMainThreadThreshold",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClearCanvasResourcesInBackground,
              "ClearCanvasResourcesInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -135,10 +131,6 @@ BASE_FEATURE(kDontAlwaysPushPictureLayerImpls,
 
 BASE_FEATURE(kPreserveDiscardableImageMapQuality,
              "PreserveDiscardableImageMapQuality",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWarmUpCompositor,
-             "WarmUpCompositor",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCSlimming, "CCSlimming", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -172,10 +164,6 @@ BASE_FEATURE(kSendExplicitDecodeRequestsImmediately,
              "SendExplicitDecodeRequestsImmediately",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThrottleFrameRateOnManyDidNotProduceFrame,
-             "ThrottleFrameRateOnManyDidNotProduceFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNewContentForCheckerboardedScrolls,
              "NewContentForCheckerboardedScrolls",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -183,13 +171,6 @@ BASE_FEATURE(kNewContentForCheckerboardedScrolls,
 BASE_FEATURE(kAllowLCDTextWithFilter,
              "AllowLCDTextWithFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// By default, frame rate starts being throttled when 4 consecutive "did not
-// produce frame" are observed. It stops being throttled when there's a drawn
-// frame.
-const base::FeatureParam<int> kNumDidNotProduceFrameBeforeThrottle{
-    &kThrottleFrameRateOnManyDidNotProduceFrame,
-    "num_did_not_produce_frame_before_throttle", 4};
 
 BASE_FEATURE(kMultipleImplOnlyScrollAnimations,
              "MultipleImplOnlyScrollAnimations",
@@ -232,15 +213,6 @@ bool IsEligibleForThrottleMainFrameTo60Hz() {
 BASE_FEATURE(kViewTransitionCaptureAndDisplay,
              "ViewTransitionCaptureAndDisplay",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, this flag stops the export of most of the
-// UKMs calculated by the DroppedFrameCounter.
-BASE_FEATURE(kStopExportDFCMetrics,
-             "StopExportDFCMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool StopExportDFCMetrics() {
-  return base::FeatureList::IsEnabled(features::kStopExportDFCMetrics);
-}
 
 BASE_FEATURE(kZeroScrollMetricsUpdate,
              "ZeroScrollMetricsUpdate",

@@ -187,10 +187,11 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
-  self.viewController.applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  self.viewController.snackbarCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  self.viewController.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  self.viewController.snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
   self.viewController.reauthModule = self.reauthenticationModule;
   if (self.openInEditMode) {
     [self.viewController editButtonPressed];
@@ -510,6 +511,8 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 #pragma mark - Private
 
 - (void)dismissActionSheetCoordinator {
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self.viewController.customLeftBarButtonItem);
   [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
 }

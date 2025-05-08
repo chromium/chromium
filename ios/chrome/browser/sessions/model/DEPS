@@ -14,6 +14,8 @@ specific_include_rules = {
     "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",
   ],
   "^.*_unittest.mm": [
+    "+components/data_sharing/test_support",
+    "+components/saved_tab_groups/test_support",
     "+ios/chrome/browser/web/model/chrome_web_client.h",
   ]
 }

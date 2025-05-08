@@ -278,4 +278,11 @@ void BrowserTaskQueues::EndRunAllPendingTasksForTesting(
   }
 }
 
+void BrowserTaskQueues::SetOnTaskCompletedHandler(
+    base::sequence_manager::TaskQueue::OnTaskCompletedHandler handler) {
+  for (auto& queue : queue_data_) {
+    queue.task_queue->SetOnTaskCompletedHandler(handler);
+  }
+}
+
 }  // namespace content

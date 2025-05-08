@@ -32,17 +32,15 @@ ConvertToListOfPublicKeyCredentialParameters(
 
 }  // namespace
 
-std::unique_ptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance() {
+scoped_refptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  return std::make_unique<BrowserBoundKeyStoreAndroid>(
+  return base::MakeRefCounted<BrowserBoundKeyStoreAndroid>(
       Java_BrowserBoundKeyStore_getInstance(env));
 }
 
 BrowserBoundKeyStoreAndroid::BrowserBoundKeyStoreAndroid(
     jni_zero::ScopedJavaLocalRef<jobject> impl)
     : impl_(impl) {}
-
-BrowserBoundKeyStoreAndroid::~BrowserBoundKeyStoreAndroid() = default;
 
 std::unique_ptr<BrowserBoundKey>
 BrowserBoundKeyStoreAndroid::GetOrCreateBrowserBoundKeyForCredentialId(
@@ -56,5 +54,13 @@ BrowserBoundKeyStoreAndroid::GetOrCreateBrowserBoundKeyForCredentialId(
           ConvertToListOfPublicKeyCredentialParameters(env,
                                                        allowed_credentials)));
 }
+
+void BrowserBoundKeyStoreAndroid::DeleteBrowserBoundKey(
+    std::vector<uint8_t> bbk_id) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  Java_BrowserBoundKeyStore_deleteBrowserBoundKey(env, impl_, bbk_id);
+}
+
+BrowserBoundKeyStoreAndroid::~BrowserBoundKeyStoreAndroid() = default;
 
 }  // namespace payments

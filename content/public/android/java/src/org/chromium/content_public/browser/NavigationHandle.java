@@ -25,10 +25,10 @@ import org.chromium.url.Origin;
 public class NavigationHandle {
     private long mNativeNavigationHandle;
     private boolean mIsInPrimaryMainFrame;
-    private boolean mIsRendererInitiated;
+    private final boolean mIsRendererInitiated;
     private boolean mIsSameDocument;
     private @PageTransition int mPageTransition;
-    private @Nullable GURL mUrl;
+    private GURL mUrl;
     private @Nullable GURL mReferrerUrl;
     private @Nullable GURL mBaseUrlForDataUrl;
     private boolean mHasCommitted;
@@ -45,11 +45,11 @@ public class NavigationHandle {
     private boolean mIsExternalProtocol;
     private long mNavigationId;
     private boolean mIsPageActivation;
-    private boolean mIsReload;
-    private boolean mIsHistory;
-    private boolean mIsBack;
-    private boolean mIsForward;
-    private boolean mIsRestore;
+    private final boolean mIsReload;
+    private final boolean mIsHistory;
+    private final boolean mIsBack;
+    private final boolean mIsForward;
+    private final boolean mIsRestore;
     private @Nullable UserDataHost mUserDataHost;
     private boolean mIsPdf;
     private @Nullable String mMimeType;
@@ -103,15 +103,22 @@ public class NavigationHandle {
             boolean hasUserGesture,
             boolean isReload,
             boolean isSaveableNavigation) {
-        NavigationHandle handle = new NavigationHandle(0);
+        NavigationHandle handle =
+                new NavigationHandle(
+                        0,
+                        url,
+                        isRendererInitiated,
+                        isReload,
+                        /* isHistory= */ false,
+                        /* isBack= */ false,
+                        /* isForward= */ false,
+                        /* isRestore= */ false);
         handle.didStart(
-                url,
-                GURL.emptyGURL(),
-                GURL.emptyGURL(),
+                /* referrerUrl= */ GURL.emptyGURL(),
+                /* baseUrlForDataUrl= */ GURL.emptyGURL(),
                 isInPrimaryMainFrame,
                 isSameDocument,
-                isRendererInitiated,
-                null,
+                /* initiatorOrigin= */ null,
                 transition,
                 /* isPost= */ false,
                 hasUserGesture,
@@ -119,31 +126,39 @@ public class NavigationHandle {
                 /* isExternalProtocol= */ false,
                 /* navigationId= */ 0,
                 /* isPageActivation= */ false,
-                isReload,
-                /* isHistory= */ false,
-                /* isBack= */ false,
-                /* isForward= */ false,
-                /* isRestore= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
                 isSaveableNavigation,
-                null);
+                /* webContents= */ null);
         return handle;
     }
 
     @CalledByNative
-    private NavigationHandle(long nativeNavigationHandle) {
+    private NavigationHandle(
+            long nativeNavigationHandle,
+            GURL url,
+            boolean isRendererInitiated,
+            boolean isReload,
+            boolean isHistory,
+            boolean isBack,
+            boolean isForward,
+            boolean isRestore) {
         mNativeNavigationHandle = nativeNavigationHandle;
+        mUrl = url;
+        mIsRendererInitiated = isRendererInitiated;
+        mIsReload = isReload;
+        mIsHistory = isHistory;
+        mIsBack = isBack;
+        mIsForward = isForward;
+        mIsRestore = isRestore;
     }
 
     @CalledByNative
     private void didStart(
-            GURL url,
             GURL referrerUrl,
             GURL baseUrlForDataUrl,
             boolean isInPrimaryMainFrame,
             boolean isSameDocument,
-            boolean isRendererInitiated,
             @Nullable Origin initiatorOrigin,
             @PageTransition int transition,
             boolean isPost,
@@ -152,21 +167,14 @@ public class NavigationHandle {
             boolean isExternalProtocol,
             long navigationId,
             boolean isPageActivation,
-            boolean isReload,
-            boolean isHistory,
-            boolean isBack,
-            boolean isForward,
-            boolean isRestore,
             boolean isPdf,
             String mimeType,
             boolean isSaveableNavigation,
             @Nullable WebContents webContents) {
-        mUrl = url;
         mReferrerUrl = referrerUrl;
         mBaseUrlForDataUrl = baseUrlForDataUrl;
         mIsInPrimaryMainFrame = isInPrimaryMainFrame;
         mIsSameDocument = isSameDocument;
-        mIsRendererInitiated = isRendererInitiated;
         mInitiatorOrigin = initiatorOrigin;
         mPageTransition = transition;
         mIsPost = isPost;
@@ -174,15 +182,10 @@ public class NavigationHandle {
         mIsRedirect = isRedirect;
         mIsExternalProtocol = isExternalProtocol;
         mNavigationId = navigationId;
-        mIsPageActivation = isPageActivation;
-        mIsReload = isReload;
-        mIsHistory = isHistory;
-        mIsBack = isBack;
-        mIsForward = isForward;
-        mIsRestore = isRestore;
         mIsPdf = isPdf;
-        mMimeType = mimeType;
         mIsSaveableNavigation = isSaveableNavigation;
+        mIsPageActivation = isPageActivation;
+        mMimeType = mimeType;
         mWebContents = webContents;
 
         mStarted = true;
@@ -252,8 +255,7 @@ public class NavigationHandle {
      * server redirect.
      */
     public GURL getUrl() {
-        assert mStarted;
-        return assumeNonNull(mUrl);
+        return mUrl;
     }
 
     /** The referrer URL for the navigation. */
@@ -290,7 +292,6 @@ public class NavigationHandle {
      * window.history.back() - any other "explicit" URL navigations, e.g. bookmarks
      */
     public boolean isRendererInitiated() {
-        assert mStarted;
         return mIsRendererInitiated;
     }
 
@@ -424,31 +425,26 @@ public class NavigationHandle {
 
     /** Whether this navigation was initiated by a page reload. */
     public boolean isReload() {
-        assert mStarted;
         return mIsReload;
     }
 
     /** Whether this navigation is a history navigation or not. */
     public boolean isHistory() {
-        assert mStarted;
         return mIsHistory;
     }
 
     /** Whether this navigation is a back history navigation or not (offset < 0). */
     public boolean isBack() {
-        assert mStarted;
         return mIsBack;
     }
 
     /** Whether this navigation is a back history navigation or not (offset > 0). */
     public boolean isForward() {
-        assert mStarted;
         return mIsForward;
     }
 
     /** Whether this navigation was initiated by a session restore. */
     public boolean isRestore() {
-        assert mStarted;
         return mIsRestore;
     }
 
@@ -494,7 +490,6 @@ public class NavigationHandle {
      * result in a Page (e.g. 204/download)
      */
     public @Nullable Page getCommittedPage() {
-        assert mStarted;
         return mCommittedPage;
     }
 }

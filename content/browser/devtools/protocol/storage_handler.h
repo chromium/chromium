@@ -21,6 +21,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
+#include "content/public/browser/global_routing_id.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
@@ -39,7 +40,9 @@ class StorageHandler
     : public DevToolsDomainHandler,
       public Storage::Backend,
       public content::InterestGroupManagerImpl::InterestGroupObserver,
-      public AttributionObserver {
+      public AttributionObserver,
+      public content::SharedStorageRuntimeManager::
+          SharedStorageObserverInterface {
  public:
   explicit StorageHandler(DevToolsAgentHostClient* client);
 
@@ -215,15 +218,33 @@ class StorageHandler
       attribution_reporting::mojom::StoreSourceResult) override;
   void OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
                         const CreateReportResult&) override;
+  void OnReportSent(const AttributionReport&,
+                    bool is_debug_report,
+                    const SendResult&) override;
 
-  void NotifySharedStorageAccessed(
-      const base::Time& access_time,
+  // SharedStorageObserverInterface
+  GlobalRenderFrameHostId AssociatedFrameHostId() const override;
+  bool ShouldReceiveAllReports() const override;
+  void OnSharedStorageAccessed(
+      base::Time access_time,
       blink::SharedStorageAccessScope scope,
       SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
           method,
-      FrameTreeNodeId main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin,
-      const SharedStorageEventParams& params);
+      const SharedStorageEventParams& params) override;
+  void OnUrnUuidGenerated(const GURL& urn_uuid) override;
+  void OnConfigPopulated(
+      const std::optional<FencedFrameConfig>& config) override;
+  void OnWorkletOperationExecutionFinished(
+      base::Time finished_time,
+      base::TimeDelta execution_time,
+      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
+          method,
+      int operation_id,
+      int worklet_id,
+      GlobalRenderFrameHostId main_frame_id,
+      const std::string& owner_origin) override;
 
   void NotifyCacheStorageListChanged(
       const storage::BucketLocator& bucket_locator);
@@ -256,7 +277,6 @@ class StorageHandler
   raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
   std::unique_ptr<CacheStorageObserver> cache_storage_observer_;
   std::unique_ptr<IndexedDBObserver> indexed_db_observer_;
-  std::unique_ptr<SharedStorageObserver> shared_storage_observer_;
   std::unique_ptr<QuotaManagerObserver> quota_manager_observer_;
 
   // Exposes the API for managing storage quota overrides.
@@ -268,6 +288,10 @@ class StorageHandler
 
   base::ScopedObservation<AttributionManager, AttributionObserver>
       attribution_observation_{this};
+  base::ScopedObservation<
+      content::SharedStorageRuntimeManager,
+      content::SharedStorageRuntimeManager::SharedStorageObserverInterface>
+      shared_storage_observation_{this};
 
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
 };

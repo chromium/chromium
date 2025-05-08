@@ -156,13 +156,7 @@ exec_script_allowlist =
       # in the Chromium repo outside of //build.
       "//build_overrides/build.gni",
 
-      "//chrome/android/webapk/shell_apk/prepare_upload_dir/BUILD.gn",
       "//chrome/version.gni",
-
-      # TODO(dgn): Layer violation but breaks the build otherwise, see
-      # https://crbug.com/474506.
-      "//clank/java/BUILD.gn",
-      "//clank/native/BUILD.gn",
 
       "//google_apis/BUILD.gn",
       "//printing/BUILD.gn",

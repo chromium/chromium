@@ -87,5 +87,10 @@ bool SearchPreloadService::OnNavigationLikely(
     const AutocompleteMatch& match,
     omnibox::mojom::NavigationPredictor navigation_predictor,
     content::WebContents* web_contents) {
-  NOTREACHED();
+  if (!web_contents) {
+    return false;
+  }
+
+  return GetOrCreatePipelineManagerWithLimit(*web_contents)
+      .OnNavigationLikely(*profile_, match, navigation_predictor);
 }

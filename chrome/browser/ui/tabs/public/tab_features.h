@@ -53,6 +53,7 @@ class ExtensionSidePanelManager;
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
+class GlicPageContextEligibilityObserver;
 class GlicTabIndicatorHelper;
 }
 #endif
@@ -96,6 +97,10 @@ class EmbedderTabObserver;
 namespace tab_groups {
 class CollaborationMessagingTabData;
 }  // namespace tab_groups
+
+namespace new_tab_footer {
+class NewTabFooterController;
+}  // namespace new_tab_footer
 
 namespace tabs {
 
@@ -216,6 +221,17 @@ class TabFeatures {
     return inactive_window_mouse_event_controller_.get();
   }
 
+  new_tab_footer::NewTabFooterController* new_tab_footer_controller() {
+    return new_tab_footer_controller_.get();
+  }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicPageContextEligibilityObserver*
+  glic_page_context_eligibility_observer() {
+    return glic_page_context_eligibility_observer_.get();
+  }
+#endif
+
   // Called exactly once to initialize features.
   // Can be overridden in tests to initialize nothing.
   virtual void Init(TabInterface& tab, Profile* profile);
@@ -330,6 +346,9 @@ class TabFeatures {
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
+
+  std::unique_ptr<glic::GlicPageContextEligibilityObserver>
+      glic_page_context_eligibility_observer_;
 #endif
 
   std::unique_ptr<memory_saver::MemorySaverChipController>
@@ -340,6 +359,9 @@ class TabFeatures {
 
   std::unique_ptr<FromGWSNavigationAndKeepAliveRequestObserver>
       from_gws_navigation_and_keep_alive_request_observer_;
+
+  std::unique_ptr<new_tab_footer::NewTabFooterController>
+      new_tab_footer_controller_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

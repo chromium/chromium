@@ -107,7 +107,6 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kAccountConsistencyService:
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
-    case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
     case signin_metrics::AccessPoint::kSaveToDriveIos:
     case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
@@ -138,6 +137,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::
         kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
+    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
       return false;
   }
 }
@@ -205,7 +205,6 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kAccountConsistencyService:
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
-    case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
     case signin_metrics::AccessPoint::kSaveToDriveIos:
     case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
@@ -236,6 +235,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
+    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -304,7 +304,6 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kAccountConsistencyService:
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
-    case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
     case signin_metrics::AccessPoint::kSaveToDriveIos:
     case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
@@ -335,6 +334,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
+    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -392,7 +392,6 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kAccountConsistencyService:
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
-    case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
     case signin_metrics::AccessPoint::kSaveToDriveIos:
     case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
@@ -423,6 +422,7 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::
         kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
+    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
       return nullptr;
   }
 }
@@ -479,7 +479,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kAccountConsistencyService:
     case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
-    case signin_metrics::AccessPoint::kPasswordMigrationWarningAndroid:
     case signin_metrics::AccessPoint::kSaveToDriveIos:
     case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
@@ -510,6 +509,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::
         kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
+    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
       return nullptr;
   }
 }

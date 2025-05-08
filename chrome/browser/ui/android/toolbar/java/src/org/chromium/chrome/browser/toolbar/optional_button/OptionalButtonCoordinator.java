@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -16,6 +18,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -37,13 +41,14 @@ import java.util.function.BooleanSupplier;
  * The coordinator for a button that may appear on the toolbar whose icon and click handler can be
  * updated with animations.
  */
+@NullMarked
 public class OptionalButtonCoordinator {
     private final OptionalButtonMediator mMediator;
     private final OptionalButtonView mView;
     private final Supplier<UserEducationHelper> mUserEducationHelper;
     private final Supplier<Tracker> mFeatureEngagementTrackerSupplier;
-    private Callback<Integer> mTransitionFinishedCallback;
-    private IphCommandBuilder mIphCommandBuilder;
+    private @Nullable Callback<Integer> mTransitionFinishedCallback;
+    private @Nullable IphCommandBuilder mIphCommandBuilder;
 
     @IntDef({
         TransitionType.SWAPPING,
@@ -131,7 +136,7 @@ public class OptionalButtonCoordinator {
      * (according to the BooleanSupplier set with setIsAnimationAllowedPredicate) then this update
      * will be animated. Otherwise it'll instantly switch to the new icon.
      */
-    public void updateButton(ButtonData buttonData, boolean isIncognito) {
+    public void updateButton(@Nullable ButtonData buttonData, boolean isIncognito) {
         if (buttonData != null
                 && buttonData.getButtonSpec() != null
                 && buttonData.getButtonSpec().getIphCommandBuilder() != null) {
@@ -148,6 +153,7 @@ public class OptionalButtonCoordinator {
 
         // Dynamic buttons include an action chip resource ID by default regardless of variant.
         if (hasActionChipResourceId) {
+            assumeNonNull(buttonData);
             // We should only show the action chip if the action chip variant is enabled.
             boolean isActionChipVariant =
                     FeatureList.isInitialized()
@@ -172,8 +178,8 @@ public class OptionalButtonCoordinator {
         if (buttonData != null) {
             buttonData.setBackgroundResource(
                     isIncognito
-                            ? R.drawable.default_icon_background_baseline
-                            : R.drawable.default_icon_background);
+                            ? R.drawable.optional_button_background_baseline
+                            : R.drawable.optional_button_background);
         }
         mMediator.updateButton(buttonData);
     }
@@ -200,7 +206,7 @@ public class OptionalButtonCoordinator {
     /**
      * Updates the foreground color on the icons and label to match the current theme/website color.
      */
-    public void setIconForegroundColor(ColorStateList colorStateList) {
+    public void setIconForegroundColor(@Nullable ColorStateList colorStateList) {
         mMediator.setIconForegroundColor(colorStateList);
     }
 

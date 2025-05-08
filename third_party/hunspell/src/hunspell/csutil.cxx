@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -70,11 +70,14 @@
 
 #include <algorithm>
 #include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cctype>
 #include <sstream>
+#if __cplusplus >= 202002L
+#include <bit>
+#endif
 
 #include "csutil.hxx"
 #include "atypes.hxx"
@@ -90,7 +93,6 @@
 #else
 #ifndef MOZILLA_CLIENT
 #include "utf_info.hxx"
-#define UTF_LST_LEN (sizeof(utf_lst) / (sizeof(unicode_info)))
 #endif
 #endif
 
@@ -101,16 +103,6 @@
 
 using namespace mozilla;
 #endif
-
-struct unicode_info2 {
-  char cletter;
-  unsigned short cupper;
-  unsigned short clower;
-};
-
-static struct unicode_info2* utf_tbl = NULL;
-static int utf_tbl_count =
-    0;  // utf_tbl can be used by multiple Hunspell instances
 
 void myopen(std::ifstream& stream, const char* path, std::ios_base::openmode mode)
 {
@@ -134,8 +126,8 @@ void myopen(std::ifstream& stream, const char* path, std::ios_base::openmode mod
 
 std::string& u16_u8(std::string& dest, const std::vector<w_char>& src) {
   dest.clear();
-  std::vector<w_char>::const_iterator u2 = src.begin();
-  std::vector<w_char>::const_iterator u2_max = src.end();
+  dest.reserve(src.size());
+  auto u2 = src.begin(), u2_max = src.end();
   while (u2 < u2_max) {
     signed char u8;
     if (u2->h) {  // > 0xFF
@@ -169,10 +161,12 @@ std::string& u16_u8(std::string& dest, const std::vector<w_char>& src) {
   return dest;
 }
 
-int u8_u16(std::vector<w_char>& dest, const std::string& src) {
-  dest.clear();
-  std::string::const_iterator u8 = src.begin();
-  std::string::const_iterator u8_max = src.end();
+int u8_u16(std::vector<w_char>& dest, const std::string& src, bool only_convert_first_letter) {
+  // faster to oversize initially, assign to elements and resize to what's used
+  // than to reserve and push_back
+  dest.resize(only_convert_first_letter ? 1 : src.size());
+  auto u16 = dest.begin();
+  auto u8 = src.begin(), u8_max = src.end();
 
   while (u8 < u8_max) {
     w_char u2;
@@ -246,21 +240,27 @@ int u8_u16(std::vector<w_char>& dest, const std::string& src) {
         }
         break;
       }
-      case 0xf0: {  // 4 or more byte UTF-8 codes
+      default: {  // 4 or more byte UTF-8 codes
+        assert(((*u8) & 0xf0) == 0xf0 && "can only be 0xf0");
         HUNSPELL_WARNING(stderr,
                          "This UTF-8 encoding can't convert to UTF-16:\n%s\n",
                          src.c_str());
         u2.h = 0xff;
         u2.l = 0xfd;
-        dest.push_back(u2);
+        *u16++ = u2;
+        dest.resize(u16 - dest.begin());
         return -1;
       }
     }
-    dest.push_back(u2);
+    *u16++ = u2;
+    if (only_convert_first_letter)
+        break;
     ++u8;
   }
 
-  return dest.size();
+  int size = u16 - dest.begin();
+  dest.resize(size);
+  return size;
 }
 
 namespace {
@@ -268,7 +268,7 @@ class is_any_of {
  public:
   explicit is_any_of(const std::string& in) : chars(in) {}
 
-  bool operator()(char c) { return chars.find(c) != std::string::npos; }
+  bool operator()(char c) const { return chars.find(c) != std::string::npos; }
 
  private:
   std::string chars;
@@ -277,36 +277,21 @@ class is_any_of {
 
 std::string::const_iterator mystrsep(const std::string &str,
                                      std::string::const_iterator& start) {
-  std::string::const_iterator end = str.end();
+  auto end = str.end();
 
   is_any_of op(" \t");
   // don't use isspace() here, the string can be in some random charset
   // that's way different than the locale's
-  std::string::const_iterator sp = start;
+  auto sp = start;
   while (sp != end && op(*sp))
       ++sp;
 
-  std::string::const_iterator dp = sp;
+  auto dp = sp;
   while (dp != end && !op(*dp))
       ++dp;
 
   start = dp;
   return sp;
-}
-
-// replaces strdup with ansi version
-char* mystrdup(const char* s) {
-  char* d = NULL;
-  if (s) {
-    size_t sl = strlen(s) + 1;
-    d = (char*)malloc(sl);
-    if (d) {
-      memcpy(d, s, sl);
-    } else {
-      HUNSPELL_WARNING(stderr, "Can't allocate memory.\n");
-    }
-  }
-  return d;
 }
 
 // remove cross-platform text line end characters
@@ -396,9 +381,9 @@ void line_uniq_app(std::string& text, char breakchar) {
   }
 
   text.assign(" ( ");
-  for (size_t i = 0; i < lines.size(); ++i) {
-      text.append(lines[i]);
-      text.append(" | ");
+  for (auto& line : lines) {
+    text.append(line);
+    text.append(" | ");
   }
   text[text.size() - 2] = ')';  // " ) "
 }
@@ -434,9 +419,8 @@ bool copy_field(std::string& dest,
   dest.clear();
   std::string beg(morph.substr(pos + MORPH_TAG_LEN, std::string::npos));
 
-  for (size_t i = 0; i < beg.size(); ++i) {
-    const char c(beg[i]);
-    if (c == ' ' || c == '\t' || c == '\n')
+  for (const char c : beg) {
+	if (c == ' ' || c == '\t' || c == '\n')
       break;
     dest.push_back(c);
   }
@@ -463,11 +447,86 @@ size_t reverseword(std::string& word) {
 
 // reverse word
 size_t reverseword_utf(std::string& word) {
-  std::vector<w_char> w;
-  u8_u16(w, word);
-  std::reverse(w.begin(), w.end());
-  u16_u8(word, w);
-  return w.size();
+  std::reverse(word.begin(), word.end()); //1st step: we reverse the string
+	
+  size_t num_chars = word.size(); //in order to make sure there are enough characters at the end of the string when we process a multibyte character
+  //2nd step: we process each multibyte character and reverse it
+  for (auto it = word.rbegin(); it != word.rend(); ) {
+    switch ((*it) & 0xf0) {
+      case 0x00:
+      case 0x10:
+      case 0x20:
+      case 0x30:
+      case 0x40:
+      case 0x50:
+      case 0x60:
+      case 0x70:
+        //one byte
+        ++it;
+        --num_chars;
+        break;
+      case 0x80:
+      case 0x90:
+      case 0xa0:
+      case 0xb0:
+        HUNSPELL_WARNING(stderr,
+                         "UTF-8 encoding error. Unexpected continuation bytes "
+                         "in %ld. character position\n%s\n",
+                         static_cast<long>(std::distance(word.begin(), it.base()) - 1),
+                         word.c_str());
+        ++it;
+        --num_chars;
+        break;
+      case 0xc0:
+      case 0xd0: {
+	//two bytes
+        if (num_chars >= 2) {
+          std::iter_swap(it, it + 1);
+          it += 2;
+          num_chars -= 2;
+        } else {
+          HUNSPELL_WARNING(stderr,
+                         "UTF-8 encoding error. Missing character at the end\n%s\n",
+                         word.c_str());
+          ++it;
+          --num_chars;
+        }
+        break;
+      }
+      case 0xe0: {
+        //three bytes
+        if (num_chars >= 3) {
+          std::iter_swap(it, it + 2);
+          it += 3;
+          num_chars -= 3;
+        } else {
+          HUNSPELL_WARNING(stderr,
+                         "UTF-8 encoding error. Missing character at the end\n%s\n",
+                         word.c_str());
+          ++it;
+          --num_chars;
+        }
+        break;
+      }
+      default: {
+        // 4 or more byte UTF-8 codes
+        if (num_chars >= 4) {
+          std::iter_swap(it, it + 3);
+          std::iter_swap(it + 1, it + 2);
+          it += 4;
+          num_chars -= 4;
+        } else {
+          HUNSPELL_WARNING(stderr,
+                         "UTF-8 encoding error. Missing character at the end\n%s\n",
+                         word.c_str());
+          ++it;
+          --num_chars;
+        }
+        break;
+      }
+    }
+  }
+  return word.size();
 }
 
 void uniqlist(std::vector<std::string>& list) {
@@ -503,62 +562,79 @@ unsigned char ccase(const struct cs_info* csconv, int nIndex) {
 }
 
 w_char upper_utf(w_char u, int langnum) {
-  unsigned short idx = (u.h << 8) + u.l;
-  unsigned short upridx = unicodetoupper(idx, langnum);
-  if (idx != upridx) {
-    u.h = (unsigned char)(upridx >> 8);
-    u.l = (unsigned char)(upridx & 0x00FF);
-  }
+	
+#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+
+//with these optimizations, msvc can optimize this function to one jmp instruction
+//but g++ remains in five instructions
+//maybe use inline asm for g++?
+
+#if __cplusplus >= 202002L
+  return std::bit_cast<w_char>(unicodetoupper((unsigned short)u, langnum));
+#else
+  const auto us = unicodetoupper((unsigned short)u, langnum);
+  memcpy(&u, &us, sizeof(unsigned short));
   return u;
+#endif
+
+#else
+  const auto us = unicodetoupper((unsigned short)u, langnum);
+  u.h = (unsigned char)(us >> 8);
+  u.l = (unsigned char)(us & 0xff);
+  return u;
+#endif
 }
 
 w_char lower_utf(w_char u, int langnum) {
-  unsigned short idx = (u.h << 8) + u.l;
-  unsigned short lwridx = unicodetolower(idx, langnum);
-  if (idx != lwridx) {
-    u.h = (unsigned char)(lwridx >> 8);
-    u.l = (unsigned char)(lwridx & 0x00FF);
-  }
+	
+#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+
+//with these optimizations, msvc can optimize this function to one jmp instruction
+//but g++ remains in five instructions
+//maybe use inline asm for g++?
+
+#if __cplusplus >= 202002L
+  return std::bit_cast<w_char>(unicodetolower((unsigned short)u, langnum));
+#else
+  const auto us = unicodetolower((unsigned short)u, langnum);
+  memcpy(&u, &us, sizeof(unsigned short));
   return u;
+#endif
+
+#else
+  const auto us = unicodetolower((unsigned short)u, langnum);
+  u.h = (unsigned char)(us >> 8);
+  u.l = (unsigned char)(us & 0xff);
+  return u;
+#endif
 }
 
 // convert std::string to all caps
 std::string& mkallcap(std::string& s, const struct cs_info* csconv) {
-  for (std::string::iterator aI = s.begin(), aEnd = s.end(); aI != aEnd; ++aI) {
-    *aI = cupper(csconv, static_cast<unsigned char>(*aI));
+  for (char& aI : s) {
+    aI = cupper(csconv, static_cast<unsigned char>(aI));
   }
   return s;
 }
 
 // convert std::string to all little
 std::string& mkallsmall(std::string& s, const struct cs_info* csconv) {
-  for (std::string::iterator aI = s.begin(), aEnd = s.end(); aI != aEnd; ++aI) {
-    *aI = clower(csconv, static_cast<unsigned char>(*aI));
+  for (char& aI : s) {
+    aI = clower(csconv, static_cast<unsigned char>(aI));
   }
   return s;
 }
 
-std::vector<w_char>& mkallsmall_utf(std::vector<w_char>& u,
-                                          int langnum) {
-  for (size_t i = 0; i < u.size(); ++i) {
-    unsigned short idx = (u[i].h << 8) + u[i].l;
-    unsigned short lwridx = unicodetolower(idx, langnum);
-    if (idx != lwridx) {
-      u[i].h = (unsigned char)(lwridx >> 8);
-      u[i].l = (unsigned char)(lwridx & 0x00FF);
-    }
+std::vector<w_char>& mkallsmall_utf(std::vector<w_char>& u, int langnum) {
+  for (auto& i : u) {
+    i = lower_utf(i, langnum);
   }
   return u;
 }
 
 std::vector<w_char>& mkallcap_utf(std::vector<w_char>& u, int langnum) {
-  for (size_t i = 0; i < u.size(); i++) {
-    unsigned short idx = (u[i].h << 8) + u[i].l;
-    unsigned short upridx = unicodetoupper(idx, langnum);
-    if (idx != upridx) {
-      u[i].h = (unsigned char)(upridx >> 8);
-      u[i].l = (unsigned char)(upridx & 0x00FF);
-    }
+  for (auto& i : u) {
+    i = upper_utf(i, langnum);
   }
   return u;
 }
@@ -572,12 +648,7 @@ std::string& mkinitcap(std::string& s, const struct cs_info* csconv) {
 
 std::vector<w_char>& mkinitcap_utf(std::vector<w_char>& u, int langnum) {
   if (!u.empty()) {
-    unsigned short idx = (u[0].h << 8) + u[0].l;
-    unsigned short upridx = unicodetoupper(idx, langnum);
-    if (idx != upridx) {
-      u[0].h = (unsigned char)(upridx >> 8);
-      u[0].l = (unsigned char)(upridx & 0x00FF);
-    }
+	u[0] = upper_utf(u[0], langnum);
   }
   return u;
 }
@@ -591,12 +662,7 @@ std::string& mkinitsmall(std::string& s, const struct cs_info* csconv) {
 
 std::vector<w_char>& mkinitsmall_utf(std::vector<w_char>& u, int langnum) {
   if (!u.empty()) {
-    unsigned short idx = (u[0].h << 8) + u[0].l;
-    unsigned short lwridx = unicodetolower(idx, langnum);
-    if (idx != lwridx) {
-      u[0].h = (unsigned char)(lwridx >> 8);
-      u[0].l = (unsigned char)(lwridx & 0x00FF);
-    }
+	u[0] = lower_utf(u[0], langnum);
   }
   return u;
 }
@@ -2262,10 +2328,9 @@ struct cs_info* get_current_cs(const std::string& es) {
   toAsciiLowerAndRemoveNonAlphanumeric(es.c_str(), normalized_encoding);
 
   struct cs_info* ccs = NULL;
-  int n = sizeof(encds) / sizeof(encds[0]);
-  for (int i = 0; i < n; i++) {
-    if (strcmp(normalized_encoding, encds[i].enc_name) == 0) {
-      ccs = encds[i].cs_table;
+  for (const auto& encd : encds) {
+    if (strcmp(normalized_encoding, encd.enc_name) == 0) {
+      ccs = encd.cs_table;
       break;
     }
   }
@@ -2411,43 +2476,12 @@ static struct lang_map lang2enc[] =
      {"ru", LANG_ru},    {"uk", LANG_uk}};
 
 int get_lang_num(const std::string& lang) {
-  int n = sizeof(lang2enc) / sizeof(lang2enc[0]);
-  for (int i = 0; i < n; i++) {
-    if (strcmp(lang.c_str(), lang2enc[i].lang) == 0) {
-      return lang2enc[i].num;
+  for (const auto& i : lang2enc) {
+    if (strcmp(lang.c_str(), i.lang) == 0) {
+      return i.num;
     }
   }
   return LANG_xx;
-}
-
-#ifndef OPENOFFICEORG
-#ifndef MOZILLA_CLIENT
-void initialize_utf_tbl() {
-  utf_tbl_count++;
-  if (utf_tbl)
-    return;
-  utf_tbl = new unicode_info2[CONTSIZE];
-  for (size_t j = 0; j < CONTSIZE; ++j) {
-    utf_tbl[j].cletter = 0;
-    utf_tbl[j].clower = (unsigned short)j;
-    utf_tbl[j].cupper = (unsigned short)j;
-  }
-  for (size_t j = 0; j < UTF_LST_LEN; ++j) {
-    utf_tbl[utf_lst[j].c].cletter = 1;
-    utf_tbl[utf_lst[j].c].clower = utf_lst[j].clower;
-    utf_tbl[utf_lst[j].c].cupper = utf_lst[j].cupper;
-  }
-}
-#endif
-#endif
-
-void free_utf_tbl() {
-  if (utf_tbl_count > 0)
-    utf_tbl_count--;
-  if (utf_tbl && (utf_tbl_count == 0)) {
-    delete[] utf_tbl;
-    utf_tbl = NULL;
-  }
 }
 
 unsigned short unicodetoupper(unsigned short c, int langnum) {
@@ -2462,7 +2496,7 @@ unsigned short unicodetoupper(unsigned short c, int langnum) {
 #ifdef MOZILLA_CLIENT
   return ToUpperCase((char16_t)c);
 #else
-  return (utf_tbl) ? utf_tbl[c].cupper : c;
+  return utf_tbl[c].cupper;
 #endif
 #endif
 }
@@ -2479,7 +2513,7 @@ unsigned short unicodetolower(unsigned short c, int langnum) {
 #ifdef MOZILLA_CLIENT
   return ToLowerCase((char16_t)c);
 #else
-  return (utf_tbl) ? utf_tbl[c].clower : c;
+  return utf_tbl[c].clower;
 #endif
 #endif
 }
@@ -2488,7 +2522,7 @@ int unicodeisalpha(unsigned short c) {
 #ifdef OPENOFFICEORG
   return u_isalpha(c);
 #else
-  return (utf_tbl) ? utf_tbl[c].cletter : 0;
+  return utf_tbl[c].cletter;
 #endif
 }
 
@@ -2500,15 +2534,15 @@ int get_captype(const std::string& word, cs_info* csconv) {
   size_t firstcap = 0;
   if (csconv == NULL)
     return NOCAP;
-  for (std::string::const_iterator q = word.begin(); q != word.end(); ++q) {
-    unsigned char nIndex = static_cast<unsigned char>(*q);
+  for (auto q = word.begin(); q != word.end(); ++q) {
+    const auto nIndex = static_cast<unsigned char>(*q);
     if (ccase(csconv, nIndex))
       ncap++;
     if (cupper(csconv, nIndex) == clower(csconv, nIndex))
       nneutral++;
   }
   if (ncap) {
-    unsigned char nIndex = static_cast<unsigned char>(word[0]);
+    const auto nIndex = static_cast<unsigned char>(word[0]);
     firstcap = csconv[nIndex].ccase;
   }
 
@@ -2531,11 +2565,10 @@ int get_captype_utf8(const std::vector<w_char>& word, int langnum) {
   size_t nneutral = 0;
   size_t firstcap = 0;
 
-  std::vector<w_char>::const_iterator it = word.begin();
-  std::vector<w_char>::const_iterator it_end = word.end();
+  auto it = word.begin(), it_end = word.end();
   while (it != it_end) {
-    unsigned short idx = (it->h << 8) + it->l;
-    unsigned short lwridx = unicodetolower(idx, langnum);
+    const auto idx = (unsigned short)*it;
+    const auto lwridx = unicodetolower(idx, langnum);
     if (idx != lwridx)
       ncap++;
     if (unicodetoupper(idx, langnum) == lwridx)
@@ -2543,7 +2576,7 @@ int get_captype_utf8(const std::vector<w_char>& word, int langnum) {
     ++it;
   }
   if (ncap) {
-    unsigned short idx = (word[0].h << 8) + word[0].l;
+    const auto idx = (unsigned short)word[0];
     firstcap = (idx != unicodetolower(idx, langnum));
   }
 
@@ -2567,13 +2600,10 @@ size_t remove_ignored_chars_utf(std::string& word,
   std::vector<w_char> w2;
   u8_u16(w, word);
 
-  for (size_t i = 0; i < w.size(); ++i) {
-    if (!std::binary_search(ignored_chars.begin(),
-                            ignored_chars.end(),
-                            w[i])) {
-      w2.push_back(w[i]);
-    }
-  }
+  std::copy_if(w.begin(), w.end(), std::back_inserter(w2), 
+  [&ignored_chars](w_char wc) {
+    return !std::binary_search(ignored_chars.begin(), ignored_chars.end(), wc);
+  });
 
   u16_u8(word, w2);
   return w2.size();
@@ -2595,8 +2625,7 @@ bool parse_string(const std::string& line, std::string& out, int ln) {
   }
   int i = 0;
   int np = 0;
-  std::string::const_iterator iter = line.begin();
-  std::string::const_iterator start_piece = mystrsep(line, iter);
+  auto iter = line.begin(), start_piece = mystrsep(line, iter);
   while (start_piece != line.end()) {
     switch (i) {
       case 0: {

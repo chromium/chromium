@@ -154,9 +154,10 @@ void Component::SetUpdateCheckResult(std::optional<ProtocolParser::App> result,
     MakePipeline(
         update_context_->config, update_context_->get_available_space,
         update_context_->is_foreground, update_context_->session_id,
-        update_context_->crx_cache_, crx_component_->crx_format_requirement,
-        crx_component_->app_id, crx_component_->pk_hash,
-        crx_component_->install_data_index, crx_component_->installer,
+        update_context_->config->GetCrxCache(),
+        crx_component_->crx_format_requirement, crx_component_->app_id,
+        crx_component_->pk_hash, crx_component_->install_data_index,
+        crx_component_->installer,
         base::BindRepeating(
             [](base::raw_ref<Component> component, ComponentState state) {
               component->state_hint_ = state;
@@ -514,8 +515,8 @@ void Component::StateUpdating::PipelineComplete(
 
   CHECK(component.crx_component_);
   if (!component.crx_component_->allow_cached_copies) {
-    component.update_context_->crx_cache_->RemoveAll(
-        component.crx_component()->app_id);
+    component.config()->GetCrxCache()->RemoveAll(
+        component.crx_component()->app_id, base::DoNothing());
   }
 
   if (component.error_category_ != ErrorCategory::kNone) {

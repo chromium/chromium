@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/assistant/assistant_interface_binder.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/network_config_service.h"
@@ -45,7 +46,6 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
-#include "chromeos/services/assistant/public/shared/new_entry_point_constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/audio_service.h"
@@ -190,11 +190,6 @@ void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
   device_actions_ = std::make_unique<DeviceActions>(
       std::make_unique<DeviceActionsDelegateImpl>());
 
-  service_ = std::make_unique<ash::assistant::Service>(
-      profile->GetURLLoaderFactory()->Clone(),
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
-  service_->Init();
-
   assistant_setup_ = std::make_unique<AssistantSetup>();
 }
 
@@ -210,8 +205,6 @@ void AssistantBrowserDelegateImpl::OnAppTerminating() {
   if (!initialized_) {
     return;
   }
-
-  ash::assistant::AssistantService::Get()->Shutdown();
 }
 
 void AssistantBrowserDelegateImpl::InitializeNewEntryPointFor(
@@ -348,7 +341,7 @@ AssistantBrowserDelegateImpl::ResolveNewEntryPointIfEligible() {
                    GetWebAppRegistrarForNewEntryPoint());
 
   std::string app_id = entry_point_id_for_testing_.empty()
-                           ? chromeos::assistant::kEntryPointId
+                           ? ash::kGeminiAppId
                            : entry_point_id_for_testing_;
   const web_app::WebApp* web_app = web_app_registrar->GetAppById(app_id);
   if (!web_app) {
@@ -395,10 +388,6 @@ void AssistantBrowserDelegateImpl::OpenNewEntryPoint() {
           WindowOpenDisposition::NEW_WINDOW,
           // TODO(xiaohuic): maybe add new source
           apps::LaunchSource::kUnknown));
-}
-
-int AssistantBrowserDelegateImpl::GetNewEntryPointIconResourceId() {
-  return chromeos::assistant::kIconResourceId;
 }
 
 std::optional<std::string>

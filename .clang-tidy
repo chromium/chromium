@@ -8,6 +8,8 @@
                     bugprone-inaccurate-erase,
                     bugprone-string-constructor,
                     bugprone-string-integer-assignment,
+                    bugprone-suspicious-memset-usage,
+                    bugprone-terminating-continue,
                     bugprone-undefined-memory-manipulation,
                     bugprone-unique-ptr-array-mismatch,
                     bugprone-unused-raii,

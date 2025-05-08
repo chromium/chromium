@@ -39,23 +39,17 @@ class PasskeyBrowserBinderTest : public ::testing::Test {
  protected:
   std::unique_ptr<PasskeyBrowserBinder> CreatePasskeyBrowserBinder() {
     auto binder = std::make_unique<PasskeyBrowserBinder>(
-        CreateFakeBrowserBoundKeyStore(), mock_web_data_service_);
+        fake_browser_bound_key_store_, mock_web_data_service_);
     binder->SetRandomBytesAsVectorCallbackForTesting(
         base::BindLambdaForTesting([this](size_t length) {
           EXPECT_EQ(length, 32u);
           return fake_bbk_id_;
         }));
     fake_browser_bound_key_store_->PutFakeKey(
-        fake_bbk_id_,
-        FakeBrowserBoundKey(fake_public_key_, /*signature=*/{}, kCoseEs256,
+        FakeBrowserBoundKey(fake_bbk_id_, fake_public_key_,
+                            /*signature=*/{}, kCoseEs256,
                             /*expected_client_data=*/{}));
     return binder;
-  }
-
-  std::unique_ptr<BrowserBoundKeyStore> CreateFakeBrowserBoundKeyStore() {
-    auto key_store = std::make_unique<FakeBrowserBoundKeyStore>();
-    fake_browser_bound_key_store_ = key_store->GetWeakPtr();
-    return key_store;
   }
 
   const std::vector<uint8_t> fake_bbk_id_ = {11, 12, 13, 14};
@@ -64,7 +58,8 @@ class PasskeyBrowserBinderTest : public ::testing::Test {
   const std::string fake_relying_party_ = "relying.test";
 
   content::BrowserTaskEnvironment task_environment_;
-  base::WeakPtr<FakeBrowserBoundKeyStore> fake_browser_bound_key_store_;
+  scoped_refptr<FakeBrowserBoundKeyStore> fake_browser_bound_key_store_ =
+      base::MakeRefCounted<FakeBrowserBoundKeyStore>();
   scoped_refptr<MockPaymentManifestWebDataService> mock_web_data_service_ =
       base::MakeRefCounted<MockPaymentManifestWebDataService>();
 };
@@ -79,6 +74,22 @@ TEST_F(PasskeyBrowserBinderTest, CreatesUnboundKey) {
 
   ASSERT_TRUE(key.has_value());
   EXPECT_EQ(fake_public_key_, key->Get().GetPublicKeyAsCoseKey());
+}
+
+TEST_F(PasskeyBrowserBinderTest, DeletesUnboundKey) {
+  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+  std::optional<PasskeyBrowserBinder::UnboundKey> key =
+      binder->CreateUnboundKey(/*allowed_credentials=*/{
+          device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
+                                                                kCoseEs256}});
+  ASSERT_TRUE(key.has_value());
+  std::vector<uint8_t> bbk_id = key->Get().GetIdentifier();
+
+  // Let the key go out of scope by resetting the std::optional without calling
+  // binder->BindKey(std::move(key), ...).
+  key.reset();
+
+  EXPECT_FALSE(fake_browser_bound_key_store_->ContainsFakeKey(bbk_id));
 }
 
 TEST_F(PasskeyBrowserBinderTest, BindsBrowserBoundKey) {

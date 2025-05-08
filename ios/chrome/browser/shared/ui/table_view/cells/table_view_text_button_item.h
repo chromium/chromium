@@ -13,13 +13,13 @@
 @interface TableViewTextButtonItem : TableViewItem
 
 // Text being displayed above the button.
-@property(nonatomic, readwrite, strong) NSString* text;
+@property(nonatomic, readwrite, copy) NSString* text;
 
 // Text being displayed above the button alignment.
 @property(nonatomic, readwrite, assign) NSTextAlignment textAlignment;
 
 // Text for cell button.
-@property(nonatomic, readwrite, strong) NSString* buttonText;
+@property(nonatomic, readwrite, copy) NSString* buttonText;
 
 // Button text color.
 @property(nonatomic, strong) UIColor* buttonTextColor;
@@ -37,7 +37,7 @@
 @property(nonatomic, assign) BOOL boldButtonText;
 
 // Accessibility identifier that will assigned to the button.
-@property(nonatomic, strong) NSString* buttonAccessibilityIdentifier;
+@property(nonatomic, copy) NSString* buttonAccessibilityIdentifier;
 
 // Whether the Item's button should be enabled or not. Button is enabled by
 // default.
@@ -63,7 +63,7 @@
 @property(nonatomic, strong) UIColor* checkmarkColor;
 
 // Accessibility label that will assigned to the button.
-@property(nonatomic, strong) NSString* buttonAccessibilityLabel;
+@property(nonatomic, copy) NSString* buttonAccessibilityLabel;
 
 @end
 

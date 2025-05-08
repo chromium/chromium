@@ -97,7 +97,7 @@ class IncludeNode(base.Node):
 
     return self.ToRealPath(input_path)
 
-  def GetDataPackValue(self, lang, encoding):
+  def GetDataPackValue(self, lang, gender, encoding):
     '''Returns bytes or a str represenation for a data_pack entry.'''
     filename = self.ToRealPath(self.GetInputPath())
     if self.attrs['flattenhtml'] == 'true':

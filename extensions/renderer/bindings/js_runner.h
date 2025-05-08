@@ -21,13 +21,13 @@ namespace extensions {
 // A helper class to execute JS functions safely.
 class JSRunner {
  public:
-  // Returns the instance of the JSRunner for the specified |context|.
+  // Returns the instance of the JSRunner for the specified `context`.
   static JSRunner* Get(v8::Local<v8::Context> context);
 
-  // Sets the instance for a given |context|.
+  // Sets the instance for a given `context`.
   static void SetInstanceForContext(v8::Local<v8::Context> context,
                                     std::unique_ptr<JSRunner> runner);
-  // Clears the instance for a given |context|.
+  // Clears the instance for a given `context`.
   static void ClearInstanceForContext(v8::Local<v8::Context> context);
 
   virtual ~JSRunner() {}
@@ -40,20 +40,20 @@ class JSRunner {
   using ResultCallback = base::OnceCallback<void(v8::Local<v8::Context>,
                                                  std::optional<base::Value>)>;
 
-  // Calls the given |function| in the specified |context| and with the provided
+  // Calls the given `function` in the specified `context` and with the provided
   // arguments. JS may be executed asynchronously if it has been suspended in
   // the context.
   void RunJSFunction(v8::Local<v8::Function> function,
                      v8::Local<v8::Context> context,
                      base::span<v8::Local<v8::Value>> args);
-  // Same as above, but if a |callback| is provided, it will be called with the
+  // Same as above, but if a `callback` is provided, it will be called with the
   // results of the function running.
   virtual void RunJSFunction(v8::Local<v8::Function> function,
                              v8::Local<v8::Context> context,
                              base::span<v8::Local<v8::Value>> args,
                              ResultCallback callback) = 0;
 
-  // Executes the given |function| synchronously and returns the result. This
+  // Executes the given `function` synchronously and returns the result. This
   // should *only* be called in direct response to script running, since it
   // bypasses script suspension.
   virtual v8::MaybeLocal<v8::Value> RunJSFunctionSync(

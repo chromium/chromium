@@ -4219,7 +4219,7 @@ enum WebFeature {
   kV8Animation_OverallProgress_AttributeGetter = 4926,
   kOBSOLETE_V8ModelManager_DefaultGenericSessionOptions_Method = 4927,
   kQuirksModeCursorHandApplied = 4928,
-  kSkippedPreloadScanning = 4929,
+  kOBSOLETE_SkippedPreloadScanning = 4929,
   kCSSColor_SpaceRGB = 4930,
   kCSSColor_SpaceRGB_outOfRec2020 = 4931,
   kCSSColor_SpaceOkLxx = 4932,
@@ -4849,6 +4849,13 @@ enum WebFeature {
   kRoleAttributeTreeitem = 5545,
   kInputParsedParentSelect = 5546,
   kInputParsedAncestorSelect = 5547,
+  kCSSSelectorPseudoHasSlotted = 5548,
+  kSelectMultipleShowPopup = 5549,
+  kSharedWorkerExtendedLifetimeFeatureEnabled = 5550,
+  kSharedWorkerExtendedLifetimeIsTrue = 5551,
+  kEditContextTextFormatUpdateAddListener = 5552,
+  kEditContextTextFormatUpdateFireEvent = 5553,
+  kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone = 5554,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

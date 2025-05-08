@@ -44,12 +44,12 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
@@ -353,7 +353,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                                         dropData,
                                         mApplicationContext,
                                         sourceWindowId,
-                                        /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID))
+                                        /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID))
                         : null;
         ChromeDragAndDropBrowserDelegate.setClipDataItemWithPendingIntentForTesting(item);
         return mDelegate.buildClipData(dropData);
@@ -374,7 +374,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                 new TabGroupMetadata(
                         rootId,
                         /* selectedTabId= */ rootId,
-                        /* sourceWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID,
+                        /* sourceWindowId= */ TabWindowManager.INVALID_WINDOW_ID,
                         tabGroupId,
                         tabIdsToUrls,
                         /* tabGroupColor= */ 0,

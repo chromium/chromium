@@ -217,7 +217,8 @@ void ImageLoader::DispatchDecodeRequestsIfComplete() {
                      frame, draw_image,
                      WTF::BindOnce(&ImageLoader::DecodeRequestFinished,
                                    MakeUnwrappingCrossThreadHandle(this),
-                                   request->request_id()));
+                                   request->request_id()),
+                     /*speculative*/ false);
                  request->NotifyDecodeDispatched();
                  return false;
                }));

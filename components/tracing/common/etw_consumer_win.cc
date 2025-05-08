@@ -420,20 +420,8 @@ bool EtwConsumer::DecodeCSwitchEvent(const EVENT_HEADER& header,
   auto previous_c_state = *iterator.Object<uint8_t>();
   (void)iterator.Object<int8_t>();  // SpareByte
   auto old_thread_wait_reason = *iterator.Object<int8_t>();
-  if (old_thread_wait_reason < 0 ||
-      old_thread_wait_reason >= CSwitchEtwEvent::MAXIMUM_WAIT_REASON) {
-    return false;
-  }
   auto old_thread_wait_mode = *iterator.Object<int8_t>();
-  if (old_thread_wait_mode < 0 ||
-      old_thread_wait_mode > CSwitchEtwEvent::USER_MODE) {
-    return false;
-  }
   auto old_thread_state = *iterator.Object<int8_t>();
-  if (old_thread_state < 0 ||
-      old_thread_state > CSwitchEtwEvent::DEFERRED_READY) {
-    return false;
-  }
   auto old_thread_wait_ideal_processor = *iterator.Object<int8_t>();
   auto new_thread_wait_time = *iterator.CopyObject<uint32_t>();
   (void)iterator.Object<uint32_t>();  // Reserved
@@ -449,13 +437,9 @@ bool EtwConsumer::DecodeCSwitchEvent(const EVENT_HEADER& header,
   c_switch->set_new_thread_priority(new_thread_priority);
   c_switch->set_old_thread_priority(old_thread_priority);
   c_switch->set_previous_c_state(previous_c_state);
-  c_switch->set_old_thread_wait_reason(
-      static_cast<CSwitchEtwEvent::OldThreadWaitReason>(
-          old_thread_wait_reason));
-  c_switch->set_old_thread_wait_mode(
-      static_cast<CSwitchEtwEvent::OldThreadWaitMode>(old_thread_wait_mode));
-  c_switch->set_old_thread_state(
-      static_cast<CSwitchEtwEvent::OldThreadState>(old_thread_state));
+  c_switch->set_old_thread_wait_reason_int(old_thread_wait_reason);
+  c_switch->set_old_thread_wait_mode_int(old_thread_wait_mode);
+  c_switch->set_old_thread_state_int(old_thread_state);
   c_switch->set_old_thread_wait_ideal_processor(
       old_thread_wait_ideal_processor);
   c_switch->set_new_thread_wait_time(new_thread_wait_time);

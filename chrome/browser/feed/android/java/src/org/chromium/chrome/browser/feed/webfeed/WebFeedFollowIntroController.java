@@ -17,6 +17,8 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -57,6 +59,7 @@ import java.util.concurrent.TimeUnit;
  * weekly limit.
  * </pre>
  */
+@NullMarked
 public class WebFeedFollowIntroController {
     private static final String TAG = "WFFollowIntroCtrl";
 
@@ -88,7 +91,7 @@ public class WebFeedFollowIntroController {
             ChromeSharedPreferences.getInstance();
     private final Tracker mFeatureEngagementTracker;
     private final WebFeedFollowIntroView mWebFeedFollowIntroView;
-    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private final WebFeedRecommendationFollowAcceleratorController
             mRecommendationFollowAcceleratorController;
     private final RecommendationInfoFetcher mRecommendationFetcher;
@@ -98,8 +101,8 @@ public class WebFeedFollowIntroController {
     private boolean mIntroShownForTesting;
 
     private static class RecommendedWebFeedInfo {
-        public byte[] webFeedId;
-        public GURL url;
+        public byte @Nullable [] webFeedId;
+        public @Nullable GURL url;
     }
 
     /**
@@ -118,7 +121,7 @@ public class WebFeedFollowIntroController {
             Activity activity,
             Profile profile,
             AppMenuHandler appMenuHandler,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             View menuButtonAnchorView,
             FeedLauncher feedLauncher,
             ModalDialogManager dialogManager,
@@ -237,7 +240,7 @@ public class WebFeedFollowIntroController {
         mCurrentTabObserver.destroy();
     }
 
-    private void swapTabs(Tab tab) {
+    private void swapTabs(@Nullable Tab tab) {
         mRecommendationFetcher.abort();
         mIntroShownForTesting = false;
     }
@@ -301,12 +304,12 @@ public class WebFeedFollowIntroController {
         return true;
     }
 
-    private static String getWebFeedIntroWebFeedIdShownTimeMsKey(byte[] webFeedId) {
+    private static String getWebFeedIntroWebFeedIdShownTimeMsKey(byte @Nullable [] webFeedId) {
         return ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.createKey(
                 Base64.encodeToString(webFeedId, Base64.DEFAULT));
     }
 
-    private static String getWebFeedIntroWebFeedIdShownCountKey(byte[] webFeedId) {
+    private static String getWebFeedIntroWebFeedIdShownCountKey(byte @Nullable [] webFeedId) {
         return ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX.createKey(
                 Base64.encodeToString(webFeedId, Base64.DEFAULT));
     }
@@ -337,12 +340,18 @@ public class WebFeedFollowIntroController {
         private final int mNumVisitMin;
         private final int mDailyVisitMin;
         private final PrefService mPrefService;
-        private Request mRequest;
+        private @Nullable Request mRequest;
 
         private static class Request {
-            public Tab tab;
-            public GURL url;
-            public Callback<RecommendedWebFeedInfo> callback;
+            public final Tab tab;
+            public final GURL url;
+            public final Callback<@Nullable RecommendedWebFeedInfo> callback;
+
+            public Request(Tab tab, GURL url, Callback<@Nullable RecommendedWebFeedInfo> callback) {
+                this.tab = tab;
+                this.url = url;
+                this.callback = callback;
+            }
         }
 
         RecommendationInfoFetcher(PrefService prefService) {
@@ -357,12 +366,9 @@ public class WebFeedFollowIntroController {
          * beginFetch() is called again before the result is returned, the old callback will not be
          * called.
          */
-        void beginFetch(Tab tab, GURL url, Callback<RecommendedWebFeedInfo> callback) {
-            Request request = new Request();
+        void beginFetch(Tab tab, GURL url, Callback<@Nullable RecommendedWebFeedInfo> callback) {
+            Request request = new Request(tab, url, callback);
             mRequest = request;
-            request.tab = tab;
-            request.url = url;
-            request.callback = callback;
 
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,
@@ -453,7 +459,7 @@ public class WebFeedFollowIntroController {
                     metadata_callback);
         }
 
-        private void sendResult(Request request, RecommendedWebFeedInfo result) {
+        private void sendResult(Request request, @Nullable RecommendedWebFeedInfo result) {
             if (mRequest == request) {
                 request.callback.onResult(prerequisitesMet(request) ? result : null);
             }

@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.ntp_customization;
 import android.view.View;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The properties associated with rendering NTP customization bottom sheets. */
+@NullMarked
 public class NtpCustomizationViewProperties {
     // Properties for the general bottom sheet:
 

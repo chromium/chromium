@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -46,7 +47,7 @@ class SingleFieldFillRouterTest : public testing::Test {
 
     // Mock such that we don't trigger the cleanup.
     prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
-                       CHROME_VERSION_MAJOR);
+                       version_info::GetMajorVersionNumberAsInt());
     web_data_service_ = base::MakeRefCounted<MockAutofillWebDataService>();
     history_manager().Init(web_data_service_, prefs_.get(), false);
 

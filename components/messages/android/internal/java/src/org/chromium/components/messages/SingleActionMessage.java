@@ -92,6 +92,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         mModel.set(
                 MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, this::handlePrimaryAction);
         mModel.set(MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK, this::handleSecondaryAction);
+        mModel.set(MessageBannerProperties.CLOSE_BUTTON_CLICK_LISTENER, this::handleCloseButton);
         mMessageEnqueuedTime = MessagesMetrics.now();
         mAreExtraHistogramsEnabled = MessageFeatureList.areExtraHistogramsEnabled();
     }
@@ -118,14 +119,10 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
                             mTopOffsetSupplier,
                             mContainer.getResources(),
                             mContainer,
-                            () -> {
-                                mDismissHandler.invoke(mModel, DismissReason.GESTURE);
-                            },
+                            () -> mDismissHandler.invoke(mModel, DismissReason.GESTURE),
                             mSwipeAnimationHandler,
                             mAutodismissDurationMs,
-                            () -> {
-                                mDismissHandler.invoke(mModel, DismissReason.TIMER);
-                            });
+                            () -> mDismissHandler.invoke(mModel, DismissReason.TIMER));
         }
         assumeNonNull(mView);
 
@@ -234,6 +231,11 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         // Avoid running the secondary action callback if the message has already been dismissed.
         if (mMessageDismissed) return;
         mModel.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
+    }
+
+    private void handleCloseButton(View v) {
+        if (mMessageDismissed) return;
+        mDismissHandler.invoke(mModel, DismissReason.CLOSE_BUTTON);
     }
 
     @VisibleForTesting

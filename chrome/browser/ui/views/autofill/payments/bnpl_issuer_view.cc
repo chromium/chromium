@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/autofill/payments/select_bnpl_issuer_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -29,6 +30,7 @@
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_host.h"
@@ -49,6 +51,8 @@
 #include "ui/views/view_utils.h"
 
 namespace autofill::payments {
+
+using IssuerId = autofill::BnplIssuer::IssuerId;
 
 BnplIssuerView::BnplIssuerView(
     base::WeakPtr<SelectBnplIssuerDialogController> controller,
@@ -73,28 +77,27 @@ void BnplIssuerView::AddedToWidget() {
     const bool issuer_linked = issuer.payment_instrument().has_value();
     const auto image_ids = [&]() -> std::pair<int, int> {
       if (issuer_linked) {
-        // TODO(crbug.com/412378244): Convert `issuer_id` logic to use switch
-        // statement instead of if/else.
-        if (issuer.issuer_id() == kBnplZipIssuerId) {
-          return {IDR_AUTOFILL_ZIP_LINKED, IDR_AUTOFILL_ZIP_LINKED_DARK};
-        } else if (issuer.issuer_id() == kBnplAffirmIssuerId) {
-          return {IDR_AUTOFILL_AFFIRM_LINKED, IDR_AUTOFILL_AFFIRM_LINKED_DARK};
-        } else if (issuer.issuer_id() == kBnplAfterpayIssuerId) {
-          return {IDR_AUTOFILL_AFTERPAY_LINKED,
-                  IDR_AUTOFILL_AFTERPAY_LINKED_DARK};
+        switch (issuer.issuer_id()) {
+          case IssuerId::kBnplAffirm:
+            return {IDR_AUTOFILL_AFFIRM_LINKED,
+                    IDR_AUTOFILL_AFFIRM_LINKED_DARK};
+          case IssuerId::kBnplZip:
+            return {IDR_AUTOFILL_ZIP_LINKED, IDR_AUTOFILL_ZIP_LINKED_DARK};
+          case IssuerId::kBnplAfterpay:
+            return {IDR_AUTOFILL_AFTERPAY_LINKED,
+                    IDR_AUTOFILL_AFTERPAY_LINKED_DARK};
         }
         NOTREACHED();
       }
-      // TODO(crbug.com/412378244): Convert `issuer_id` logic to use switch
-      // statement instead of if/else.
-      if (issuer.issuer_id() == kBnplZipIssuerId) {
-        return {IDR_AUTOFILL_ZIP_UNLINKED, IDR_AUTOFILL_ZIP_UNLINKED_DARK};
-      } else if (issuer.issuer_id() == kBnplAffirmIssuerId) {
-        return {IDR_AUTOFILL_AFFIRM_UNLINKED,
-                IDR_AUTOFILL_AFFIRM_UNLINKED_DARK};
-      } else if (issuer.issuer_id() == kBnplAfterpayIssuerId) {
-        return {IDR_AUTOFILL_AFTERPAY_UNLINKED,
-                IDR_AUTOFILL_AFTERPAY_UNLINKED_DARK};
+      switch (issuer.issuer_id()) {
+        case IssuerId::kBnplAffirm:
+          return {IDR_AUTOFILL_AFFIRM_UNLINKED,
+                  IDR_AUTOFILL_AFFIRM_UNLINKED_DARK};
+        case IssuerId::kBnplZip:
+          return {IDR_AUTOFILL_ZIP_UNLINKED, IDR_AUTOFILL_ZIP_UNLINKED_DARK};
+        case IssuerId::kBnplAfterpay:
+          return {IDR_AUTOFILL_AFTERPAY_UNLINKED,
+                  IDR_AUTOFILL_AFTERPAY_UNLINKED_DARK};
       }
       NOTREACHED();
     }();
@@ -123,9 +126,7 @@ void BnplIssuerView::AddedToWidget() {
                             views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
                         layout_provider->GetDistanceMetric(
                             views::DISTANCE_RELATED_LABEL_HORIZONTAL))));
-    issuer_button->SetFocusRingCornerRadius(corner_radius);
     issuer_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    issuer_button->SetInstallFocusRingOnFocus(true);
     // Make the highlight with rounded corners per the mocks.
     if (auto* ink_drop = views::InkDrop::Get(issuer_button.get())) {
       ink_drop->SetCreateHighlightCallback(base::BindRepeating(
@@ -155,6 +156,8 @@ void BnplIssuerView::AddedToWidget() {
                                    views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
                                0, 0))
               .Build());
+      issuer_button->GetViewAccessibility().SetDescription(
+          linked_pill->GetAccessibilityDescription());
     }
     issuer_button->AddChildView(
         views::Builder<views::ImageView>()
@@ -199,6 +202,8 @@ void BnplIssuerView::AddedToWidget() {
                                        background_color, std::nullopt);
     }
   }
+  CHECK(!children().empty());
+  children()[0]->RequestFocus();
 }
 
 void BnplIssuerView::IssuerSelected(BnplIssuer issuer, const ui::Event& event) {

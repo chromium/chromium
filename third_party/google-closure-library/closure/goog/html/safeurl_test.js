@@ -10,12 +10,12 @@ goog.module('goog.html.safeUrlTest');
 goog.setTestOnly();
 
 const Const = goog.require('goog.string.Const');
-const Dir = goog.require('goog.i18n.bidi.Dir');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const SafeUrl = goog.require('goog.html.SafeUrl');
 const TrustedResourceUrl = goog.require('goog.html.TrustedResourceUrl');
 const fsUrl = goog.require('goog.fs.url');
 const googObject = goog.require('goog.object');
+const javascriptUrlTestVectors = goog.require('goog.html.javascriptUrlTestVectors');
 const safeUrlTestVectors = goog.require('goog.html.safeUrlTestVectors');
 const testSuite = goog.require('goog.testing.testSuite');
 const {assertExists} = goog.require('goog.asserts');
@@ -54,6 +54,12 @@ testSuite({
     stubs.reset();
   },
 
+  testConstructor_throwsOnBadToken() {
+    assertThrows(() => new (/** @type {?} */ (SafeUrl))(''));
+    assertThrows(
+        () => new (/** @type {?} */ (SafeUrl.ABOUT_BLANK)).constructor(''));
+  },
+
   testSafeUrl() {
     const safeUrl = SafeUrl.fromConstant(Const.from('javascript:trusted();'));
     const extracted = SafeUrl.unwrap(safeUrl);
@@ -61,12 +67,8 @@ testSuite({
     assertEquals('javascript:trusted();', SafeUrl.unwrap(safeUrl));
     assertEquals('javascript:trusted();', String(safeUrl));
 
-    // URLs are always LTR.
-    assertEquals(Dir.LTR, safeUrl.getDirection());
-
     // Interface markers are present.
     assertTrue(safeUrl.implementsGoogStringTypedString);
-    assertTrue(safeUrl.implementsGoogI18nBidiDirectionalString);
   },
 
   testSafeUrlIsSafeMimeType_withSafeType() {
@@ -85,6 +87,9 @@ testSuite({
     // Allow comma-separated, quoted MIME parameters with and without spaces.
     assertTrue(SafeUrl.isSafeMimeType('video/webm;codecs="vp8,opus"'));
     assertTrue(SafeUrl.isSafeMimeType('video/webm;codecs="vp8, opus"'));
+    // HEIC & HEIF image types
+    assertTrue(SafeUrl.isSafeMimeType('image/heic'));
+    assertTrue(SafeUrl.isSafeMimeType('image/heif'));
   },
 
   testSafeUrlIsSafeMimeType_withUnsafeType() {
@@ -379,6 +384,23 @@ testSuite({
       } else {
         assertThrows(() => {
           SafeUrl.sanitizeAssertUnchanged(v.input, isDataUrl);
+        });
+      }
+    }
+  },
+
+  /**
+     @suppress {missingProperties,checkTypes} suppression added to enable type
+     checking
+   */
+  testSafeUrlSanitize_sanitizeJavascriptUrlAssertUnchanged() {
+    for (const v of javascriptUrlTestVectors.BASE_VECTORS) {
+      if (v.safe) {
+        const asserted = SafeUrl.sanitizeJavascriptUrlAssertUnchanged(v.input);
+        assertEquals(v.expected, SafeUrl.unwrap(asserted));
+      } else {
+        assertThrows(() => {
+          SafeUrl.sanitizeJavascriptUrlAssertUnchanged(v.input);
         });
       }
     }

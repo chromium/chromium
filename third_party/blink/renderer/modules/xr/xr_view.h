@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
+#include "third_party/blink/renderer/modules/xr/xr_view_geometry.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -39,13 +40,14 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
 
   V8XREye eye() const;
   device::mojom::blink::XREye EyeValue() const { return eye_; }
+  gfx::Transform refSpaceFromMojo() const { return ref_space_from_mojo_; }
   XRViewData* ViewData() const { return view_data_.Get(); }
   XRViewport* Viewport(double scale);
 
   XRFrame* frame() const;
   XRSession* session() const;
   NotShared<DOMFloat32Array> projectionMatrix() const;
-  XRRigidTransform* refSpaceFromView() const;
+  XRRigidTransform* viewGeometryTransform() const;
   XRCamera* camera() const;
 
   // isFirstPersonObserver is only true for views that composed with a video
@@ -66,6 +68,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
 
  private:
   device::mojom::blink::XREye eye_;
+  gfx::Transform ref_space_from_mojo_;
   Member<XRFrame> frame_;
   Member<XRViewData> view_data_;
   // The transform from the view to the reference space requested by
@@ -75,15 +78,16 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   Member<XRViewport> viewport_;
 };
 
-class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
+class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData>,
+                                        public XRViewGeometry {
  public:
-  explicit XRViewData(wtf_size_t index,
-                      device::mojom::blink::XREye eye,
-                      gfx::Rect viewport,
-                      XRGraphicsBinding::Api graphics_api)
-      : index_(index),
+  XRViewData(wtf_size_t index,
+             device::mojom::blink::XREye eye,
+             gfx::Rect viewport,
+             XRGraphicsBinding::Api graphics_api)
+      : XRViewGeometry(graphics_api),
+        index_(index),
         eye_(eye),
-        graphics_api_(graphics_api),
         viewport_(viewport) {}
   XRViewData(
       wtf_size_t index,
@@ -98,37 +102,17 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
                   double depth_near,
                   double depth_far);
 
-  void UpdateProjectionMatrixFromFoV(float up_rad,
-                                     float down_rad,
-                                     float left_rad,
-                                     float right_rad,
-                                     float near_depth,
-                                     float far_depth);
-  void UpdateProjectionMatrixFromAspect(float fovy,
-                                        float aspect,
-                                        float near_depth,
-                                        float far_depth);
-
-  gfx::Transform UnprojectPointer(double x,
-                                  double y,
-                                  double canvas_width,
-                                  double canvas_height);
-
-  void SetMojoFromView(const gfx::Transform& mojo_from_view);
-
   wtf_size_t index() const { return index_; }
   device::mojom::blink::XREye Eye() const { return eye_; }
-  const gfx::Transform& MojoFromView() const { return mojo_from_view_; }
-  const gfx::Transform& ProjectionMatrix() const { return projection_matrix_; }
   const gfx::Rect& Viewport() const { return viewport_; }
   bool IsFirstPersonObserver() const { return is_first_person_observer_; }
 
   XRCPUDepthInformation* GetCpuDepthInformation(
-      const XRFrame* xr_frame,
+      const XRView* xr_view,
       ExceptionState& exception_state) const;
 
   XRWebGLDepthInformation* GetWebGLDepthInformation(
-      const XRFrame* xr_frame,
+      const XRView* xr_view,
       ExceptionState& exception_state) const;
 
   std::optional<double> recommendedViewportScale() const;
@@ -156,11 +140,6 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
  private:
   const wtf_size_t index_;
   const device::mojom::blink::XREye eye_;
-  const XRGraphicsBinding::Api graphics_api_;
-  gfx::Transform mojo_from_view_;
-  gfx::Transform projection_matrix_;
-  gfx::Transform inv_projection_;
-  bool inv_projection_dirty_ = true;
   gfx::Rect viewport_;
   bool is_first_person_observer_ = false;
   std::optional<double> recommended_viewport_scale_ = std::nullopt;

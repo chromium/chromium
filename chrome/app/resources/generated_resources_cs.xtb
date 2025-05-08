@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Začněte něco nového nebo si s něčím nechte pomoct.</translation>
 <translation id="1054048317165655285">Dokončete nastavení na telefonu</translation>
 <translation id="1054153489933238809">Otevřít původní &amp;obrázek na nové kartě</translation>
-<translation id="1054187194995068149">Dobrý den, tohle je ukázka</translation>
 <translation id="1054502481659725522">Aplikace, weby a systémové služby můžou používat vaši polohu</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Do 1 týdne zařízení <ph name="DEVICE_TYPE" /> aktualizujte}few{Do {NUM_WEEKS} týdnů zařízení <ph name="DEVICE_TYPE" /> aktualizujte}many{Do {NUM_WEEKS} týdne zařízení <ph name="DEVICE_TYPE" /> aktualizujte}other{Do {NUM_WEEKS} týdnů zařízení <ph name="DEVICE_TYPE" /> aktualizujte}}</translation>
 <translation id="1055606969515662982">Odesílání zastavte dálkovým ovládáním</translation>

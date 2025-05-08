@@ -113,12 +113,6 @@ void NavigationPolicyContainerBuilder::SetIsOriginPotentiallyTrustworthy(
   delivered_policies_.is_web_secure_context = value;
 }
 
-void NavigationPolicyContainerBuilder::SetAllowCrossOriginIsolation(
-    bool value) {
-  DCHECK(!HasComputedPolicies());
-  delivered_policies_.allow_cross_origin_isolation = value;
-}
-
 void NavigationPolicyContainerBuilder::SetCrossOriginIsolationEnabledByDIP() {
   DCHECK(HasComputedPolicies());
   host_->SetCrossOriginIsolationEnabledByDIP();
@@ -158,6 +152,20 @@ void NavigationPolicyContainerBuilder::SetDocumentIsolationPolicy(
   DCHECK(!HasComputedPolicies());
 
   delivered_policies_.document_isolation_policy = dip;
+}
+
+void NavigationPolicyContainerBuilder::SetIntegrityPolicy(
+    network::IntegrityPolicy ip) {
+  DCHECK(!HasComputedPolicies());
+
+  delivered_policies_.integrity_policy = std::move(ip);
+}
+
+void NavigationPolicyContainerBuilder::SetIntegrityPolicyReportOnly(
+    network::IntegrityPolicy ip) {
+  DCHECK(!HasComputedPolicies());
+
+  delivered_policies_.integrity_policy_report_only = std::move(ip);
 }
 
 const PolicyContainerPolicies&

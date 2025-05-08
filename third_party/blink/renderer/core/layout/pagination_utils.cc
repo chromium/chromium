@@ -352,16 +352,29 @@ PhysicalRect StitchedPageContentRect(
   DCHECK_EQ(page_container.GetBoxType(), PhysicalFragment::kPageContainer);
   const PhysicalBoxFragment& page_border_box = GetPageBorderBox(page_container);
   const PhysicalBoxFragment& page_area = GetPageArea(page_border_box);
+  const LayoutView& view = *page_container.GetDocument().GetLayoutView();
+  const PhysicalBoxFragment& first_page_area = *GetPageArea(view, 0);
+  const BlockBreakToken* previous_break_token =
+      FindPreviousBreakTokenForPageArea(page_area);
+
+  return StitchedPageContentRect(page_area, first_page_area,
+                                 previous_break_token);
+}
+
+PhysicalRect StitchedPageContentRect(
+    const PhysicalBoxFragment& page_area,
+    const PhysicalBoxFragment& first_page_area,
+    const BlockBreakToken* previous_break_token) {
+  DCHECK_EQ(page_area.GetBoxType(), PhysicalFragment::kPageArea);
+  DCHECK_EQ(first_page_area.GetBoxType(), PhysicalFragment::kPageArea);
+
   PhysicalRect physical_page_rect = page_area.LocalRect();
 
-  if (const BlockBreakToken* previous_break_token =
-          FindPreviousBreakTokenForPageArea(page_area)) {
+  if (previous_break_token) {
     LayoutUnit consumed_block_size = previous_break_token->ConsumedBlockSize();
     PhysicalDirection block_end =
-        page_container.Style().GetWritingDirection().BlockEnd();
+        page_area.Style().GetWritingDirection().BlockEnd();
     if (block_end == PhysicalDirection::kLeft) {
-      const LayoutView& view = *page_container.GetDocument().GetLayoutView();
-      const PhysicalBoxFragment& first_page_area = *GetPageArea(view, 0);
       physical_page_rect.offset.left += first_page_area.Size().width;
       physical_page_rect.offset.left -=
           consumed_block_size + page_area.Size().width;

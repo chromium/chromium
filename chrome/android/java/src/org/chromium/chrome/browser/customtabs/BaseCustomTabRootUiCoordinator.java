@@ -52,8 +52,10 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Minimi
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabHeightStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTabObserver;
+import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesThemeColorProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIphController;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -111,7 +113,6 @@ import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -144,6 +145,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private @NonNull Runnable mOpenInBrowserRunnable;
     private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private @Nullable WebAppHeaderLayoutCoordinator mWebAppHeaderLayoutCoordinator;
+    private Supplier<BrowserServicesThemeColorProvider> mWebAppThemeColorProvider;
+
+    // TODO(crbug.com/402213312): This can be NonNull once the flag is enabled by default.
+    private @Nullable CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -183,8 +188,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param featureOverridesManagerSupplier Supplies the {@link CustomTabFeatureOverridesManager}.
      * @param openInBrowserRunnable Runnable opening the current tab in BrApp.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
-     * @param insetObserver The {@link InsetObserver}.
-     * @param savedInstanceState The saved bundle for the last recorded state.
+     * @param desktopWindowStateManager Provides information about desktop windowing state.
+     * @param webAppThemeColorProvider Provides current theme of a web app.
      */
     public BaseCustomTabRootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -223,7 +228,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<CustomTabFeatureOverridesManager> featureOverridesManagerSupplier,
             @NonNull Runnable openInBrowserRunnable,
             @NonNull EdgeToEdgeManager edgeToEdgeManager,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @Nullable Supplier<BrowserServicesThemeColorProvider> webAppThemeColorProvider) {
         super(
                 activity,
                 null,
@@ -268,6 +274,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mIntentDataProvider = intentDataProvider;
         mCustomTabSearchClient = new SearchActivityClientImpl(activity, IntentOrigin.CUSTOM_TAB);
         mDesktopWindowStateManager = desktopWindowStateManager;
+        mWebAppThemeColorProvider = webAppThemeColorProvider;
 
         boolean isAuthTab = intentDataProvider.get().isAuthTab();
         if ((activityType == ActivityType.CUSTOM_TAB || isAuthTab)
@@ -401,12 +408,24 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     mIntentDataProvider.get(),
                     mFeatureOverridesManagerSupplier.get(),
                     mMinimizeDelegateSupplier.get(),
-                    omniboxParams,
-                    params -> mToolbarCoordinator.get().onCustomButtonClick(params));
+                    omniboxParams);
+            mToolbarButtonsCoordinator =
+                    new CustomTabToolbarButtonsCoordinator(
+                            toolbar,
+                            mIntentDataProvider.get(),
+                            params -> mToolbarCoordinator.get().onCustomButtonClick(params),
+                            mMinimizeDelegateSupplier.get(),
+                            mFeatureOverridesManagerSupplier.get());
 
             super.initializeToolbar();
 
             mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager);
+            View coordinator = mActivity.findViewById(R.id.coordinator);
+            mCustomTabHeightStrategy.onToolbarInitialized(
+                    coordinator,
+                    toolbar,
+                    mIntentDataProvider.get().getPartialTabToolbarCornerRadius(),
+                    mToolbarButtonsCoordinator);
 
             return;
         }
@@ -424,7 +443,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
         View coordinator = mActivity.findViewById(R.id.coordinator);
         mCustomTabHeightStrategy.onToolbarInitialized(
-                coordinator, toolbar, mIntentDataProvider.get().getPartialTabToolbarCornerRadius());
+                coordinator,
+                toolbar,
+                mIntentDataProvider.get().getPartialTabToolbarCornerRadius(),
+                null);
         if (mBrandingController != null) {
             mBrandingController.onToolbarInitialized(toolbar.getBrandingDelegate());
         }
@@ -630,6 +652,12 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
+    protected boolean shouldAllowThemingOnTablets() {
+        return mActivityType == ActivityType.TRUSTED_WEB_ACTIVITY
+                || mActivityType == ActivityType.WEB_APK;
+    }
+
+    @Override
     public void onPreInflationStartup() {
         super.onPreInflationStartup();
 
@@ -673,8 +701,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                             .web_app_header_layout),
                             desktopWindowStateManager,
                             mActivityTabProvider,
-                            getTopUiThemeColorProvider(),
+                            mWebAppThemeColorProvider.get(),
                             intentDataProvider,
+                            getScrimManager(),
                             (tab) -> {
                                 Intent fullHistoryIntent = new Intent(Intent.ACTION_MAIN);
                                 fullHistoryIntent.setClass(mActivity, ChromeLauncherActivity.class);

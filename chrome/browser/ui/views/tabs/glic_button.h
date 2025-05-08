@@ -22,7 +22,6 @@ namespace glic {
 // TabSearchButton for sizing and appropriate theming.
 
 class GlicButton : public TabStripNudgeButton,
-                   public GlicButtonControllerDelegate,
                    public views::ContextMenuController,
                    public ui::SimpleMenuModel::Delegate {
   METADATA_HEADER(GlicButton, TabStripNudgeButton)
@@ -38,10 +37,6 @@ class GlicButton : public TabStripNudgeButton,
   GlicButton(const GlicButton&) = delete;
   GlicButton& operator=(const GlicButton&) = delete;
   ~GlicButton() override;
-
-  // GlicButtonControllerDelegate:
-  void SetShowState(bool show) override;
-  void SetIcon(const gfx::VectorIcon& icon) override;
 
   // TabStripNudgeButton:
   void SetIsShowingNudge(bool is_showing) override;
@@ -103,10 +98,6 @@ class GlicButton : public TabStripNudgeButton,
 
   // Tab strip that contains this button.
   raw_ptr<TabStripController> tab_strip_controller_;
-
-  // Represents the show state of the button. Visibility of the button
-  // is reflected by the show state except when the nudge is showing.
-  bool show_state_ = true;
 
   // Callback which is invoked when the button is hovered (i.e., the user is
   // more likely to interact with it soon).

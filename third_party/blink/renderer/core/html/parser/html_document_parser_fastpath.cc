@@ -64,18 +64,6 @@ namespace blink {
 namespace {
 
 #if VECTORIZE_SCANNING
-// We use the vectorized classification trick to scan and classify characters.
-// Instead of checking the string byte-by-byte (or vector-by-vector), the
-// algorithm takes the lower nibbles (4-bits) of the passed string and uses them
-// as offsets into the table, represented as a vector. The values corresponding
-// to those offsets are actual interesting symbols. The algorithm then simply
-// compares the looked up values with the input vector. The true lanes in the
-// resulting vector correspond to the interesting symbols.
-//
-// A big shout out to Daniel Lemire for suggesting the idea. See more on
-// vectorized classification in the Daniel's paper:
-// https://arxiv.org/pdf/1902.08318.
-//
 // For relatively short incoming strings (less than 64 characters) it's assumed
 // that byte-by-byte comparison is faster. TODO(340582182): According to
 // microbenchmarks on M1, string larger than 16 bytes are already scanned faster
@@ -100,17 +88,16 @@ template <typename D, typename VectorT>
   requires(sizeof(hwy::HWY_NAMESPACE::TFromD<D>) == 1)
 HWY_ATTR ALWAYS_INLINE MatchedCharacter TryMatch(D tag,
                                                  VectorT input,
-                                                 VectorT low_nibble_table,
-                                                 VectorT low_nib_and_mask) {
+                                                 VectorT interesting1,
+                                                 VectorT interesting2,
+                                                 VectorT interesting3,
+                                                 VectorT interesting4) {
   namespace hw = hwy::HWY_NAMESPACE;
 
-  // Get the low nibbles.
-  const auto nib_lo = input & low_nib_and_mask;
-  // Lookup the values in the table using the nibbles as offsets into the table.
-  const auto shuf_lo = hw::TableLookupBytes(low_nibble_table, nib_lo);
-  // The values in the tables correspond to the interesting symbols. Just
-  // compare them with the input vector.
-  const auto result = shuf_lo == input;
+  // Just compare them with the input vector.
+  const auto result =
+      hw::Or(hw::Or(input == interesting1, input == interesting2),
+             hw::Or(input == interesting3, input == interesting4));
   // Find the interesting symbol.
   if (const intptr_t index = hw::FindFirstTrue(tag, result); index != -1) {
     return {static_cast<size_t>(index), hw::ExtractLane(input, index)};
@@ -125,20 +112,21 @@ template <typename T, typename VectorT>
   requires(sizeof(T) == 1)
 HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(const T*& start,
                                                     const T* end,
-                                                    VectorT low_nibble_table) {
+                                                    VectorT interesting1,
+                                                    VectorT interesting2,
+                                                    VectorT interesting3,
+                                                    VectorT interesting4) {
   namespace hw = hwy::HWY_NAMESPACE;
   DCHECK_GE(static_cast<size_t>(end - start), kVectorizationThreshold);
 
   hw::FixedTag<uint8_t, 16> tag;
   static constexpr auto stride = hw::MaxLanes(tag);
 
-  const auto low_nib_and_mask = hw::Set(tag, 0xf);
-
   // The main scanning loop.
   for (; start + (stride - 1) < end; start += stride) {
     const auto input = hw::LoadU(tag, reinterpret_cast<const uint8_t*>(start));
-    if (const auto result =
-            TryMatch(tag, input, low_nibble_table, low_nib_and_mask);
+    if (const auto result = TryMatch(tag, input, interesting1, interesting2,
+                                     interesting3, interesting4);
         result.Matched()) {
       start = reinterpret_cast<const T*>(start + result.index_in_vector);
       return result.found_character;
@@ -149,8 +137,8 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(const T*& start,
   if (start < end) {
     const auto input =
         hw::LoadU(tag, reinterpret_cast<const uint8_t*>(end - stride));
-    if (const auto result =
-            TryMatch(tag, input, low_nibble_table, low_nib_and_mask);
+    if (const auto result = TryMatch(tag, input, interesting1, interesting2,
+                                     interesting3, interesting4);
         result.Matched()) {
       start = end - stride + result.index_in_vector;
       return result.found_character;
@@ -168,14 +156,15 @@ template <typename T, typename VectorT>
   requires(sizeof(T) == 2)
 HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(const T*& start,
                                                     const T* end,
-                                                    VectorT low_nibble_table) {
+                                                    VectorT interesting1,
+                                                    VectorT interesting2,
+                                                    VectorT interesting3,
+                                                    VectorT interesting4) {
   namespace hw = hwy::HWY_NAMESPACE;
   DCHECK_GE(static_cast<size_t>(end - start), kVectorizationThreshold);
 
   hw::FixedTag<uint8_t, 16> tag;
   static constexpr auto stride = hw::MaxLanes(tag);
-
-  const auto low_nib_and_mask = hw::Set(tag, 0xf);
 
   // The main scanning loop.
   while (start + (stride - 1) < end) {
@@ -183,8 +172,8 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(const T*& start,
     VectorT input;
     hw::LoadInterleaved2(tag, reinterpret_cast<const uint8_t*>(start), input,
                          dummy_upper);
-    if (const auto result =
-            TryMatch(tag, input, low_nibble_table, low_nib_and_mask);
+    if (const auto result = TryMatch(tag, input, interesting1, interesting2,
+                                     interesting3, interesting4);
         result.Matched()) {
       const auto index = result.index_in_vector;
       // Check if the upper byte is zero.
@@ -207,9 +196,11 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(const T*& start,
     VectorT input;
     hw::LoadInterleaved2(tag, reinterpret_cast<const uint8_t*>(end - stride),
                          input, dummy_upper);
-    for (auto result = TryMatch(tag, input, low_nibble_table, low_nib_and_mask);
+    for (auto result = TryMatch(tag, input, interesting1, interesting2,
+                                interesting3, interesting4);
          result.Matched();
-         result = TryMatch(tag, input, low_nibble_table, low_nib_and_mask)) {
+         result = TryMatch(tag, input, interesting1, interesting2, interesting3,
+                           interesting4)) {
       const auto index = result.index_in_vector;
       // Check if the upper byte is zero.
       if (*(end - stride + index) >> 8 == 0) {
@@ -435,7 +426,7 @@ class HTMLFastPathParser {
       }                                                       \
     }                                                         \
     break;
-      SUPPORTED_TAGS(TAG_CASE)
+        SUPPORTED_TAGS(TAG_CASE)
       default:
         break;
 #undef TAG_CASE
@@ -735,16 +726,12 @@ class HTMLFastPathParser {
     namespace hw = hwy::HWY_NAMESPACE;
     DCHECK_GE(static_cast<size_t>(end_ - pos_), kVectorizationThreshold);
     hw::FixedTag<uint8_t, 16> tag;
-    // ASCII representation of interesting symbols:
-    //   <: 0011 1100
-    //  \r: 0000 1101
-    //  \0: 0000 0000
-    //   &: 0010 0110
-    // The lower nibbles represent offsets into the |low_nibble_table|. The
-    // values in the table are the corresponding characters.
-    const auto low_nibble_table = hw::Dup128VecFromValues(
-        tag, '\0', 0, 0, 0, 0, 0, '&', 0, 0, 0, 0, 0, '<', '\r', 0, 0);
-    switch (SimdAdvanceAndLookup(pos_, end_, low_nibble_table)) {
+    const auto interesting1 = hw::Set(tag, '<');
+    const auto interesting2 = hw::Set(tag, '\r');
+    const auto interesting3 = hw::Set(tag, '\0');
+    const auto interesting4 = hw::Set(tag, '&');
+    switch (SimdAdvanceAndLookup(pos_, end_, interesting1, interesting2,
+                                 interesting3, interesting4)) {
       case kNeverMatchedChar:
         DCHECK_EQ(pos_, end_);
         return {{initial_start, static_cast<size_t>(pos_ - initial_start)},
@@ -908,16 +895,12 @@ class HTMLFastPathParser {
     namespace hw = hwy::HWY_NAMESPACE;
     DCHECK_GE(static_cast<size_t>(end_ - pos_), kVectorizationThreshold);
     hw::FixedTag<uint8_t, 16> tag;
-    // ASCII representation of interesting symbols:
-    //   ': 0010 0111
-    //  \r: 0000 1101
-    //  \0: 0000 0000
-    //   &: 0010 0110
-    // The lower nibbles represent offsets into the |low_nibble_table|. The
-    // values in the table are the corresponding characters.
-    const auto low_nibble_table = hw::Dup128VecFromValues(
-        tag, '\0', 0, 0, 0, 0, 0, '&', '\'', 0, 0, 0, 0, 0, '\r', 0, 0);
-    return SimdAdvanceAndLookup(pos_, end_, low_nibble_table);
+    const auto interesting1 = hw::Set(tag, '\'');
+    const auto interesting2 = hw::Set(tag, '\r');
+    const auto interesting3 = hw::Set(tag, '\0');
+    const auto interesting4 = hw::Set(tag, '&');
+    return SimdAdvanceAndLookup(pos_, end_, interesting1, interesting2,
+                                interesting3, interesting4);
   }
 
   ALWAYS_INLINE uint8_t
@@ -925,16 +908,12 @@ class HTMLFastPathParser {
     namespace hw = hwy::HWY_NAMESPACE;
     DCHECK_GE(static_cast<size_t>(end_ - pos_), kVectorizationThreshold);
     hw::FixedTag<uint8_t, 16> tag;
-    // ASCII representation of interesting symbols:
-    //   ": 0010 0010
-    //  \r: 0000 1101
-    //  \0: 0000 0000
-    //   &: 0010 0110
-    // The lower nibbles represent offsets into the |low_nibble_table|. The
-    // values in the table are the corresponding characters.
-    const auto low_nibble_table = hw::Dup128VecFromValues(
-        tag, '\0', 0, '"', 0, 0, 0, '&', 0, 0, 0, 0, 0, 0, '\r', 0, 0);
-    return SimdAdvanceAndLookup(pos_, end_, low_nibble_table);
+    const auto interesting1 = hw::Set(tag, '"');
+    const auto interesting2 = hw::Set(tag, '\r');
+    const auto interesting3 = hw::Set(tag, '\0');
+    const auto interesting4 = hw::Set(tag, '&');
+    return SimdAdvanceAndLookup(pos_, end_, interesting1, interesting2,
+                                interesting3, interesting4);
   }
 
   ALWAYS_INLINE std::pair<Span, USpan> ScanAttrValueVectorized(

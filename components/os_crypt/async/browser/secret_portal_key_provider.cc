@@ -247,9 +247,9 @@ void SecretPortalKeyProvider::Finalize(InitStatus init_status,
 
   base::UmaHistogramEnumeration(kUmaInitStatusEnum, init_status);
 
-  std::string desktop;
-  base::Environment::Create()->GetVar(base::nix::kXdgCurrentDesktopEnvVar,
-                                      &desktop);
+  std::string desktop = base::Environment::Create()
+                            ->GetVar(base::nix::kXdgCurrentDesktopEnvVar)
+                            .value_or(std::string());
 
   const bool success = init_status == InitStatus::kSuccess;
 

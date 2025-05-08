@@ -74,3 +74,12 @@ bool IsIdentityDiscAccountMenuEnabled() {
   }
   return base::FeatureList::IsEnabled(kIdentityDiscAccountMenu);
 }
+
+BASE_FEATURE(kWidgetsForMultiprofile,
+             "WidgetsForMultiprofile",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsWidgetsForMultiprofileEnabled() {
+  return base::FeatureList::IsEnabled(kWidgetsForMultiprofile) &&
+         AreSeparateProfilesForManagedAccountsEnabled();
+}

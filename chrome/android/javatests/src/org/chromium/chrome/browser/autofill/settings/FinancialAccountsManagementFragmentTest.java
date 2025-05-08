@@ -42,8 +42,7 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherUtils;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -53,6 +52,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.ImageType;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -126,16 +126,15 @@ public class FinancialAccountsManagementFragmentTest {
                 () -> {
                     AutofillImageFetcher imageFetcher =
                             AutofillTestHelper.getAutofillImageFetcherForLastUsedProfile();
-                    CardIconSpecs specs =
-                            CardIconSpecs.create(
-                                    ContextUtils.getApplicationContext(), ImageSize.LARGE);
+                    IconSpecs specs =
+                            IconSpecs.create(
+                                    ContextUtils.getApplicationContext(),
+                                    ImageType.CREDIT_CARD_ART_IMAGE,
+                                    ImageSize.LARGE);
                     // Cache the test image in AutofillImageFetcher. Only cached images are returned
                     // immediately by the AutofillImageFetcher.
                     imageFetcher.addImageToCacheForTesting(
-                            AutofillUiUtils.getFifeIconUrlWithParams(
-                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_URL,
-                                    specs.getWidth(),
-                                    specs.getHeight()),
+                            specs.getResolvedIconUrl(FINANCIAL_ACCOUNT_DISPLAY_ICON_URL),
                             FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP);
                     imageFetcher.addImageToCacheForTesting(
                             AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(

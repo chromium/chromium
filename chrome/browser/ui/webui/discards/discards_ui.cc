@@ -149,9 +149,9 @@ class DiscardsDetailsProviderImpl
       performance_manager::policies::CanDiscardResult can_discard_result =
           eligiblity_policy->CanDiscard(
               page_node, DiscardEligibilityPolicy::DiscardReason::URGENT);
-      candidates.emplace_back(page_node, can_discard_result,
+      candidates.emplace_back(page_node->GetWeakPtr(), can_discard_result,
                               page_node->IsVisible(), page_node->IsFocused(),
-                              page_node->GetTimeSinceLastVisibilityChange());
+                              page_node->GetLastVisibilityChangeTime());
     }
 
     // Sorts with ascending importance.
@@ -165,7 +165,7 @@ class DiscardsDetailsProviderImpl
       discards::mojom::TabDiscardsInfoPtr info(
           discards::mojom::TabDiscardsInfo::New());
 
-      const PageNode* page_node = candidate.page_node();
+      const base::WeakPtr<const PageNode> page_node = candidate.page_node();
       content::WebContents* contents = page_node->GetWebContents().get();
       CHECK(contents);
 
@@ -177,7 +177,7 @@ class DiscardsDetailsProviderImpl
 
       info->cannot_discard_reasons =
           performance_manager::user_tuning::GetCannotDiscardReasonsForPageNode(
-              page_node);
+              page_node.get());
       info->can_discard = info->cannot_discard_reasons.empty();
 
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
@@ -187,7 +187,7 @@ class DiscardsDetailsProviderImpl
       // TODO(crbug.com/40160563): Add FreezingPolicy to Android.
       info->cannot_freeze_reasons = base::ToVector(
           performance_manager::freezing::GetCannotFreezeReasonsForPageNode(
-              page_node));
+              page_node.get()));
       info->can_freeze = info->cannot_freeze_reasons.empty()
                              ? discards::mojom::CanFreeze::YES
                              : discards::mojom::CanFreeze::NO;
@@ -198,7 +198,7 @@ class DiscardsDetailsProviderImpl
       page_nodes_by_id_.insert(std::make_pair(info->id, page_node));
       const auto* live_state_data =
           performance_manager::PageLiveStateDecorator::Data::FromPageNode(
-              page_node);
+              page_node.get());
       if (live_state_data) {
         info->is_auto_discardable = live_state_data->IsAutoDiscardable();
       }
@@ -253,8 +253,8 @@ class DiscardsDetailsProviderImpl
                    mojom::LifecycleUnitDiscardReason reason,
                    DiscardByIdCallback callback) override {
     auto it = page_nodes_by_id_.find(id);
-    if (it != page_nodes_by_id_.end()) {
-      const PageNode* page_node = it->second;
+    if (it != page_nodes_by_id_.end() && it->second) {
+      const PageNode* page_node = it->second.get();
       performance_manager::user_tuning::DiscardPage(
           page_node, reason,
           /*ignore_minimum_time_in_background=*/true);
@@ -264,8 +264,8 @@ class DiscardsDetailsProviderImpl
 
   void FreezeById(int32_t id) override {
     auto it = page_nodes_by_id_.find(id);
-    if (it != page_nodes_by_id_.end()) {
-      const PageNode* page_node = it->second;
+    if (it != page_nodes_by_id_.end() && it->second) {
+      const PageNode* page_node = it->second.get();
       content::WebContents* contents = page_node->GetWebContents().get();
       CHECK(contents);
       contents->SetPageFrozen(true);
@@ -274,8 +274,8 @@ class DiscardsDetailsProviderImpl
 
   void LoadById(int32_t id) override {
     auto it = page_nodes_by_id_.find(id);
-    if (it != page_nodes_by_id_.end()) {
-      const PageNode* page_node = it->second;
+    if (it != page_nodes_by_id_.end() && it->second) {
+      const PageNode* page_node = it->second.get();
       PageNode::LoadingState loading_state = page_node->GetLoadingState();
       if (loading_state != PageNode::LoadingState::kLoadingNotStarted &&
           loading_state != PageNode::LoadingState::kLoadingTimedOut) {
@@ -322,8 +322,7 @@ class DiscardsDetailsProviderImpl
   mojo::Receiver<discards::mojom::DetailsProvider> receiver_;
 
   // Mapping from id to page node.
-  base::flat_map<int32_t, raw_ptr<const PageNode, CtnExperimental>>
-      page_nodes_by_id_;
+  base::flat_map<int32_t, base::WeakPtr<const PageNode>> page_nodes_by_id_;
 };
 
 }  // namespace

@@ -208,8 +208,8 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   bool IsLoggedInAsChildUser() const override;
   bool IsLoggedInAsManagedGuestSession() const override;
   bool IsLoggedInAsGuest() const override;
-  bool IsLoggedInAsKioskApp() const override;
-  bool IsLoggedInAsWebKioskApp() const override;
+  bool IsLoggedInAsKioskChromeApp() const override;
+  bool IsLoggedInAsKioskWebApp() const override;
   bool IsLoggedInAsKioskIWA() const override;
   bool IsLoggedInAsAnyKioskApp() const override;
   bool IsLoggedInAsStub() const override;

@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -31,7 +32,8 @@
 #include "chrome/browser/glic/host/glic_actor_controller.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
+#include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -55,6 +57,21 @@
 
 namespace glic {
 
+namespace {
+
+base::TimeDelta GetWarmingDelay() {
+  base::TimeDelta delay_start =
+      base::Milliseconds(features::kGlicWarmingDelayMs.Get());
+  base::TimeDelta delay_limit =
+      delay_start + base::Milliseconds(features::kGlicWarmingJitterMs.Get());
+  if (delay_limit > delay_start) {
+    return RandTimeDelta(delay_start, delay_limit);
+  }
+  return delay_start;
+}
+
+}  // namespace
+
 GlicKeyedService::GlicKeyedService(
     Profile* profile,
     signin::IdentityManager* identity_manager,
@@ -68,10 +85,10 @@ GlicKeyedService::GlicKeyedService(
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
       host_(std::make_unique<Host>(profile)),
       window_controller_(
-          std::make_unique<GlicWindowController>(profile,
-                                                 identity_manager,
-                                                 this,
-                                                 enabling_.get())),
+          std::make_unique<GlicWindowControllerImpl>(profile,
+                                                     identity_manager,
+                                                     this,
+                                                     enabling_.get())),
       focused_tab_manager_(profile, *window_controller_),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
       auth_controller_(std::make_unique<AuthController>(profile,
@@ -80,6 +97,7 @@ GlicKeyedService::GlicKeyedService(
       glic_profile_manager_(glic_profile_manager),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
+  host_->Initialize(window_controller_.get());
   metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
@@ -110,6 +128,7 @@ GlicKeyedService::GlicKeyedService(
 }
 
 GlicKeyedService::~GlicKeyedService() {
+  host().Destroy();
   metrics_->SetControllers(nullptr, nullptr);
 }
 
@@ -135,14 +154,20 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
   window_controller_->Toggle(bwi, prevent_close, source);
 }
 
+void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi) {
+  // Glic may be disabled for certain user profiles (the user is browsing in
+  // incognito or guest mode, policy, etc). In those cases, the entry points to
+  // this method should already have been removed.
+  CHECK(GlicEnabling::IsEnabledForProfile(profile_));
+
+  glic_profile_manager_->SetActiveGlic(this);
+  window_controller_->fre_controller()->OpenFreDialogInNewTab(bwi);
+}
+
 void GlicKeyedService::CloseUI() {
   window_controller_->Shutdown();
   host().Shutdown();
   SetContextAccessIndicator(false);
-}
-
-void GlicKeyedService::FocusUI() {
-  window_controller_->FocusIfOpen();
 }
 
 void GlicKeyedService::PrepareForOpen() {
@@ -178,7 +203,7 @@ void GlicKeyedService::FetchZeroStateSuggestions(
         callback) {
   auto* active_web_contents = GetFocusedTabData().focus();
 
-  if (contextual_cueing_service_ && active_web_contents) {
+  if (contextual_cueing_service_ && active_web_contents && IsWindowShowing()) {
     auto suggestions = mojom::ZeroStateSuggestions::New();
     suggestions->tab_id = GetTabId(active_web_contents);
     suggestions->tab_url = active_web_contents->GetLastCommittedURL();
@@ -193,6 +218,11 @@ void GlicKeyedService::FetchZeroStateSuggestions(
   } else {
     std::move(callback).Run(nullptr);
   }
+}
+
+GlicWindowController& GlicKeyedService::window_controller() {
+  CHECK(window_controller_);
+  return *window_controller_.get();
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
@@ -363,6 +393,25 @@ void GlicKeyedService::ActInFocusedTab(
                          std::move(callback));
 }
 
+void GlicKeyedService::StopActorTask() {
+  if (!actor_controller_) {
+    return;
+  }
+
+  actor_controller_->StopTask();
+}
+
+bool GlicKeyedService::IsActorCoordinatorActingOnTab(
+    const content::WebContents* tab) const {
+  return actor_controller_ &&
+         actor_controller_->IsActorCoordinatorActingOnTab(tab);
+}
+
+actor::ActorCoordinator& GlicKeyedService::GetActorCoordinatorForTesting() {
+  CHECK(actor_controller_);
+  return actor_controller_->GetActorCoordinatorForTesting();  // IN-TEST
+}
+
 void GlicKeyedService::CaptureScreenshot(
     mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   screenshot_capturer_->CaptureScreenshot(
@@ -382,9 +431,24 @@ bool GlicKeyedService::IsContextAccessIndicatorShown(
 
 void GlicKeyedService::TryPreload() {
   CHECK(glic_profile_manager_);
+  base::TimeDelta delay = GetWarmingDelay();
 
-  glic_profile_manager_->ShouldPreloadForProfile(
-      profile_, base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
+  // TODO(b/411100559): Ideally we'd use post delayed task in all cases,
+  // but this requires a refactor of tests that are currently brittle. For now,
+  // just synchronously call ShouldPreloadForProfile if there is no delay.
+  if (delay.is_zero()) {
+    glic_profile_manager_->ShouldPreloadForProfile(
+        profile_,
+        base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &GlicProfileManager::ShouldPreloadForProfile,
+            glic_profile_manager_->GetWeakPtr(), profile_,
+            base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr())),
+        delay);
+  }
 }
 
 void GlicKeyedService::TryPreloadFre() {

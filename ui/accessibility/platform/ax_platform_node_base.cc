@@ -1482,6 +1482,10 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DetailsFrom::kCommandfor:
         AddAttributeToList("details-from", "command-for", attributes);
         break;
+      case ax::mojom::DetailsFrom::kCssScrollMarkerPseudoElement:
+        AddAttributeToList("details-from", "css-scroll-marker-pseudo-element",
+                           attributes);
+        break;
     }
   }
 
@@ -2201,6 +2205,7 @@ int AXPlatformNodeBase::FindTextBoundary(
       position->CreatePositionAtTextBoundary(boundary, direction, options);
   if (boundary_position->IsNullPosition())
     return -1;
+  DCHECK_EQ(boundary_position->GetAnchor(), position->GetAnchor());
   DCHECK_GE(boundary_position->text_offset(), 0);
   return boundary_position->text_offset();
 }

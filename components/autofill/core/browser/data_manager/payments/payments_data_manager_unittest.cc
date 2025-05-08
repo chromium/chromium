@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
+#include "components/autofill/core/browser/ui/mock_autofill_image_fetcher.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -263,33 +264,6 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
   std::unique_ptr<PaymentsDataManager> payments_data_manager_;
 };
 
-class MockAutofillImageFetcher : public AutofillImageFetcherBase {
- public:
-  MOCK_METHOD(
-      void,
-      FetchCreditCardArtImagesForURLs,
-      (base::span<const GURL> card_art_urls,
-       base::span<const AutofillImageFetcherBase::ImageSize> image_sizes),
-      (override));
-  MOCK_METHOD(void,
-              FetchPixAccountImagesForURLs,
-              (base::span<const GURL> card_art_urls),
-              (override));
-  MOCK_METHOD(void,
-              FetchValuableImagesForURLs,
-              (base::span<const GURL> image_urls),
-              (override));
-  MOCK_METHOD(const gfx::Image*,
-              GetCachedImageForUrl,
-              (const GURL& image_url, ImageType image_type),
-              (const, override));
-#if BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,
-              GetOrCreateJavaImageFetcher,
-              (),
-              (override));
-#endif
-};
 class PaymentsDataManagerTest : public PaymentsDataManagerHelper,
                                 public testing::Test {
  public:
@@ -2465,7 +2439,7 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers) {
 
   ASSERT_EQ(linked_bnpl_issuers.size(), 1U);
   EXPECT_EQ(linked_bnpl_issuers[0],
-            BnplIssuer(instrument_id, issuer_id,
+            BnplIssuer(instrument_id, ConvertToBnplIssuerIdEnum(issuer_id),
                        /*eligible_price_ranges=*/
                        {BnplIssuer::EligiblePriceRange(
                            currency, /*price_lower_bound=*/min_price_in_micros,
@@ -2711,18 +2685,20 @@ TEST_F(PaymentsDataManagerTest, ProcessCardArtUrlChanges) {
 // 1. Whether the benefits toggle is turned on or off.
 // 2. Whether the American Express benefits flag is enabled.
 // 3. Whether the BMO benefits flag is enabled.
+// 4. Whether the Curinos flat rate benefits flag is enabled.
 class PaymentsDataManagerStartupBenefitsTest
     : public PaymentsDataManagerHelper,
       public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
   PaymentsDataManagerStartupBenefitsTest() {
     feature_list_.InitWithFeatureStates(
         /*feature_states=*/
         {{features::kAutofillEnableCardBenefitsForAmericanExpress,
           AreAmericanExpressBenefitsEnabled()},
-         {features::kAutofillEnableCardBenefitsForBmo,
-          AreBmoBenefitsEnabled()}});
+         {features::kAutofillEnableCardBenefitsForBmo, AreBmoBenefitsEnabled()},
+         {features::kAutofillEnableFlatRateCardBenefitsFromCurinos,
+          AreCurinosFlatRateBenefitsEnabled()}});
     SetUpTest();
   }
 
@@ -2733,6 +2709,9 @@ class PaymentsDataManagerStartupBenefitsTest
     return std::get<1>(GetParam());
   }
   bool AreBmoBenefitsEnabled() const { return std::get<2>(GetParam()); }
+  bool AreCurinosFlatRateBenefitsEnabled() const {
+    return std::get<3>(GetParam());
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -2741,6 +2720,7 @@ class PaymentsDataManagerStartupBenefitsTest
 INSTANTIATE_TEST_SUITE_P(,
                          PaymentsDataManagerStartupBenefitsTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
 
@@ -2751,7 +2731,8 @@ TEST_P(PaymentsDataManagerStartupBenefitsTest,
   prefs::SetPaymentCardBenefits(prefs_.get(), IsBenefitsPrefTurnedOn());
   base::HistogramTester histogram_tester;
   ResetPaymentsDataManager();
-  if (!AreAmericanExpressBenefitsEnabled() && !AreBmoBenefitsEnabled()) {
+  if (!AreAmericanExpressBenefitsEnabled() && !AreBmoBenefitsEnabled() &&
+      !AreCurinosFlatRateBenefitsEnabled()) {
     histogram_tester.ExpectTotalCount(
         "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);
   } else {
@@ -3548,7 +3529,7 @@ TEST_F(PaymentsDataManagerTest,
   // Must match the BnplCreationOption in the payment instrument creation
   // option.
   std::vector<BnplIssuer> want_bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/std::nullopt, std::string(kBnplAffirmIssuerId),
+      /*instrument_id=*/std::nullopt, BnplIssuer::IssuerId::kBnplAffirm,
       {BnplIssuer::EligiblePriceRange(/*currency= */ "USD",
                                       /*price_lower_bound=*/50,
                                       /*price_upper_bound=*/200)})};
@@ -3924,6 +3905,17 @@ TEST_F(PaymentsDataManagerTest, ShouldShowBnplSettings) {
 
   prefs_.get()->SetBoolean(prefs::kAutofillHasSeenBnpl, false);
   EXPECT_FALSE(payments_data_manager().ShouldShowBnplSettings());
+}
+
+TEST_F(PaymentsDataManagerTest,
+       ShouldShowBnplSettings_BnplNotSeenButLinkedIssuerPresent) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableBuyNowPayLater};
+  prefs_.get()->SetBoolean(prefs::kAutofillHasSeenBnpl, false);
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  EXPECT_TRUE(payments_data_manager().ShouldShowBnplSettings());
 }
 
 TEST_F(PaymentsDataManagerTest, ShouldShowBnplSettings_FlagOff) {

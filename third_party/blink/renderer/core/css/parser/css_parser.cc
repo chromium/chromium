@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -350,7 +351,7 @@ bool CSSParser::ParseSupportsCondition(
     const String& condition,
     const ExecutionContext* execution_context) {
   // window.CSS.supports requires to parse as-if it was wrapped in parenthesis.
-  String wrapped_condition = "(" + condition + ")";
+  String wrapped_condition = WTF::StrCat({"(", condition, ")"});
   CSSParserTokenStream stream(wrapped_condition);
   DCHECK(execution_context);
   // Create parser context using document so it can check for origin trial

@@ -19,7 +19,6 @@
 #include "base/base_paths.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/features.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -27,7 +26,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -53,32 +51,20 @@ base::HeapArray<char> MakeNotNullTerminatedInput(const char* input) {
 
 namespace base {
 
-class JSONReaderTest : public testing::TestWithParam<bool> {
- public:
-  void SetUp() override {
-    feature_list_.InitWithFeatureState(base::features::kUseRustJsonParser,
-                                       using_rust_);
-  }
-
- protected:
-  bool using_rust_ = GetParam();
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_P(JSONReaderTest, Whitespace) {
+TEST(JSONReaderTest, Whitespace) {
   std::optional<Value> root = JSONReader::Read("   null   ");
   ASSERT_TRUE(root);
   EXPECT_TRUE(root->is_none());
 }
 
-TEST_P(JSONReaderTest, InvalidString) {
+TEST(JSONReaderTest, InvalidString) {
   // These are invalid because they do not represent a JSON value,
   // see https://tools.ietf.org/rfc/rfc8259.txt
   EXPECT_FALSE(JSONReader::Read(""));
   EXPECT_FALSE(JSONReader::Read("nu"));
 }
 
-TEST_P(JSONReaderTest, SimpleBool) {
+TEST(JSONReaderTest, SimpleBool) {
   base::HistogramTester histograms;
   std::optional<Value> root = JSONReader::Read("true  ");
   ASSERT_TRUE(root);
@@ -86,7 +72,7 @@ TEST_P(JSONReaderTest, SimpleBool) {
   histograms.ExpectTotalCount("Security.JSONParser.ParsingTime", 1);
 }
 
-TEST_P(JSONReaderTest, EmbeddedComments) {
+TEST(JSONReaderTest, EmbeddedComments) {
   std::optional<Value> root = JSONReader::Read("/* comment */null");
   ASSERT_TRUE(root);
   EXPECT_TRUE(root->is_none());
@@ -142,21 +128,21 @@ TEST_P(JSONReaderTest, EmbeddedComments) {
   EXPECT_FALSE(JSONReader::Read("/33"));
 }
 
-TEST_P(JSONReaderTest, Ints) {
+TEST(JSONReaderTest, Ints) {
   std::optional<Value> root = JSONReader::Read("43");
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->is_int());
   EXPECT_EQ(43, root->GetInt());
 }
 
-TEST_P(JSONReaderTest, NonDecimalNumbers) {
+TEST(JSONReaderTest, NonDecimalNumbers) {
   // According to RFC 8259, oct, hex, and leading zeros are invalid JSON.
   EXPECT_FALSE(JSONReader::Read("043"));
   EXPECT_FALSE(JSONReader::Read("0x43"));
   EXPECT_FALSE(JSONReader::Read("00"));
 }
 
-TEST_P(JSONReaderTest, NumberZero) {
+TEST(JSONReaderTest, NumberZero) {
   // Test 0 (which needs to be special cased because of the leading zero
   // clause).
   std::optional<Value> root = JSONReader::Read("0");
@@ -165,7 +151,7 @@ TEST_P(JSONReaderTest, NumberZero) {
   EXPECT_EQ(0, root->GetInt());
 }
 
-TEST_P(JSONReaderTest, LargeIntPromotion) {
+TEST(JSONReaderTest, LargeIntPromotion) {
   // Numbers that overflow ints should succeed, being internally promoted to
   // storage as doubles
   std::optional<Value> root = JSONReader::Read("2147483648");
@@ -178,7 +164,7 @@ TEST_P(JSONReaderTest, LargeIntPromotion) {
   EXPECT_DOUBLE_EQ(-2147483649.0, root->GetDouble());
 }
 
-TEST_P(JSONReaderTest, LargerIntIsLossy) {
+TEST(JSONReaderTest, LargerIntIsLossy) {
   // Parse LONG_MAX as a JSON number (not a JSON string). The result of the
   // parse is a base::Value, either a (32-bit) int or a (64-bit) double.
   // LONG_MAX would overflow an int and can only be approximated by a double.
@@ -195,7 +181,7 @@ TEST_P(JSONReaderTest, LargerIntIsLossy) {
   EXPECT_EQ(std::string(etc808), StringPrintf("%f", root->GetDouble()));
 }
 
-TEST_P(JSONReaderTest, Doubles) {
+TEST(JSONReaderTest, Doubles) {
   std::optional<Value> root = JSONReader::Read("43.1");
   ASSERT_TRUE(root);
   EXPECT_TRUE(root->is_double());
@@ -239,14 +225,14 @@ TEST_P(JSONReaderTest, Doubles) {
   ASSERT_FALSE(value.has_value());
 }
 
-TEST_P(JSONReaderTest, FractionalNumbers) {
+TEST(JSONReaderTest, FractionalNumbers) {
   // Fractional parts must have a digit before and after the decimal point.
   EXPECT_FALSE(JSONReader::Read("1."));
   EXPECT_FALSE(JSONReader::Read(".1"));
   EXPECT_FALSE(JSONReader::Read("1.e10"));
 }
 
-TEST_P(JSONReaderTest, ExponentialNumbers) {
+TEST(JSONReaderTest, ExponentialNumbers) {
   // Exponent must have a digit following the 'e'.
   EXPECT_FALSE(JSONReader::Read("1e"));
   EXPECT_FALSE(JSONReader::Read("1E"));
@@ -254,7 +240,7 @@ TEST_P(JSONReaderTest, ExponentialNumbers) {
   EXPECT_FALSE(JSONReader::Read("1e1.0"));
 }
 
-TEST_P(JSONReaderTest, InvalidInfNAN) {
+TEST(JSONReaderTest, InvalidInfNAN) {
   // The largest finite double is roughly 1.8e308.
   EXPECT_FALSE(JSONReader::Read("1e1000"));
   EXPECT_FALSE(JSONReader::Read("-1e1000"));
@@ -263,7 +249,7 @@ TEST_P(JSONReaderTest, InvalidInfNAN) {
   EXPECT_FALSE(JSONReader::Read("inf"));
 }
 
-TEST_P(JSONReaderTest, InvalidNumbers) {
+TEST(JSONReaderTest, InvalidNumbers) {
   EXPECT_TRUE(JSONReader::Read("4.3"));
   EXPECT_FALSE(JSONReader::Read("4."));
   EXPECT_FALSE(JSONReader::Read("4.3.1"));
@@ -272,7 +258,7 @@ TEST_P(JSONReaderTest, InvalidNumbers) {
   EXPECT_FALSE(JSONReader::Read("42a"));
 }
 
-TEST_P(JSONReaderTest, Zeroes) {
+TEST(JSONReaderTest, Zeroes) {
   std::optional<Value> root = JSONReader::Read("0");
   ASSERT_TRUE(root);
   EXPECT_TRUE(root->is_int());
@@ -297,21 +283,21 @@ TEST_P(JSONReaderTest, Zeroes) {
   EXPECT_TRUE(std::signbit(root->GetDouble()));
 }
 
-TEST_P(JSONReaderTest, SimpleString) {
+TEST(JSONReaderTest, SimpleString) {
   std::optional<Value> root = JSONReader::Read("\"hello world\"");
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->is_string());
   EXPECT_EQ("hello world", root->GetString());
 }
 
-TEST_P(JSONReaderTest, EmptyString) {
+TEST(JSONReaderTest, EmptyString) {
   std::optional<Value> root = JSONReader::Read("\"\"");
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->is_string());
   EXPECT_EQ("", root->GetString());
 }
 
-TEST_P(JSONReaderTest, BasicStringEscapes) {
+TEST(JSONReaderTest, BasicStringEscapes) {
   std::optional<Value> root =
       JSONReader::Read("\" \\\"\\\\\\/\\b\\f\\n\\r\\t\"");
   ASSERT_TRUE(root);
@@ -319,7 +305,7 @@ TEST_P(JSONReaderTest, BasicStringEscapes) {
   EXPECT_EQ(" \"\\/\b\f\n\r\t", root->GetString());
 }
 
-TEST_P(JSONReaderTest, UnicodeEscapes) {
+TEST(JSONReaderTest, UnicodeEscapes) {
   // Test hex and unicode escapes including the null character.
   std::optional<Value> root =
       JSONReader::Read("\"\\x41\\xFF\\x00\\u1234\\u0000\"");
@@ -336,7 +322,7 @@ TEST_P(JSONReaderTest, UnicodeEscapes) {
   EXPECT_TRUE(JSONReader::Read("\"\\uD834\\uDD1E\""));  // U+1D11E
 }
 
-TEST_P(JSONReaderTest, InvalidStrings) {
+TEST(JSONReaderTest, InvalidStrings) {
   EXPECT_FALSE(JSONReader::Read("\"no closing quote"));
   EXPECT_FALSE(JSONReader::Read("\"\\z invalid escape char\""));
   EXPECT_FALSE(JSONReader::Read("\"\\xAQ invalid hex code\""));
@@ -345,7 +331,7 @@ TEST_P(JSONReaderTest, InvalidStrings) {
   EXPECT_FALSE(JSONReader::Read("\"extra backslash at end of input\\\""));
 }
 
-TEST_P(JSONReaderTest, BasicArray) {
+TEST(JSONReaderTest, BasicArray) {
   std::optional<Value> root = JSONReader::Read("[true, false, null]");
   ASSERT_TRUE(root);
   Value::List* list = root->GetIfList();
@@ -359,7 +345,7 @@ TEST_P(JSONReaderTest, BasicArray) {
   EXPECT_EQ(*list, *root2);
 }
 
-TEST_P(JSONReaderTest, EmptyArray) {
+TEST(JSONReaderTest, EmptyArray) {
   std::optional<Value> value = JSONReader::Read("[]");
   ASSERT_TRUE(value);
   Value::List* list = value->GetIfList();
@@ -367,7 +353,7 @@ TEST_P(JSONReaderTest, EmptyArray) {
   EXPECT_TRUE(list->empty());
 }
 
-TEST_P(JSONReaderTest, CompleteArray) {
+TEST(JSONReaderTest, CompleteArray) {
   std::optional<Value> value = JSONReader::Read("[\"a\", 3, 4.56, null]");
   ASSERT_TRUE(value);
   Value::List* list = value->GetIfList();
@@ -375,7 +361,7 @@ TEST_P(JSONReaderTest, CompleteArray) {
   EXPECT_EQ(4U, list->size());
 }
 
-TEST_P(JSONReaderTest, NestedArrays) {
+TEST(JSONReaderTest, NestedArrays) {
   std::optional<Value> value = JSONReader::Read(
       "[[true], [], {\"smell\": \"nice\",\"taste\": \"yummy\" }, [false, [], "
       "[null]], null]");
@@ -393,7 +379,7 @@ TEST_P(JSONReaderTest, NestedArrays) {
   EXPECT_EQ(*list, *root2);
 }
 
-TEST_P(JSONReaderTest, InvalidArrays) {
+TEST(JSONReaderTest, InvalidArrays) {
   // Missing close brace.
   EXPECT_FALSE(JSONReader::Read("[[true], [], [false, [], [null]], null"));
 
@@ -408,7 +394,7 @@ TEST_P(JSONReaderTest, InvalidArrays) {
   EXPECT_FALSE(JSONReader::Read("[true,]"));
 }
 
-TEST_P(JSONReaderTest, ArrayTrailingComma) {
+TEST(JSONReaderTest, ArrayTrailingComma) {
   // Valid if we set |allow_trailing_comma| to true.
   std::optional<Value> value =
       JSONReader::Read("[true,]", JSON_ALLOW_TRAILING_COMMAS);
@@ -421,7 +407,7 @@ TEST_P(JSONReaderTest, ArrayTrailingComma) {
   EXPECT_TRUE(value1.GetBool());
 }
 
-TEST_P(JSONReaderTest, ArrayTrailingCommaNoEmptyElements) {
+TEST(JSONReaderTest, ArrayTrailingCommaNoEmptyElements) {
   // Don't allow empty elements, even if |allow_trailing_comma| is
   // true.
   EXPECT_FALSE(JSONReader::Read("[,]", JSON_ALLOW_TRAILING_COMMAS));
@@ -430,13 +416,13 @@ TEST_P(JSONReaderTest, ArrayTrailingCommaNoEmptyElements) {
   EXPECT_FALSE(JSONReader::Read("[true,,false]", JSON_ALLOW_TRAILING_COMMAS));
 }
 
-TEST_P(JSONReaderTest, EmptyDictionary) {
+TEST(JSONReaderTest, EmptyDictionary) {
   std::optional<Value> dict_val = JSONReader::Read("{}");
   ASSERT_TRUE(dict_val);
   ASSERT_TRUE(dict_val->is_dict());
 }
 
-TEST_P(JSONReaderTest, CompleteDictionary) {
+TEST(JSONReaderTest, CompleteDictionary) {
   std::optional<Value> root1 = JSONReader::Read(
       "{\"number\":9.87654321, \"null\":null , \"\\x53\" : \"str\", \"bool\": "
       "false, \"more\": {} }");
@@ -495,7 +481,7 @@ TEST_P(JSONReaderTest, CompleteDictionary) {
   EXPECT_EQ(*root1_dict, *root2_dict);
 }
 
-TEST_P(JSONReaderTest, NestedDictionaries) {
+TEST(JSONReaderTest, NestedDictionaries) {
   std::optional<Value> root1 = JSONReader::Read(
       "{\"inner\":{\"array\":[true, 3, 4.56, null]},\"false\":false,\"d\":{}}");
   ASSERT_TRUE(root1);
@@ -520,7 +506,7 @@ TEST_P(JSONReaderTest, NestedDictionaries) {
   EXPECT_EQ(*root1_dict, *root2);
 }
 
-TEST_P(JSONReaderTest, DictionaryKeysWithPeriods) {
+TEST(JSONReaderTest, DictionaryKeysWithPeriods) {
   std::optional<Value> root =
       JSONReader::Read("{\"a.b\":3,\"c\":2,\"d.e.f\":{\"g.h.i.j\":1}}");
   ASSERT_TRUE(root);
@@ -552,7 +538,7 @@ TEST_P(JSONReaderTest, DictionaryKeysWithPeriods) {
   EXPECT_EQ(1, *integer_value);
 }
 
-TEST_P(JSONReaderTest, DuplicateKeys) {
+TEST(JSONReaderTest, DuplicateKeys) {
   std::optional<Value> root = JSONReader::Read("{\"x\":1,\"x\":2,\"y\":3}");
   ASSERT_TRUE(root);
   const Value::Dict* root_dict = root->GetIfDict();
@@ -563,7 +549,7 @@ TEST_P(JSONReaderTest, DuplicateKeys) {
   EXPECT_EQ(2, *integer_value);
 }
 
-TEST_P(JSONReaderTest, InvalidDictionaries) {
+TEST(JSONReaderTest, InvalidDictionaries) {
   // No closing brace.
   EXPECT_FALSE(JSONReader::Read("{\"a\": true"));
 
@@ -593,7 +579,7 @@ TEST_P(JSONReaderTest, InvalidDictionaries) {
                                 JSON_ALLOW_TRAILING_COMMAS));
 }
 
-TEST_P(JSONReaderTest, StackOverflow) {
+TEST(JSONReaderTest, StackOverflow) {
   std::string evil(1000000, '[');
   evil.append(std::string(1000000, ']'));
   EXPECT_FALSE(JSONReader::Read(evil));
@@ -612,7 +598,7 @@ TEST_P(JSONReaderTest, StackOverflow) {
   EXPECT_EQ(5001U, list->size());
 }
 
-TEST_P(JSONReaderTest, UTF8Input) {
+TEST(JSONReaderTest, UTF8Input) {
   std::optional<Value> root = JSONReader::Read("\"\xe7\xbd\x91\xe9\xa1\xb5\"");
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->is_string());
@@ -676,13 +662,13 @@ TEST_P(JSONReaderTest, UTF8Input) {
   }
 }
 
-TEST_P(JSONReaderTest, InvalidUTF8Input) {
+TEST(JSONReaderTest, InvalidUTF8Input) {
   EXPECT_FALSE(JSONReader::Read("\"345\xb0\xa1\xb0\xa2\""));
   EXPECT_FALSE(JSONReader::Read("\"123\xc0\x81\""));
   EXPECT_FALSE(JSONReader::Read("\"abc\xc0\xae\""));
 }
 
-TEST_P(JSONReaderTest, UTF16Escapes) {
+TEST(JSONReaderTest, UTF16Escapes) {
   std::optional<Value> root = JSONReader::Read("\"\\u20ac3,14\"");
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->is_string());
@@ -697,7 +683,7 @@ TEST_P(JSONReaderTest, UTF16Escapes) {
   EXPECT_EQ("\xf0\x9f\x92\xa9\xf0\x9f\x91\xac", root->GetString());
 }
 
-TEST_P(JSONReaderTest, InvalidUTF16Escapes) {
+TEST(JSONReaderTest, InvalidUTF16Escapes) {
   const char* const cases[] = {
       "\"\\u123\"",          // Invalid scalar.
       "\"\\ud83d\"",         // Invalid scalar.
@@ -719,7 +705,7 @@ TEST_P(JSONReaderTest, InvalidUTF16Escapes) {
   }
 }
 
-TEST_P(JSONReaderTest, LiteralRoots) {
+TEST(JSONReaderTest, LiteralRoots) {
   std::optional<Value> root = JSONReader::Read("null");
   ASSERT_TRUE(root);
   EXPECT_TRUE(root->is_none());
@@ -740,7 +726,7 @@ TEST_P(JSONReaderTest, LiteralRoots) {
   EXPECT_EQ("root", root->GetString());
 }
 
-TEST_P(JSONReaderTest, ReadFromFile) {
+TEST(JSONReaderTest, ReadFromFile) {
   FilePath path;
   ASSERT_TRUE(PathService::Get(base::DIR_TEST_DATA, &path));
   path = path.AppendASCII("json");
@@ -756,7 +742,7 @@ TEST_P(JSONReaderTest, ReadFromFile) {
 
 // Tests that the root of a JSON object can be deleted safely while its
 // children outlive it.
-TEST_P(JSONReaderTest, StringOptimizations) {
+TEST(JSONReaderTest, StringOptimizations) {
   Value dict_literal_0;
   Value dict_literal_1;
   Value dict_string_0;
@@ -832,7 +818,7 @@ TEST_P(JSONReaderTest, StringOptimizations) {
 // A smattering of invalid JSON designed to test specific portions of the
 // parser implementation against buffer overflow. Best run with DCHECKs so
 // that the one in NextChar fires.
-TEST_P(JSONReaderTest, InvalidSanity) {
+TEST(JSONReaderTest, InvalidSanity) {
   const auto kInvalidJson = std::to_array<const char*>({
       "/* test *",
       "{\"foo\"",
@@ -850,7 +836,7 @@ TEST_P(JSONReaderTest, InvalidSanity) {
   }
 }
 
-TEST_P(JSONReaderTest, IllegalTrailingNull) {
+TEST(JSONReaderTest, IllegalTrailingNull) {
   const auto json = std::to_array<char>({'"', 'n', 'u', 'l', 'l', '"', '\0'});
   std::string json_string(json.data(), sizeof(json));
   auto root = JSONReader::ReadAndReturnValueWithError(json_string);
@@ -858,7 +844,7 @@ TEST_P(JSONReaderTest, IllegalTrailingNull) {
   EXPECT_NE("", root.error().message);
 }
 
-TEST_P(JSONReaderTest, ASCIIControlCodes) {
+TEST(JSONReaderTest, ASCIIControlCodes) {
   // A literal NUL byte or a literal new line, in a JSON string, should be
   // rejected. RFC 8259 section 7 says "the characters that MUST be escaped
   // [include]... the control characters (U+0000 through U+001F)".
@@ -883,13 +869,13 @@ TEST_P(JSONReaderTest, ASCIIControlCodes) {
   }
 }
 
-TEST_P(JSONReaderTest, MaxNesting) {
+TEST(JSONReaderTest, MaxNesting) {
   std::string json(R"({"outer": { "inner": {"foo": true}}})");
   EXPECT_FALSE(JSONReader::Read(json, JSON_PARSE_RFC, 3));
   EXPECT_TRUE(JSONReader::Read(json, JSON_PARSE_RFC, 4));
 }
 
-TEST_P(JSONReaderTest, Decode4ByteUtf8Char) {
+TEST(JSONReaderTest, Decode4ByteUtf8Char) {
   // kUtf8Data contains a 4 byte unicode character (a smiley!) that JSONReader
   // should be able to handle. The UTF-8 encoding of U+1F607 SMILING FACE WITH
   // HALO is "\xF0\x9F\x98\x87".
@@ -903,7 +889,7 @@ TEST_P(JSONReaderTest, Decode4ByteUtf8Char) {
   EXPECT_EQ("\xF0\x9F\x98\x87", (*list)[0].GetString());
 }
 
-TEST_P(JSONReaderTest, DecodeUnicodeNonCharacter) {
+TEST(JSONReaderTest, DecodeUnicodeNonCharacter) {
   // Tests Unicode code points (encoded as escaped UTF-16) that are not valid
   // characters.
   EXPECT_TRUE(JSONReader::Read("[\"\\uFDD0\"]"));         // U+FDD0
@@ -945,13 +931,13 @@ TEST_P(JSONReaderTest, DecodeUnicodeNonCharacter) {
   EXPECT_TRUE(JSONReader::Read("[\"\\uDBFF\\uDFFF\"]"));  // U+10FFFF
 }
 
-TEST_P(JSONReaderTest, DecodeNegativeEscapeSequence) {
+TEST(JSONReaderTest, DecodeNegativeEscapeSequence) {
   EXPECT_FALSE(JSONReader::Read("[\"\\x-A\"]"));
   EXPECT_FALSE(JSONReader::Read("[\"\\u-00A\"]"));
 }
 
 // Verifies invalid code points are replaced.
-TEST_P(JSONReaderTest, ReplaceInvalidCharacters) {
+TEST(JSONReaderTest, ReplaceInvalidCharacters) {
   // U+D800 is a lone high surrogate.
   const std::string invalid_high = "\"\xED\xA0\x80\"";
   std::optional<Value> value =
@@ -970,7 +956,7 @@ TEST_P(JSONReaderTest, ReplaceInvalidCharacters) {
   EXPECT_EQ(U_FFFD U_FFFD U_FFFD, value->GetString());
 }
 
-TEST_P(JSONReaderTest, ReplaceInvalidUTF16EscapeSequence) {
+TEST(JSONReaderTest, ReplaceInvalidUTF16EscapeSequence) {
   // U+D800 is a lone high surrogate.
   const std::string invalid_high = "\"_\\uD800_\"";
   std::optional<Value> value =
@@ -987,7 +973,7 @@ TEST_P(JSONReaderTest, ReplaceInvalidUTF16EscapeSequence) {
   EXPECT_EQ("_" U_FFFD "_", value->GetString());
 }
 
-TEST_P(JSONReaderTest, InvalidUTF16HighSurrogates) {
+TEST(JSONReaderTest, InvalidUTF16HighSurrogates) {
   // U+dbaa is a high surrogate and expects a low surrogate, which U+001e is
   // not, so the entire surrogate pair should be replaced by
   // REPLACEMENT_CHARACTER.
@@ -1004,7 +990,7 @@ TEST_P(JSONReaderTest, InvalidUTF16HighSurrogates) {
   ASSERT_FALSE(value);
 }
 
-TEST_P(JSONReaderTest, InvalidUTF16HighSurrogatesAndEscapes) {
+TEST(JSONReaderTest, InvalidUTF16HighSurrogatesAndEscapes) {
   // U+dbaa is a lone high surrogate, and should be replaced with
   // REPLACEMENT_CHARACTER and not affect interpretation of the following `\`
   // character as a part of the escape sequence `\"`.
@@ -1021,7 +1007,7 @@ TEST_P(JSONReaderTest, InvalidUTF16HighSurrogatesAndEscapes) {
   ASSERT_FALSE(value);
 }
 
-TEST_P(JSONReaderTest, ParseNumberErrors) {
+TEST(JSONReaderTest, ParseNumberErrors) {
   struct Cases {
     const char* input;
     bool parse_success;
@@ -1059,7 +1045,7 @@ TEST_P(JSONReaderTest, ParseNumberErrors) {
   }
 }
 
-TEST_P(JSONReaderTest, UnterminatedInputs) {
+TEST(JSONReaderTest, UnterminatedInputs) {
   const auto kCases = std::to_array<const char*>({
       // clang-format off
       "/",
@@ -1091,7 +1077,7 @@ TEST_P(JSONReaderTest, UnterminatedInputs) {
   }
 }
 
-TEST_P(JSONReaderTest, LineColumnCounting) {
+TEST(JSONReaderTest, LineColumnCounting) {
   struct Cases {
     const char* input;
     int error_line;
@@ -1165,7 +1151,7 @@ TEST_P(JSONReaderTest, LineColumnCounting) {
   }
 }
 
-TEST_P(JSONReaderTest, ChromiumExtensions) {
+TEST(JSONReaderTest, ChromiumExtensions) {
   // All of these cases should parse with JSON_PARSE_CHROMIUM_EXTENSIONS but
   // fail with JSON_PARSE_RFC.
   struct Cases {
@@ -1207,7 +1193,7 @@ TEST_P(JSONReaderTest, ChromiumExtensions) {
 // For every control character, place it unescaped in a string and ensure that:
 // a) It doesn't parse with JSON_PARSE_RFC
 // b) It doesn't parse with JSON_PARSE_CHROMIUM_EXTENSIONS
-TEST_P(JSONReaderTest, UnescapedControls) {
+TEST(JSONReaderTest, UnescapedControls) {
   std::string input = "\"foo\"";
   // ECMA-404 (JSON standard) section 9: characters from 0x00 to 0x1f must be
   // escaped.
@@ -1223,11 +1209,7 @@ TEST_P(JSONReaderTest, UnescapedControls) {
   }
 }
 
-TEST_P(JSONReaderTest, UsingRust) {
-  ASSERT_EQ(JSONReader::UsingRust(), using_rust_);
-}
-
-TEST_P(JSONReaderTest, ReadingJsonIntoDictAndList) {
+TEST(JSONReaderTest, ReadingJsonIntoDictAndList) {
   {
     std::optional<base::Value::List> list = JSONReader::ReadList("[1, 2, 3]");
     ASSERT_TRUE(list);
@@ -1255,12 +1237,5 @@ static void CanParseAnythingWithoutCrashing(std::string_view input,
 }
 
 FUZZ_TEST(JSONReaderTest, CanParseAnythingWithoutCrashing);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         JSONReaderTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "Rust" : "Cpp";
-                         });
 
 }  // namespace base

@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_ELEMENT_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -63,12 +64,12 @@ class VTTElement final : public Element {
   AtomicString Language() const { return language_; }
   void SetLanguage(AtomicString value) { language_ = value; }
 
-  static const QualifiedName& VoiceAttributeName() {
+  CORE_EXPORT static const QualifiedName& VoiceAttributeName() {
     DEFINE_STATIC_LOCAL(QualifiedName, voice_attr, (AtomicString("voice")));
     return voice_attr;
   }
 
-  static const QualifiedName& LangAttributeName() {
+  CORE_EXPORT static const QualifiedName& LangAttributeName() {
     DEFINE_STATIC_LOCAL(QualifiedName, attr, (AtomicString("lang")));
     return attr;
   }

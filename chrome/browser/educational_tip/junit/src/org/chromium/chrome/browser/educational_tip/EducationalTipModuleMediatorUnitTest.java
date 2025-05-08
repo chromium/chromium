@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -32,10 +33,14 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -53,11 +58,15 @@ public class EducationalTipModuleMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private SyncService mSyncService;
+    @Mock private IdentityManager mIdentityManager;
 
     @Captor
     private ArgumentCaptor<DefaultBrowserPromoTriggerStateListener>
             mDefaultBrowserPromoTriggerStateListener;
 
+    ObservableSupplierImpl<Profile> mProfileSupplier;
     private Context mContext;
     private @ModuleType int mDefaultModuleTypeForTesting;
     private EducationalTipModuleMediator mEducationalTipModuleMediator;
@@ -66,10 +75,17 @@ public class EducationalTipModuleMediatorUnitTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(mContext);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         mDefaultModuleTypeForTesting = ModuleType.DEFAULT_BROWSER_PROMO;
         TrackerFactory.setTrackerForTests(mTracker);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
+
+        // Setup for History sync promo
+        mProfileSupplier = new ObservableSupplierImpl<>();
+        mProfileSupplier.set(mProfile);
+        when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
 
         mEducationalTipModuleMediator =
                 new EducationalTipModuleMediator(

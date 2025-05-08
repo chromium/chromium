@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
 import android.text.TextUtils;
@@ -25,6 +26,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -45,6 +47,7 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preloading.PreloadingDataBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.OnSystemNavigationObserver;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -61,14 +64,15 @@ import java.util.function.Predicate;
 
 /** Responsible for navigating to new pages and going back to previous pages. */
 public class CustomTabActivityNavigationController
-        implements StartStopWithNativeObserver, BackPressHandler {
+        implements StartStopWithNativeObserver, BackPressHandler, OnSystemNavigationObserver {
     private static final String TAG = "CTANavigationCtrl";
 
     @IntDef({
         FinishReason.USER_NAVIGATION,
         FinishReason.REPARENTING,
         FinishReason.OTHER,
-        FinishReason.OPEN_IN_BROWSER
+        FinishReason.OPEN_IN_BROWSER,
+        FinishReason.HANDLED_BY_OS
     })
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
@@ -79,6 +83,7 @@ public class CustomTabActivityNavigationController
         int OTHER = 2;
         // The web page is opened in the default browser by starting a new activity.
         int OPEN_IN_BROWSER = 3;
+        int HANDLED_BY_OS = 4;
     }
 
     /** A handler of back presses. */
@@ -115,6 +120,8 @@ public class CustomTabActivityNavigationController
 
     private @FinishReason int mFinishReason;
 
+    private static @Nullable Integer sVersionForTesting;
+
     private final CustomTabActivityTabProvider.Observer mTabObserver =
             new CustomTabActivityTabProvider.Observer() {
                 @Override
@@ -137,7 +144,7 @@ public class CustomTabActivityNavigationController
                     // If this is the first tab created or when all other tabs are closed, we want
                     // the OS to handle the back event then notify the registered observer that the
                     // back event has happened.
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREDICTIVE_BACK_GESTURE)
+                    if (supportsPredictiveBackGesture()
                             && mTabController.onlyOneTabRemaining()
                             && !mIntentDataProvider.isPartialCustomTab()) {
                         return false;
@@ -146,6 +153,14 @@ public class CustomTabActivityNavigationController
                             && ChromeBrowserInitializer.getInstance().isFullBrowserInitialized();
                 }
             };
+
+    /** Whether the feature of predictive back gesture is supported. */
+    public static boolean supportsPredictiveBackGesture() {
+        boolean isAtLeastB =
+                (sVersionForTesting == null ? Build.VERSION.SDK_INT : sVersionForTesting)
+                        >= Build.VERSION_CODES.BAKLAVA;
+        return isAtLeastB && ChromeFeatureList.sCctPredictiveBackGesture.isEnabled();
+    }
 
     public CustomTabActivityNavigationController(
             CustomTabActivityTabController tabController,
@@ -229,7 +244,7 @@ public class CustomTabActivityNavigationController
     }
 
     /** Handles back button navigation. */
-    public boolean navigateOnBack() {
+    public boolean navigateOnBack(@FinishReason int reason) {
         if (!ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) return false;
 
         boolean separateTask =
@@ -237,11 +252,12 @@ public class CustomTabActivityNavigationController
                                 & (Intent.FLAG_ACTIVITY_NEW_TASK
                                         | Intent.FLAG_ACTIVITY_NEW_DOCUMENT))
                         != 0;
+
         RecordUserAction.record("CustomTabs.SystemBack");
         if (mTabProvider.getTab() == null) return false;
 
         if (mTabController.onlyOneTabRemaining()) {
-            finishActivity(separateTask);
+            finishActivity(reason, separateTask);
             return true;
         }
 
@@ -249,24 +265,26 @@ public class CustomTabActivityNavigationController
         MinimizeAppAndCloseTabBackPressHandler.recordForCustomTab(
                 MinimizeAppAndCloseTabType.CLOSE_TAB, separateTask);
 
-        if (!mTabController.dispatchBeforeUnloadIfNeeded()) mTabController.closeTab();
+        if (!mTabController.dispatchBeforeUnloadIfNeeded()) {
+            mTabController.closeTab();
+        }
 
         return true;
     }
 
-    private void finishActivity(boolean separateTask) {
+    private void finishActivity(@FinishReason int reason, boolean separateTask) {
         // If we're closing the last tab and it doesn't have beforeunload, just finish the Activity
         // manually. If we had called mTabController.closeTab() and waited for the Activity to close
         // as a result we would have a visual glitch: https://crbug.com/1087108.
         MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
         MinimizeAppAndCloseTabBackPressHandler.recordForCustomTab(
                 MinimizeAppAndCloseTabType.MINIMIZE_APP, separateTask);
-        finish(USER_NAVIGATION);
+        finish(reason);
     }
 
     @Override
     public int handleBackPress() {
-        return navigateOnBack() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
+        return navigateOnBack(USER_NAVIGATION) ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override
@@ -425,6 +443,13 @@ public class CustomTabActivityNavigationController
         }
     }
 
+    @Override
+    public void onSystemNavigation() {
+        if (supportsPredictiveBackGesture()) {
+            navigateOnBack(FinishReason.HANDLED_BY_OS);
+        }
+    }
+
     // Debug log dump for https://crbug.com/374871254.
     private void assertUrlNotNullForOpenInBrowser(String url, @NonNull Tab tab) {
         if (url != null) return;
@@ -456,5 +481,14 @@ public class CustomTabActivityNavigationController
 
     public CustomTabActivityTabProvider.Observer getTabObserverForTesting() {
         return mTabObserver;
+    }
+
+    public Integer getVersionForTesting() {
+        return sVersionForTesting;
+    }
+
+    public static void enablePredictiveBackGestureForTesting() {
+        sVersionForTesting = Build.VERSION_CODES.BAKLAVA;
+        ResettersForTesting.register(() -> sVersionForTesting = null);
     }
 }

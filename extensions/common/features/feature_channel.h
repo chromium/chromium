@@ -17,7 +17,7 @@ version_info::Channel GetCurrentChannel();
 // Sets the current channel as seen by the Feature system. In the browser
 // process this should be chrome::GetChannel(), and in the renderer this will
 // need to come from an IPC. Note that the value set through this function may
-// be overridden by |ScopedCurrentChannel|.
+// be overridden by `ScopedCurrentChannel`.
 void SetCurrentChannel(version_info::Channel channel);
 
 // Scoped channel setter. Use for tests.

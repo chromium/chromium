@@ -61,15 +61,6 @@ SetMetadataValidationOutcome IsAllowedSetMetadataChange(
        current_metadata->sequenceNumber() != new_metadata->sequenceNumber())) {
     return SetMetadataValidationOutcome{false, "Bad sequenceNumber"};
   }
-  if (RuntimeEnabledFeatures::RTCEncodedAudioFrameAbsCaptureTimeEnabled()) {
-    if (new_metadata->hasAbsCaptureTime() !=
-            current_metadata->hasAbsCaptureTime() ||
-        (new_metadata->hasAbsCaptureTime() &&
-         current_metadata->absCaptureTime() !=
-             new_metadata->absCaptureTime())) {
-      return SetMetadataValidationOutcome{false, "Bad absoluteCaptureTime"};
-    }
-  }
   if (!new_metadata->hasRtpTimestamp()) {
     return SetMetadataValidationOutcome{false, "Bad rtpTimestamp"};
   }
@@ -170,11 +161,6 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata(
   }
   if (delegate_->SequenceNumber()) {
     metadata->setSequenceNumber(*delegate_->SequenceNumber());
-  }
-  if (RuntimeEnabledFeatures::RTCEncodedAudioFrameAbsCaptureTimeEnabled()) {
-    if (delegate_->AbsCaptureTime()) {
-      metadata->setAbsCaptureTime(*delegate_->AbsCaptureTime());
-    }
   }
   metadata->setRtpTimestamp(delegate_->RtpTimestamp());
   if (delegate_->MimeType()) {

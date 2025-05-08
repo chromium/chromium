@@ -1069,10 +1069,7 @@ public class UrlOverridingTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         // This will cause getActivityTab() in loadUrlAndWaitForIntentUrl to return an incognito tab
         // instead.
-        mActivityTestRule.loadUrlInNewTab(
-                "chrome://about/",
-                /* incognito* */
-                true);
+        mActivityTestRule.loadUrlInNewTab("chrome://about/", /* incognito= */ true);
 
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
         String fallbackUrlWithoutScheme = fallbackUrl.replace("https://", "");
@@ -1860,10 +1857,7 @@ public class UrlOverridingTest {
 
         // This will cause getActivityTab() in loadUrlAndWaitForIntentUrl to return an incognito tab
         // instead.
-        mActivityTestRule.loadUrlInNewTab(
-                "chrome://about/",
-                /* incognito* */
-                true);
+        mActivityTestRule.loadUrlInNewTab("chrome://about/", /* incognito= */ true);
 
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
         String subframeUrl =

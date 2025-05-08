@@ -1111,13 +1111,6 @@ public class SigninFirstRunFragmentTest {
             sdk_is_greater_than = Build.VERSION_CODES.S_V2,
             message = "Flaky, crbug.com/358148764")
     public void testFragmentSigninWhenAddedAccountIsNotYetAvailable() {
-        final String continueAsText =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string.sync_promo_continue_as,
-                                TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail());
-
         // This will freeze AccountManagerFacade with the currently available list of accounts.
         // The added account from add account flow later on will not be available.
         try (var ignored =
@@ -1126,15 +1119,19 @@ public class SigninFirstRunFragmentTest {
             onView(withText(R.string.signin_add_account_to_device)).perform(click());
             mSigninTestRule.setAddAccountFlowResult(TestAccounts.TEST_ACCOUNT_NO_NAME);
             onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
-            checkFragmentWithSelectedAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
 
-            clickContinueButton(continueAsText);
-
-            // The click on continue button should be a no-op.
-            verify(mFirstRunPageDelegateMock, never()).advanceToNextPage();
-            checkFragmentWithSelectedAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
+            // The account is not visible and thus add account button is shown.
+            onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
         }
+
         // Allow account list update and the continue button starts sign-in.
+        checkFragmentWithSelectedAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
+        String continueAsText =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.sync_promo_continue_as,
+                                TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail());
         clickContinueButton(continueAsText);
         verify(mFirstRunPageDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .advanceToNextPage();

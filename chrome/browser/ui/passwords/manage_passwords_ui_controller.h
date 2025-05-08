@@ -183,6 +183,7 @@ class ManagePasswordsUIController
   void OnNoInteraction() override;
   void OnNopeUpdateClicked() override;
   void NeverSavePassword() override;
+  void OnNotNowClicked() override;
   void OnPasswordsRevealed() override;
   void SavePassword(const std::u16string& username,
                     const std::u16string& password) override;
@@ -295,12 +296,25 @@ class ManagePasswordsUIController
     SHOULD_POP_UP_WITH_FOCUS,
   };
 
+  // The status of the saving prompt.
+  enum class SavingPromptStatus {
+    // The prompt can show.
+    kCanShow,
+    // The current site is explicitly blocklisted.
+    kExplicitlyBlocklisted,
+    // The bubble for the current site is implicitly blocked.
+    kImplicitlyBlocked
+  };
+
   // Returns whether saving credentials prompts for the current form in
   // |passwords_data_| is blocked due to explicit action of the user asking to
   // never save passwords for this form, or because the user ignored the bubble
   // multiple times that the browser will automatically suppress further save
   // prompts.
-  bool IsSavingPromptBlockedExplicitlyOrImplicitly() const;
+  SavingPromptStatus GetSavingPromptStatus() const;
+
+  // Returns whether the current site is explicitly blocklisted.
+  bool IsExplicitlyBlocklisted() const;
 
   // Returns the timeout for the manual save fallback.
   static base::TimeDelta GetTimeoutForSaveFallback();

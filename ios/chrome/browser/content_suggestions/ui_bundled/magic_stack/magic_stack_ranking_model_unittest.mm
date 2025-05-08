@@ -155,13 +155,8 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
     _config = [[MostVisitedTilesConfig alloc] init];
     _config.mostVisitedItems =
         @[ [[ContentSuggestionsMostVisitedItem alloc] init] ];
-    _config.inMagicStack = self.inMagicStack;
   }
   return _config;
-}
-
-- (BOOL)inMagicStack {
-  return ShouldPutMostVisitedSitesInMagicStack(FeedActivityBucket::kNoActivity);
 }
 
 @end
@@ -210,7 +205,6 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 
 // Expose -hasReceivedMagicStackResponse for waiting for ranking to return.
 @interface MagicStackRankingModel (Testing) <
-    MostVisitedTilesMediatorDelegate,
     SafetyCheckMagicStackMediatorDelegate,
     TipsMagicStackMediatorDelegate,
     TabResumptionHelperDelegate>
@@ -225,8 +219,6 @@ class MagicStackRankingModelTest : public PlatformTest {
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         segmentation_platform::kEphemeralModuleBackendRankerTestOverride,
         "price_tracking_notification_promo");
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}}}, {});
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
@@ -299,8 +291,6 @@ class MagicStackRankingModelTest : public PlatformTest {
                  authenticationService:authenticationService
                             sceneState:scene_state_
                  isDefaultSearchEngine:NO
-                   segmentationService:nullptr
-        deviceSwitcherResultDispatcher:nullptr
                   priceTrackingEnabled:NO];
     _setUpListMediator.shouldShowSetUpList = YES;
     _tabResumptionMediator = [[FakeTabResumptionMediator alloc]
@@ -519,11 +509,6 @@ TEST_F(MagicStackRankingModelTest, TestModuleClickIndexMetric) {
                                ContentSuggestionsModuleType::kSetUpListSync];
   histogram_tester_->ExpectUniqueSample("IOS.MagicStack.Module.Click.SetUpList",
                                         0, 1);
-
-  [_magicStackRankingModel logMagicStackEngagementForType:
-                               ContentSuggestionsModuleType::kMostVisited];
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.MagicStack.Module.Click.MostVisited", 1, 1);
 }
 
 // Test that the ranking model passed an expected list of module configs in
@@ -539,7 +524,7 @@ TEST_F(MagicStackRankingModelTest, TestModelDidGetLatestRankingOrder) {
         base::RunLoop().RunUntilIdle();
         return [delegate_.rank count] > 0;
       }));
-  NSArray* expectedModuleRank = @[ @(5), @(0), @(1), @(10) ];
+  NSArray* expectedModuleRank = @[ @(5), @(1), @(10) ];
   EXPECT_EQ([delegate_.rank count], [expectedModuleRank count]);
   for (NSUInteger i = 0; i < [expectedModuleRank count]; i++) {
     MagicStackModule* config = delegate_.rank[i];
@@ -562,46 +547,8 @@ TEST_F(MagicStackRankingModelTest, TestFeatureInsertCalls) {
       }));
 
   [_magicStackRankingModel tabResumptionHelperDidReceiveItem];
-  EXPECT_EQ(delegate_.lastInsertionIndex, 3u);
+  EXPECT_EQ(delegate_.lastInsertionIndex, 2u);
   EXPECT_EQ(delegate_.lastInsertedItem, _tabResumptionMediator.itemConfig);
-}
-
-// Test the TestMostVisitedTilesMediatorDelegate API implementations in
-// MagicStackRankingModel.
-TEST_F(MagicStackRankingModelTest, TestMostVisitedTilesMediatorDelegate) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}}}, {});
-
-  // Assert that delegate API isn't called if rank has not been received yet.
-  id mockDelegate =
-      OCMStrictProtocolMock(@protocol(MagicStackRankingModelDelegate));
-  _magicStackRankingModel.delegate = mockDelegate;
-  [_magicStackRankingModel didReceiveInitialMostVistedTiles];
-  [_magicStackRankingModel removeMostVisitedTilesModule];
-  EXPECT_OCMOCK_VERIFY(mockDelegate);
-
-  FakeMagicStackRankingModelDelegate* fakeDelegate =
-      [[FakeMagicStackRankingModelDelegate alloc] init];
-  _magicStackRankingModel.delegate = fakeDelegate;
-  [_magicStackRankingModel fetchLatestMagicStackRanking];
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      TestTimeouts::action_timeout(), true, ^bool() {
-        base::RunLoop().RunUntilIdle();
-        return [fakeDelegate.rank count] > 0;
-      }));
-
-  _magicStackRankingModel.delegate = mockDelegate;
-  OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
-                                   didInsertItem:[OCMArg any]
-                                         atIndex:1]);
-  [_magicStackRankingModel didReceiveInitialMostVistedTiles];
-  OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
-                                   didRemoveItem:[OCMArg any]
-                                         animate:[OCMArg any]
-                                  withCompletion:[OCMArg any]]);
-  [_magicStackRankingModel removeMostVisitedTilesModule];
-  EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 
 // Verifies that the ranking model correctly emits removal signals to its

@@ -21,15 +21,15 @@ class FakeScreenAIAnnotator : public mojom::ScreenAIAnnotator {
   FakeScreenAIAnnotator& operator=(const FakeScreenAIAnnotator&) = delete;
   ~FakeScreenAIAnnotator() override;
 
+  // mojom::ScreenAIAnnotator:
   void PerformOcrAndReturnAXTreeUpdate(
       const ::SkBitmap& image,
       PerformOcrAndReturnAXTreeUpdateCallback callback) override;
-
   void PerformOcrAndReturnAnnotation(
       const ::SkBitmap& image,
       PerformOcrAndReturnAnnotationCallback callback) override;
-
   void SetClientType(mojom::OcrClientType client_type) override;
+  void GetMaxImageDimension(GetMaxImageDimensionCallback callback) override;
 
   mojo::PendingRemote<mojom::ScreenAIAnnotator> BindNewPipeAndPassRemote();
 

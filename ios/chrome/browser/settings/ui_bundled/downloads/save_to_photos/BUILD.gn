@@ -74,6 +74,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/common/ui/colors",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",
   ]

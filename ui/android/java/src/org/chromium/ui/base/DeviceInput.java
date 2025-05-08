@@ -52,7 +52,9 @@ public class DeviceInput implements InputDeviceListener {
         for (int i = 0; i < deviceIds.length; i++) {
             int deviceId = deviceIds[i];
             InputDevice device = InputDevice.getDevice(deviceId);
-            if (device != null) mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
+            if (device != null) {
+                mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
+            }
         }
 
         // Register listener to perform cache updates.
@@ -89,7 +91,9 @@ public class DeviceInput implements InputDeviceListener {
             return sSupportsAlphabeticKeyboardForTesting;
         }
         for (int i = 0; i < mDeviceSnapshotsById.size(); i++) {
-            if (mDeviceSnapshotsById.valueAt(i).supportsAlphabeticKeyboard) return true;
+            if (mDeviceSnapshotsById.valueAt(i).supportsAlphabeticKeyboard) {
+                return true;
+            }
         }
         return false;
     }
@@ -117,7 +121,9 @@ public class DeviceInput implements InputDeviceListener {
             return sSupportsPrecisionPointerForTesting;
         }
         for (int i = 0; i < mDeviceSnapshotsById.size(); i++) {
-            if (mDeviceSnapshotsById.valueAt(i).supportsPrecisionPointer) return true;
+            if (mDeviceSnapshotsById.valueAt(i).supportsPrecisionPointer) {
+                return true;
+            }
         }
         return false;
     }
@@ -126,15 +132,20 @@ public class DeviceInput implements InputDeviceListener {
     public void onInputDeviceAdded(int deviceId) {
         ThreadUtils.assertOnUiThread();
         InputDevice device = InputDevice.getDevice(deviceId);
-        if (device != null) mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
+        if (device != null) {
+            mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
+        }
     }
 
     @Override
     public void onInputDeviceChanged(int deviceId) {
         ThreadUtils.assertOnUiThread();
         InputDevice device = InputDevice.getDevice(deviceId);
-        if (device != null) mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
-        else mDeviceSnapshotsById.remove(deviceId);
+        if (device != null) {
+            mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
+        } else {
+            mDeviceSnapshotsById.remove(deviceId);
+        }
     }
 
     @Override
@@ -171,6 +182,7 @@ public class DeviceInput implements InputDeviceListener {
             return new DeviceSnapshot(
                     /* supportsAlphabeticKeyboard= */ isPhysical
                             && device.getKeyboardType() == KEYBOARD_TYPE_ALPHABETIC,
+                    // SOURCE_MOUSE applies to pointer devices, including mouse and touchpad
                     /* supportsPrecisionPointer= */ isPhysical
                             && device.supportsSource(SOURCE_MOUSE));
         }

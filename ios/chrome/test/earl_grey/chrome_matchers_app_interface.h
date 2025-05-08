@@ -831,8 +831,8 @@
 // Returns the matcher for the overflow menu button in the tab group view.
 + (id<GREYMatcher>)tabGroupOverflowMenuButton;
 
-// Returns the matcher for the back button in the tab group view.
-+ (id<GREYMatcher>)tabGroupBackButton;
+// Returns the matcher for the button to close the tab group view.
++ (id<GREYMatcher>)closeTabGroupButton;
 
 // Returns the matcher for the activity summary cell in the tab group view.
 + (id<GREYMatcher>)tabGroupActivitySummaryCell;

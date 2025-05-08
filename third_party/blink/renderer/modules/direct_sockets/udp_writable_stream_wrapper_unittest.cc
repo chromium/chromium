@@ -86,7 +86,8 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
     stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
         script_state,
         WTF::BindOnce(&StreamCreator::Close, WrapWeakPersistent(this)),
-        udp_socket, network::mojom::RestrictedUDPSocketMode::CONNECTED);
+        udp_socket, network::mojom::RestrictedUDPSocketMode::CONNECTED,
+        /*inspector_id=*/0);
     return stream_wrapper_.Get();
   }
 

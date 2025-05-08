@@ -16,10 +16,10 @@ document.body.appendChild(styleSelector);
 chrome.test.runTests([
   // Test that the styles can be toggled.
   async function testSelectStyles() {
-    const initialStyles = manager.getCurrentText().styles;
+    const initialStyles = manager.getCurrentTextAttributes().styles;
 
     // Check that the button toggles its style and aria-pressed state and
-    // triggers a text-changed event when clicked.
+    // triggers a attributes-changed event when clicked.
     async function testButton(
         button: CrIconButtonElement, style: TextStyle, icon: string) {
       chrome.test.assertEq(icon, button.ironIcon);
@@ -28,7 +28,7 @@ chrome.test.runTests([
       chrome.test.assertEq(
           initialValue.toString(), button.getAttribute('aria-pressed'));
 
-      const whenChanged = eventToPromise('text-changed', manager);
+      const whenChanged = eventToPromise('attributes-changed', manager);
       button.click();
       const changedEvent = await whenChanged;
       chrome.test.assertEq(!initialValue, changedEvent.detail.styles[style]);
@@ -41,15 +41,10 @@ chrome.test.runTests([
     // For each button, check that it can be toggled and confirm it is
     // displaying the expected icon.
     const buttons = styleSelector.shadowRoot.querySelectorAll('cr-icon-button');
-    chrome.test.assertEq(4, buttons.length);
+    chrome.test.assertEq(2, buttons.length);
     await testButton(buttons[0]!, TextStyle.BOLD, 'pdf-ink:text-format-bold');
     await testButton(
         buttons[1]!, TextStyle.ITALIC, 'pdf-ink:text-format-italic');
-    await testButton(
-        buttons[2]!, TextStyle.UNDERLINE, 'pdf-ink:text-format-underline');
-    await testButton(
-        buttons[3]!, TextStyle.STRIKETHROUGH,
-        'pdf-ink:text-format-strikethrough');
 
     chrome.test.succeed();
   },

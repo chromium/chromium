@@ -18,6 +18,7 @@
 #include "ash/webui/boca_ui/webview_auth_handler.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/thread_annotations.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
@@ -116,6 +117,9 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnActiveNetworkStateChanged(
       std::vector<mojom::NetworkInfoPtr> active_networks) override;
   void OnLocalCaptionDisabled() override;
+  void OnSpeechRecognitionInstallStateUpdated(
+      mojom::SpeechRecognitionInstallState state) override;
+  void OnSessionCaptionDisabled(bool is_error) override;
 
   // BocaSessionManager::Observer
   void OnConsumerActivityUpdated(
@@ -132,6 +136,8 @@ class BocaAppHandler : public mojom::PageHandler,
       const std::string& tachyon_group_id) override;
   void OnSessionRosterUpdated(const ::boca::Roster& roster) override;
   void OnLocalCaptionClosed() override;
+  void OnSodaStatusUpdate(BocaSessionManager::SodaStatus status) override;
+  void OnSessionCaptionClosed(bool is_error) override;
 
   void NotifyLocalCaptionConfigUpdate(mojom::CaptionConfigPtr config);
 
@@ -179,6 +185,15 @@ class BocaAppHandler : public mojom::PageHandler,
                              base::expected<std::unique_ptr<::boca::Session>,
                                             google_apis::ApiErrorCode> result);
 
+  void OnCreateSessionResponse(
+      CreateSessionCallback callback,
+      base::expected<std::unique_ptr<::boca::Session>,
+                     google_apis::ApiErrorCode> result);
+
+  void OnEndSessionResponse(EndSessionCallback callback,
+                            base::expected<std::unique_ptr<::boca::Session>,
+                                           google_apis::ApiErrorCode> result);
+
   void UpdateCaptionConfigInternal(const std::string& session_id,
                                    mojom::CaptionConfigPtr config,
                                    UpdateCaptionConfigCallback callback,
@@ -208,6 +223,10 @@ class BocaAppHandler : public mojom::PageHandler,
 
   void OnUpdateSessionBlockingRequestCompleted();
 
+  BocaSessionManager* GetSessionManager();
+
+  void SetAccountImage(user_manager::User* user);
+
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;
   std::string base_url_;
@@ -231,6 +250,7 @@ class BocaAppHandler : public mojom::PageHandler,
   raw_ptr<content::WebUI> web_ui_;
   raw_ptr<PrefService> pref_service_;
   mojom::CaptionConfigPtr producer_current_session_caption_config_;
+  raw_ptr<BocaSessionManager> session_manager_;
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };
 

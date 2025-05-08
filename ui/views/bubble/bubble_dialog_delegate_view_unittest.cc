@@ -219,7 +219,7 @@ TEST_F(BubbleDialogDelegateViewTest, CreateDelegate) {
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
-  bubble_delegate->set_background_color(SK_ColorGREEN);
+  bubble_delegate->SetBackgroundColor(SK_ColorGREEN);
   Widget* bubble_widget =
       BubbleDialogDelegateView::CreateBubble(bubble_delegate);
   EXPECT_EQ(bubble_delegate, bubble_widget->widget_delegate());

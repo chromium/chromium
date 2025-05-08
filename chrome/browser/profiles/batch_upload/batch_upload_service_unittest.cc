@@ -204,6 +204,44 @@ TEST_F(BatchUploadServiceTest, NoLocalDataReturned) {
   EXPECT_FALSE(service.IsDialogOpened());
 }
 
+TEST_F(BatchUploadServiceTest, GetLocalDataDescriptionsForAvailableTypes) {
+  SigninWithFullInfo();
+  BatchUploadService& service = CreateService();
+
+  // Make sure all available data types have return descriptions so that the
+  // order is properly tested.
+  SetLocalDataDescriptionForAllAvailableTypes();
+
+  // Lists the requested types.
+  EXPECT_CALL(sync_service_mock(),
+              GetLocalDataDescriptions(
+                  syncer::DataTypeSet{
+                      syncer::DataType::PASSWORDS, syncer::DataType::BOOKMARKS,
+                      syncer::DataType::READING_LIST,
+                      syncer::DataType::CONTACT_INFO, syncer::DataType::THEMES},
+                  _))
+      .Times(1);
+
+  base::MockCallback<base::OnceCallback<void(
+      std::map<syncer::DataType, syncer::LocalDataDescription>)>>
+      result_callback;
+  // Order is not tested.
+  std::map<syncer::DataType, syncer::LocalDataDescription>
+      expected_description_map{
+          {syncer::PASSWORDS, GetReturnDescription(syncer::PASSWORDS)},
+          {syncer::BOOKMARKS, GetReturnDescription(syncer::BOOKMARKS)},
+          {syncer::READING_LIST, GetReturnDescription(syncer::READING_LIST)},
+          {syncer::CONTACT_INFO, GetReturnDescription(syncer::CONTACT_INFO)},
+          {syncer::THEMES, GetReturnDescription(syncer::THEMES)},
+      };
+  EXPECT_CALL(result_callback, Run(expected_description_map));
+  service.GetLocalDataDescriptionsForAvailableTypes(result_callback.Get());
+}
+
+// TODO(crbug.com/416219929): This test uses the password related entry point,
+// which is in line with the default primary data type. When adding a neutral
+// entry point (not tied to any specific data type), this entry point should be
+// used in this test to be able to more accurately test the order.
 TEST_F(BatchUploadServiceTest, LocalDataForAllAvailableTypesMainOrder) {
   SigninWithFullInfo();
   BatchUploadService& service = CreateService();
@@ -216,27 +254,92 @@ TEST_F(BatchUploadServiceTest, LocalDataForAllAvailableTypesMainOrder) {
               GetLocalDataDescriptions(
                   syncer::DataTypeSet{
                       syncer::DataType::PASSWORDS, syncer::DataType::BOOKMARKS,
+                      syncer::DataType::READING_LIST,
                       syncer::DataType::CONTACT_INFO, syncer::DataType::THEMES},
-                  _))
-      .Times(1);
+                  _));
   // Order is tested.
   std::vector<syncer::LocalDataDescription> expected_descriptions{
       GetReturnDescription(syncer::PASSWORDS),
       GetReturnDescription(syncer::BOOKMARKS),
+      GetReturnDescription(syncer::READING_LIST),
       GetReturnDescription(syncer::CONTACT_INFO),
       GetReturnDescription(syncer::THEMES),
   };
   EXPECT_CALL(delegate_mock(),
-              ShowBatchUploadDialog(_, expected_descriptions, _, _))
-      .Times(1);
+              ShowBatchUploadDialog(_, expected_descriptions, _, _));
 
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
-  EXPECT_CALL(opened_callback, Run(true)).Times(1);
+  EXPECT_CALL(opened_callback, Run(true));
 
   service.OpenBatchUpload(
       nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
       opened_callback.Get());
   EXPECT_TRUE(service.IsDialogOpened());
+}
+
+TEST_F(BatchUploadServiceTest, LocalDataOrderBasedOnEntryPoint) {
+  SigninWithFullInfo();
+  BatchUploadService& service = CreateService();
+
+  SetReturnDescriptions(syncer::PASSWORDS, 1);
+  SetReturnDescriptions(syncer::BOOKMARKS, 1);
+  SetReturnDescriptions(syncer::CONTACT_INFO, 1);
+
+  EXPECT_CALL(sync_service_mock(), GetLocalDataDescriptions(_, _)).Times(2);
+
+  // Password entry point.
+  {
+    // Order is tested - passwords is first.
+    std::vector<syncer::LocalDataDescription> expected_descriptions{
+        GetReturnDescription(syncer::PASSWORDS),
+        GetReturnDescription(syncer::BOOKMARKS),
+        GetReturnDescription(syncer::CONTACT_INFO),
+    };
+    // Used to close the dialog.
+    BatchUploadSelectedDataTypeItemsCallback returned_complete_callback;
+    EXPECT_CALL(delegate_mock(),
+                ShowBatchUploadDialog(_, expected_descriptions, _, _))
+        .WillOnce(
+            [&](Browser* browser,
+                const std::vector<syncer::LocalDataDescription>&
+                    local_data_description_list,
+                BatchUploadService::EntryPoint entry_point,
+                BatchUploadSelectedDataTypeItemsCallback complete_callback) {
+              returned_complete_callback = std::move(complete_callback);
+            });
+
+    base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
+    EXPECT_CALL(opened_callback, Run(true));
+
+    service.OpenBatchUpload(
+        nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
+        opened_callback.Get());
+    EXPECT_TRUE(service.IsDialogOpened());
+    // Returning empty will close the dialog without any action.
+    std::move(returned_complete_callback).Run({});
+  }
+
+  ASSERT_FALSE(service.IsDialogOpened());
+
+  // Bookmarks entry point.
+  {
+    // Order is tested - bookmarks is first.
+    std::vector<syncer::LocalDataDescription> expected_descriptions{
+        GetReturnDescription(syncer::BOOKMARKS),
+        GetReturnDescription(syncer::PASSWORDS),
+        GetReturnDescription(syncer::CONTACT_INFO),
+    };
+    EXPECT_CALL(delegate_mock(),
+                ShowBatchUploadDialog(_, expected_descriptions, _, _));
+
+    base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
+    EXPECT_CALL(opened_callback, Run(true));
+
+    service.OpenBatchUpload(
+        nullptr, BatchUploadService::EntryPoint::kBookmarksManagerPromoCard,
+        opened_callback.Get());
+    EXPECT_TRUE(service.IsDialogOpened());
+  }
 }
 
 TEST_F(BatchUploadServiceTest, EmptyLocalDataReturned) {
@@ -260,15 +363,15 @@ TEST_F(BatchUploadServiceTest,
   BatchUploadService& service = CreateService();
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
   SetReturnDescriptions(syncer::PASSWORDS, 0);
-  const syncer::LocalDataDescription& contact_info =
-      SetReturnDescriptions(syncer::CONTACT_INFO, 2);
+  const syncer::LocalDataDescription& passwords =
+      SetReturnDescriptions(syncer::PASSWORDS, 2);
 
   EXPECT_CALL(sync_service_mock(), GetLocalDataDescriptions(_, _)).Times(1);
-  // Only expect `CONTACT_INFO` since return `PASSWORDS` are empty.
+  // Only expect `PASSWORDS` since descriptions of `CONTACT_INFO` are empty.
   EXPECT_CALL(
       delegate_mock(),
       ShowBatchUploadDialog(
-          _, std::vector<syncer::LocalDataDescription>{contact_info}, _, _));
+          _, std::vector<syncer::LocalDataDescription>{passwords}, _, _));
   EXPECT_CALL(opened_callback, Run(true)).Times(1);
   service.OpenBatchUpload(
       nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,

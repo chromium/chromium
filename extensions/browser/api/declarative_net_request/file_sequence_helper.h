@@ -80,7 +80,7 @@ class RulesetInfo {
   // The expected checksum of the indexed ruleset.
   std::optional<int> expected_checksum_;
 
-  // Stores the result of creating a verified matcher from the |source_|.
+  // Stores the result of creating a verified matcher from the `source_`.
   std::unique_ptr<RulesetMatcher> matcher_;
   std::optional<LoadRulesetResult> load_ruleset_result_;
 
@@ -138,7 +138,7 @@ class FileSequenceHelper {
   void LoadRulesets(LoadRequestData load_data,
                     LoadRulesetsUICallback ui_callback) const;
 
-  // Updates dynamic rules for |load_data|. Invokes |ui_callback| on the UI
+  // Updates dynamic rules for `load_data`. Invokes `ui_callback` on the UI
   // thread once loading is done with the LoadRequestData and an optional error
   // string.
   using UpdateDynamicRulesUICallback =

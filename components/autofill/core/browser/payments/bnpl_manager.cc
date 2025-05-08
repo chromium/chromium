@@ -41,8 +41,7 @@ bool ShouldShowBnplOptionForIssuer(const BnplIssuer& bnpl_issuer,
                                    uint64_t extracted_amount_in_micros) {
   // For MVP, BNPL will only target US users and support USD.
   return bnpl_issuer.IsEligibleAmount(extracted_amount_in_micros,
-                                      /*currency=*/"USD") &&
-         base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
+                                      /*currency=*/"USD");
 }
 
 bool ShouldShowPermanentErrorDialog(
@@ -65,12 +64,17 @@ BnplManager::~BnplManager() = default;
 // static
 const std::array<std::string_view, 2>&
 BnplManager::GetSupportedBnplIssuerIds() {
+  // Calling `ConvertToBnplIssuerIdString` serves as a validation step,
+  // verifying that each supported Bnpl IssuerId enum value has a corresponding
+  // string representation. This helps maintain the invariant with
+  // `ConvertToBnplIssuerIdEnum`.
   static const std::array<std::string_view, 2> kBnplIssuers = {
-      kBnplAffirmIssuerId, kBnplZipIssuerId};
+      autofill::ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplAffirm),
+      autofill::ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplZip)};
   return kBnplIssuers;
 }
 
-void BnplManager::InitBnplFlow(
+void BnplManager::OnDidAcceptBnplSuggestion(
     uint64_t final_checkout_amount,
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback) {
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
@@ -100,6 +104,10 @@ void BnplManager::InitBnplFlow(
 
 void BnplManager::NotifyOfSuggestionGeneration(
     const AutofillSuggestionTriggerSource trigger_source) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater)) {
+    return;
+  }
+
   update_suggestions_barrier_callback_ = base::BarrierCallback<
       std::variant<SuggestionsShownResponse, std::optional<uint64_t>>>(
       2U, base::BindOnce(&BnplManager::MaybeUpdateSuggestionsWithBnpl,
@@ -109,6 +117,10 @@ void BnplManager::NotifyOfSuggestionGeneration(
 void BnplManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
     UpdateSuggestionsCallback update_suggestions_callback) {
+  if (!update_suggestions_barrier_callback_.has_value()) {
+    return;
+  }
+
   // Do not proceed to calling the barrier callback, if the suggestion list
   // already contains a buy-now-pay-later-entry (which is triggered after
   // updating the original suggestion list).
@@ -126,6 +138,10 @@ void BnplManager::OnSuggestionsShown(
 
 void BnplManager::OnAmountExtractionReturned(
     const std::optional<uint64_t>& extracted_amount) {
+  if (!update_suggestions_barrier_callback_.has_value()) {
+    return;
+  }
+
   if (update_suggestions_barrier_callback_.has_value()) {
     update_suggestions_barrier_callback_->Run(extracted_amount);
   }
@@ -146,7 +162,8 @@ void BnplManager::FetchVcnDetails(GURL url) {
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.context_token = ongoing_flow_state_->context_token;
   request_details.redirect_url = std::move(url);
-  request_details.issuer_id = ongoing_flow_state_->issuer.issuer_id();
+  request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
+      ongoing_flow_state_->issuer.issuer_id());
 
   payments_autofill_client().ShowAutofillProgressDialog(
       AutofillProgressDialogType::kBnplFetchVcnProgressDialog,
@@ -199,7 +216,8 @@ void BnplManager::OnVcnDetailsFetched(
     credit_card.SetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
                            base::UTF8ToUTF16(response_details.expiration_year));
     credit_card.set_cvc(base::UTF8ToUTF16(response_details.cvv));
-    credit_card.set_issuer_id(ongoing_flow_state_->issuer.issuer_id());
+    credit_card.set_issuer_id(autofill::ConvertToBnplIssuerIdString(
+        ongoing_flow_state_->issuer.issuer_id()));
     credit_card.set_is_bnpl_card(true);
     credit_card.SetNickname(ongoing_flow_state_->issuer.GetDisplayName());
     std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
@@ -230,7 +248,8 @@ void BnplManager::GetDetailsForCreateBnplPaymentInstrument() {
   request_details.app_locale = ongoing_flow_state_->app_locale;
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
-  request_details.issuer_id = ongoing_flow_state_->issuer.issuer_id();
+  request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
+      ongoing_flow_state_->issuer.issuer_id());
 
   payments_autofill_client()
       .GetPaymentsNetworkInterface()
@@ -244,7 +263,7 @@ void BnplManager::GetDetailsForCreateBnplPaymentInstrument() {
 void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
     PaymentsAutofillClient::PaymentsRpcResult result,
     std::string context_token,
-    std::unique_ptr<base::Value::Dict> legal_message) {
+    LegalMessageLines legal_message) {
   // Dismiss the loading throbber in the issuer selection dialog after the
   // server call completion to show the next dialog.
   payments_autofill_client().DismissSelectBnplIssuerDialog();
@@ -252,25 +271,17 @@ void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     ongoing_flow_state_->context_token = std::move(context_token);
 
-    // BNPL TOS should only be shown if legal messages are parsed successfully.
-    CHECK(legal_message);
-    LegalMessageLines parsed_legal_message_lines;
-    if (LegalMessageLine::Parse(*legal_message, &parsed_legal_message_lines,
-                                /*escape_apostrophes=*/true)) {
-      if (!parsed_legal_message_lines.empty()) {
-        BnplTosModel bnpl_tos_model;
-        bnpl_tos_model.legal_message_lines =
-            std::move(parsed_legal_message_lines);
-        bnpl_tos_model.issuer = ongoing_flow_state_->issuer;
+    CHECK(!legal_message.empty());
+    BnplTosModel bnpl_tos_model;
+    bnpl_tos_model.legal_message_lines = std::move(legal_message);
+    bnpl_tos_model.issuer = ongoing_flow_state_->issuer;
 
-        payments_autofill_client().ShowBnplTos(
-            std::move(bnpl_tos_model),
-            base::BindOnce(&BnplManager::OnTosDialogAccepted,
-                           weak_factory_.GetWeakPtr()),
-            base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
-        return;
-      }
-    }
+    payments_autofill_client().ShowBnplTos(
+        std::move(bnpl_tos_model),
+        base::BindOnce(&BnplManager::OnTosDialogAccepted,
+                       weak_factory_.GetWeakPtr()),
+        base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+    return;
   }
 
   payments_autofill_client().ShowAutofillErrorDialog(
@@ -487,7 +498,8 @@ void BnplManager::CreateBnplPaymentInstrument() {
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
   request_details.context_token = ongoing_flow_state_->context_token;
-  request_details.issuer_id = ongoing_flow_state_->issuer.issuer_id();
+  request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
+      ongoing_flow_state_->issuer.issuer_id());
   request_details.risk_data = ongoing_flow_state_->risk_data;
   payments_autofill_client()
       .GetPaymentsNetworkInterface()
@@ -534,9 +546,8 @@ std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
 
         BnplIssuerEligibilityForPage eligibility;
 
-        if (!autofill_optimization_guide
-                 ->IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-                     issuer.issuer_id(), merchant_url)) {
+        if (!autofill_optimization_guide->IsUrlEligibleForBnplIssuer(
+                issuer.issuer_id(), merchant_url)) {
           eligibility = BnplIssuerEligibilityForPage::
               kNotEligibleIssuerDoesNotSupportMerchant;
         } else if (ongoing_flow_state_->final_checkout_amount <
@@ -575,6 +586,24 @@ std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
       });
 
   return result;
+}
+
+bool BnplManager::IsEligibleForBnpl() const {
+  AutofillOptimizationGuide* autofill_optimization_guide =
+      browser_autofill_manager_->client().GetAutofillOptimizationGuide();
+  if (!autofill_optimization_guide) {
+    return false;
+  }
+
+  const GURL& url =
+      browser_autofill_manager_->client().GetLastCommittedPrimaryMainFrameURL();
+
+  return std::ranges::any_of(
+      payments_autofill_client().GetPaymentsDataManager().GetBnplIssuers(),
+      [&autofill_optimization_guide, &url](const BnplIssuer& bnpl_issuer) {
+        return autofill_optimization_guide->IsUrlEligibleForBnplIssuer(
+            bnpl_issuer.issuer_id(), url);
+      });
 }
 
 }  // namespace autofill::payments

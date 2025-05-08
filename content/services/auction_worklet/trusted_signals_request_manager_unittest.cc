@@ -32,6 +32,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
+#include "content/services/auction_worklet/public/cpp/creative_info.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
@@ -260,13 +261,13 @@ mojom::TrustedSignalsPublicKeyPtr CreateDefaultPublicKey() {
       kKeyId);
 }
 
-std::set<TrustedSignals::CreativeInfo> ToCreativeInfo(
+std::set<CreativeInfo> ToCreativeInfo(
     const std::vector<std::string>& render_urls) {
   return CreateCreativeInfoSet(render_urls);
 }
 
-TrustedSignals::CreativeInfo ToCreativeInfo(const GURL& url) {
-  TrustedSignals::CreativeInfo ad;
+CreativeInfo ToCreativeInfo(const GURL& url) {
+  CreativeInfo ad;
   ad.ad_descriptor.url = url;
   return ad;
 }
@@ -3895,8 +3896,8 @@ class TrustedSignalsRequestManagerCreativeScanTest
   }
 
  protected:
-  std::vector<TrustedSignals::CreativeInfo> ads_;
-  std::vector<TrustedSignals::CreativeInfo> ad_components_;
+  std::vector<CreativeInfo> ads_;
+  std::vector<CreativeInfo> ad_components_;
   url::Origin joining_origin_{url::Origin::Create(GURL(kJoiningOriginA))};
 };
 

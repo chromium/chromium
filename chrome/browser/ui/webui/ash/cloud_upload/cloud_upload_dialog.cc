@@ -27,6 +27,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -1216,11 +1218,10 @@ void CloudOpenTask::ShowDialog(
                             office_move_confirmation_shown);
 
   // Get Files App window, if it exists.
-  files_app_browser_ =
-      FindSystemWebAppBrowser(profile_, ash::SystemWebAppType::FILE_MANAGER);
+  files_app_browser_ = FindSystemWebAppBrowser(
+      profile_, ash::SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
   gfx::NativeWindow modal_parent =
-      files_app_browser_ ? files_app_browser_->window()->GetNativeWindow()
-                         : nullptr;
+      files_app_browser_ ? files_app_browser_->GetNativeWindow() : nullptr;
 
   if (!modal_parent) {
     need_new_files_app_ = true;
@@ -1280,15 +1281,15 @@ void CloudOpenTask::OnBrowserAdded(Browser* browser) {
     return;
   }
   need_new_files_app_ = false;
-  files_app_browser_ = browser;
-  pending_dialog_->ShowSystemDialog(
-      files_app_browser_->window()->GetNativeWindow());
+  files_app_browser_ = BrowserController::GetInstance()->GetDelegate(browser);
+  pending_dialog_->ShowSystemDialog(files_app_browser_->GetNativeWindow());
   // The dialog is deleted in `SystemWebDialogDelegate::OnDialogClosed`.
   pending_dialog_ = nullptr;
 }
 
 void CloudOpenTask::OnBrowserClosing(Browser* browser) {
-  if (browser == files_app_browser_) {
+  if (BrowserController::GetInstance()->GetDelegate(browser) ==
+      files_app_browser_) {
     // The Files app that the dialog is modal to is closed. This will close the
     // dialog with an empty user response.
     files_app_closed_ = true;

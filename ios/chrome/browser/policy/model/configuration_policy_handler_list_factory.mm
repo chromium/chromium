@@ -9,6 +9,7 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
+#import "components/collaboration/public/pref_names.h"
 #import "components/commerce/core/pref_names.h"
 #import "components/component_updater/pref_names.h"
 #import "components/content_settings/core/common/pref_names.h"
@@ -247,6 +248,12 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(
       std::make_unique<policy::GenAiDefaultSettingsPolicyHandler>(
           std::move(gen_ai_default_policies)));
+
+  handlers->AddHandler(std::make_unique<policy::CloudUserOnlyPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          policy::key::kTabGroupSharingSettings,
+          collaboration::prefs::kSharedTabGroupsManagedAccountSetting,
+          base::Value::Type::INTEGER)));
 
   handlers->AddHandler(
       std::make_unique<

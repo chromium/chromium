@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Session.Android.TabbedSessionContainedGoogleSearch"
-    enum="Boolean" expires_after="2025-08-24">
+    enum="Boolean" expires_after="2025-10-26">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.IsActive" enum="BooleanActive"
-    expires_after="2025-08-24">
+    expires_after="2025-10-26">
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.OpenedTabCounts" units="operations"
-    expires_after="2025-08-24">
+    expires_after="2025-10-26">
   <owner>rohitrao@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -990,7 +990,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreHasFetchers"
-    enum="BooleanHasFetchers" expires_after="2025-08-24">
+    enum="BooleanHasFetchers" expires_after="2025-10-26">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -1033,7 +1033,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionHasData"
-    enum="BooleanHasData" expires_after="2025-08-24">
+    enum="BooleanHasData" expires_after="2025-10-26">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -1168,26 +1168,12 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="SessionRestoreTabCounts">
     <variant name=""/>
-    <variant name="_1" summary="1 tab present"/>
-    <variant name="_2" summary="2 tabs present"/>
-    <variant name="_3" summary="3 tabs present"/>
-    <variant name="_4" summary="4 tabs present"/>
-    <variant name="_5" summary="5 tabs present"/>
-    <variant name="_6" summary="6 tabs present"/>
-    <variant name="_7" summary="7 tabs present"/>
-    <variant name="_8" summary="8 tabs present"/>
-    <variant name="_9" summary="9 tabs present"/>
-    <variant name="_10" summary="10 tabs present"/>
-    <variant name="_11" summary="11 tab present"/>
-    <variant name="_12" summary="12 tabs present"/>
-    <variant name="_13" summary="13 tabs present"/>
-    <variant name="_14" summary="14 tabs present"/>
-    <variant name="_15" summary="15 tabs present"/>
-    <variant name="_16" summary="16 tabs present"/>
-    <variant name="_17" summary="17 tabs present"/>
-    <variant name="_18" summary="18 tabs present"/>
-    <variant name="_19" summary="19 tabs present"/>
-    <variant name="_20" summary="20 tabs present"/>
+    <variant name=".1Tab" summary="1 tab present"/>
+    <variant name=".2to3Tabs" summary="2 to 3 tabs present"/>
+    <variant name=".4to7Tabs" summary="4 to 7 tabs present"/>
+    <variant name=".8to15Tabs" summary="8 to 15 tabs present"/>
+    <variant name=".16to31Tabs" summary="16 to 31 tabs present"/>
+    <variant name=".32PlusTabs" summary="32 or more tabs present"/>
   </token>
 </histogram>
 
@@ -1205,7 +1191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.TabCount{TabType}" units="tabs"
-    expires_after="2025-08-24">
+    expires_after="2025-10-26">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

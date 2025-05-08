@@ -32,7 +32,6 @@ using PreCloseTask = BackingStorePreCloseTaskQueue::PreCloseTask;
 namespace {
 constexpr base::TimeDelta kTestMaxRunTime = base::Seconds(30);
 const std::u16string kDBName = u"TestDBName";
-constexpr int64_t kDBId = 1;
 constexpr int64_t kDBVersion = 2;
 constexpr int64_t kDBMaxObjectStoreId = 29;
 
@@ -49,7 +48,8 @@ class MockPreCloseTask : public PreCloseTask {
   bool RequiresMetadata() const override { return true; }
 
   MOCK_METHOD1(SetMetadata,
-               void(const std::vector<IndexedDBDatabaseMetadata>* metadata));
+               void(const std::vector<
+                    std::unique_ptr<IndexedDBDatabaseMetadata>>* metadata));
 
   MOCK_METHOD0(RunRound, bool());
 };
@@ -62,10 +62,13 @@ void SetBoolValue(bool* pointer, bool value_to_set) {
 Status MetadataFetcher(
     bool* called,
     Status return_status,
-    std::vector<IndexedDBDatabaseMetadata>* metadata,
-    std::vector<IndexedDBDatabaseMetadata>* output_metadata) {
+    std::vector<std::unique_ptr<IndexedDBDatabaseMetadata>>* metadata,
+    std::vector<std::unique_ptr<IndexedDBDatabaseMetadata>>* output_metadata) {
   *called = true;
-  *output_metadata = *metadata;
+  for (const auto& md : *metadata) {
+    output_metadata->push_back(
+        std::make_unique<IndexedDBDatabaseMetadata>(*md));
+  }
   return return_status;
 }
 
@@ -74,12 +77,15 @@ Status MetadataFetcher(
 class BackingStorePreCloseTaskQueueTest : public testing::Test {
  public:
   BackingStorePreCloseTaskQueueTest() {
-    metadata_.emplace_back(kDBName, kDBId, kDBVersion, kDBMaxObjectStoreId);
+    metadata_.emplace_back(
+        std::make_unique<IndexedDBDatabaseMetadata>(kDBName));
+    metadata_.back()->version = kDBVersion;
+    metadata_.back()->max_object_store_id = kDBMaxObjectStoreId;
   }
   ~BackingStorePreCloseTaskQueueTest() override = default;
 
  protected:
-  std::vector<IndexedDBDatabaseMetadata> metadata_;
+  std::vector<std::unique_ptr<IndexedDBDatabaseMetadata>> metadata_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -107,8 +113,7 @@ TEST_F(BackingStorePreCloseTaskQueueTest, TaskOneRound) {
   auto task = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
   MockPreCloseTask& task_ref = *task;
 
-  EXPECT_CALL(task_ref,
-              SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
+  EXPECT_CALL(task_ref, SetMetadata(testing::_));
 
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task));
@@ -137,8 +142,7 @@ TEST_F(BackingStorePreCloseTaskQueueTest, TaskTwoRounds) {
   auto task = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
   MockPreCloseTask& task_ref = *task;
 
-  EXPECT_CALL(task_ref,
-              SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
+  EXPECT_CALL(task_ref, SetMetadata(testing::_));
 
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task));
@@ -182,8 +186,7 @@ TEST_F(BackingStorePreCloseTaskQueueTest, TwoTasks) {
   auto task2 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
   MockPreCloseTask& task2_ref = *task2;
 
-  EXPECT_CALL(task1_ref,
-              SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
+  EXPECT_CALL(task1_ref, SetMetadata(testing::_));
 
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task1));
@@ -202,8 +205,7 @@ TEST_F(BackingStorePreCloseTaskQueueTest, TwoTasks) {
 
     EXPECT_CALL(task1_ref, RunRound())
         .WillOnce(RunClosureThenReturn(loop.QuitClosure(), true));
-    EXPECT_CALL(task2_ref,
-                SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
+    EXPECT_CALL(task2_ref, SetMetadata(testing::_));
 
     loop.Run();
   }
@@ -257,8 +259,7 @@ TEST_F(BackingStorePreCloseTaskQueueTest, StopForNewConnectionAfterRound) {
   auto task = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
   MockPreCloseTask& task_ref = *task;
 
-  EXPECT_CALL(task_ref,
-              SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
+  EXPECT_CALL(task_ref, SetMetadata(testing::_));
 
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task));
@@ -297,8 +298,7 @@ TEST_F(BackingStorePreCloseTaskQueueTest,
   MockPreCloseTask& task1_ref = *task1;
   auto task2 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
 
-  EXPECT_CALL(task1_ref,
-              SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
+  EXPECT_CALL(task1_ref, SetMetadata(testing::_));
 
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task1));
@@ -337,7 +337,7 @@ TEST_F(BackingStorePreCloseTaskQueueTest, StopForTimeout) {
   MockPreCloseTask& task1_ref = *task1;
 
   EXPECT_CALL(*task1,
-              SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
+              SetMetadata(testing::Pointee(testing::SizeIs(metadata_.size()))));
 
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task1));

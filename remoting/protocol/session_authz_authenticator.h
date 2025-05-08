@@ -132,7 +132,8 @@ class SessionAuthzAuthenticator : public Authenticator {
   void HandleSessionAuthzError(const std::string_view& action_name,
                                const HttpStatus& status);
   void StartReauthorizerIfNecessary();
-  void OnReauthorizationFailed();
+  void OnReauthorizationFailed(HttpStatus::Code error_code,
+                               const Authenticator::RejectionDetails& details);
 
   CredentialsType credentials_type_;
   std::unique_ptr<SessionAuthzServiceClient> service_client_;

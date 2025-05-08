@@ -11,6 +11,8 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
 #include "chrome/browser/extensions/api/enterprise_kiosk_input/enterprise_kiosk_input_api.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
@@ -141,7 +143,10 @@ class EnterpriseKioskInputTest : public extensions::ApiUnitTest {
     args.Append(options.ToValue());
     return args;
   }
-  crosapi::TestCrosapiEnvironment crosapi_environment_;
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
+  crosapi::TestCrosapiEnvironment crosapi_environment_{
+      &testing_profile_manager_};
 };
 
 // Test for API enterprise.kioskInput.setCurrentInputMethod

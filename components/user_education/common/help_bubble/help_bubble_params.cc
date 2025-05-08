@@ -37,16 +37,6 @@ HelpBubbleParams::ExtendedProperties::operator=(
   return *this;
 }
 
-bool HelpBubbleParams::ExtendedProperties::operator==(
-    const ExtendedProperties& other) const {
-  return dict_ == other.dict_;
-}
-
-bool HelpBubbleParams::ExtendedProperties::operator!=(
-    const ExtendedProperties& other) const {
-  return dict_ != other.dict_;
-}
-
 HelpBubbleParams::ExtendedProperties::~ExtendedProperties() = default;
 
 HelpBubbleParams::HelpBubbleParams() = default;

@@ -705,7 +705,10 @@ viz_source_set("unit_tests") {
     sources += [
       "display/overlay_dc_unittest.cc",
       "display_embedder/output_device_backing_unittest.cc",
+      "display_embedder/software_output_device_win_swapchain_unittest.cc",
       "display_embedder/software_output_device_win_unittest.cc",
+      "display_embedder/test_support/dcomp_mocks.cc",
+      "display_embedder/test_support/dcomp_mocks.h",
     ]
 
     deps += [

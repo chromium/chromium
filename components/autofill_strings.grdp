@@ -92,6 +92,9 @@
   <message name="IDS_AUTOFILL_IBAN_GENERIC" desc="Generic IBAN name." formatter_data="android_java">
     Iban
   </message>
+  <message name="IDS_AUTOFILL_LOYALTY_CARD_GENERIC" desc="Generic loyalty card name." formatter_data="android_java">
+    Loyalty card
+  </message>
   <message name="IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR" desc="The separator character used in the summary of an address." formatter_data="android_java">
     , '''
   </message>
@@ -187,6 +190,10 @@
 
   <message name="IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL" desc="The label text to display for verified autofill suggestions. If the user selects such email suggestion, the website receives cryptographic proof that the user has access to the email. The benefit for the user indicate in this message is that they can skip the manual process of receiving a confirmation email and pressing a link to prove ownership of the email." translateable="false">
     Skip confirmation emails
+  </message>
+
+  <message name="IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT" desc="The label to display in an autofill suggestion." translateable="false">
+    Sign in with <ph name="IDP_ORIGIN">$1<ex>google.com</ex></ph>
   </message>
 
   <if expr="not use_titlecase">
@@ -381,6 +388,9 @@
   <if expr="is_android">
     <message name="IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK" desc="The text of the link in the address sheet that opens the address management section.">
       Manage payment methods
+    </message>
+    <message name="IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_LOYALTY_CARDS_LINK" desc="The text of the link in the payments sheet that opens the Google Wallet loyalty card section.">
+      Manage loyalty cards
     </message>
     <message name="IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE" desc="Message indicating that no payment methods (e.g., credit cards) are available for filling.">
       No saved payment methods

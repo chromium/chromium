@@ -356,7 +356,7 @@ reviewer.
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.PayflowExitedReason"
-    enum="FacilitatedPayments.PixFlowExitedReason" expires_after="2025-08-31">
+    enum="FacilitatedPayments.PixFlowExitedReason" expires_after="2025-11-02">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -370,7 +370,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.Pix.PaymentCodeValidation.{PaymentCodeValidationResult}.Latency"
-    units="ms" expires_after="2025-08-31">
+    units="ms" expires_after="2025-11-02">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -394,7 +394,7 @@ reviewer.
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.PixCodeCopied" enum="Boolean"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>

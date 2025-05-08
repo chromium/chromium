@@ -284,7 +284,7 @@ void AppShimController::PreInitFeatureState(
        "MojoBindingsInlineSLS", "MojoInlineMessagePayloads", "MojoIpcz",
        "MojoIpczMemV2", "MojoTaskPerMessage", "StandardCompliantHostCharacters",
        "StandardCompliantNonSpecialSchemeURLParsing",
-       "UseAdHocSigningForWebAppShims", "UseIDNA2008NonTransitional",
+       "UseAdHocSigningForWebAppShims",
        "SonomaAccessibilityActivationRefinements", "FeatureParamWithCache",
        "UseMachVouchers"});
 }

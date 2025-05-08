@@ -21,7 +21,8 @@ class FileManagerSystemAppDelegate : public ash::SystemWebAppDelegate {
   // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
-  Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
+  ash::BrowserDelegate* GetWindowForLaunch(Profile* profile,
+                                           const GURL& url) const override;
   bool ShouldShowNewWindowMenuOption() const override;
   bool IsAppEnabled() const override;
   std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;

@@ -45,6 +45,7 @@
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -76,6 +77,7 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/search_scoring_signals_annotator.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
+#include "components/omnibox/browser/tab_group_provider.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/browser/url_scoring_signals_annotator.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
@@ -355,7 +357,7 @@ std::string EncodeURIComponent(const std::string& component) {
 }  // namespace
 
 AutocompleteController::OldResult::OldResult(UpdateType update_type,
-                                             AutocompleteInput input,
+                                             const AutocompleteInput& input,
                                              AutocompleteResult* result) {
   if (result->default_match()) {
     last_default_match = *result->default_match();
@@ -611,15 +613,11 @@ AutocompleteController::AutocompleteController(
 AutocompleteController::~AutocompleteController() {
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
-
-  // The providers may have tasks outstanding that hold refs to them.  We need
-  // to ensure they won't call us back if they outlive us.  (Practically,
-  // calling Stop() should also cancel those tasks and make it so that we hold
-  // the only refs.)  We also don't want to bother notifying anyone of our
-  // result changes here, because the notification observer is in the midst of
-  // shutdown too, so we don't ask Stop() to clear `internal_result_` (and
-  // notify).
-  Stop(false);
+  // Must stop providers because they may have unowned tasks that continue to
+  // run or hold refs to them; e.g. remote requests or DB reads. Don't bother
+  // notifying observers or using `kClobbered` to clear provider caches and
+  // state, since the observers and providers are being destroyed too.
+  Stop(AutocompleteStopReason::kInteraction);
 }
 
 void AutocompleteController::AddObserver(Observer* observer) {
@@ -771,7 +769,7 @@ void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
 
     // Avoid starting a prefetch request if a non-prefetch request is in
     // progress. Though explicitly discouraged as per documentation in
-    // AutocompleteProvider::StartPrefetch(), a provider may still cancel its
+    // `AutocompleteProvider::StartPrefetch()`, a provider may still cancel its
     // in-flight non-prefetch request when a prefetch request is started. This
     // may cause the provider to never get a chance to notify the controller of
     // its status; resulting in the controller to remain in an invalid state.
@@ -784,8 +782,7 @@ void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
   }
 }
 
-void AutocompleteController::Stop(bool clear_result,
-                                  bool due_to_user_inactivity) {
+void AutocompleteController::Stop(AutocompleteStopReason stop_reason) {
   // Must be called before `expire_timer_.Stop()`, modifying `done_`, or
   // modifying `AutocompleteProvider::done_` below. If the current request has
   // not completed, and therefore has not been logged yet, will log it now.
@@ -796,17 +793,16 @@ void AutocompleteController::Stop(bool clear_result,
   for (const auto& provider : providers_) {
     if (!ShouldRunProvider(provider.get()))
       continue;
-    provider->Stop(clear_result, due_to_user_inactivity);
+    provider->Stop(stop_reason);
   }
-
-  UpdateResult(UpdateType::kStop);
 
   // Cancel any pending requests that may update the results. Otherwise, e.g.,
   // the user's suggestion selection may be reset.
+  UpdateResult(UpdateType::kStop);
   CancelNotifyChangedRequest();
 
   const bool non_empty_result = !internal_result_.empty();
-  if (clear_result) {
+  if (stop_reason == AutocompleteStopReason::kClobbered) {
     internal_result_.Reset();
     if (non_empty_result) {
       // Pass `notify_default_match` as false to clear only the popup and not
@@ -1356,6 +1352,11 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     providers_.push_back(
         new RecentlyClosedTabsProvider(provider_client_.get(), this));
   }
+#if BUILDFLAG(IS_ANDROID)
+  if (provider_types & AutocompleteProvider::TYPE_TAB_GROUP) {
+    providers_.push_back(new TabGroupProvider(provider_client_.get()));
+  }
+#endif
 }
 
 void AutocompleteController::UpdateResult(UpdateType update_type,
@@ -1629,7 +1630,7 @@ void AutocompleteController::AttachActions() {
     return;
   }
 
-  #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Attach the contextual search fulfillment actions in the @page keyword mode.
   if (omnibox_feature_configs::ContextualSearch::Get()
           .contextual_zero_suggest_lens_fulfillment &&
@@ -1814,10 +1815,10 @@ void AutocompleteController::UpdateKeywordDescriptions(
         if (template_url) {
           i->description_class.emplace_back(ACMatchClassification(
               (i->description).size(), ACMatchClassification::DIM));
-          // TODO(crbug.com/407610885): Localize the people suggestion metadata.
           i->description +=
-              u" - " + template_url->AdjustedShortNameForLocaleDirection() +
-              u" People";
+              u" - " + l10n_util::GetStringFUTF16(
+                           IDS_PERSON_SUGGESTION_DESCRIPTION,
+                           template_url->AdjustedShortNameForLocaleDirection());
         }
       }
       last_keyword = i->keyword;
@@ -2122,7 +2123,7 @@ void AutocompleteController::StartStopTimer() {
 }
 
 void AutocompleteController::OnStopTimerTriggered() {
-  Stop(false, true);
+  Stop(AutocompleteStopReason::kInactivity);
   for (Observer& obs : observers_) {
     obs.OnAutocompleteStopTimerTriggered(input_);
   }

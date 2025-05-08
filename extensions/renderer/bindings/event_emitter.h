@@ -43,7 +43,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   const char* GetTypeName() final;
 
   // Fires the event to any listeners.
-  // Warning: This can run arbitrary JS code, so the |context| may be
+  // Warning: This can run arbitrary JS code, so the `context` may be
   // invalidated after this!
   void Fire(v8::Local<v8::Context> context,
             v8::LocalVector<v8::Value>* args,
@@ -53,7 +53,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // Fires the event to any listeners synchronously, and returns the result.
   // This should only be used if the caller is certain that JS is already
   // running (i.e., is not blocked).
-  // Warning: This can run arbitrary JS code, so the |context| may be
+  // Warning: This can run arbitrary JS code, so the `context` may be
   // invalidated after this!
   v8::Local<v8::Value> FireSync(v8::Local<v8::Context> context,
                                 v8::LocalVector<v8::Value>* args,

@@ -45,7 +45,7 @@ export class PrintPreviewDpiSettingsElement extends
     };
   }
 
-  accessor capability: DpiCapability|undefined;
+  accessor capability: DpiCapability|null;
   accessor disabled: boolean = false;
   protected accessor capabilityWithLabels_: DpiCapability|null = null;
   private lastSelectedValue_: DpiOption;

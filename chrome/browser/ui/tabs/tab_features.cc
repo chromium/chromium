@@ -31,6 +31,7 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
@@ -72,12 +74,14 @@
 #include "components/metrics/content/dwa_web_contents_observer.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
+#include "components/search/ntp_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/base/features.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/host/context/glic_page_context_eligibility_observer.h"
 #endif
 namespace tabs {
 
@@ -189,19 +193,22 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           std::make_unique<tab_groups::CollaborationMessagingTabData>(profile);
     }
 
-    if (base::FeatureList::IsEnabled(passage_embeddings::kPassageEmbedder)) {
-      embedder_tab_observer_ =
-          std::make_unique<passage_embeddings::EmbedderTabObserver>(
-              tab.GetContents());
-    }
-
 #if BUILDFLAG(ENABLE_GLIC)
     if (glic::GlicEnabling::IsProfileEligible(
             tab.GetBrowserWindowInterface()->GetProfile())) {
       glic_tab_indicator_helper_ =
           std::make_unique<glic::GlicTabIndicatorHelper>(&tab);
+
+      glic_page_context_eligibility_observer_ =
+          glic::GlicPageContextEligibilityObserver::MaybeCreateForWebContents(
+              tab.GetContents());
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
+    if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+      new_tab_footer_controller_ =
+          std::make_unique<new_tab_footer::NewTabFooterController>(&tab);
+    }
   }     // IsInNormalWindow() end.
 
   if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {

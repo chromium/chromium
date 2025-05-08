@@ -23,7 +23,7 @@ const base::TimeDelta kDialogTimeout = base::Seconds(10);
 
 // A wrapper importing the settings module when the chrome://settings serve the
 // Polymer 3 version.
-const char kSettingsScriptWrapperFormat[] =
+inline constexpr char kSettingsScriptWrapperFormat[] =
     "import('./settings.js').then(settings => {%s});";
 
 signin::IdentityManager* identity_manager(Browser* browser);

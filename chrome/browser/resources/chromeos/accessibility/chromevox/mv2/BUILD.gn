@@ -119,6 +119,7 @@ ts_modules = [
   "background/panel/panel_background.ts",
   "background/panel/panel_node_menu_background.ts",
   "background/prefs.ts",
+  "background/primary_tts.ts",
   "background/tts_background.ts",
   "background/tts_interface.ts",
   "chromevox_loader.ts",
@@ -172,7 +173,6 @@ js_modules = [
   "background/automation_object_constructor_installer.js",
   "background/composite_tts.js",
   "background/phonetic_data.js",
-  "background/primary_tts.js",
 ]
 
 # Closure library modules needed by chromevox.

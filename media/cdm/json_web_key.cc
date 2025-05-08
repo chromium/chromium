@@ -116,7 +116,7 @@ static bool ConvertJwkToKeyPair(const base::Value::Dict& jwk,
   // Get the key id and actual key parameters.
   const base::Value* encoded_key_id = jwk.Find(kKeyIdTag);
   const base::Value* encoded_key = jwk.Find(kKeyTag);
-  if (!encoded_key_id || !encoded_key->is_string()) {
+  if (!encoded_key_id || !encoded_key_id->is_string()) {
     DVLOG(1) << "Missing '" << kKeyIdTag << "' parameter";
     return false;
   }

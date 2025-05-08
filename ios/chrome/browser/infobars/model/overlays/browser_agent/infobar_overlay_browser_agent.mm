@@ -13,6 +13,7 @@
 
 InfobarOverlayBrowserAgent::InfobarOverlayBrowserAgent(Browser* browser)
     : OverlayBrowserAgentBase(browser),
+      BrowserUserData(browser),
       overlay_visibility_observer_(browser, this) {}
 
 InfobarOverlayBrowserAgent::~InfobarOverlayBrowserAgent() = default;

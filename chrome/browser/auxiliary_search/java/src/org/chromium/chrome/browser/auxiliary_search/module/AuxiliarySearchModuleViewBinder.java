@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.auxiliary_search.module;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The view binder class for the auxiliary search module. */
+@NullMarked
 public class AuxiliarySearchModuleViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         AuxiliarySearchModuleView moduleView = (AuxiliarySearchModuleView) view;

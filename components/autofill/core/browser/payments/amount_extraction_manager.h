@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 class AutofillDriver;
@@ -35,6 +36,14 @@ namespace autofill::payments {
 // UI together. If not, it does nothing.
 class AmountExtractionManager {
  public:
+  // Enum for all features that require amount extraction.
+  enum class EligibleFeature {
+    // Buy now pay later uses the amount extracted by amount extraction to
+    // determine if the current purchase is eligible for buy now pay later.
+    kBnpl = 0,
+    kMaxValue = kBnpl,
+  };
+
   explicit AmountExtractionManager(BrowserAutofillManager* autofill_manager);
   AmountExtractionManager(const AmountExtractionManager& other) = delete;
   AmountExtractionManager& operator=(const AmountExtractionManager& other) =
@@ -56,18 +65,20 @@ class AmountExtractionManager {
   static std::optional<uint64_t> MaybeParseAmountToMonetaryMicroUnits(
       const std::string& amount);
 
-  // Determines if amount extraction should be initiated.
-  // Triggers extraction when:
+  // Returns the set of all eligible features that depend on amount extraction
+  // result when:
   //   Autofill is available in the given `SuggestionsContext`;
   //   Autofill provides non-empty, non-suppressed suggestions;
   //   The form being interacted with is a credit card form but not the CVC
   //   field of the credit card form;
-  //   The url being visited is within the amount extraction allowlist;
+  //   There is a feature that can use amount extraction on the current
+  //   checkout page;
   //   Amount Extraction feature is enabled;
-  virtual bool ShouldTriggerAmountExtraction(const SuggestionsContext& context,
-                                             bool should_suppress_suggestions,
-                                             bool has_suggestions,
-                                             FieldType field_type) const;
+  DenseSet<EligibleFeature> GetEligibleFeatures(
+      const SuggestionsContext& context,
+      bool should_suppress_suggestions,
+      bool has_suggestions,
+      FieldType field_type) const;
 
   // Trigger the search for the final checkout amount from the DOM of the
   // current page.
@@ -76,8 +87,6 @@ class AmountExtractionManager {
   void SetSearchRequestPendingForTesting(bool search_request_pending);
 
   bool GetSearchRequestPendingForTesting();
-
-  bool IsUrlEligibleForAmountExtractionForTesting() const;
 
  private:
   friend class AmountExtractionManagerTest;
@@ -90,16 +99,17 @@ class AmountExtractionManager {
       base::TimeTicks search_request_start_timestamp,
       const std::string& extracted_amount);
 
-  // Check whether the current amount search has reached the timeout or not. If
-  // so, cancel the ongoing search.
+  // Checks whether the current amount search has reached the timeout or not.
+  // If so, cancel the ongoing search.
   virtual void OnTimeoutReached();
 
-  // Check whether the host of the checkout webpage exists in the amount
-  // extraction allowlist.
-  bool IsUrlEligibleForAmountExtraction() const;
+  // Checks eligibility of features depending on amount extraction result, and
+  // returns the eligible features.
+  DenseSet<EligibleFeature>
+  CheckEligiblilityForFeaturesRequiringAmountExtraction() const;
 
-  // Get the driver associated with the main frame as the final checkout amount
-  // is on the main frame.
+  // Gets the driver associated with the main frame as the final checkout
+  // amount is on the main frame.
   AutofillDriver* GetMainFrameDriver();
 
   // The owning BrowserAutofillManager.

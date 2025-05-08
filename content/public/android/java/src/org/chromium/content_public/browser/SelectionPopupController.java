@@ -117,7 +117,7 @@ public interface SelectionPopupController {
     void handleTextReplacementAction(String text);
 
     /** Sets the given {@link SelectionClient} in the selection popup controller. */
-    void setSelectionClient(SelectionClient selectionClient);
+    void setSelectionClient(@Nullable SelectionClient selectionClient);
 
     /** Returns the {@link SelectionClient} in the selection popup controller. */
     public @Nullable SelectionClient getSelectionClient();

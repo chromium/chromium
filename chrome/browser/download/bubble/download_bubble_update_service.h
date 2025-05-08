@@ -54,9 +54,8 @@ class DownloadBubbleUpdateService
       kNotInProgress = 2,
     };
 
+    friend bool operator==(const ItemSortKey&, const ItemSortKey&) = default;
     bool operator<(const ItemSortKey& other) const;
-    bool operator==(const ItemSortKey& other) const;
-    bool operator!=(const ItemSortKey& other) const;
     bool operator>(const ItemSortKey& other) const;
 
     // Returns a key that sorts before any other.

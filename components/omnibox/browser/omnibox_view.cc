@@ -207,22 +207,34 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
     }
   }
   if (AutocompleteMatch::IsSearchType(match.type)) {
-    // For search queries, display default search engine's favicon. If the
-    // default search engine is google return the icon instead of favicon for
+    const TemplateURL* turl =
+        !match.keyword.empty() ? controller_->client()
+                                     ->GetTemplateURLService()
+                                     ->GetTemplateURLForKeyword(match.keyword)
+                               : nullptr;
+    // For search queries, display match's search engine's favicon. If the
+    // search engine is google, return the icon instead of favicon for
     // search queries with the chrome refresh feature.
-    if (search::DefaultSearchProviderIsGoogle(
-            controller_->client()->GetTemplateURLService())) {
+    if (turl && search::TemplateURLIsGoogle(turl, controller_->client()
+                                                      ->GetTemplateURLService()
+                                                      ->search_terms_data())) {
       // For non chrome builds this would return an empty image model. In
       // those cases revert to using the favicon.
       ui::ImageModel icon = model()->GetSuperGIcon(dip_size, dark_mode);
       if (!icon.IsEmpty()) {
         return icon;
       }
+    } else if (turl && turl->CreatedByEnterpriseSearchAggregatorPolicy()) {
+      // If the search engine is enterprise search aggregator, return the icon
+      // from the bitmap instead of favicon.
+      const SkBitmap* bitmap = model()->GetIconBitmap(turl->favicon_url());
+      if (bitmap) {
+        return ui::ImageModel::FromImage(
+            controller_->client()->GetSizedIcon(bitmap));
+      }
     }
-
-    favicon = controller_->client()->GetFaviconForDefaultSearchProvider(
-        std::move(on_icon_fetched));
-
+    favicon = controller_->client()->GetFaviconForKeywordSearchProvider(
+        turl, std::move(on_icon_fetched));
   } else if (match.type != AutocompleteMatchType::HISTORY_CLUSTER) {
     // The starter pack suggestions are a unique case. These suggestions
     // normally use a favicon image that cannot be styled further by client

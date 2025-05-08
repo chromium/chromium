@@ -38,10 +38,6 @@ class FeaturedSearchProvider : public AutocompleteProvider {
  private:
   ~FeaturedSearchProvider() override;
 
-  static const int kGeminiRelevance;
-  static const int kFeaturedEnterpriseSearchRelevance;
-  static const int kStarterPackRelevance;
-
   // Populates `matches_` with matching starter pack keywords such as @history,
   // and @bookmarks
   void AddFeaturedKeywordMatches(const AutocompleteInput& input);
@@ -59,42 +55,37 @@ class FeaturedSearchProvider : public AutocompleteProvider {
                    const std::u16string& matched_term,
                    const std::u16string& iph_link_text,
                    const GURL& iph_link_url,
+                   int relevance,
                    bool deletable);
 
   void AddFeaturedEnterpriseSearchMatch(const TemplateURL& template_url,
                                         const AutocompleteInput& input);
 
-  // Whether to show the @gemini IPH row. This takes into account factors like
-  // feature flags, zero suggest state, how many times its been shown, and past
-  // user behavior.
-  bool ShouldShowGeminiIPHMatch(const AutocompleteInput& input) const;
-
-  // Whether to show the Enterprise featured Search IPH row. This takes into
-  // account factors like feature flags, zero suggest state, how many times it's
-  // been shown, and past user behavior.
-  bool ShouldShowEnterpriseFeaturedSearchIPHMatch(
-      const AutocompleteInput& input) const;
-
-  // Returns whether Chrome should show the IPH for `iph_type`, meaning that:
-  // - It has been shown fewer times than the session limit;
-  // - The user has not manually deleted it.
-  // If the limit is set to INT_MAX, it is not limited.
+  // Returns whether to show the IPH match for `iph_type`.
   bool ShouldShowIPH(IphType iph_type) const;
 
+  // Whether to show the @gemini keyword promo row in zero-state.
+  bool ShouldShowGeminiIPHMatch() const;
+  void AddGeminiIPHMatch();
+
+  // Whether to show the Enterprise Featured keyword promo row in zero-state.
+  bool ShouldShowEnterpriseFeaturedSearchIPHMatch() const;
   void AddFeaturedEnterpriseSearchIPHMatch();
 
+  // Whether to show the History Embeddings promo row in @history scope.
   bool ShouldShowHistoryEmbeddingsSettingsPromoIphMatch() const;
   void AddHistoryEmbeddingsSettingsPromoIphMatch();
 
+  // Whether to show the History Embeddings disclaimer row in @history scope.
   bool ShouldShowHistoryEmbeddingsDisclaimerIphMatch() const;
   void AddHistoryEmbeddingsDisclaimerIphMatch();
 
-  bool ShouldShowHistoryScopePromoIphMatch(
-      const AutocompleteInput& input) const;
+  // Whether to show the @history keyword promo row in zero-state.
+  bool ShouldShowHistoryScopePromoIphMatch() const;
   void AddHistoryScopePromoIphMatch();
 
-  bool ShouldShowHistoryEmbeddingsScopePromoIphMatch(
-      const AutocompleteInput& input) const;
+  // Whether to show the @history (embeddings) keyword promo row in zero-state.
+  bool ShouldShowHistoryEmbeddingsScopePromoIphMatch() const;
   void AddHistoryEmbeddingsScopePromoIphMatch();
 
   raw_ptr<AutocompleteProviderClient> client_;

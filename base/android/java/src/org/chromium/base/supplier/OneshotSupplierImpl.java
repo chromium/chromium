@@ -38,6 +38,7 @@ public class OneshotSupplierImpl<T> implements OneshotSupplier<T> {
     }
 
     @Override
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
     public @Nullable T get() {
         mThreadChecker.assertOnValidThread();
         return mPromise.isFulfilled() ? mPromise.getResult() : null;

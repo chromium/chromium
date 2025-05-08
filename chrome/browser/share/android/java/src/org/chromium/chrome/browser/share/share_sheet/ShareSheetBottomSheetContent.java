@@ -532,9 +532,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         imageView.setPadding(padding, padding, padding, padding);
     }
 
-    /**
-     * Fetches the favicon for the given url.
-     **/
+    /** Fetches the favicon for the given url. */
     private void fetchFavicon(String url) {
         if (!url.isEmpty()) {
             mIconBridge.getLargeIconForUrl(

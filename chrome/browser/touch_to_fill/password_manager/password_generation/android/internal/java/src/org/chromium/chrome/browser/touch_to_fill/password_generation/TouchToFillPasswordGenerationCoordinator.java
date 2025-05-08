@@ -17,6 +17,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -35,6 +37,7 @@ import java.lang.annotation.RetentionPolicy;
  * Coordinates the password generation bottom sheet functionality. It shows the bottom sheet, fills
  * in the generated password and handles the bottom sheet dismissal.
  */
+@NullMarked
 class TouchToFillPasswordGenerationCoordinator {
     interface Delegate {
         /** Called when the bottom sheet is hidden (both by the user and programmatically). */
@@ -92,8 +95,8 @@ class TouchToFillPasswordGenerationCoordinator {
 
     private final WebContents mWebContents;
     private final PrefService mPrefService;
-    private TouchToFillPasswordGenerationView mTouchToFillPasswordGenerationView;
-    private View mTouchToFillPasswordGenerationContent;
+    private @Nullable TouchToFillPasswordGenerationView mTouchToFillPasswordGenerationView;
+    private @Nullable View mTouchToFillPasswordGenerationContent;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Delegate mTouchToFillPasswordGenerationDelegate;
     private final BottomSheetController mBottomSheetController;
@@ -208,7 +211,7 @@ class TouchToFillPasswordGenerationCoordinator {
         // dismissal.
     }
 
-    View getContentViewForTesting() {
+    @Nullable View getContentViewForTesting() {
         return mTouchToFillPasswordGenerationContent;
     }
 

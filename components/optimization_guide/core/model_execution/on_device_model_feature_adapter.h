@@ -24,6 +24,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/text_safety.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom-forward.h"
 
 namespace optimization_guide {
 
@@ -71,6 +72,9 @@ class OnDeviceModelFeatureAdapter final
   const proto::OnDeviceModelExecutionFeatureConfig& config() const {
     return config_;
   }
+
+  // Get the configured response constraint, may be null.
+  on_device_model::mojom::ResponseConstraintPtr GetResponseConstraint() const;
 
  private:
   friend class base::RefCounted<OnDeviceModelFeatureAdapter>;

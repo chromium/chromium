@@ -13,28 +13,25 @@
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller.h"
 #include "components/dom_distiller/core/dom_distiller_request_view_base.h"
-#include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "components/dom_distiller/core/task_tracker.h"
 #include "components/dom_distiller/core/viewer.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace dom_distiller {
-
 DistillerViewer::DistillerViewer(
-    dom_distiller::DistillerFactory* distiller_factory,
+    DistillerService* distiller_service,
     std::unique_ptr<dom_distiller::DistillerPage> page,
-    PrefService* prefs,
     const GURL& url,
     DistillationFinishedCallback callback)
-    : DistillerViewerInterface(prefs),
+    : DistillerViewerInterface(distiller_service->GetDistilledPagePrefs()),
       url_(url),
       csp_nonce_(base::Base64Encode(base::RandBytesAsVector(16))),
+      use_offline_data_(page->ShouldFetchOfflineData()),
       callback_(std::move(callback)) {
   DCHECK(url.is_valid());
   SendCommonJavaScript();
-  distiller_ = distiller_factory->CreateDistiller();
-  distiller_->DistillPage(
+  distiller_service->DistillPage(
       url, std::move(page),
       base::BindOnce(&DistillerViewer::OnDistillerFinished,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -67,9 +64,9 @@ void DistillerViewer::OnArticleReady(
       }
     }
 
-    const std::string html = viewer::GetArticleTemplateHtml(
+    const std::string html = dom_distiller::viewer::GetArticleTemplateHtml(
         distilled_page_prefs_->GetTheme(),
-        distilled_page_prefs_->GetFontFamily(), csp_nonce_);
+        distilled_page_prefs_->GetFontFamily(), csp_nonce_, use_offline_data_);
 
     std::string html_and_script(html);
     html_and_script += "<script nonce=\"" + csp_nonce_ + "\">" +
@@ -90,5 +87,3 @@ void DistillerViewer::SendJavaScript(const std::string& buffer) {
 std::string DistillerViewer::GetCspNonce() {
   return csp_nonce_;
 }
-
-}  // namespace dom_distiller

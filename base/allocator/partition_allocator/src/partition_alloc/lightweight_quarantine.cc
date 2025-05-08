@@ -5,6 +5,7 @@
 #include "partition_alloc/lightweight_quarantine.h"
 
 #include "partition_alloc/internal_allocator.h"
+#include "partition_alloc/lightweight_quarantine_support.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_root.h"
 
@@ -323,6 +324,7 @@ void SchedulerLoopQuarantineBranch::Configure(
     // Already enabled, explicitly purging an existing instance.
     branch_->Purge();
   }
+  PA_CHECK(pause_quarantine_ == 0);
 
   enable_quarantine_ = config.enable_quarantine;
   enable_zapping_ = config.enable_zapping;
@@ -347,7 +349,7 @@ void SchedulerLoopQuarantineBranch::QuarantineWithAcquiringLock(
     SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
     uintptr_t slot_start,
     size_t usable_size) {
-  if (!enable_quarantine_ ||
+  if (!enable_quarantine_ || pause_quarantine_ ||
       allocator_root_->IsDirectMappedBucket(slot_span->bucket)) [[unlikely]] {
     return allocator_root_->FreeNoHooksImmediate(object, slot_span, slot_start);
   }
@@ -364,7 +366,7 @@ void SchedulerLoopQuarantineBranch::QuarantineWithoutAcquiringLock(
     SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
     uintptr_t slot_start,
     size_t usable_size) {
-  if (!enable_quarantine_ ||
+  if (!enable_quarantine_ || pause_quarantine_ ||
       allocator_root_->IsDirectMappedBucket(slot_span->bucket)) [[unlikely]] {
     return allocator_root_->FreeNoHooksImmediate(object, slot_span, slot_start);
   }

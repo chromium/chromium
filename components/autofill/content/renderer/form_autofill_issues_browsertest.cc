@@ -49,26 +49,20 @@ class FormAutofillIssuesTest : public content::RenderViewTest {
   FormAutofillIssuesTest() = default;
   ~FormAutofillIssuesTest() override = default;
 
-  WebFormElement WebFormElementFromHTML(const char* html,
-                                        const std::string& form_id = "target") {
-    LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    WebFormElement form_target =
-        GetFormElementById(web_frame->GetDocument(), form_id);
-    return form_target;
+  WebFormElement GetTargetForm() {
+    return GetFormElementById(GetMainFrame()->GetDocument(), "target");
   }
 };
 
 TEST_F(FormAutofillIssuesTest, FormLabelHasNeitherForNorNestedInput) {
-  constexpr char kHtml[] = R"(
+  LoadHTML(R"(
        <form id=target>
         <input>
         <label> A label</label>
-      </form>)";
-  WebFormElement form_target = WebFormElementFromHTML(kHtml);
+      </form>)");
 
-  std::vector<FormIssue> form_issues =
-      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
+  std::vector<FormIssue> form_issues = GetFormIssuesForTesting(
+      GetTargetForm().GetFormControlElements(), {});  // nocheck
 
   EXPECT_TRUE(FormIssuesContainIssueType(
       form_issues,
@@ -76,17 +70,16 @@ TEST_F(FormAutofillIssuesTest, FormLabelHasNeitherForNorNestedInput) {
 }
 
 TEST_F(FormAutofillIssuesTest, FormDuplicateIdForInputError) {
-  constexpr char kHtml[] = R"(
+  LoadHTML(R"(
       <form id=target>
         <input id=id>
         <input id=id_2>
         <input id=id>
         <input id=id>
-      </form>)";
-  WebFormElement form_target = WebFormElementFromHTML(kHtml);
+      </form>)");
 
-  std::vector<FormIssue> form_issues =
-      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
+  std::vector<FormIssue> form_issues = GetFormIssuesForTesting(
+      GetTargetForm().GetFormControlElements(), {});  // nocheck
 
   int duplicated_ids_issue_count =
       std::ranges::count_if(form_issues, [](const FormIssue& form_issue) {
@@ -98,11 +91,11 @@ TEST_F(FormAutofillIssuesTest, FormDuplicateIdForInputError) {
 }
 
 TEST_F(FormAutofillIssuesTest, FormAriaLabelledByToNonExistingId) {
-  constexpr char kHtml[] = R"(
+  LoadHTML(R"(
       <form id=target>
         <input aria-labelledby=non_existing>
-      </form>)";
-  WebFormElement form_target = WebFormElementFromHTML(kHtml);
+      </form>)");
+  WebFormElement form_target = GetTargetForm();
   std::vector<FormIssue> form_issues =
       GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
 
@@ -114,11 +107,11 @@ TEST_F(FormAutofillIssuesTest, FormAriaLabelledByToNonExistingId) {
 }
 
 TEST_F(FormAutofillIssuesTest, FormAutocompleteAttributeEmptyError) {
-  constexpr char kHtml[] = R"(
+  LoadHTML(R"(
       <form id=target>
         <input autocomplete>
-      </form>)";
-  WebFormElement form_target = WebFormElementFromHTML(kHtml);
+      </form>)");
+  WebFormElement form_target = GetTargetForm();
 
   std::vector<FormIssue> form_issues =
       GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
@@ -130,11 +123,11 @@ TEST_F(FormAutofillIssuesTest, FormAutocompleteAttributeEmptyError) {
 
 TEST_F(FormAutofillIssuesTest,
        FormInputHasWrongButWellIntendedAutocompleteValueError) {
-  constexpr char kHtml[] = R"(
+  LoadHTML(R"(
       <form id=target>
         <input autocomplete=address-line-1>
-      </form>)";
-  WebFormElement form_target = WebFormElementFromHTML(kHtml);
+      </form>)");
+  WebFormElement form_target = GetTargetForm();
 
   std::vector<FormIssue> form_issues =
       GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
@@ -155,11 +148,11 @@ TEST_F(
     FormInputHasWrongButWellIntendedAutocompleteValueError_LargeAutocompleteString_DoNotCalculateIssue) {
   std::string autocomplete(100, 'a');
   autocomplete += "address-line-1";
-  constexpr char kHtml[] = R"(
+  LoadHTML(R"(
       <form id=target>
         <input>
-      </form>)";
-  WebFormElement form_target = WebFormElementFromHTML(kHtml);
+      </form>)");
+  WebFormElement form_target = GetTargetForm();
   form_target.GetFormControlElements()[0].SetAttribute(
       "autocomplete", WebString::FromUTF8(autocomplete));
   std::vector<FormIssue> form_issues =
@@ -173,11 +166,11 @@ TEST_F(
 }
 
 TEST_F(FormAutofillIssuesTest, FormEmptyIdAndNameAttributesForInputError) {
-  constexpr char kHtml[] = R"(
+  LoadHTML(R"(
       <form id=target>
         <input>
-      </form>)";
-  WebFormElement form_target = WebFormElementFromHTML(kHtml);
+      </form>)");
+  WebFormElement form_target = GetTargetForm();
 
   std::vector<FormIssue> form_issues =
       GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
@@ -189,12 +182,12 @@ TEST_F(FormAutofillIssuesTest, FormEmptyIdAndNameAttributesForInputError) {
 
 TEST_F(FormAutofillIssuesTest,
        FormInputAssignedAutocompleteValueToIdOrNameAttributeError) {
-  constexpr char kHtml[] = R"(
+  LoadHTML(R"(
       <form id=target>
         <input id=country>
-      </form>)";
+      </form>)");
 
-  WebFormElement form_target = WebFormElementFromHTML(kHtml);
+  WebFormElement form_target = GetTargetForm();
 
   std::vector<FormIssue> form_issues =
       GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
@@ -209,12 +202,11 @@ TEST_F(FormAutofillIssuesTest,
 TEST_F(
     FormAutofillIssuesTest,
     FormInputAssignedAutocompleteValueToIdOrNameAttributeErrorUnownedControl) {
-  constexpr char kHtml[] = R"(
+  LoadHTML(R"(
       <div>
         <label for="country">Country</label>
         <input id=country>
-      </div>)";
-  LoadHTML(kHtml);
+      </div>)");
   WebLocalFrame* web_frame = GetMainFrame();
 
   std::vector<FormIssue> form_issues =
@@ -230,7 +222,7 @@ TEST_F(
 }
 
 TEST_F(FormAutofillIssuesTest, FormLabelForNameError) {
-  constexpr char kHtml[] = R"(
+  LoadHTML(R"(
       <form id=target>
         <input id=id_0 name=name_0>
         <input id=id_1 name=name_1>
@@ -238,11 +230,10 @@ TEST_F(FormAutofillIssuesTest, FormLabelForNameError) {
         <label for=id_0>correct label</label>
         <label for=name_1>incorrect label 1</label>
         <label for=name_2>incorrect label 2</label>
-      </form>)";
-  LoadHTML(kHtml);
+      </form>)");
   WebLocalFrame* web_frame = GetMainFrame();
   FormData form_data = *form_util::ExtractFormData(
-      web_frame->GetDocument(), WebFormElementFromHTML(kHtml),
+      web_frame->GetDocument(), GetTargetForm(),
       *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
       /*button_titles_cache=*/nullptr);
 
@@ -257,16 +248,15 @@ TEST_F(FormAutofillIssuesTest, FormLabelForNameError) {
 }
 
 TEST_F(FormAutofillIssuesTest, FormLabelForMatchesNonExistingIdError) {
-  constexpr char kHtml[] = R"(
+  LoadHTML(R"(
       <form id=target>
         <label for=non_existing />
         <input id=id_0 name=name_0>
         <label for=id_0 />"
-      </form>)";
-  LoadHTML(kHtml);
+      </form>)");
   WebLocalFrame* web_frame = GetMainFrame();
   FormData form_data = *form_util::ExtractFormData(
-      web_frame->GetDocument(), WebFormElementFromHTML(kHtml),
+      web_frame->GetDocument(), GetTargetForm(),
       *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
       /*button_titles_cache=*/nullptr);
 

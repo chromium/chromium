@@ -430,11 +430,10 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
   if (UIAccessibilityIsVoiceOverRunning()) {
     _scoped_accessibility_mode =
         accessibility_state->CreateScopedModeForProcess(
-            ui::kAXModeComplete | ui::AXMode::kFromPlatform);
-    accessibility_state->SetScreenReaderAppActive(true);
+            ui::kAXModeComplete | ui::AXMode::kFromPlatform |
+            ui::AXMode::kScreenReader);
   } else {
     _scoped_accessibility_mode.reset();
-    accessibility_state->SetScreenReaderAppActive(false);
   }
 }
 @end

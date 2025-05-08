@@ -87,16 +87,15 @@ suite('InvalidSettingsTest', function() {
         previewAreaEl.shadowRoot!.querySelector('.preview-area-message')!;
     const sidebar = page.shadowRoot!.querySelector('print-preview-sidebar')!;
     let printButton: CrButtonElement;
-    const destinationSettings = sidebar.shadowRoot!.querySelector(
-        'print-preview-destination-settings')!;
+    const destinationSettings =
+        sidebar.shadowRoot.querySelector('print-preview-destination-settings')!;
 
     return waitBeforeNextRender(page)
         .then(() => {
           const parentElement =
-              sidebar.shadowRoot!.querySelector('print-preview-button-strip')!;
-          printButton =
-              parentElement.shadowRoot!.querySelector<CrButtonElement>(
-                  '.action-button')!;
+              sidebar.shadowRoot.querySelector('print-preview-button-strip')!;
+          printButton = parentElement.shadowRoot.querySelector<CrButtonElement>(
+              '.action-button')!;
 
           return Promise.all([
             whenReady(),

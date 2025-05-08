@@ -1,7 +1,7 @@
 Name: WindowManager Core
 Short Name: window-core-android
-URL: https://developer.android.com/jetpack/androidx/releases/window#1.7.0-SNAPSHOT
-Version: 1.7.0-SNAPSHOT
+URL: https://developer.android.com/jetpack/androidx/releases/window#1.5.0-SNAPSHOT
+Version: 1.5.0-SNAPSHOT
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/task_environment.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
@@ -22,6 +21,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -224,7 +224,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     }
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   id<SystemIdentity> fake_identity_a_;
   id<SystemIdentity> fake_identity_b_;

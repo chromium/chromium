@@ -270,6 +270,8 @@ class VideoWakeLockTest : public testing::Test {
 
   void UpdateObservers() {
     UpdateAllLifecyclePhasesForTest();
+    task_environment_.FastForwardBy(VideoWakeLock::kIntersectionObserverDelay +
+                                    base::Microseconds(1));
     test::RunPendingTasks();
   }
 
@@ -300,7 +302,8 @@ class VideoWakeLockTest : public testing::Test {
   }
 
  private:
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<VideoWakeLockTestWebFrameClient> client_;
   Persistent<HTMLDivElement> div_;
   Persistent<HTMLVideoElement> video_;

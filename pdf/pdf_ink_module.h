@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -19,11 +20,14 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/buildflags.h"
+#include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "pdf/ui/thumbnail.h"
+#include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
+#include "third_party/ink/src/ink/rendering/skia/native/skia_renderer.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
@@ -135,11 +139,16 @@ class PdfInkModule {
 
   bool enabled() const { return enabled_; }
 
-  // Determines if there are any `drawing_stroke_state().inputs` to be drawn.
+  // Returns whether the text selection change event should be blocked to
+  // prevent modifying the clipboard content.
+  bool ShouldBlockTextSelectionChanged();
+
+  // Determines if there are any in-progress inputs to be drawn.
   bool HasInputsToDraw() const;
 
-  // Draws `drawing_stroke_state().inputs` into `canvas`.  Must be in a drawing
-  // stroke state with non-empty `drawing_stroke_state().inputs`.
+  // Draws any in-progress inputs into `canvas`.  Must either be in text
+  // highlighting state or in drawing stroke state with non-empty
+  // `drawing_stroke_state().inputs`.
   void Draw(SkCanvas& canvas);
 
   // Generates a thumbnail of `thumbnail_size` for the page at `page_index`
@@ -283,12 +292,33 @@ class PdfInkModule {
     ink::StrokeInput::ToolType tool_type;
   };
 
+  struct TextHighlightState {
+    TextHighlightState();
+    TextHighlightState(const TextHighlightState&) = delete;
+    TextHighlightState& operator=(const TextHighlightState&) = delete;
+    ~TextHighlightState();
+
+    // A mapping of 0-based page indices to a list of strokes on pages that
+    // represent the user's highlighter text selections. Unlike drawing strokes
+    // which are limited to one page, text selection may cover multiple pages.
+    // For example, when the user has the highlighter brush selected, they may
+    // select text from page A to page B. Strokes will be drawn to cover any
+    // selected text and stored in the page index of the page they are on.
+    std::map<int, std::vector<ink::Stroke>> highlight_strokes;
+  };
+
   // Drawing brush state changes that are pending the completion of an
   // in-progress stroke.
   struct PendingDrawingBrushState {
     SkColor color;
     float size;
     PdfInkBrush::Type type;
+  };
+
+  // The transform to and clip page rect needed to render strokes on screen.
+  struct TransformAndClipRect {
+    ink::AffineTransform transform;
+    SkRect clip_rect;
   };
 
   // Returns whether the event was handled or not.
@@ -321,6 +351,31 @@ class PdfInkModule {
   // Shared code for the Erase methods above.
   void EraseHelper(const gfx::PointF& position, int page_index);
 
+  // Return values have the same semantics as On{Mouse,Touch}*() above.
+  bool StartTextHighlight(const gfx::PointF& position,
+                          int click_count,
+                          base::TimeTicks timestamp);
+  bool ContinueTextHighlight(const gfx::PointF& position);
+  bool FinishTextHighlight(const gfx::PointF& position);
+
+  // Returns a highlighter stroke that matches the position and size of
+  // `selection_rect`. `selection_rect` must be in screen coordinates.
+  ink::Stroke GetHighlightStrokeFromSelectionRect(
+      const gfx::Rect& selection_rect);
+
+  // Returns the start and end point of a stroke that covers `selection_rect`
+  // with a size of `brush_size`. `brush_size` must be large enough to cover
+  // `selection_rect`'s smallest dimension. `selection_rect` must be in screen
+  // coordinates.
+  std::pair<gfx::PointF, gfx::PointF> GetPointsForTextSelectionHighlightStroke(
+      const gfx::Rect& selection_rect,
+      float brush_size);
+
+  // Converts PdfInkModuleClient's text selection to strokes and returns a
+  // mapping of 0-based page indices to a list of those strokes. See comments
+  // for `TextHighlightState::highlight_strokes`.
+  std::map<int, std::vector<ink::Stroke>> GetTextSelectionAsStrokes();
+
   // Sets `using_stylus_instead_of_touch_` to true if `tool_type` is
   // `ink::StrokeInput::ToolType::kStylus`. Otherwise do nothing.
   void MaybeRecordPenInput(ink::StrokeInput::ToolType tool_type);
@@ -331,18 +386,20 @@ class PdfInkModule {
 
   void HandleAnnotationRedoMessage(const base::Value::Dict& message);
   void HandleAnnotationUndoMessage(const base::Value::Dict& message);
+  void HandleFinishTextAnnotationMessage(const base::Value::Dict& message);
   void HandleGetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
-  void HandleGetTextAnnotFontNamesMessage(const base::Value::Dict& message);
-  void HandleSetTextAnnotationFontMessage(const base::Value::Dict& message);
-  void HandleSetTextAnnotTextBoxRectMessage(const base::Value::Dict& message);
+  void HandleStartTextAnnotationMessage(const base::Value::Dict& message);
 
   bool is_drawing_stroke() const {
     return std::holds_alternative<DrawingStrokeState>(current_tool_state_);
   }
   bool is_erasing_stroke() const {
     return std::holds_alternative<EraserState>(current_tool_state_);
+  }
+  bool is_text_highlighting() const {
+    return std::holds_alternative<TextHighlightState>(current_tool_state_);
   }
   const DrawingStrokeState& drawing_stroke_state() const {
     return std::get<DrawingStrokeState>(current_tool_state_);
@@ -355,6 +412,12 @@ class PdfInkModule {
   }
   EraserState& erasing_stroke_state() {
     return std::get<EraserState>(current_tool_state_);
+  }
+  const TextHighlightState& text_highlight_state() const {
+    return std::get<TextHighlightState>(current_tool_state_);
+  }
+  TextHighlightState& text_highlight_state() {
+    return std::get<TextHighlightState>(current_tool_state_);
   }
 
   // Returns the current brush. Must be in a drawing stroke state.
@@ -391,9 +454,30 @@ class PdfInkModule {
   void ApplyUndoRedoDiscards(
       const PdfInkUndoRedoModel::DiscardedDrawCommands& discards);
 
+  // Sets the cursor to a drawing/erasing brush cursor when necessary.
   void MaybeSetCursor();
 
-  void MaybeSetDrawingBrushAndCursor();
+  // Handles setting the cursor only for mousemove events at `position`. This
+  // differs from `MaybeSetCursor()` in that it may also set the cursor to an
+  // I-beam for text highlighting.
+  void MaybeSetCursorOnMouseMove(const gfx::PointF& position);
+
+  // Returns whether the drawing brush was set or not.
+  bool MaybeSetDrawingBrush();
+
+  void DrawStrokeInRenderer(ink::SkiaRenderer& skia_renderer,
+                            SkCanvas& canvas,
+                            int page_index,
+                            const ink::Stroke& stroke);
+
+  void DrawInProgressStrokeInRenderer(ink::SkiaRenderer& skia_renderer,
+                                      SkCanvas& canvas,
+                                      int page_index,
+                                      const ink::InProgressStroke& stroke);
+
+  // Returns the transform and the clip page rect needed to render strokes on
+  // page `page_index`.
+  TransformAndClipRect GetTransformAndClipRect(int page_index);
 
   // Helper that calls GenerateAndSendInkThumbnail() without needing to specify
   // the thumbnail size. This helper determines the size by asking
@@ -414,6 +498,8 @@ class PdfInkModule {
   // Handles the callback for PDF thumbnail generation requests. Sends
   // `thumbnail` to the WebUI.
   void OnGotThumbnail(int page_index, Thumbnail thumbnail);
+
+  void SendContentFocusedMessage();
 
   const raw_ref<PdfInkModuleClient> client_;
 
@@ -441,7 +527,8 @@ class PdfInkModule {
   std::optional<PendingDrawingBrushState> pending_drawing_brush_state_;
 
   // The state of the current tool that is in use.
-  std::variant<DrawingStrokeState, EraserState> current_tool_state_;
+  std::variant<DrawingStrokeState, EraserState, TextHighlightState>
+      current_tool_state_;
 
   // The state of the strokes that have been completed.
   DocumentStrokesMap strokes_;

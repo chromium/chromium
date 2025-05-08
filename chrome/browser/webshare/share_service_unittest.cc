@@ -13,11 +13,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/webshare/share_service_impl.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,9 +43,6 @@ using blink::mojom::ShareError;
 
 class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
  public:
-  ShareServiceUnitTest() {
-    feature_list_.InitAndEnableFeature(features::kWebShare);
-  }
   ~ShareServiceUnitTest() override = default;
 
   void SetUp() override {
@@ -168,7 +163,6 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
 #if BUILDFLAG(IS_WIN)
   webshare::ScopedShareOperationFakeComponents scoped_fake_components_;
 #endif
-  base::test::ScopedFeatureList feature_list_;
   mojo::Remote<blink::mojom::ShareService> share_service_remote_;
 };
 

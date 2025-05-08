@@ -69,6 +69,7 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
   }
 
   struct SpeculationRulesPrefetchContainerOptions {
+    blink::mojom::SpeculationEagerness eagerness;
     SpeculationRulesTags speculation_rules_tags;
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager;
   };
@@ -79,8 +80,7 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
     return std::make_unique<PrefetchContainer>(
         *main_rfhi(), blink::DocumentToken(), prefetch_url,
         PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                     /*use_prefetch_proxy=*/true,
-                     blink::mojom::SpeculationEagerness::kEager),
+                     /*use_prefetch_proxy=*/true, options.eagerness),
         blink::mojom::Referrer(),
         std::make_optional(std::move(options.speculation_rules_tags)),
         /*no_vary_search_hint=*/std::nullopt, options.prefetch_document_manager,
@@ -927,99 +927,132 @@ TEST_P(PrefetchContainerTest, IneligibleRedirect) {
             PrefetchStatus::kPrefetchFailedIneligibleRedirect);
 }
 
-TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
+TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
   struct TestCase {
-    blink::mojom::SpeculationEagerness eagerness;
+    PrefetchType prefetch_type;
     bool is_served;
     std::optional<base::TimeDelta> prefetch_match_resolver_wait_duration;
   };
 
   std::vector<TestCase> test_cases{
-      {blink::mojom::SpeculationEagerness::kEager, true, std::nullopt},
-      {blink::mojom::SpeculationEagerness::kModerate, true,
-       base::Milliseconds(10)},
-      {blink::mojom::SpeculationEagerness::kConservative, false,
-       base::Milliseconds(20)}};
+      {PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                    /*use_prefetch_proxy=*/true,
+                    blink::mojom::SpeculationEagerness::kEager),
+       true, std::nullopt},
+      {PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                    /*use_prefetch_proxy=*/true,
+                    blink::mojom::SpeculationEagerness::kModerate),
+       true, base::Milliseconds(10)},
+      {PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                    /*use_prefetch_proxy=*/true,
+                    blink::mojom::SpeculationEagerness::kConservative),
+       false, std::nullopt},
+      {PrefetchType(PreloadingTriggerType::kEmbedder,
+                    /*use_prefetch_proxy=*/true),
+       false, base::Milliseconds(20)}};
+
+  const GURL prefetch_url = GURL("https://test.com/?nvsparam=1");
+  const GURL navigated_url = GURL("https://test.com/");
 
   base::HistogramTester histogram_tester;
   for (const auto& test_case : test_cases) {
-    PrefetchContainer prefetch_container(
-        *main_rfhi(), blink::DocumentToken(),
-        GURL("https://test.com/?nvsparam=1"),
-        PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                     /*use_prefetch_proxy=*/true, test_case.eagerness),
-        blink::mojom::Referrer(), std::make_optional(SpeculationRulesTags()),
-        /*no_vary_search_hint=*/std::nullopt,
-        /*prefetch_document_manager=*/nullptr,
-        PreloadPipelineInfo::Create(
-            /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
+    auto prefetch_container = [&] {
+      if (test_case.prefetch_type.IsRendererInitiated()) {
+        return CreateSpeculationRulesPrefetchContainer(
+            prefetch_url,
+            {.eagerness = test_case.prefetch_type.GetEagerness()});
+      } else {
+        return CreateEmbedderPrefetchContainer(prefetch_url);
+      }
+    }();
 
-    prefetch_container.OnUnregisterCandidate(
-        GURL("https://test.com/"), test_case.is_served,
+    prefetch_container->OnUnregisterCandidate(
+        navigated_url, test_case.is_served,
         test_case.prefetch_match_resolver_wait_duration);
   }
 
   histogram_tester.ExpectBucketCount(
-      "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
+      "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
+      "SpeculationRule_"
       "Eager",
       true, 0);
   histogram_tester.ExpectBucketCount(
-      "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
+      "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
+      "SpeculationRule_"
       "Eager",
       false, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.Served.Eager",
+      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
+      "SpeculationRule_"
+      "Eager",
       base::Milliseconds(0), 1);
   histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.NotServed.Eager",
+      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
+      "SpeculationRule_"
+      "Eager",
       0);
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.Served.Eager", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.NotServed.Eager", 0);
 
   histogram_tester.ExpectBucketCount(
-      "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
+      "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
+      "SpeculationRule_"
       "Moderate",
       true, 1);
   histogram_tester.ExpectBucketCount(
-      "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
+      "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
+      "SpeculationRule_"
       "Moderate",
       false, 0);
   histogram_tester.ExpectUniqueTimeSample(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.Served.Moderate",
+      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
+      "SpeculationRule_"
+      "Moderate",
       base::Milliseconds(10), 1);
   histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.NotServed."
+      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
+      "SpeculationRule_"
       "Moderate",
       0);
-  histogram_tester.ExpectUniqueTimeSample(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.Served.Moderate",
-      base::Milliseconds(10), 1);
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.NotServed.Moderate", 0);
 
   histogram_tester.ExpectBucketCount(
-      "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
+      "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
+      "SpeculationRule_"
       "Conservative",
+      true, 0);
+  histogram_tester.ExpectBucketCount(
+      "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
+      "SpeculationRule_"
+      "Conservative",
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
+      "SpeculationRule_"
+      "Conservative",
+      0);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
+      "SpeculationRule_"
+      "Conservative",
+      base::Milliseconds(0), 1);
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"Prefetch.PrefetchMatchingBlockedNavigation."
+                    "PerMatchingCandidate.Embedder_",
+                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
       true, 1);
   histogram_tester.ExpectBucketCount(
-      "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
-      "Conservative",
+      base::StrCat({"Prefetch.PrefetchMatchingBlockedNavigation."
+                    "PerMatchingCandidate.Embedder_",
+                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
       false, 0);
   histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.Served."
-      "Conservative",
+      base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
+                    "Served.Embedder_",
+                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.NotServed."
-      "Conservative",
-      base::Milliseconds(20), 1);
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.Served.Conservative",
-      0);
-  histogram_tester.ExpectUniqueTimeSample(
-      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.NotServed.Conservative",
+      base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
+                    "NotServed.Embedder_",
+                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
       base::Milliseconds(20), 1);
 }
 

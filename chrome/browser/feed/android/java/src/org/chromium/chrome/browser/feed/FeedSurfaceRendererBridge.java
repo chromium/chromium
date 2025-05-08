@@ -12,17 +12,20 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
 /** Java bridge to feed::SurfaceRenderer, provides shallow JNI bindings. */
 @JNINamespace("feed::android")
+@NullMarked
 public class FeedSurfaceRendererBridge {
     private final Profile mProfile;
     private int mSurfaceId;
     private long mNativeSurfaceRenderer;
-    private Renderer mRenderer;
+    private @Nullable Renderer mRenderer;
 
     /**
      * Calls from native to Java to implement rendering for the feed. See `feed::SurfaceRenderer`
@@ -166,7 +169,7 @@ public class FeedSurfaceRendererBridge {
         FeedSurfaceRendererBridgeJni.get().reportPageLoaded(mProfile, mSurfaceId, inNewTab);
     }
 
-    void reportOpenAction(GURL url, String sliceId, @OpenActionType int openActionType) {
+    void reportOpenAction(GURL url, @Nullable String sliceId, @OpenActionType int openActionType) {
         FeedSurfaceRendererBridgeJni.get()
                 .reportOpenAction(mProfile, mSurfaceId, url, sliceId, openActionType);
     }
@@ -295,7 +298,7 @@ public class FeedSurfaceRendererBridge {
                 @JniType("Profile*") Profile profile,
                 int surfaceId,
                 GURL url,
-                @JniType("std::string") String sliceId,
+                @JniType("std::string") @Nullable String sliceId,
                 @OpenActionType int openActionType);
 
         void reportOpenVisitComplete(

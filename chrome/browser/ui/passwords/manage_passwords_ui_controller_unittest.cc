@@ -126,11 +126,16 @@ class PasswordLeakDialogMock : public CredentialLeakPrompt {
 
 class TestManagePasswordsIconView : public ManagePasswordsIconView {
  public:
-  void SetState(password_manager::ui::State state) override { state_ = state; }
+  void SetState(password_manager::ui::State state,
+                bool is_blocklisted) override {
+    state_ = state;
+    is_blocklisted_ = is_blocklisted;
+  }
   password_manager::ui::State state() { return state_; }
 
  private:
   password_manager::ui::State state_;
+  bool is_blocklisted_ = false;
 };
 
 class TestPasswordManagerClient
@@ -261,8 +266,7 @@ std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManagerWithBestMatches(
       .Times(AtMost(2))
       .WillRepeatedly(ReturnRef(password_form->url));
   EXPECT_CALL(*form_manager, IsBlocklisted())
-      .Times(AtMost(1))
-      .WillOnce(Return(is_blocklisted));
+      .WillRepeatedly(Return(is_blocklisted));
   EXPECT_CALL(*form_manager, GetInteractionsStats())
       .Times(AtMost(1))
       .WillOnce(
@@ -1486,7 +1490,7 @@ TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
 
   // After closing the lead check dialog, the blocklisting will be checked again
   // to decide whether to reopen the save prompt.
-  EXPECT_CALL(*form_manager_ptr, IsBlocklisted()).WillOnce(Return(false));
+  EXPECT_CALL(*form_manager_ptr, IsBlocklisted()).WillRepeatedly(Return(false));
   EXPECT_CALL(*form_manager_ptr, GetInteractionsStats())
       .WillOnce(
           Return(base::span<const password_manager::InteractionsStats>()));
@@ -1528,7 +1532,7 @@ TEST_F(ManagePasswordsUIControllerTest,
 
   // After closing the lead check dialog, the blocklisting will be checked again
   // to decide whether to reopen the save prompt.
-  EXPECT_CALL(*form_manager_ptr, IsBlocklisted()).WillOnce(Return(true));
+  EXPECT_CALL(*form_manager_ptr, IsBlocklisted()).WillRepeatedly(Return(true));
 
   // Close the dialog.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());

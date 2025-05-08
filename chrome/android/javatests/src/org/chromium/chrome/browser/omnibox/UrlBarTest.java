@@ -23,8 +23,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,8 +43,9 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -72,26 +71,24 @@ import java.util.concurrent.atomic.AtomicReference;
 @Batch(Batch.PER_CLASS)
 public class UrlBarTest {
     public static final String EXAMPLE_STRING = "example string";
-    public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
     private UrlBar mUrlBar;
+    public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
+            ChromeTransitTestRules.blankPageStartReusedActivityRule();
     private OmniboxTestUtils mOmnibox;
+    private WebPageStation mStartingPage;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Runnable mListener;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        sActivityTestRule.startMainActivityWithURL(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-        // Needed to make sure all the necessary ChromeFeatureFlags are populated.
-        sActivityTestRule.waitForDeferredStartup();
-    }
-
     @Before
     public void setUpTest() throws Exception {
-        mOmnibox = new OmniboxTestUtils(sActivityTestRule.getActivity());
-        mUrlBar = sActivityTestRule.getActivity().findViewById(R.id.url_bar);
+        mStartingPage = mActivityTestRule.start();
+        // Needed to make sure all the necessary ChromeFeatureFlags are populated.
+        mActivityTestRule.getActivityTestRule().waitForDeferredStartup();
+
+        mOmnibox = new OmniboxTestUtils(mStartingPage.getActivity());
+        mUrlBar = mStartingPage.urlBarElement.get();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Start with an empty Omnibox and disable all automatic features.
@@ -677,7 +674,7 @@ public class UrlBarTest {
     @Test
     @SmallTest
     public void testAutocompleteUpdatedOnDefocus() throws InterruptedException {
-        sActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         mOmnibox.requestFocus();
         mOmnibox.typeText("test", false);
         mOmnibox.clearFocus();

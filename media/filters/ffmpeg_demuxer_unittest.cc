@@ -876,6 +876,62 @@ TEST_F(FFmpegDemuxerTest, Read_AudioVideoNegativeStartTime) {
        kInfiniteDuration);
   Read(video, FROM_HERE, 4049, 133467, false);
 }
+
+TEST_F(FFmpegDemuxerTest, Read_FrontDiscard_FiniteDuration) {
+  // This file has buffers that are marked for complete discard (e.g. the front
+  // discard padding ends up being `kInfiniteDuration`). It is a regression
+  // test, guarding against the demuxer reporting an infinite duration.
+  CreateDemuxer("front-discard.mp4");
+  InitializeDemuxer();
+
+  const auto verify_finite_duration = [](DemuxerStream* stream) {
+    base::RunLoop loop;
+    stream->Read(100, base::BindLambdaForTesting(
+                          [&](DemuxerStream::Status status,
+                              DemuxerStream::DecoderBufferVector buffers) {
+                            loop.QuitWhenIdle();
+                          }));
+    loop.Run();
+    auto* ffmpeg_stream = reinterpret_cast<FFmpegDemuxerStream*>(stream);
+    EXPECT_FALSE(ffmpeg_stream->duration().is_inf() ||
+                 ffmpeg_stream->duration().is_max());
+  };
+
+  verify_finite_duration(GetStream(DemuxerStream::AUDIO));
+  verify_finite_duration(GetStream(DemuxerStream::VIDEO));
+}
+
+TEST_F(FFmpegDemuxerTest, Read_LargeStartTime_DurationUpdates) {
+  // This file is poorly muxed, but useful as a regression test. It has an
+  // initial duration of 10s, contains 20s of video data, starts at a timestamp
+  // of 10s, and (surprisingly) ends at ~20s.
+  // Reading from this stream should update the duration.
+  CreateDemuxer("mid-file-start-time.mp4");
+  InitializeDemuxer();
+
+  auto* stream =
+      reinterpret_cast<FFmpegDemuxerStream*>(GetStream(DemuxerStream::VIDEO));
+
+  auto inital_duration = stream->duration();
+  ASSERT_GT(inital_duration, base::Seconds(9));
+  ASSERT_LT(inital_duration, base::Seconds(11));
+
+  // The final duration of the file after reading all packets is just below 20s.
+  const base::TimeDelta target_duration = base::Seconds(19);
+
+  int remaining_reads = 300;
+  while (remaining_reads-- > 0 && stream->duration() < target_duration) {
+    base::RunLoop loop;
+    stream->Read(1, base::BindLambdaForTesting(
+                        [&](DemuxerStream::Status status,
+                            DemuxerStream::DecoderBufferVector buffers) {
+                          loop.QuitWhenIdle();
+                        }));
+    loop.Run();
+  }
+
+  EXPECT_GT(stream->duration(), target_duration);
+}
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // Similar to the test above, but using sfx-opus.ogg, which has a much smaller

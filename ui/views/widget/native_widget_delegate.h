@@ -64,8 +64,13 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   virtual void OnNativeFocus() = 0;
   virtual void OnNativeBlur() = 0;
 
-  // Called when the window is shown/hidden.
+  // Called when the window is shown/hidden. A visible widget might be
+  // physically invisible on screen, for example, if it is shown on an hidden
+  // virtual desktop.
   virtual void OnNativeWidgetVisibilityChanged(bool visible) = 0;
+
+  // Called when the window's visibility on screen changes.
+  virtual void OnNativeWidgetVisibilityOnScreenChanged(bool visible) = 0;
 
   // Called when the native widget is created.
   virtual void OnNativeWidgetCreated() = 0;

@@ -221,7 +221,7 @@ class EntityInstance final {
                  base::Uuid guid,
                  std::string nickname,
                  base::Time date_modified,
-                 int use_count,
+                 size_t use_count,
                  base::Time use_date);
 
   EntityInstance(const EntityInstance&);

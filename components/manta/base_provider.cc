@@ -8,9 +8,12 @@
 #include "base/version_info/channel.h"
 #include "components/manta/proto/manta.pb.h"
 
+using endpoint_fetcher::EndpointFetcher;
+
 namespace manta {
 namespace {
-constexpr HttpMethod kHttpMethod = HttpMethod::kPost;
+constexpr endpoint_fetcher::HttpMethod kHttpMethod =
+    endpoint_fetcher::HttpMethod::kPost;
 constexpr char kHttpMethodString[] = "POST";
 constexpr char kHttpContentType[] = "application/x-protobuf";
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";

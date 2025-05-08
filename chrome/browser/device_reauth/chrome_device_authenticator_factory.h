@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVICE_REAUTH_CHROME_DEVICE_AUTHENTICATOR_FACTORY_H_
 #define CHROME_BROWSER_DEVICE_REAUTH_CHROME_DEVICE_AUTHENTICATOR_FACTORY_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"

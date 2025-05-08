@@ -6,19 +6,21 @@ package org.chromium.chrome.browser.autofill;
 
 import android.text.Editable;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 /**
  * Android wrapper of i18n::phonenumbers::PhoneNumberUtil which provides convenient methods to
  * format and validate phone number.
  */
+@NullMarked
 @JNINamespace("autofill")
 public class PhoneNumberUtil {
     // Avoid instantiation by accident.
@@ -29,7 +31,7 @@ public class PhoneNumberUtil {
         /** Indicates the change was caused by ourselves. */
         private boolean mSelfChange;
 
-        @Nullable private String mCountryCode;
+        private @Nullable String mCountryCode;
 
         /**
          * Updates the country code used to format phone numbers.
@@ -104,11 +106,13 @@ public class PhoneNumberUtil {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         @JniType("std::string")
-        String formatForDisplay(@JniType("std::string") String phoneNumber, String countryCode);
+        String formatForDisplay(
+                @JniType("std::string") String phoneNumber, @Nullable String countryCode);
 
         @JniType("std::string")
         String formatForResponse(@JniType("std::string") String phoneNumber);
 
-        boolean isPossibleNumber(@JniType("std::string") String phoneNumber, String countryCode);
+        boolean isPossibleNumber(
+                @JniType("std::string") String phoneNumber, @Nullable String countryCode);
     }
 }

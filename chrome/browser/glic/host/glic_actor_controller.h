@@ -20,6 +20,10 @@ namespace actor {
 class ActorCoordinator;
 }
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -39,6 +43,12 @@ class GlicActorController {
            const optimization_guide::proto::BrowserAction& action,
            const mojom::GetTabContextOptions& options,
            glic::mojom::WebClientHandler::ActInFocusedTabCallback callback);
+
+  void StopTask();
+
+  bool IsActorCoordinatorActingOnTab(const content::WebContents* tab) const;
+
+  actor::ActorCoordinator& GetActorCoordinatorForTesting();
 
  private:
   // Handles a new task being started, and then performs the action that

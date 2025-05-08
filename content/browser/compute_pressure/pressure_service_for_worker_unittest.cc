@@ -267,7 +267,8 @@ class PressureServiceForSharedWorkerTest
         blink::mojom::SharedWorkerCreationContextType::kSecure,
         rfh->GetStorageKey().IsFirstPartyContext()
             ? blink::mojom::SharedWorkerSameSiteCookies::kAll
-            : blink::mojom::SharedWorkerSameSiteCookies::kNone);
+            : blink::mojom::SharedWorkerSameSiteCookies::kNone,
+        /*extended_lifetime=*/false);
     worker_service_ = std::make_unique<SharedWorkerServiceImpl>(
         rfh->GetStoragePartition(), nullptr /* service_worker_context */);
     worker_host_ = std::make_unique<SharedWorkerHost>(

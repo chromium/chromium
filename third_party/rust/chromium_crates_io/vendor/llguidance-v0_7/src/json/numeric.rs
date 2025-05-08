@@ -1,6 +1,8 @@
 use anyhow::{anyhow, Result};
 use regex_syntax::escape;
 
+use super::schema::NumberSchema;
+
 /// coef * 10^-exp
 #[cfg_attr(test, derive(PartialEq))]
 #[derive(Debug, Clone)]
@@ -504,14 +506,9 @@ pub fn rx_float_range(
     }
 }
 
-pub fn check_number_bounds(
-    minimum: Option<f64>,
-    maximum: Option<f64>,
-    exclusive_minimum: bool,
-    exclusive_maximum: bool,
-    integer: bool,
-    multiple_of: Option<Decimal>,
-) -> Result<(), String> {
+pub fn check_number_bounds(num: &NumberSchema) -> Result<(), String> {
+    let (minimum, exclusive_minimum) = num.get_minimum();
+    let (maximum, exclusive_maximum) = num.get_maximum();
     if let (Some(min), Some(max)) = (minimum, maximum) {
         if min > max {
             return Err(format!(
@@ -536,7 +533,7 @@ pub fn check_number_bounds(
             ));
         }
     }
-    if let Some(d) = multiple_of {
+    if let Some(d) = num.multiple_of.as_ref() {
         if d.coef == 0 {
             if let Some(min) = minimum {
                 if min > 0.0 || (exclusive_minimum && min >= 0.0) {
@@ -567,7 +564,7 @@ pub fn check_number_bounds(
                 } else {
                     first_num_ge_min
                 };
-                if integer {
+                if num.integer {
                     adjusted_min.ceil()
                 } else {
                     adjusted_min
@@ -580,7 +577,7 @@ pub fn check_number_bounds(
                 } else {
                     first_num_le_max
                 };
-                if integer {
+                if num.integer {
                     adjusted_max.floor()
                 } else {
                     adjusted_max
@@ -893,6 +890,8 @@ mod test_decimal {
 
 #[cfg(test)]
 mod test_number_bounds {
+    use crate::json::schema::NumberSchema;
+
     use super::{check_number_bounds, Decimal};
 
     #[derive(Debug)]
@@ -904,6 +903,35 @@ mod test_number_bounds {
         integer: bool,
         multiple_of: Option<Decimal>,
         ok: bool,
+    }
+
+    impl Case {
+        fn to_number_schema(&self) -> NumberSchema {
+            NumberSchema {
+                minimum: if self.exclusive_minimum {
+                    None
+                } else {
+                    self.minimum
+                },
+                maximum: if self.exclusive_maximum {
+                    None
+                } else {
+                    self.maximum
+                },
+                exclusive_minimum: if self.exclusive_minimum {
+                    self.minimum
+                } else {
+                    None
+                },
+                exclusive_maximum: if self.exclusive_maximum {
+                    self.maximum
+                } else {
+                    None
+                },
+                integer: self.integer,
+                multiple_of: self.multiple_of.clone(),
+            }
+        }
     }
 
     #[test]
@@ -1142,14 +1170,7 @@ mod test_number_bounds {
             },
         ];
         for case in cases {
-            let result = check_number_bounds(
-                case.minimum,
-                case.maximum,
-                case.exclusive_minimum,
-                case.exclusive_maximum,
-                case.integer,
-                case.multiple_of.clone(),
-            );
+            let result = check_number_bounds(&case.to_number_schema());
             assert_eq!(
                 result.is_ok(),
                 case.ok,

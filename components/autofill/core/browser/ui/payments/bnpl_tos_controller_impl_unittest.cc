@@ -62,7 +62,7 @@ class BnplTosControllerImplTest : public Test {
         .SetAccountInfoForPayments(account_info_);
 
     issuer_ = BnplIssuer(/*instrument_id=*/std::nullopt,
-                         std::string(kBnplAffirmIssuerId),
+                         BnplIssuer::IssuerId::kBnplAffirm,
                          std::vector<BnplIssuer::EligiblePriceRange>{});
     LegalMessageLine::Parse(
         base::JSONReader::Read(

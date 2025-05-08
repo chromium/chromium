@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 
@@ -195,7 +196,11 @@ TEST_F(ChunkToLayerMapperTest, SlowPath) {
   EXPECT_TRUE(mapper.ClipRect().IsInfinite());
   EXPECT_EQ(gfx::Rect(-40, -50, 208, 219),
             mapper.MapVisualRect(gfx::Rect(30, 30, 88, 99)));
-  EXPECT_EQ(gfx::Rect(), mapper.MapVisualRect(gfx::Rect()));
+  if (RuntimeEnabledFeatures::EmptyReferenceFilterInvalidationEnabled()) {
+    EXPECT_EQ(gfx::Rect(-70, -80, 120, 120), mapper.MapVisualRect(gfx::Rect()));
+  } else {
+    EXPECT_EQ(gfx::Rect(), mapper.MapVisualRect(gfx::Rect()));
+  }
 
   mapper.SwitchToChunk(chunk3);
   EXPECT_TRUE(HasFilterThatMovesPixels(mapper));
@@ -203,7 +208,11 @@ TEST_F(ChunkToLayerMapperTest, SlowPath) {
   EXPECT_TRUE(mapper.ClipRect().IsInfinite());
   EXPECT_EQ(gfx::Rect(-40, -50, 208, 219),
             mapper.MapVisualRect(gfx::Rect(30, 30, 88, 99)));
-  EXPECT_EQ(gfx::Rect(), mapper.MapVisualRect(gfx::Rect()));
+  if (RuntimeEnabledFeatures::EmptyReferenceFilterInvalidationEnabled()) {
+    EXPECT_EQ(gfx::Rect(-70, -80, 120, 120), mapper.MapVisualRect(gfx::Rect()));
+  } else {
+    EXPECT_EQ(gfx::Rect(), mapper.MapVisualRect(gfx::Rect()));
+  }
 
   mapper.SwitchToChunk(chunk4);
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));

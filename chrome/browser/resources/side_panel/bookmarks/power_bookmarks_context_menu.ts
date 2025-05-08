@@ -42,6 +42,7 @@ export enum MenuItemId {
   RENAME = 8,
   DELETE = 9,
   DIVIDER = 10,
+  OPEN_SPLIT_VIEW = 11,
 }
 
 export interface MenuItem {
@@ -154,6 +155,14 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
             loadTimeData.getStringF(
                 'menuOpenIncognitoWithCount', bookmarkCount),
         disabled: bookmarkCount === 0,
+      });
+    }
+
+    if (loadTimeData.getBoolean('splitViewEnabled') && bookmarkCount === 1 &&
+        this.bookmarks_[0].url) {
+      menuItems.push({
+        id: MenuItemId.OPEN_SPLIT_VIEW,
+        label: loadTimeData.getString('menuOpenSplitView'),
       });
     }
 
@@ -296,6 +305,11 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
         break;
       case MenuItemId.OPEN_NEW_TAB_GROUP:
         this.bookmarksApi_.contextMenuOpenBookmarkInNewTabGroup(
+            this.bookmarks_.map(bookmark => bookmark.id),
+            ActionSource.kBookmark);
+        break;
+      case MenuItemId.OPEN_SPLIT_VIEW:
+        this.bookmarksApi_.contextMenuOpenBookmarkInSplitView(
             this.bookmarks_.map(bookmark => bookmark.id),
             ActionSource.kBookmark);
         break;
