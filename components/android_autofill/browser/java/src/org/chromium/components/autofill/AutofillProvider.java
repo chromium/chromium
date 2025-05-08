@@ -115,6 +115,7 @@ public class AutofillProvider {
     }
 
     private void initializeFrameworkWrapper(Context context) {
+        if (mAutofillManager != null) return;
         mAutofillManager = new AutofillManagerWrapper(context);
         maybeInitializeUmaRecorder(context);
         maybeInitializeInputObserver();
@@ -311,7 +312,7 @@ public class AutofillProvider {
         }
 
         transformFormFieldToContainViewCoordinates(formData);
-        maybeInitializeUmaRecorder(mContext);
+        initializeFrameworkWrapper(mContext);
         mAutofillUMA.onSessionStarted(getAutofillManagerWrapper().isDisabled());
         mRequest =
                 new AutofillRequest(
