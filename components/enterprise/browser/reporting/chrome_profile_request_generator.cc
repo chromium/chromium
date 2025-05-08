@@ -272,9 +272,10 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
 
   request->GetChromeProfileReportRequest().set_allocated_browser_report(
       browser_report.release());
+
   VLOG_POLICY(1, REPORTING)
       << "Signals report request generated: "
-      << request->GetChromeProfileReportRequest().SerializeAsString();
+      << GetSecuritySignalsInReport(request->GetChromeProfileReportRequest());
   OnRequestReady(std::move(request), std::move(callback));
 }
 
