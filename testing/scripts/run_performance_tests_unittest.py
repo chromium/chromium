@@ -148,7 +148,8 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     del mock_exists
     run_performance_tests.copy_map_file_to_out_dir('file', 'dir')
 
-    mock_copyfile.assert_called_with('file', 'dir/benchmarks_shard_map.json')
+    mock_copyfile.assert_called_with(
+        'file', str(pathlib.Path('dir/benchmarks_shard_map.json')))
   # pylint: enable=no-self-use
 
   @mock.patch.object(run_performance_tests.CrossbenchTest,
