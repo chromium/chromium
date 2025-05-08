@@ -55,7 +55,7 @@ suite('UpdateContent', () => {
         .addText(textNodeIds[3]!, /* parentId= */ 8, texts[3]!)
         .build(readingMode);
 
-    setupBasicSpeech(app, speech);
+    setupBasicSpeech(speech);
   });
 
   test('playable if done with distillation', async () => {

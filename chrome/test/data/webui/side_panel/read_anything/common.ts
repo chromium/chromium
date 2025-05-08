@@ -62,30 +62,28 @@ export function createSpeechErrorEvent(
       'type', {utterance: utterance, error: errorCode});
 }
 
-export function setupBasicSpeech(
-    app: AppElement, speech: TestSpeechBrowserProxy) {
+export function setupBasicSpeech(speech: TestSpeechBrowserProxy) {
   VoicePackController.getInstance().enableLang('en');
   createAndSetVoices(
-      app, speech, [{lang: 'en', name: 'Google Basic', default: true}]);
+      speech, [{lang: 'en', name: 'Google Basic', default: true}]);
 }
 
 // Creates SpeechSynthesisVoices and sets them on the given
 // TestSpeechBrowserProxy.
 export function createAndSetVoices(
-    app: AppElement, speech: TestSpeechBrowserProxy,
+    speech: TestSpeechBrowserProxy,
     overrides: Array<Partial<SpeechSynthesisVoice>>) {
   const voices: SpeechSynthesisVoice[] = [];
   overrides.forEach(partialVoice => {
     voices.push(createSpeechSynthesisVoice(partialVoice));
   });
-  setVoices(app, speech, voices);
+  setVoices(speech, voices);
 }
 
 export function setVoices(
-    app: AppElement, speech: TestSpeechBrowserProxy,
-    voices: SpeechSynthesisVoice[]) {
+    speech: TestSpeechBrowserProxy, voices: SpeechSynthesisVoice[]) {
   speech.setVoices(voices);
-  app.onVoicesChanged();
+  VoicePackController.getInstance().onVoicesChanged();
 }
 
 export function createSpeechSynthesisVoice(

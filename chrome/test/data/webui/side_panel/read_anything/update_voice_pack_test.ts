@@ -25,7 +25,7 @@ suite('UpdateVoicePack', () => {
   let voicePackController: VoicePackController;
 
   function setNaturalVoicesForLang(lang: string) {
-    createAndSetVoices(app, speech, [
+    createAndSetVoices(speech, [
       {lang: lang, name: 'Wall-e (Natural)'},
       {lang: lang, name: 'Andy (Natural)'},
       {lang: lang, name: 'Buzz'},
@@ -81,7 +81,7 @@ suite('UpdateVoicePack', () => {
       });
 
       test('and no other voices for language, disables language', () => {
-        createAndSetVoices(app, speech, []);
+        createAndSetVoices(speech, []);
         app.updateVoicePackStatus(lang, 'kOther');
 
         assertFalse(voicePackController.isLangEnabled(lang));
@@ -93,7 +93,7 @@ suite('UpdateVoicePack', () => {
       test(
           'and only eSpeak voices for language, disables language on ChromeOS',
           () => {
-            createAndSetVoices(app, speech, [
+            createAndSetVoices(speech, [
               {lang: lang, name: 'eSpeak Portuguese'},
             ]);
 
@@ -109,7 +109,7 @@ suite('UpdateVoicePack', () => {
       test(
           'and only system voices for language, keeps language for desktop',
           () => {
-            createAndSetVoices(app, speech, [
+            createAndSetVoices(speech, [
               {lang: lang, name: 'System Portuguese'},
             ]);
 
@@ -126,7 +126,7 @@ suite('UpdateVoicePack', () => {
               'still disables language',
           () => {
             voicePackController.enableLang('it-it');
-            createAndSetVoices(app, speech, []);
+            createAndSetVoices(speech, []);
 
             app.updateVoicePackStatus('it', 'kOther');
 
@@ -143,7 +143,7 @@ suite('UpdateVoicePack', () => {
               'e-speak voices, still disables language',
           () => {
             voicePackController.enableLang('it-it');
-            createAndSetVoices(app, speech, [
+            createAndSetVoices(speech, [
               {lang: 'it', name: 'eSpeak Italian '},
             ]);
 
@@ -157,7 +157,7 @@ suite('UpdateVoicePack', () => {
       test(
           'and has other Google voices for language, keeps language enabled',
           () => {
-            createAndSetVoices(app, speech, [
+            createAndSetVoices(speech, [
               {lang: lang, name: 'Google Portuguese 1'},
               {lang: lang, name: 'Google Portuguese 2'},
             ]);
@@ -304,7 +304,7 @@ suite('UpdateVoicePack', () => {
           ' are available',
       () => {
         const lang = 'yue';
-        createAndSetVoices(app, speech, [
+        createAndSetVoices(speech, [
           {lang: 'yue-hk', name: 'Cantonese'},
         ]);
 
@@ -344,7 +344,7 @@ suite('UpdateVoicePack', () => {
     app.updateVoicePackStatus(lang, 'kInstalling');
     // set the voices on speech synthesis without triggering on voices
     // changed, so we can verify that updateVoicePackStatus calls it.
-    createAndSetVoices(app, speech, [
+    createAndSetVoices(speech, [
       {lang: lang, name: 'Wall-e (Natural)'},
       {lang: lang, name: 'Andy (Natural)'},
     ]);
@@ -392,7 +392,7 @@ suite('UpdateVoicePack', () => {
         emitEvent(
             app, ToolbarEvent.VOICE, {detail: {selectedVoice: currentVoice}});
         chrome.readingMode.getStoredVoice = () => '';
-        setVoices(app, speech, [currentVoice]);
+        setVoices(speech, [currentVoice]);
 
         app.updateVoicePackStatus(installedLang, 'kInstalled');
 

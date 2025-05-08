@@ -95,7 +95,7 @@ suite('Speech', () => {
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
-    setupBasicSpeech(app, speech);
+    setupBasicSpeech(speech);
     chrome.readingMode.setContentForTesting(axTree, leafIds);
     speech.reset();
   });
@@ -422,7 +422,7 @@ suite('Speech', () => {
 
     test('on text-too-long error smaller text segment plays', () => {
       createAndSetVoices(
-          app, speech, [{lang: 'en', name: 'Google Bob', localService: true}]);
+          speech, [{lang: 'en', name: 'Google Bob', localService: true}]);
       emitEvent(app, ToolbarEvent.VOICE, {
         detail: {
           selectedVoice: speech.getVoices()[0],
@@ -465,7 +465,7 @@ suite('Speech', () => {
 
 
     test('voice change cancels and restarts speech', () => {
-      createAndSetVoices(app, speech, [
+      createAndSetVoices(speech, [
         {lang: 'en', name: 'Google Sheldon'},
         {lang: 'en', name: 'Google Mary'},
       ]);

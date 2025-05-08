@@ -11,7 +11,7 @@ import {isGoogle} from '../voice_language_util.js';
 import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
 import type {VoicePackStatus} from '../voice_language_util.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, VoiceClientSideStatusCode, VoicePackServerStatusSuccessCode} from '../voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, VoiceClientSideStatusCode, VoicePackServerStatusSuccessCode} from '../voice_language_util.js';
 import {VoiceNotificationManager} from '../voice_notification_manager.js';
 
 import {VoicePackModel} from './voice_pack_model.js';
@@ -34,6 +34,10 @@ export class VoicePackController {
   // downloaded. This handle is a reference to the callback that will be invoked
   // if the extension does not respond in a timely manner.
   private speechExtensionResponseCallbackHandle_?: number;
+
+  constructor() {
+    this.speech_.setOnVoicesChanged(this.onVoicesChanged.bind(this));
+  }
 
   addListener(listener: VoiceLanguageListener) {
     this.listeners_.push(listener);
@@ -84,12 +88,125 @@ export class VoicePackController {
         availableVoice => areVoicesEqual(availableVoice, voice));
   }
 
+  onTtsEngineInstalled() {
+    this.model_.setWaitingForNewEngine(true);
+  }
+
+  onVoicesChanged() {
+    if (this.model_.getWaitingForNewEngine()) {
+      this.installEnabledLangs_(
+          /* onlyInstallExactGoogleLocaleMatch=*/ true,
+          /* retryIfPreviousInstallFailed= */ true);
+      this.model_.setWaitingForNewEngine(false);
+      return;
+    }
+
+    const hadAvailableVoices = this.hasAvailableVoices();
+    // Get a new list of voices. This should be done before we call
+    // updateUnavailableVoiceToDefaultVoice_();
+    this.refreshAvailableVoices(/*forceRefresh=*/ true);
+
+    // TODO: crbug.com/390435037 - Simplify logic around loading voices and
+    // language availability, especially around the new TTS engine.
+
+    // <if expr="not is_chromeos">
+    this.enableNowAvailableLangs();
+    // </if>
+
+    if (!hadAvailableVoices && this.hasAvailableVoices()) {
+      // If we go from having no available voices to having voices available,
+      // restore voice settings from preferences.
+      this.restoreFromPrefs();
+    }
+
+    // If voice was selected automatically and not by the user, check if
+    // there's a higher quality voice available now.
+    this.updateAutoSelectedVoiceToNaturalVoice_();
+
+    // If the selected voice is now unavailable, such as after an uninstall,
+    // reselect a new voice.
+    this.updateUnavailableVoiceToDefaultVoice_();
+  }
+
+  // Kicks off a workflow to install a voice pack.
+  // 1) Checks if Language Pack Manager supports a version of this
+  // voice/locale 2) If so, adds voice to installVoicePackIfPossible set 3)
+  // Kicks off request GetVoicePackInfo to see if the voice is installed 4)
+  // Upon response, if we see the voice is not installed and that it's in
+  // installVoicePackIfPossible, then we trigger an install request
+  installVoicePackIfPossible(
+      langOrLocale: string, onlyInstallExactGoogleLocaleMatch: boolean,
+      retryIfPreviousInstallFailed: boolean) {
+    // Don't attempt to install a language if it's not a Google TTS language
+    // available for downloading. It's possible for other non-Google TTS
+    // voices to have a valid language code from
+    // convertLangOrLocaleForVoicePackManager, so return early instead to
+    // prevent accidentally downloading untoggled voices.
+    // If we shouldn't check for Google locales (such as when installing a new
+    // page language), this check can be skipped.
+    if (onlyInstallExactGoogleLocaleMatch &&
+        !AVAILABLE_GOOGLE_TTS_LOCALES.has(langOrLocale)) {
+      this.autoSwitchVoice(langOrLocale);
+      return;
+    }
+
+    const langCodeForVoicePackManager = convertLangOrLocaleForVoicePackManager(
+        langOrLocale, this.getEnabledLangs(), this.getAvailableLangs());
+
+    if (!langCodeForVoicePackManager) {
+      this.autoSwitchVoice(langOrLocale);
+      return;
+    }
+
+    if (!this.requestInstall(
+            langCodeForVoicePackManager, retryIfPreviousInstallFailed)) {
+      this.autoSwitchVoice(langCodeForVoicePackManager);
+    }
+  }
+
+  autoSwitchVoice(lang: string) {
+    // Only enable this language if it has available voices and is the current
+    // language. Otherwise switch to a default voice if nothing is selected.
+    const availableLang =
+        convertLangToAnAvailableLangIfPresent(lang, this.getAvailableLangs());
+    const speechSynthesisBaseLang = this.getCurrentLanguage().split('-')[0];
+    if (!availableLang ||
+        (speechSynthesisBaseLang &&
+         !availableLang.startsWith(speechSynthesisBaseLang))) {
+      this.setUserPreferredVoiceFromPrefs_();
+      return;
+    }
+
+    // Enable the preferred locale for this lang if one exists. Otherwise,
+    // enable a Google TTS supported locale for this language if one exists.
+    this.refreshAvailableVoices();
+    const preferredVoice = chrome.readingMode.getStoredVoice();
+    const preferredVoiceLang = this.getAvailableVoices()
+                                   .find(voice => voice.name === preferredVoice)
+                                   ?.lang;
+    let localeToEnable: string|undefined = preferredVoiceLang ?
+        preferredVoiceLang :
+        convertLangOrLocaleToExactVoicePackLocale(availableLang);
+
+    // If there are no Google TTS locales for this language then enable the
+    // first available locale for this language.
+    if (!localeToEnable) {
+      localeToEnable =
+          this.getAvailableLangs().find(l => l.startsWith(availableLang));
+    }
+
+    // Enable the locales so we can select a voice for the given language and
+    // show it in the voice menu.
+    this.enableLang(localeToEnable);
+    this.setUserPreferredVoiceFromPrefs_();
+  }
+
   setUserPreferredVoice(selectedVoice: SpeechSynthesisVoice): void {
     this.setCurrentVoice(selectedVoice);
     chrome.readingMode.onVoiceChange(selectedVoice.name, selectedVoice.lang);
   }
 
-  setUserPreferredVoiceFromPrefs(): void {
+  private setUserPreferredVoiceFromPrefs_(): void {
     const storedVoiceName = chrome.readingMode.getStoredVoice();
     if (!storedVoiceName) {
       this.setCurrentVoice(this.getDefaultVoice_());
@@ -108,7 +225,7 @@ export class VoicePackController {
     this.enableLang(this.getCurrentVoice()?.lang);
   }
 
-  updateAutoSelectedVoiceToNaturalVoice(): void {
+  private updateAutoSelectedVoiceToNaturalVoice_(): void {
     if (this.currentVoiceIsUserChosen_()) {
       return;
     }
@@ -125,7 +242,7 @@ export class VoicePackController {
 
   // Checks the voice pack status of the current voice and updates to the
   // default voice if it's no longer available.
-  updateUnavailableVoiceToDefaultVoice(): void {
+  private updateUnavailableVoiceToDefaultVoice_(): void {
     for (const lang of this.model_.getServerLanguages()) {
       this.requestInfo_(lang);
     }
@@ -270,18 +387,24 @@ export class VoicePackController {
   }
   // </if>
 
-  restoreEnabledLanguagesFromPref(): void {
+  restoreFromPrefs(): void {
     // We need to make sure the languages we choose correspond to voices, so
     // refresh the list of voices and available langs
     this.refreshAvailableVoices();
     this.setCurrentLanguage(chrome.readingMode.baseLanguageForSpeech);
     const storedLanguagesPref = chrome.readingMode.getLanguagesEnabledInPref();
     const langOfDefaultVoice = this.getDefaultVoice_()?.lang;
+
+    // We need to restore enabled languages prior to selecting the preferred
+    // voice to ensure we have the right voices available.
     const langs = createInitialListOfEnabledLanguages(
         chrome.readingMode.baseLanguageForSpeech, storedLanguagesPref,
         this.getAvailableLangs(), langOfDefaultVoice);
     this.alignPreferencesWithEnabledLangs_(storedLanguagesPref);
     langs.forEach((l: string) => this.enableLang(l));
+    this.installEnabledLangs_(/* onlyInstallExactGoogleLocaleMatch=*/ true,
+                              /* retryIfPreviousInstallFailed= */ false);
+    this.setUserPreferredVoiceFromPrefs_();
   }
 
   refreshAvailableVoices(forceRefresh: boolean = false): void {
@@ -409,6 +532,16 @@ export class VoicePackController {
     if (this.speechExtensionResponseCallbackHandle_ !== undefined) {
       clearTimeout(this.speechExtensionResponseCallbackHandle_);
       this.speechExtensionResponseCallbackHandle_ = undefined;
+    }
+  }
+
+  private installEnabledLangs_(
+      onlyInstallExactGoogleLocaleMatch: boolean,
+      retryIfPreviousInstallFailed: boolean) {
+    for (const lang of this.getEnabledLangs()) {
+      this.installVoicePackIfPossible(
+          lang, onlyInstallExactGoogleLocaleMatch,
+          retryIfPreviousInstallFailed);
     }
   }
 

@@ -41,8 +41,22 @@ export class VoicePackModel {
   // need to download Natural voices for automatically
   private languagesForVoiceDownloads_: Set<string> = new Set();
 
+  // When a new TTS Engine extension is loaded into reading mode, we want to try
+  // to install new natural voices from it. However, the new engine isn't ready
+  // until it calls onvoiceschanged, so set this and wait for that call to
+  // request the install.
+  private waitingForNewEngine_ = false;
+
   private currentVoice_: SpeechSynthesisVoice|null = null;
   private currentLanguage_: string = '';
+
+  getWaitingForNewEngine(): boolean {
+    return this.waitingForNewEngine_;
+  }
+
+  setWaitingForNewEngine(waitingForNewEngine: boolean): void {
+    this.waitingForNewEngine_ = waitingForNewEngine;
+  }
 
   addLanguageForDownload(lang: string): void {
     this.languagesForVoiceDownloads_.add(lang);

@@ -117,7 +117,7 @@ suite('LanguageChanged', () => {
     chrome.readingMode.getStoredVoice = () => voice.name;
     chrome.readingMode.baseLanguageForSpeech = 'es';
     setInstalled(voice.lang);
-    setVoices(app, speech, [voice]);
+    setVoices(speech, [voice]);
     assertFalse(voicePackController.isLangEnabled(voice.lang));
 
     app.languageChanged();
@@ -153,7 +153,7 @@ suite('LanguageChanged', () => {
       });
 
       test('to the device default if there\'s no natural', () => {
-        setVoices(app, speech, voices.filter(v => v !== naturalVoiceWithLang3));
+        setVoices(speech, voices.filter(v => v !== naturalVoiceWithLang3));
         app.languageChanged();
         assertEquals(defaultVoice, voicePackController.getCurrentVoice());
       });
@@ -163,7 +163,7 @@ suite('LanguageChanged', () => {
       const voice =
           createSpeechSynthesisVoice({lang: 'es-us', name: 'Spanish'});
       voicePackController.enableLang('es-us');
-      setVoices(app, speech, [voice]);
+      setVoices(speech, [voice]);
       chrome.readingMode.baseLanguageForSpeech = 'es';
 
       app.languageChanged();
@@ -174,7 +174,7 @@ suite('LanguageChanged', () => {
     test('to a voice in the available locale for this base language', () => {
       const voice =
           createSpeechSynthesisVoice({lang: 'en-au', name: 'Australian'});
-      setVoices(app, speech, [voice]);
+      setVoices(speech, [voice]);
       setInstalled('en-au');
       chrome.readingMode.baseLanguageForSpeech = 'en';
 
@@ -238,7 +238,7 @@ suite('LanguageChanged', () => {
         const voice = createSpeechSynthesisVoice(
             {lang: 'en-GB', name: 'British', default: true});
         voicePackController.enableLang('en-gb');
-        setVoices(app, speech, [voice]);
+        setVoices(speech, [voice]);
         setInstalled('en-gb');
         setInstalled('en-us');
         chrome.readingMode.baseLanguageForSpeech = 'en-US';
@@ -250,7 +250,7 @@ suite('LanguageChanged', () => {
 
       test('to natural enabled voice if no same locale', () => {
         voicePackController.enableLang(lang3);
-        setVoices(app, speech, [naturalVoiceWithLang3]);
+        setVoices(speech, [naturalVoiceWithLang3]);
         chrome.readingMode.baseLanguageForSpeech = lang2;
 
         app.languageChanged();
@@ -261,7 +261,7 @@ suite('LanguageChanged', () => {
 
       test('to default enabled voice if no natural voice', () => {
         voicePackController.enableLang(lang1);
-        setVoices(app, speech, [defaultVoiceWithLang1]);
+        setVoices(speech, [defaultVoiceWithLang1]);
         chrome.readingMode.baseLanguageForSpeech = lang2;
 
         app.languageChanged();

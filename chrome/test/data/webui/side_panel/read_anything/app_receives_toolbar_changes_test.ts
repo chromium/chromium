@@ -245,7 +245,7 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   test('on speech rate change speech rate updated', () => {
-    setupBasicSpeech(app, speech);
+    setupBasicSpeech(speech);
     app.updateContent();
     app.playSpeech();
 

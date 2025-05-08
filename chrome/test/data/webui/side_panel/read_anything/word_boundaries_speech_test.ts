@@ -73,7 +73,7 @@ suite('WordBoundariesUsedForSpeech', () => {
 
     app = await createApp();
     wordBoundaries = WordBoundaries.getInstance();
-    setupBasicSpeech(app, speech);
+    setupBasicSpeech(speech);
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
   });
 

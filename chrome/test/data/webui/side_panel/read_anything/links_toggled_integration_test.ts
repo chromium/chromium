@@ -82,7 +82,7 @@ suite('LinksToggledIntegration', () => {
             '#' + LINK_TOGGLE_BUTTON_ID);
     assertTrue(!!linksToggleButton);
     chrome.readingMode.setContentForTesting(axTree, [3, 5]);
-    setupBasicSpeech(app, speech);
+    setupBasicSpeech(speech);
   });
 
   test('container has links by default', () => {

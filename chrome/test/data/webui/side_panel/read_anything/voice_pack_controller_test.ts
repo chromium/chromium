@@ -175,7 +175,7 @@ suite('VoicePackController', () => {
     assertEquals(voice.lang, sentLang);
   });
 
-  suite('setUserPreferredVoiceFromPrefs', () => {
+  suite('restoreFromPrefs', () => {
     const langForDefaultVoice = 'en';
     const lang1 = 'zh';
     const lang2 = 'tr';
@@ -212,16 +212,41 @@ suite('VoicePackController', () => {
       speech.setVoices(voices);
     });
 
-    test('enables the lang for the chosen voice', () => {
+    test('enables stored languages', () => {
+      const lang1 = 'en-gb';
+      const lang2 = 'fr';
+      const lang3 = 'bd';
+      chrome.readingMode.onLanguagePrefChange(lang1, true);
+      chrome.readingMode.onLanguagePrefChange(lang2, true);
+      chrome.readingMode.onLanguagePrefChange(lang3, true);
+      chrome.readingMode.baseLanguageForSpeech = 'en';
+      speech.setVoices([
+        createSpeechSynthesisVoice({lang: lang1, name: 'Henry'}),
+        createSpeechSynthesisVoice({lang: lang2, name: 'Google Thomas'}),
+        createSpeechSynthesisVoice({lang: lang3, name: 'Google Matt'}),
+      ]);
+
+      voicePackController.restoreFromPrefs();
+
+      assertArrayEquals(
+          [lang1, lang2, lang3], voicePackController.getEnabledLangs());
+      assertEquals('en', voicePackController.getCurrentLanguage());
+      assertTrue(voicePackController.isLangEnabled(lang1));
+      assertTrue(voicePackController.isLangEnabled(lang2));
+      assertTrue(voicePackController.isLangEnabled(lang3));
+      assertTrue(onEnabledLangsChange);
+    });
+
+    test('enables the lang for the preferred voice', () => {
       chrome.readingMode.getStoredVoice = () => otherVoice.name;
-      voicePackController.setUserPreferredVoiceFromPrefs();
+      voicePackController.restoreFromPrefs();
       assertTrue(voicePackController.isLangEnabled(otherVoice.lang));
     });
 
     test('uses the stored voice for this language if there is one', () => {
       chrome.readingMode.getStoredVoice = () => otherVoice.name;
 
-      voicePackController.setUserPreferredVoiceFromPrefs();
+      voicePackController.restoreFromPrefs();
 
       assertTrue(onCurrentVoiceChange);
       assertEquals(otherVoice, voicePackController.getCurrentVoice());
@@ -231,7 +256,7 @@ suite('VoicePackController', () => {
       chrome.readingMode.getStoredVoice = () => 'Matt';
       voicePackController.enableLang(langForDefaultVoice);
 
-      voicePackController.setUserPreferredVoiceFromPrefs();
+      voicePackController.restoreFromPrefs();
 
       assertTrue(onCurrentVoiceChange);
       assertEquals(defaultVoice, voicePackController.getCurrentVoice());
@@ -246,7 +271,7 @@ suite('VoicePackController', () => {
         voicePackController.enableLang(lang1);
         voicePackController.setCurrentLanguage(lang1);
 
-        voicePackController.setUserPreferredVoiceFromPrefs();
+        voicePackController.restoreFromPrefs();
 
         assertTrue(onCurrentVoiceChange);
         assertEquals(
@@ -258,7 +283,7 @@ suite('VoicePackController', () => {
         voicePackController.setCurrentVoice(otherVoice);
         voicePackController.enableLang(otherVoice.lang);
 
-        voicePackController.setUserPreferredVoiceFromPrefs();
+        voicePackController.restoreFromPrefs();
 
         assertTrue(onCurrentVoiceChange);
         assertEquals(otherVoice, voicePackController.getCurrentVoice());
@@ -269,7 +294,7 @@ suite('VoicePackController', () => {
         voicePackController.enableLang(langForDefaultVoice);
         voicePackController.enableLang(otherVoice.lang);
 
-        voicePackController.setUserPreferredVoiceFromPrefs();
+        voicePackController.restoreFromPrefs();
 
         assertTrue(onCurrentVoiceChange);
         assertEquals(defaultVoice, voicePackController.getCurrentVoice());
@@ -281,7 +306,7 @@ suite('VoicePackController', () => {
             voicePackController.enableLang(lang2);
             voicePackController.setCurrentLanguage(lang2);
 
-            voicePackController.setUserPreferredVoiceFromPrefs();
+            voicePackController.restoreFromPrefs();
 
             assertTrue(onCurrentVoiceChange);
             assertEquals(
@@ -291,64 +316,39 @@ suite('VoicePackController', () => {
   });
 
   test(
-      'updateAutoSelectedVoiceToNaturalVoice with auto selected voice, ' +
-          'switches to a Natural voice',
+      'onVoicesChanged with auto selected voice, switches to a Natural voice',
       () => {
         chrome.readingMode.getStoredVoice = () => '';
-        const voice = createSpeechSynthesisVoice({lang: 'ja', name: 'Eagle'});
-        const naturalVoice =
-            createSpeechSynthesisVoice({lang: 'ja', name: 'Horse (Natural)'});
+        const voice =
+            createSpeechSynthesisVoice({lang: 'ja', name: 'Google Eagle'});
+        const naturalVoice = createSpeechSynthesisVoice(
+            {lang: 'ja', name: 'Google Horse (Natural)'});
+        speech.setVoices([voice, naturalVoice]);
         voicePackController.setCurrentVoice(voice);
         voicePackController.setCurrentLanguage(voice.lang);
-        voicePackController.setAvailableVoices([voice, naturalVoice]);
 
-        voicePackController.updateAutoSelectedVoiceToNaturalVoice();
+        voicePackController.onVoicesChanged();
 
         assertEquals(naturalVoice, voicePackController.getCurrentVoice());
       });
 
   test(
-      'updateAutoSelectedVoiceToNaturalVoice with a user selected voice, does' +
-          ' not switch to a Natural voice',
+      'onVoicesChanged with a user selected voice, does not switch to a ' +
+          'Natural voice',
       () => {
-        const name = 'Emu';
+        const name = 'Google Emu';
         chrome.readingMode.getStoredVoice = () => name;
         const voice = createSpeechSynthesisVoice({lang: 'ja', name: name});
-        const naturalVoice =
-            createSpeechSynthesisVoice({lang: 'ja', name: 'Ostrich (Natural)'});
+        const naturalVoice = createSpeechSynthesisVoice(
+            {lang: 'ja', name: 'Google Ostrich (Natural)'});
+        speech.setVoices([voice, naturalVoice]);
         voicePackController.setCurrentVoice(voice);
         voicePackController.setCurrentLanguage(voice.lang);
-        voicePackController.setAvailableVoices([voice, naturalVoice]);
 
-        voicePackController.updateAutoSelectedVoiceToNaturalVoice();
+        voicePackController.onVoicesChanged();
 
         assertEquals(voice, voicePackController.getCurrentVoice());
       });
-
-  test('restoreEnabledLanguagesFromPref', () => {
-    const lang1 = 'en-gb';
-    const lang2 = 'fr';
-    const lang3 = 'bd';
-    chrome.readingMode.onLanguagePrefChange(lang1, true);
-    chrome.readingMode.onLanguagePrefChange(lang2, true);
-    chrome.readingMode.onLanguagePrefChange(lang3, true);
-    chrome.readingMode.baseLanguageForSpeech = 'en';
-    speech.setVoices([
-      createSpeechSynthesisVoice({lang: lang1, name: 'Henry'}),
-      createSpeechSynthesisVoice({lang: lang2, name: 'Google Thomas'}),
-      createSpeechSynthesisVoice({lang: lang3, name: 'Google Matt'}),
-    ]);
-
-    voicePackController.restoreEnabledLanguagesFromPref();
-
-    assertArrayEquals(
-        [lang1, lang2, lang3], voicePackController.getEnabledLangs());
-    assertEquals('en', voicePackController.getCurrentLanguage());
-    assertTrue(voicePackController.isLangEnabled(lang1));
-    assertTrue(voicePackController.isLangEnabled(lang2));
-    assertTrue(voicePackController.isLangEnabled(lang3));
-    assertTrue(onEnabledLangsChange);
-  });
 
   test('refreshAvailableVoices', () => {
     const voices = [
@@ -455,7 +455,7 @@ suite('VoicePackController', () => {
         assertFalse(voicePackController.isLangEnabled(lang3));
       });
 
-  test('enableNowAvailableLangs', () => {
+  test('onVoicesChanged enables newly available langs', () => {
     const lang1 = 'en-gb';
     const lang2 = 'fr';
     const lang3 = 'bd';
@@ -467,7 +467,7 @@ suite('VoicePackController', () => {
       createSpeechSynthesisVoice({lang: lang1, name: 'Henry'}),
     ]);
     voicePackController.refreshAvailableVoices();
-    voicePackController.restoreEnabledLanguagesFromPref();
+    voicePackController.restoreFromPrefs();
     assertArrayEquals([lang1], voicePackController.getEnabledLangs());
     assertArrayEquals([], chrome.readingMode.getLanguagesEnabledInPref());
     onEnabledLangsChange = false;
@@ -477,11 +477,10 @@ suite('VoicePackController', () => {
       createSpeechSynthesisVoice({lang: lang2, name: 'Google Thomas'}),
       createSpeechSynthesisVoice({lang: lang3, name: 'Google Matt'}),
     ]);
-    voicePackController.refreshAvailableVoices(true);
-    voicePackController.enableNowAvailableLangs();
+    voicePackController.onVoicesChanged();
 
     // After voices come in, we should enable those langs.
-    voicePackController.restoreEnabledLanguagesFromPref();
+    voicePackController.restoreFromPrefs();
     assertArrayEquals(
         [lang1, lang2, lang3], voicePackController.getEnabledLangs());
     assertArrayEquals(
@@ -520,7 +519,35 @@ suite('VoicePackController', () => {
       VoiceNotificationManager.getInstance().addListener(notificationListener);
     });
 
-    test('updateUnavailableVoiceToDefaultVoice requests info', () => {
+    test('onVoicesChanged after new tts engine installs google locales', () => {
+      const lang1 = 'bn-bd';
+      const lang2 = 'hu-hu';
+      const lang3 = 'en';
+      voicePackController.enableLang(lang1);
+      voicePackController.enableLang(lang2);
+      voicePackController.enableLang(lang3);
+
+      voicePackController.onTtsEngineInstalled();
+      voicePackController.onVoicesChanged();
+
+      assertArrayEquals(['bn', 'hu'], installedLangs);
+      assertFalse(voicePackController.hasAvailableVoices());
+    });
+
+    test('onVoicesChanged restores from prefs on first voices received', () => {
+      const lang = 'uk';
+      const name = 'Google Lemur';
+      const voice = createSpeechSynthesisVoice({lang, name});
+      speech.setVoices([voice]);
+      chrome.readingMode.getStoredVoice = () => name;
+
+      voicePackController.onVoicesChanged();
+
+      assertTrue(voicePackController.isLangEnabled(lang));
+      assertArrayEquals([voice], voicePackController.getAvailableVoices());
+    });
+
+    test('onVoicesChanged requests info', () => {
       const lang1 = 'fi';
       const lang2 = 'id';
       const lang3 = 'da';
@@ -531,56 +558,56 @@ suite('VoicePackController', () => {
       voicePackController.setServerStatus(
           lang3, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
 
-      voicePackController.updateUnavailableVoiceToDefaultVoice();
+      voicePackController.onVoicesChanged();
 
       assertArrayEquals([lang1, lang2, lang3], requestInfoLangs);
     });
 
+    test('onVoicesChanged waits for engine timeout', () => {
+      const lang = 'fi';
+      voicePackController.setServerStatus(
+          lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+      const mockTimer = new MockTimer();
+      mockTimer.install();
+
+      voicePackController.onVoicesChanged();
+      mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
+      mockTimer.uninstall();
+
+      assertEquals(
+          NotificationType.GOOGLE_VOICES_UNAVAILABLE, notificationType);
+    });
+
     test(
-        'updateUnavailableVoiceToDefaultVoice waits for engine timeout', () => {
-          const lang = 'fi';
-          voicePackController.setServerStatus(
-              lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
-          const mockTimer = new MockTimer();
-          mockTimer.install();
-
-          voicePackController.updateUnavailableVoiceToDefaultVoice();
-          mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
-          mockTimer.uninstall();
-
-          assertEquals(
-              NotificationType.GOOGLE_VOICES_UNAVAILABLE, notificationType);
-        });
-
-    test(
-        'updateUnavailableVoiceToDefaultVoice does nothing when current voice' +
+        'onVoicesChanged does nothing when current voice' +
             ' still available',
         () => {
           const voice = createSpeechSynthesisVoice({lang: 'id', name: 'Dog'});
+          speech.setVoices([voice]);
           voicePackController.enableLang(voice.lang);
           voicePackController.setCurrentVoice(voice);
-          voicePackController.setAvailableVoices([voice]);
           onCurrentVoiceChange = false;
 
-          voicePackController.updateUnavailableVoiceToDefaultVoice();
+          voicePackController.onVoicesChanged();
 
           assertFalse(onCurrentVoiceChange);
           assertEquals(voice, voicePackController.getCurrentVoice());
         });
 
     test(
-        'updateUnavailableVoiceToDefaultVoice gets default voice when current' +
+        'onVoicesChanged gets default voice when current' +
             ' voice unavailable',
         () => {
-          const voice = createSpeechSynthesisVoice({lang: 'id', name: 'Cat'});
+          const voice =
+              createSpeechSynthesisVoice({lang: 'id', name: 'Google Cat'});
           const defaultVoice =
-              createSpeechSynthesisVoice({lang: 'id', name: 'Komodo'});
+              createSpeechSynthesisVoice({lang: 'id', name: 'Google Komodo'});
+          speech.setVoices([defaultVoice]);
           voicePackController.enableLang(voice.lang);
           voicePackController.setCurrentVoice(voice);
-          voicePackController.setAvailableVoices([defaultVoice]);
           onCurrentVoiceChange = false;
 
-          voicePackController.updateUnavailableVoiceToDefaultVoice();
+          voicePackController.onVoicesChanged();
 
           assertTrue(onCurrentVoiceChange);
           assertEquals(defaultVoice, voicePackController.getCurrentVoice());
@@ -603,12 +630,13 @@ suite('VoicePackController', () => {
           const mockTimer = new MockTimer();
           mockTimer.install();
 
-          voicePackController.updateUnavailableVoiceToDefaultVoice();
+          voicePackController.onVoicesChanged();
           voicePackController.stopWaitingForSpeechExtension();
           mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
           mockTimer.uninstall();
 
-          assertFalse(!!notificationType);
+          // Now download the voice since the speech engine responded.
+          assertEquals(NotificationType.DOWNLOADING, notificationType);
         });
 
     test(

@@ -41,7 +41,7 @@ suite('PrefsTest', () => {
     test('removes unavailable languages from prefs', () => {
       const previouslyAvailableLang = 'pt-pt';
       chrome.readingMode.onLanguagePrefChange(previouslyAvailableLang, true);
-      setupBasicSpeech(app, speech);
+      setupBasicSpeech(speech);
 
       app.restoreSettingsFromPrefs();
 
@@ -54,7 +54,7 @@ suite('PrefsTest', () => {
       const previouslyAvailableLang = 'pt-pt';
       const availableLang = 'pt-br';
       chrome.readingMode.onLanguagePrefChange(previouslyAvailableLang, true);
-      createAndSetVoices(app, speech, [
+      createAndSetVoices(speech, [
         {lang: availableLang, name: 'Google Galinda'},
       ]);
 
@@ -72,7 +72,7 @@ suite('PrefsTest', () => {
     test('adds unavailable language to prefs once available', () => {
       const previouslyAvailableLang = 'da-dk';
       chrome.readingMode.onLanguagePrefChange(previouslyAvailableLang, true);
-      createAndSetVoices(app, speech, [
+      createAndSetVoices(speech, [
         {lang: 'en-us', name: 'Google Fiyero'},
       ]);
 
@@ -83,7 +83,7 @@ suite('PrefsTest', () => {
           previouslyAvailableLang));
 
       // The previously unavailable language is now available.
-      createAndSetVoices(app, speech, [
+      createAndSetVoices(speech, [
         {lang: 'en-us', name: 'Google Fiyero'},
         {lang: 'da-dk', name: 'Doctor Dillamond'},
       ]);
@@ -99,7 +99,7 @@ suite('PrefsTest', () => {
         chrome.readingMode.baseLanguageForSpeech = 'en';
 
         // Set synthesis to have no available voices
-        setVoices(app, speech, []);
+        setVoices(speech, []);
         voicePackController.setCurrentVoice(null);
       });
 
@@ -112,7 +112,7 @@ suite('PrefsTest', () => {
         assertFalse(!!voicePackController.getCurrentVoice());
 
         // Update the speech synthesis engine with voices.
-        setupBasicSpeech(app, speech);
+        setupBasicSpeech(speech);
 
         // Once voices are available, settings should be restored.
         assertTrue(!!voicePackController.getCurrentVoice());
@@ -127,7 +127,7 @@ suite('PrefsTest', () => {
         assertFalse(!!voicePackController.getCurrentVoice());
 
         // Update the speech synthesis engine with voices.
-        setupBasicSpeech(app, speech);
+        setupBasicSpeech(speech);
 
         // Once voices are available, settings should be restored.
         assertTrue(!!voicePackController.getCurrentVoice());
@@ -145,7 +145,7 @@ suite('PrefsTest', () => {
             assertFalse(!!voicePackController.getCurrentVoice());
 
             // Update the speech synthesis engine with voices.
-            createAndSetVoices(app, speech, [
+            createAndSetVoices(speech, [
               {lang: 'en', name: 'Google Lauren'},
               {lang: 'en', name: 'Google Eitan'},
               {lang: 'en-uk', name: 'Google Kristi'},
@@ -171,7 +171,7 @@ suite('PrefsTest', () => {
                 createSpeechSynthesisVoice({lang: 'en', name: 'Google Kristi'});
 
             // Update the speech synthesis engine with voices.
-            setVoices(app, speech, [
+            setVoices(speech, [
               createSpeechSynthesisVoice({lang: 'en', name: 'Google Lauren'}),
               createSpeechSynthesisVoice({lang: 'en', name: 'Google Shari'}),
               futureSelectedVoice,
@@ -192,7 +192,7 @@ suite('PrefsTest', () => {
             // We have to update the stored voice so onVoicesChanged recognizes
             // a user chosen voice.
             chrome.readingMode.getStoredVoice = () => 'Google Kristi';
-            app.onVoicesChanged();
+            voicePackController.onVoicesChanged();
 
             // After onVoicesChanged, the most recently selected voice should
             // be used.
@@ -207,7 +207,7 @@ suite('PrefsTest', () => {
       const locales = ['si-lk', 'km-kh', 'th-th'];
 
       setup(() => {
-        createAndSetVoices(app, speech, [
+        createAndSetVoices(speech, [
           {lang: langs[0], name: 'Google Frodo'},
           {lang: langs[1], name: 'Google Merry'},
           {lang: langs[2], name: 'Google Pippin'},

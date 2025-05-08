@@ -135,7 +135,7 @@ suite('Images', () => {
 
   suite('with read aloud,', () => {
     setup(() => {
-      setupBasicSpeech(app, speech);
+      setupBasicSpeech(speech);
     });
 
     test('image captions are read aloud when showing', () => {
