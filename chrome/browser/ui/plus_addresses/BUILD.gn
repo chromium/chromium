@@ -1,0 +1,143 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views || is_android)
+
+# TODO(crbug.com/413572035): Pull in android and views impl and test code.
+
+source_set("plus_addresses") {
+  sources = [
+    "plus_address_creation_controller.h",
+    "plus_address_creation_view.h",
+  ]
+
+  public_deps = [
+    "//components/plus_addresses:types",
+    "//content/public/browser",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (toolkit_views) {
+    sources += [
+      "plus_address_creation_controller_desktop.h",
+      "plus_address_error_dialog.h",
+      "plus_address_menu_model.h",
+    ]
+
+    public_deps += [
+      "//base",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/plus_addresses/metrics",
+      "//components/plus_addresses/settings",
+      "//ui/menus",
+    ]
+
+    deps = [
+      "//components/constrained_window",
+      "//components/plus_addresses/resources/strings",
+      "//components/plus_addresses/resources/strings:strings_grit",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//components/plus_addresses:types",
+    "//content/public/browser",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (toolkit_views) {
+    sources += [
+      "plus_address_error_dialog.cc",
+      "plus_address_menu_model.cc",
+    ]
+
+    public_deps += [
+      "//base",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/plus_addresses/metrics",
+      "//components/plus_addresses/settings",
+      "//ui/menus",
+    ]
+
+    deps = [
+      ":plus_addresses",
+      "//components/constrained_window",
+      "//components/plus_addresses/resources/strings",
+      "//components/plus_addresses/resources/strings:strings_grit",
+    ]
+  }
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  sources = []
+
+  if (!is_android && !is_chromeos_device) {
+    sources += [
+      "plus_address_error_dialog_interactive_uitest.cc",
+      "views/plus_address_creation_dialog_interactive_uitest.cc",
+    ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      ":plus_addresses",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/plus_addresses",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/plus_addresses:test_support",
+      "//components/plus_addresses/resources/strings:strings_grit",
+      "//components/plus_addresses/settings:test_support",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//content/test:test_support",
+      "//ui/views:test_support",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+
+  if (!is_android) {
+    sources += [
+      "plus_address_creation_controller_desktop_unittest.cc",
+      "plus_address_menu_model_unittest.cc",
+    ]
+    deps = [
+      ":plus_addresses",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/plus_addresses",
+      "//chrome/browser/ui/hats",
+      "//chrome/test:test_support",
+      "//components/autofill/content/browser:test_support",
+      "//components/autofill/core/common",
+      "//components/plus_addresses",
+      "//components/plus_addresses:features",
+      "//components/plus_addresses:prefs",
+      "//components/plus_addresses:test_support",
+      "//components/plus_addresses:types",
+      "//components/plus_addresses/metrics",
+      "//components/plus_addresses/settings:test_support",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync_preferences:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
