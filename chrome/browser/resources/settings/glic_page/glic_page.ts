@@ -94,6 +94,13 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     };
   }
 
+  static get observers() {
+    return [
+      'onTabContextEnabledChanged_(' +
+          `prefs.${SettingsGlicPageFeaturePrefName.TAB_CONTEXT_ENABLED}.value)`,
+    ];
+  }
+
   private shortcutInput_: string;
   private focusToggleShortcutInput_: string;
   private removedShortcut_: string|null = null;
@@ -117,10 +124,6 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     this.registeredFocusToggleShortcut_ =
         await this.browserProxy_.getGlicFocusToggleShortcut();
     await CrSettingsPrefs.initialized;
-    this.tabAccessToggleExpanded_ =
-        this.getPref<boolean>(
-                SettingsGlicPageFeaturePrefName.TAB_CONTEXT_ENABLED)
-            .value;
   }
 
   private onGlicPageClick_() {
@@ -222,10 +225,14 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     }
   }
 
+  // Update the tab access collapsible any time the tab access pref changes.
+  private onTabContextEnabledChanged_(enabled: boolean) {
+    this.tabAccessToggleExpanded_ = enabled;
+  }
+
   private onTabAccessToggleChange_(event: CustomEvent) {
     const target = event.target as SettingsToggleButtonElement;
     const enabled = target.checked;
-    this.tabAccessToggleExpanded_ = enabled;
     this.metricsBrowserProxy_.recordAction(
         'Glic.Settings.TabContext' + (enabled ? '.Enabled' : '.Disabled'));
   }
