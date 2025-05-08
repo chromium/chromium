@@ -17,20 +17,20 @@
   </print-preview-destination-settings>
   <print-preview-pages-settings
       page-count="${this.pageCount}" ?disabled="${this.controlsDisabled_}"
-      ?hidden="${!this.settings?.pages.available || false}" class="settings-section">
+      ?hidden="${!this.settingsAvailable_.pages}" class="settings-section">
   </print-preview-pages-settings>
   <print-preview-copies-settings
       .capability="${this.destinationCapabilities_?.printer.copies || null}"
       ?disabled="${this.controlsDisabled_}"
-      ?hidden="${!this.settings?.copies.available || false}" class="settings-section">
+      ?hidden="${!this.settingsAvailable_.copies}" class="settings-section">
   </print-preview-copies-settings>
   <print-preview-layout-settings
       ?disabled="${this.controlsDisabled_}"
-      ?hidden="${!this.settings?.layout.available || false}" class="settings-section">
+      ?hidden="${!this.settingsAvailable_.layout}" class="settings-section">
   </print-preview-layout-settings>
   <print-preview-color-settings
       ?disabled="${this.controlsDisabled_}"
-      ?hidden="${!this.settings?.color.available || false}" class="settings-section">
+      ?hidden="${!this.settingsAvailable_.color}" class="settings-section">
   </print-preview-color-settings>
   <print-preview-more-settings
       ?settings-expanded-by-user="${this.settingsExpandedByUser_}"
@@ -43,43 +43,43 @@
     <print-preview-media-size-settings
         .capability="${this.destinationCapabilities_?.printer.media_size || null}"
         ?disabled="${this.controlsDisabled_}"
-        ?hidden="${!this.settings?.mediaSize.available || false}"
+        ?hidden="${!this.settingsAvailable_.mediaSize}"
         class="settings-section">
     </print-preview-media-size-settings>
     <print-preview-pages-per-sheet-settings
         ?disabled="${this.controlsDisabled_}"
-        ?hidden="${!this.settings?.pagesPerSheet.available || false}"
+        ?hidden="${!this.settingsAvailable_.pagesPerSheet}"
         class="settings-section">
     </print-preview-pages-per-sheet-settings>
     <print-preview-margins-settings .state="${this.state}"
         ?disabled="${this.controlsDisabled_}"
-        ?hidden="${!this.settings?.margins.available || false}"
+        ?hidden="${!this.settingsAvailable_.margins}"
         class="settings-section">
     </print-preview-margins-settings>
     <print-preview-dpi-settings
         .capability="${this.destinationCapabilities_?.printer.dpi || null}"
         ?disabled="${this.controlsDisabled_}"
-        ?hidden="${!this.settings?.dpi.available || false}" class="settings-section">
+        ?hidden="${!this.settingsAvailable_.dpi}" class="settings-section">
     </print-preview-dpi-settings>
     <print-preview-scaling-settings
         ?disabled="${this.controlsDisabled_}" ?is-pdf="${this.isPdf}"
-        ?hidden="${!this.settings?.scaling.available || false}"
+        ?hidden="${!this.settingsAvailable_.scaling}"
         class="settings-section">
     </print-preview-scaling-settings>
     <print-preview-duplex-settings
         ?disabled="${this.controlsDisabled_}" ?dark="${this.inDarkMode}"
-        ?hidden="${!this.settings?.duplex.available || false}"
+        ?hidden="${!this.settingsAvailable_.duplex}"
         class="settings-section">
     </print-preview-duplex-settings>
     <print-preview-other-options-settings
         ?disabled="${this.controlsDisabled_}"
-        ?hidden="${!this.settings?.otherOptions.available || false}"
+        ?hidden="${!this.settingsAvailable_.otherOptions}"
         class="settings-section">
     </print-preview-other-options-settings>
     <print-preview-advanced-options-settings
         .destination="${this.destination}"
         ?disabled="${this.controlsDisabled_}"
-        ?hidden="${!this.settings?.vendorItems.available || false}"
+        ?hidden="${!this.settingsAvailable_.vendorItems}"
         class="settings-section">
     </print-preview-advanced-options-settings>
     <print-preview-link-container .destination="${this.destination}"

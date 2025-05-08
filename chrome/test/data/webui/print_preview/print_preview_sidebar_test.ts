@@ -29,7 +29,6 @@ suite('PrintPreviewSidebarTest', function() {
     document.body.appendChild(model);
 
     sidebar = document.createElement('print-preview-sidebar');
-    sidebar.settings = model.settings;
     sidebar.setSetting('duplex', false);
     sidebar.pageCount = 1;
     document.body.appendChild(sidebar);

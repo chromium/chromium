@@ -115,7 +115,7 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
       isInAppKioskMode_: {type: Boolean},
       settingsExpandedByUser_: {type: Boolean},
       shouldShowMoreSettings_: {type: Boolean},
-      settings: {type: Object},
+      settingsAvailable_: {type: Object},
     };
   }
 
@@ -127,18 +127,28 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   accessor isPdf: boolean;
   accessor pageCount: number;
   accessor state: State;
-  accessor settings: Settings|null = null;
+  protected accessor settingsAvailable_: Record<keyof Settings, boolean>;
   protected accessor controlsDisabled_: boolean;
   protected accessor firstLoad_: boolean = true;
   protected accessor isInAppKioskMode_: boolean = false;
   protected accessor settingsExpandedByUser_: boolean = false;
   protected accessor shouldShowMoreSettings_: boolean;
 
+  constructor() {
+    super();
+
+    this.settingsAvailable_ = {} as Record<keyof Settings, boolean>;
+    for (const key of SETTINGS_TO_OBSERVE) {
+      this.settingsAvailable_[key] = true;
+    }
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
     for (const key of SETTINGS_TO_OBSERVE) {
-      this.addSettingObserver(`${key}.available`, () => {
+      this.addSettingObserver(`${key}.available`, (value: boolean) => {
+        this.settingsAvailable_[key] = value;
         this.updateShouldShowMoreSettings_();
         this.requestUpdate();
       });
@@ -185,7 +195,7 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     // available sections exceeds the maximum number to show.
     this.shouldShowMoreSettings_ =
         SETTINGS_TO_OBSERVE.reduce((count, setting) => {
-          return this.getSetting(setting).available ? count + 1 : count;
+          return this.settingsAvailable_[setting] ? count + 1 : count;
         }, 1) > MAX_SECTIONS_TO_SHOW;
   }
 
