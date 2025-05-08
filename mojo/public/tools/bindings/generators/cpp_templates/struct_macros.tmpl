@@ -15,7 +15,8 @@
       wrapper class.
     - method parameters/response parameters: the input is a list of
       arguments. #}
-{%- macro serialize(struct, struct_display_name, input_field_pattern, fragment, input_may_be_temp=False) -%}
+{%- macro serialize(struct, struct_display_name, input_field_pattern, fragment,
+        send_validation_compiler_setting, input_may_be_temp=False) -%}
   {{fragment}}.Allocate();
 {%- for pf in struct.packed.packed_fields_in_ordinal_order %}
 
@@ -37,6 +38,7 @@
         "&" + fragment + "->" + value_pf.field.name]
     %}
     {{send_validation_macros.get_serialize_call(
+      "default",
       serializer_type,
       serialization_args)|indent(4)}}
   } else {
@@ -80,8 +82,9 @@
               "&" + name + "_validate_params"]
 %}
   {{send_validation_macros.get_serialize_call(
+      send_validation_compiler_setting,
       serializer_type,
-      serialization_args)|indent(4)}}
+      serialization_args)|indent(2)}}
 
   {{fragment}}->{{name}}.Set(
       {{name}}_fragment.is_null() ? nullptr : {{name}}_fragment.data());
@@ -96,8 +99,9 @@
               "true"]
 %}
   {{send_validation_macros.get_serialize_call(
+      send_validation_compiler_setting,
       serializer_type,
-      serialization_args)|indent(4)}}
+      serialization_args)|indent(2)}}
 {%-       else %}
   mojo::internal::MessageFragment<
       typename decltype({{fragment}}->{{name}})::BaseType> {{name}}_fragment(
@@ -108,8 +112,9 @@
               name + "_fragment"]
 %}
   {{send_validation_macros.get_serialize_call(
+      send_validation_compiler_setting,
       serializer_type,
-      serialization_args)|indent(4)}}
+      serialization_args)|indent(2)}}
 
   {{fragment}}->{{name}}.Set(
       {{name}}_fragment.is_null() ? nullptr : {{name}}_fragment.data());
@@ -117,9 +122,10 @@
 {%-       if not kind|is_nullable_kind%}
 
   {{send_validation_macros.get_validation_check(
+      send_validation_compiler_setting,
       "%s->%s.is_null()" | format(fragment, name),
       "mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER",
-      "null %s in %s"| format(name, struct_display_name))|indent(4)}}
+      "null %s in %s"| format(name, struct_display_name))|indent(2)}}
 {%-       endif %}
 
 {%-     elif kind|is_any_handle_or_interface_kind %}
@@ -129,25 +135,27 @@
             "&"+ fragment + ".message()"]
 %}
 
-    {{send_validation_macros.get_serialize_call(
+  {{send_validation_macros.get_serialize_call(
+      "default",
       serializer_type,
-      serialization_args)|indent(4)}}
+      serialization_args)|indent(2)}}
 
 {%-       if not kind|is_nullable_kind %}
 {%-         if kind|is_associated_kind %}
 {%-           set error_code =
-              "mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_INTERFACE_ID"
+          "mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_INTERFACE_ID"
 %}
 {%-         else %}
 {%-           set error_code =
-              "mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE"
+                "mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE"
 %}
 {%-         endif %}
 
   {{send_validation_macros.get_validation_check(
+      send_validation_compiler_setting,
       "!mojo::internal::IsHandleOrInterfaceValid(%s->%s)" | format(fragment, name),
       error_code,
-      "invalid %s in %s" | format(name, struct_display_name))|indent(4)}}
+      "invalid %s in %s" | format(name, struct_display_name))|indent(2)}}
 {%-       endif %}
 
 {%-     elif kind|is_enum_kind %}
@@ -157,8 +165,9 @@
 %}
 
   {{send_validation_macros.get_serialize_call(
+      "default",
       serializer_type,
-      serialization_args)|indent(4)}}
+      serialization_args)|indent(2)}}
 {%-     else %}
 
   {{fragment}}->{{name}} = {{input_field}};

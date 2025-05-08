@@ -49,6 +49,7 @@ _METHOD_ATTRIBUTES = _COMMON_ATTRIBUTES | {
     'MinVersion',
     'NoInterrupt',
     'RuntimeFeature',
+    'SendValidation',
     'SupportsUrgent',
     'Sync',
     'UnlimitedSize',

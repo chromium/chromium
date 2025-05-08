@@ -13,7 +13,7 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
   static void Serialize(MaybeConstUserType& input,
                         MessageFragment<{{data_type}}>& fragment,
                         bool inlined) {
-    {{union_macros.serialize(union)|indent(4)}}
+    {{union_macros.serialize(union, "default")}}
   }
 
   static bool Deserialize({{data_type}}* input,
@@ -24,6 +24,18 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
 
     {{data_view}} data_view(input, message);
     return Traits::Read(data_view, output);
+  }
+};
+
+template <typename MaybeConstUserType, SendValidation send_validation>
+struct SendValidationSerializer<{{data_view}}, MaybeConstUserType, send_validation> {
+  using UserType = typename std::remove_const<MaybeConstUserType>::type;
+  using Traits = UnionTraits<{{data_view}}, UserType>;
+
+  static void Serialize(MaybeConstUserType& input,
+                        MessageFragment<{{data_type}}>& fragment,
+                        bool inlined) {
+    {{union_macros.serialize(union, "template")}}
   }
 };
 

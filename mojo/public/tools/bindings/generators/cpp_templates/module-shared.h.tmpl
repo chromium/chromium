@@ -41,6 +41,14 @@ struct MojomTypeTraits<{{kind|get_qualified_name_for_kind}}DataView> {
 #include "mojo/public/cpp/bindings/string_data_view.h"
 {%- endif %}
 
+{%- if structs or unions %}
+#include "mojo/public/cpp/bindings/lib/send_validation.h"
+{%- endif %}
+
+{%- if all_enums|length > 0 %}
+#include "mojo/public/cpp/bindings/lib/has_send_validation_helper.h"
+{%- endif %}
+
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #include "{{module.path}}-shared-internal.h"
@@ -51,6 +59,7 @@ struct MojomTypeTraits<{{kind|get_qualified_name_for_kind}}DataView> {
 {#- Avoid transitive includes of interface headers if possible. #}
 {% if not disallow_interfaces and uses_interfaces -%}
 #include "mojo/public/cpp/bindings/lib/interface_serialization.h"
+#include "mojo/public/cpp/bindings/lib/interface_serialization_send_validation.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 {%- endif %}
 

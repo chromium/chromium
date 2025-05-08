@@ -42,6 +42,8 @@
 #include "interface.test-mojom-import-headers.h"
 #include "interface.test-mojom-test-utils.h"
 
+#include "mojo/public/cpp/bindings/lib/send_validation.h"
+
 
 namespace golden {
 const char IFace::Name_[] = "golden.IFace";
@@ -270,17 +272,20 @@ void IFace_Method_ProxyToResponder::Run(
   mojo::internal::MessageFragment<
       typename decltype(params->result)::BaseType> result_fragment(
           params.message());
+  
   mojo::internal::Serialize<mojo::StringDataView>(
-      in_result,
-      result_fragment);
+    in_result,
+    result_fragment);
 
   params->result.Set(
       result_fragment.is_null() ? nullptr : result_fragment.data());
 
-  MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-      params->result.is_null(),
-      mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
-      "null result in ");
+  
+  MOJO_INTERNAL_CHECK_SERIALIZATION(
+    mojo::internal::SendValidation::kDefault,
+    !(params->result.is_null()),
+    mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
+    "null result in ");
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name(IFace::Name_);

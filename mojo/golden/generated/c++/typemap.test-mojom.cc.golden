@@ -42,6 +42,8 @@
 #include "typemap.test-mojom-import-headers.h"
 #include "typemap.test-mojom-test-utils.h"
 
+#include "mojo/public/cpp/bindings/lib/send_validation.h"
+
 
 namespace golden {
 Typemapped::Typemapped()
@@ -205,17 +207,20 @@ void IFaceWithTypemapProxy::Echo(
   mojo::internal::MessageFragment<
       typename decltype(params->param)::BaseType> param_fragment(
           params.message());
+  
   mojo::internal::Serialize<::golden::TypemappedDataView>(
-      in_param,
-      param_fragment);
+    in_param,
+    param_fragment);
 
   params->param.Set(
       param_fragment.is_null() ? nullptr : param_fragment.data());
 
-  MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-      params->param.is_null(),
-      mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
-      "null param in IFaceWithTypemap.Echo request");
+  
+  MOJO_INTERNAL_CHECK_SERIALIZATION(
+    mojo::internal::SendValidation::kDefault,
+    !(params->param.is_null()),
+    mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
+    "null param in IFaceWithTypemap.Echo request");
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name(IFaceWithTypemap::Name_);
@@ -334,17 +339,20 @@ void IFaceWithTypemap_Echo_ProxyToResponder::Run(
   mojo::internal::MessageFragment<
       typename decltype(params->out)::BaseType> out_fragment(
           params.message());
+  
   mojo::internal::Serialize<::golden::TypemappedDataView>(
-      in_out,
-      out_fragment);
+    in_out,
+    out_fragment);
 
   params->out.Set(
       out_fragment.is_null() ? nullptr : out_fragment.data());
 
-  MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-      params->out.is_null(),
-      mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
-      "null out in ");
+  
+  MOJO_INTERNAL_CHECK_SERIALIZATION(
+    mojo::internal::SendValidation::kDefault,
+    !(params->out.is_null()),
+    mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
+    "null out in ");
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name(IFaceWithTypemap::Name_);

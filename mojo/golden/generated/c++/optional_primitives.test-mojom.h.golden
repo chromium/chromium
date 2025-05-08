@@ -17,6 +17,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/equals_traits.h"
+#include "mojo/public/cpp/bindings/lib/send_validation_type.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -98,6 +99,13 @@ class  OptionalPrimitives {
 
   template <typename T, OptionalPrimitives::EnableIfSame<T>* = nullptr>
   bool operator!=(const T& rhs) const { return !operator==(rhs); }
+
+  template <mojo::internal::SendValidation send_validation, typename UserType>
+  static std::vector<uint8_t> Serialize(UserType* input) {
+    return mojo::internal::SerializeImpl<
+        OptionalPrimitives::DataView, std::vector<uint8_t>, send_validation>(input);
+  }
+
   template <typename UserType>
   static std::vector<uint8_t> Serialize(UserType* input) {
     return mojo::internal::SerializeImpl<

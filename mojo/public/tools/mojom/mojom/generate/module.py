@@ -391,6 +391,7 @@ ATTRIBUTE_MIN_VERSION = 'MinVersion'
 ATTRIBUTE_DEFAULT = 'Default'
 ATTRIBUTE_DISPATCH_DEBUG_ALIAS = 'DispatchDebugAlias'
 ATTRIBUTE_ESTIMATE_SIZE = 'EstimateSize'
+ATTRIBUTE_SEND_VALIDATION = 'SendValidation'
 ATTRIBUTE_EXTENSIBLE = 'Extensible'
 ATTRIBUTE_NO_INTERRUPT = 'NoInterrupt'
 ATTRIBUTE_STABLE = 'Stable'
@@ -1066,6 +1067,18 @@ class Method:
   def estimate_message_size(self):
     return self.attributes.get(ATTRIBUTE_ESTIMATE_SIZE) \
         if self.attributes else False
+
+  @property
+  def send_validation(self):
+    if not self.attributes:
+      return None
+    send_validation = self.attributes.get(ATTRIBUTE_SEND_VALIDATION, None)
+    if send_validation is None:
+      return None
+    if not isinstance(send_validation, Feature):
+      raise Exception("SendValidation attribute on %s must be a feature." %
+                      self.name)
+    return send_validation
 
   @property
   def unlimited_message_size(self):

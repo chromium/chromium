@@ -259,6 +259,7 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 {%-   set params_description =
           "%s.%s request"|format(interface.name, method.name) %}
 {%-   set message_typename = "%s_%s_Message"|format(proxy_name, method.name) %}
+{%-   set send_validation = method.send_validation %}
 
 {%-   if method.sync %}
 bool {{proxy_name}}::{{method.name}}(
@@ -291,7 +292,7 @@ bool {{proxy_name}}::{{method.name}}(
                                         "kFlags")}}
 {{interface_macros.build_serialized_message(
     message_name, method, "param_%s", params_struct, params_description,
-    "kFlags", "message")}}
+    "kFlags", "message", send_validation)}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
@@ -346,7 +347,7 @@ void {{proxy_name}}::{{method.name}}(
                                        "kFlags")}}
 {{interface_macros.build_serialized_message(
     message_name, method, "in_%s", params_struct, params_description,
-    "kFlags", "message", True)}}
+    "kFlags", "message", method.send_validation, True)}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
@@ -488,7 +489,7 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
                                        "false", "kFlags")}}
 {{interface_macros.build_serialized_message(
     message_name, method, "in_%s", response_params_struct,
-    response_params_description, "kFlags", "message")}}
+    response_params_description, "kFlags", "message", method.send_validation)}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);

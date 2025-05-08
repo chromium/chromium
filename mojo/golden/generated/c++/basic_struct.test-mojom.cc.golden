@@ -42,6 +42,8 @@
 #include "basic_struct.test-mojom-import-headers.h"
 #include "basic_struct.test-mojom-test-utils.h"
 
+#include "mojo/public/cpp/bindings/lib/send_validation.h"
+
 
 namespace golden {
 BasicStruct::BasicStruct()

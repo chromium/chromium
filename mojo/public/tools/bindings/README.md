@@ -588,6 +588,18 @@ interesting attributes supported today.
   selectively – only for frequently-called methods with large payloads
   that may trigger many allocations.
 
+* **`[SendValidation=feature]`**:
+  The `SendValidation` attribute should reference a mojo `feature`.  If this
+  feature is enabled (e.g. using `--enable-features={feature.name}`) then when
+  the method message is serialized, the serialization result will be validated
+  immediately for errors in addition to at the point of deserialization. This
+  can help diagnose bugs only found in production.
+
+  Note: SendValidation can be binary size expensive, so use sparingly.
+
+  `SendValidation` is currently only supported for C++ bindings and has no
+  effect for, say, Java or TypeScript bindings (see https://crbug.com/1278253).
+
 * **`[DispatchDebugAlias]`**:
   The `DispatchDebugAlias` attribute can be used on an interface to opt into
   having every dispatched message retain an aliased copy of the message ID on

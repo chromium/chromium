@@ -14,14 +14,14 @@
       wrapper class.
     - method parameters/response parameters: the input is a list of
       arguments. #}
-{%- macro serialize(union) -%}
-{%-   set data_view = union|get_qualified_name_for_kind ~ "DataView" %}
-{%-   set data_type = union|get_qualified_name_for_kind(internal=True) %}
-if (CallIsNullIfExists<Traits>(input)) {
-  if (inlined)
-    fragment->set_null();
-  return;
-}
+{%- macro serialize(union, send_validation_compiler_setting) -%}
+{%- set data_view = union|get_qualified_name_for_kind ~ "DataView" %}
+{%- set data_type = union|get_qualified_name_for_kind(internal=True) %}
+    if (CallIsNullIfExists<Traits>(input)) {
+       if (inlined)
+        fragment->set_null();
+      return;
+    }
 
 if (!inlined)
   fragment.Allocate();
@@ -43,39 +43,43 @@ switch (fragment->tag) {
       typename decltype(fragment->data.f_{{name}})::BaseType>
     value_fragment(fragment.message());
 {%-     if kind|is_union_kind %}
-{%-       set serialization_args =
-            ["in_" + name,
-            "value_fragment",
-            "false"]
-%}
-    {{send_validation_macros.get_serialize_call(
-          serializer_type,
-          serialization_args)|indent(4)}}
-{%-     elif kind|is_array_kind or kind|is_map_kind %}
-    constexpr const mojo::internal::ContainerValidateParams& {{name}}_validate_params =
-      {{kind|get_container_validate_params_ctor_args|indent(6)}};
-{%-       set serialization_args =
-            ["in_" + name,
-            "value_fragment",
-            "&" + name + "_validate_params"]
-%}
-    {{send_validation_macros.get_serialize_call(
+  {%- set serialization_args =
+        ["in_" + name,
+         "value_fragment",
+         "false"]
+  %}
+  {{send_validation_macros.get_serialize_call(
+      send_validation_compiler_setting,
       serializer_type,
-      serialization_args)|indent(4)}}
+      serialization_args)}}
+{%-     elif kind|is_array_kind or kind|is_map_kind %}
+        constexpr const mojo::internal::ContainerValidateParams& {{name}}_validate_params =
+            {{kind|get_container_validate_params_ctor_args|indent(6)}};
+        {%- set serialization_args =
+          ["in_" + name,
+          "value_fragment",
+          "&" + name + "_validate_params"]
+        %}
+        {{send_validation_macros.get_serialize_call(
+            send_validation_compiler_setting,
+            serializer_type,
+            serialization_args)}}
 {%-     else %}
-{%-       set serialization_args =
-            ["in_" + name,
-            "value_fragment"]
-%}
-{{send_validation_macros.get_serialize_call(
-    serializer_type,
-    serialization_args)|indent(4, true)}}
+        {%- set serialization_args =
+          ["in_" + name,
+          "value_fragment"]
+        %}
+        {{send_validation_macros.get_serialize_call(
+            send_validation_compiler_setting,
+            serializer_type,
+            serialization_args)}}
 {%-     endif %}
 {%-     if not kind|is_nullable_kind %}
-    {{send_validation_macros.get_validation_check(
-        "value_fragment.is_null()",
-        "mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER",
-        "null %s in %s union"| format(name, union.name))|indent(4)}}
+  {{send_validation_macros.get_validation_check(
+      send_validation_compiler_setting,
+      "value_fragment.is_null()",
+      "mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER",
+      "null %s in %s union"| format(name, union.name))}}
 {%-     endif %}
     fragment->data.f_{{name}}.Set(
       value_fragment.is_null() ? nullptr : value_fragment.data());
@@ -85,30 +89,31 @@ switch (fragment->tag) {
           ["in_" + name,
            "&fragment->data.f_" + name,
           "&fragment.message()"]
-%}
-    {{send_validation_macros.get_serialize_call(
-        serializer_type,
-        serialization_args)|indent(4)}}
+        %}
+        {{send_validation_macros.get_serialize_call(
+            send_validation_compiler_setting,
+            serializer_type,
+            serialization_args)}}
 {%-     if not kind|is_nullable_kind %}
-{%-       set error_code =
-            "mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_INTERFACE_ID"
-            if kind|is_associated_kind
-            else "mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE"
-%}
-    {{send_validation_macros.get_validation_check(
-        "!mojo::internal::IsHandleOrInterfaceValid(fragment->data.f_%s)" | format(name),
-        error_code,
-        "null %s in %s union"| format(name, union.name))|indent(4)}}
+{%-     set error_code = "mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_INTERFACE_ID"
+        if kind|is_associated_kind
+        else "mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE" %}
+  {{send_validation_macros.get_validation_check(
+      send_validation_compiler_setting,
+      "!mojo::internal::IsHandleOrInterfaceValid(fragment->data.f_%s)" | format(name),
+      error_code,
+      "null %s in %s union"| format(name, union.name))}}
 {%-     endif %}
 
 {%-   elif kind|is_enum_kind %}
 {%-     set serialization_args =
           ["in_" + name,
            "&fragment->data.f_" + name]
-%}
-    {{send_validation_macros.get_serialize_call(
-      serializer_type,
-      serialization_args)|indent(4)}}
+        %}
+        {{send_validation_macros.get_serialize_call(
+            send_validation_compiler_setting,
+            serializer_type,
+            serialization_args)}}
 
 {%-   else %}
     fragment->data.f_{{name}} = in_{{name}};

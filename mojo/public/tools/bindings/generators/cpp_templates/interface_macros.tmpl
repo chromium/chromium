@@ -99,6 +99,7 @@ base::expected<
 {%- macro build_serialized_message(message_name, method, param_name_prefix,
                                    params_struct, params_description,
                                    flags_text, message_object_name,
+                                   send_validation,
                                    has_size_estimator = False) %}
   const size_t estimated_payload_size =
 {%-   if has_size_estimator and method.estimate_message_size  %}
@@ -119,8 +120,17 @@ base::expected<
   mojo::internal::MessageFragment<
       {{params_struct|get_qualified_name_for_kind(internal=True)}}> params(
           {{message_object_name}});
+{%-   set send_validation_compiler_setting = "runtime" if send_validation
+                                                      else "default" %}
+{%-   if send_validation %}
+{%-     set feature_cpp = method.send_validation|get_qualified_name_for_feature %}
+  mojo::internal::SendValidation send_validation =
+      (base::FeatureList::IsEnabled({{feature_cpp}})) ?
+        mojo::internal::SendValidation::kFatal :
+        mojo::internal::SendValidation::kWarning;
+{%-   endif %}
   {{struct_macros.serialize(
-      params_struct, params_description, param_name_prefix, "params")}}
+      params_struct, params_description, param_name_prefix, "params", send_validation_compiler_setting)}}
 {%- endmacro %}
 
 {%- macro define_message_type(interface, message_typename, message_name,
@@ -186,7 +196,7 @@ class {{message_typename}}
 
     DCHECK(serialize);
     {{build_serialized_message(message_name, method, "param_%s", params_struct,
-                               params_description, "kFlags", "message")}}
+                               params_description, "kFlags", "message", method.send_validation)}}
     return message;
   }
 
@@ -275,8 +285,17 @@ class {{message_typename}}
     mojo::internal::MessageFragment<
         {{params_struct|get_qualified_name_for_kind(internal=True)}}> params(
             message);
+{%-  set send_validation_compiler_setting = "runtime" if send_validation
+                                                      else "default" %}
+{%-  if send_validation %}
+{%-    set feature_cpp = method.send_validation|get_qualified_name_for_feature %}
+    mojo::internal::SendValidation send_validation =
+      (base::FeatureList::IsEnabled({{feature_cpp}})) ?
+        mojo::internal::SendValidation::kFatal :
+        mojo::internal::SendValidation::kWarning;
+{%-  endif %}
     {{struct_macros.serialize(
-        params_struct, params_description, "param_%s_", "params")}}
+        params_struct, params_description, "param_%s_", "params", send_validation_compiler_setting)}}
   }
 
 {%-     for param in parameters %}

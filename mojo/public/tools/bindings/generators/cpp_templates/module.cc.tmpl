@@ -51,6 +51,8 @@
 #include "{{header}}"
 {%- endfor %}
 
+#include "mojo/public/cpp/bindings/lib/send_validation.h"
+
 {{namespace_begin(namespaces_as_array, variant)}}
 
 {#--- Constants #}

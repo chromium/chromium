@@ -38,6 +38,7 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/cpp_templates/struct_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_definition.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_macros.tmpl",
+    "$mojom_generator_root/generators/cpp_templates/struct_macros.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_serialization_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_traits_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_traits_definition.tmpl",

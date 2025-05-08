@@ -1,0 +1,31 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo.test.serialization_death.mojom;
+
+// This struct is used to test send validation.
+struct BadStruct {
+  handle hdl;
+};
+
+// Death test feature.
+feature kSerializationDeathTestFeatureOn {
+  const string name = "SerializationDeathTestFeatureOn";
+  const bool default_state = true;
+};
+
+feature kSerializationDeathTestFeatureOff {
+  const string name = "SerializationDeathTestFeatureOff";
+  const bool default_state = false;
+};
+
+// This interface is for a test that validates the SendValidation tag.
+interface SerializationDeath {
+  [SendValidation=kSerializationDeathTestFeatureOn]
+  HandleInStructMethodShouldDie(BadStruct bad_struct);
+
+  [SendValidation=kSerializationDeathTestFeatureOff]
+  HandleInStructMethodShouldWarn(BadStruct bad_struct);
+};
+

@@ -97,6 +97,11 @@ class MojoBindingsCheckTest(MojomParserTestCase):
         [RuntimeFeature=test.mojom.FeatureName]
         MethodWithFeature() => (bool c);
       };
+
+      interface FooMethodValidation {
+        [SendValidation=test.mojom.FeatureName]
+        MethodWithSendValidation(Thingy thing);
+      };
     """)
 
   def testWrongModuleStable(self):
