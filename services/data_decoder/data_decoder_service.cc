@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/cbor_parser_impl.h"
 #include "services/data_decoder/gzipper.h"
-#include "services/data_decoder/json_parser_impl.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "services/data_decoder/structured_headers_parser_impl.h"
 #include "services/data_decoder/xml_parser.h"
@@ -52,12 +51,6 @@ void DataDecoderService::BindImageDecoder(
   mojo::MakeSelfOwnedReceiver(std::make_unique<ImageDecoderImpl>(),
                               std::move(receiver));
 #endif
-}
-
-void DataDecoderService::BindJsonParser(
-    mojo::PendingReceiver<mojom::JsonParser> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<JsonParserImpl>(),
-                              std::move(receiver));
 }
 
 void DataDecoderService::BindStructuredHeadersParser(

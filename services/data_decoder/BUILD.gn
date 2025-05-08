@@ -23,8 +23,6 @@ source_set("lib") {
     "data_decoder_service.h",
     "gzipper.cc",
     "gzipper.h",
-    "json_parser_impl.cc",
-    "json_parser_impl.h",
     "structured_headers_parser_impl.cc",
     "structured_headers_parser_impl.h",
     "xml_parser.cc",

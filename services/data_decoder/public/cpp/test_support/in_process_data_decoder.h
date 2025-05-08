@@ -63,8 +63,6 @@ class InProcessDataDecoder
   mojom::DataDecoderService* GetForwardingInterface() override;
   void BindImageDecoder(
       mojo::PendingReceiver<mojom::ImageDecoder> receiver) override;
-  void BindJsonParser(
-      mojo::PendingReceiver<mojom::JsonParser> receiver) override;
   void BindWebBundleParserFactory(
       mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
           receiver) override;

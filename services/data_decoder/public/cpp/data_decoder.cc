@@ -23,7 +23,6 @@
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/mojom/cbor_parser.mojom.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
-#include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "services/data_decoder/public/mojom/structured_headers_parser.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 

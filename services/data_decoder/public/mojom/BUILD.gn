@@ -10,7 +10,6 @@ mojom("mojom") {
     "data_decoder_service.mojom",
     "gzipper.mojom",
     "image_decoder.mojom",
-    "json_parser.mojom",
     "structured_headers_parser.mojom",
   ]
 

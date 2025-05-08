@@ -13,7 +13,6 @@
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
-#include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "services/data_decoder/public/mojom/structured_headers_parser.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
@@ -43,8 +42,6 @@ class DataDecoderService : public mojom::DataDecoderService {
   // mojom::DataDecoderService implementation:
   void BindImageDecoder(
       mojo::PendingReceiver<mojom::ImageDecoder> receiver) override;
-  void BindJsonParser(
-      mojo::PendingReceiver<mojom::JsonParser> receiver) override;
   void BindStructuredHeadersParser(
       mojo::PendingReceiver<mojom::StructuredHeadersParser> receiver) override;
   void BindXmlParser(mojo::PendingReceiver<mojom::XmlParser> receiver) override;
