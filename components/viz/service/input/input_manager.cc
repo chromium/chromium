@@ -651,6 +651,8 @@ bool InputManager::ReturnInputBackToBrowser() {
 
 void InputManager::SetBeginFrameSource(const FrameSinkId& frame_sink_id,
                                        BeginFrameSource* begin_frame_source) {
+  TRACE_EVENT("input", "InputManager::SetBeginFrameSource", "frame_sink_id",
+              frame_sink_id);
   // Return early if |frame_sink_id| is associated with non layer tree frame
   // sink.
   auto itr = rir_map_.find(frame_sink_id);

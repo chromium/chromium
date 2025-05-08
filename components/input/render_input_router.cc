@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/input/input_constants.h"
 #include "components/input/input_router_config_helper.h"
 #include "components/input/input_router_impl.h"
@@ -121,7 +122,11 @@ base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
 }  // namespace
 
 RenderInputRouter::~RenderInputRouter() {
-  TRACE_EVENT_INSTANT("input", "RenderInputRouter::~RenderInputRouter");
+  TRACE_EVENT("input", "RenderInputRouter::~RenderInputRouter");
+  // TODO(413442819): Remove these crash keys after the UAF bug has been fixed.
+  static crash_reporter::CrashKeyString<1024> trace_key("crbug413442819");
+  crash_reporter::SetCrashKeyStringToStackTrace(&trace_key,
+                                                base::debug::StackTrace());
 }
 
 RenderInputRouter::RenderInputRouter(
