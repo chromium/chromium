@@ -43,18 +43,27 @@ void RegisterComponentsForUpdate(
   component_installer_list.push_back(
       std::make_unique<
           component_updater::OriginTrialsComponentInstallerPolicy>());
-  component_installer_list.push_back(
-      std::make_unique<
-          component_updater::MaskedDomainListComponentInstallerPolicy>(
-          /*on_list_ready=*/base::BindRepeating(
-              [](base::Version version,
-                 std::optional<mojo_base::ProtoWrapper> masked_domain_list) {
-                if (masked_domain_list.has_value()) {
-                  VLOG(1) << "Received Masked Domain List version " << version;
-                } else {
-                  LOG(ERROR) << "Could not read Masked Domain List file";
-                }
-              })));
+
+  // Note: We're using a command-line switch because finch features
+  // isn't supported in nonembedded WebView.
+  // After setting this flag, it may be necessary to force restart the
+  // non-embedded process.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebViewMaskedDomainListComponent)) {
+    component_installer_list.push_back(
+        std::make_unique<
+            component_updater::MaskedDomainListComponentInstallerPolicy>(
+            /*on_list_ready=*/base::BindRepeating(
+                [](base::Version version,
+                   std::optional<mojo_base::ProtoWrapper> masked_domain_list) {
+                  if (masked_domain_list.has_value()) {
+                    VLOG(1)
+                        << "Received Masked Domain List version " << version;
+                  } else {
+                    LOG(ERROR) << "Could not read Masked Domain List file";
+                  }
+                })));
+  }
 
   // Note: We're using a command-line switch because finch features
   // isn't supported in nonembedded WebView.

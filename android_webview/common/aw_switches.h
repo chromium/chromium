@@ -25,6 +25,7 @@ extern const char kWebViewFencedFrames[];
 extern const char kWebViewEnableTrustTokensComponent[];
 extern const char kWebViewTpcdMetadaComponent[];
 extern const char kWebViewFpsComponent[];
+extern const char kWebViewMaskedDomainListComponent[];
 extern const char kWebViewForceDisable3pcs[];
 extern const char kWebViewForceCrashJava[];
 extern const char kWebViewForceCrashNative[];
