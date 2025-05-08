@@ -83,10 +83,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
 // to when tracing is enabled.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsTracingCalculationReduction);
 
-// When enabled we will submit the 'CopySharedImage' in one call and not batch
-// it up into 4MiB increments.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNonBatchedCopySharedImage);
-
 // Currently there is a race between OnBeginFrames from the GPU process and
 // input arriving from the Browser process. Due to this we can start to produce
 // a frame while scrolling without any input events. Late arriving events are

@@ -138,7 +138,6 @@ OneCopyRasterBufferProvider::OneCopyRasterBufferProvider(
                          max_copy_texture_chromium_size)
               : kMaxBytesPerCopyOperation),
       use_partial_raster_(use_partial_raster),
-      bytes_scheduled_since_last_flush_(0),
       tile_overlay_candidate_(is_overlay_candidate),
       staging_pool_(std::move(task_runner),
                     worker_context_provider,
@@ -397,39 +396,9 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kNonBatchedCopySharedImage)) {
-    ri->CopySharedImage(staging_buffer->client_shared_image->mailbox(),
-                        backing->shared_image()->mailbox(), 0, 0, 0, 0,
-                        rect_to_copy.width(), rect_to_copy.height());
-  } else {
-    int bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
-        rect_to_copy.width(), staging_buffer->format);
-    int chunk_size_in_rows =
-        std::max(1, max_bytes_per_copy_operation_ / bytes_per_row);
-    // Align chunk size to 4. Required to support compressed texture formats.
-    chunk_size_in_rows = MathUtil::UncheckedRoundUp(chunk_size_in_rows, 4);
-    int y = 0;
-    int height = rect_to_copy.height();
-    while (y < height) {
-      // Copy at most |chunk_size_in_rows|.
-      int rows_to_copy = std::min(chunk_size_in_rows, height - y);
-      DCHECK_GT(rows_to_copy, 0);
-
-      ri->CopySharedImage(staging_buffer->client_shared_image->mailbox(),
-                          backing->shared_image()->mailbox(), 0, y, 0, y,
-                          rect_to_copy.width(), rows_to_copy);
-      y += rows_to_copy;
-
-      // Increment |bytes_scheduled_since_last_flush_| by the amount of memory
-      // used for this copy operation.
-      bytes_scheduled_since_last_flush_ += rows_to_copy * bytes_per_row;
-
-      if (bytes_scheduled_since_last_flush_ >= max_bytes_per_copy_operation_) {
-        ri->ShallowFlushCHROMIUM();
-        bytes_scheduled_since_last_flush_ = 0;
-      }
-    }
-  }
+  ri->CopySharedImage(staging_buffer->client_shared_image->mailbox(),
+                      backing->shared_image()->mailbox(), 0, 0, 0, 0,
+                      rect_to_copy.width(), rect_to_copy.height());
 
   if (query_target != GL_NONE)
     ri->EndQueryEXT(query_target);

@@ -121,10 +121,6 @@ BASE_FEATURE(kWaitForLateScrollEvents,
 const base::FeatureParam<double> kWaitForLateScrollEventsDeadlineRatio{
     &kWaitForLateScrollEvents, "deadline_ratio", 0.333};
 
-BASE_FEATURE(kNonBatchedCopySharedImage,
-             "NonBatchedCopySharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDontAlwaysPushPictureLayerImpls,
              "DontAlwaysPushPictureLayerImpls",
              base::FEATURE_ENABLED_BY_DEFAULT);

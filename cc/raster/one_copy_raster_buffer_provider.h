@@ -139,10 +139,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
   const int max_bytes_per_copy_operation_;
   const bool use_partial_raster_;
-
-  // Context lock must be acquired when accessing this member.
-  int bytes_scheduled_since_last_flush_;
-
   const bool tile_overlay_candidate_;
 
   StagingBufferPool staging_pool_;
