@@ -151,7 +151,9 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     mock_copyfile.assert_called_with('file', 'dir/benchmarks_shard_map.json')
   # pylint: enable=no-self-use
 
-  @mock.patch.object(run_performance_tests.CrossbenchTest, 'execute_benchmark')
+  @mock.patch.object(run_performance_tests.CrossbenchTest,
+                     'execute_benchmark',
+                     return_value=0)
   def testCrossbenchTestBenchmarksArg(self, mock_execute_benchmark):
     fake_args = _create_crossbench_args()
     options = run_performance_tests.parse_arguments(fake_args)
@@ -179,7 +181,9 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     with self.assertRaises(Exception):
       run_performance_tests.CrossbenchTest(options, 'dir').execute()
 
-  @mock.patch.object(run_performance_tests, '_run_benchmarks_on_shardmap')
+  @mock.patch.object(run_performance_tests,
+                     '_run_benchmarks_on_shardmap',
+                     return_value=0)
   @mock.patch.object(os.path, 'dirname')
   @mock.patch.object(run_performance_tests, 'load_map_file')
   def testCrossbenchTestShardMapFile(self, mock_load_map_file, mock_direname,
@@ -200,7 +204,9 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
                                                        expected_options, 'dir',
                                                        [])
 
-  @mock.patch.object(run_performance_tests, '_run_benchmarks_on_shardmap')
+  @mock.patch.object(run_performance_tests,
+                     '_run_benchmarks_on_shardmap',
+                     return_value=0)
   @mock.patch.object(os.path, 'dirname')
   @mock.patch.object(run_performance_tests, 'load_map_string')
   def testCrossbenchTestShardMapString(self, mock_load_map_string,
@@ -333,7 +339,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     expected_dict = {
         'type': 'local',
         'path': local_fileserver,
-        'url': 'http://localhost:8000'
+        'url': 'http://localhost:0'
     }
 
     crosebench_test = run_performance_tests.CrossbenchTest(options, 'dir')
@@ -349,7 +355,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     expected_dict = {
         'type': 'local',
         'path': local_fileserver,
-        'url': 'http://localhost:8000'
+        'url': 'http://localhost:0'
     }
 
     crosebench_test = run_performance_tests.CrossbenchTest(options, 'dir')
@@ -360,10 +366,10 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
   @mock.patch.object(binary_manager, 'FetchPath')
   def testCrossbenchGetDefaultWpr(self, mock_fetch_path):
     mock_fetch_path.return_value = 'wpr_go_path'
-    fake_args = _create_crossbench_args() + ['--wpr']
+    fake_args = _create_crossbench_args() + ['--wpr=fake.wprgo']
     options = run_performance_tests.parse_arguments(fake_args)
     data_dir = run_performance_tests.PAGE_SETS_DATA
-    archive = str(data_dir / 'crossbench_android_speedometer_3.0_000.wprgo')
+    archive = str(data_dir / 'fake.wprgo')
     expected_dict = {
         'type': 'wpr',
         'path': archive,
