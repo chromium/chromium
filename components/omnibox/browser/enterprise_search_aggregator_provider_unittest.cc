@@ -110,6 +110,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                 }
               }
             },
+            "destinationUri": "https://example.com/people/jdoe",
             "score": 0.8,
             "dataStore": "project 1"
           }
@@ -166,13 +167,25 @@ const std::string kMissingFieldsJsonResponse = base::StringPrintf(
                   "userName": "missingDisplayName"
                 }
               }
+            },
+            "destinationUri": "https://example.com/people/jdoe"
+          },
+          {
+            "suggestion": "missingUri@example.com",
+            "document": {
+              "derivedStructData": {
+                "name": {
+                  "displayName": "John Doe",
+                  "userName": "john"
+                }
+              }
             }
           },
           {
             "document": {
               "derivedStructData": {
                 "name": {
-                  "displayName": "Missing suggestion / user name"
+                  "displayName": "Missing suggestion / user name / URI"
                 }
               }
             }
@@ -186,7 +199,8 @@ const std::string kMissingFieldsJsonResponse = base::StringPrintf(
                   "userName": "john"
                 }
               }
-            }
+            },
+            "destinationUri": "https://example.com/people/jdoe"
           }
         ],
         "contentSuggestions": [
@@ -253,6 +267,7 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
               }
             }
           },
+          "destinationUri": "https://example.com/people/jdoe",
           "dataStore": "project 1"
         },
         {
@@ -276,6 +291,7 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
               }
             }
           },
+          "destinationUri": "https://example.com/people/jdoe2",
           "dataStore": "project 1"
         },
         {
@@ -299,6 +315,7 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
               }
             }
           },
+          "destinationUri": "https://example.com/people/jdoe3",
           "dataStore": "project 1"
         },
         {
@@ -322,6 +339,7 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
               }
             }
           },
+          "destinationUri": "https://example.com/people/jdoe4",
           "dataStore": "project 1"
         }
       ],
@@ -730,16 +748,16 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
 
   EXPECT_EQ(matches[0].type, AutocompleteMatchType::NAVSUGGEST);
   EXPECT_EQ(matches[0].relevance, 810);
-  EXPECT_EQ(matches[0].contents, u"www.google.com/?q=john%40example.com");
+  EXPECT_EQ(matches[0].contents, u"example.com/people/jdoe");
   EXPECT_EQ(matches[0].description, u"John Doe");
   EXPECT_EQ(matches[0].destination_url,
-            GURL("https://www.google.com/?q=john%40example.com"));
+            GURL("https://example.com/people/jdoe"));
   EXPECT_EQ(matches[0].image_url, GURL("https://example.com/image.png"));
   EXPECT_EQ(matches[0].icon_url, GURL("https://www.google.com/favicon.ico"));
   EXPECT_TRUE(PageTransitionCoreTypeIs(matches[0].transition,
                                        ui::PAGE_TRANSITION_KEYWORD));
   EXPECT_EQ(matches[0].fill_into_edit,
-            u"keyword https://www.google.com/?q=john%40example.com");
+            u"keyword https://example.com/people/jdoe");
 
   EXPECT_EQ(matches[1].type, AutocompleteMatchType::NAVSUGGEST);
   EXPECT_EQ(matches[1].relevance, 410);
@@ -773,22 +791,22 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndModifyImageUrls) {
   ACMatches matches = provider_->matches_;
   ASSERT_EQ(matches.size(), 4u);
 
-  EXPECT_EQ(matches[0].contents, u"www.google.com/?q=john%40example.com");
+  EXPECT_EQ(matches[0].contents, u"example.com/people/jdoe");
   EXPECT_EQ(matches[0].description, u"John Doe");
   EXPECT_EQ(matches[0].image_url,
             GURL("https://lh3.googleusercontent.com/some/path-s100=s64"));
 
-  EXPECT_EQ(matches[1].contents, u"www.google.com/?q=john2%40example.com");
+  EXPECT_EQ(matches[1].contents, u"example.com/people/jdoe2");
   EXPECT_EQ(matches[1].description, u"John Doe2");
   EXPECT_EQ(matches[1].image_url,
             GURL("https://lh3.googleusercontent.com/some/path=s100"));
 
-  EXPECT_EQ(matches[2].contents, u"www.google.com/?q=john3%40example.com");
+  EXPECT_EQ(matches[2].contents, u"example.com/people/jdoe3");
   EXPECT_EQ(matches[2].description, u"John Doe3");
   EXPECT_EQ(matches[2].image_url,
             GURL("https://lh3.googleusercontent.com/some/path=abc-s64"));
 
-  EXPECT_EQ(matches[3].contents, u"www.google.com/?q=john4%40example.com");
+  EXPECT_EQ(matches[3].contents, u"example.com/people/jdoe4");
   EXPECT_EQ(matches[3].description, u"John Doe4");
   EXPECT_EQ(matches[3].image_url,
             GURL("https://lh3.googleusercontent.com/some/path=w100-h200"));
@@ -798,11 +816,17 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndModifyImageUrls) {
 TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithMissingFields) {
   provider_->adjusted_input_ = CreateInput(u"john d", true);
   ParseResponse(kMissingFieldsJsonResponse);
-  EXPECT_THAT(
-      GetMatches(),
-      testing::ElementsAre(u"https://www.google.com/?q=john%40example.com",
-                           u"https://www.example.com/",
-                           u"https://www.google.com/?q=John%27s+Document+1"));
+  EXPECT_THAT(GetMatches(),
+              testing::ElementsAre(
+                  // TODO(crbug.com/392734200): The following match is created
+                  //   because we fall back to a search URL for the suggestion
+                  //   that is missing "destinationURI". Once support for
+                  //   fallback is removed, this match should be removed as
+                  //   well.
+                  u"https://www.google.com/?q=missingUri%40example.com",
+                  u"https://example.com/people/jdoe",
+                  u"https://www.example.com/",
+                  u"https://www.google.com/?q=John%27s+Document+1"));
 }
 
 // Test non-dict results are skipped.
@@ -922,7 +946,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_THAT(
       GetMatches(),
-      testing::ElementsAre(u"https://www.google.com/?q=john%40example.com",
+      testing::ElementsAre(u"https://example.com/people/jdoe",
                            u"https://www.example.com/",
                            u"https://www.google.com/?q=John%27s+Document+1"));
 }
@@ -954,7 +978,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnfeaturedKeyword) {
   ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_EQ(provider_->matches_[0].keyword, u"unfeatured");
   EXPECT_THAT(GetMatches(), testing::ElementsAre(
-                                u"http://www.yahoo.com/john@example.com",
+                                u"https://example.com/people/jdoe",
                                 u"https://www.example.com/",
                                 u"http://www.yahoo.com/John's%20Document%201"));
 }
@@ -975,7 +999,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnscopedMode) {
   ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_THAT(
       GetMatches(),
-      testing::ElementsAre(u"https://www.google.com/?q=john%40example.com",
+      testing::ElementsAre(u"https://example.com/people/jdoe",
                            u"https://www.example.com/",
                            u"https://www.google.com/?q=John%27s+Document+1"));
 }

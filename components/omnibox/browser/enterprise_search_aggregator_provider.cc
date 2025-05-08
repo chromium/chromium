@@ -785,9 +785,23 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
 std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
     const base::Value::Dict& result,
     SuggestionType suggestion_type) const {
+  std::string destination_uri =
+    ptr_to_string(result.FindString("destinationUri"));
   if (suggestion_type == SuggestionType::CONTENT) {
-    return ptr_to_string(result.FindString("destinationUri"));
+    return destination_uri;
   }
+
+  if (suggestion_type == SuggestionType::PEOPLE) {
+    // Return the destination URI if it is present. Otherwise, fall back to the
+    // creating a search URL, below.
+    // TODO(crbug.com/392734200): Remove the fallback to search URL once the
+    //   change to populate "destinationUri" for people suggestions is available
+    //   in prod.
+    if (!destination_uri.empty()) {
+      return destination_uri;
+    }
+  }
+
 
   std::string query = ptr_to_string(result.FindString("suggestion"));
   if (query.empty()) {
