@@ -1,5 +1,6 @@
 {
   "android-arm32-orderfile": {
+    "args_file": "//tools/pgo/override_args.gni",
     "gn_args": {
       "debuggable_apks": false,
       "devtools_instrumentation_dumping": true,
@@ -18,6 +19,7 @@
     }
   },
   "android-arm64-orderfile": {
+    "args_file": "//tools/pgo/override_args.gni",
     "gn_args": {
       "debuggable_apks": false,
       "devtools_instrumentation_dumping": true,

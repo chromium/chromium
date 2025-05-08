@@ -996,7 +996,7 @@
     },
 
     'orderfile': {
-      'mixins': ['no_proguard_obfuscation', 'devtools_instrumentation_dumping', 'order_profiling'],
+      'mixins': ['no_proguard_obfuscation', 'devtools_instrumentation_dumping', 'order_profiling', 'pgo_profile_override'],
     },
 
     'ozone_headless': {
@@ -1011,6 +1011,10 @@
     'pgo_phase_1': {
       'mixins': ['v8_release_branch'],
       'gn_args': 'chrome_pgo_phase=1'
+    },
+
+    'pgo_profile_override': {
+      'args_file': '//tools/pgo/override_args.gni',
     },
 
     # Note: This is probably not what you want to use. Instead use one of the
