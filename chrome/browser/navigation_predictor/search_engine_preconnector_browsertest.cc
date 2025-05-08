@@ -524,8 +524,10 @@ class SearchEnginePreconnectorDesktopAutoStartBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorDesktopAutoStartBrowserTest,
                        AutoStartDesktop) {
+  int preresolve_count =
+      SearchEnginePreconnector::SearchEnginePreconnect2Enabled() ? 1 : 2;
   // Verifies that the default search is preconnected.
-  WaitForPreresolveCountForURL(GURL(kGoogleSearch), 2);
+  WaitForPreresolveCountForURL(GURL(kGoogleSearch), preresolve_count);
 }
 
 class SearchEnginePreconnectorEnabledOnlyBrowserTest

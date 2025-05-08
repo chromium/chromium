@@ -21347,6 +21347,32 @@
             ]
         }
     ],
+    "SearchEnginePreconnect2": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithbase_60_30_30_30__20250507",
+                    "params": {
+                        "IdleTimeoutInSeconds": "60",
+                        "MaxPreconnectRetryInterval": "30",
+                        "MaxShortSessionThreshold": "30",
+                        "PingIntervalInSeconds": "30"
+                    },
+                    "enable_features": [
+                        "SearchEnginePreconnect2"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchEnginePreconnectInterval": [
         {
             "platforms": [
