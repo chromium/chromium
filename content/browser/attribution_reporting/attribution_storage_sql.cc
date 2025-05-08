@@ -2214,9 +2214,6 @@ bool AttributionStorageSql::CreateSchema() {
   //
   // |source_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
-  //
-  // TODO(linnan): Read and update |num_aggregatable_debug_reports| when
-  // creating an aggregatable debug report for the source.
   static constexpr char kImpressionTableSql[] =
       "CREATE TABLE sources("
       "source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
