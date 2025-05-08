@@ -61,6 +61,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Code inside should use instance method IsAllowed() instead.
   static bool IsEnabledForProfile(Profile* profile);
 
+  // Returns true if the profile has completed the FRE.
+  static bool HasConsentedForProfile(Profile* profile);
+
   // Returns true if the given profile has Glic enabled and has completed the
   // FRE. True implies that IsEnabledByFlags(), IsProfileEligible(profile), and
   // IsEnabledForProfile(profile) are also true. This value can change at

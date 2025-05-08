@@ -23,15 +23,6 @@
 
 namespace glic {
 
-namespace {
-
-bool HasConsentedForProfile(Profile* profile) {
-  return profile->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) ==
-         static_cast<int>(prefs::FreStatus::kCompleted);
-}
-
-}  // namespace
-
 GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     Profile* profile) {
   ProfileEnablement result;
@@ -117,6 +108,11 @@ bool GlicEnabling::IsProfileEligible(const Profile* profile) {
 
 bool GlicEnabling::IsEnabledForProfile(Profile* profile) {
   return EnablementForProfile(profile).IsEnabled();
+}
+
+bool GlicEnabling::HasConsentedForProfile(Profile* profile) {
+  return profile->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) ==
+         static_cast<int>(prefs::FreStatus::kCompleted);
 }
 
 bool GlicEnabling::IsEnabledAndConsentForProfile(Profile* profile) {

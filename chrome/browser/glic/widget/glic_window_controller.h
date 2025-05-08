@@ -74,7 +74,7 @@ class GlicWindowController : public Host::Delegate {
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
-  virtual void Toggle(BrowserWindowInterface* browser,
+  virtual void Toggle(BrowserWindowInterface* bwi,
                       bool prevent_close,
                       mojom::InvocationSource source) = 0;
 

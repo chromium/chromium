@@ -66,6 +66,10 @@ class GlicFreController {
   // showing the dialog.
   bool CanShowFreDialog(Browser* browser);
 
+  // Open the new tab page in the browser and show the FRE in that tab if
+  // possible.
+  void OpenFreDialogInNewTab(BrowserWindowInterface* bwi);
+
   // Shows the FRE dialog. This should only be called if `ShouldShowFreDialog`
   // and `CanShowFreDialog` are both satisfied.
   void ShowFreDialog(Browser* browser);
