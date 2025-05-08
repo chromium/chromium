@@ -1673,7 +1673,7 @@
     "expires": "Oct 1, 2025"
   },
   {
-    "prefix": "prefetch-serviceworker",
+    "prefix": "prefetch-sw",
     "owners": ["hiroshige@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
