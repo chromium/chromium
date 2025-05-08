@@ -220,6 +220,7 @@ void DragController::ClearDragCaret() {
 void DragController::DragEnded() {
   drag_initiator_ = nullptr;
   did_initiate_drag_ = false;
+  drag_pointer_id_.reset();
   page_->GetDragCaret().Clear();
   // When dragging occurs, the mousedown event is triggered, causing the caret's
   // blinking state to be suspended. Therefore, it is necessary to reset the
@@ -1366,6 +1367,7 @@ bool DragController::StartDrag(LocalFrame* frame,
       drag_obj_rect, effective_drag_initiation_location, frame, state,
       hit_test_result, drag_initiation_location, mouse_dragged_point);
 
+  drag_pointer_id_ = drag_event.id;
   DoSystemDrag(drag_image.get(), drag_obj_rect,
                effective_drag_initiation_location,
                state.drag_data_transfer_.Get(), frame);

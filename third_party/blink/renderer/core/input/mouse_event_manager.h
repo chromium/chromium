@@ -90,7 +90,8 @@ class CORE_EXPORT MouseEventManager final
   void SetLastKnownMousePosition(const WebMouseEvent&);
   void SetLastMousePositionAsUnknown();
 
-  bool HandleDragDropIfPossible(const GestureEventWithHitTestResults&);
+  bool HandleDragDropIfPossible(const GestureEventWithHitTestResults&,
+                                PointerId pointer_id);
 
   WebInputEventResult HandleMouseDraggedEvent(
       const MouseEventWithHitTestResults&);

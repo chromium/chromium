@@ -649,7 +649,13 @@ void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
       WebInputEvent::Type::kMouseMove,
       GetPage()->GetVisualViewport().ViewportToRootFrame(point_in_viewport),
       screen_point, WebPointerProperties::Button::kLeft, 0,
-      WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+      WebInputEvent::kNoModifiers, base::TimeTicks::Now(), kMenuSourceNone,
+      local_root_->GetFrame()
+          ->GetPage()
+          ->GetDragController()
+          .drag_pointer_id()
+          .value_or(WebMouseEvent::kMousePointerId));
+
   fake_mouse_move.SetFrameScale(1);
   local_root_->GetFrame()->GetEventHandler().DragSourceEndedAt(fake_mouse_move,
                                                                operation);

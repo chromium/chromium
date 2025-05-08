@@ -741,7 +741,8 @@ void MouseEventManager::UpdateSelectionForMouseDrag() {
 }
 
 bool MouseEventManager::HandleDragDropIfPossible(
-    const GestureEventWithHitTestResults& targeted_event) {
+    const GestureEventWithHitTestResults& targeted_event,
+    PointerId pointer_id) {
   const WebGestureEvent& gesture_event = targeted_event.Event();
   unsigned modifiers = gesture_event.GetModifiers();
 
@@ -757,7 +758,7 @@ bool MouseEventManager::HandleDragDropIfPossible(
       WebPointerProperties::Button::kLeft, 1,
       modifiers | WebInputEvent::Modifiers::kLeftButtonDown |
           WebInputEvent::Modifiers::kIsCompatibilityEventForTouch,
-      base::TimeTicks::Now());
+      base::TimeTicks::Now(), pointer_id);
   HitTestRequest request(HitTestRequest::kReadOnly);
   MouseEventWithHitTestResults mev =
       event_handling_util::PerformMouseEventHitTest(frame_, request,

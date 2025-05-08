@@ -2840,6 +2840,7 @@ bool WebViewTest::SimulateGestureAtElement(WebInputEvent::Type type,
   WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                         WebInputEvent::GetStaticTimeStampForTests(),
                         WebGestureDevice::kTouchscreen);
+
   event.SetPositionInWidget(gfx::PointF(center));
 
   web_view_helper_.GetWebView()->MainFrameWidget()->HandleInputEvent(
@@ -6493,6 +6494,46 @@ TEST_F(WebViewTest, HiddenVisibilityTransitionsDontDispatchEvents) {
   web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
                                /*is_initial_state=*/false);
   EXPECT_EQ("visible 4", log_element.TextContent());
+}
+
+// Verifies that the drag controller stores the drag's pointer id to be used
+// by synthetic events.
+TEST_F(WebViewTest, TouchDragSetsDragPointerId) {
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebPointerEvent pointer_down(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch), 5, 5);
+  pointer_down.SetPositionInWidget(250, 8);
+  pointer_down.SetPositionInScreen(250, 8);
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pointer_down, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
+
+  WebString target_id = WebString::FromUTF8("target");
+
+  // Simulate long press to start dragging.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  // Starting a drag should make the drag controller cache the pointer id, and
+  // it should be reset after it ends.
+  EXPECT_TRUE(
+      web_view->GetPage()->GetDragController().drag_pointer_id().has_value());
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      gfx::PointF(), gfx::PointF(), ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  EXPECT_FALSE(
+      web_view->GetPage()->GetDragController().drag_pointer_id().has_value());
 }
 
 }  // namespace blink

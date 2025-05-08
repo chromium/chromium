@@ -413,8 +413,9 @@ WebInputEventResult GestureManager::HandleGestureShortPress(
   // timeout which causes GestureRecognizer to suppress long-press detection.
   if (TouchDragAndContextMenuEnabled(frame_) &&
       RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
-    drag_in_progress_ =
-        mouse_event_manager_->HandleDragDropIfPossible(targeted_event);
+    drag_in_progress_ = mouse_event_manager_->HandleDragDropIfPossible(
+        targeted_event,
+        GetPointerIdFromWebGestureEvent(targeted_event.Event()));
   }
   return drag_in_progress_ ? WebInputEventResult::kHandledSystem
                            : WebInputEventResult::kNotHandled;
@@ -439,8 +440,9 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
   if (TouchDragAndContextMenuEnabled(frame_)) {
     if (!RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
-      drag_in_progress_ =
-          mouse_event_manager_->HandleDragDropIfPossible(targeted_event);
+      drag_in_progress_ = mouse_event_manager_->HandleDragDropIfPossible(
+          targeted_event,
+          GetPointerIdFromWebGestureEvent(targeted_event.Event()));
     }
   } else if (frame_->GetSettings() &&
              frame_->GetSettings()->GetTouchDragDropEnabled() &&
@@ -450,7 +452,9 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
         !hit_test_result.AbsoluteImageURL().IsNull() ||
         !hit_test_result.AbsoluteMediaURL().IsNull();
     if (!hit_test_contains_links &&
-        mouse_event_manager_->HandleDragDropIfPossible(targeted_event)) {
+        mouse_event_manager_->HandleDragDropIfPossible(
+            targeted_event,
+            GetPointerIdFromWebGestureEvent(targeted_event.Event()))) {
       gesture_context_menu_deferred_ = true;
       return WebInputEventResult::kHandledSystem;
     }
