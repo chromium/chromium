@@ -159,7 +159,7 @@ bool EncodeHandle(PlatformHandle& handle,
   DCHECK(remote_process.IsValid());
 #if BUILDFLAG(IS_WIN)
   if (remote_process_trust == Transport::ProcessTrust::kUntrusted) {
-    DcheckIfFileHandleIsUnsafe(handle.GetHandle().get());
+    MaybeCheckIfHandleIsUnsafe(handle.GetHandle().get());
   }
 #endif
 

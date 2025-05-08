@@ -6,19 +6,25 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <optional>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/win/nt_status.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/security_util.h"
+#include "base/win/win_util.h"
+#include "mojo/core/embedder/features.h"
 
 namespace mojo {
 
@@ -69,8 +75,31 @@ std::optional<bool> IsReadOnlyHandle(HANDLE handle) {
 
 }  // namespace
 
-void DcheckIfFileHandleIsUnsafe(HANDLE handle) {
+void MaybeCheckIfHandleIsUnsafe(HANDLE handle) {
+  if (base::FeatureList::IsEnabled(core::kMojoHandleTypeProtections)) {
+    // This check should be inexpensive as it calls directly to NtQueryObject.
+    const auto type = base::win::GetObjectTypeName(handle);
+
+    if (type.has_value()) {
+      constexpr static const auto kSupported = std::to_array<const wchar_t*>({
+          L"Section",
+          L"File",
+          L"Directory",
+          L"DxgkSharedResource",
+      });
+
+      if (std::find_if(kSupported.begin(), kSupported.end(),
+                       [&type](const wchar_t* entry) {
+                         return *type == entry;
+                       }) == kSupported.end()) {
+        base::debug::Alias(&handle);
+        DEBUG_ALIAS_FOR_WCHARCSTR(type_for_debugging, type->c_str(), 64);
+        NOTREACHED() << "Cannot transfer handle of type " << *type;
+      }
+    }
+  }
 #if DCHECK_IS_ON()
+  // More expensive checks go here.
   if (GetFileType(handle) != FILE_TYPE_DISK) {
     return;
   }

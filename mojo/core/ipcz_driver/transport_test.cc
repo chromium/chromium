@@ -23,12 +23,15 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/path_service.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "mojo/core/embedder/features.h"
 #include "mojo/core/ipcz_driver/driver.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/transmissible_platform_handle.h"
@@ -765,6 +768,80 @@ TEST_F(MojoIpczTransportTest, InvalidHandleUntrusted) {
         listener.WaitForDisconnect();
       });
 }
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransmitThreadClient,
+                                  MojoIpczTransportTest,
+                                  h) {
+  scoped_refptr<Transport> transport = ReceiveTransport(h);
+
+  TransportListener listener(*transport);
+
+  scoped_refptr<WrappedPlatformHandle> wrapper =
+      DeserializeObjectFrom<WrappedPlatformHandle>(
+          *transport, listener.WaitForNextMessage());
+  CHECK(wrapper);
+  auto handle = wrapper->TakeHandle().TakeHandle();
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+}
+
+class MojoIpczTransportHandleTest
+    : public MojoIpczTransportTest,
+      public ::testing::WithParamInterface</*feature_enabled=*/bool> {
+ public:
+  MojoIpczTransportHandleTest() {
+    features_.InitWithFeatureState(core::kMojoHandleTypeProtections,
+                                   GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// Tests that only the allowlisted set of object types can be transmitted. See
+// `MaybeCheckIfHandleIsUnsafe` for the allowlist. An object of type "Thread" is
+// used here.
+TEST_P(MojoIpczTransportHandleTest, TransmitThread) {
+  RunTestClientWithController("TransmitThreadClient", [&](ClientController& c) {
+    scoped_refptr<Transport> transport = CreateAndSendTransport(
+        c.pipe(), c.process(), Transport::ProcessTrust::kUntrusted);
+
+    TransportListener listener(*transport);
+    HANDLE thread;
+    // Create a real Thread handle, not a psuedohandle. Psuedohandles are
+    // blocked elsewhere.
+    CHECK(::DuplicateHandle(::GetCurrentProcess(), ::GetCurrentThread(),
+                            ::GetCurrentProcess(), &thread,
+                            /*dwDesiredAccess=*/0, /*bInheritHandle=*/FALSE,
+                            DUPLICATE_SAME_ACCESS));
+    auto thread_wrapper = base::MakeRefCounted<WrappedPlatformHandle>(
+        PlatformHandle(base::win::ScopedHandle(thread)));
+    if (GetParam()) {
+      EXPECT_NOTREACHED_DEATH({
+        SerializeObjectFor(*transport, std::move(thread_wrapper))
+            .Transmit(*transport);
+      });
+      // Handler will never get this message as the controller has crashed in
+      // death check, so send over a valid handle in the form of a file to
+      // unblock the handler.
+      SerializeFileFor(
+          *transport, base::File(base::PathService::CheckedGet(base::FILE_EXE),
+                                 base::File::FLAG_OPEN | base::File::FLAG_READ))
+          .Transmit(*transport);
+    } else {
+      SerializeObjectFor(*transport, std::move(thread_wrapper))
+          .Transmit(*transport);
+    }
+    listener.WaitForDisconnect();
+  });
+}
+
+INSTANTIATE_TEST_SUITE_P(/*empty prefix*/,
+                         MojoIpczTransportHandleTest,
+                         testing::Bool(),
+                         [](auto& info) {
+                           return info.param ? "FeatureEnabled"
+                                             : "FeatureDisabled";
+                         });
 
 #endif  // BUILDFLAG(IS_WIN)
 

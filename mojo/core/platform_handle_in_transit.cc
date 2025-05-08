@@ -33,7 +33,7 @@ HANDLE TransferHandle(HANDLE handle,
                       base::ProcessHandle to_process,
                       PlatformHandleInTransit::TransferTargetTrustLevel trust) {
   if (trust == PlatformHandleInTransit::kUntrustedTarget) {
-    DcheckIfFileHandleIsUnsafe(handle);
+    MaybeCheckIfHandleIsUnsafe(handle);
   }
 
   // Duplicating INVALID_HANDLE_VALUE passes a process handle. If you intend to
