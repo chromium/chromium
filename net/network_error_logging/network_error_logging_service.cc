@@ -574,7 +574,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     DCHECK(initialized_);
     if (PoliciesArePersisted()) {
       // TODO(chlily): Add a DeleteAllNelPolicies command to PersistentNelStore.
-      for (auto origin_and_policy : policies_) {
+      for (const auto& origin_and_policy : policies_) {
         store_->DeleteNelPolicy(origin_and_policy.second);
       }
       store_->Flush();

@@ -423,7 +423,7 @@ base::Value HostResolverInternalDataResult::ToValue() const {
 
   base::Value::List endpoints_list;
   endpoints_list.reserve(endpoints_.size());
-  for (IPEndPoint endpoint : endpoints_) {
+  for (const IPEndPoint& endpoint : endpoints_) {
     endpoints_list.Append(endpoint.ToValue());
   }
   dict.Set(kValueEndpointsKey, std::move(endpoints_list));
