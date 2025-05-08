@@ -3562,7 +3562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ExtendedUpdates.DialogEvent"
-    enum="ExtendedUpdatesDialogEventEnum" expires_after="2025-09-07">
+    enum="ExtendedUpdatesDialogEventEnum" expires_after="2026-09-07">
   <owner>aluh@chromium.org</owner>
   <owner>artyomchen@google.com</owner>
   <owner>janetmac@google.com</owner>
@@ -3575,7 +3575,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ExtendedUpdates.EntryPointEvent"
-    enum="ExtendedUpdatesEntryPointEventEnum" expires_after="2025-09-07">
+    enum="ExtendedUpdatesEntryPointEventEnum" expires_after="2026-09-07">
   <owner>aluh@chromium.org</owner>
   <owner>artyomchen@google.com</owner>
   <owner>janetmac@google.com</owner>
