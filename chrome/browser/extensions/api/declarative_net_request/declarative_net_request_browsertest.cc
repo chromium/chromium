@@ -7165,19 +7165,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 }
 
 // Tests that Protected Audience requests can be blocked by the
-// declarativeNetRequest API, and that if they try to redirect requests, the
-// request is blocked by the Protected Audience logic, which doesn't allow
-// redirects, instead of being redirected.
-// Flaky on Mac and Win bots, see also crbug.com/414462480
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_ProtectedAudienceNetworkRequestsBlockRequests \
-  DISABLED_ProtectedAudienceNetworkRequestsBlockRequests
-#else
-#define MAYBE_ProtectedAudienceNetworkRequestsBlockRequests \
-  ProtectedAudienceNetworkRequestsBlockRequests
-#endif
+// declarativeNetRequest API.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       MAYBE_ProtectedAudienceNetworkRequestsBlockRequests) {
+                       ProtectedAudienceNetworkRequestsBlockRequests) {
   privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations(
       privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
   // Mark all Privacy Sandbox APIs as attested since the test case is testing
@@ -7265,10 +7255,74 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
   EXPECT_EQ(0u, GetAndResetRequestsToServer().count(bidder_report_url));
+}
 
-  // Load a second extension which redirects requests for the bidding script
-  // (not the report URL, which the first extension blocks) to a URL that serves
-  // an identical bidding script.
+// Tests that if the declarativeNetRequest API tries to redirect Protected
+// Audience requests, the request is blocked by the Protected Audience logic,
+// which doesn't allow redirects, instead of being redirected.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
+                       ProtectedAudienceNetworkRequestsBlockRedirect) {
+  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations(
+      privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
+  // Mark all Privacy Sandbox APIs as attested since the test case is testing
+  // behaviors not related to attestations.
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAllPrivacySandboxAttestedForTesting(true);
+
+  ASSERT_TRUE(https_server()->Start());
+
+  PrivacySandboxSettingsFactory::GetForProfile(profile())
+      ->SetAllPrivacySandboxAllowedForTesting();
+
+  NavigateToURL(https_server()->GetURL("/interest_group/fenced_frame.html"));
+
+  GURL bidding_logic_url =
+      https_server()->GetURL("/interest_group/bidding_logic.js");
+  GURL decision_logic_url =
+      https_server()->GetURL("/interest_group/decision_logic.js");
+  GURL bidder_report_url = https_server()->GetURL("/echo?bidder_report");
+  GURL decision_report_url = https_server()->GetURL("/echo?decision_report");
+
+  // Add an interest group.
+  EXPECT_EQ("done", content::EvalJs(
+                        web_contents(),
+                        content::JsReplace(
+                            R"(
+          (function() {
+            navigator.joinAdInterestGroup({
+              name: 'cars',
+              owner: $1,
+              biddingLogicURL: $2,
+              userBiddingSignals: [],
+              ads: [{
+                renderURL: 'https://example.com/render',
+                metadata: {ad: 'metadata', here: [1, 2, 3]}
+              }]
+            }, /*joinDurationSec=*/ 300);
+            return 'done';
+          })();
+        )",
+                            url::Origin::Create(bidding_logic_url).Serialize(),
+                            bidding_logic_url)));
+
+  std::string run_auction_command = content::JsReplace(
+      R"(
+             (async function() {
+               let config = await navigator.runAdAuction({
+                 seller: $1,
+                 decisionLogicURL: $2,
+                 interestGroupBuyers: [$1],
+               });
+               document.querySelector('fencedframe').config =
+                  new FencedFrameConfig(config);
+               return config;
+             })()
+          )",
+      url::Origin::Create(decision_logic_url).Serialize(),
+      decision_logic_url.spec());
+
+  // Add an extension which redirects requests for the bidding script to a URL
+  // that serves an identical bidding script.
   TestRule redirect_bidding_logic_rule = CreateGenericRule();
   redirect_bidding_logic_rule.condition->url_filter =
       bidding_logic_url.spec() + "^";
