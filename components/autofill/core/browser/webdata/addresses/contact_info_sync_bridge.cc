@@ -121,10 +121,6 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
         // Since the specifics are guaranteed to be valid by
         // `IsEntityDataValid()`, the conversion will succeed.
         DCHECK(remote);
-        if (!EnsureUniquenessOfHomeAndWork(*remote)) {
-          return syncer::ModelError(FROM_HERE,
-                                    "Failed to ensure uniqueness of H/W.");
-        }
         // Since the distinction between adds and updates is not always clear,
         // we check the existence of the profile manually and act accordingly.
         // TODO(crbug.com/40100455): Consider adding an AddOrUpdate() function
@@ -371,22 +367,6 @@ void ContactInfoSyncBridge::LoadMetadata() {
     batch = std::make_unique<syncer::MetadataBatch>();
   }
   change_processor()->ModelReadyToSync(std::move(batch));
-}
-
-bool ContactInfoSyncBridge::EnsureUniquenessOfHomeAndWork(
-    const AutofillProfile& profile) {
-  if (profile.record_type() != AutofillProfile::RecordType::kAccountHome &&
-      profile.record_type() != AutofillProfile::RecordType::kAccountWork) {
-    return true;
-  }
-  std::vector<AutofillProfile> existing_profiles;
-  AddressAutofillTable& table = *GetAutofillTable();
-  return table.GetAutofillProfiles({profile.record_type()},
-                                   existing_profiles) &&
-         std::ranges::all_of(existing_profiles, [&](const AutofillProfile& p) {
-           return p.guid() == profile.guid() ||
-                  table.UpdateAutofillProfile(p.DowngradeToAccountProfile());
-         });
 }
 
 void ContactInfoSyncBridge::FlushPendingAccountProfileChanges() {
