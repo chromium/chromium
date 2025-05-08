@@ -1164,11 +1164,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/392927981
-      name: "CssDecoratingBoxPseudoFix",
-      status: "stable",
-    },
-    {
       name: "CSSDynamicRangeLimit",
       status: "stable",
     },

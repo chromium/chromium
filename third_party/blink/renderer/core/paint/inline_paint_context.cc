@@ -123,8 +123,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
             return 0;
           }
           if (decorations->size() == 1 &&
-              (decorations->front().Lines() == style->GetTextDecorationLine() ||
-               !RuntimeEnabledFeatures::CssDecoratingBoxPseudoFixEnabled())) {
+              decorations->front().Lines() == style->GetTextDecorationLine()) {
             inline_context_->ClearDecoratingBoxes(saved_decorating_boxes_);
             PushDecoratingBox(item, *layout_object, *style, *decorations);
             return 1;
