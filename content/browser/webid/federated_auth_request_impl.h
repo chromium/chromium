@@ -692,7 +692,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // A list of discloures that were parsed in the token response, when
   // the token's format is "vc+sd-jwt".
-  std::vector<std::pair<std::string, std::string>> disclosures_;
+  std::vector<std::pair<std::string, content::sdjwt::JSONString>> disclosures_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };

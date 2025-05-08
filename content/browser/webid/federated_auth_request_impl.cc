@@ -2954,8 +2954,9 @@ void FederatedAuthRequestImpl::ProcessSdJwt(const GURL& config_url,
 
   for (const auto& json : sd_jwt->disclosures) {
     data_decoder::DataDecoder::ParseJsonIsolated(
-        json, base::BindOnce(&FederatedAuthRequestImpl::OnDisclosureParsed,
-                             weak_ptr_factory_.GetWeakPtr(), callback, json));
+        json.value(),
+        base::BindOnce(&FederatedAuthRequestImpl::OnDisclosureParsed,
+                       weak_ptr_factory_.GetWeakPtr(), callback, json.value()));
   }
 }
 
@@ -2975,7 +2976,7 @@ void FederatedAuthRequestImpl::OnDisclosureParsed(
     return;
   }
 
-  disclosures_.push_back({disclosure->name, json});
+  disclosures_.push_back({disclosure->name, sdjwt::JSONString(json)});
   cb.Run();
 }
 
