@@ -197,8 +197,18 @@ std::string ContactInfoSyncBridge::GetStorageKey(
 void ContactInfoSyncBridge::AutofillProfileChanged(
     const AutofillProfileChange& change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!change.data_model().IsAccountProfile()) {
-    return;
+  // Determine if the profile change should be uploaded to CONTACT_INFO.
+  switch (change.data_model().record_type()) {
+    case AutofillProfile::RecordType::kAccount:
+      break;
+    case AutofillProfile::RecordType::kAccountHome:
+    case AutofillProfile::RecordType::kAccountWork:
+      // Home and work record types are read-only on the client side. Changes
+      // are only persisted locally, but not uploaded.
+      return;
+    case AutofillProfile::RecordType::kLocalOrSyncable:
+      // kLocalOrSyncable addresses are synced through AUTOFILL_PROFILE.
+      return;
   }
   if (!change_processor()->IsTrackingMetadata()) {
     pending_account_profile_changes_.push(change);

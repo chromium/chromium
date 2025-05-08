@@ -354,6 +354,25 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_HideInAutofill) {
   bridge().AutofillProfileChanged(change);
 }
 
+// Tests that no changes for Home and Work addresses are uploaded.
+TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_HomeAndWork) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+
+  // None of these changes should trigger a write.
+  bridge().AutofillProfileChanged(AutofillProfileChange(
+      AutofillProfileChange::ADD, kGUID1,
+      TestProfile(kGUID1, AutofillProfile::RecordType::kAccountHome)));
+  bridge().AutofillProfileChanged(AutofillProfileChange(
+      AutofillProfileChange::REMOVE, kGUID1,
+      TestProfile(kGUID1, AutofillProfile::RecordType::kAccountHome)));
+  bridge().AutofillProfileChanged(AutofillProfileChange(
+      AutofillProfileChange::UPDATE, kGUID2,
+      TestProfile(kGUID2, AutofillProfile::RecordType::kAccountWork)));
+}
+
 // Tests that `ApplyDisableSyncChanges()` clears all data in AutofillTable when
 // the data type gets disabled.
 TEST_F(ContactInfoSyncBridgeTest, ApplyDisableSyncChanges) {
