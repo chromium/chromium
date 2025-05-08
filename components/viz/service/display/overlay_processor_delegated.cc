@@ -28,44 +28,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace {
-DBG_FLAG_FBOOL("delegated.fd.usage", usage_every_frame)
-
-void RecordFDUsageUMA() {
-  static uint64_t sReportUsageFrameCounter = 0;
-  sReportUsageFrameCounter++;
-  constexpr uint32_t kReportEveryNFrames = 60 * 60 * 5;
-  if (((sReportUsageFrameCounter % kReportEveryNFrames) != 0) &&
-      !usage_every_frame()) {
-    return;
-  }
-
-  base::TimeDelta delta_time_taken;
-  int fd_max;
-  int active_fd_count;
-  int rlim_cur;
-
-  if (!viz::GatherFDStats(&delta_time_taken, &fd_max, &active_fd_count,
-                          &rlim_cur))
-    return;
-
-  static constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
-  static constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(10);
-  static constexpr int kHistogramTimeBuckets = 50;
-  int percentage_usage_int = (active_fd_count * 100) / fd_max;
-  UMA_HISTOGRAM_PERCENTAGE("Viz.FileDescriptorTracking.PercentageUsed",
-                           percentage_usage_int);
-  UMA_HISTOGRAM_COUNTS_100000("Viz.FileDescriptorTracking.NumActive",
-                              active_fd_count);
-  UMA_HISTOGRAM_COUNTS_100000("Viz.FileDescriptorTracking.NumSoftMax",
-                              rlim_cur);
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Viz.FileDescriptorTracking.TimeToCompute", delta_time_taken,
-      kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
-
-  DBG_LOG("delegated.fd.usage", "FD usage: %d / %d - time us: %f",
-          active_fd_count, fd_max, delta_time_taken.InMicrosecondsF());
-}
-
 // Block delegation if there has been a copy request in the last 3 frames.
 constexpr int kCopyRequestBlockFrames = 3;
 
@@ -231,9 +193,6 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     std::vector<gfx::Rect>* content_bounds) {
   DCHECK(candidates->empty());
   bool success = false;
-#if !BUILDFLAG(IS_APPLE)
-  RecordFDUsageUMA();
-#endif
 
   DebugLogBeforeDelegation(*damage_rect, surface_damage_rect_list);
 
