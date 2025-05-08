@@ -4906,14 +4906,12 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DontStartQuicAfterFailure) {
       .RequestStream(pool());
   ASSERT_FALSE(requester.result().has_value());
 
-  // Simulate a network change event to fail the AttemptManager.
+  // Simulate a network change event to fail the AttemptManager. The
+  // AttemptManager will reset ServiceEndpointRequest.
   NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
   FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(endpoint_request);
 
-  // Complete the service endpoint resolution. QuicAttempt should not start.
-  endpoint_request
-      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
-      .CallOnServiceEndpointRequestFinished(OK);
   requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_NETWORK_CHANGED)));
   ASSERT_TRUE(pool()

@@ -910,6 +910,9 @@ void HttpStreamPool::AttemptManager::
 }
 
 void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
+  CHECK(!is_failing_);
+  CHECK(service_endpoint_request_);
+
   // The order of the following checks is important, see the following comments.
   // TODO(crbug.com/383606724): Figure out a better design and algorithms to
   // handle attempts and existing sessions.
@@ -1420,6 +1423,8 @@ void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
   CHECK(!final_error_to_notify_jobs_.has_value());
   final_error_to_notify_jobs_ = error;
   is_failing_ = true;
+  service_endpoint_request_.reset();
+
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_NOTIFY_FAILURE, [&] {
         base::Value::Dict dict = GetStatesAsNetLogParams();
