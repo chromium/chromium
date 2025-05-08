@@ -7,8 +7,19 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import {OffscreenCommandType} from '../../common/offscreen_command_type.js';
+
 type LoadCallback = (instance: LibLouis) => void;
 type MessageCallback = (message: Object) => void;
+type SerializedMessageEvent = {
+  command: OffscreenCommandType,
+  data: string,
+};
+type SerializedErrorEvent = {
+  command: OffscreenCommandType,
+  message: string,
+};
+
 
 interface Dictionary {
   [key: string]: any;
@@ -25,8 +36,6 @@ export class LibLouis {
   /** Next message ID to be used. Incremented with each sent message. */
   private nextMessageId_ = 1;
 
-  worker?: Worker;
-
   /**
    * @param wasmPath Path to .wasm file for the module.
    * @param tablesDir Path to tables directory.
@@ -35,16 +44,27 @@ export class LibLouis {
       wasmPath: string, _tablesDir?: string, loadCallback?: LoadCallback) {
     this.wasmPath_ = wasmPath;
 
-    this.loadOrReload_(loadCallback);
+    chrome.runtime.onMessage
+        .addListener(
+            (message: any|undefined, _sender: chrome.runtime.MessageSender,
+             _sendResponse: (value: any) => void) =>
+                this.handleMessageFromOffscreen_(message))
+
+            this.loadOrReload_(loadCallback);
   }
 
-  /**
-   * Convenience method to wait for the constructor to resolve its callback.
-   * @param wasmPath Path to .wasm file for the module.
-   * @param tablesDir Path to tables directory.
-   */
-  static async create(wasmPath: string, tablesDir?: string): Promise<LibLouis> {
-    return new Promise(resolve => new LibLouis(wasmPath, tablesDir, resolve));
+  private handleMessageFromOffscreen_(message: any|undefined): boolean {
+    switch (message['command']) {
+      case OffscreenCommandType.LIBLOUIS_MESSAGE:
+        this.onInstanceMessage_(message);
+        break;
+      case OffscreenCommandType.LIBLOUIS_ERROR:
+        this.onInstanceError_(message);
+        break;
+    }
+    // Returns false as the response is not asynchronous and the callback does
+    // not need to be kept alive.
+    return false;
   }
 
   isLoaded(): boolean {
@@ -87,9 +107,6 @@ export class LibLouis {
    * @param callback Callback to receive the reply.
    */
   rpc(command: string, message: Dictionary, callback: MessageCallback): void {
-    if (!this.worker) {
-      throw Error('Cannot send RPC: liblouis instance not loaded');
-    }
     const messageId = '' + this.nextMessageId_++;
     message['message_id'] = messageId;
     message['command'] = command;
@@ -97,25 +114,33 @@ export class LibLouis {
     if (LibLouis.DEBUG) {
       globalThis.console.debug('RPC -> ' + json);
     }
-    this.worker.postMessage(json);
     this.pendingRpcCallbacks_[messageId] = callback;
+
+    chrome.runtime.sendMessage(
+        undefined,
+        {command: OffscreenCommandType.LIBLOUIS_RPC, messageJson: json},
+        undefined, (error: any) => {
+          if (error && error.message) {
+            throw Error(error.message);
+          }
+        });
   }
 
   /** Invoked when the Web Assembly instance successfully loads. */
   private onInstanceLoad_(): void {}
 
   /** Invoked when the Web Assembly instance fails to load. */
-  private onInstanceError_(e: ErrorEvent): void {
-    globalThis.console.error('Error in liblouis ' + e.message);
+  private onInstanceError_(serializedEvent: SerializedErrorEvent): void {
+    globalThis.console.error('Error in liblouis ' + serializedEvent.message);
     this.loadOrReload_();
   }
 
   /** Invoked when the Web Assembly instance posts a message. */
-  private onInstanceMessage_(e: MessageEvent): void {
+  private onInstanceMessage_(serializedEvent: SerializedMessageEvent): void {
     if (LibLouis.DEBUG) {
-      globalThis.console.debug('RPC <- ' + e.data);
+      globalThis.console.debug('RPC <- ' + serializedEvent.data);
     }
-    const message = /** @type {!Object} */ (JSON.parse(e.data));
+    const message = /** @type {!Object} */ (JSON.parse(serializedEvent.data));
     const messageId = message['in_reply_to'];
     if (messageId === undefined) {
       globalThis.console.warn(
@@ -133,11 +158,11 @@ export class LibLouis {
   }
 
   private loadOrReload_(loadCallback?: LoadCallback): void {
-    this.worker = new Worker(this.wasmPath_);
-    this.worker.addEventListener(
-        'message', e => this.onInstanceMessage_(e), false /* useCapture */);
-    this.worker.addEventListener(
-        'error', e => this.onInstanceError_(e), false /* useCapture */);
+    chrome.runtime.sendMessage(undefined, {
+      command: OffscreenCommandType.LIBLOUIS_START_WORKER,
+      wasmPath: this.wasmPath_
+    });
+
     this.rpc('load', {}, () => {
       this.isLoaded_ = true;
       loadCallback && loadCallback(this);
@@ -193,7 +218,7 @@ export namespace LibLouis {
     translate(
         text: string, formTypeMap: number[]|number,
         callback: TranslateCallback): void {
-      if (!this.instance_.worker) {
+      if (!this.instance_.isLoaded()) {
         callback(
             null /*cells*/, null /*textToBraille*/, null /*brailleToText*/);
         return;
@@ -236,7 +261,7 @@ export namespace LibLouis {
      * @param callback Callback for result.
      */
     backTranslate(cells: ArrayBuffer, callback: BackTranslateCallback): void {
-      if (!this.instance_.worker) {
+      if (!this.instance_.isLoaded()) {
         callback(null /*text*/);
         return;
       }

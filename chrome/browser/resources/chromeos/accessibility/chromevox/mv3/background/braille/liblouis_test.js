@@ -15,9 +15,8 @@ ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    const path = chrome.runtime.getURL(
-        'chromevox/third_party/liblouis/liblouis_wrapper.js');
-    this.liblouis = await LibLouis.create(path, '');
+    this.liblouis = BrailleTranslatorManager.instance.getLibLouisForTest();
+    await new Promise((resolve) => this.waitForLibLouisLoad(resolve));
   }
 
   async backTranslate(tableNames, buffer) {
@@ -29,6 +28,14 @@ ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
     const translator = await this.liblouis.getTranslator(tableNames);
     return new Promise(
         resolve => translator.translate(text, [], (...args) => resolve(args)));
+  }
+
+  async waitForLibLouisLoad(resolve) {
+    if (this.liblouis.isLoaded()) {
+      resolve()
+    } else {
+      setTimeout(() => this.waitForLibLouisLoad(resolve), 500);
+    }
   }
 };
 

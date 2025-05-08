@@ -6,6 +6,8 @@ import {EarconEngine} from '../background/earcon_engine.js';
 import {InternalKeyEvent} from '../common/internal_key_event.js';
 import {OffscreenCommandType} from '../common/offscreen_command_type.js';
 
+import {LibLouisWorker} from './liblouis_worker.js';
+
 type MessageSender = chrome.runtime.MessageSender;
 type SendResponse = (value: any) => void;
 
@@ -195,3 +197,4 @@ OffscreenBackgroundKeyboardHandler.init();
 OffscreenClipboardHandler.init();
 OffscreenSpeechSynthesis.init();
 EarconEngine.init();
+LibLouisWorker.init();
