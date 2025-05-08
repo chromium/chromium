@@ -20,6 +20,10 @@ namespace policy {
 crypto::obsolete::Md5 MakeMd5HasherForPolicyEventId();
 }
 
+namespace web_app::internals {
+crypto::obsolete::Md5 MakeMd5HasherForWebAppShortcutIcon();
+}
+
 namespace crypto::obsolete {
 
 // This class is used for computing MD5 hashes, either one-shot via Md5::Hash(),
@@ -44,6 +48,9 @@ class CRYPTO_EXPORT Md5 {
   // The friends listed here are the areas required to continue using MD5 for
   // compatibility with existing specs, on-disk data, or similar.
   friend Md5 policy::MakeMd5HasherForPolicyEventId();
+
+  // TODO(https://crbug.com/416304903): get rid of this.
+  friend Md5 web_app::internals::MakeMd5HasherForWebAppShortcutIcon();
 
   Md5();
   static std::array<uint8_t, kSize> Hash(base::span<const uint8_t> data);

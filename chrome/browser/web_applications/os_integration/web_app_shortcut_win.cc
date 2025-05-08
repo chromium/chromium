@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
 
 #include <shlobj.h>
@@ -21,12 +16,12 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/md5.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -45,6 +40,7 @@
 #include "chrome/installer/util/taskbar_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/obsolete/md5.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/win/shell.h"
 #include "ui/gfx/icon_util.h"
@@ -60,26 +56,33 @@ constexpr base::FilePath::CharType kIconChecksumFileExt[] =
 }  // namespace
 
 namespace internals {
+
+// Not in namespace {} so it can be friended from //crypto to allow access to
+// the private Md5 constructor.
+crypto::obsolete::Md5 MakeMd5HasherForWebAppShortcutIcon() {
+  return crypto::obsolete::Md5();
+}
+
 namespace {
+
+using Md5Result = std::array<uint8_t, crypto::obsolete::Md5::kSize>;
 
 // Calculates checksum of an icon family using MD5.
 // The checksum is derived from all of the icons in the family.
-void GetImageCheckSum(const gfx::ImageFamily& image, base::MD5Digest* digest) {
-  DCHECK(digest);
-  base::MD5Context md5_context;
-  base::MD5Init(&md5_context);
+Md5Result GetImageCheckSum(const gfx::ImageFamily& image_family) {
+  crypto::obsolete::Md5 md5 = MakeMd5HasherForWebAppShortcutIcon();
 
-  for (gfx::ImageFamily::const_iterator it = image.begin(); it != image.end();
-       ++it) {
-    SkBitmap bitmap = it->AsBitmap();
-
-    std::string_view image_data(
-        reinterpret_cast<const char*>(bitmap.getPixels()),
-        bitmap.computeByteSize());
-    base::MD5Update(&md5_context, image_data);
+  for (const auto& image : image_family) {
+    SkBitmap bitmap = image.AsBitmap();
+    // SAFETY: Skia guarantees that computeByteSize() returns the number of
+    // bytes that the pointer returned by getPixels() points to.
+    UNSAFE_BUFFERS(base::span<const uint8_t> pixels(
+        reinterpret_cast<const uint8_t*>(bitmap.getPixels()),
+        bitmap.computeByteSize()));
+    md5.Update(pixels);
   }
 
-  base::MD5Final(digest, &md5_context);
+  return md5.Finish();
 }
 
 // Saves |image| as an |icon_file| with the checksum.
@@ -88,13 +91,13 @@ bool SaveIconWithCheckSum(const base::FilePath& icon_file,
   if (!IconUtil::CreateIconFileFromImageFamily(image, icon_file))
     return false;
 
-  base::MD5Digest digest;
-  GetImageCheckSum(image, &digest);
+  Md5Result checksum = GetImageCheckSum(image);
 
-  base::FilePath cheksum_file(icon_file.ReplaceExtension(kIconChecksumFileExt));
+  base::FilePath checksum_file(
+      icon_file.ReplaceExtension(kIconChecksumFileExt));
   // Passing digest as one element in a span of digest fields, therefore the 1u,
   // and then having as_bytes converting it to a new span of uint8_t's.
-  return base::WriteFile(cheksum_file, base::byte_span_from_ref(digest));
+  return base::WriteFile(checksum_file, checksum);
 }
 
 // Returns true if |icon_file| is missing or different from |image|.
@@ -107,19 +110,16 @@ bool ShouldUpdateIcon(const base::FilePath& icon_file,
   if (!base::PathExists(icon_file) || !base::PathExists(checksum_file))
     return true;
 
-  base::MD5Digest persisted_image_checksum;
-  if (sizeof(persisted_image_checksum) !=
-      base::ReadFile(checksum_file,
-                     reinterpret_cast<char*>(&persisted_image_checksum),
-                     sizeof(persisted_image_checksum)))
+  Md5Result persisted_image_checksum;
+  if (base::ReadFile(checksum_file, persisted_image_checksum).value_or(0) !=
+      sizeof(persisted_image_checksum)) {
     return true;
+  }
 
-  base::MD5Digest downloaded_image_checksum;
-  GetImageCheckSum(image, &downloaded_image_checksum);
+  Md5Result downloaded_image_checksum = GetImageCheckSum(image);
 
   // Update icon if checksums are not equal.
-  return memcmp(&persisted_image_checksum, &downloaded_image_checksum,
-                sizeof(base::MD5Digest)) != 0;
+  return persisted_image_checksum != downloaded_image_checksum;
 }
 
 // Returns true if |shortcut_file_name| matches profile |profile_path|, and has
