@@ -959,13 +959,8 @@ ci.thin_tester(
                     shards = 8,
                 ),
             ),
-            "browser_tests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter",
-                ],
-                swarming = targets.swarming(
-                    shards = 20,
-                ),
+            "browser_tests": targets.remove(
+                reason = "https://crbug.com/1406364",
             ),
             "content_browsertests": targets.mixin(
                 # https://crbug.com/1279504
