@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] empty URL: inline-unquoted
+  assert_equals: expected "url(\\"#foo\\")" but got "url(\\"http://web-platform.test:8001/css/css-values/urls/fragment-only.html#foo\\")"
+[FAIL] empty URL: inline-quoted
+  assert_equals: expected "url(\\"#foo\\")" but got "url(\\"http://web-platform.test:8001/css/css-values/urls/fragment-only.html#foo\\")"
+[FAIL] empty URL: external-unquoted
+  assert_equals: expected "url(\\"#foo\\")" but got "url(\\"http://web-platform.test:8001/css/css-values/urls/support/fragment-only-urls.css#foo\\")"
+[FAIL] empty URL: external-quoted
+  assert_equals: expected "url(\\"#foo\\")" but got "url(\\"http://web-platform.test:8001/css/css-values/urls/support/fragment-only-urls.css#foo\\")"
+[FAIL] empty URL: external-variable
+  assert_equals: expected "url(\\"#foo\\")" but got "url(\\"http://web-platform.test:8001/css/css-values/urls/support/fragment-only-urls.css#foo\\")"
+Harness: the test ran to completion.
+
