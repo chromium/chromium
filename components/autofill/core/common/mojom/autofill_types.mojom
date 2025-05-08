@@ -313,6 +313,7 @@ struct AutocompleteParsingResult {
   HtmlFieldMode mode;
   HtmlFieldType field_type;
   bool webauthn;
+  bool webidentity;
 };
 
 // autofill::FormFieldData (components/autofill/core/common/form_field_data.h)

@@ -189,6 +189,10 @@ struct StructTraits<autofill::mojom::AutocompleteParsingResultDataView,
     return r.webauthn;
   }
 
+  static bool webidentity(const autofill::AutocompleteParsingResult& r) {
+    return r.webidentity;
+  }
+
   static bool Read(autofill::mojom::AutocompleteParsingResultDataView data,
                    autofill::AutocompleteParsingResult* out);
 };

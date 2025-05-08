@@ -24,6 +24,8 @@ namespace autofill {
 // - If ShouldIgnoreAutocompleteAttribute(autocomplete) is true.
 // An unrecognizable field_type doesn't stop parsing and yields
 // HtmlFieldType::kUnrecognized instead.
+// When adding a new field, keep the traits updated in
+// components/autofill/core/common/mojom/autofill_types.mojom.
 struct AutocompleteParsingResult {
   std::string ToString() const;
 

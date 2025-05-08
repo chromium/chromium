@@ -163,6 +163,7 @@ bool StructTraits<autofill::mojom::AutocompleteParsingResultDataView,
   if (!data.ReadFieldType(&out->field_type))
     return false;
   out->webauthn = data.webauthn();
+  out->webidentity = data.webidentity();
   return true;
 }
 

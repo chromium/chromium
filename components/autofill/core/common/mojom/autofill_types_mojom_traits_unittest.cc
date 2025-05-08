@@ -526,11 +526,13 @@ TEST_F(AutofillTypeTraitsTestImpl, PassPasswordSuggestionRequest) {
 }
 
 TEST(AutofillTypesMojomTraitsTest, AutocompleteParsingResult) {
-  // Simulate a parsed "name webauthn" attribute.
+  // Simulate a parsed "section-test name webauthn webidentity" attribute.
   autofill::AutocompleteParsingResult original;
+  original.section = "section-test";
   original.mode = HtmlFieldMode::kNone;
   original.field_type = HtmlFieldType::kName;
   original.webauthn = true;
+  original.webidentity = true;
 
   autofill::AutocompleteParsingResult copy;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
