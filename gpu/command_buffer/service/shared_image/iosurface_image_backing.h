@@ -19,6 +19,8 @@
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
 
+@protocol MTLDevice;
+
 namespace gl {
 class ScopedEGLSurfaceIOSurface;
 }  // namespace gl
@@ -141,13 +143,19 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   void AddWGPUDeviceWithPendingCommands(wgpu::Device device)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void WaitForDawnCommandsToBeScheduled(const wgpu::Device& device_to_exclude)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void AddEGLDisplayWithPendingCommands(gl::GLDisplayEGL* display)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void WaitForANGLECommandsToBeScheduled() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void ClearEGLDisplaysWithPendingCommands(gl::GLDisplayEGL* display_to_keep)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Wait for commands to be scheduled on every WGPUDevice or EGLDisplay that's
+  // pending a flush except those using the same MTLDevice as `waiting_device`.
+  // This is needed in two cases: 1) handing off the IOSurface to CoreAnimation
+  // since there's no other synchronization mechanism, and 2) accessing the
+  // IOSurface on different GPUs/MTLDevices since there could be shadow copies
+  // performed by the kernel.
+  void WaitForCommandsToBeScheduled(id<MTLDevice> waiting_device = nil)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
  private:

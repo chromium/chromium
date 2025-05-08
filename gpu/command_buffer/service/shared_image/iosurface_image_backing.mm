@@ -10,8 +10,10 @@
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing.h"
 
 #include <EGL/egl.h>
+#include <EGL/eglext.h>
 #import <Metal/Metal.h>
 #include <dawn/native/MetalBackend.h>
+#include <dawn/webgpu_cpp.h>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_nsobject.h"
@@ -32,6 +34,7 @@
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "third_party/angle/include/EGL/eglext_angle.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/ganesh/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
@@ -185,6 +188,24 @@ std::vector<scoped_refptr<GraphiteTextureHolder>> CreateGraphiteMetalTextures(
   return graphite_textures;
 }
 #endif
+
+id<MTLDevice> QueryMetalDeviceFromANGLE(gl::GLDisplayEGL* display) {
+  id<MTLDevice> metal_device = nil;
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+    EGLAttrib angle_device_attrib = 0;
+    if (eglQueryDisplayAttribEXT(display->GetDisplay(), EGL_DEVICE_EXT,
+                                 &angle_device_attrib)) {
+      EGLDeviceEXT angle_device =
+          reinterpret_cast<EGLDeviceEXT>(angle_device_attrib);
+      EGLAttrib metal_device_attrib = 0;
+      if (eglQueryDeviceAttribEXT(angle_device, EGL_METAL_DEVICE_ANGLE,
+                                  &metal_device_attrib)) {
+        metal_device = (__bridge id)(void*)metal_device_attrib;
+      }
+    }
+  }
+  return metal_device;
+}
 
 class BackpressureMetalSharedEventImpl final
     : public BackpressureMetalSharedEvent {
@@ -697,13 +718,8 @@ bool IOSurfaceImageBacking::OverlayRepresentation::BeginReadAccess(
     return false;
   }
 
-  // This will transition the image to be accessed by CoreAnimation. So
-  // WaitForANGLECommandsToBeScheduled() call is required.
-  iosurface_backing->WaitForANGLECommandsToBeScheduled();
-
-  // Likewise do the same for Dawn's commands.
-  iosurface_backing->WaitForDawnCommandsToBeScheduled(
-      /*device_to_exclude=*/nullptr);
+  // This will transition the image to be accessed by CoreAnimation.
+  iosurface_backing->WaitForCommandsToBeScheduled();
 
   gl::GLContext* context = gl::GLContext::GetCurrent();
   if (context) {
@@ -808,17 +824,6 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
     return {};
   }
 
-  // IOSurface might be written on a different GPU. We need to wait for
-  // previous Dawn and ANGLE commands to be scheduled first.
-  // Note: we don't need to wait for the commands from the same wgpu::Device to
-  // be scheduled, but we do need it on different devices since they could wrap
-  // the same IOSurface in different MTLTextures and the kernel needs to be told
-  // about the pending update to the IOSurface before we use it on another Metal
-  // command queue and the way to do that is waitUntilScheduled.
-  iosurface_backing->WaitForANGLECommandsToBeScheduled();
-  iosurface_backing->WaitForDawnCommandsToBeScheduled(
-      /*device_to_exclude=*/device_);
-
   usage_ = wgpu_texture_usage;
   internal_usage_ = internal_usage;
 
@@ -846,6 +851,11 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
     return texture_;
   }
 
+  // IOSurface might be written on a different GPU. We need to wait for previous
+  // Dawn and ANGLE commands to be scheduled first.
+  iosurface_backing->WaitForCommandsToBeScheduled(
+      dawn::native::metal::GetMTLDevice(device_.Get()));
+
   bool is_cleared = iosurface_backing->IsClearedInternal();
   wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc = {};
   begin_access_desc.initialized = is_cleared;
@@ -857,26 +867,20 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   std::vector<wgpu::SharedFence> shared_fences;
   std::vector<uint64_t> signaled_values;
 
-  // Synchronize with all of the MTLSharedEvents that have been
-  // stored in the backing as a consequence of earlier BeginAccess/
-  // EndAccess calls against other representations.
-  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
-    // Not possible to reach this with any other type of backing.
-    DCHECK_EQ(backing()->GetType(), SharedImageBackingType::kIOSurface);
+  // Synchronize with all of the MTLSharedEvents that have been stored in the
+  // backing as a consequence of earlier BeginAccess/EndAccess calls against
+  // other representations.
+  iosurface_backing->ProcessSharedEventsForBeginAccess(
+      readonly, [&](id<MTLSharedEvent> shared_event, uint64_t signaled_value) {
+        wgpu::SharedFenceMTLSharedEventDescriptor shared_event_desc;
+        shared_event_desc.sharedEvent = shared_event;
 
-    iosurface_backing->ProcessSharedEventsForBeginAccess(
-        readonly,
-        [&](id<MTLSharedEvent> shared_event, uint64_t signaled_value) {
-          wgpu::SharedFenceMTLSharedEventDescriptor shared_event_desc;
-          shared_event_desc.sharedEvent = shared_event;
+        wgpu::SharedFenceDescriptor fence_desc;
+        fence_desc.nextInChain = &shared_event_desc;
 
-          wgpu::SharedFenceDescriptor fence_desc;
-          fence_desc.nextInChain = &shared_event_desc;
-
-          shared_fences.push_back(device_.ImportSharedFence(&fence_desc));
-          signaled_values.push_back(signaled_value);
-        });
-  }
+        shared_fences.push_back(device_.ImportSharedFence(&fence_desc));
+        signaled_values.push_back(signaled_value);
+      });
 
   // Populate `begin_access_desc` with the fence data.
   CHECK(shared_fences.size() == signaled_values.size());
@@ -1116,8 +1120,7 @@ bool IOSurfaceImageBacking::ReadbackToMemory(
   CHECK_LE(pixmaps.size(), 3u);
 
   // Make sure any pending ANGLE EGLDisplays and Dawn devices are flushed.
-  WaitForANGLECommandsToBeScheduled();
-  WaitForDawnCommandsToBeScheduled(/*device_to_exclude=*/nullptr);
+  WaitForCommandsToBeScheduled();
 
   ScopedIOSurfaceLock io_surface_lock(io_surface_.get(), /*options=*/0);
 
@@ -1168,8 +1171,7 @@ bool IOSurfaceImageBacking::UploadFromMemory(
   CHECK_LE(pixmaps.size(), 3u);
 
   // Make sure any pending ANGLE EGLDisplays and Dawn devices are flushed.
-  WaitForANGLECommandsToBeScheduled();
-  WaitForDawnCommandsToBeScheduled(/*device_to_exclude=*/nullptr);
+  WaitForCommandsToBeScheduled();
 
   ScopedIOSurfaceLock io_surface_lock(io_surface_.get(), /*options=*/0);
 
@@ -1386,39 +1388,44 @@ void IOSurfaceImageBacking::AddWGPUDeviceWithPendingCommands(
   wgpu_devices_pending_flush_.insert(std::move(device));
 }
 
-void IOSurfaceImageBacking::WaitForDawnCommandsToBeScheduled(
-    const wgpu::Device& device_to_exclude) {
+void IOSurfaceImageBacking::WaitForCommandsToBeScheduled(
+    id<MTLDevice> waiting_device) {
   AssertLockAcquired();
-  TRACE_EVENT0("gpu",
-               "IOSurfaceImageBacking::WaitForDawnCommandsToBeScheduled");
-  bool excluded_device_was_pending_flush = false;
+  TRACE_EVENT0("gpu", "IOSurfaceImageBacking::WaitForCommandsToBeScheduled");
+
+  std::vector<wgpu::Device> wgpu_devices_to_keep;
   for (const auto& device : std::move(wgpu_devices_pending_flush_)) {
-    if (device.Get() == device_to_exclude.Get()) {
-      excluded_device_was_pending_flush = true;
+    // Only Metal backed devices are added to `wgpu_devices_pending_flush_`.
+    id<MTLDevice> mtl_device = dawn::native::metal::GetMTLDevice(device.Get());
+    if (mtl_device && mtl_device == waiting_device) {
+      wgpu_devices_to_keep.push_back(device);
       continue;
     }
+    TRACE_EVENT0("gpu",
+                 "IOSurfaceImageBacking::WaitForCommandsToBeScheduled::Dawn");
     dawn::native::metal::WaitForCommandsToBeScheduled(device.Get());
   }
-  if (excluded_device_was_pending_flush) {
-    // This device wasn't flushed, so we need to add it to the list again.
-    wgpu_devices_pending_flush_.insert(device_to_exclude);
+  wgpu_devices_pending_flush_ = std::move(wgpu_devices_to_keep);
+
+  std::vector<gl::GLDisplayEGL*> egl_displays_to_keep;
+  for (auto* display : std::move(egl_displays_pending_flush_)) {
+    // Always flush work for any ANGLE-OpenGL EGLDisplays.
+    if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal &&
+        QueryMetalDeviceFromANGLE(display) == waiting_device) {
+      egl_displays_to_keep.push_back(display);
+      continue;
+    }
+    TRACE_EVENT0("gpu",
+                 "IOSurfaceImageBacking::WaitForCommandsToBeScheduled::ANGLE");
+    eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
   }
+  egl_displays_pending_flush_ = std::move(egl_displays_to_keep);
 }
 
 void IOSurfaceImageBacking::AddEGLDisplayWithPendingCommands(
     gl::GLDisplayEGL* display) {
   AssertLockAcquired();
   egl_displays_pending_flush_.insert(display);
-}
-
-void IOSurfaceImageBacking::WaitForANGLECommandsToBeScheduled() {
-  AssertLockAcquired();
-  TRACE_EVENT0("gpu",
-               "IOSurfaceImageBacking::WaitForANGLECommandsToBeScheduled");
-
-  for (auto* display : std::move(egl_displays_pending_flush_)) {
-    eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
-  }
 }
 
 void IOSurfaceImageBacking::ClearEGLDisplaysWithPendingCommands(
@@ -1742,15 +1749,15 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
   CHECK(display);
   CHECK_EQ(display->GetDisplay(), egl_state->egl_display_);
 
-  // IOSurface might be written on a different queue. So we have to wait for the
-  // previous Dawn and ANGLE commands to be scheduled first so that the kernel
-  // knows about the pending update to the IOSurface.
-  WaitForDawnCommandsToBeScheduled(/*device_to_exclude=*/nullptr);
-
-  // Note that we don't need to call WaitForANGLECommandsToBeScheduled for other
+  // Note that we don't need to call WaitForCommandsToBeScheduled for other
   // EGLDisplays because it is already done when the previous GL context is made
   // uncurrent. We can simply remove the other EGLDisplays from the list.
   ClearEGLDisplaysWithPendingCommands(/*display_to_keep=*/display);
+
+  // IOSurface might be written on a different queue. So we have to wait for the
+  // previous Dawn and ANGLE commands to be scheduled first so that the kernel
+  // knows about the pending update to the IOSurface.
+  WaitForCommandsToBeScheduled(QueryMetalDeviceFromANGLE(display));
 
   if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     // If this image could potentially be shared with another Metal device,
@@ -1853,7 +1860,9 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   CHECK(display);
   CHECK_EQ(display->GetDisplay(), egl_state->egl_display_);
 
-  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+  const bool is_angle_metal =
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal;
+  if (is_angle_metal) {
     id<MTLSharedEvent> shared_event = nil;
     uint64_t signal_value = 0;
     if (display->CreateMetalSharedEvent(&shared_event, &signal_value)) {
@@ -1885,10 +1894,18 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   // serialized with respect to reads (so that the end of a write always
   // triggers a release and copy). By design, IOSurfaceImageBackingFactory
   // enforces this property for this use case.
+  //
+  // For ANGLE Metal, we need to rebind the texture for two reasons:
+  // 1) ReleaseTexImage flushes the command buffer which contains the shared
+  //    event signal above, otherwise the shared event might never be signaled
+  //    since we skip calling eglWaitUntilWorkScheduledANGLE in single GPU case.
+  // 2) BindTexImage adds a synchronization dependency on the command buffer
+  //    which contains the shared event wait before the next ANGLE access.
+  //    Otherwise, ANGLE might skip waiting on the command buffer and hence the
+  //    shared event and do a CPU readback from the IOSurface in some cases.
   const bool is_swangle =
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader;
-
-  if (is_swangle && egl_state->num_ongoing_accesses_ == 0) {
+  if ((is_swangle || is_angle_metal) && egl_state->num_ongoing_accesses_ == 0) {
     CHECK_EQ(static_cast<int>(egl_state->gl_textures_.size()),
              format().NumberOfPlanes());
     CHECK_EQ(static_cast<int>(egl_state->egl_surfaces_.size()),
