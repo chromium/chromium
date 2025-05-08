@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
@@ -127,7 +128,9 @@ PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
       view_(std::move(view)),
       exit_callback_(exit_callback),
       auth_performer_(UserDataAuthClient::Get()),
-      cryptohome_pin_engine_(&auth_performer_) {
+      // TODO(crbug.com/404133029): Remove g_browser_process usage.
+      cryptohome_pin_engine_(g_browser_process->local_state(),
+                             &auth_performer_) {
   DCHECK(view_);
 
   quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(

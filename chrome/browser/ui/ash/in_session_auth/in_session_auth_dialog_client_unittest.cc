@@ -13,6 +13,8 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
@@ -68,7 +70,8 @@ class InSessionAuthDialogClientTest : public testing::Test {
     ash::CryptohomeMiscClient::InitializeFake();
     ash::SystemSaltGetter::Initialize();
 
-    client_ = std::make_unique<InSessionAuthDialogClient>();
+    client_ = std::make_unique<InSessionAuthDialogClient>(
+        TestingBrowserProcess::GetGlobal()->local_state());
   }
 
   ~InSessionAuthDialogClientTest() override {
@@ -128,6 +131,9 @@ class InSessionAuthDialogClientTest : public testing::Test {
 
  protected:
   const content::BrowserTaskEnvironment task_environment_;
+
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
 
   ash::ScopedStubInstallAttributes install_attributes{
       ash::StubInstallAttributes::CreateConsumerOwned()};
