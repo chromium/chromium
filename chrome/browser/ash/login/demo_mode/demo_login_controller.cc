@@ -391,14 +391,16 @@ void DemoLoginController::TriggerDemoAccountLoginFlow() {
   MaybeCleanupPreviousDemoAccount();
 }
 
-void DemoLoginController::SetSetupFailedCallbackForTest(
-    FailedRequestCallback callback) {
-  setup_failed_callback_for_testing_ = std::move(callback);
+void DemoLoginController::SetSetupRequestCallbackForTesting(
+    RequestCallback callback) {
+  CHECK_IS_TEST();
+  setup_request_callback_for_testing_ = std::move(callback);
 }
 
-void DemoLoginController::SetCleanUpFailedCallbackForTest(
-    FailedRequestCallback callback) {
-  clean_up_failed_callback_for_testing_ = std::move(callback);
+void DemoLoginController::SetCleanupRequestCallbackForTesting(
+    RequestCallback callback) {
+  CHECK_IS_TEST();
+  cleanup_request_callback_for_testing_ = std::move(callback);
 }
 
 void DemoLoginController::SetDeviceCloudPolicyManagerForTesting(
@@ -409,8 +411,6 @@ void DemoLoginController::SetDeviceCloudPolicyManagerForTesting(
 void DemoLoginController::SendSetupDemoAccountRequest() {
   CHECK(!url_loader_);
 
-  // TODO(crbug.com/372333479): Demo server use auth the request with device
-  // integrity check. Attach credential to the request once it is ready.
   const auto sign_in_scoped_device_id = GenerateSigninScopedDeviceId();
   std::optional<base::Value::Dict> device_identifier =
       GetDeviceIdentifier(sign_in_scoped_device_id);
@@ -497,6 +497,10 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
   DemoSessionMetricsRecorder::ReportDemoAccountSetupResult(
       ResultCode::kSuccess);
 
+  if (setup_request_callback_for_testing_) {
+    std::move(setup_request_callback_for_testing_).Run();
+  }
+
   UserLoginPermissionTracker::Get()->SetDemoUser(
       gaia::CanonicalizeEmail(*email));
   DCHECK_EQ(State::kSetupDemoAccountInProgress, state_);
@@ -536,8 +540,8 @@ void DemoLoginController::OnSetupDemoAccountError(
       DemoSessionMetricsRecorder::SessionType::kFallbackMGS);
   configure_auto_login_callback_.Run();
 
-  if (setup_failed_callback_for_testing_) {
-    std::move(setup_failed_callback_for_testing_).Run();
+  if (setup_request_callback_for_testing_) {
+    std::move(setup_request_callback_for_testing_).Run();
   }
 }
 
@@ -626,6 +630,16 @@ void DemoLoginController::OnCleanUpDemoAccountComplete(
   if (result == ResultCode::kSuccess) {
     // Report success to the metrics.
     DemoSessionMetricsRecorder::ReportDemoAccountCleanupResult(result);
+
+    // Clear the the gaia_id and sign_in_scoped_device_id in pref to prevent
+    // repeating cleanups.
+    auto* local_state = g_browser_process->local_state();
+    local_state->ClearPref(prefs::kDemoAccountGaiaId);
+    local_state->ClearPref(prefs::kDemoModeSessionIdentifier);
+
+    if (cleanup_request_callback_for_testing_) {
+      std::move(cleanup_request_callback_for_testing_).Run();
+    }
   } else {
     // `response_body` could be nullptr when network is not connected.
     if (response_body) {
@@ -646,8 +660,8 @@ void DemoLoginController::OnCleanUpDemoAccountError(
   LOG(ERROR) << "Failed to clean up demo account. Result code: "
              << static_cast<int>(result_code);
 
-  if (clean_up_failed_callback_for_testing_) {
-    std::move(clean_up_failed_callback_for_testing_).Run();
+  if (cleanup_request_callback_for_testing_) {
+    std::move(cleanup_request_callback_for_testing_).Run();
   }
 }
 
