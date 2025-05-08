@@ -1481,8 +1481,8 @@ public class NotificationPlatformBridgeTest {
                 "Notifications allowed from " + expectedOrigin,
                 NotificationTestUtil.getExtraTitle(alwaysAllowConfirmationNotification));
         Assert.assertEquals(
-                "Help improve spam protection by sending notification content and the site's URL to"
-                        + " Google.",
+                "Help improve spam protection by sharing notification content and the site's URL"
+                        + " with Google. Content may be reviewed by humans.",
                 NotificationTestUtil.getExtraText(alwaysAllowConfirmationNotification));
         Assert.assertEquals(1, alwaysAllowConfirmationNotification.actions.length);
         PendingIntent reportIntent = alwaysAllowConfirmationNotification.actions[0].actionIntent;
@@ -1566,11 +1566,11 @@ public class NotificationPlatformBridgeTest {
         Notification unsubscribeConfirmationNotification =
                 mNotificationTestRule.waitForNotification().notification;
         Assert.assertEquals(
-                "Unsubscribed from notifications",
+                "Unsubscribed",
                 NotificationTestUtil.getExtraTitle(unsubscribeConfirmationNotification));
         Assert.assertEquals(
-                "Help improve spam protection by sending notification content and the site's URL to"
-                        + " Google.",
+                "Help improve spam protection by sharing notification content and the site's URL"
+                        + " with Google. Content may be reviewed by humans.",
                 NotificationTestUtil.getExtraText(unsubscribeConfirmationNotification));
         Assert.assertEquals(2, unsubscribeConfirmationNotification.actions.length);
         PendingIntent reportIntent = unsubscribeConfirmationNotification.actions[1].actionIntent;
@@ -1638,11 +1638,11 @@ public class NotificationPlatformBridgeTest {
         Notification unsubscribeConfirmationNotification =
                 mNotificationTestRule.waitForNotification().notification;
         Assert.assertEquals(
-                "Unsubscribed from notifications",
+                "Unsubscribed",
                 NotificationTestUtil.getExtraTitle(unsubscribeConfirmationNotification));
         Assert.assertEquals(
-                "Help improve spam protection by sending notification content and the site's URL to"
-                        + " Google.",
+                "Help improve spam protection by sharing notification content and the site's URL"
+                        + " with Google. Content may be reviewed by humans.",
                 NotificationTestUtil.getExtraText(unsubscribeConfirmationNotification));
         Assert.assertEquals(2, unsubscribeConfirmationNotification.actions.length);
         PendingIntent reportIntent = unsubscribeConfirmationNotification.actions[1].actionIntent;

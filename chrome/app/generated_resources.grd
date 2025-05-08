@@ -18855,7 +18855,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     Notifications allowed from <ph name="DOMAIN">$1<ex>example.com</ex></ph>
   </message>
   <message name="IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_BODY_NEW" desc="The body for the notification sent by Chrome informing the user that their decision to never show warnings for the url has been applied and they may report their notification contents to Google.">
-    Help improve spam protection by sending notification content and the site's URL to Google.
+    Help improve spam protection by sharing notification content and the site's URL with Google. Content may be reviewed by humans.
   </message>
 
      <!-- Merchant Trust IPH strings -->

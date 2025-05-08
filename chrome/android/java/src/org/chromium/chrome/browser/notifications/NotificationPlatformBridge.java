@@ -1153,21 +1153,30 @@ public class NotificationPlatformBridge {
         // TODO(crbug.com/41495650): Ideally we would not need native libraries here, find a way to
         // format the `origin` using means other than the `UrlFormatter`.
         LibraryLoader.getInstance().ensureInitialized();
+        String notificationTitle;
+        String notificationBody;
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)) {
+            notificationTitle =
+                    res.getString(R.string.notification_provisionally_unsubscribed_title_new);
+            notificationBody =
+                    res.getString(R.string.notification_provisionally_unsubscribed_body_new);
+        } else {
+            notificationTitle =
+                    res.getString(R.string.notification_provisionally_unsubscribed_title);
+            notificationBody =
+                    res.getString(
+                            R.string.notification_provisionally_unsubscribed_body,
+                            UrlFormatter.formatUrlForSecurityDisplay(
+                                    identifyingAttributes.origin,
+                                    SchemeDisplay.OMIT_HTTP_AND_HTTPS));
+        }
         NotificationBuilderBase notificationBuilder =
                 prepareNotificationBuilder(
                         identifyingAttributes,
                         /* vibrateEnabled= */ false,
-                        res.getString(R.string.notification_provisionally_unsubscribed_title),
-                        ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList
-                                                .REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)
-                                ? res.getString(
-                                        R.string.notification_provisionally_unsubscribed_body_new)
-                                : res.getString(
-                                        R.string.notification_provisionally_unsubscribed_body,
-                                        UrlFormatter.formatUrlForSecurityDisplay(
-                                                identifyingAttributes.origin,
-                                                SchemeDisplay.OMIT_HTTP_AND_HTTPS)),
+                        notificationTitle,
+                        notificationBody,
                         /* image= */ null,
                         /* icon= */ null,
                         /* badge= */ null,
