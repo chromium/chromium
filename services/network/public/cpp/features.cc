@@ -534,7 +534,7 @@ BASE_FEATURE_PARAM(bool,
 // https://wicg.github.io/shared-storage/#batch-update
 BASE_FEATURE(kSharedStorageTransactionalBatchUpdate,
              "SharedStorageTransactionalBatchUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for the Interest Group API, i.e. if disabled, the
 // API exposure will be disabled regardless of the OT config.
