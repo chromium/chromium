@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/kcer/kcer_utils.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/browser/browser_context.h"
@@ -835,7 +836,23 @@ void CertProvisioningWorkerDynamic::OnBuildProofOfPossessionDone(
     return;
   }
 
-  signature_ = std::move(signature);
+  if (signature_algorithm_ ==
+      em::CertProvSignatureAlgorithm::SIGNATURE_ALGORITHM_ECDSA_SHA256) {
+    base::expected<std::vector<uint8_t>, kcer::Error> asn1_ec_signature =
+        kcer::ReencodeEcSignatureAsAsn1(signature);
+    if (!asn1_ec_signature.has_value()) {
+      failure_message_no_pii_ =
+          base::StringPrintf("Failed to re-encode ECC signature, error: %d",
+                             static_cast<int>(asn1_ec_signature.error()));
+      FINAL_STATE_EXPECTED(
+          UpdateState(FROM_HERE, CertProvisioningWorkerState::kFailed));
+      return;
+    }
+    signature_ = std::move(asn1_ec_signature).value();
+  } else {
+    signature_ = std::move(signature);
+  }
+
   RETURN_ON_FINAL_STATE(
       UpdateState(FROM_HERE, CertProvisioningWorkerState::kSignCsrFinished));
   DoStep();

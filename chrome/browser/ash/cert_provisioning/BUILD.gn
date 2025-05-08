@@ -55,6 +55,7 @@ static_library("cert_provisioning") {
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/kcer",
     "//chromeos/dbus/common",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",

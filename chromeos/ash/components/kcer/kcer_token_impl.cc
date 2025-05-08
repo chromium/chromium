@@ -301,52 +301,6 @@ base::expected<DigestWithPrefix, Error> DigestOnWorkerThread(
   return DigestWithPrefix(std::vector<uint8_t>(digest, digest + digest_len));
 }
 
-// The EC signature returned by Chaps is a concatenation of two numbers r and s
-// (see PKCS#11 v2.40: 2.3.1 EC Signatures). Kcer needs to return it as a DER
-// encoding of the following ASN.1 notations:
-// Ecdsa-Sig-Value ::= SEQUENCE {
-//     r       INTEGER,
-//     s       INTEGER
-// }
-// (according to the RFC 8422, Section 5.4).
-// This function reencodes the signature.
-base::expected<std::vector<uint8_t>, Error> ReencodeEcSignature(
-    base::span<const uint8_t> signature) {
-  if (signature.size() % 2 != 0) {
-    return base::unexpected(Error::kFailedToSignBadSignatureLength);
-  }
-  size_t order_size_bytes = signature.size() / 2;
-  base::span<const uint8_t> r_bytes = signature.first(order_size_bytes);
-  base::span<const uint8_t> s_bytes = signature.subspan(order_size_bytes);
-
-  // Convert the RAW ECDSA signature to a DER-encoded ECDSA-Sig-Value.
-  bssl::UniquePtr<ECDSA_SIG> sig(ECDSA_SIG_new());
-  if (!sig || !BN_bin2bn(r_bytes.data(), r_bytes.size(), sig->r) ||
-      !BN_bin2bn(s_bytes.data(), s_bytes.size(), sig->s)) {
-    return base::unexpected(Error::kFailedToDerEncode);
-  }
-
-  std::vector<uint8_t> result_signature;
-
-  {
-    const int len = i2d_ECDSA_SIG(sig.get(), nullptr);
-    if (len <= 0) {
-      return base::unexpected(Error::kFailedToSignBadSignatureLength);
-    }
-    result_signature.resize(len);
-  }
-
-  {
-    uint8_t* ptr = result_signature.data();
-    const int len = i2d_ECDSA_SIG(sig.get(), &ptr);
-    if (len <= 0) {
-      return base::unexpected(Error::kFailedToDerEncode);
-    }
-  }
-
-  return result_signature;
-}
-
 std::vector<uint8_t> GetPssSignParams(SigningScheme kcer_signing_scheme) {
   chromeos::PKCS11_CK_RSA_PKCS_PSS_PARAMS pss_params;
 
@@ -1736,7 +1690,7 @@ void KcerTokenImpl::DidSign(SignTask task,
   uint64_t mechanism = SigningSchemeToPkcs11Mechanism(task.signing_scheme);
   if (mechanism == chromeos::PKCS11_CKM_ECDSA) {
     base::expected<std::vector<uint8_t>, Error> reencoded_signature =
-        ReencodeEcSignature(std::move(signature));
+        ReencodeEcSignatureAsAsn1(std::move(signature));
     if (!reencoded_signature.has_value()) {
       return std::move(task.callback)
           .Run(base::unexpected(reencoded_signature.error()));

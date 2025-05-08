@@ -44,4 +44,41 @@ std::vector<SigningScheme> GetSupportedSigningSchemes(bool supports_pss,
   return result;
 }
 
+base::expected<std::vector<uint8_t>, Error> ReencodeEcSignatureAsAsn1(
+    base::span<const uint8_t> signature) {
+  if (signature.size() % 2 != 0) {
+    return base::unexpected(Error::kFailedToSignBadSignatureLength);
+  }
+  size_t order_size_bytes = signature.size() / 2;
+  base::span<const uint8_t> r_bytes = signature.first(order_size_bytes);
+  base::span<const uint8_t> s_bytes = signature.subspan(order_size_bytes);
+
+  // Convert the RAW ECDSA signature to a DER-encoded ECDSA-Sig-Value.
+  bssl::UniquePtr<ECDSA_SIG> sig(ECDSA_SIG_new());
+  if (!sig || !BN_bin2bn(r_bytes.data(), r_bytes.size(), sig->r) ||
+      !BN_bin2bn(s_bytes.data(), s_bytes.size(), sig->s)) {
+    return base::unexpected(Error::kFailedToDerEncode);
+  }
+
+  std::vector<uint8_t> result_signature;
+
+  {
+    const int len = i2d_ECDSA_SIG(sig.get(), nullptr);
+    if (len <= 0) {
+      return base::unexpected(Error::kFailedToSignBadSignatureLength);
+    }
+    result_signature.resize(len);
+  }
+
+  {
+    uint8_t* ptr = result_signature.data();
+    const int len = i2d_ECDSA_SIG(sig.get(), &ptr);
+    if (len <= 0) {
+      return base::unexpected(Error::kFailedToDerEncode);
+    }
+  }
+
+  return result_signature;
+}
+
 }  // namespace kcer

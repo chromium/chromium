@@ -171,6 +171,12 @@ constexpr char kInvalidationTopic[] = "fake_invalidation_topic_1";
 constexpr char kChallenge[] = "fake_va_challenge_1";
 constexpr char kChallengeResponse[] = "fake_va_challenge_response_1";
 constexpr char kSignatureBase64[] = "AQIDBAU=";
+// The signature was recorded from the code under test. A real CA successfully
+// issued a cert for it, so it should be correct. It is not related to the
+// kPublicKeyEcBase64 key, but it shouldn't matter for these unit tests.
+constexpr char kEccSignatureAsn1Base64[] =
+    "MEQCIHRmp42nHk9m/rx4cITQE7lkYG9NVFXQQgQHHOzmbMZhAiB/c/"
+    "D3K3fFFeprb+IKs4cYLzX5d3JsGDXAca/eCzyaTg==";
 constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
 constexpr char kEcNamedCurve[] = "P-256";
 
@@ -226,6 +232,22 @@ std::string GetSignatureStr() {
 
 std::vector<uint8_t> GetSignatureBin() {
   return std::vector<uint8_t>({1, 2, 3, 4, 5});
+}
+
+std::vector<uint8_t> GetEccSignatureRawBin() {
+  // The raw values from the kEccSignatureAsn1Base64 signature (concatenated to
+  // each other) without the ASN.1 structure. This should be a realistic example
+  // of what is returned from the SIgnEcdsa method.
+  return base::Base64Decode(
+             "dGanjaceT2b+vHhwhNATuWRgb01UVdBCBAcc7OZsxmF/c/"
+             "D3K3fFFeprb+IKs4cYLzX5d3JsGDXAca/eCzyaTg==")
+      .value();
+}
+
+std::string GetEccSignatureAsn1Str() {
+  std::vector<uint8_t> asn1_signature =
+      base::Base64Decode(kEccSignatureAsn1Base64).value();
+  return std::string(asn1_signature.begin(), asn1_signature.end());
 }
 
 std::vector<uint8_t> GetCertProfileIdBin() {
@@ -418,7 +440,8 @@ CertProvisioningClient::Error InstructionNotYetAvailable() {
   {                                                                         \
     EXPECT_CALL(*platform_keys_service_, SIGN_FUNC)                         \
         .Times(1)                                                           \
-        .WillOnce(RunOnceCallback<4>(GetSignatureBin(), Status::kSuccess)); \
+        .WillOnce(                                                          \
+            RunOnceCallback<4>(GetEccSignatureRawBin(), Status::kSuccess)); \
   }
 
 #define EXPECT_IMPORT_CERTIFICATE_OK(IMPORT_FUNC)        \
@@ -1006,7 +1029,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsEcKeys) {
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         NoDataResultOk());
 
@@ -1343,7 +1366,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaitingEcKeys) {
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         NoDataResultOk());
 
@@ -1779,7 +1802,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaSuccessEcKeys) {
         chromeos::platform_keys::HASH_ALGORITHM_SHA256, /*callback=*/_));
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         NoDataResultOk());
     EXPECT_GET_NEXT_INSTRUCTION(
@@ -1957,7 +1980,7 @@ TEST_F(CertProvisioningWorkerDynamicTest,
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         NoDataResultOk());
 
@@ -2260,7 +2283,7 @@ TEST_F(CertProvisioningWorkerDynamicTest,
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         NoDataResultOk());
 
@@ -2415,7 +2438,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, PublicKeyMismatchEcKeys) {
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         NoDataResultOk());
 
@@ -2659,7 +2682,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetryEcKeys) {
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         NoDataResultOk());
 
@@ -3047,7 +3070,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitEcKeys) {
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         NoDataResultOk());
 
@@ -3346,7 +3369,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitForInvalidationEcKeys) {
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         NoDataResultOk());
 
@@ -4306,7 +4329,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryUploadProofOfPossessionEcKeys) {
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         base::unexpected(
             DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
@@ -4317,7 +4340,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryUploadProofOfPossessionEcKeys) {
   {
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         NoDataResultOk());
     FastForwardBy(kRequestRetryInitialDelay + kSmallDelay);
@@ -5334,12 +5357,12 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
             "state": 6
           }
         })",
-        process_id.c_str(), kSignatureBase64, kPublicKeyEcBase64));
+        process_id.c_str(), kEccSignatureAsn1Base64, kPublicKeyEcBase64));
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         base::unexpected(
             DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
@@ -5367,7 +5390,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
     testing::InSequence seq;
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
-                                GetSignatureStr(),
+                                GetEccSignatureAsn1Str(),
                                 /*callback=*/_),
         NoDataResultOk());
 
