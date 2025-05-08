@@ -1481,6 +1481,15 @@ SkColor PdfViewWebPlugin::GetBackgroundColor() const {
 
 void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
                                         const gfx::Rect& right) {
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // Ignore the selected text if `ink_module_` is currently text highlighting.
+  // This prevents `pdf_host_` from showing touch handles for touch text
+  // highlighting.
+  if (ink_module_ && ink_module_->ShouldBlockTextSelectionChanged()) {
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
   gfx::PointF left_point(left.x() + available_area_.x(), left.y());
   gfx::PointF right_point(right.x() + available_area_.x(), right.y());
 
@@ -1514,8 +1523,7 @@ void PdfViewWebPlugin::DocumentFocusChanged(bool document_has_focus) {
 void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
 #if BUILDFLAG(ENABLE_PDF_INK2)
   // Ignore the selected text if `ink_module_` is currently text highlighting.
-  if (features::kPdfInk2TextHighlighting.Get() &&
-      ink_module_->ShouldBlockTextSelectionChanged()) {
+  if (ink_module_ && ink_module_->ShouldBlockTextSelectionChanged()) {
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)

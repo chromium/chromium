@@ -165,7 +165,7 @@ PdfInkModule::PdfInkModule(PdfInkModuleClient& client)
 PdfInkModule::~PdfInkModule() = default;
 
 bool PdfInkModule::ShouldBlockTextSelectionChanged() {
-  return is_text_highlighting();
+  return features::kPdfInk2TextHighlighting.Get() && is_text_highlighting();
 }
 
 bool PdfInkModule::HasInputsToDraw() const {
@@ -553,12 +553,16 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
     return false;
   }
 
-  // TODO(crbug.com/342445982): Handle text selection for touch.
-
   gfx::PointF position = event.touches[0].PositionInWidget();
-  return is_drawing_stroke()
-             ? StartStroke(position, event.TimeStamp(), tool_type)
-             : StartEraseStroke(position, tool_type);
+  if (is_drawing_stroke()) {
+    if (IsHighlightingTextAtPosition(drawing_stroke_state(), position)) {
+      // Multi-click text selection for touch is not supported.
+      return StartTextHighlight(position, /*click_count=*/1, event.TimeStamp());
+    }
+    return StartStroke(position, event.TimeStamp(), tool_type);
+  }
+
+  return StartEraseStroke(position, tool_type);
 }
 
 bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
@@ -575,6 +579,10 @@ bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
   }
 
   gfx::PointF position = event.touches[0].PositionInWidget();
+  if (features::kPdfInk2TextHighlighting.Get() && is_text_highlighting()) {
+    return FinishTextHighlight(position);
+  }
+
   return is_drawing_stroke()
              ? FinishStroke(position, event.TimeStamp(), tool_type)
              : FinishEraseStroke(position, tool_type);
@@ -594,6 +602,10 @@ bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
   }
 
   gfx::PointF position = event.touches[0].PositionInWidget();
+  if (features::kPdfInk2TextHighlighting.Get() && is_text_highlighting()) {
+    return ContinueTextHighlight(position);
+  }
+
   return is_drawing_stroke()
              ? ContinueStroke(position, event.TimeStamp(), tool_type)
              : ContinueEraseStroke(position, tool_type);

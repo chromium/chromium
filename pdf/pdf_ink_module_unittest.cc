@@ -3417,7 +3417,7 @@ TEST_P(PdfInkModuleTextHighlightTest, OneClickCount) {
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   // There will be no text selection rects.
-  std::vector<gfx::Rect> selection_rects{};
+  std::vector<gfx::Rect> selection_rects;
   EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
   EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
       .WillRepeatedly(Return(true));
@@ -3678,6 +3678,114 @@ TEST_P(PdfInkModuleTextHighlightTest,
   EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
 
   RunStrokeMissedEndEventThenMouseMoveTest();
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, TouchSingleHorizontalSelection) {
+  SetUpSingleSelectionTest(kHorizontalSelection);
+
+  // Apply a text highlight stroke at the given points.
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kStartPointInsidePage0),
+                               {base::span_from_ref(kEndPointInsidePage0)},
+                               base::span_from_ref(kEndPointInsidePage0));
+
+  constexpr auto kExpectedInputs = std::to_array<PdfInkInputData>(
+      {PdfInkInputData(gfx::PointF(15.0, 20.0)),
+       PdfInkInputData(gfx::PointF(35.0, 20.0))});
+  VerifySingleSelectionTest(kExpectedInputs, /*expected_size=*/10.0f);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, TouchOneClickCount) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+  // There will be no text selection rects.
+  std::vector<gfx::Rect> selection_rects;
+  EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1));
+  EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
+
+  blink::WebTouchEvent touch_event =
+      CreateTouchEvent(blink::WebInputEvent::Type::kTouchStart,
+                       base::span_from_ref(kStartPointInsidePage0));
+  EXPECT_TRUE(ink_module().HandleInputEvent(touch_event));
+
+  touch_event = CreateTouchEvent(blink::WebInputEvent::Type::kTouchEnd,
+                                 base::span_from_ref(kStartPointInsidePage0));
+  EXPECT_TRUE(ink_module().HandleInputEvent(touch_event));
+
+  EXPECT_EQ(0, client().stroke_finished_count());
+  EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
+
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+      CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+  EXPECT_TRUE(collected_strokes.empty());
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, MultiTouchDoesNotSelectText) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_)).Times(0);
+
+  ApplyStrokeWithTouchAtPointsNotHandled(
+      {kStartPointInsidePage0, kStartPointInsidePage0},
+      {{kEndPointInsidePage0, kEndPointInsidePage0}},
+      {kEndPointInsidePage0, kEndPointInsidePage0});
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, PenSingleHorizontalSelection) {
+  const std::vector<PdfInkInputData> expected_inputs{
+      PdfInkInputData(gfx::PointF(15.0, 20.0)),
+      PdfInkInputData(gfx::PointF(35.0, 20.0))};
+  SetUpSingleSelectionTest(kHorizontalSelection);
+
+  // Apply a text highlight stroke at the given points.
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kStartPointInsidePage0),
+                             {base::span_from_ref(kEndPointInsidePage0)},
+                             base::span_from_ref(kEndPointInsidePage0));
+
+  VerifySingleSelectionTest(expected_inputs, /*expected_size=*/10.0f);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, PenOneClickCount) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+  // There will be no text selection rects.
+  std::vector<gfx::Rect> selection_rects;
+  EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1));
+  EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
+
+  blink::WebTouchEvent pen_event =
+      CreatePenEvent(blink::WebInputEvent::Type::kTouchStart,
+                     base::span_from_ref(kStartPointInsidePage0));
+  EXPECT_TRUE(ink_module().HandleInputEvent(pen_event));
+
+  pen_event = CreatePenEvent(blink::WebInputEvent::Type::kTouchEnd,
+                             base::span_from_ref(kStartPointInsidePage0));
+  EXPECT_TRUE(ink_module().HandleInputEvent(pen_event));
+
+  EXPECT_EQ(0, client().stroke_finished_count());
+  EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
+
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+      CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+  EXPECT_TRUE(collected_strokes.empty());
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {

@@ -3354,6 +3354,11 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
   EXPECT_CALL(*client_ptr_, TextSelectionChanged(_, _, _)).Times(0);
 
   plugin_->SetSelectedText("text");
+
+  EXPECT_CALL(pdf_host_, SelectionChanged(_, _, _, _)).Times(0);
+
+  plugin_->SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
+  pdf_receiver_.FlushForTesting();
 }
 
 TEST_P(PdfViewWebPluginInkTextHighlightTest, DrawInProgressTextHighlight) {
