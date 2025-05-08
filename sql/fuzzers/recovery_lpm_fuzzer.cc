@@ -343,13 +343,16 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
     logging::ScopedLoggingSettings scoped_logging;
     logging::SetMinLogLevel(logging::LOGGING_FATAL);
     std::ignore = database.Execute(test_case.sql_statement_after_open());
-
-    database.Close();
   }
+
+  // The database must be closed before we can call `sql::Database::Delete()`.
+  // Note that it could be open even though `database.Open()` returned false.
+  database.Close();
+  CHECK(!database.is_open());
 
   // Delete the backing file and related journal files so the next iteration
   // starts with a clean slate.
-  CHECK(database.Delete(env.db_path()));
+  PCHECK(sql::Database::Delete(env.db_path()));
   // Ensure that no unexpected files were created in the temp directory.
   env.AssertTempDirIsEmpty();
 }
