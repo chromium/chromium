@@ -59,6 +59,12 @@ void BitmapImageMetrics::CountDecodedImageType(const String& type,
   }
 }
 
+void BitmapImageMetrics::CountDecodedImageC2PA(UseCounter* use_counter) {
+  if (use_counter) {
+    use_counter->CountUse(WebFeature::kC2PAManifest);
+  }
+}
+
 void BitmapImageMetrics::CountDecodedImageDensity(const String& type,
                                                   int image_min_side,
                                                   uint64_t density_centi_bpp,

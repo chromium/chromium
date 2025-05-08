@@ -741,4 +741,10 @@ void ImageResourceContent::RecordDecodedImageType(UseCounter* use_counter) {
     bitmap_image->RecordDecodedImageType(use_counter);
 }
 
+void ImageResourceContent::RecordDecodedImageC2PA(UseCounter* use_counter) {
+  if (auto* bitmap_image = DynamicTo<BitmapImage>(image_.get())) {
+    bitmap_image->RecordDecodedImageC2PA(use_counter);
+  }
+}
+
 }  // namespace blink

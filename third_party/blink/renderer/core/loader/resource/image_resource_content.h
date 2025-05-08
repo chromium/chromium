@@ -230,6 +230,10 @@ class CORE_EXPORT ImageResourceContent final
   // BitmapImage. |use_counter| may be a null pointer.
   void RecordDecodedImageType(UseCounter* use_counter);
 
+  // Records the presence of a C2PManifest if the image is a BitmapImage.
+  // |use_counter| may be a null pointer.
+  void RecordDecodedImageC2PA(UseCounter* use_counter);
+
  private:
   using CanDeferInvalidation = ImageResourceObserver::CanDeferInvalidation;
 

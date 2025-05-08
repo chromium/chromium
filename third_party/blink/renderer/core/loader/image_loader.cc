@@ -799,6 +799,7 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
   }
 
   content->RecordDecodedImageType(&element_->GetDocument());
+  content->RecordDecodedImageC2PA(&element_->GetDocument());
 
   CHECK(!pending_load_event_.IsActive());
   pending_load_event_ = PostCancellableTask(

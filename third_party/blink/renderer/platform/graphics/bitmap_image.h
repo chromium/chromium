@@ -108,6 +108,9 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   // pointer.
   void RecordDecodedImageType(UseCounter* use_counter);
 
+  // Records the presence of a C2PA Manifest in a UseCounter.
+  void RecordDecodedImageC2PA(UseCounter* use_counter);
+
  protected:
   bool IsSizeAvailable() override;
 
