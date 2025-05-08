@@ -1,33 +1,28 @@
-<style include="print-preview-shared throbber md-select destination-select-style
-    cr-hidden-style">
-</style>
 <print-preview-settings-section>
   <span id="destination-label" slot="title">$i18n{destinationLabel}</span>
   <div slot="controls">
-    <div class="throbber-container" hidden$="[[loaded]]">
+    <div class="throbber-container" ?hidden="${this.loaded}">
       <div class="throbber"></div>
     </div>
     <select class="md-select" aria-labelledby="destination-label"
-        hidden$="[[!loaded]]"
-        style="background-image:
-            [[getBackgroundImages_(selectedValue, destination,
-                                   noDestinations, dark)]];"
-        disabled$="[[disabled]]" on-change="onSelectChange">
-      <template is="dom-repeat" items="[[recentDestinationList]]">
-        <option value="[[item.key]]"
-            selected$="[[isSelected_(item.key, selectedValue)]]">
-          [[item.displayName]]
+        ?hidden="${!this.loaded}" ?disabled="${this.disabled}"
+        .style="background-image:${this.getBackgroundImages_()};"
+        @change="${this.onSelectChange}">
+      ${this.recentDestinationList.map(item => html`
+        <option value="${item.key}" ?selected="${this.isSelected_(item.key)}">
+          ${item.displayName}
         </option>
-      </template>
-      <option value="[[pdfDestinationKey_]]" hidden$="[[pdfPrinterDisabled]]"
-          selected$="[[isSelected_(pdfDestinationKey_, selectedValue)]]">
+      `)}
+      <option value="${this.pdfDestinationKey_}"
+          ?hidden="${this.pdfPrinterDisabled}"
+          ?selected="${this.isSelected_(this.pdfDestinationKey_)}">
         $i18n{printToPDF}
       </option>
-      <option value="noDestinations" hidden$="[[!noDestinations]]"
-          selected$="[[noDestinations]]">
+      <option value="noDestinations" ?hidden="${!this.noDestinations}"
+          ?selected="${this.noDestinations}">
         $i18n{noDestinationsMessage}
       </option>
-      <option value="seeMore" aria-label$="[[i18n(seeMoreDestinationsLabel)]]">
+      <option value="seeMore" aria-label="$i18n{seeMoreDestinationsLabel}">
         $i18n{seeMore}
       </option>
     </select>

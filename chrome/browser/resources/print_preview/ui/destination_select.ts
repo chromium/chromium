@@ -2,36 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Note: Chrome OS uses print-preview-destination-select-cros rather than the
- * element in this file. Ensure any fixes for cross platform bugs work on both
- * Chrome OS and non-Chrome OS.
- */
-
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/js/util.js';
-import './destination_select_style.css.js';
 import './icons.html.js';
-import './print_preview_shared.css.js';
-import './throbber.css.js';
 import '/strings.m.js';
 
 import {IconsetMap} from 'chrome://resources/cr_elements/cr_icon/iconset_map.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Destination} from '../data/destination.js';
 import {PDF_DESTINATION_KEY} from '../data/destination.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
-import {getTemplate} from './destination_select.html.js';
-import {SelectMixin} from './select_mixin.js';
+import {getCss} from './destination_select.css.js';
+import {getHtml} from './destination_select.html.js';
+import {SelectMixinLit} from './select_mixin_lit.js';
 
-const PrintPreviewDestinationSelectElementBase =
-    I18nMixin(SelectMixin(PolymerElement));
+const PrintPreviewDestinationSelectElementBase = SelectMixinLit(CrLitElement);
 
 export class PrintPreviewDestinationSelectElement extends
     PrintPreviewDestinationSelectElementBase {
@@ -39,59 +26,38 @@ export class PrintPreviewDestinationSelectElement extends
     return 'print-preview-destination-select';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      dark: {
-        type: Boolean,
-        value: false,
-      },
-
-      destination: Object,
-
-      disabled: {
-        type: Boolean,
-        value: false,
-      },
-
-      loaded: {
-        type: Boolean,
-        value: false,
-      },
-
-      noDestinations: {
-        type: Boolean,
-        value: false,
-      },
-
-      pdfPrinterDisabled: {
-        type: Boolean,
-        value: false,
-      },
-
-      recentDestinationList: Array,
-
-      pdfDestinationKey_: {
-        type: String,
-        value: PDF_DESTINATION_KEY,
-      },
+      dark: {type: Boolean},
+      destination: {type: Object},
+      disabled: {type: Boolean},
+      loaded: {type: Boolean},
+      noDestinations: {type: Boolean},
+      pdfPrinterDisabled: {type: Boolean},
+      recentDestinationList: {type: Array},
+      pdfDestinationKey_: {type: String},
     };
   }
 
-  declare dark: boolean;
-  declare destination: Destination;
-  declare disabled: boolean;
-  declare loaded: boolean;
-  declare noDestinations: boolean;
-  declare pdfPrinterDisabled: boolean;
-  declare recentDestinationList: Destination[];
-  declare private pdfDestinationKey_: string;
+  accessor dark: boolean = false;
+  accessor destination: Destination;
+  accessor disabled: boolean = false;
+  accessor loaded: boolean = false;
+  accessor noDestinations: boolean = false;
+  accessor pdfPrinterDisabled: boolean = false;
+  accessor recentDestinationList: Destination[] = [];
+  protected accessor pdfDestinationKey_: string = PDF_DESTINATION_KEY;
 
   override focus() {
-    this.shadowRoot!.querySelector<HTMLElement>('.md-select')!.focus();
+    this.shadowRoot.querySelector<HTMLElement>('.md-select')!.focus();
   }
 
   /** Sets the select to the current value of |destination|. */
@@ -139,7 +105,7 @@ export class PrintPreviewDestinationSelectElement extends
    * @return An inline svg corresponding to the icon for the current
    *     destination and the image for the dropdown arrow.
    */
-  private getBackgroundImages_(): string {
+  protected getBackgroundImages_(): string {
     const icon = this.getDestinationIcon_();
     if (!icon) {
       return '';
@@ -157,23 +123,23 @@ export class PrintPreviewDestinationSelectElement extends
   }
 
   override onProcessSelectChange(value: string) {
-    this.dispatchEvent(new CustomEvent(
-        'selected-option-change',
-        {bubbles: true, composed: true, detail: value}));
+    this.fire('selected-option-change', value);
   }
 
   /**
    * Return the options currently visible to the user for testing purposes.
    */
   getVisibleItemsForTest(): NodeListOf<HTMLOptionElement> {
-    return this.shadowRoot!.querySelectorAll<HTMLOptionElement>(
+    return this.shadowRoot.querySelectorAll<HTMLOptionElement>(
         'option:not([hidden])');
   }
 
-  private isSelected_(destinationKey: string): boolean {
+  protected isSelected_(destinationKey: string): boolean {
     return this.selectedValue === destinationKey;
   }
 }
+
+export type DestinationSelectElement = PrintPreviewDestinationSelectElement;
 
 declare global {
   interface HTMLElementTagNameMap {

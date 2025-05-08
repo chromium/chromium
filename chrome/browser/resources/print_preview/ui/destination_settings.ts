@@ -109,7 +109,7 @@ export class PrintPreviewDestinationSettingsElement extends
   accessor firstLoad: boolean;
   accessor state: State;
   protected accessor destinationStore_: DestinationStore|null = null;
-  protected accessor displayedDestinations_: Destination[];
+  protected accessor displayedDestinations_: Destination[] = [];
   private accessor isDialogOpen_: boolean = false;
   protected accessor noDestinations_: boolean = false;
   protected accessor pdfPrinterDisabled_: boolean;
