@@ -656,13 +656,14 @@ public class TabPersistentStore {
      * Merge the tabs of the other Chrome instance into this instance by reading its tab metadata
      * file and tab state files.
      *
-     * This method should be called after a change in activity state indicates that a merge is
+     * <p>This method should be called after a change in activity state indicates that a merge is
      * necessary. #loadState() will take care of merging states on application cold start if needed.
      *
-     * If there is currently a merge or load in progress then this method will return early.
+     * <p>If there is currently a merge or load in progress then this method will return early.
      */
     public void mergeState() {
         if (mLoadInProgress
+                || mTabBatchLoader != null
                 || mPersistencePolicy.isMergeInProgress()
                 || !mTabsToRestore.isEmpty()) {
             Log.d(TAG, "Tab load still in progress when merge was attempted.");
@@ -1815,6 +1816,8 @@ public class TabPersistentStore {
     private void loadNextTabs() {
         if (mDestroyed) return;
 
+        if (mTabBatchLoader != null) return;
+
         if (mTabsToRestore.isEmpty()) {
             mNormalTabsRestored = null;
             mIncognitoTabsRestored = null;
@@ -1847,7 +1850,6 @@ public class TabPersistentStore {
             recordUniqueTabUrlMetrics();
             cleanUpPersistentData();
             onStateLoaded();
-            mTabBatchLoader = null;
             Log.d(
                     TAG,
                     "Loaded tab lists; counts: "
@@ -1927,6 +1929,7 @@ public class TabPersistentStore {
     private class TabBatchLoader {
         private final LinkedList<TabRestoreDetails> mBatchedTabsToRestore;
         private LoadTabsTask mLoadTabsTask;
+        private boolean mCancelled;
 
         /**
          * @param tabsToRestore details of {@link Tab}s which will be read from storage
@@ -1942,12 +1945,15 @@ public class TabPersistentStore {
 
         /** Loads {@link TabState} for the batch. */
         public void load() {
+            if (mCancelled) return;
+
             mLoadTabsTask = new LoadTabsTask(mBatchedTabsToRestore);
             mLoadTabsTask.executeOnTaskRunner(mSequencedTaskRunner);
         }
 
         /** Cancels restoring the batch of tabs. */
         public void cancel(boolean mayInterruptIfRunning) {
+            mCancelled = true;
             if (mLoadTabsTask != null) {
                 mLoadTabsTask.cancel(mayInterruptIfRunning);
             }
@@ -2167,6 +2173,7 @@ public class TabPersistentStore {
             }
         }
 
+        mTabBatchLoader = null;
         loadNextTabs();
     }
 
