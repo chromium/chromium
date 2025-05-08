@@ -22,7 +22,7 @@ bool ShouldSendObserverReportForMainFrameId(
   // that global render frame host ID matches the main frame ID passed as a
   // parameter of the report (and hence the observer is attached to the relevant
   // main render frame host).
-  return observer.ShouldReceiveAllReports() ||
+  return observer.ShouldReceiveAllSharedStorageReports() ||
          (observer.AssociatedFrameHostId() &&
           observer.AssociatedFrameHostId() == main_frame_id);
 }
@@ -169,9 +169,9 @@ void SharedStorageRuntimeManager::NotifyWorkletOperationExecutionFinished(
     // "finish" time/report time as part of the DevTools notification. Note,
     // however, that there may be a discrepancy between `execution_time` and
     // `finished_time - start-time`.
-    observer.OnWorkletOperationExecutionFinished(now, execution_time, method,
-                                                 operation_id, worklet_id,
-                                                 main_frame_id, owner_origin);
+    observer.OnSharedStorageWorkletOperationExecutionFinished(
+        now, execution_time, method, operation_id, worklet_id, main_frame_id,
+        owner_origin);
   }
 }
 
@@ -204,14 +204,14 @@ void SharedStorageRuntimeManager::OnWorkletKeepAliveFinished(
 
 void SharedStorageRuntimeManager::NotifyUrnUuidGenerated(const GURL& urn_uuid) {
   for (SharedStorageObserverInterface& observer : observers_) {
-    observer.OnUrnUuidGenerated(urn_uuid);
+    observer.OnSharedStorageSelectUrlUrnUuidGenerated(urn_uuid);
   }
 }
 
 void SharedStorageRuntimeManager::NotifyConfigPopulated(
     const std::optional<FencedFrameConfig>& config) {
   for (SharedStorageObserverInterface& observer : observers_) {
-    observer.OnConfigPopulated(config);
+    observer.OnSharedStorageSelectUrlConfigPopulated(config);
   }
 }
 

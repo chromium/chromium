@@ -99,7 +99,7 @@ GlobalRenderFrameHostId TestSharedStorageObserver::AssociatedFrameHostId()
   return GlobalRenderFrameHostId();
 }
 
-bool TestSharedStorageObserver::ShouldReceiveAllReports() const {
+bool TestSharedStorageObserver::ShouldReceiveAllSharedStorageReports() const {
   return true;
 }
 
@@ -113,21 +113,23 @@ void TestSharedStorageObserver::OnSharedStorageAccessed(
   accesses_.emplace_back(scope, method, main_frame_id, owner_origin, params);
 }
 
-void TestSharedStorageObserver::OnUrnUuidGenerated(const GURL& urn_uuid) {
+void TestSharedStorageObserver::OnSharedStorageSelectUrlUrnUuidGenerated(
+    const GURL& urn_uuid) {
   urn_uuids_observed_.push_back(urn_uuid);
 }
 
-void TestSharedStorageObserver::OnConfigPopulated(
+void TestSharedStorageObserver::OnSharedStorageSelectUrlConfigPopulated(
     const std::optional<FencedFrameConfig>& config) {}
 
-void TestSharedStorageObserver::OnWorkletOperationExecutionFinished(
-    base::Time finished_time,
-    base::TimeDelta execution_time,
-    AccessMethod method,
-    int operation_id,
-    int worklet_id,
-    GlobalRenderFrameHostId main_frame_id,
-    const std::string& owner_origin) {
+void TestSharedStorageObserver::
+    OnSharedStorageWorkletOperationExecutionFinished(
+        base::Time finished_time,
+        base::TimeDelta execution_time,
+        AccessMethod method,
+        int operation_id,
+        int worklet_id,
+        GlobalRenderFrameHostId main_frame_id,
+        const std::string& owner_origin) {
   operation_finished_infos_.emplace_back(execution_time, method, operation_id,
                                          worklet_id, main_frame_id,
                                          owner_origin);

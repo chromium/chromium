@@ -21,8 +21,8 @@ TestSelectURLFencedFrameConfigObserverImpl::AssociatedFrameHostId() const {
   return GlobalRenderFrameHostId();
 }
 
-bool TestSelectURLFencedFrameConfigObserverImpl::ShouldReceiveAllReports()
-    const {
+bool TestSelectURLFencedFrameConfigObserverImpl::
+    ShouldReceiveAllSharedStorageReports() const {
   return true;
 }
 
@@ -34,8 +34,8 @@ void TestSelectURLFencedFrameConfigObserverImpl::OnSharedStorageAccessed(
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {}
 
-void TestSelectURLFencedFrameConfigObserverImpl::OnUrnUuidGenerated(
-    const GURL& urn_uuid) {
+void TestSelectURLFencedFrameConfigObserverImpl::
+    OnSharedStorageSelectUrlUrnUuidGenerated(const GURL& urn_uuid) {
   if (urn_uuid_.has_value()) {
     // This observer has already observed an urn::uuid.
     return;
@@ -43,8 +43,9 @@ void TestSelectURLFencedFrameConfigObserverImpl::OnUrnUuidGenerated(
   urn_uuid_ = urn_uuid;
 }
 
-void TestSelectURLFencedFrameConfigObserverImpl::OnConfigPopulated(
-    const std::optional<FencedFrameConfig>& config) {
+void TestSelectURLFencedFrameConfigObserverImpl::
+    OnSharedStorageSelectUrlConfigPopulated(
+        const std::optional<FencedFrameConfig>& config) {
   if (config_observed_ || !urn_uuid_.has_value() || !config.has_value() ||
       (urn_uuid_.value() != config->urn_uuid())) {
     // 1. This observer has already observed a config.
@@ -58,13 +59,14 @@ void TestSelectURLFencedFrameConfigObserverImpl::OnConfigPopulated(
 }
 
 void TestSelectURLFencedFrameConfigObserverImpl::
-    OnWorkletOperationExecutionFinished(base::Time finished_time,
-                                        base::TimeDelta execution_time,
-                                        AccessMethod method,
-                                        int operation_id,
-                                        int worklet_id,
-                                        GlobalRenderFrameHostId main_frame_id,
-                                        const std::string& owner_origin) {}
+    OnSharedStorageWorkletOperationExecutionFinished(
+        base::Time finished_time,
+        base::TimeDelta execution_time,
+        AccessMethod method,
+        int operation_id,
+        int worklet_id,
+        GlobalRenderFrameHostId main_frame_id,
+        const std::string& owner_origin) {}
 
 const std::optional<GURL>&
 TestSelectURLFencedFrameConfigObserverImpl::GetUrnUuid() const {

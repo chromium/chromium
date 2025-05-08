@@ -222,9 +222,9 @@ class StorageHandler
                     bool is_debug_report,
                     const SendResult&) override;
 
-  // SharedStorageObserverInterface
+  // content::SharedStorageRuntimeManager::SharedStorageObserverInterface
   GlobalRenderFrameHostId AssociatedFrameHostId() const override;
-  bool ShouldReceiveAllReports() const override;
+  bool ShouldReceiveAllSharedStorageReports() const override;
   void OnSharedStorageAccessed(
       base::Time access_time,
       blink::SharedStorageAccessScope scope,
@@ -233,10 +233,10 @@ class StorageHandler
       GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params) override;
-  void OnUrnUuidGenerated(const GURL& urn_uuid) override;
-  void OnConfigPopulated(
+  void OnSharedStorageSelectUrlUrnUuidGenerated(const GURL& urn_uuid) override;
+  void OnSharedStorageSelectUrlConfigPopulated(
       const std::optional<FencedFrameConfig>& config) override;
-  void OnWorkletOperationExecutionFinished(
+  void OnSharedStorageWorkletOperationExecutionFinished(
       base::Time finished_time,
       base::TimeDelta execution_time,
       SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod

@@ -62,7 +62,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
 
     virtual GlobalRenderFrameHostId AssociatedFrameHostId() const = 0;
 
-    virtual bool ShouldReceiveAllReports() const = 0;
+    virtual bool ShouldReceiveAllSharedStorageReports() const = 0;
 
     virtual void OnSharedStorageAccessed(
         base::Time access_time,
@@ -72,12 +72,13 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
         const std::string& owner_origin,
         const SharedStorageEventParams& params) = 0;
 
-    virtual void OnUrnUuidGenerated(const GURL& urn_uuid) = 0;
+    virtual void OnSharedStorageSelectUrlUrnUuidGenerated(
+        const GURL& urn_uuid) = 0;
 
-    virtual void OnConfigPopulated(
+    virtual void OnSharedStorageSelectUrlConfigPopulated(
         const std::optional<FencedFrameConfig>& config) = 0;
 
-    virtual void OnWorkletOperationExecutionFinished(
+    virtual void OnSharedStorageWorkletOperationExecutionFinished(
         base::Time finished_time,
         base::TimeDelta execution_time,
         AccessMethod method,

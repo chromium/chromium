@@ -21,7 +21,7 @@ class TestSelectURLFencedFrameConfigObserverImpl
   ~TestSelectURLFencedFrameConfigObserverImpl() override;
 
   GlobalRenderFrameHostId AssociatedFrameHostId() const override;
-  bool ShouldReceiveAllReports() const override;
+  bool ShouldReceiveAllSharedStorageReports() const override;
 
   void OnSharedStorageAccessed(base::Time access_time,
                                AccessScope scope,
@@ -29,11 +29,11 @@ class TestSelectURLFencedFrameConfigObserverImpl
                                GlobalRenderFrameHostId main_frame_id,
                                const std::string& owner_origin,
                                const SharedStorageEventParams& params) override;
-  void OnUrnUuidGenerated(const GURL& urn_uuid) override;
-  void OnConfigPopulated(
+  void OnSharedStorageSelectUrlUrnUuidGenerated(const GURL& urn_uuid) override;
+  void OnSharedStorageSelectUrlConfigPopulated(
       const std::optional<FencedFrameConfig>& config) override;
 
-  void OnWorkletOperationExecutionFinished(
+  void OnSharedStorageWorkletOperationExecutionFinished(
       base::Time finished_time,
       base::TimeDelta execution_time,
       AccessMethod method,

@@ -1460,7 +1460,7 @@ GlobalRenderFrameHostId StorageHandler::AssociatedFrameHostId() const {
   return frame_host_ ? frame_host_->GetGlobalId() : GlobalRenderFrameHostId();
 }
 
-bool StorageHandler::ShouldReceiveAllReports() const {
+bool StorageHandler::ShouldReceiveAllSharedStorageReports() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return false;
 }
@@ -1658,11 +1658,12 @@ void StorageHandler::OnSharedStorageAccessed(
       std::move(protocol_params));
 }
 
-void StorageHandler::OnUrnUuidGenerated(const GURL& urn_uuid) {}
-void StorageHandler::OnConfigPopulated(
+void StorageHandler::OnSharedStorageSelectUrlUrnUuidGenerated(
+    const GURL& urn_uuid) {}
+void StorageHandler::OnSharedStorageSelectUrlConfigPopulated(
     const std::optional<FencedFrameConfig>& config) {}
 
-void StorageHandler::OnWorkletOperationExecutionFinished(
+void StorageHandler::OnSharedStorageWorkletOperationExecutionFinished(
     base::Time finished_time,
     base::TimeDelta execution_time,
     SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
