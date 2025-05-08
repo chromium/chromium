@@ -29,9 +29,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-#include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "services/image_annotation/annotator.h"
 #include "services/image_annotation/image_annotation_metrics.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
@@ -404,11 +401,6 @@ class TestAnnotatorClient : public Annotator::Client {
   }
 
  private:
-  // Annotator::Client implementation:
-  void BindJsonParser(mojo::PendingReceiver<data_decoder::mojom::JsonParser>
-                          receiver) override {
-    decoder_.GetService()->BindJsonParser(std::move(receiver));
-  }
   std::vector<std::string> GetAcceptLanguages() override {
     return accept_langs_;
   }
@@ -416,7 +408,6 @@ class TestAnnotatorClient : public Annotator::Client {
   void RecordLanguageMetrics(const std::string& page_language,
                              const std::string& requested_language) override {}
 
-  data_decoder::DataDecoder decoder_;
   std::vector<std::string> accept_langs_ = {"en", "it", "fr"};
   std::vector<std::string> top_langs_;
 };
@@ -429,7 +420,6 @@ TEST(AnnotatorTest, OcrSuccessAndCache) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -536,7 +526,6 @@ TEST(AnnotatorTest, DescriptionSuccess) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -644,7 +633,6 @@ TEST(AnnotatorTest, DoubleOcrResult) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -760,7 +748,6 @@ TEST(AnnotatorTest, HttpError) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -817,7 +804,6 @@ TEST(AnnotatorTest, BackendError) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -901,7 +887,6 @@ TEST(AnnotatorTest, OcrBackendError) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -996,7 +981,6 @@ TEST(AnnotatorTest, DescriptionBackendError) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -1087,7 +1071,6 @@ TEST(AnnotatorTest, ServerError) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -1146,7 +1129,6 @@ TEST(AnnotatorTest, AdultError) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -1222,7 +1204,6 @@ TEST(AnnotatorTest, ProcessorFails) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -1303,7 +1284,6 @@ TEST(AnnotatorTest, ProcessorFailedPreviously) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -1373,7 +1353,6 @@ TEST(AnnotatorTest, ProcessorDies) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -1449,7 +1428,6 @@ TEST(AnnotatorTest, ConcurrentSameBatch) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -1537,7 +1515,6 @@ TEST(AnnotatorTest, ConcurrentSeparateBatches) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -1682,7 +1659,6 @@ TEST(AnnotatorTest, DuplicateWork) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -1791,7 +1767,6 @@ TEST(AnnotatorTest, DescPolicy) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -1996,7 +1971,6 @@ TEST(AnnotatorTest, DescLanguage) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -2195,7 +2169,6 @@ TEST(AnnotatorTest, LanguageFallback) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
   Annotator annotator(
@@ -2295,7 +2268,6 @@ TEST(AnnotatorTest, LanguageFallback) {
 TEST(AnnotatorTest, ApiKey) {
   base::test::TaskEnvironment test_task_env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
   // A call to a secure Google-owner server URL should include the specified API
   // key.
@@ -2470,7 +2442,6 @@ TEST(AnnotatorTest, FetchServerLanguages) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
   Annotator annotator(
       GURL(kTestServerUrl), GURL(kLangsServerUrl), std::string() /* api_key */,
@@ -2505,7 +2476,6 @@ TEST(AnnotatorTest, ServerLanguagesMustContainEnglish) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
   Annotator annotator(
       GURL(kTestServerUrl), GURL(kLangsServerUrl), std::string() /* api_key */,
