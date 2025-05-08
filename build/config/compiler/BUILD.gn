@@ -512,9 +512,10 @@ config("compiler") {
   # Linux-specific compiler flags setup.
   # ------------------------------------
   if (use_icf && (!is_apple || use_lld)) {
-    if (is_fuchsia) {
+    if (is_fuchsia || is_android) {
       # TODO(crbug.com/415810137): A temporary workaround to avoid crashing
       # blink on fuchsia.
+      # TODO(crbug.com/415842701): blink also crashing on android.
       ldflags += [ "-Wl,--icf=safe" ]
     } else {
       ldflags += [ "-Wl,--icf=all" ]
