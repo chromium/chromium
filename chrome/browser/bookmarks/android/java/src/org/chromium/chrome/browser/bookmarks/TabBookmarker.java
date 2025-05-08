@@ -113,7 +113,7 @@ public class TabBookmarker {
 
     private void addOrEditBookmark(
             final Tab tabToBookmark, @BookmarkType int bookmarkType, boolean fromExplicitTrackUi) {
-        if (tabToBookmark == null || tabToBookmark.isFrozen()) {
+        if (tabToBookmark == null) {
             return;
         }
 
