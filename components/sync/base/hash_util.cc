@@ -4,7 +4,7 @@
 
 #include "components/sync/base/hash_util.h"
 
-#include "base/notreached.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/data_type.h"
@@ -41,7 +41,11 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
     case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
       return std::string();
     case sync_pb::AutofillWalletSpecifics::UNKNOWN:
-      NOTREACHED();
+      DVLOG(1) << "New or unknown Autofill Wallet Specifics type is sent from "
+                  "the sync server side while not handled by Chrome. This is "
+                  "expected when the new type is not yet supported on current "
+                  "chrome version.";
+      return std::string();
   }
   return std::string();
 }
