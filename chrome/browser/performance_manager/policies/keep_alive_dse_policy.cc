@@ -40,12 +40,21 @@ KeepAliveDSEPolicy::~KeepAliveDSEPolicy() = default;
 
 void KeepAliveDSEPolicy::OnMainFrameUrlChanged(const PageNode* page_node) {
   const FrameNode* main_frame_node = page_node->GetMainFrameNode();
-  CHECK(main_frame_node);
+  // If there's no main frame (e.g., this can happen during session restore
+  // before the main frame is fully initialized), there's nothing to do, as we
+  // need it to determine the URL and associated process.
+  if (!main_frame_node) {
+    return;
+  }
 
   TemplateURLService* template_url_service = GetTemplateURLService(page_node);
 
-  // Check in case profile is invalid
-  CHECK(template_url_service);
+  // If the TemplateURLService can't be retrieved (e.g., for an off-the-record
+  // profile or a profile that doesn't have one), we cannot determine the DSE
+  // or if the current page is a DSE SRP.
+  if (!template_url_service) {
+    return;
+  }
 
   const TemplateURL* default_search_provider =
       template_url_service->GetDefaultSearchProvider();
