@@ -276,6 +276,9 @@ template("mojolpm_generated_fuzzer") {
       inputs = jinja2_sources
 
       deps = []
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
       if (defined(invoker.proto_deps)) {
         deps += invoker.proto_deps
       }
@@ -289,6 +292,7 @@ template("mojolpm_generated_fuzzer") {
           "-f",
           rebase_path(invoker.interface_file, root_build_dir),
         ]
+        inputs += [ invoker.interface_file ]
       }
       args += [
         "--output_file_format",
