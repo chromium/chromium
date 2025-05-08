@@ -3074,6 +3074,7 @@
     {
       name: "cursor",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "inherited",
       inherited: true,
       independent: true,
       field_template: "keyword",
