@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
@@ -100,6 +101,8 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   void ChangeRequestPriority(RequestPriority priority) override;
 
  private:
+  friend class FakeServiceEndpointResolver;
+
   raw_ptr<Delegate> delegate_;
 
   int start_result_ = ERR_IO_PENDING;
@@ -108,6 +111,8 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   bool endpoints_crypto_ready_ = false;
   ResolveErrorInfo resolve_error_info_;
   RequestPriority priority_ = RequestPriority::IDLE;
+
+  base::WeakPtrFactory<FakeServiceEndpointRequest> weak_ptr_factory_{this};
 };
 
 // A fake HostResolver that implements the ServiceEndpointRequest API using
@@ -127,7 +132,7 @@ class FakeServiceEndpointResolver : public HostResolver {
   // CreateServiceEndpointRequest() consumes the request. You will need to call
   // this method multiple times when you expect multiple
   // CreateServiceEndpointRequest() calls.
-  FakeServiceEndpointRequest* AddFakeRequest();
+  base::WeakPtr<FakeServiceEndpointRequest> AddFakeRequest();
 
   // HostResolver methods:
   void OnShutdown() override;

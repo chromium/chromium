@@ -6955,7 +6955,8 @@ class HttpStreamFactoryJobControllerPoolTest
 };
 
 TEST_F(HttpStreamFactoryJobControllerPoolTest, Preconnect) {
-  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("127.0.0.1").endpoint())
       .CompleteStartSynchronously(OK);

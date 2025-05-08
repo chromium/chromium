@@ -98,12 +98,14 @@ FakeServiceEndpointResolver::FakeServiceEndpointResolver() = default;
 
 FakeServiceEndpointResolver::~FakeServiceEndpointResolver() = default;
 
-FakeServiceEndpointRequest* FakeServiceEndpointResolver::AddFakeRequest() {
+base::WeakPtr<FakeServiceEndpointRequest>
+FakeServiceEndpointResolver::AddFakeRequest() {
   std::unique_ptr<FakeServiceEndpointRequest> request =
       std::make_unique<FakeServiceEndpointRequest>();
-  FakeServiceEndpointRequest* raw_request = request.get();
+  base::WeakPtr<FakeServiceEndpointRequest> weak_request =
+      request->weak_ptr_factory_.GetWeakPtr();
   requests_.emplace_back(std::move(request));
-  return raw_request;
+  return weak_request;
 }
 
 void FakeServiceEndpointResolver::OnShutdown() {}
