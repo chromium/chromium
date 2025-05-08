@@ -49,7 +49,6 @@
 
 #include "base/types/optional_util.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -297,12 +296,6 @@ void PaintLayerStackingNode::RebuildZOrderLists() {
   // order.
   if (layer_->IsRootLayer()) {
     LayoutBlockFlow* root_block = layer_->GetLayoutObject().View();
-    // If the viewport is paginated, everything (including "top-layer" elements)
-    // gets redirected to the flow thread. So that's where we have to look, in
-    // that case.
-    if (LayoutBlockFlow* multi_column_flow_thread =
-            root_block->MultiColumnFlowThread())
-      root_block = multi_column_flow_thread;
     for (LayoutObject* child = root_block->FirstChild(); child;
          child = child->NextSibling()) {
       if (child->IsInTopOrViewTransitionLayer() && child->IsStacked()) {
