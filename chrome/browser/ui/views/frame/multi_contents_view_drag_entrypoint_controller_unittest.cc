@@ -17,16 +17,6 @@ static constexpr gfx::Size kMultiContentsViewSize(500, 500);
 
 static constexpr gfx::PointF kDragPointForDropTargetShow(450, 450);
 
-views::View* FindChildWithElementId(views::View* parent,
-                                    ui::ElementIdentifier id) {
-  for (views::View* child : parent->children()) {
-    if (child->GetProperty(views::kElementIdentifierKey) == id) {
-      return child;
-    }
-  }
-  return nullptr;
-}
-
 class MultiContentsViewDragEntrypointControllerTest : public testing::Test {
  public:
   MultiContentsViewDragEntrypointControllerTest() = default;
@@ -34,11 +24,11 @@ class MultiContentsViewDragEntrypointControllerTest : public testing::Test {
 
   void SetUp() override {
     multi_contents_view_ = std::make_unique<views::View>();
+    drop_target_view_ =
+        multi_contents_view_->AddChildView(std::make_unique<views::View>());
+    drop_target_view_->SetVisible(false);
     controller_ = std::make_unique<MultiContentsViewDragEntrypointController>(
-        *multi_contents_view_.get());
-
-    drop_target_view_ = FindChildWithElementId(
-        multi_contents_view_.get(), kMultiContentsViewDropTargetElementId);
+        *drop_target_view_);
 
     multi_contents_view_->SetSize(kMultiContentsViewSize);
   }

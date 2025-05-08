@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_drag_entrypoint_controller.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/web_contents.h"
@@ -23,6 +24,8 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewDropTargetElementId);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
                                       kMultiContentsViewElementId);
@@ -60,6 +63,14 @@ MultiContentsView::MultiContentsView(
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  views::View* drop_target_view = AddChildView(std::make_unique<views::View>());
+  drop_target_view->SetProperty(views::kElementIdentifierKey,
+                                kMultiContentsViewDropTargetElementId);
+  drop_target_view->SetVisible(false);
+  drag_entrypoint_controller_ =
+      std::make_unique<MultiContentsViewDragEntrypointController>(
+          *drop_target_view);
 }
 
 MultiContentsView::~MultiContentsView() = default;

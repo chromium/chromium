@@ -4,16 +4,23 @@
 
 #include "base/numerics/clamped_math.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/test/split_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_drag_entrypoint_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "content/public/test/browser_test.h"
@@ -409,3 +416,185 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       WaitForState(kMultiContentsViewSwapObserver, true), CheckTabIsActive(1),
       CheckActiveContentsHasFocus());
 }
+
+// TODO(crbug.com/414590951): There's limited support for testing drag and drop
+// on various platforms. These should be re-enabled as support is added.
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
+
+gfx::Point PointForDropTargetFromView(views::View* view) {
+  return view->GetBoundsInScreen().right_center() - gfx::Vector2d(10, 0);
+}
+
+class MultiContentsViewDragEntrypointsUiTest : public MultiContentsViewUiTest {
+ public:
+  using MultiContentsViewUiTest::MultiContentsViewUiTest;
+
+  void SetUp() override {
+    http_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(http_server_.InitializeAndListen());
+    MultiContentsViewUiTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    http_server_.StartAcceptingConnections();
+    InteractiveBrowserTest::SetUpOnMainThread();
+  }
+
+  GURL GetURL(std::string path) { return http_server_.GetURL(path); }
+
+  auto PointForDropTarget() const {
+    return base::BindLambdaForTesting(
+        [](views::View* view) { return PointForDropTargetFromView(view); });
+  }
+
+  // The standard DragMouseTo verb waits for the mouse to reach the
+  // destination. This version does not, since the mouse position sometimes
+  // doesn't get reported immediately (see `WaitForDropTargetVisible`).
+  auto DragMouseToWithoutWait(
+      ElementSpecifier target_view,
+      base::RepeatingCallback<gfx::Point(views::View*)> pos) {
+    return WithView(target_view, [pos = std::move(pos)](views::View* view) {
+      base::RunLoop press_loop(base::RunLoop::Type::kNestableTasksAllowed);
+      EXPECT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(
+          ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::DOWN,
+          press_loop.QuitClosure()));
+      press_loop.Run();
+      gfx::Point target_location = std::move(pos).Run(view);
+
+      EXPECT_TRUE(
+          ui_controls::SendMouseMove(target_location.x(), target_location.y()));
+    });
+  }
+
+  auto WaitForDropTargetVisible() {
+    // This method waits for the drop target to be visible, but also sends
+    // periodic mouse movement events while waiting. The mouse movements are
+    // needed to deflake this test on some Mac platforms: in the normal case,
+    // the initial mouse movement initiates a drag session, which later
+    // receives "drag updated" events from the OS. However, for some of the
+    // flakes, these updates are never sent by the OS. Manually generating
+    // the events seems to fix this.
+    // We really only need one event timed to execute after the drag session
+    // starts; an alternative approach would be to add observation to the
+    // Mac DnD client. Until then, periodic events does the trick.
+    //
+    // Note, both branches of AnyOf end with WaitForShow to ensure that the
+    // only way this step terminates successfully is if the view is shown.
+    return AnyOf(
+        RunSubsequence(WaitForShow(kMultiContentsViewDropTargetElementId)),
+        RunSubsequence(
+            Steps(
+                // Programmatically generate a list of mouse movement steps.
+                []() {
+                  constexpr int kMouseMovements = 20;
+                  constexpr base::TimeDelta kMovementDelay =
+                      base::Milliseconds(250);
+                  MultiStep mouse_moves;
+                  // Jitter applied to the mouse move destination to ensure it
+                  // changes between each step.
+                  int jitter = 3;
+                  for (int mouse_move_events = 0;
+                       mouse_move_events < kMouseMovements;
+                       ++mouse_move_events) {
+                    jitter *= -1;
+                    AddStep(mouse_moves, Do([kMovementDelay] {
+                              base::PlatformThread::Sleep(kMovementDelay);
+                            }));
+                    AddStep(
+                        mouse_moves,
+                        WithView(MultiContentsView::kMultiContentsViewElementId,
+                                 [jitter](views::View* view) {
+                                   gfx::Point target =
+                                       PointForDropTargetFromView(view);
+                                   EXPECT_TRUE(ui_controls::SendMouseMove(
+                                       target.x() + jitter, target.y()));
+                                 }));
+                  }
+                  return mouse_moves;
+                }()),
+            // This branch also waits for visibility to prevent it from exiting
+            // prematurely.
+            WaitForShow(kMultiContentsViewDropTargetElementId)));
+  }
+
+ private:
+  net::EmbeddedTestServer http_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
+                       ShowsDropTargetOnLinkDragged) {
+  RunTestSequence(
+      AddInstrumentedTab(kNewTab, GetURL("/links.html"), 0),
+      CheckTabIsActive(0),
+      // Drag an href element to the drop target area. The drop
+      // target should be shown.
+      MoveMouseTo(kNewTab, DeepQuery{"#title1"}),
+      DragMouseToWithoutWait(MultiContentsView::kMultiContentsViewElementId,
+                             PointForDropTarget()),
+      WaitForDropTargetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
+                       DoesNotShowDropTargetOnNonURLDragged) {
+  RunTestSequence(
+      AddInstrumentedTab(kNewTab, GetURL("/button.html"), 0),
+      CheckTabIsActive(0),
+      // Dragging a non-url to the drop target area should have no
+      // effect.
+      MoveMouseTo(kNewTab, DeepQuery{"#button"}),
+      DragMouseToWithoutWait(MultiContentsView::kMultiContentsViewElementId,
+                             PointForDropTarget()),
+      WaitForHide(kMultiContentsViewDropTargetElementId));
+}
+
+class MultiContentsViewBookmarkDragEntrypointsUiTest
+    : public MultiContentsViewDragEntrypointsUiTest {
+ public:
+  using MultiContentsViewDragEntrypointsUiTest::
+      MultiContentsViewDragEntrypointsUiTest;
+
+  void SetUpOnMainThread() override {
+    MultiContentsViewDragEntrypointsUiTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(
+        bookmarks::prefs::kShowBookmarkBar, true);
+  }
+
+  // Names the bookmark bar button for the given bookmark folder.
+  auto NameBookmarkButton(std::string assigned_name,
+                          std::u16string node_title) {
+    return NameViewRelative(
+        kBookmarkBarElementId, assigned_name,
+        base::BindLambdaForTesting([=](views::View* view) -> views::View* {
+          auto* const bookmark_bar = views::AsViewClass<BookmarkBarView>(view);
+          CHECK(bookmark_bar);
+          for (views::View* child : bookmark_bar->children()) {
+            auto* bookmark_button = views::AsViewClass<BookmarkButton>(child);
+            if (bookmark_button && bookmark_button->GetText() == node_title) {
+              return bookmark_button;
+            }
+          }
+          NOTREACHED() << "Bookmark button with title " << node_title
+                       << " not found.";
+        }));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBookmarkDragEntrypointsUiTest,
+                       ShowsDropTargetOnBookmarkedLinkDragged) {
+  bookmarks::BookmarkModel* const model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const std::u16string bookmark_title = u"Bookmark";
+  model->AddNewURL(model->bookmark_bar_node(), 0, u"Bookmark",
+                   GetURL("/links.html"));
+
+  const std::string kBookmarkButtonId = "bookmark_button";
+  RunTestSequence(
+      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 0),
+      CheckTabIsActive(0), WaitForShow(kBookmarkBarElementId),
+      NameBookmarkButton(kBookmarkButtonId, bookmark_title),
+      MoveMouseTo(kBookmarkButtonId),
+      DragMouseToWithoutWait(MultiContentsView::kMultiContentsViewElementId,
+                             PointForDropTarget()),
+      WaitForDropTargetVisible());
+}
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)

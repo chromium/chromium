@@ -7,29 +7,23 @@
 #include "content/public/common/drop_data.h"
 #include "ui/views/view_class_properties.h"
 
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewDropTargetElementId);
-
 MultiContentsViewDragEntrypointController::
-    MultiContentsViewDragEntrypointController(views::View& multi_contents_view)
-    : multi_contents_view_(multi_contents_view),
-      drop_target_view_(
-          *multi_contents_view.AddChildView(std::make_unique<views::View>())) {
-  drop_target_view_->SetProperty(views::kElementIdentifierKey,
-                                 kMultiContentsViewDropTargetElementId);
-  drop_target_view_->SetVisible(false);
+    MultiContentsViewDragEntrypointController(views::View& drop_target_view)
+    : drop_target_view_(drop_target_view) {
+  CHECK_NE(nullptr, drop_target_view.parent());
 }
 
 void MultiContentsViewDragEntrypointController::OnWebContentsDragUpdate(
     const content::DropData& data,
     const gfx::PointF& point) {
-  CHECK_LE(point.x(), multi_contents_view_->width());
+  CHECK_LE(point.x(), drop_target_view_->parent()->width());
 
   // TODO(crbug.com/394369035): Settle on an appropriate value for this.
   constexpr int kDropEntryPointWidth = 100;
 
   const bool should_show_drop_zone =
       data.url.is_valid() &&
-      point.x() >= multi_contents_view_->width() - kDropEntryPointWidth;
+      point.x() >= drop_target_view_->parent()->width() - kDropEntryPointWidth;
   // TODO(crbug.com/394369035): Add a timer to delay showing the drop zone.
   drop_target_view_->SetVisible(should_show_drop_zone);
 }
