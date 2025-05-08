@@ -1827,11 +1827,6 @@ void ResizeAllocatedTableWithSeedChange(CommonFields& common,
                                         const PolicyFunctions& policy,
                                         size_t new_capacity);
 
-inline void PrepareInsertCommon(CommonFields& common) {
-  common.increment_size();
-  common.maybe_increment_generation_on_insert();
-}
-
 // ClearBackingArray clears the backing array, either modifying it in place,
 // or creating a new one based on the value of "reuse".
 // REQUIRES: c.capacity > 0

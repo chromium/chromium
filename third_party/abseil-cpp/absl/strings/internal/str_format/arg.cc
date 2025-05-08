@@ -26,6 +26,7 @@
 #include <cstring>
 #include <cwchar>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "absl/base/config.h"
@@ -37,10 +38,6 @@
 #include "absl/strings/internal/utf8.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/string_view.h"
-
-#if defined(ABSL_HAVE_STD_STRING_VIEW)
-#include <string_view>
-#endif
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -459,13 +456,11 @@ StringConvertResult FormatConvertImpl(string_view v,
   return {ConvertStringArg(v, conv, sink)};
 }
 
-#if defined(ABSL_HAVE_STD_STRING_VIEW)
 StringConvertResult FormatConvertImpl(std::wstring_view v,
                                       const FormatConversionSpecImpl conv,
                                       FormatSinkImpl* sink) {
   return {ConvertStringArg(v.data(), v.size(), conv, sink)};
 }
-#endif
 
 StringPtrConvertResult FormatConvertImpl(const char* v,
                                          const FormatConversionSpecImpl conv,

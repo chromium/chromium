@@ -73,32 +73,33 @@ for std in ${STD}; do
         --rm \
         ${DOCKER_EXTRA_ARGS:-} \
         ${DOCKER_CONTAINER} \
+        /bin/bash --login -c "
         /usr/local/bin/bazel test ... \
-          --action_env="CC=/opt/llvm/clang/bin/clang" \
-          --action_env="BAZEL_CXXOPTS=-std=${std}:-nostdinc++" \
-          --action_env="BAZEL_LINKOPTS=-L/opt/llvm/libcxx/lib:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/libcxx/lib" \
-          --action_env="CPLUS_INCLUDE_PATH=/opt/llvm/libcxx/include/c++/v1" \
-          --compilation_mode="${compilation_mode}" \
-          --copt="${exceptions_mode}" \
-          --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \
-          --copt="-fsanitize=address" \
-          --copt="-fsanitize=${UBSAN_CHECKS}" \
-          --copt="-fno-sanitize-recover=${UBSAN_CHECKS}" \
-          --copt="-fno-sanitize-blacklist" \
+          --action_env=\"CC=/opt/llvm/clang/bin/clang\" \
+          --action_env=\"BAZEL_CXXOPTS=-std=${std}:-nostdinc++\" \
+          --action_env=\"BAZEL_LINKOPTS=-L/opt/llvm/libcxx/lib:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/libcxx/lib\" \
+          --action_env=\"CPLUS_INCLUDE_PATH=/opt/llvm/libcxx/include/c++/v1\" \
+          --compilation_mode=\"${compilation_mode}\" \
+          --copt=\"${exceptions_mode}\" \
+          --copt=\"-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1\" \
+          --copt=\"-fsanitize=address\" \
+          --copt=\"-fsanitize=${UBSAN_CHECKS}\" \
+          --copt=\"-fno-sanitize-recover=${UBSAN_CHECKS}\" \
+          --copt=\"-fno-sanitize-blacklist\" \
           --copt=-Werror \
           --enable_bzlmod=true \
           --features=external_include_paths \
           --keep_going \
-          --linkopt="-fsanitize=address" \
-          --linkopt="-fsanitize-link-c++-runtime" \
+          --linkopt=\"-fsanitize=address\" \
+          --linkopt=\"-fsanitize-link-c++-runtime\" \
           --show_timestamps \
-          --test_env="ASAN_SYMBOLIZER_PATH=/opt/llvm/clang/bin/llvm-symbolizer" \
-          --test_env="TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo" \
-          --test_env="UBSAN_OPTIONS=print_stacktrace=1" \
-          --test_env="UBSAN_SYMBOLIZER_PATH=/opt/llvm/clang/bin/llvm-symbolizer" \
+          --test_env=\"ASAN_SYMBOLIZER_PATH=/opt/llvm/clang/bin/llvm-symbolizer\" \
+          --test_env=\"TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo\" \
+          --test_env=\"UBSAN_OPTIONS=print_stacktrace=1\" \
+          --test_env=\"UBSAN_SYMBOLIZER_PATH=/opt/llvm/clang/bin/llvm-symbolizer\" \
           --test_output=errors \
-          --test_tag_filters="-benchmark,-noasan" \
-          ${BAZEL_EXTRA_ARGS:-}
+          --test_tag_filters=\"-benchmark,-noasan\" \
+          ${BAZEL_EXTRA_ARGS:-}"
     done
   done
 done
