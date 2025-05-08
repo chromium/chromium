@@ -146,6 +146,14 @@ const char kGoogleMyAccountURL[] =
 const char kGoogleMyAccountDeviceActivityURL[] =
     "https://myaccount.google.com/device-activity?utm_source=chrome";
 
+const char kGoogleMyAccountHomeAddressURL[] =
+    "https://myaccount.google.com/address/"
+    "home?utm_source=chrome&utm_campaign=manage_addresses";
+
+const char kGoogleMyAccountWorkAddressURL[] =
+    "https://myaccount.google.com/address/"
+    "work?utm_source=chrome&utm_campaign=manage_addresses";
+
 const char kReadingListReferrerURL[] =
     "chrome://do_not_consider_for_most_visited/reading_list";
 

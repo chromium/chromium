@@ -128,6 +128,12 @@ extern const char kGoogleMyAccountURL[];
 // URL of the Google Account page showing the known user devices.
 extern const char kGoogleMyAccountDeviceActivityURL[];
 
+// URL of the Google Account home address page.
+extern const char kGoogleMyAccountHomeAddressURL[];
+
+// URL of the Google Account work address page.
+extern const char kGoogleMyAccountWorkAddressURL[];
+
 // URL used in referrer to signal that the navigation originates from Reading
 // List page and thus should not be considered for Most Visited.
 extern const char kReadingListReferrerURL[];
