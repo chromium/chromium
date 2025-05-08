@@ -359,7 +359,7 @@ AudioInputStream* AudioManagerBase::MakeAudioInputStream(
       // the user of the stream. I the case where the audio manager closes the
       // stream (Mac), this will result in a dangling pointer.
       AudioDebugRecordingStreamType stream_type =
-          (device_id == media::AudioDeviceDescription::kLoopbackInputDeviceId)
+          AudioDeviceDescription::IsLoopbackDevice(device_id)
               ? AudioDebugRecordingStreamType::kLoopback
               : AudioDebugRecordingStreamType::kInput;
       stream = new AudioInputStreamDataInterceptor(
