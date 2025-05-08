@@ -1195,12 +1195,6 @@ PaintLayer* LayoutObject::PaintingLayer(int max_depth) const {
     // be accessed through the associated out-of-flow placeholder's parent.
     if (object.IsColumnSpanAll())
       return object.SpannerPlaceholder();
-    // Use ContainingBlock() instead of Parent() for floating objects to omit
-    // any self-painting layers of inline objects that don't paint the floating
-    // object. This is only needed for inline-level floats not managed by
-    // LayoutNG. LayoutNG floats are painted by the correct painting layer.
-    if (object.IsFloating() && !object.IsInLayoutNGInlineFormattingContext())
-      return object.ContainingBlock();
     // Physical fragments and fragment items for ruby-text boxes are not
     // managed by inline parents, and stored in a separated line of the IFC.
     if (object.IsInlineRubyText()) {
