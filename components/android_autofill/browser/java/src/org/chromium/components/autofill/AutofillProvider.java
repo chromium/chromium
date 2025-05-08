@@ -144,7 +144,7 @@ public class AutofillProvider {
     }
 
     public void destroy() {
-        mAutofillUMA.recordSession();
+        if (mAutofillUMA != null) mAutofillUMA.recordSession();
         detachFromJavaAutofillProvider();
         getAutofillManagerWrapper().destroy();
     }
@@ -311,6 +311,7 @@ public class AutofillProvider {
         }
 
         transformFormFieldToContainViewCoordinates(formData);
+        maybeInitializeUmaRecorder(mContext);
         mAutofillUMA.onSessionStarted(getAutofillManagerWrapper().isDisabled());
         mRequest =
                 new AutofillRequest(
@@ -728,7 +729,7 @@ public class AutofillProvider {
 
     public void setWebContents(WebContents webContents) {
         if (webContents == mWebContents) return;
-        mAutofillUMA.recordSession();
+        if (mAutofillUMA != null) mAutofillUMA.recordSession();
         if (mWebContents != null) mRequest = null;
         mWebContents = webContents;
         detachFromJavaAutofillProvider();
