@@ -11,8 +11,10 @@ namespace collaboration {
 //   org.chromium.components.collaboration)
 enum class SigninStatus {
   kNotSignedIn = 0,
-  kSignedInPaused = 1,
-  kSignedIn = 2
+  // Signin is disabled either in user setting or by enterprise policy.
+  kSigninDisabled = 1,
+  kSignedInPaused = 2,
+  kSignedIn = 3
 };
 
 // GENERATED_JAVA_ENUM_PACKAGE: (

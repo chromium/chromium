@@ -274,7 +274,7 @@ class WaitingForPolicyUpdateState : public ControllerState,
   void HandleError() override {
     ServiceStatus status =
         controller->collaboration_service()->GetServiceStatus();
-    if (status.signin_status == SigninStatus::kNotSignedIn) {
+    if (status.signin_status == SigninStatus::kSigninDisabled) {
       RecordJoinOrShareOrManageEvent(
           GetLogger(), controller->flow().type,
           CollaborationServiceJoinEvent::kDevicePolicyDisableSignin,

@@ -160,23 +160,21 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_CreateOverridesJoinOnly) {
             CollaborationStatus::kEnabledCreateAndJoin);
 }
 
-TEST_F(CollaborationServiceImplTest, GetServiceStatus_ManagedDevice) {
+TEST_F(CollaborationServiceImplTest, GetServiceStatus_SigninDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       data_sharing::features::kDataSharingFeature);
 
-  // Set device policy to disable signin.
+  // Set signin preference to disable signin.
   pref_service_.SetBoolean(prefs::kSigninAllowed, false);
   InitService();
 
   EXPECT_EQ(service_->GetServiceStatus().signin_status,
-            SigninStatus::kNotSignedIn);
+            SigninStatus::kSigninDisabled);
   EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
-            CollaborationStatus::kDisabledForPolicy);
-  identity_test_env_.MakePrimaryAccountAvailable(kConsumerUserEmail,
-                                                 signin::ConsentLevel::kSignin);
-  EXPECT_EQ(service_->GetServiceStatus().signin_status,
-            SigninStatus::kSignedIn);
+            CollaborationStatus::kEnabledCreateAndJoin);
+
+  pref_service_.SetManagedPref(prefs::kSigninAllowed, base::Value(false));
   EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
             CollaborationStatus::kDisabledForPolicy);
 }

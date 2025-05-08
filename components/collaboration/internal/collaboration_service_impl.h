@@ -116,7 +116,6 @@ class CollaborationServiceImpl : public CollaborationService,
       const data_sharing::GroupId& group_id,
       base::OnceCallback<void(bool)> callback,
       data_sharing::DataSharingService::PeopleGroupActionOutcome result);
-  void OnPrefChanged();
 
   ServiceStatus current_status_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>

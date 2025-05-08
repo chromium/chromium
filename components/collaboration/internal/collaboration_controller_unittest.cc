@@ -14,6 +14,7 @@
 #include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
+#include "components/collaboration/public/service_status.h"
 #include "components/collaboration/test_support/mock_collaboration_controller_delegate.h"
 #include "components/collaboration/test_support/mock_collaboration_service.h"
 #include "components/data_sharing/public/data_sharing_service.h"
@@ -66,6 +67,8 @@ class CollaborationControllerTest : public testing::Test {
     tab_group_sync_service_ =
         std::make_unique<tab_groups::MockTabGroupSyncService>();
     sync_service_ = std::make_unique<syncer::MockSyncService>();
+    EXPECT_CALL(*data_sharing_service_, GetLogger())
+        .Times(::testing::AnyNumber());
   }
 
   void TearDown() override {}
@@ -270,7 +273,7 @@ TEST_F(CollaborationControllerTest, JoinFlowManagedDevice) {
 
   // Simulate managed device.
   ServiceStatus status;
-  status.signin_status = SigninStatus::kNotSignedIn;
+  status.signin_status = SigninStatus::kSigninDisabled;
   status.sync_status = SyncStatus::kNotSyncing;
   status.collaboration_status = CollaborationStatus::kDisabledForPolicy;
   EXPECT_CALL(*collaboration_service_, GetServiceStatus())
@@ -327,7 +330,7 @@ TEST_F(CollaborationControllerTest, JoinFlowSignedOutManagedAccountAsync) {
 
   // Simulate managed account with info not ready.
   ServiceStatus status;
-  status.signin_status = SigninStatus::kNotSignedIn;
+  status.signin_status = SigninStatus::kSigninDisabled;
   status.sync_status = SyncStatus::kNotSyncing;
   status.collaboration_status = CollaborationStatus::kDisabledPending;
   EXPECT_CALL(*collaboration_service_, GetServiceStatus())
@@ -341,6 +344,7 @@ TEST_F(CollaborationControllerTest, JoinFlowSignedOutManagedAccountAsync) {
             StateId::kWaitingForPolicyUpdate);
 
   // The managed account info become available.
+  EXPECT_CALL(*collaboration_service_, RemoveObserver(_));
   EXPECT_CALL(*delegate_,
               ShowError(ErrorInfo(ErrorInfo::Type::kSigninDisabledByPolicy),
                         IsNotNullCallback()));

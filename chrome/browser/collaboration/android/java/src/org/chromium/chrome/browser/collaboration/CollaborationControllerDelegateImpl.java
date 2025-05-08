@@ -222,8 +222,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         ServiceStatus serviceStatus =
                 CollaborationServiceFactory.getForProfile(profile).getServiceStatus();
 
-        if (serviceStatus.signinStatus == SigninStatus.NOT_SIGNED_IN
-                && !signinManager.isSigninAllowed()) {
+        if (serviceStatus.signinStatus == SigninStatus.SIGNIN_DISABLED) {
             // The signin option is disabled manually by the user in settings.
             openSigninSettingsModel(resultCallback);
             return;

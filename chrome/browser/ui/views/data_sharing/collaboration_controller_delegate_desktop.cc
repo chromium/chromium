@@ -50,6 +50,12 @@ DialogText GetPromptDialogTextFromStatus(
       ok_button_text_id = IDS_DATA_SHARING_NEED_SIGN_IN_CONTINUE_BUTTON;
       valid = true;
       break;
+    case collaboration::SigninStatus::kSigninDisabled:
+      title_id = IDS_DATA_SHARING_SIGNED_OUT;
+      body_id = IDS_DATA_SHARING_SIGNED_OUT_BODY;
+      ok_button_text_id = IDS_DATA_SHARING_SETTINGS;
+      valid = true;
+      break;
     case collaboration::SigninStatus::kSignedInPaused:
       title_id = IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT;
       body_id = IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_BODY;
@@ -383,6 +389,9 @@ void CollaborationControllerDelegateDesktop::MaybeShowSignInAndSyncUi() {
   switch (status.signin_status) {
     case collaboration::SigninStatus::kNotSignedIn:
       ShowSignInAndSyncUi(profile);
+      break;
+    case collaboration::SigninStatus::kSigninDisabled:
+      chrome::ShowSettingsSubPage(browser_, chrome::kSyncSetupSubPage);
       break;
     case collaboration::SigninStatus::kSignedInPaused:
       signin_ui_util::ShowReauthForAccount(

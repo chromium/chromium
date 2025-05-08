@@ -178,6 +178,10 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
       operation = AuthenticationOperation::kSheetSigninAndHistorySync;
       break;
 
+    case SigninStatus::kSigninDisabled:
+      // TODO(crbug.com/390153810): Handle the sign in disabled case.
+      NOTREACHED();
+
     case SigninStatus::kSignedInPaused:
       // TODO(crbug.com/390153810): Handle the sign in paused.
       NOTREACHED();

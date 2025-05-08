@@ -58,9 +58,14 @@ CollaborationServiceImpl::CollaborationServiceImpl(
   current_status_.collaboration_status = GetCollaborationStatus();
 
   registrar_.Init(profile_prefs_);
-  registrar_.Add(prefs::kSharedTabGroupsManagedAccountSetting,
-                 base::BindRepeating(&CollaborationServiceImpl::OnPrefChanged,
-                                     base::Unretained(this)));
+  registrar_.Add(
+      prefs::kSharedTabGroupsManagedAccountSetting,
+      base::BindRepeating(&CollaborationServiceImpl::RefreshServiceStatus,
+                          base::Unretained(this)));
+  registrar_.Add(
+      ::prefs::kSigninAllowed,
+      base::BindRepeating(&CollaborationServiceImpl::RefreshServiceStatus,
+                          base::Unretained(this)));
 }
 
 CollaborationServiceImpl::~CollaborationServiceImpl() {
@@ -347,6 +352,8 @@ SigninStatus CollaborationServiceImpl::GetSigninStatus() {
   } else if (identity_manager_->HasPrimaryAccount(
                  signin::ConsentLevel::kSignin)) {
     status = SigninStatus::kSignedInPaused;
+  } else if (!profile_prefs_->GetBoolean(::prefs::kSigninAllowed)) {
+    status = SigninStatus::kSigninDisabled;
   }
 
   return status;
@@ -354,7 +361,8 @@ SigninStatus CollaborationServiceImpl::GetSigninStatus() {
 
 CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   // Check if device policy allow signin.
-  if (!profile_prefs_->GetBoolean(::prefs::kSigninAllowed)) {
+  if (!profile_prefs_->GetBoolean(::prefs::kSigninAllowed) &&
+      profile_prefs_->IsManagedPreference(::prefs::kSigninAllowed)) {
     return CollaborationStatus::kDisabledForPolicy;
   }
 
@@ -498,10 +506,6 @@ void CollaborationServiceImpl::OnCollaborationGroupRemoved(
   }
 
   std::move(callback).Run(/*success=*/false);
-}
-
-void CollaborationServiceImpl::OnPrefChanged() {
-  RefreshServiceStatus();
 }
 
 }  // namespace collaboration

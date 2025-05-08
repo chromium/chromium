@@ -217,7 +217,13 @@ public class CollaborationControllerDelegateImplUnitTest {
         createDelegate(FlowType.JOIN);
         long resultCallback = 1;
 
-        doReturn(false).when(mSigninManager).isSigninAllowed();
+        doReturn(
+                        new ServiceStatus(
+                                SigninStatus.SIGNIN_DISABLED,
+                                /* syncStatus= */ 0,
+                                /* collaborationStatus= */ 0))
+                .when(mCollaborationService)
+                .getServiceStatus();
 
         mCollaborationControllerDelegateImpl.showAuthenticationUi(resultCallback);
         verify(mLoadingFullscreenCoordinator).closeLoadingScreen();
