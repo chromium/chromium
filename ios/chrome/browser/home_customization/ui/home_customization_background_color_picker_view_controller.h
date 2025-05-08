@@ -7,11 +7,21 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_consumer.h"
+
+@protocol HomeCustomizationBackgroundColorPickerMutator;
+
 // View controller responsible for displaying and managing the background color
 // picker in the Home customization flow. Implements collection view delegate
 // and data source to handle color options.
 @interface HomeCustomizationBackgroundColorPickerViewController
-    : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource>
+    : UIViewController <HomeCustomizationBackgroundColorPickerConsumer,
+                        UICollectionViewDataSource>
+
+// Mutator for communicating with the
+// `HomeCustomizationBackgroundColorPickerMediator`.
+@property(nonatomic, weak) id<HomeCustomizationBackgroundColorPickerMutator>
+    mutator;
 
 @end
 

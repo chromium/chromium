@@ -7,6 +7,8 @@ source_set("ui") {
     "home_customization_background_cell+subclassing.h",
     "home_customization_background_cell.h",
     "home_customization_background_cell.mm",
+    "home_customization_background_color_picker_consumer.h",
+    "home_customization_background_color_picker_mutator.h",
     "home_customization_background_color_picker_view_controller.h",
     "home_customization_background_color_picker_view_controller.mm",
     "home_customization_background_photo_library_picker_view_controller.h",
@@ -18,6 +20,8 @@ source_set("ui") {
     "home_customization_background_preset_gallery_picker_view_controller.mm",
     "home_customization_collection_configurator.h",
     "home_customization_collection_configurator.mm",
+    "home_customization_color_palette_configuration.h",
+    "home_customization_color_palette_configuration.mm",
     "home_customization_discover_consumer.h",
     "home_customization_discover_view_controller.h",
     "home_customization_discover_view_controller.mm",
@@ -36,6 +40,8 @@ source_set("ui") {
     "home_customization_toggle_cell.h",
     "home_customization_toggle_cell.mm",
     "home_customization_view_controller_protocol.h",
+    "home_cutomization_color_palette_cell.h",
+    "home_cutomization_color_palette_cell.mm",
   ]
   deps = [
     "//ios/chrome/app/strings:ios_strings",
