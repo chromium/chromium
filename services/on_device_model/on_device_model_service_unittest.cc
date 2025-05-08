@@ -10,7 +10,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/on_device_model/fake/fake_chrome_ml_api.h"
 #include "services/on_device_model/fake/on_device_model_fake.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
@@ -223,25 +222,6 @@ TEST_F(OnDeviceModelServiceTest, PerSessionSamplingParams) {
   EXPECT_THAT(response.responses(),
               ElementsAre("TopK: 2, Temp: 0.5\n", "Context: cheese\n",
                           "Context: more\n", "Context: cheddar\n"));
-}
-
-TEST_F(OnDeviceModelServiceTest, GenerateWithSamplingParamsIsNotAllowed) {
-  auto model = LoadModel();
-
-  TestResponseHolder response;
-  mojo::Remote<mojom::Session> session;
-  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
-  session->Append(MakeInput("cheese"), {});
-
-  // Sampling params should be passed at session creation, not to Generate().
-  auto generate_options = mojom::GenerateOptions::New();
-  generate_options->top_k = 2;
-  generate_options->temperature = 0.8;
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  session->Generate(std::move(generate_options), response.BindRemote());
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              testing::HasSubstr("deprecated"));
 }
 
 TEST_F(OnDeviceModelServiceTest, CloneContextAndContinue) {
@@ -554,40 +534,6 @@ TEST_F(OnDeviceModelServiceTest, AppendWithTokens) {
   EXPECT_THAT(response.responses(), ElementsAre("Context: System: hi End.\n",
                                                 "Context: Model: hello End.\n",
                                                 "Context: User: bye\n"));
-}
-
-TEST_F(OnDeviceModelServiceTest, AppendWithImagesAdaptation) {
-  auto model = LoadModel();
-  auto params = mojom::LoadAdaptationParams::New();
-  params->enable_image_input = true;
-  auto adaptation = LoadAdaptationWithParams(*model, std::move(params));
-
-  mojo::Remote<mojom::Session> session;
-  auto session_params = mojom::SessionParams::New();
-  session_params->capabilities.Put(CapabilityFlags::kImageInput);
-  adaptation->StartSession(session.BindNewPipeAndPassReceiver(),
-                           std::move(session_params));
-
-  std::vector<ml::InputPiece> pieces;
-  pieces.push_back("bleu");
-
-  SkBitmap moldy_cheese;
-  moldy_cheese.allocPixels(
-      SkImageInfo::Make(63, 42, kRGBA_8888_SkColorType, kOpaque_SkAlphaType),
-      0);
-  moldy_cheese.eraseColor(SK_ColorBLUE);
-  pieces.push_back(moldy_cheese);
-
-  pieces.push_back("cheese");
-
-  session->Append(MakeInput(std::move(pieces)), {});
-
-  TestResponseHolder response;
-  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
-  response.WaitForCompletion();
-
-  EXPECT_THAT(response.responses(),
-              ElementsAre("Context: bleu[Bitmap of size 63x42]cheese\n"));
 }
 
 TEST_F(OnDeviceModelServiceTest, AppendWithImages) {

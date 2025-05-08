@@ -311,12 +311,6 @@ void SessionImpl::Generate(
       std::move(response), std::move(on_complete), std::move(cloned));
   ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
   ChromeMLConstraint constraint = 0;
-  if (options->response_json_schema &&
-      !options->response_json_schema->empty()) {
-    options->constraint =
-        on_device_model::mojom::ResponseConstraint::NewJsonSchema(
-            *options->response_json_schema);
-  }
   if (options->constraint) {
     constraint = executor_->CreateConstraint(*options->constraint);
     if (!constraint) {

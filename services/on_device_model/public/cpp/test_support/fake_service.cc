@@ -223,13 +223,6 @@ void FakeOnDeviceSession::GenerateImpl(
       chunk->text = "Context: " + text + "\n";
       remote->OnResponse(std::move(chunk));
     }
-    if (options->top_k > 1) {
-      auto chunk = mojom::ResponseChunk::New();
-      chunk->text += "TopK: " + base::NumberToString(*options->top_k) +
-                     ", Temp: " + base::NumberToString(*options->temperature) +
-                     "\n";
-      remote->OnResponse(std::move(chunk));
-    }
   } else {
     for (const auto& text : settings_->model_execute_result) {
       output_token_count += text.size();

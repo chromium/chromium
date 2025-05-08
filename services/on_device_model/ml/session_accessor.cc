@@ -156,17 +156,6 @@ void SessionAccessor::CreateInternal(
   // this fallback path.
   if (!params) {
     params = on_device_model::mojom::SessionParams::New();
-    // If session params are not provided but adaptation params are, inherit
-    // values from adaptation.
-    if (adaptation_params) {
-      if (adaptation_params->enable_image_input) {
-        params->capabilities.Put(on_device_model::CapabilityFlags::kImageInput);
-      }
-      if (adaptation_params->enable_audio_input) {
-        params->capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
-      }
-      params->max_tokens = adaptation_params->max_tokens;
-    }
     params->top_k = GetTopK(std::nullopt);
     params->temperature = GetTemperature(std::nullopt);
   } else {

@@ -152,7 +152,6 @@ abstract class OnDeviceModel<T> implements Model<T> {
     session.append(
       {
         maxTokens: 0,
-        tokenOffset: 0,
         input: inputPieces,
       },
       null,
@@ -160,9 +159,6 @@ abstract class OnDeviceModel<T> implements Model<T> {
     session.generate(
       {
         maxOutputTokens: 0,
-        topK: null,
-        temperature: null,
-        responseJsonSchema: null,
         constraint: null,
       },
       responseRouter.$.bindNewPipeAndPassRemote(),
