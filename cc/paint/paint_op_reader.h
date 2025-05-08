@@ -256,8 +256,9 @@ class CC_PAINT_EXPORT PaintOpReader {
     kHdrMetadataDeserializeFailure = 55,
     kNonFiniteSkColor4f = 56,
     kInvalidSkColor4fAlpha = 57,
+    kInvalidColorsSize_Read_PaintShader_ColorSize = 58,
 
-    kMaxValue = kInvalidSkColor4fAlpha
+    kMaxValue = kInvalidColorsSize_Read_PaintShader_ColorSize
   };
 
   template <typename T>

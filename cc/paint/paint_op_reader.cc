@@ -750,6 +750,11 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   ReadSize(&colors_size);
 
   // If there are too many colors, abort.
+  if (colors_size > ref.colors_.max_size()) {
+    SetInvalid(
+        DeserializationError::kInvalidColorsSize_Read_PaintShader_ColorSize);
+    return;
+  }
   size_t colors_bytes;
   if (!base::CheckMul(colors_size, sizeof(decltype(ref.colors_)::value_type))
            .AssignIfValid(&colors_bytes)) {
