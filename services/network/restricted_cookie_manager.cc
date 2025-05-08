@@ -1112,7 +1112,8 @@ void RestrictedCookieManager::CookiesEnabledFor(
           storage_access_api_status,
           /*is_ad_tagged=*/false,
           /*apply_devtools_overrides=*/apply_devtools_overrides,
-          /*force_disable_third_party_cookies=*/false)));
+          /*force_disable_third_party_cookies=*/false),
+      cookie_partition_key_));
 }
 
 void RestrictedCookieManager::InstallReceiver(

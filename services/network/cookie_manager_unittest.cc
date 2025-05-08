@@ -2412,24 +2412,26 @@ TEST_F(CookieManagerTest, CloningAndClientDestructVisible) {
 
 TEST_F(CookieManagerTest, BlockThirdPartyCookies) {
   const GURL kThisURL = GURL("http://www.this.com");
+  const net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(kThisURL);
   const url::Origin kThisOrigin = url::Origin::Create(kThisURL);
   const net::SiteForCookies kThisSiteForCookies =
       net::SiteForCookies::FromOrigin(kThisOrigin);
   const net::SiteForCookies kNullSiteForCookies;
   EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kNullSiteForCookies, kThisOrigin,
-      net::CookieSettingOverrides()));
+      kThisURL, kNullSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
+      cookie_partition_key));
 
   // Set block third party cookies to true, cookie should now be blocked.
   cookie_service_client()->BlockThirdPartyCookies(true);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kNullSiteForCookies, kThisOrigin,
-      net::CookieSettingOverrides()));
+      kThisURL, kNullSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
+      cookie_partition_key));
   EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kThisSiteForCookies, kThisOrigin,
-      net::CookieSettingOverrides()));
+      kThisURL, kThisSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
+      cookie_partition_key));
 
   // Set block third party cookies back to false, cookie should no longer be
   // blocked.
@@ -2437,8 +2439,8 @@ TEST_F(CookieManagerTest, BlockThirdPartyCookies) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kNullSiteForCookies, kThisOrigin,
-      net::CookieSettingOverrides()));
+      kThisURL, kNullSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
+      cookie_partition_key));
 }
 
 // A test class having cookie store with a persistent backing store.
