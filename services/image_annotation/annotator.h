@@ -217,7 +217,7 @@ class Annotator : public mojom::Annotator {
   // given request keys.
   void OnServerResponseReceived(const std::set<RequestKey>& request_keys,
                                 UrlLoaderList::iterator server_request_it,
-                                std::unique_ptr<std::string> json_response);
+                                std::optional<std::string> json_response);
   // Called once a response comes back from anchovy_provider_.
   void OnMantaResponseReceived(const RequestKey& request_key,
                                base::Time request_time,
@@ -245,8 +245,7 @@ class Annotator : public mojom::Annotator {
   void FetchServerLanguages();
 
   // Handle the reply with the server languages.
-  void OnServerLangsResponseReceived(
-      const std::unique_ptr<std::string> json_response);
+  void OnServerLangsResponseReceived(std::optional<std::string> json_response);
 
   const std::unique_ptr<manta::AnchovyProvider> anchovy_provider_;
   const std::unique_ptr<Client> client_;

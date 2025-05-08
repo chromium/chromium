@@ -950,7 +950,7 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
 void Annotator::OnServerResponseReceived(
     const std::set<RequestKey>& request_keys,
     const UrlLoaderList::iterator server_request_it,
-    const std::unique_ptr<std::string> json_response) {
+    std::optional<std::string> json_response) {
   ReportServerNetError(server_request_it->get()->NetError());
 
   if (const network::mojom::URLResponseHead* const response_info =
@@ -962,7 +962,7 @@ void Annotator::OnServerResponseReceived(
 
   ongoing_server_requests_.erase(server_request_it);
 
-  if (!json_response) {
+  if (!json_response.has_value()) {
     DVLOG(1) << "HTTP request to image annotation server failed.";
     ProcessResults(request_keys, {});
     return;
@@ -1156,8 +1156,8 @@ void Annotator::FetchServerLanguages() {
 }
 
 void Annotator::OnServerLangsResponseReceived(
-    const std::unique_ptr<std::string> json_response) {
-  if (!json_response) {
+    std::optional<std::string> json_response) {
+  if (!json_response.has_value()) {
     DVLOG(1) << "Failed to get languages from the server.";
     return;
   }
