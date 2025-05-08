@@ -42,8 +42,6 @@
 #include "typemap.test-mojom-import-headers.h"
 #include "typemap.test-mojom-test-utils.h"
 
-#include "mojo/public/cpp/bindings/lib/send_validation.h"
-
 
 namespace golden {
 Typemapped::Typemapped()

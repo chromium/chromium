@@ -42,8 +42,6 @@
 #include "optional_primitives.test-mojom-import-headers.h"
 #include "optional_primitives.test-mojom-test-utils.h"
 
-#include "mojo/public/cpp/bindings/lib/send_validation.h"
-
 
 namespace golden {
 OptionalPrimitives::OptionalPrimitives()

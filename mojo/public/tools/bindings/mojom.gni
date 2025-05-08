@@ -997,8 +997,10 @@ template("mojom") {
         inputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
 
         outputs += [
+          "$root_gen_dir/$base_path-data-view.h",
           "$root_gen_dir/$base_path-features.h",
           "$root_gen_dir/$base_path-params-data.h",
+          "$root_gen_dir/$base_path-send-validation.h",
           "$root_gen_dir/$base_path-shared-internal.h",
           "$root_gen_dir/$base_path-shared.cc",
           "$root_gen_dir/$base_path-shared.h",
@@ -1049,8 +1051,10 @@ template("mojom") {
       sources = []
       foreach(base_path, output_file_base_paths) {
         sources += [
+          "$root_gen_dir/$base_path-data-view.h",
           "$root_gen_dir/$base_path-features.h",
           "$root_gen_dir/$base_path-params-data.h",
+          "$root_gen_dir/$base_path-send-validation.h",
           "$root_gen_dir/$base_path-shared-internal.h",
           "$root_gen_dir/$base_path-shared.cc",
           "$root_gen_dir/$base_path-shared.h",

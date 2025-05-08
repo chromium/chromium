@@ -58,6 +58,7 @@ _METHOD_ATTRIBUTES = _COMMON_ATTRIBUTES | {
 _MODULE_ATTRIBUTES = _COMMON_ATTRIBUTES | {
     'JavaConstantsClassName',
     'JavaPackage',
+    'IncludeSendValidation',
 }
 
 _PARAMETER_ATTRIBUTES = _COMMON_FIELD_ATTRIBUTES

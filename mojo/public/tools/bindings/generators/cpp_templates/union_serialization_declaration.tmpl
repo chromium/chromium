@@ -27,16 +27,4 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
   }
 };
 
-template <typename MaybeConstUserType, SendValidation send_validation>
-struct SendValidationSerializer<{{data_view}}, MaybeConstUserType, send_validation> {
-  using UserType = typename std::remove_const<MaybeConstUserType>::type;
-  using Traits = UnionTraits<{{data_view}}, UserType>;
-
-  static void Serialize(MaybeConstUserType& input,
-                        MessageFragment<{{data_type}}>& fragment,
-                        bool inlined) {
-    {{union_macros.serialize(union, "template")}}
-  }
-};
-
 }  // namespace internal

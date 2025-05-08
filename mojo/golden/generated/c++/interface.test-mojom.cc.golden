@@ -42,8 +42,6 @@
 #include "interface.test-mojom-import-headers.h"
 #include "interface.test-mojom-test-utils.h"
 
-#include "mojo/public/cpp/bindings/lib/send_validation.h"
-
 
 namespace golden {
 const char IFace::Name_[] = "golden.IFace";

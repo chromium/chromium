@@ -12,31 +12,6 @@
 
 namespace mojo::internal {
 
-// Primary template declaration (incomplete type).
-template <typename MojomType,
-          typename MaybeConstUserType,
-          SendValidation send_validation>
-struct SendValidationSerializer;
-
-// Helpers to detect if a specialization of SendValidationSerializer exists.
-template <typename MojomType,
-          typename MaybeConstUserType,
-          SendValidation send_validation,
-          typename = void>
-struct HasSendValidationSerializer : std::false_type {};
-
-template <typename MojomType,
-          typename MaybeConstUserType,
-          SendValidation send_validation>
-struct HasSendValidationSerializer<
-    MojomType,
-    MaybeConstUserType,
-    send_validation,
-    std::void_t<decltype(SendValidationSerializer<MojomType,
-                                                  MaybeConstUserType,
-                                                  send_validation>{})>>
-    : std::true_type {};
-
 // Fallback to regular Serializer if SendValidationSerializer does not exist.
 template <typename MojomType,
           SendValidation send_validation,

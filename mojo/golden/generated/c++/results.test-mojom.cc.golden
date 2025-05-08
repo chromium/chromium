@@ -42,8 +42,6 @@
 #include "results.test-mojom-import-headers.h"
 #include "results.test-mojom-test-utils.h"
 
-#include "mojo/public/cpp/bindings/lib/send_validation.h"
-
 
 namespace golden {
 ResultTestError::ResultTestError() {}

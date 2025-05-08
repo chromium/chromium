@@ -18,8 +18,4 @@ struct Serializer<{{mojom_type}}, MaybeConstUserType> {
   }
 };
 
-template <typename MaybeConstUserType>
-struct HasSendValidationSerialize<{{mojom_type}}, MaybeConstUserType>
-    : std::false_type {};
-
 }  // namespace internal
