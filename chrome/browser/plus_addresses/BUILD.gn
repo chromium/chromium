@@ -12,15 +12,12 @@ source_set("plus_addresses") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/profiles:profile",
-    "//components/plus_addresses",
-  ]
-
-  deps = [
     "//chrome/browser/affiliations",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/common:features",
+    "//components/plus_addresses",
     "//components/plus_addresses:features",
     "//components/plus_addresses:hats_utils",
     "//components/plus_addresses/settings",
@@ -36,28 +33,7 @@ source_set("impl") {
     "plus_address_service_factory.cc",
     "plus_address_setting_service_factory.cc",
   ]
-
-  public_deps = [
-    "//base",
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/profiles:profile",
-    "//components/plus_addresses",
-  ]
-
-  deps = [
-    ":plus_addresses",
-    "//chrome/browser/affiliations",
-    "//chrome/browser/sync",
-    "//components/affiliations/core/browser:affiliations",
-    "//components/autofill/core/common:features",
-    "//components/plus_addresses:features",
-    "//components/plus_addresses:hats_utils",
-    "//components/plus_addresses/settings",
-    "//components/signin/public/identity_manager",
-    "//components/sync/model",
-    "//components/variations/service",
-    "//services/network/public/cpp",
-  ]
+  deps = [ ":plus_addresses" ]
 }
 
 if (!is_android) {
