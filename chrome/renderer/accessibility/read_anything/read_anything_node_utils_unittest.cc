@@ -74,3 +74,17 @@ TEST_F(ReadAnythingNodeUtilsTest,
   EXPECT_NE(text.find('\n'), std::string::npos);
   EXPECT_NE(text.find('\r'), std::string::npos);
 }
+
+TEST_F(ReadAnythingNodeUtilsTest, IsSuperscript) {
+  const std::u16string sentence =
+      u"This is a superscript: <sup>superscript</sup>";
+  ui::AXNodeData data = test::TextNode(2, sentence);
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_FALSE(a11y::IsSuperscript(&node));
+
+  data.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+  node.SetData(std::move(data));
+  EXPECT_TRUE(a11y::IsSuperscript(&node));
+}
