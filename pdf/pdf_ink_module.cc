@@ -459,11 +459,12 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
       return StartTextHighlight(position, event.ClickCount(),
                                 event.TimeStamp());
     }
+
+    return StartStroke(position, event.TimeStamp(),
+                       ink::StrokeInput::ToolType::kMouse);
   }
-  return is_drawing_stroke()
-             ? StartStroke(position, event.TimeStamp(),
-                           ink::StrokeInput::ToolType::kMouse)
-             : StartEraseStroke(position, ink::StrokeInput::ToolType::kMouse);
+
+  return StartEraseStroke(position, ink::StrokeInput::ToolType::kMouse);
 }
 
 bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
