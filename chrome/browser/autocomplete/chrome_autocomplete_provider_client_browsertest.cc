@@ -47,18 +47,14 @@ class MockLensOverlayController : public LensOverlayController {
                               theme_service) {}
 
   MOCK_METHOD(void,
-              ShowUI,
-              (lens::LensOverlayInvocationSource invocation_source),
-              (override));
-  MOCK_METHOD(void,
               StartContextualizationWithoutOverlay,
               (lens::LensOverlayInvocationSource invocation_source),
               (override));
 };
 
-class LensSearchControllerFake : public lens::TestLensSearchController {
+class MockLensSearchController : public lens::TestLensSearchController {
  public:
-  explicit LensSearchControllerFake(tabs::TabInterface* tab)
+  explicit MockLensSearchController(tabs::TabInterface* tab)
       : lens::TestLensSearchController(tab) {}
 
   std::unique_ptr<LensOverlayController> CreateLensOverlayController(
@@ -73,13 +69,18 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
         tab, lens_search_controller, variations_client, identity_manager,
         pref_service, sync_service, theme_service);
   }
+
+  MOCK_METHOD(void,
+              OpenLensOverlay,
+              (lens::LensOverlayInvocationSource invocation_source),
+              (override));
 };
 
 class TestTabFeatures : public tabs::TabFeatures {
  protected:
   std::unique_ptr<LensSearchController> CreateLensController(
       tabs::TabInterface* tab) override {
-    return std::make_unique<LensSearchControllerFake>(tab);
+    return std::make_unique<MockLensSearchController>(tab);
   }
 };
 
@@ -124,6 +125,14 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
             ->autocomplete_provider_client());
   }
 
+  MockLensSearchController* GetLensSearchController() {
+    return static_cast<MockLensSearchController*>(
+        browser()
+            ->GetActiveTabInterface()
+            ->GetTabFeatures()
+            ->lens_search_controller());
+  }
+
   MockLensOverlayController* GetLensOverlayController() {
     return static_cast<MockLensOverlayController*>(
         browser()
@@ -150,7 +159,7 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
                        OpenLensOverlay_Show) {
-  EXPECT_CALL(*GetLensOverlayController(), ShowUI(testing::_))
+  EXPECT_CALL(*GetLensSearchController(), OpenLensOverlay(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
           [](lens::LensOverlayInvocationSource invocation_source) {

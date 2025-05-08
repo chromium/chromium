@@ -79,7 +79,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
@@ -103,6 +103,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -2342,10 +2344,10 @@ void ExecLensOverlay(Browser* browser) {
       browser->tab_strip_model()->GetActiveWebContents();
   CHECK(web_contents);
 
-  LensOverlayController* const controller =
-      LensOverlayController::FromTabWebContents(web_contents);
+  LensSearchController* const controller =
+      LensSearchController::FromTabWebContents(web_contents);
   CHECK(controller);
-  controller->ShowUI(lens::LensOverlayInvocationSource::kAppMenu);
+  controller->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
   browser->window()->NotifyNewBadgeFeatureUsed(lens::features::kLensOverlay);
 }
 

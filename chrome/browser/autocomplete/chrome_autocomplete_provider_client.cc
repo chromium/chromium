@@ -97,6 +97,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -144,6 +145,12 @@ content::WebContents* GetWebContents(
 LensOverlayController* GetLensOverlayController(
     content::WebContents* web_contents) {
   return web_contents ? LensOverlayController::FromTabWebContents(web_contents)
+                      : nullptr;
+}
+
+LensSearchController* GetLensSearchController(
+    content::WebContents* web_contents) {
+  return web_contents ? LensSearchController::FromTabWebContents(web_contents)
                       : nullptr;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -602,18 +609,22 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 
 void ChromeAutocompleteProviderClient::OpenLensOverlay(bool show) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* lens_overlay_controller =
-          GetLensOverlayController(GetWebContents(web_contents_getter_))) {
-    // TODO(crbug.com/402497756): For prototyping, reusing the existing
-    // omnibox entry point. However, for production, create a new invocation
-    // source for this new entry point.
-    if (show) {
-      lens_overlay_controller->ShowUI(
-          lens::LensOverlayInvocationSource::kOmnibox);
-    } else {
-      lens_overlay_controller->StartContextualizationWithoutOverlay(
+  if (show) {
+    if (auto* lens_search_controller =
+            GetLensSearchController(GetWebContents(web_contents_getter_))) {
+      // TODO(crbug.com/402497756): For prototyping, reusing the existing
+      // omnibox entry point. However, for production, create a new invocation
+      // source for this new entry point.
+      lens_search_controller->OpenLensOverlay(
           lens::LensOverlayInvocationSource::kOmnibox);
     }
+    return;
+  }
+
+  if (auto* lens_overlay_controller =
+          GetLensOverlayController(GetWebContents(web_contents_getter_))) {
+    lens_overlay_controller->StartContextualizationWithoutOverlay(
+        lens::LensOverlayInvocationSource::kOmnibox);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
