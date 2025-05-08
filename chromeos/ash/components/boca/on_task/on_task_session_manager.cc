@@ -97,7 +97,9 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
     // Unlock SWA window before closing it to ensure we restore things like
     // global accelerators, etc.
     LockOrUnlockWindow(/*lock_window=*/false);
-    system_web_app_manager_->CloseSystemWebAppWindow(window_id);
+    if (!features::IsBocaKeepSWAOpenOnSessionEndedEnabled()) {
+      system_web_app_manager_->CloseSystemWebAppWindow(window_id);
+    }
   }
   active_session_id_ = std::nullopt;
   provider_url_set_.clear();

@@ -288,6 +288,11 @@ BASE_FEATURE(kBocaAdjustCaptionBubbleOnExpand,
              "BocaAdjustCaptionBubbleOnExpand",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables keeping the Boca SWA open when the session is ended.
+BASE_FEATURE(kBocaKeepSWAOpenOnSessionEnded,
+             "BocaKeepSWAOpenOnSessionEnded",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables enforcing sequential execution for Boca Session load.
 BASE_FEATURE(kBocaSequentialSessionLoad,
              "BocaSequentialSessionLoad",
@@ -3518,6 +3523,10 @@ bool IsBocaClientTypeForSpeechRecognitionEnabled() {
 
 bool IsBocaAdjustCaptionBubbleOnExpandEnabled() {
   return base::FeatureList::IsEnabled(kBocaAdjustCaptionBubbleOnExpand);
+}
+
+bool IsBocaKeepSWAOpenOnSessionEndedEnabled() {
+  return base::FeatureList::IsEnabled(kBocaKeepSWAOpenOnSessionEnded);
 }
 
 bool IsBocaSequentialSessionLoadEnabled() {

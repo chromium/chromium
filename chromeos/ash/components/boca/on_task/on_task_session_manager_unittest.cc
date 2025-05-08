@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/task/current_thread.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/notification_constants.h"
@@ -274,6 +275,10 @@ TEST_F(OnTaskSessionManagerTest,
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldCloseBocaSWAOnSessionEnd) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kBocaKeepSWAOpenOnSessionEnded});
   const SessionID kWindowId = SessionID::NewUnique();
   Sequence s;
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
@@ -284,6 +289,27 @@ TEST_F(OnTaskSessionManagerTest, ShouldCloseBocaSWAOnSessionEnd) {
       .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_, CloseSystemWebAppWindow(kWindowId))
       .Times(1)
+      .InSequence(s);
+  session_manager_->OnSessionEnded("test_session_id");
+
+  // Verify session end notification was shown and window lock state was reset.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
+  EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
+      kOnTaskSessionEndNotificationId));
+  EXPECT_FALSE(*should_lock_window());
+}
+
+TEST_F(OnTaskSessionManagerTest, ShouldKeepBocaSWAOpenOnSessionEnd) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetPinStateForSystemWebAppWindow(false, kWindowId))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_, CloseSystemWebAppWindow(kWindowId))
+      .Times(0)
       .InSequence(s);
   session_manager_->OnSessionEnded("test_session_id");
 

@@ -72,19 +72,11 @@ class FakeOnTaskNotificationsManagerDelegate
   std::set<std::string> notifications_shown_;
 };
 
-class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
+class OnTaskSessionManagerBrowserTestBase : public InProcessBrowserTest {
  protected:
-  OnTaskSessionManagerBrowserTest() {
+  OnTaskSessionManagerBrowserTestBase() {
     // Initialize the MockClock.
     boca::MockClock::Get();
-
-    // Enable Boca and consumer experience for testing purposes. This is used
-    // to set up the Boca SWA for OnTask.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kBoca, features::kBocaConsumer,
-                              features::kBocaLockedModeCustomCountdownDuration,
-                              features::kOnDeviceSpeechRecognition},
-        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -161,11 +153,28 @@ class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   raw_ptr<FakeOnTaskNotificationsManagerDelegate>
       fake_notifications_delegate_ptr_;
+};
+
+class OnTaskSessionManagerBrowserTest
+    : public OnTaskSessionManagerBrowserTestBase {
+ protected:
+  OnTaskSessionManagerBrowserTest() {
+    // Enable Boca and consumer experience for testing purposes. This is used
+    // to set up the Boca SWA for OnTask.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kBoca, features::kBocaConsumer,
+                              features::kBocaLockedModeCustomCountdownDuration,
+                              features::kOnDeviceSpeechRecognition,
+                              features::kBocaKeepSWAOpenOnSessionEnded},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
@@ -618,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
-                       ShouldCloseBocaSWAOnSessionEnd) {
+                       ShouldKeepBocaSWAOpenOnSessionEndWithFeatureEnabled) {
   const GURL boca_chrome_url = GURL(kChromeBocaAppUntrustedIndexURL);
   content::TestNavigationObserver navigation_observer(boca_chrome_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -633,12 +642,11 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
   ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
   // End the session.
   GetOnTaskSessionManager()->OnSessionEnded(kSessionId);
-  // Wait until the browser actually gets closed.
-  ui_test_utils::WaitForBrowserToClose();
+
   VerifyNotificationShown(kOnTaskSessionEndNotificationId, true);
   VerifyNotificationShown(kOnTaskBundleContentAddedNotificationId, false);
   VerifyNotificationShown(kOnTaskBundleContentRemovedNotificationId, false);
-  ASSERT_THAT(FindBocaSystemWebAppBrowser(), IsNull());
+  EXPECT_EQ(FindBocaSystemWebAppBrowser(), boca_app_browser);
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
@@ -786,6 +794,45 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
       browser_1->tab_strip_model()->GetActiveWebContents()->IsAudioMuted());
   EXPECT_FALSE(
       browser_2->tab_strip_model()->GetActiveWebContents()->IsAudioMuted());
+}
+
+class OnTaskSessionManagerCloseSWAOnSessionEndBrowserTest
+    : public OnTaskSessionManagerBrowserTestBase {
+ protected:
+  OnTaskSessionManagerCloseSWAOnSessionEndBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kBoca, features::kBocaConsumer,
+                              features::kBocaLockedModeCustomCountdownDuration,
+                              features::kOnDeviceSpeechRecognition},
+        /*disabled_features=*/{features::kBocaKeepSWAOpenOnSessionEnded});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerCloseSWAOnSessionEndBrowserTest,
+                       ShouldCloseBocaSWAOnSessionEnd) {
+  const GURL boca_chrome_url = GURL(kChromeBocaAppUntrustedIndexURL);
+  content::TestNavigationObserver navigation_observer(boca_chrome_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Start OnTask session.
+  GetOnTaskSessionManager()->OnSessionStarted(kSessionId,
+                                              ::boca::UserIdentity());
+  navigation_observer.Wait();
+
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+  // End the session.
+  GetOnTaskSessionManager()->OnSessionEnded(kSessionId);
+  // Wait until the browser actually gets closed.
+  ui_test_utils::WaitForBrowserToClose();
+  VerifyNotificationShown(kOnTaskSessionEndNotificationId, true);
+  VerifyNotificationShown(kOnTaskBundleContentAddedNotificationId, false);
+  VerifyNotificationShown(kOnTaskBundleContentRemovedNotificationId, false);
+  ASSERT_THAT(FindBocaSystemWebAppBrowser(), IsNull());
 }
 
 }  // namespace
