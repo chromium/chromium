@@ -950,7 +950,10 @@
         Tracking protections
       </message>
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP" desc="" translateable="false">
-        Sites you visit may embed content from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>Incognito tracking protections<ph name="END_LINK">&lt;/a&gt;</ph>.
+        Sites you visit may embed content from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Incognito tracking protections<ph name="END_LINK">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP_A11Y_LABEL" desc="" translateable="false">
+        Learn more about managing Incognito tracking protections
       </message>
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
         Sites you visit may embed content from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="BEGIN_LINK">&lt;link&gt;</ph> Incongito tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>.
@@ -1014,6 +1017,9 @@
           <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
             Chrome will try to limit device and browser data, like installed fonts or your time zone, from embedded sites that may be trying to learn about you
           </message>
+          <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_DESCRIPTION" desc="" translateable="false">
+            Opens in a regular Chrome window
+          </message>
         </then>
         <else>
           <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
@@ -1031,6 +1037,9 @@
           <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
             Chromium will try to limit device and browser data, like installed fonts or your time zone, from embedded sites that may be trying to learn about you
           </message>
+          <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_DESCRIPTION" desc="" translateable="false">
+            Opens in a regular Chromium window
+          </message>
         </else>
       </if>
 
@@ -1043,11 +1052,10 @@
         Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. You can manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP" desc="" translateable="false">
-        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. You can manage Incognito tracking protections in <ph name="START_LINK">&lt;a href="$1" aria-description="$2"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>.
+        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. You can manage Incognito tracking protections in <ph name="START_LINK">&lt;a href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
-      <!-- TODO(crbug.com/408036586): Update a11y label when finalized -->
       <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_LABEL" desc="" translateable="false">
-        Opens the Incognito tracking protections page in a new tab
+        Settings for Incognito tracking protections
       </message>
     </messages>
   </release>

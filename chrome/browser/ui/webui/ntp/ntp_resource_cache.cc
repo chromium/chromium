@@ -314,7 +314,9 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
             IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP,
             u"chrome://settings/incognito",
             l10n_util::GetStringUTF16(
-                IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_LABEL)));
+                IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_LABEL),
+            l10n_util::GetStringUTF16(
+                IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_DESCRIPTION)));
   } else if (base::FeatureList::IsEnabled(
                  privacy_sandbox::kAlwaysBlock3pcsIncognito)) {
     replacements["hideUserBypassIcon"] = "";
