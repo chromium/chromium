@@ -2,7 +2,7 @@
    "tests": {
       "AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -44,12 +44,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -85,12 +87,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -127,12 +131,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -168,12 +174,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -209,12 +217,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled", "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -250,12 +260,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -292,12 +304,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -333,12 +347,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "FocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "FocusExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -375,12 +391,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "FocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "FocusExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -413,12 +431,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "FocusExisting_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "FocusExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -451,12 +471,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left&did_redirect" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "AppWindowOpened" ]
          }
       },
       "FocusExisting_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "FocusExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -476,12 +498,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "FocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "FocusExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -509,12 +533,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "FocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "FocusExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -535,12 +561,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "NavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -577,12 +605,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "NavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -615,12 +645,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "NavigateExisting_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -653,12 +685,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left&did_redirect" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "AppWindowOpened" ]
          }
       },
       "NavigateExisting_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -678,12 +712,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "NavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -711,12 +747,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "NavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -737,12 +775,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2A_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2A_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -775,12 +815,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-BLANK-NO_OPENER&click=Left&did_redirect" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppWindow" ],
+            "redirection_result": [ "SameContext" ]
          }
       },
       "Tab_ScopeA2A_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2A_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -800,12 +842,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [  ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -838,12 +882,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left&did_redirect" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "AppWindowOpened" ]
          }
       },
       "Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -869,12 +915,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2A_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2A_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -907,12 +955,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_X-BLANK-NO_OPENER&click=Left&did_redirect" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewTabRedirectionEligible" ],
+            "redirection_result": [ "AppWindowOpened" ]
          }
       },
       "Tab_ScopeA2A_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2A_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -932,12 +982,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [  ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -969,12 +1021,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1001,12 +1055,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-BTN-A_TO_B-SELF-OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1034,12 +1090,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-BTN-A_TO_B-BLANK-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1066,12 +1124,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-BTN-A_TO_B-SELF-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1098,12 +1158,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled", "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1130,12 +1192,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1163,12 +1227,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1195,12 +1261,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1228,12 +1296,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_A-BLANK-NO_OPENER&click=Left&did_redirect" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppWindow" ],
+            "redirection_result": [ "AppBrowserTabOpened" ]
          }
       },
       "Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1260,12 +1330,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_A-SELF-NO_OPENER&click=Left&did_redirect" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1293,12 +1365,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left&did_redirect" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "SameContext" ]
          }
       },
       "Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1325,12 +1399,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1358,12 +1434,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_X-BLANK-NO_OPENER&click=Left&did_redirect" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NewTabRedirectionEligible" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1390,12 +1468,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_X-SELF-NO_OPENER&click=Left&did_redirect" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2X_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2X_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1422,12 +1502,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [ "NewAppWindow" ],
+            "redirection_result": [ "ReparentBrowserTabToBrowserTab" ]
          }
       },
       "Tab_ScopeA2X_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2X_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1447,12 +1529,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [  ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2X_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2X_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1479,12 +1563,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [ "NewAppBrowserTab" ],
+            "redirection_result": [ "SameContext" ]
          }
       },
       "Tab_ScopeA2X_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2X_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1510,12 +1596,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "Tab_ScopeA2X_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2X_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1542,12 +1630,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [ "NewTabRedirectionEligible" ],
+            "redirection_result": [ "SameContext" ]
          }
       },
       "Tab_ScopeA2X_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBBrowser_CaptureOnWithSelfLinkCapture_Tab_ScopeA2X_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1567,7 +1657,9 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [  ],
+            "redirection_result": [  ]
          }
       }
    }

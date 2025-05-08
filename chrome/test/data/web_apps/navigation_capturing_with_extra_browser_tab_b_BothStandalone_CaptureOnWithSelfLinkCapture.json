@@ -2,7 +2,7 @@
    "tests": {
       "FocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "FocusExisting_BothStandalone_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -35,12 +35,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "FocusExistingAppBrowserTab" ],
+            "redirection_result": [  ]
          }
       },
       "FocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "FocusExisting_BothStandalone_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -84,12 +86,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "FocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "FocusExisting_BothStandalone_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -119,12 +123,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "FocusExistingAppBrowserTab" ],
+            "redirection_result": [  ]
          }
       },
       "FocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "FocusExisting_BothStandalone_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -165,12 +171,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "NavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "NavigateExisting_BothStandalone_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -207,12 +215,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NavigateExistingAppBrowserTab" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "NavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothStandalone_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -256,12 +266,14 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       },
       "NavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "NavigateExisting_BothStandalone_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -295,12 +307,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "navigation_capturing_result": [ "NavigateExistingAppBrowserTab" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "NavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothStandalone_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -341,7 +355,9 @@
                   "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromLink" ]
+            "launch_metric_buckets": [ "kFromLink" ],
+            "navigation_capturing_result": [ "NotHandled" ],
+            "redirection_result": [  ]
          }
       }
    }

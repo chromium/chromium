@@ -2,7 +2,7 @@
    "tests": {
       "AppWnd_ScopeA2X_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2X_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "app_scope": "/banners/link_capturing/scope_a/",
@@ -32,12 +32,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [ "NewTabRedirectionEligible" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "AppWnd_ScopeA2X_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2X_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "app_scope": "/banners/link_capturing/scope_a/",
@@ -67,12 +69,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [ "NewTabRedirectionEligible" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "AppWnd_ScopeA2X_Direct_ViaServiceWorkerButton_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2X_Direct_ViaServiceWorkerButton_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "app_scope": "/banners/link_capturing/scope_a/",
@@ -102,12 +106,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [ "NewTabRedirectionEligible" ],
+            "redirection_result": [ "NotHandled" ]
          }
       },
       "AppWnd_ScopeA2X_ServerSideViaB_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2X_ServerSideViaB_ViaButton_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "app_scope": "/banners/link_capturing/scope_a/",
@@ -137,12 +143,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [ "NewAppWindow" ],
+            "redirection_result": [ "ReparentBrowserTabToBrowserTab" ]
          }
       },
       "AppWnd_ScopeA2X_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2X_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "app_scope": "/banners/link_capturing/scope_a/",
@@ -172,12 +180,14 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [ "NewAppWindow" ],
+            "redirection_result": [ "ReparentBrowserTabToBrowserTab" ]
          }
       },
       "AppWnd_ScopeA2X_ServerSideViaB_ViaServiceWorkerButton_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOnWithSelfLinkCapture_AppWnd_ScopeA2X_ServerSideViaB_ViaServiceWorkerButton_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "app_scope": "/banners/link_capturing/scope_a/",
@@ -207,7 +217,9 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [  ],
+            "navigation_capturing_result": [ "NewAppWindow" ],
+            "redirection_result": [ "ReparentBrowserTabToBrowserTab" ]
          }
       }
    }
