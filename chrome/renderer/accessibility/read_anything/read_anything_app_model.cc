@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 
 #include <cstddef>
@@ -554,6 +553,22 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
     }
   }
 
+  if (may_use_child_for_active_tree_) {
+    // If this is the original root tree id, set it back to the active tree
+    // in case there has been a delay in receiving valid accessibility tree
+    // updates.
+    if (root_tree_id_ == tree_id) {
+      SetRootTreeId(root_tree_id_);
+    } else if (active_tree_id_ != ui::AXTreeIDUnknown() &&
+               active_tree_id_ != tree_id &&
+               child_tree_ids_.find(tree_id) != child_tree_ids_.end()) {
+      // If read aloud is searching for a child tree to distill and this tree id
+      // matches one of the possible child ids, set the active tree to this tree
+      // so that it can be distilled.
+      SetActiveTreeId(tree_id);
+    }
+  }
+
   // If a tree update on the active tree is received while distillation is in
   // progress, cache updates that are received but do not yet unserialize them.
   // Drawing must be done on the same tree that was sent to the distiller,
@@ -728,6 +743,17 @@ void ReadAnythingAppModel::OnScroll(bool on_selection,
   }
   base::UmaHistogramEnumeration("Accessibility.ReadAnything.ScrollEvent",
                                 event);
+}
+
+void ReadAnythingAppModel::SetRootTreeId(ui::AXTreeID root_tree_id) {
+  root_tree_id_ = root_tree_id;
+  SetActiveTreeId(root_tree_id);
+
+  // Whenever reading mode receives a signal of a new active tree id, clear
+  // previous attempts to search for a valid child tree on the active tree in
+  // case the new active tree is distillable.
+  may_use_child_for_active_tree_ = false;
+  child_tree_ids_.clear();
 }
 
 void ReadAnythingAppModel::SetActiveTreeId(ui::AXTreeID active_tree_id) {
@@ -1091,4 +1117,25 @@ const std::set<ui::AXNodeID>* ReadAnythingAppModel::GetCurrentlyVisibleNodes()
     const {
   return selection_node_ids_.empty() ? &display_node_ids()
                                      : &selection_node_ids_;
+}
+
+void ReadAnythingAppModel::AllowChildTreeForActiveTree(bool use_child_tree) {
+  may_use_child_for_active_tree_ = use_child_tree;
+
+  if (!may_use_child_for_active_tree_) {
+    child_tree_ids_.clear();
+  }
+
+  ui::AXSerializableTree* active_tree = GetTreeFromId(active_tree_id_);
+  if (!active_tree) {
+    return;
+  }
+  std::set<ui::AXTreeID> child_ids = active_tree->GetAllChildTreeIds();
+  if (!child_ids.size()) {
+    return;
+  }
+
+  // Store all the possible child tree ids that could be used as the active
+  // tree if they have distillable content.
+  child_tree_ids_.insert(child_ids.begin(), child_ids.end());
 }

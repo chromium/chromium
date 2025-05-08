@@ -615,7 +615,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // Cancel any running draw timers.
   post_user_entry_draw_timer_->Stop();
 
-  model_.SetActiveTreeId(tree_id);
+  model_.SetRootTreeId(tree_id);
   model_.SetUkmSourceIdForTree(tree_id, ukm_source_id);
   model_.set_is_pdf(is_pdf);
 
@@ -758,6 +758,12 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // displayed nodes. Thus, we have to calculate the display nodes first.
     model_.ComputeDisplayNodeIdsForDistilledTree();
   }
+
+  // If there's no distillable content on the active tree, allow child tree
+  // content to be distilled. This is needed to distill content on pages with
+  // a single root node containing an iframe that contains a tree with all
+  // the page's content.
+  model_.AllowChildTreeForActiveTree(model_.content_node_ids().empty());
 
   // Draw the selection in the side panel (if one exists in the main panel).
   if (!PostProcessSelection()) {

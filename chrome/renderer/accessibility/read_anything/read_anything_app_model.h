@@ -232,6 +232,7 @@ class ReadAnythingAppModel {
 
   const ui::AXTreeID& active_tree_id() const { return active_tree_id_; }
   void SetActiveTreeId(ui::AXTreeID active_tree_id);
+  void SetRootTreeId(ui::AXTreeID root_tree_id);
 
   ukm::SourceId GetUkmSourceId() const;
   void SetUkmSourceIdForTree(const ui::AXTreeID& tree,
@@ -322,6 +323,15 @@ class ReadAnythingAppModel {
   void AddObserver(ModelObserver* observer);
   void RemoveObserver(ModelObserver* observer);
 
+  // TODO: crbug.com/416483312 - Longer term, reading mode should support
+  // distilling from multiple trees, if they have important content.
+  // Currently, reading mode only distills from a child tree if the root tree
+  // has no distillable content.
+
+  // Signal if reading mode should allow use of child trees for the active tree
+  // if the web content's root AXTree has no distillable content.
+  void AllowChildTreeForActiveTree(bool use_child_tree);
+
  private:
   struct SelectionEndpoint {
     enum class Source {
@@ -376,6 +386,11 @@ class ReadAnythingAppModel {
   // always be the AXTreeID of the main web contents (not the PDF iframe or its
   // child).
   ui::AXTreeID active_tree_id_ = ui::AXTreeIDUnknown();
+
+  // The AXTreeID of the root tree of the web contents. This will be the same
+  // as active_tree_id_ unless root_tree_id_ has no distillable content but has
+  // a child tree with distillable content.
+  ui::AXTreeID root_tree_id_ = ui::AXTreeIDUnknown();
 
   // For determining whether the latest tree is a reload or new page.
   std::string previous_tree_url_;
@@ -473,6 +488,15 @@ class ReadAnythingAppModel {
   bool will_hide_ = false;
 
   std::map<ui::AXTreeID, ukm::SourceId> pending_ukm_sources_;
+
+  // Possible child tree ids that could be used to distill content if the
+  // root tree has no distillable content. This will only be used if
+  // may_use_child_for_active_tree_ is true.
+  std::set<ui::AXTreeID> child_tree_ids_;
+
+  // If reading mode should attempt to use child trees to distill content. This
+  // should only be true if the root tree has no distillable content.
+  bool may_use_child_for_active_tree_ = false;
 
   // List of observers of model state changes.
   base::ObserverList<ModelObserver, /*check_empty=*/true> observers_;
