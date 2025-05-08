@@ -533,7 +533,8 @@ void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
     ConnectLocalTabGroup(local_group_id, saved_guid);
   }
 
-  for (SavedTabGroup group : restored_groups_to_save_on_load_) {
+  for (SavedTabGroup& group : restored_groups_to_save_on_load_) {
+    // Move from vector about to be cleared below.
     SaveRestoredGroup(std::move(group));
   }
 

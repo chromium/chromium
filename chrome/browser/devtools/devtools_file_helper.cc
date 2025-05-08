@@ -238,7 +238,7 @@ void DevToolsFileHelper::UpgradeDraggedFileSystemPermissions(
     const HandlePermissionsCallback& handle_permissions_callback) {
   auto file_system_paths =
       storage_->GetDraggedFileSystemPaths(GURL(file_system_url));
-  for (auto file_system_path : file_system_paths) {
+  for (const auto& file_system_path : file_system_paths) {
     InnerAddFileSystem(handle_permissions_callback, kDefaultFileSystemType,
                        file_system_path);
   }
@@ -432,7 +432,7 @@ DevToolsFileHelper::GetFileSystems() {
         prefs::kDevToolsFileSystemPaths,
         base::BindRepeating(RunOnUIThread, change_handler_on_ui));
   }
-  for (auto file_system_path : file_system_paths_) {
+  for (const auto& file_system_path : file_system_paths_) {
     auto path = base::FilePath::FromUTF8Unsafe(file_system_path.first);
     auto file_system =
         storage_->RegisterFileSystem(path, file_system_path.second);
@@ -490,7 +490,7 @@ void DevToolsFileHelper::UpdateFileSystemPathsOnUI() {
   remaining.swap(file_system_paths_);
   DCHECK(file_watcher_.get());
 
-  for (auto file_system_path : GetActiveFileSystemPaths()) {
+  for (const auto& file_system_path : GetActiveFileSystemPaths()) {
     if (remaining.find(file_system_path.first) == remaining.end()) {
       auto path = base::FilePath::FromUTF8Unsafe(file_system_path.first);
       auto file_system =
@@ -503,7 +503,7 @@ void DevToolsFileHelper::UpdateFileSystemPathsOnUI() {
     file_system_paths_[file_system_path.first] = file_system_path.second;
   }
 
-  for (auto file_system : remaining) {
+  for (const auto& file_system : remaining) {
     delegate_->FileSystemRemoved(file_system.first);
     base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system.first);
     storage_->UnregisterFileSystem(path);

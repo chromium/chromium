@@ -256,7 +256,7 @@ void ReadAloudAppModel::UpdatePhraseBoundaries(std::vector<std::string> tokens,
 
   // Reconstruct the tokenized sentence using the tokens.
   std::vector<std::u16string> u16string_tokens;
-  for (auto token : tokens) {
+  for (const auto& token : tokens) {
     u16string_tokens.emplace_back(base::UTF8ToUTF16(token));
   }
 
@@ -628,8 +628,7 @@ bool ReadAloudAppModel::NodeBeenOrWillBeSpoken(
   if (base::Contains(current_granularity.segments, id)) {
     return true;
   }
-  for (a11y::ReadAloudCurrentGranularity granularity :
-       processed_granularities_on_current_page_) {
+  for (const auto& granularity : processed_granularities_on_current_page_) {
     if (base::Contains(granularity.segments, id)) {
       return true;
     }

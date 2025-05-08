@@ -194,7 +194,7 @@ void DeleteUnacceptedPasskeys(
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   bool is_passkey_deleted = false;
-  for (auto passkey :
+  for (const auto& passkey :
        passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
     if (std::vector<uint8_t>(passkey.user_id().begin(),
                              passkey.user_id().end()) == user_id &&

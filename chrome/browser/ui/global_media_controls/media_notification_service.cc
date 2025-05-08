@@ -340,8 +340,9 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
   // notification items and Remote Playback presentation routes should be shown
   // as media session notification items.
   std::optional<std::string> cast_presentation_route_id;
-  for (auto route : media_router::WebContentsPresentationManager::Get(contents)
-                        ->GetMediaRoutes()) {
+  for (const auto& route :
+       media_router::WebContentsPresentationManager::Get(contents)
+           ->GetMediaRoutes()) {
     if (route.media_source().IsCastPresentationUrl()) {
       cast_presentation_route_id = route.media_route_id();
       break;

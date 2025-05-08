@@ -118,7 +118,7 @@ std::vector<NotificationPermissions> NotificationPermissionsReviewService::
 std::set<ContentSettingsPattern> NotificationPermissionsReviewService::
     NotificationPermissionsResult::GetOrigins() const {
   std::set<ContentSettingsPattern> origins;
-  for (NotificationPermissions permission : notification_permissions_) {
+  for (const auto& permission : notification_permissions_) {
     origins.insert(permission.primary_pattern);
   }
   return origins;
@@ -134,7 +134,7 @@ base::Value::Dict NotificationPermissionsReviewService::
     NotificationPermissionsResult::ToDictValue() const {
   base::Value::Dict result = BaseToDictValue();
   base::Value::List notification_permissions;
-  for (NotificationPermissions permission : notification_permissions_) {
+  for (const auto& permission : notification_permissions_) {
     base::Value::Dict permission_dict;
     permission_dict.Set(kSafetyHubOriginKey,
                         permission.primary_pattern.ToString());

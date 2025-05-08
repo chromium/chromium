@@ -176,7 +176,7 @@ bool OnDeviceSpeechRecognitionImpl::CanInstallWithoutUserConsent(
 
   std::vector<std::string> accept_languages;
   language_prefs_->GetAcceptLanguagesList(&accept_languages);
-  for (auto accept_language : accept_languages) {
+  for (const auto& accept_language : accept_languages) {
     if (l10n_util::GetLanguage(base::ToLowerASCII(accept_language)) ==
         l10n_util::GetLanguage(base::ToLowerASCII(language))) {
       return true;

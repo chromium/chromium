@@ -98,9 +98,9 @@ std::vector<MediaRoute> GetRouteSetDifference(
     std::vector<MediaRoute> routes_a,
     std::vector<MediaRoute> routes_b) {
   std::vector<MediaRoute> routes;
-  for (auto route_a : routes_a) {
+  for (const auto& route_a : routes_a) {
     bool route_seen = false;
-    for (auto route_b : routes_b) {
+    for (const auto& route_b : routes_b) {
       if (route_a.media_route_id() == route_b.media_route_id()) {
         route_seen = true;
       }

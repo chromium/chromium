@@ -134,7 +134,7 @@ bool IsAccessibilityEnabled(Profile* profile) {
 }
 
 void RecordAcceptLanguages(const std::string& accept_languages) {
-  for (std::string language :
+  for (const std::string& language :
        base::SplitString(accept_languages, ",", base::TRIM_WHITESPACE,
                          base::SPLIT_WANT_NONEMPTY)) {
     // Convert to a Chrome language code synonym. This language synonym is then

@@ -75,7 +75,7 @@ AblationType GetAblationType(const GURL& navigation_url,
     return AblationType::kDefaultSearchQuery;
   }
 
-  for (auto url_ref : default_search->url_refs()) {
+  for (const auto& url_ref : default_search->url_refs()) {
     if (url::Origin::Create(navigation_url) ==
         url::Origin::Create(GURL(url_ref.GetURL()))) {
       return AblationType::kDefaultSearchHost;

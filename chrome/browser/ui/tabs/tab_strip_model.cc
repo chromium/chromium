@@ -3836,7 +3836,7 @@ void TabStripModel::SendMoveNotificationForTab(
     int index,
     int to_position,
     tabs::TabInterface* tab,
-    TabStripSelectionChange& selection_change) {
+    const TabStripSelectionChange& selection_change) {
   TabStripModelChange::Move move;
   move.tab = tab;
   move.contents = tab->GetContents();
@@ -4074,7 +4074,7 @@ void TabStripModel::MoveTabsWithNotifications(
 
   UpdateSelectionModelForMoves(tab_indices, destination_index);
 
-  for (auto notification : notifications) {
+  for (const auto& notification : notifications) {
     const int final_index = GetIndexOfTab(notification.tab);
     tabs::TabInterface* tab = GetTabAtIndex(final_index);
     if (notification.initial_index != final_index) {

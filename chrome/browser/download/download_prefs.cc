@@ -525,7 +525,7 @@ bool DownloadPrefs::IsAutoOpenPdfEnabled() {
 
 void DownloadPrefs::SaveAutoOpenState() {
   std::string extensions;
-  for (auto it : auto_open_by_user_) {
+  for (const auto& it : auto_open_by_user_) {
 #if BUILDFLAG(IS_WIN)
     // TODO(phajdan.jr): Why we're using Sys conversion here, but not in ctor?
     std::string this_extension = base::SysWideToUTF8(it);

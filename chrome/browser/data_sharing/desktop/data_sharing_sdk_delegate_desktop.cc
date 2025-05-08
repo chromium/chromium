@@ -46,7 +46,7 @@ void DataSharingSDKDelegateDesktop::ReadGroups(
                 ->page_handler();
         CHECK(handler);
         auto mojom_params = data_sharing::mojom::ReadGroupsParams::New();
-        for (auto group_param : params.group_params()) {
+        for (const auto& group_param : params.group_params()) {
           auto param = data_sharing::mojom::ReadGroupParams::New();
           param->group_id = group_param.group_id();
           param->consistency_token = group_param.consistency_token();

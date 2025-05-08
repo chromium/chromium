@@ -734,7 +734,7 @@ void HatsServiceDesktop::CheckSurveyStatusAndMaybeShow(
   // trigger. If fields are set for a trigger, they must be provided.
   CHECK_EQ(product_specific_bits_data.size(),
            survey_config.product_specific_bits_data_fields.size());
-  for (auto field_value : product_specific_bits_data) {
+  for (const auto& field_value : product_specific_bits_data) {
     CHECK(base::Contains(survey_config.product_specific_bits_data_fields,
                          field_value.first));
   }
@@ -743,7 +743,7 @@ void HatsServiceDesktop::CheckSurveyStatusAndMaybeShow(
   // trigger. If fields are set for a trigger, they must be provided.
   CHECK_EQ(product_specific_string_data.size(),
            survey_config.product_specific_string_data_fields.size());
-  for (auto field_value : product_specific_string_data) {
+  for (const auto& field_value : product_specific_string_data) {
     CHECK(base::Contains(survey_config.product_specific_string_data_fields,
                          field_value.first));
   }

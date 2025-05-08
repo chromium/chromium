@@ -269,7 +269,7 @@ RevokedPermissionsService::RevokedPermissionsResult::GetRevokedPermissions() {
 std::set<ContentSettingsPattern>
 RevokedPermissionsService::RevokedPermissionsResult::GetRevokedOrigins() const {
   std::set<ContentSettingsPattern> origins;
-  for (auto permission : revoked_permissions_) {
+  for (const auto& permission : revoked_permissions_) {
     origins.insert(permission.primary_pattern);
   }
   return origins;
@@ -279,7 +279,7 @@ base::Value::Dict
 RevokedPermissionsService::RevokedPermissionsResult::ToDictValue() const {
   base::Value::Dict result = BaseToDictValue();
   base::Value::List revoked_origins;
-  for (auto permission : revoked_permissions_) {
+  for (const auto& permission : revoked_permissions_) {
     revoked_origins.Append(permission.primary_pattern.ToString());
   }
   result.Set(kRevokedPermissionsResultKey, std::move(revoked_origins));

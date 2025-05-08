@@ -184,7 +184,8 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
   std::set<GURL> urls;
   auto candidate_products =
       current_entry_point_info_->similar_candidate_products;
-  for (auto url_info : shopping_service_->GetUrlInfosForActiveWebWrappers()) {
+  for (const auto& url_info :
+       shopping_service_->GetUrlInfosForActiveWebWrappers()) {
     if (base::Contains(candidate_products, url_info.url)) {
       urls.insert(url_info.url);
     }

@@ -118,7 +118,7 @@ void SessionRestoreDelegate::RestoreTabs(
   } else {
     std::vector<content::WebContents*> web_contents_vector;
     web_contents_vector.reserve(tabs.size());
-    for (auto tab : tabs) {
+    for (const auto& tab : tabs) {
       CHECK(tab.contents());
       web_contents_vector.push_back(tab.contents());
     }

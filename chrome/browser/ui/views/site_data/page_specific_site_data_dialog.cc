@@ -229,7 +229,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     }
 
     std::vector<PageSpecificSiteDataDialogSite> sites;
-    for (auto site : sites_map) {
+    for (const auto& site : sites_map) {
       sites.push_back(site.second);
     }
 

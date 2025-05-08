@@ -113,7 +113,7 @@ std::unique_ptr<URLMatcher> CreateEnrollmentHeaderUrlMatcher() {
         profile_management::features::kOidcAuthAdditionalUrls.Get(), ",",
         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-    for (std::string url : urls) {
+    for (const std::string& url : urls) {
       allowed_urls.push_back(url);
     }
   }
@@ -147,7 +147,7 @@ std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
         profile_management::features::kOidcAuthAdditionalHosts.Get(), ",",
         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-    for (std::string host : hosts) {
+    for (const std::string& host : hosts) {
       allowed_hosts.push_back(host);
     }
   }

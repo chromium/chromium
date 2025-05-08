@@ -131,7 +131,7 @@ bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
     std::vector<std::string> allowed_extension_ids =
         base::SplitString(kChromeAppAllowlist.Get(), ",", base::TRIM_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
-    for (std::string allowed_extension_id : allowed_extension_ids) {
+    for (const std::string& allowed_extension_id : allowed_extension_ids) {
       if (extension_id == allowed_extension_id)
         return false;
     }

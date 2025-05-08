@@ -1116,7 +1116,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
            OptionalToStringValue(latest_install_source_));
 
   base::Value::Dict external_map;
-  for (auto it : management_to_external_config_map_) {
+  for (const auto& it : management_to_external_config_map_) {
     external_map.Set(base::ToString(it.first), it.second.AsDebugValue());
   }
 

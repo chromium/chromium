@@ -227,7 +227,7 @@ CollaborationMessagingObserver::~CollaborationMessagingObserver() {
 void CollaborationMessagingObserver::OnMessagingBackendServiceInitialized() {
   CHECK(service_);
   auto messages = service_->GetMessages(std::nullopt);
-  for (auto message : messages) {
+  for (const auto& message : messages) {
     DispatchMessage(message, MessageDisplayStatus::kDisplay);
   }
 }

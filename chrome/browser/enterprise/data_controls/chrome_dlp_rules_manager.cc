@@ -188,7 +188,7 @@ ChromeDlpRulesManager::GetAggregatedDestinations(
   }
 
   std::map<Level, std::set<std::string>> result;
-  for (auto it : destination_level_map) {
+  for (const auto& it : destination_level_map) {
     if (it.first == kWildCardMatching) {
       result[it.second] = {it.first};
     } else if (it.second >= wildcard_level &&

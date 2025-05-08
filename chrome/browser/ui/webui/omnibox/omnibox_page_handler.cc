@@ -436,7 +436,7 @@ void OmniboxPageHandler::OnResultChanged(AutocompleteController* controller,
   BitmapFetcherService* bitmap_fetcher_service =
       BitmapFetcherServiceFactory::GetForBrowserContext(profile_);
 
-  for (std::string image_url : image_urls) {
+  for (const std::string& image_url : image_urls) {
     if (image_url.empty()) {
       continue;
     }

@@ -63,7 +63,7 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
     const PrefService* pref_service = profile_->GetPrefs();
     std::string accept_languages_pref =
         pref_service->GetString(language::prefs::kAcceptLanguages);
-    for (std::string lang :
+    for (const std::string& lang :
          base::SplitString(accept_languages_pref, ",", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY)) {
       accept_languages.push_back(lang);

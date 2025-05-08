@@ -85,7 +85,7 @@ lens::mojom::PolygonPtr CreatePolygonMojomFromProto(
   lens::mojom::PolygonPtr polygon = lens::mojom::Polygon::New();
 
   std::vector<lens::mojom::VertexPtr> vertices;
-  for (auto vertex : proto_polygon.vertex()) {
+  for (const auto& vertex : proto_polygon.vertex()) {
     vertices.push_back(lens::mojom::Vertex::New(vertex.x(), vertex.y()));
   }
   polygon->vertex = std::move(vertices);
@@ -133,7 +133,7 @@ lens::mojom::GeometryPtr CreateGeometryMojomFromProto(
   geometry->bounding_box = std::move(center_rotated_box);
 
   std::vector<lens::mojom::PolygonPtr> polygons;
-  for (auto polygon : response_geometry.segmentation_polygon()) {
+  for (const auto& polygon : response_geometry.segmentation_polygon()) {
     polygons.push_back(CreatePolygonMojomFromProto(polygon));
   }
   geometry->segmentation_polygon = std::move(polygons);
@@ -170,7 +170,7 @@ lens::mojom::LinePtr CreateLineMojomFromProto(
     lens::WritingDirection writing_direction) {
   lens::mojom::LinePtr line = lens::mojom::Line::New();
   std::vector<lens::mojom::WordPtr> words;
-  for (auto word : proto_line.words()) {
+  for (const auto& word : proto_line.words()) {
     words.push_back(
         CreateWordMojomFromProto(word, region_crop_box, writing_direction));
   }
@@ -348,7 +348,7 @@ lens::mojom::ParagraphPtr CreateParagraphMojomFromProto(
   lens::mojom::ParagraphPtr paragraph = lens::mojom::Paragraph::New();
   paragraph->content_language = proto_paragraph.content_language();
   std::vector<lens::mojom::LinePtr> lines;
-  for (auto line : proto_paragraph.lines()) {
+  for (const auto& line : proto_paragraph.lines()) {
     lines.push_back(CreateLineMojomFromProto(
         line, region_crop_box, proto_paragraph.writing_direction()));
   }
@@ -414,7 +414,7 @@ CreateObjectsMojomArrayFromServerResponse(
   }
 
   auto response_objects = response.objects_response().overlay_objects();
-  for (auto response_object : response_objects) {
+  for (const auto& response_object : response_objects) {
     if (!response_object.has_interaction_properties() ||
         !response_object.interaction_properties().select_on_tap()) {
       continue;

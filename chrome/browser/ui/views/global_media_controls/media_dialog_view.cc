@@ -445,10 +445,10 @@ MediaDialogView::MediaDialogView(
 }
 
 MediaDialogView::~MediaDialogView() {
-  for (auto item_pair : observed_items_) {
+  for (auto& item_pair : observed_items_) {
     item_pair.second->RemoveObserver(this);
   }
-  for (auto item_pair : updated_items_) {
+  for (auto& item_pair : updated_items_) {
     item_pair.second->RemoveObserver(this);
   }
 }

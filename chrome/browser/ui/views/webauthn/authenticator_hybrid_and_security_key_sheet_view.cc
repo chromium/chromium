@@ -64,7 +64,7 @@ std::unique_ptr<views::View> CreateMechanismDescriptionWithIcon(
   header_view->SetMultiLine(true);
   header_view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  for (auto description_text : descriptions) {
+  for (const auto& description_text : descriptions) {
     auto* description_view =
         description_column->AddChildView(std::make_unique<views::Label>(
             description_text, views::style::CONTEXT_DIALOG_BODY_TEXT));

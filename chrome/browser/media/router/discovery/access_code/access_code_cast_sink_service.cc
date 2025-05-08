@@ -732,7 +732,7 @@ void AccessCodeCastSinkService::ValidateStoredDevices(
 
 void AccessCodeCastSinkService::InitExpirationTimers(
     const std::vector<MediaSinkInternal>& cast_sinks) {
-  for (auto cast_sink : cast_sinks) {
+  for (const auto& cast_sink : cast_sinks) {
     SetExpirationTimer(cast_sink.id());
   }
 }
@@ -912,7 +912,7 @@ void AccessCodeCastSinkService::StoreSinkAndSetExpirationTimer(
 void AccessCodeCastSinkService::AddStoredDevicesToMediaRouter(
     const std::vector<MediaSinkInternal>& cast_sinks) {
   std::vector<MediaSinkInternal> cast_sinks_to_add;
-  for (auto cast_sink : cast_sinks) {
+  for (const auto& cast_sink : cast_sinks) {
     AddSinkResultCallback callback =
         base::BindOnce(AddRememberedSinkMetricsCallback);
     AddSinkToMediaRouter(cast_sink, std::move(callback));

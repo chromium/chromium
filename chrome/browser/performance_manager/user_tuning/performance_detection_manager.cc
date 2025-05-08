@@ -70,7 +70,7 @@ bool PerformanceDetectionManager::DiscardTabs(
 
   std::vector<const PageNode*> eligible_nodes;
   std::vector<resource_attribution::PageContext> eligible_page_contexts;
-  for (resource_attribution::PageContext context : tabs) {
+  for (const resource_attribution::PageContext& context : tabs) {
     const PageNode* page_node = context.GetPageNode();
     if (page_node) {
       eligible_nodes.emplace_back(page_node);

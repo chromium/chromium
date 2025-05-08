@@ -340,7 +340,7 @@ std::string RecursiveDumpAXPlatformNodeAsString(
   std::string line = node_delegate->GetData().ToString();
   std::vector<std::string> attributes = base::SplitString(
       line, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (std::string attribute : attributes) {
+  for (const std::string& attribute : attributes) {
     if (ui::AXTreeFormatter::MatchesPropertyFilters(property_filters, attribute,
                                                     false)) {
       str += attribute + " ";
@@ -988,7 +988,7 @@ void AccessibilityUIMessageHandler::RequestAccessibilityEvents(
     StopRecording(web_contents);
 
     std::string event_logs_str;
-    for (std::string log : event_logs_) {
+    for (const std::string& log : event_logs_) {
       event_logs_str += log;
       event_logs_str += "\n";
     }

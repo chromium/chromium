@@ -111,7 +111,7 @@ void SiteSettingsCounter::Count() {
   const std::vector<std::string> tab_discard_exceptions =
       performance_manager::user_tuning::prefs::GetTabDiscardExceptionsBetween(
           pref_service_, period_start, period_end);
-  for (auto exception : tab_discard_exceptions) {
+  for (const auto& exception : tab_discard_exceptions) {
     url_matcher::util::FilterComponents components;
     bool is_valid = url_matcher::util::FilterToComponents(
         exception, &components.scheme, &components.host,

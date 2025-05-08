@@ -669,7 +669,7 @@ void ExtensionService::CheckManagementPolicy() {
       remove_list.push_back(extension->id());
     }
   }
-  for (auto extension_id : remove_list) {
+  for (const auto& extension_id : remove_list) {
     std::u16string error;
     if (!extension_registrar_->UninstallExtension(
             extension_id, UNINSTALL_REASON_INTERNAL_MANAGEMENT, &error)) {

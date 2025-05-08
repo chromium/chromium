@@ -2468,7 +2468,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           base::BindRepeating(&PopulatePolicyHandlerParameters),
           base::BindRepeating(&GetChromePolicyDetails),
           AreFuturePoliciesEnabledByDefault()));
-  for (PolicyToPreferenceMapEntry entry : kSimplePolicyMap) {
+  for (const PolicyToPreferenceMapEntry& entry : kSimplePolicyMap) {
     handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
         entry.policy_name, entry.preference_path, entry.value_type));
   }

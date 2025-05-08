@@ -763,7 +763,7 @@ base::WeakPtr<WebAppRegistrar> WebAppRegistrar::AsWeakPtr() {
 std::optional<webapps::AppId> WebAppRegistrar::LookUpAppIdByInstallUrl(
     const GURL& install_url) const {
   for (const WebApp& web_app : GetApps()) {
-    for (auto it : web_app.management_to_external_config_map()) {
+    for (const auto& it : web_app.management_to_external_config_map()) {
       if (base::Contains(it.second.install_urls, install_url)) {
         return web_app.app_id();
       }

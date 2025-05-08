@@ -75,10 +75,8 @@ TabStripPageLoadMetricsObserver::OnStart(
     return CONTINUE_OBSERVING;
   }
   base::TimeTicks now = base::TimeTicks::Now();
-  std::vector<std::vector<content::WebContents*>> all_web_contents =
-      GetAllWebContents();
-  for (std::vector<content::WebContents*> tab_strip_web_contents :
-       all_web_contents) {
+
+  for (const auto& tab_strip_web_contents : GetAllWebContents()) {
     for (content::WebContents* web_contents : tab_strip_web_contents) {
       if (web_contents) {
         base::TimeTicks last_active = web_contents->GetLastActiveTimeTicks();
@@ -113,10 +111,7 @@ TabStripPageLoadMetricsObserver::OnFencedFramesStart(
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 TabStripPageLoadMetricsObserver::OnShown() {
-  std::vector<std::vector<content::WebContents*>> all_web_contents =
-      GetAllWebContents();
-  for (std::vector<content::WebContents*> tab_strip_web_contents :
-       all_web_contents) {
+  for (const auto& tab_strip_web_contents : GetAllWebContents()) {
     const int count = tab_strip_web_contents.size();
     for (int i = 0; i < count; i++) {
       if (tab_strip_web_contents.at(i) == web_contents_.get()) {

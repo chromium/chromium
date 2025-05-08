@@ -238,7 +238,7 @@ void MediaItemUIDeviceSelectorView::UpdateAvailableAudioDevices(
   current_audio_device_entry_view_ = nullptr;
 
   bool current_device_still_exists = false;
-  for (auto description : device_descriptions) {
+  for (const auto& description : device_descriptions) {
     auto device_entry_view = std::make_unique<AudioDeviceEntryView>(
         base::BindRepeating(
             &MediaItemUIDeviceSelectorDelegate::OnAudioSinkChosen,

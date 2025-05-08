@@ -50,7 +50,7 @@ void ExtensionsRequestAccessHoverCardCoordinator::ShowBubble(
     dialog_builder.AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
         IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
         ui::DialogModelLabel::CreateEmphasizedText(url)));
-    for (auto extension_id : extension_ids) {
+    for (const auto& extension_id : extension_ids) {
       ToolbarActionViewController* action =
           extensions_container->GetActionForId(extension_id);
       dialog_builder.AddMenuItem(

@@ -46,7 +46,7 @@ std::vector<const extensions::Extension*> GetExtensions(
   const extensions::ExtensionSet& enabled_extensions =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   std::vector<const extensions::Extension*> extensions;
-  for (auto extension_id : extension_ids) {
+  for (const auto& extension_id : extension_ids) {
     extensions.push_back(enabled_extensions.GetByID(extension_id));
   }
   return extensions;

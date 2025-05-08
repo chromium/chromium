@@ -108,7 +108,7 @@ DialogArgs& DialogArgs::operator=(const DialogArgs&) = default;
 base::Value::Dict DialogArgs::ToValue() {
   base::Value::Dict dialog_args_value;
   base::Value::List product_spec_urls;
-  for (auto url : urls) {
+  for (const auto& url : urls) {
     product_spec_urls.Append(url.spec());
   }
   dialog_args_value.Set(kDialogArgsName, std::move(name));

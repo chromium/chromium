@@ -69,7 +69,7 @@ CpuHealthTracker::HealthLevel CpuHealthTracker::GetCurrentHealthLevel() {
 
 int CpuHealthTracker::GetTotalCpuPercentUsage(ActionableTabsResult tabs) {
   int total_cpu = 0;
-  for (resource_attribution::PageContext context : tabs) {
+  for (const resource_attribution::PageContext& context : tabs) {
     auto iter = tab_page_measurements_.find(context);
     if (iter != tab_page_measurements_.end()) {
       total_cpu += iter->second.value();

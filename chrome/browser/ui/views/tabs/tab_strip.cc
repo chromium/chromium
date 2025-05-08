@@ -1120,7 +1120,7 @@ void TabStrip::AddTabsAt(
     std::vector<std::pair<int, TabRendererData>> tabs_datas) {
   std::vector<TabContainer::TabInsertionParams> tabs_params;
 
-  for (auto tab_data : tabs_datas) {
+  for (const auto& tab_data : tabs_datas) {
     const int model_index = tab_data.first;
     CHECK(IsValidModelIndex(model_index))
         << "Attempted to add a tab with an invalid model index.";

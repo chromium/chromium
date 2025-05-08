@@ -310,7 +310,7 @@ void IsolatedWebAppUpdateManager::Start() {
     return;
   }
 
-  for (WebApp web_app : provider_->registrar_unsafe().GetApps()) {
+  for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
     if (!web_app.isolation_data().has_value() ||
         !web_app.isolation_data()->pending_update_info().has_value()) {
       continue;

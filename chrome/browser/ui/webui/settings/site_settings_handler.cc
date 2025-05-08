@@ -460,9 +460,9 @@ std::map<std::string, std::pair<std::string, int>> GetRwsMap(
 
   // site eTLD+1 : {owner site eTLD+1, # of sites in that related website set}
   std::map<std::string, std::pair<std::string, int>> rws_map;
-  for (auto rws : rws_owner_to_members) {
+  for (const auto& rws : rws_owner_to_members) {
     // Set rws owner and count of members for each eTLD+1
-    for (auto member : rws.second) {
+    for (const auto& member : rws.second) {
       rws_map[member] = {rws.first, rws.second.size()};
     }
   }

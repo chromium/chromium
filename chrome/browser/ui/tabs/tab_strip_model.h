@@ -1051,10 +1051,11 @@ class TabStripModel : public TabGroupController {
   // pinned tabs placement, group contiguity and selected tabs validity.
   void ValidateTabStripModel();
 
-  void SendMoveNotificationForTab(int index,
-                                  int to_position,
-                                  tabs::TabInterface* tab,
-                                  TabStripSelectionChange& selection_change);
+  void SendMoveNotificationForTab(
+      int index,
+      int to_position,
+      tabs::TabInterface* tab,
+      const TabStripSelectionChange& selection_change);
 
   void UpdateSelectionModelForMove(int initial_index,
                                    int final_index,

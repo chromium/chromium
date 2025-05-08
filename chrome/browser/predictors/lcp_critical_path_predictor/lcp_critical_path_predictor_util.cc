@@ -1455,7 +1455,7 @@ void LcppDataMap::DeleteUrls(const std::vector<GURL>& urls) {
         needs_update[key_value.first] = lcpp_origin;
       }
     }
-    for (auto it : needs_update) {
+    for (const auto& it : needs_update) {
       origin_map_->UpdateData(it.first, it.second);
     }
   }

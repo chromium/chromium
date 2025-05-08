@@ -38,7 +38,7 @@ void DependencyTree::CalculateSubtreeBoundaries() {
   bool updated = true;
   while (updated) {
     updated = false;
-    for (auto token : dep_head_array_) {
+    for (const auto& token : dep_head_array_) {
       // Expand parent boundary to include all child boundaries, and repeat
       // until all boundaries have been updated.
       if (token.dependency_head != token.absolute_index) {

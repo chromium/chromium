@@ -469,7 +469,7 @@ GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url) {
 
 GURL RemoveIgnoredSearchURLParameters(const GURL& url) {
   GURL processed_url = url;
-  for (std::string query_param : kIgnoredSearchUrlQueryParameters) {
+  for (const std::string& query_param : kIgnoredSearchUrlQueryParameters) {
     processed_url = net::AppendOrReplaceQueryParameter(
         processed_url, query_param, std::nullopt);
   }

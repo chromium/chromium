@@ -174,7 +174,7 @@ bool CheckClientDownloadRequestBase::IsDownloadManuallyBlocklisted(
   if (service_->IsHashManuallyBlocklisted(request.digests().sha256()))
     return true;
 
-  for (auto bin_itr : request.archived_binary()) {
+  for (const auto& bin_itr : request.archived_binary()) {
     if (service_->IsHashManuallyBlocklisted(bin_itr.digests().sha256()))
       return true;
   }

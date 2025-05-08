@@ -41,9 +41,9 @@ void UserUninstalledPreinstalledWebAppPrefs::Add(
 
   AppendExistingInstallUrlsPerAppId(app_id, install_urls);
 
-  for (auto install_url : install_urls)
+  for (const auto& install_url : install_urls) {
     url_list.Append(install_url.spec());
-
+  }
   if (!DoesAppIdExist(app_id)) {
     base::RecordAction(
         base::UserMetricsAction(kUserUninstalledPreinstalledAppAction));
@@ -191,7 +191,7 @@ bool UserUninstalledPreinstalledWebAppPrefs::AppIdContainsAllUrls(
     existing_urls.emplace(url.GetString());
   }
 
-  for (auto it : url_map) {
+  for (const auto& it : url_map) {
     if (only_default && !(it.first == WebAppManagement::kDefault))
       continue;
 

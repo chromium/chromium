@@ -54,7 +54,7 @@ class DeprecatedAppsDialogView::DeprecatedAppsTableModel
       content::WebContents* web_contents,
       base::RepeatingClosure on_icon_updated)
       : on_icon_updated_(on_icon_updated) {
-    for (extensions::ExtensionId app_id : deprecated_app_ids) {
+    for (const extensions::ExtensionId& app_id : deprecated_app_ids) {
       auto* browser_context = web_contents->GetBrowserContext();
       const extensions::Extension* extension =
           extensions::ExtensionRegistry::Get(browser_context)
@@ -255,7 +255,7 @@ void DeprecatedAppsDialogView::OnIconsLoadedForTable() {
 }
 
 void DeprecatedAppsDialogView::OnAccept() {
-  for (extensions::ExtensionId id : deprecated_app_ids_) {
+  for (const extensions::ExtensionId& id : deprecated_app_ids_) {
     extensions::ExtensionRegistrar::Get(web_contents_->GetBrowserContext())
         ->UninstallExtension(id, extensions::UNINSTALL_REASON_USER_INITIATED,
                              /*error=*/nullptr);

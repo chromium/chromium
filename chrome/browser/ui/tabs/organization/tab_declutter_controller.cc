@@ -240,7 +240,7 @@ void TabDeclutterController::DeclutterTabs(
   }
 
   int duplicate_tabs_decluttered = 0;
-  for (GURL url : urls) {
+  for (const GURL& url : urls) {
     // Sort the tabs with `url` based on the last committed navigation time and
     // close all the tabs except the oldest tab.
     std::vector<std::pair<tabs::TabInterface*, base::Time>> url_matching_tabs;

@@ -613,7 +613,7 @@ WebAppIconManager::IconFilesCheck CheckForEmptyOrMissingIconFilesBlocking(
   TRACE_EVENT0("ui",
                "web_app_icon_manager::CheckForEmptyOrMissingIconFilesBlocking");
   WebAppIconManager::IconFilesCheck result;
-  for (auto it : purpose_to_sizes) {
+  for (const auto& it : purpose_to_sizes) {
     const IconPurpose& purpose = it.first;
     const SortedSizesPx& square_sizes = it.second;
     for (SquareSizePx size : square_sizes) {

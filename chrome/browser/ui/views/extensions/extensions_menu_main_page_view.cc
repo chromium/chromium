@@ -400,7 +400,7 @@ ExtensionsMenuMainPageView::GetExtensionsRequestingAccessForTesting() {
   CHECK_IS_TEST();
   std::vector<extensions::ExtensionId> extensions;
   extensions.reserve(requests_entries_.size());
-  for (auto entry : requests_entries_) {
+  for (const auto& entry : requests_entries_) {
     extensions.push_back(entry.first);
   }
   return extensions;

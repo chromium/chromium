@@ -26,7 +26,7 @@ void AccessCodeCastPrefUpdaterImpl::UpdateDevicesDict(
   // multiple times, we use ip-based deduping of stored media sinks to
   // ensure that the same sink (possibly with a different older stored named)
   // isn't stored twice in the cast list.
-  for (auto existing_sink_ids :
+  for (const auto& existing_sink_ids :
        AccessCodeCastPrefUpdaterImpl::GetMatchingIPEndPoints(
            pref_service_->GetDict(prefs::kAccessCodeCastDevices),
            sink.cast_data().ip_endpoint)) {
