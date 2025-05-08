@@ -1462,6 +1462,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.RestrictedCandidates.Port"
+    units="candidates" expires_after="2025-12-31">
+  <owner>tov@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Classifies the port of the connection that has been restricted when non-spec
+    munging was used between createOffer/createAnswer and setLocalDescription
+    Recorded when a candidate is restricted. This happens for the ports blocked
+    through the WebRTC-NoSdpMangleUfragRestrictedAddresses feature.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.RestrictedCandidates.SdpMungingType"
+    enum="SdpMungingType" expires_after="2025-12-31">
+  <owner>tov@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Classifies the type of non-spec SDP munging used between
+    createOffer/createAnswer and setLocalDescription that has been blocked.
+    Recorded when a candidate is restricted. This happens for the ports blocked
+    through the WebRTC-NoSdpMangleUfragRestrictedAddresses feature.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.RtcpMux" enum="PeerConnectionRtcpMux"
     expires_after="2024-11-03">
   <owner>hta@chromium.org</owner>
