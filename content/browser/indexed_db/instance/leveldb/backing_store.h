@@ -113,6 +113,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     base::WeakPtrFactory<Database> weak_factory_{this};
   };
 
+  class Cursor;
+
   // This class could be moved to the implementation file, but it's left here to
   // avoid needless git churn.
   class CONTENT_EXPORT Transaction
@@ -208,28 +210,24 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
         const blink::IndexedDBKey& key,
         std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
         bool* exists) override;
-    std::unique_ptr<indexed_db::BackingStore::Cursor> OpenObjectStoreKeyCursor(
-        int64_t object_store_id,
-        const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) override;
-    std::unique_ptr<indexed_db::BackingStore::Cursor> OpenObjectStoreCursor(
-        int64_t object_store_id,
-        const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) override;
-    std::unique_ptr<indexed_db::BackingStore::Cursor> OpenIndexKeyCursor(
-        int64_t object_store_id,
-        int64_t index_id,
-        const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) override;
-    std::unique_ptr<indexed_db::BackingStore::Cursor> OpenIndexCursor(
-        int64_t object_store_id,
-        int64_t index_id,
-        const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) override;
+    base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+    OpenObjectStoreKeyCursor(int64_t object_store_id,
+                             const blink::IndexedDBKeyRange& key_range,
+                             blink::mojom::IDBCursorDirection) override;
+    base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+    OpenObjectStoreCursor(int64_t object_store_id,
+                          const blink::IndexedDBKeyRange& key_range,
+                          blink::mojom::IDBCursorDirection) override;
+    base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+    OpenIndexKeyCursor(int64_t object_store_id,
+                       int64_t index_id,
+                       const blink::IndexedDBKeyRange& key_range,
+                       blink::mojom::IDBCursorDirection) override;
+    base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+    OpenIndexCursor(int64_t object_store_id,
+                    int64_t index_id,
+                    const blink::IndexedDBKeyRange& key_range,
+                    blink::mojom::IDBCursorDirection) override;
 
     Status PutExternalObjectsIfNeeded(const std::string& object_store_data_key,
                                       std::vector<IndexedDBExternalObject>*);
@@ -283,6 +281,11 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     // into live (active references) and dead (no references).
     void PartitionBlobsToRemove(BlobJournalType* dead_blobs,
                                 BlobJournalType* live_blobs) const;
+
+    // Prepares a cursor and returns it if successful, an error Status if
+    // there's an error, or null if the cursor is empty.
+    base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+    PrepareCursor(std::unique_ptr<Cursor> cursor);
 
     // This does NOT mean that this class can outlive the BackingStore.
     // This is only to protect against security issues before this class is

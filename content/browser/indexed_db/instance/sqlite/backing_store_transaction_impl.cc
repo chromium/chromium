@@ -161,44 +161,40 @@ Status BackingStoreTransactionImpl::KeyExistsInIndex(
   return Status::OK();
 }
 
-std::unique_ptr<BackingStore::Cursor>
+base::expected<std::unique_ptr<BackingStore::Cursor>, Status>
 BackingStoreTransactionImpl::OpenObjectStoreKeyCursor(
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range,
-    blink::mojom::IDBCursorDirection,
-    Status*) {
+    blink::mojom::IDBCursorDirection) {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-std::unique_ptr<BackingStore::Cursor>
+base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
 BackingStoreTransactionImpl::OpenObjectStoreCursor(
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range,
-    blink::mojom::IDBCursorDirection,
-    Status*) {
+    blink::mojom::IDBCursorDirection) {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-std::unique_ptr<BackingStore::Cursor>
+base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
 BackingStoreTransactionImpl::OpenIndexKeyCursor(
     int64_t object_store_id,
     int64_t index_id,
     const blink::IndexedDBKeyRange& key_range,
-    blink::mojom::IDBCursorDirection,
-    Status*) {
+    blink::mojom::IDBCursorDirection) {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-std::unique_ptr<BackingStore::Cursor>
+base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
 BackingStoreTransactionImpl::OpenIndexCursor(
     int64_t object_store_id,
     int64_t index_id,
     const blink::IndexedDBKeyRange& key_range,
-    blink::mojom::IDBCursorDirection,
-    Status*) {
+    blink::mojom::IDBCursorDirection) {
   NOTIMPLEMENTED();
   return nullptr;
 }

@@ -81,28 +81,24 @@ class FakeTransaction : public BackingStore::Transaction {
       const blink::IndexedDBKey& key,
       std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
       bool* exists) override;
-  std::unique_ptr<indexed_db::BackingStore::Cursor> OpenObjectStoreKeyCursor(
-      int64_t object_store_id,
-      const blink::IndexedDBKeyRange& key_range,
-      blink::mojom::IDBCursorDirection,
-      Status*) override;
-  std::unique_ptr<indexed_db::BackingStore::Cursor> OpenObjectStoreCursor(
-      int64_t object_store_id,
-      const blink::IndexedDBKeyRange& key_range,
-      blink::mojom::IDBCursorDirection,
-      Status*) override;
-  std::unique_ptr<indexed_db::BackingStore::Cursor> OpenIndexKeyCursor(
-      int64_t object_store_id,
-      int64_t index_id,
-      const blink::IndexedDBKeyRange& key_range,
-      blink::mojom::IDBCursorDirection,
-      Status*) override;
-  std::unique_ptr<indexed_db::BackingStore::Cursor> OpenIndexCursor(
-      int64_t object_store_id,
-      int64_t index_id,
-      const blink::IndexedDBKeyRange& key_range,
-      blink::mojom::IDBCursorDirection,
-      Status*) override;
+  base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+  OpenObjectStoreKeyCursor(int64_t object_store_id,
+                           const blink::IndexedDBKeyRange& key_range,
+                           blink::mojom::IDBCursorDirection) override;
+  base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+  OpenObjectStoreCursor(int64_t object_store_id,
+                        const blink::IndexedDBKeyRange& key_range,
+                        blink::mojom::IDBCursorDirection) override;
+  base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+  OpenIndexKeyCursor(int64_t object_store_id,
+                     int64_t index_id,
+                     const blink::IndexedDBKeyRange& key_range,
+                     blink::mojom::IDBCursorDirection) override;
+  base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+  OpenIndexCursor(int64_t object_store_id,
+                  int64_t index_id,
+                  const blink::IndexedDBKeyRange& key_range,
+                  blink::mojom::IDBCursorDirection) override;
 
  private:
   Status result_;

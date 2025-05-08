@@ -189,28 +189,24 @@ class BackingStore {
         const blink::IndexedDBKey& key,
         std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
         bool* exists) = 0;
-    virtual std::unique_ptr<Cursor> OpenObjectStoreKeyCursor(
-        int64_t object_store_id,
-        const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) = 0;
-    virtual std::unique_ptr<Cursor> OpenObjectStoreCursor(
-        int64_t object_store_id,
-        const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) = 0;
-    virtual std::unique_ptr<Cursor> OpenIndexKeyCursor(
+    virtual base::expected<std::unique_ptr<Cursor>, Status>
+    OpenObjectStoreKeyCursor(int64_t object_store_id,
+                             const blink::IndexedDBKeyRange& key_range,
+                             blink::mojom::IDBCursorDirection) = 0;
+    virtual base::expected<std::unique_ptr<Cursor>, Status>
+    OpenObjectStoreCursor(int64_t object_store_id,
+                          const blink::IndexedDBKeyRange& key_range,
+                          blink::mojom::IDBCursorDirection) = 0;
+    virtual base::expected<std::unique_ptr<Cursor>, Status> OpenIndexKeyCursor(
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) = 0;
-    virtual std::unique_ptr<Cursor> OpenIndexCursor(
+        blink::mojom::IDBCursorDirection) = 0;
+    virtual base::expected<std::unique_ptr<Cursor>, Status> OpenIndexCursor(
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) = 0;
+        blink::mojom::IDBCursorDirection) = 0;
   };
 
   // Another interface to be implemented by a backend implementation.

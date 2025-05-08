@@ -158,44 +158,41 @@ Status FakeTransaction::KeyExistsInIndex(
                                                 found_primary_key, exists);
 }
 
-std::unique_ptr<indexed_db::BackingStore::Cursor>
+base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
 FakeTransaction::OpenObjectStoreKeyCursor(
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range,
-    blink::mojom::IDBCursorDirection direction,
-    Status* status) {
-  return wrapped_transaction_->OpenObjectStoreKeyCursor(
-      object_store_id, key_range, direction, status);
+    blink::mojom::IDBCursorDirection direction) {
+  return wrapped_transaction_->OpenObjectStoreKeyCursor(object_store_id,
+                                                        key_range, direction);
 }
 
-std::unique_ptr<indexed_db::BackingStore::Cursor>
+base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
 FakeTransaction::OpenObjectStoreCursor(
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range,
-    blink::mojom::IDBCursorDirection direction,
-    Status* status) {
+    blink::mojom::IDBCursorDirection direction) {
   return wrapped_transaction_->OpenObjectStoreCursor(object_store_id, key_range,
-                                                     direction, status);
+                                                     direction);
 }
 
-std::unique_ptr<indexed_db::BackingStore::Cursor>
-FakeTransaction::OpenIndexKeyCursor(int64_t object_store_id,
-                                    int64_t index_id,
-                                    const blink::IndexedDBKeyRange& key_range,
-                                    blink::mojom::IDBCursorDirection direction,
-                                    Status* status) {
+base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+FakeTransaction::OpenIndexKeyCursor(
+    int64_t object_store_id,
+    int64_t index_id,
+    const blink::IndexedDBKeyRange& key_range,
+    blink::mojom::IDBCursorDirection direction) {
   return wrapped_transaction_->OpenIndexKeyCursor(object_store_id, index_id,
-                                                  key_range, direction, status);
+                                                  key_range, direction);
 }
 
-std::unique_ptr<indexed_db::BackingStore::Cursor>
+base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
 FakeTransaction::OpenIndexCursor(int64_t object_store_id,
                                  int64_t index_id,
                                  const blink::IndexedDBKeyRange& key_range,
-                                 blink::mojom::IDBCursorDirection direction,
-                                 Status* status) {
+                                 blink::mojom::IDBCursorDirection direction) {
   return wrapped_transaction_->OpenIndexCursor(object_store_id, index_id,
-                                               key_range, direction, status);
+                                               key_range, direction);
 }
 
 }  // namespace content::indexed_db
