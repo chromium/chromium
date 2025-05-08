@@ -673,7 +673,8 @@ public class TileGroup implements MostVisitedSites.Observer {
             if (tile == null) return;
 
             GURL url = tile.getUrl();
-            assignCustomLinkAndUpdateOnSuccess(url, tile.getTitle(), url);
+            String name = TileUtils.formatCustomTileName(tile.getTitle(), url);
+            assignCustomLinkAndUpdateOnSuccess(url, name, url);
         }
 
         @Override
@@ -708,6 +709,10 @@ public class TileGroup implements MostVisitedSites.Observer {
         }
 
         private boolean addCustomLinkAndUpdateOnSuccess(String name, GURL url) {
+            if (!TileUtils.isValidCustomTileName(name) || !TileUtils.isValidCustomTileUrl(url)) {
+                return false;
+            }
+
             // On success, onSiteSuggestionsAvailable() triggers.
             mPendingChanges.customTilesIndicator = true;
             boolean success = mTileGroupDelegate.addCustomLink(name, url);
@@ -719,6 +724,11 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         private boolean assignCustomLinkAndUpdateOnSuccess(
                 GURL keyUrl, String name, @Nullable GURL url) {
+            if (!TileUtils.isValidCustomTileName(name)
+                    || (url != null && !TileUtils.isValidCustomTileUrl(url))) {
+                return false;
+            }
+
             // On success, onSiteSuggestionsAvailable() triggers.
             mPendingChanges.customTilesIndicator = true;
             boolean success = mTileGroupDelegate.assignCustomLink(keyUrl, name, url);

@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
+import org.chromium.chrome.browser.suggestions.tile.TileUtils;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.base.WindowAndroid.OnCloseContextMenuListener;
@@ -376,8 +377,13 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
                     GURL itemUrl = delegate.getUrl();
                     return itemUrl != null && OfflinePageBridge.canSavePage(itemUrl);
                 }
-            case ContextMenuItemId.REMOVE: // Fall through.
-            case ContextMenuItemId.PIN_THIS_SHORTCUT: // Fall through.
+            case ContextMenuItemId.REMOVE:
+                return true;
+            case ContextMenuItemId.PIN_THIS_SHORTCUT:
+                {
+                    GURL itemUrl = delegate.getUrl();
+                    return TileUtils.isValidCustomTileUrl(itemUrl);
+                }
             case ContextMenuItemId.EDIT_SHORTCUT: // Fall through.
             case ContextMenuItemId.UNPIN:
                 return true;

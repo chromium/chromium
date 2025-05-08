@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.TextView.BufferType;
@@ -17,6 +18,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.DialogMode;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.MediatorToView;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.UrlErrorCode;
@@ -52,7 +54,15 @@ class CustomTileEditView extends FrameLayout
     public void onFinishInflate() {
         super.onFinishInflate();
         mNameField = findViewById(R.id.name_field);
+        mNameField.setFilters(
+                new InputFilter[] {
+                    new InputFilter.LengthFilter(SuggestionsConfig.MAX_CUSTOM_TILES_NAME_LENGTH)
+                });
         mUrlField = findViewById(R.id.url_field);
+        mUrlField.setFilters(
+                new InputFilter[] {
+                    new InputFilter.LengthFilter(SuggestionsConfig.MAX_CUSTOM_TILES_URL_LENGTH)
+                });
         mUrlField.addTextChangedListener(
                 new EmptyTextWatcher() {
                     @Override

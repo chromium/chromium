@@ -4,12 +4,31 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import android.text.TextUtils;
+
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.url.GURL;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Utility class for {@link Tile}s related queries or operations. */
 public class TileUtils {
+    private static final Set<String> CUSTOM_TILE_SCHEMES =
+            new HashSet<String>(
+                    Arrays.asList(
+                            UrlConstants.CHROME_SCHEME,
+                            UrlConstants.CHROME_NATIVE_SCHEME,
+                            UrlConstants.FTP_SCHEME,
+                            UrlConstants.HTTP_SCHEME,
+                            UrlConstants.HTTPS_SCHEME,
+                            UrlConstants.FILE_SCHEME));
+
     /**
      * Returns whether or not {@param tile} represents a Search query. This includes suggestions
      * from Repeatable Queries.
@@ -19,5 +38,33 @@ public class TileUtils {
         TemplateUrlService searchService = TemplateUrlServiceFactory.getForProfile(profile);
         return searchService != null
                 && searchService.isSearchResultsPageFromDefaultSearchProvider(tile.getUrl());
+    }
+
+    /**
+     * @return Custom tile name, truncated (if needed) from {@param name} if non-empty, or {@param
+     *     url} otherwise. The result can still fail {@link isValidCustomTileName()}, e.g., when
+     *     both {@param name} and {@param url} are empty then the result is also empty.
+     */
+    public static String formatCustomTileName(String name, GURL url) {
+        String nameToUse = TextUtils.isEmpty(name) ? url.getSpec() : name;
+        return nameToUse.length() <= SuggestionsConfig.MAX_CUSTOM_TILES_NAME_LENGTH
+                ? nameToUse
+                : nameToUse.substring(0, SuggestionsConfig.MAX_CUSTOM_TILES_NAME_LENGTH);
+    }
+
+    /**
+     * @return Whether {@param url} is a valid name for Custom Tiles.
+     */
+    public static boolean isValidCustomTileName(String name) {
+        return !name.isEmpty() && name.length() <= SuggestionsConfig.MAX_CUSTOM_TILES_NAME_LENGTH;
+    }
+
+    /**
+     * @return Whether {@param url} is a valid URL for usage Custom Tiles.
+     */
+    public static boolean isValidCustomTileUrl(GURL url) {
+        return !GURL.isEmptyOrInvalid(url)
+                && url.getSpec().length() <= SuggestionsConfig.MAX_CUSTOM_TILES_URL_LENGTH
+                && CUSTOM_TILE_SCHEMES.contains(url.getScheme());
     }
 }
