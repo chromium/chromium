@@ -1056,6 +1056,7 @@ public final class ProductionSupportedFlagList {
                 "Enable the <link blocking=\"full-frame-rate\"/> API to lower the frame rate during"
                         + " loading"),
         Flag.baseFeature("ProgressiveAccessibility"),
+        Flag.baseFeature("PreloadingNoSamePageFragmentAnchorTracking"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
