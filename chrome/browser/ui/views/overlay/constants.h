@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_CONSTANTS_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_CONSTANTS_H_
 
-constexpr int kPipWindowIconPadding = 8;
+inline constexpr int kPipWindowIconPadding = 8;
 
-constexpr int kPipWindowIconPadding2024 = 4;
+inline constexpr int kPipWindowIconPadding2024 = 4;
 
-constexpr int kCenterButtonSize = 48;
+inline constexpr int kCenterButtonSize = 48;
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_CONSTANTS_H_

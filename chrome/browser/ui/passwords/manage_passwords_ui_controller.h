@@ -45,7 +45,8 @@ class PostSaveCompromisedHelper;
 }  // namespace password_manager
 
 namespace {
-constexpr int kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown = 3;
+inline constexpr int kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown =
+    3;
 }
 
 class AccountChooserPrompt;

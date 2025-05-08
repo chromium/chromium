@@ -27,6 +27,6 @@ std::unique_ptr<views::View> CreatePasskeyWithUsernameLabel(
 // +---------------------+
 std::unique_ptr<views::View> CreateGpmIconWithLabel();
 
-constexpr int kWebAuthnGpmDialogSpacingBetweenTitleAndDescription = 4;
+inline constexpr int kWebAuthnGpmDialogSpacingBetweenTitleAndDescription = 4;
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_COMMON_VIEWS_H_

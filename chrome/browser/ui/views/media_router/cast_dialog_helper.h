@@ -12,7 +12,7 @@
 namespace media_router {
 
 // Icon sizes in DIP.
-constexpr int kPrimaryIconSize = 20;
+inline constexpr int kPrimaryIconSize = 20;
 constexpr auto kPrimaryIconBorder = gfx::Insets(6);
 
 // Creates a view containing a throbber. The throbber has a border around it so

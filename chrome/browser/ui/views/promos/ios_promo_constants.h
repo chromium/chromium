@@ -21,7 +21,7 @@ inline constexpr char kIOSPromoPaymentBubbleQRCodeURL[] =
 
 // Size of the QR code image view including the quiet zone margin added by the
 // QR code generator.
-const int kQrCodeImageSize = 90;
+inline constexpr int kQrCodeImageSize = 90;
 
 struct IOSPromoTypeConfigs {
   int bubble_title_id = -1;

@@ -38,10 +38,10 @@ enum class StorageSpaceState {
 };
 
 // Threshold to show a message indicating space is critically low (512 MB).
-const int64_t kSpaceCriticallyLowBytes = 512 * 1024 * 1024;
+inline constexpr int64_t kSpaceCriticallyLowBytes = 512 * 1024 * 1024;
 
 // Threshold to show a message indicating space is low (1 GB).
-const int64_t kSpaceLowBytes = 1 * 1024 * 1024 * 1024;
+inline constexpr int64_t kSpaceLowBytes = 1 * 1024 * 1024 * 1024;
 
 class StorageHandler : public ::settings::SettingsPageUIHandler,
                        public arc::ArcSessionManagerObserver,

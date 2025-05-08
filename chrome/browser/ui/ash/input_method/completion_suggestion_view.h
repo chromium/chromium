@@ -28,16 +28,16 @@ class CompletionSuggestionLabelView;
 
 // Font-related constants
 inline constexpr char kFontStyle[] = "Roboto";
-constexpr int kAnnotationFontSize = 10;
-constexpr int kIndexFontSize = 10;
+inline constexpr int kAnnotationFontSize = 10;
+inline constexpr int kIndexFontSize = 10;
 
 // Style-related constants
-constexpr int kAnnotationBorderThickness = 1;
-constexpr int kAnnotationCornerRadius = 2;
-constexpr int kPadding = 8;
-constexpr int kAnnotationPaddingLeft = 12;
-constexpr int kAnnotationPaddingBottom = 16;
-constexpr int kAnnotationPaddingTop = 6;
+inline constexpr int kAnnotationBorderThickness = 1;
+inline constexpr int kAnnotationCornerRadius = 2;
+inline constexpr int kPadding = 8;
+inline constexpr int kAnnotationPaddingLeft = 12;
+inline constexpr int kAnnotationPaddingBottom = 16;
+inline constexpr int kAnnotationPaddingTop = 6;
 inline constexpr char kTabKey[] = "tab";
 constexpr cros_styles::ColorName kButtonHighlightColor =
     cros_styles::ColorName::kRippleColor;

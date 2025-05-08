@@ -23,7 +23,7 @@ class AlmanacAppIconLoader;
 
 namespace ash::app_install {
 
-const int kIconSize = 32;
+inline constexpr int kIconSize = 32;
 
 // Defines the web dialog used for installing an app.
 class AppInstallDialog : public SystemWebDialogDelegate {

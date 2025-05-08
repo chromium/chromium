@@ -17,7 +17,7 @@ namespace {
 // Maximum time in milliseconds to wait for the Safe Browsing service reputation
 // check. After this amount of time the outstanding check will be aborted, and
 // the resource will be treated as if it were safe.
-const int kCheckUrlTimeoutMs = 5000;
+inline constexpr int kCheckUrlTimeoutMs = 5000;
 }  // namespace
 
 namespace safe_browsing {

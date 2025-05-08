@@ -10,8 +10,8 @@
 
 enum class OmniboxPartState { NORMAL, HOVERED, SELECTED, IPH };
 
-constexpr float kOmniboxOpacityHovered = 0.10f;
-constexpr float kOmniboxOpacitySelected = 0.16f;
+inline constexpr float kOmniboxOpacityHovered = 0.10f;
+inline constexpr float kOmniboxOpacitySelected = 0.16f;
 
 inline ui::ColorId GetOmniboxBackgroundColorId(OmniboxPartState state) {
   // TODO(crbug.com/333762301): Update the background color for the IPH

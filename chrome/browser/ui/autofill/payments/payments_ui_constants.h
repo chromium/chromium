@@ -10,7 +10,7 @@
 
 namespace autofill {
 
-constexpr int kMigrationDialogMainContainerChildSpacing = 24;
+inline constexpr int kMigrationDialogMainContainerChildSpacing = 24;
 constexpr auto kMigrationDialogInsets = gfx::Insets::TLBR(0, 24, 48, 24);
 
 // The time span an Autofill card bubble should be visible even if the document

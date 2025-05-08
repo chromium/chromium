@@ -40,7 +40,7 @@ class Profile;
 struct AccountInfo;
 
 // The desired width and height in pixels for an account avatar.
-constexpr int kAvatarImageSize = 32;
+inline constexpr int kAvatarImageSize = 32;
 
 // Crops and scales |image_skia| to the desired size for an account avatar.
 gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia image_skia);
