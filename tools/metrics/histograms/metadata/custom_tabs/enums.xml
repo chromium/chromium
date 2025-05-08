@@ -267,6 +267,25 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="High-end and Pip"/>
 </enum>
 
+<enum name="TwaLaunchHandlerClientMode">
+  <int value="0" label="Initial intent (client mode is ignored)"/>
+  <int value="1" label="Client mode navigate_existing"/>
+  <int value="2" label="Client mode navigate_new"/>
+  <int value="3" label="Client mode focus_existing"/>
+  <int value="4" label="Client mode auto"/>
+</enum>
+
+<enum name="TwaLaunchHandlerFailureReason">
+  <int value="0" label="Target URL verification failed"/>
+  <int value="1" label="Current page URL verification failed"/>
+</enum>
+
+<enum name="TwaLaunchHandlerFileHandling">
+  <int value="0" label="No files"/>
+  <int value="1" label="Single file"/>
+  <int value="2" label="Multiple files"/>
+</enum>
+
 <enum name="VisibleTab">
   <int value="0" label="Custom Tab"/>
   <int value="1" label="Chrome Tab"/>

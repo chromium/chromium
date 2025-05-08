@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static androidx.browser.trusted.LaunchHandlerClientMode.AUTO;
 import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
@@ -26,6 +27,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
+import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.ClientModeAction;
+import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FailureReasonAction;
+import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FileHandlingAction;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
@@ -110,8 +114,15 @@ public class WebAppLaunchHandler {
             String packageName,
             @Nullable FileHandlingData fileHandlingData) {
         List<Uri> fileUris = null;
-        if (fileHandlingData != null) {
+        if (fileHandlingData != null && !fileHandlingData.uris.isEmpty()) {
+            if (fileHandlingData.uris.size() == 1) {
+                WebAppLaunchHandlerHistogram.logFileHandling(FileHandlingAction.SINGLE_FILE);
+            } else {
+                WebAppLaunchHandlerHistogram.logFileHandling(FileHandlingAction.MULTIPLE_FILES);
+            }
             fileUris = fileHandlingData.uris;
+        } else {
+            WebAppLaunchHandlerHistogram.logFileHandling(FileHandlingAction.NO_FILES);
         }
 
         return new WebAppLaunchParams(newNavigationStarted, targetUrl, packageName, fileUris);
@@ -128,6 +139,8 @@ public class WebAppLaunchHandler {
      *     data.
      */
     public void handleInitialIntent(BrowserServicesIntentDataProvider intentDataProvider) {
+        WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.INITIAL_INTENT);
+
         WebAppLaunchParams launchParams =
                 getLaunchParams(
                         /* newNavigationStarted= */ true,
@@ -150,7 +163,9 @@ public class WebAppLaunchHandler {
      *     data.
      */
     public void handleNewIntent(BrowserServicesIntentDataProvider intentDataProvider) {
-        @ClientMode int clientMode = getClientMode(intentDataProvider.getLaunchHandlerClientMode());
+        @ClientMode int clientModeFromIntent = intentDataProvider.getLaunchHandlerClientMode();
+        recordClientMode(clientModeFromIntent);
+        @ClientMode int clientMode = getClientMode(clientModeFromIntent);
 
         if (clientMode == NAVIGATE_NEW) {
             launchNewIntent(
@@ -173,6 +188,23 @@ public class WebAppLaunchHandler {
                             intentDataProvider.getFileHandlingData());
 
             maybeNotifyLaunchQueue(launchParams);
+        }
+    }
+
+    private void recordClientMode(@ClientMode int clientMode) {
+        switch (clientMode) {
+            case NAVIGATE_EXISTING:
+                WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.MODE_NAVIGATE_EXISTING);
+                break;
+            case FOCUS_EXISTING:
+                WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.MODE_FOCUS_EXISTING);
+                break;
+            case NAVIGATE_NEW:
+                WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.MODE_NAVIGATE_NEW);
+                break;
+            case AUTO:
+                WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.MODE_AUTO);
+                break;
         }
     }
 
@@ -212,6 +244,8 @@ public class WebAppLaunchHandler {
             // Launch params should not be sent to a not verified origin.
             CurrentPageVerifier.VerificationState state = mCurrentPageVerifier.getState();
             if (state == null || state.status != CurrentPageVerifier.VerificationStatus.SUCCESS) {
+                WebAppLaunchHandlerHistogram.logFailureReason(
+                        FailureReasonAction.CURRENT_PAGE_VERIFICATION_FAILED);
                 return;
             }
         }
@@ -220,7 +254,11 @@ public class WebAppLaunchHandler {
                 .verify(launchParams.targetUrl)
                 .then(
                         (verified) -> {
-                            if (!verified) return;
+                            if (!verified) {
+                                WebAppLaunchHandlerHistogram.logFailureReason(
+                                        FailureReasonAction.TARGET_URL_VERIFICATION_FAILED);
+                                return;
+                            }
                             WebAppLaunchHandlerJni.get()
                                     .notifyLaunchQueue(
                                             mWebContents,

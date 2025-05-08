@@ -932,6 +932,43 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="TrustedWebActivity.LaunchHandler.ClientMode"
+    enum="TwaLaunchHandlerClientMode" expires_after="2026-05-01">
+  <owner>tkachenkoo@google.com</owner>
+  <owner>sselyvon@google.com</owner>
+  <owner>cros-web-apps-team@google.com</owner>
+  <summary>
+    Records the client mode of a web app launched through Trusted Web Activity.
+    Client mode is a part of Launch Handler API. Recorded on Trusted Web
+    Activity startup if the Launch Handler API is enabled.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.LaunchHandler.FailureReason"
+    enum="TwaLaunchHandlerFailureReason" expires_after="2026-05-01">
+  <owner>tkachenkoo@google.com</owner>
+  <owner>sselyvon@google.com</owner>
+  <owner>cros-web-apps-team@google.com</owner>
+  <summary>
+    Records the verification failure that caused launch queue to not be notified
+    in Trusted Web Activity, if any. Recorded on Trusted Web Activity startup if
+    the Launch Handler API is enabled.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.LaunchHandler.FileHandling"
+    enum="TwaLaunchHandlerFileHandling" expires_after="2026-05-01">
+  <owner>tkachenkoo@google.com</owner>
+  <owner>sselyvon@google.com</owner>
+  <owner>cros-web-apps-team@google.com</owner>
+  <summary>
+    Records the usage of file handling API in Trusted Web Activities, as part of
+    Launch Handler API. Recorded on Trusted Web Activity startup if the Launch
+    Handler API is enabled. If file handling is not used, NO_FILES will be
+    reported.
+  </summary>
+</histogram>
+
 <histogram name="TrustedWebActivity.Notification.PermissionRequestResult"
     enum="ContentSetting" expires_after="2025-10-01">
   <owner>peconn@chromium.org</owner>
