@@ -243,8 +243,6 @@ void PDFDocumentHelper::GetPdfBytes(
                             /*bytes=*/{}, /*page_count=*/0);
     return;
   }
-  // Before the document is loaded, `GetPdfBytes()` may crash or return 0 bytes.
-  CHECK(IsDocumentLoadComplete());
   remote_pdf_client_->GetPdfBytes(size_limit, std::move(callback));
 }
 
