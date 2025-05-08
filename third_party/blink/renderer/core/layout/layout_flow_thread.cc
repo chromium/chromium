@@ -52,7 +52,7 @@ bool LayoutFlowThread::IsLayoutNGObject() const {
 LayoutFlowThread* LayoutFlowThread::LocateFlowThreadContainingBlockOf(
     const LayoutObject& descendant,
     AncestorSearchConstraint constraint) {
-  DCHECK(descendant.IsInsideFlowThread());
+  DCHECK(descendant.IsInsideMulticol());
   LayoutObject* curr = const_cast<LayoutObject*>(&descendant);
   bool inner_is_ng_object = curr->IsLayoutNGObject();
   while (curr) {

@@ -49,7 +49,7 @@ LayoutMultiColumnFlowThread::LayoutMultiColumnFlowThread()
     : last_set_worked_on_(nullptr),
       column_count_(1),
       is_being_evacuated_(false) {
-  SetIsInsideFlowThread(true);
+  SetIsInsideMulticol(true);
 }
 
 LayoutMultiColumnFlowThread::~LayoutMultiColumnFlowThread() = default;
@@ -527,8 +527,9 @@ bool LayoutMultiColumnFlowThread::RemoveSpannerPlaceholderIfNoLongerValid(
 LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::EnclosingFlowThread(
     AncestorSearchConstraint constraint) const {
   NOT_DESTROYED();
-  if (!MultiColumnBlockFlow()->IsInsideFlowThread())
+  if (!MultiColumnBlockFlow()->IsInsideMulticol()) {
     return nullptr;
+  }
   return To<LayoutMultiColumnFlowThread>(
       LocateFlowThreadContainingBlockOf(*MultiColumnBlockFlow(), constraint));
 }

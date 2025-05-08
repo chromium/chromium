@@ -127,12 +127,11 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
     return;
   }
 
-  // Make sure the LayoutObject already knows it is going to be added to a
-  // LayoutFlowThread before we set the style for the first time. Otherwise code
-  // using IsInsideFlowThread() in the StyleWillChange and StyleDidChange will
-  // fail.
-  new_layout_object->SetIsInsideFlowThread(
-      parent_layout_object->IsInsideFlowThread());
+  // Make sure the LayoutObject already knows it's a descendant of a multicol
+  // container before we set the style for the first time. Otherwise code using
+  // IsInsideMulticol() in the StyleWillChange and StyleDidChange will fail.
+  new_layout_object->SetIsInsideMulticol(
+      parent_layout_object->IsInsideMulticol());
 
   LayoutObject* next_layout_object = NextLayoutObject();
   node_->SetLayoutObject(new_layout_object);
@@ -200,12 +199,10 @@ void LayoutTreeBuilderForText::CreateLayoutObject() {
     return;
   }
 
-  // Make sure the LayoutObject already knows it is going to be added to a
-  // LayoutFlowThread before we set the style for the first time. Otherwise code
-  // using IsInsideFlowThread() in the StyleWillChange and StyleDidChange will
-  // fail.
-  new_layout_object->SetIsInsideFlowThread(
-      context_.parent->IsInsideFlowThread());
+  // Make sure the LayoutObject already knows it's a descendant of a multicol
+  // container before we set the style for the first time. Otherwise code using
+  // IsInsideMulticol() in the StyleWillChange and StyleDidChange will fail.
+  new_layout_object->SetIsInsideMulticol(context_.parent->IsInsideMulticol());
 
   node_->SetLayoutObject(new_layout_object);
   DCHECK(!new_layout_object->Style());

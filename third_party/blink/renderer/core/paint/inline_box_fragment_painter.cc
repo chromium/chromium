@@ -45,7 +45,7 @@ inline bool MayHaveMultipleFragmentItems(const FragmentItem& item,
   // if it's possible that this object participates in a fragmentation context.
   // This will give false positives, but that should be harmless, given the way
   // the return value is used by the caller.
-  if (layout_object.IsInsideFlowThread()) [[unlikely]] {
+  if (layout_object.IsInsideMulticol()) [[unlikely]] {
     return true;
   }
   return false;

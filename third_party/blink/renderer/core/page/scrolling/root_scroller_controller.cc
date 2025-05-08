@@ -224,9 +224,10 @@ bool RootScrollerController::IsValidRootScroller(const Element& element) const {
   if (!element.GetLayoutObject()->IsBox())
     return false;
 
-  // Ignore anything inside a FlowThread (multi-col, paginated, etc.).
-  if (element.GetLayoutObject()->IsInsideFlowThread())
+  // Ignore anything inside that might be inside multicol layout.
+  if (element.GetLayoutObject()->IsInsideMulticol()) {
     return false;
+  }
 
   if (!element.GetLayoutObject()->IsScrollContainer() &&
       !element.IsFrameOwnerElement())
@@ -265,9 +266,10 @@ bool RootScrollerController::IsValidImplicitCandidate(
   if (!element.GetLayoutObject()->IsBox())
     return false;
 
-  // Ignore anything inside a FlowThread (multi-col, paginated, etc.).
-  if (element.GetLayoutObject()->IsInsideFlowThread())
+  // Ignore anything inside that might be inside multicol layout.
+  if (element.GetLayoutObject()->IsInsideMulticol()) {
     return false;
+  }
 
   PaintLayerScrollableArea* scrollable_area = GetScrollableArea(element);
   if (!scrollable_area || !scrollable_area->ScrollsOverflow())

@@ -546,8 +546,8 @@ void LayoutObject::MarkMayHaveAnchorQuery() {
   }
 }
 
-void LayoutObject::SetIsInsideFlowThreadIncludingDescendants(
-    bool inside_flow_thread) {
+void LayoutObject::SetIsInsideMulticolIncludingDescendants(
+    bool inside_multicol) {
   NOT_DESTROYED();
   LayoutObject* next;
   for (LayoutObject* object = this; object; object = next) {
@@ -558,8 +558,8 @@ void LayoutObject::SetIsInsideFlowThreadIncludingDescendants(
       continue;
     }
     next = object->NextInPreOrder(this);
-    DCHECK_NE(inside_flow_thread, object->IsInsideFlowThread());
-    object->SetIsInsideFlowThread(inside_flow_thread);
+    DCHECK_NE(inside_multicol, object->IsInsideMulticol());
+    object->SetIsInsideMulticol(inside_multicol);
   }
 }
 
@@ -1313,7 +1313,7 @@ bool LayoutObject::IsFirstInlineFragmentSafe() const {
 
 LayoutFlowThread* LayoutObject::LocateFlowThreadContainingBlock() const {
   NOT_DESTROYED();
-  DCHECK(IsInsideFlowThread());
+  DCHECK(IsInsideMulticol());
   return LayoutFlowThread::LocateFlowThreadContainingBlockOf(
       *this, LayoutFlowThread::kAnyAncestor);
 }
@@ -4005,8 +4005,9 @@ void LayoutObject::MaybeClearIsScrollAnchorObject() {
 
 void LayoutObject::RemoveFromLayoutFlowThread() {
   NOT_DESTROYED();
-  if (!IsInsideFlowThread())
+  if (!IsInsideMulticol()) {
     return;
+  }
 
   // Sometimes we remove the element from the flow, but it's not destroyed at
   // that time.
@@ -4042,7 +4043,7 @@ void LayoutObject::RemoveFromLayoutFlowThreadRecursive(
 
   if (layout_flow_thread && layout_flow_thread != this)
     layout_flow_thread->FlowThreadDescendantWillBeRemoved(this);
-  SetIsInsideFlowThread(false);
+  SetIsInsideMulticol(false);
   CHECK(!SpannerPlaceholder());
 }
 

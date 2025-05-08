@@ -409,11 +409,11 @@ bool LayoutBlockFlow::MergeSiblingContiguousAnonymousBlock(
   DCHECK_EQ(sibling_that_may_be_deleted->ChildrenInline(), ChildrenInline());
 
   // Take all the children out of the |next| block and put them in the |prev|
-  // block. If there are paint layers involved, or if we're part of a flow
-  // thread, we need to notify the layout tree about the movement.
+  // block. If there are paint layers involved, or if we're part of a multicol
+  // container, we need to notify the layout tree about the movement.
   bool full_remove_insert = sibling_that_may_be_deleted->HasLayer() ||
                             HasLayer() ||
-                            sibling_that_may_be_deleted->IsInsideFlowThread();
+                            sibling_that_may_be_deleted->IsInsideMulticol();
   sibling_that_may_be_deleted->MoveAllChildrenIncludingFloatsTo(
       this, full_remove_insert);
   // Delete the now-empty block's lines and nuke it.
