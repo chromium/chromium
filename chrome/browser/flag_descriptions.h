@@ -1913,9 +1913,6 @@ extern const char kPrerender2EarlyDocumentLifecycleUpdateDescription[];
 extern const char kWarmUpCompositorName[];
 extern const char kWarmUpCompositorDescription[];
 
-extern const char kPrerender2WarmUpCompositorName[];
-extern const char kPrerender2WarmUpCompositorDescription[];
-
 extern const char kPrerender2ForNewTabPageAndroidName[];
 extern const char kPrerender2ForNewTabPageAndroidDescription[];
 

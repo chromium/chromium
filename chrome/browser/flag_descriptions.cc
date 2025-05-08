@@ -3315,13 +3315,6 @@ const char kWarmUpCompositorName[] = "Warm up compositor";
 const char kWarmUpCompositorDescription[] =
     "Allows compositor to start warming up on certain signals";
 
-const char kPrerender2WarmUpCompositorName[] =
-    "Warm up compositor on prerendering";
-const char kPrerender2WarmUpCompositorDescription[] =
-    "Enables compositor warming up on particular loading events of prerender "
-    "initial navigation. Requires chrome://flags/#compositor-warm-up to be "
-    "enabled";
-
 const char kPrerender2ForNewTabPageAndroidName[] =
     "Enable prerendering on New Tab Page Android";
 const char kPrerender2ForNewTabPageAndroidDescription[] =

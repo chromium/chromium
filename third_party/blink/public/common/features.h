@@ -1458,19 +1458,6 @@ BLINK_COMMON_EXPORT extern const char
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPrerender2EarlyDocumentLifecycleUpdate);
 
-// Enables to warm up compositor on certain loading event of prerender initial
-// navigation. The feature `kWarmUpCompositor` in cc is required to enable this
-// feature. Please see crbug.com/41496019 for more details.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositor);
-enum class Prerender2WarmUpCompositorTriggerPoint {
-  kDidCommitLoad,
-  kDidDispatchDOMContentLoadedEvent,
-  kDidFinishLoad,
-};
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    Prerender2WarmUpCompositorTriggerPoint,
-    kPrerender2WarmUpCompositorTriggerPoint);
-
 // Firing pagehide events for intended prerender cancellation. See
 // crbug.com/353628449 for more details.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPageHideEventForPrerender2);

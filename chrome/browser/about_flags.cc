@@ -3827,32 +3827,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam
-    kPrerender2WarmUpCompositorTriggerPointDidCommitLoad[] = {
-        {"trigger_point", "did_commit_load"}};
-const FeatureEntry::FeatureParam
-    kPrerender2WarmUpCompositorTriggerPointDidDispatchDOMContentLoadedEvent[] =
-        {{"trigger_point", "did_dispatch_dom_content_loaded_event"}};
-const FeatureEntry::FeatureParam
-    kPrerender2WarmUpCompositorTriggerPointDidFinishLoad[] = {
-        {"trigger_point", "did_finish_load"}};
-const FeatureEntry::FeatureVariation
-    kPrerender2WarmUpCompositorTriggerPointVariations[] = {
-        {"(on DidCommitLoad)",
-         kPrerender2WarmUpCompositorTriggerPointDidCommitLoad,
-         std::size(kPrerender2WarmUpCompositorTriggerPointDidCommitLoad),
-         nullptr},
-        {"(on DOMContentLoaded)",
-         kPrerender2WarmUpCompositorTriggerPointDidDispatchDOMContentLoadedEvent,
-         std::size(
-             kPrerender2WarmUpCompositorTriggerPointDidDispatchDOMContentLoadedEvent),
-         nullptr},
-        {"(on DidFinishLoad)",
-         kPrerender2WarmUpCompositorTriggerPointDidFinishLoad,
-         std::size(kPrerender2WarmUpCompositorTriggerPointDidFinishLoad),
-         nullptr},
-};
-
 const FeatureEntry::FeatureParam kGroupSuggestionEnableRecentlyOpenedOnly[] = {
     {"group_suggestion_enable_recently_opened", "true"},
     {"group_suggestion_enable_switch_between", "false"},
@@ -8993,14 +8967,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"warm-up-compositor", flag_descriptions::kWarmUpCompositorName,
      flag_descriptions::kWarmUpCompositorDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWarmUpCompositor)},
-
-    {"prerender2-warm-up-compositor",
-     flag_descriptions::kPrerender2WarmUpCompositorName,
-     flag_descriptions::kPrerender2WarmUpCompositorDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         blink::features::kPrerender2WarmUpCompositor,
-         kPrerender2WarmUpCompositorTriggerPointVariations,
-         "Prerender2WarmUpCompositor")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"prerender2-new-tab-page-android",

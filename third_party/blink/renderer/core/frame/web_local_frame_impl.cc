@@ -2597,8 +2597,7 @@ WebViewImpl* WebLocalFrameImpl::ViewImpl() const {
   return GetFrame()->GetPage()->GetChromeClient().GetWebView();
 }
 
-bool WebLocalFrameImpl::ShouldWarmUpCompositorOnPrerenderFromThisPoint(
-    features::Prerender2WarmUpCompositorTriggerPoint trigger_point) {
+bool WebLocalFrameImpl::ShouldWarmUpCompositor() {
   static const bool is_warm_up_compositor_enabled =
       base::FeatureList::IsEnabled(::features::kWarmUpCompositor);
   if (!is_warm_up_compositor_enabled) {
@@ -2609,36 +2608,14 @@ bool WebLocalFrameImpl::ShouldWarmUpCompositorOnPrerenderFromThisPoint(
     return false;
   }
 
-  if (!GetFrame()->GetPage() || !GetFrame()->GetPage()->IsPrerendering() ||
-      !GetFrame()->GetPage()->ShouldWarmUpCompositorOnPrerender()) {
-    return false;
-  }
-
-  static const bool is_prerender2_warm_up_compositor_enabled =
-      base::FeatureList::IsEnabled(features::kPrerender2WarmUpCompositor);
-  // TODO(crbug.com/41496019): Seek the best point to start warm-up.
-  static const auto prerender2_warm_up_compositor_trigger_point =
-      features::kPrerender2WarmUpCompositorTriggerPoint.Get();
-  if (!is_prerender2_warm_up_compositor_enabled ||
-      prerender2_warm_up_compositor_trigger_point != trigger_point) {
-    return false;
-  }
-
-  return true;
+  // It can be effective for prerendering pages to consider warming up their
+  // composers before they are activated and visible.
+  return GetFrame()->GetPage() && GetFrame()->GetPage()->IsPrerendering() &&
+         GetFrame()->GetPage()->ShouldWarmUpCompositorOnPrerender();
 }
 
 void WebLocalFrameImpl::DidCommitLoad() {
-  if (frame_widget_ &&
-      ShouldWarmUpCompositorOnPrerenderFromThisPoint(
-          features::Prerender2WarmUpCompositorTriggerPoint::kDidCommitLoad)) {
-    frame_widget_->WarmUpCompositor();
-  }
-}
-
-void WebLocalFrameImpl::DidDispatchDOMContentLoadedEvent() {
-  if (frame_widget_ && ShouldWarmUpCompositorOnPrerenderFromThisPoint(
-                           features::Prerender2WarmUpCompositorTriggerPoint::
-                               kDidDispatchDOMContentLoadedEvent)) {
+  if (frame_widget_ && ShouldWarmUpCompositor()) {
     frame_widget_->WarmUpCompositor();
   }
 }
@@ -2656,12 +2633,6 @@ void WebLocalFrameImpl::DidFailLoad(const ResourceError& error,
 void WebLocalFrameImpl::DidFinish() {
   if (!Client())
     return;
-
-  if (frame_widget_ &&
-      ShouldWarmUpCompositorOnPrerenderFromThisPoint(
-          features::Prerender2WarmUpCompositorTriggerPoint::kDidFinishLoad)) {
-    frame_widget_->WarmUpCompositor();
-  }
 
   if (WebPluginContainerImpl* plugin = GetFrame()->GetWebPluginContainer())
     plugin->DidFinishLoading();

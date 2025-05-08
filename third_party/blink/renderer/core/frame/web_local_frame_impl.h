@@ -529,7 +529,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetFindEndstateFocusAndSelection();
 
   void DidCommitLoad();
-  void DidDispatchDOMContentLoadedEvent();
   void DidFailLoad(const ResourceError&, WebHistoryCommitType);
   void DidFinish();
   void DidFinishLoadForPrinting();
@@ -663,10 +662,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   mojom::blink::BackForwardCacheNotRestoredReasonsPtr ConvertNotRestoredReasons(
       const mojom::BackForwardCacheNotRestoredReasonsPtr& reasons_struct);
 
-  // If true, requests compositor warm-up when the page is under prerendering.
-  // Please see crbug.com/41496019 for more details.
-  bool ShouldWarmUpCompositorOnPrerenderFromThisPoint(
-      features::Prerender2WarmUpCompositorTriggerPoint trigger_point);
+  // Returns whether we should perform compositor warm-up.
+  bool ShouldWarmUpCompositor();
 
   WebLocalFrameClient* client_;
 
