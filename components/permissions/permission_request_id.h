@@ -50,8 +50,8 @@ class PermissionRequestID {
     return request_local_id_;
   }
 
-  bool operator==(const PermissionRequestID& other) const;
-  bool operator!=(const PermissionRequestID& other) const;
+  friend bool operator==(const PermissionRequestID&,
+                         const PermissionRequestID&) = default;
 
   std::string ToString() const;
 
