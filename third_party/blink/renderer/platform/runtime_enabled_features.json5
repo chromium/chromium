@@ -3909,10 +3909,6 @@
       status: "experimental",
     },
     {
-      name: "RTCEncodedAudioFrameAbsCaptureTime",
-      status: "experimental",
-    },
-    {
       name: "RTCEncodedFrameSetMetadata",
       status: "experimental",
       origin_trial_feature_name: "RTCEncodedFrameSetMetadata",
