@@ -5,12 +5,15 @@
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 
 #include "base/check_deref.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
+#include "chrome/browser/smart_card/smart_card_histograms.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -192,9 +195,11 @@ class SmartCardPermissionContextTest : public testing::Test {
     return std::make_unique<FakeOneTimePermissionsTracker>();
   }
 
+  base::test::ScopedPowerMonitorTestSource power_monitor_test_source_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(SmartCardPermissionContextTest, GrantEphemeralReaderPermission) {
@@ -244,6 +249,11 @@ TEST_F(SmartCardPermissionContextTest,
   EXPECT_FALSE(reader_tracker.HasObservers());
   EXPECT_THAT(observer.GetRevokedOriginsSequence(),
               testing::ElementsAre(origin_1));
+  histogram_tester_.ExpectUniqueSample(
+      "SmartCard.OneTimePermissionExpiryReason",
+      SmartCardOneTimePermissionExpiryReason::
+          kSmartCardPermissionExpiredCardRemoved,
+      1);
 }
 
 TEST_F(SmartCardPermissionContextTest,
@@ -270,6 +280,11 @@ TEST_F(SmartCardPermissionContextTest,
   // The ephemeral permission should have been revoked.
   EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
   EXPECT_FALSE(reader_tracker.HasObservers());
+  histogram_tester_.ExpectUniqueSample(
+      "SmartCard.OneTimePermissionExpiryReason",
+      SmartCardOneTimePermissionExpiryReason::
+          kSmartCardPermissionExpiredReaderRemoved,
+      1);
 }
 
 TEST_F(SmartCardPermissionContextTest, RevokeEphemeralPermissionWhenAppClosed) {
@@ -292,6 +307,11 @@ TEST_F(SmartCardPermissionContextTest, RevokeEphemeralPermissionWhenAppClosed) {
 
   // The ephemeral permission should have been revoked.
   EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  histogram_tester_.ExpectUniqueSample(
+      "SmartCard.OneTimePermissionExpiryReason",
+      SmartCardOneTimePermissionExpiryReason::
+          kSmartCardPermissionExpiredLastWindowClosed,
+      1);
 }
 
 TEST_F(SmartCardPermissionContextTest,
@@ -319,9 +339,45 @@ TEST_F(SmartCardPermissionContextTest,
   EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
   EXPECT_THAT(observer.GetRevokedOriginsSequence(),
               testing::ElementsAre(origin_1));
+  histogram_tester_.ExpectUniqueSample(
+      "SmartCard.OneTimePermissionExpiryReason",
+      SmartCardOneTimePermissionExpiryReason::
+          kSmartCardPermissionExpiredAllWindowsInTheBackgroundTimeout,
+      1);
 }
 
-// Covers callers of this method such as the PowerSuspendObserver.
+TEST_F(SmartCardPermissionContextTest,
+       RevokeEphemeralPermissionsOnPowerSuspend) {
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
+  auto origin_2 = url::Origin::Create(
+      GURL("isolated-app://"
+           "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac"));
+
+  SmartCardPermissionContext permission_context(&profile_);
+  TestPermissionsObserver observer;
+  permission_context.AddObserver(&observer);
+
+  GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, origin_2, kDummyReader);
+
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_2, kDummyReader));
+
+  power_monitor_test_source_.GenerateSuspendEvent();
+
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_2, kDummyReader));
+  EXPECT_THAT(observer.GetRevokedOriginsSequence(),
+              testing::ElementsAre(origin_1, origin_2));
+  histogram_tester_.ExpectUniqueSample(
+      "SmartCard.OneTimePermissionExpiryReason",
+      SmartCardOneTimePermissionExpiryReason::
+          kSmartCardPermissionExpiredSystemSuspended,
+      1);
+}
+
 TEST_F(SmartCardPermissionContextTest, RevokeEphemeralPermissions) {
   auto origin_1 = url::Origin::Create(
       GURL("isolated-app://"
@@ -471,4 +527,9 @@ TEST_F(SmartCardPermissionContextTest, EphemeralGrantExpiryOnLongTimeout) {
   EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
   EXPECT_THAT(observer.GetRevokedOriginsSequence(),
               testing::ElementsAre(origin_1));
+  histogram_tester_.ExpectUniqueSample(
+      "SmartCard.OneTimePermissionExpiryReason",
+      SmartCardOneTimePermissionExpiryReason::
+          kSmartCardPermissionExpiredMaxLifetimeReached,
+      1);
 }

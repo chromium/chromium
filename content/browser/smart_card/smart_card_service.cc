@@ -8,6 +8,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/smart_card/smart_card_histograms.h"
 #include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/smart_card_delegate.h"
@@ -285,6 +286,8 @@ void SmartCardService::OnMojoWatcherPipeClosed() {
   if (reader_names_per_watcher_.empty()) {
     GetSmartCardDelegate().NotifyLastConnectionLost(render_frame_host());
   }
+  RecordSmartCardConnectionClosedReason(
+      SmartCardConnectionClosedReason::kSmartCardConnectionClosedDisconnect);
 }
 
 void SmartCardService::OnPermissionRevoked(const url::Origin& origin) {
@@ -304,6 +307,9 @@ void SmartCardService::OnPermissionRevoked(const url::Origin& origin) {
   }
   for (const auto& receiver_id : watchers_of_connections_to_remove) {
     connection_watcher_receivers_.Remove(receiver_id);
+    RecordSmartCardConnectionClosedReason(
+        SmartCardConnectionClosedReason::
+            kSmartCardConnectionClosedPermissionRevoked);
   }
 }
 

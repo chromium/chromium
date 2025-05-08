@@ -26,6 +26,7 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/smart_card/smart_card_histograms.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker_factory.h"
 #include "chrome/common/url_constants.h"
@@ -38,6 +39,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -64,6 +66,9 @@ class SmartCardPermissionContext::OneTimeObserver
   }
   void OnLastPageFromOriginClosed(const url::Origin& origin) override {
     permission_context_->RevokeEphemeralPermissionsForOrigin(origin);
+    RecordSmartCardOneTimePermissionExpiryReason(
+        SmartCardOneTimePermissionExpiryReason::
+            kSmartCardPermissionExpiredLastWindowClosed);
   }
 
   void OnAllTabsInBackgroundTimerExpired(
@@ -71,6 +76,11 @@ class SmartCardPermissionContext::OneTimeObserver
       const BackgroundExpiryType& expiry_type) override {
     if (expiry_type == BackgroundExpiryType::kTimeout) {
       permission_context_->RevokeEphemeralPermissionsForOrigin(origin);
+      // Record histogram even if no permissions were revoked - for the purpose
+      // of a dry run.
+      RecordSmartCardOneTimePermissionExpiryReason(
+          SmartCardOneTimePermissionExpiryReason::
+              kSmartCardPermissionExpiredAllWindowsInTheBackgroundTimeout);
     }
   }
 
@@ -95,6 +105,9 @@ class SmartCardPermissionContext::PowerSuspendObserver
 
   void OnSuspend() override {
     permission_context_->RevokeEphemeralPermissions();
+    RecordSmartCardOneTimePermissionExpiryReason(
+        SmartCardOneTimePermissionExpiryReason::
+            kSmartCardPermissionExpiredSystemSuspended);
   }
 
  private:
@@ -118,6 +131,9 @@ class SmartCardPermissionContext::ReaderObserver
   void OnReaderRemoved(const std::string& reader_name) override {
     known_info_map_.erase(reader_name);
     permission_context_->RevokeEphemeralPermissionsForReader(reader_name);
+    RecordSmartCardOneTimePermissionExpiryReason(
+        SmartCardOneTimePermissionExpiryReason::
+            kSmartCardPermissionExpiredReaderRemoved);
   }
 
   void OnReaderChanged(
@@ -147,6 +163,9 @@ class SmartCardPermissionContext::ReaderObserver
     if (card_removed) {
       permission_context_->RevokeEphemeralPermissionsForReader(
           reader_info.name);
+      RecordSmartCardOneTimePermissionExpiryReason(
+          SmartCardOneTimePermissionExpiryReason::
+              kSmartCardPermissionExpiredCardRemoved);
     }
   }
 
@@ -473,6 +492,9 @@ void SmartCardPermissionContext::RevokeEphemeralPermissionIfLongTimeoutOccured(
       ephemeral_grants_with_expiry_.erase(it_origin);
     }
     NotifyPermissionRevoked(origin);
+    RecordSmartCardOneTimePermissionExpiryReason(
+        SmartCardOneTimePermissionExpiryReason::
+            kSmartCardPermissionExpiredMaxLifetimeReached);
   }
 }
 

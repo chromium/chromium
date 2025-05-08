@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/smart_card/mock_smart_card_context_factory.h"
+#include "content/browser/smart_card/smart_card_histograms.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/smart_card_delegate.h"
@@ -326,6 +327,9 @@ class SmartCardTest : public ContentBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_{
       blink::features::kSmartCard};
+
+ protected:
+  base::HistogramTester histogram_tester_;
 };
 }  // namespace
 
@@ -418,6 +422,11 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Disconnect) {
 
       return `second disconnect did not throw`;
     })())"));
+
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester_.ExpectUniqueSample(
+      "SmartCard.ConnectionClosedReason",
+      SmartCardConnectionClosedReason::kSmartCardConnectionClosedDisconnect, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, LastConnectionClosed) {
@@ -509,6 +518,10 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, LastConnectionClosed) {
       await connection1.disconnect("eject");
       await connection2.disconnect("eject");
     })())"));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester_.ExpectUniqueSample(
+      "SmartCard.ConnectionClosedReason",
+      SmartCardConnectionClosedReason::kSmartCardConnectionClosedDisconnect, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, NotifyConnectionUsed) {
@@ -2059,6 +2072,13 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, WatcherClosedWhenPermissionExpired) {
   observer.OnPermissionRevoked(url::Origin::Create(GetIsolatedContextUrl()));
   EXPECT_TRUE(watcher_closed.Wait());
   ASSERT_FALSE(watcher.is_connected());
+
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester_.ExpectUniqueSample(
+      "SmartCard.ConnectionClosedReason",
+      SmartCardConnectionClosedReason::
+          kSmartCardConnectionClosedPermissionRevoked,
+      1);
 }
 
 }  // namespace content

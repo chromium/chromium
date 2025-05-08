@@ -11,6 +11,8 @@ source_set("smart_card") {
       "chromeos_smart_card_delegate.h",
       "get_smart_card_context_factory.cc",
       "get_smart_card_context_factory.h",
+      "smart_card_histograms.cc",
+      "smart_card_histograms.h",
       "smart_card_permission_context.cc",
       "smart_card_permission_context.h",
       "smart_card_permission_context_factory.cc",

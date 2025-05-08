@@ -2626,6 +2626,8 @@ source_set("browser") {
       "lock_screen/lock_screen_service_impl.h",
       "lock_screen/lock_screen_storage_impl.cc",
       "lock_screen/lock_screen_storage_impl.h",
+      "smart_card/smart_card_histograms.cc",
+      "smart_card/smart_card_histograms.h",
       "smart_card/smart_card_service.cc",
       "smart_card/smart_card_service.h",
     ]
