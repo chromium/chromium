@@ -2125,6 +2125,9 @@ public class StripLayoutHelper
      * @param groupTitle The title of the group.
      */
     private void showTabGroupContextMenuHelper(StripLayoutGroupTitle groupTitle) {
+        // No-op if the tab group isn't found in sync (it might have been removed from another
+        // device and will be cleaned up here soon).
+        if (groupTitle.getTabGroupId() == null) return;
         // Popup menu requires screen coordinates for anchor view. Get absolute position for title.
         RectProvider anchorRectProvider = new RectProvider();
         getAnchorRect(groupTitle, anchorRectProvider);
