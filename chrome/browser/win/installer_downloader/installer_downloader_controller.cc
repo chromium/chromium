@@ -16,13 +16,15 @@
 #include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model_impl.h"
+#include "chrome/browser/win/installer_downloader/system_info_provider_impl.h"
 
 namespace installer_downloader {
 
 InstallerDownloaderController::InstallerDownloaderController(
     std::unique_ptr<InstallerDownloaderModel> model)
     : model_(model ? std::move(model)
-                   : std::make_unique<InstallerDownloaderModelImpl>()) {
+                   : std::make_unique<InstallerDownloaderModelImpl>(
+                         std::make_unique<SystemInfoProviderImpl>())) {
   CHECK(base::FeatureList::IsEnabled(kInstallerDownloader));
 }
 

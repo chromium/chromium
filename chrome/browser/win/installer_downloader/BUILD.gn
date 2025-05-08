@@ -22,6 +22,9 @@ source_set("installer_downloader") {
     "installer_downloader_model.h",
     "installer_downloader_model_impl.cc",
     "installer_downloader_model_impl.h",
+    "system_info_provider.h",
+    "system_info_provider_impl.cc",
+    "system_info_provider_impl.h",
   ]
 
   public_deps = [ "//base" ]
@@ -29,6 +32,7 @@ source_set("installer_downloader") {
   deps = [
     ":prefs",
     "//chrome/browser:browser_process",
+    "//chrome/browser/win:cloud_synced_folder_checker",
     "//components/prefs",
     "//url:url",
   ]
@@ -47,6 +51,7 @@ source_set("unit_tests") {
     ":prefs",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/win:cloud_synced_folder_checker",
     "//chrome/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",

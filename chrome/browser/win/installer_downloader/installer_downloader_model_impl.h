@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_MODEL_IMPL_H_
 #define CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_MODEL_IMPL_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/callback_forward.h"
@@ -18,6 +19,8 @@ class FilePath;
 
 namespace installer_downloader {
 
+class SystemInfoProvider;
+
 // Non-UI service that:
 //   •  Checks whether the current machine is a Win 10 device **not**
 //      eligible for in-place upgrade *and* has a OneDrive-synced Desktop.
@@ -28,20 +31,21 @@ namespace installer_downloader {
 //
 // All expensive work executes on the ThreadPool; the class itself is
 // constructed and destroyed on the UI thread.
-class InstallerDownloaderModelImpl final : public InstallerDownloaderModel {
+class InstallerDownloaderModelImpl : public InstallerDownloaderModel {
  public:
   // This represents the maximum number of times that the info bar will be
   // shown.
   static constexpr int kMaxShowCount = 3;
 
-  InstallerDownloaderModelImpl();
+  explicit InstallerDownloaderModelImpl(
+      std::unique_ptr<SystemInfoProvider> system_info_provider);
   InstallerDownloaderModelImpl(const InstallerDownloaderModelImpl&) = delete;
   InstallerDownloaderModelImpl& operator=(const InstallerDownloaderModelImpl&) =
       delete;
 
   ~InstallerDownloaderModelImpl() override;
 
-  // InstallerDownloaderModelInterface:
+  // InstallerDownloaderModel:
   void CheckEligibility(
       base::OnceCallback<void(const std::optional<base::FilePath>&)> callback)
       override;
@@ -49,6 +53,11 @@ class InstallerDownloaderModelImpl final : public InstallerDownloaderModel {
                      const base::FilePath& destination,
                      CompletionCallback completion_callback) override;
   bool IsMaxShowCountReached() const override;
+
+ private:
+  std::optional<base::FilePath> GetInstallerDestination() const;
+
+  std::unique_ptr<SystemInfoProvider> system_info_provider_;
 };
 
 }  // namespace installer_downloader
