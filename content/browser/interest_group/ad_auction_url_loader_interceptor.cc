@@ -57,12 +57,6 @@ void AdAuctionURLLoaderInterceptor::WillStartRequest(
 
   ad_auction_headers_eligible_ = true;
   headers.SetHeader(kAdAuctionRequestHeaderKey, "?1");
-
-  // Pre-warm the data-decoder.
-  AdAuctionPageData* ad_auction_page_data =
-      PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-          request_initiator_frame->GetPage());
-  ad_auction_page_data->GetDecoderFor(request_origin_)->GetService();
 }
 
 void AdAuctionURLLoaderInterceptor::OnReceiveRedirect(
