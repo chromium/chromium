@@ -5,6 +5,8 @@
 static_library("trusted_vault") {
   sources = [
     "trusted_vault_client.h",
+    "trusted_vault_server_constants.cc",
+    "trusted_vault_server_constants.h",
     "trusted_vault_service.cc",
     "trusted_vault_service.h",
   ]
@@ -42,6 +44,8 @@ static_library("trusted_vault") {
       "standalone_trusted_vault_backend.h",
       "standalone_trusted_vault_client.cc",
       "standalone_trusted_vault_client.h",
+      "standalone_trusted_vault_server_constants.cc",
+      "standalone_trusted_vault_server_constants.h",
       "standalone_trusted_vault_storage.cc",
       "standalone_trusted_vault_storage.h",
       "trusted_vault_access_token_fetcher.h",
@@ -61,8 +65,6 @@ static_library("trusted_vault") {
       "trusted_vault_histograms.h",
       "trusted_vault_request.cc",
       "trusted_vault_request.h",
-      "trusted_vault_server_constants.cc",
-      "trusted_vault_server_constants.h",
       "trusted_vault_throttling_connection.h",
       "trusted_vault_throttling_connection_impl.cc",
       "trusted_vault_throttling_connection_impl.h",
@@ -104,6 +106,7 @@ if (!is_android) {
       "recovery_key_store_connection_unittest.cc",
       "securebox_unittest.cc",
       "standalone_trusted_vault_backend_unittest.cc",
+      "standalone_trusted_vault_server_constants_unittest.cc",
       "standalone_trusted_vault_storage_unittest.cc",
       "trusted_vault_access_token_fetcher_frontend_unittest.cc",
       "trusted_vault_connection_impl_unittest.cc",
