@@ -9,12 +9,16 @@ source_set("ios") {
   deps = [
     ":passkey_controller_js",
     "//base",
+    "//components/webauthn/core/browser:passkey_model",
+    "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
 
   sources = [
     "passkey_java_script_feature.h",
     "passkey_java_script_feature.mm",
+    "passkey_tab_helper.h",
+    "passkey_tab_helper.mm",
   ]
 }
 
@@ -35,6 +39,20 @@ source_set("features") {
     "features.mm",
   ]
   public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "passkey_tab_helper_unittest.mm" ]
+  deps = [
+    ":ios",
+    ":js_tests",
+    "//base/test:test_support",
+    "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/core/browser:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
 }
 
 source_set("js_tests") {

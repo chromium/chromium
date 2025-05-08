@@ -4,11 +4,9 @@
 
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 
-#import <optional>
-
-#import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/values.h"
+#import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
@@ -16,24 +14,6 @@ namespace {
 
 constexpr char kScriptName[] = "passkey_controller";
 constexpr char kHandlerName[] = "PasskeyInteractionHandler";
-
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange
-enum class WebAuthenticationIOSContentAreaEvent {
-  kGetRequested,
-  kCreateRequested,
-  kMaxValue = kCreateRequested,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
-
-// Logs metrics indicating that an event occurred, with the event type
-// determined by the given string.
-void LogEvent(WebAuthenticationIOSContentAreaEvent event) {
-  base::UmaHistogramEnumeration("WebAuthentication.IOS.ContentAreaEvent",
-                                event);
-}
 
 }  // namespace
 
@@ -68,6 +48,13 @@ PasskeyJavaScriptFeature::GetScriptMessageHandlerName() const {
 void PasskeyJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
+  // This message is sent whenever a navigator.credentials get() or create() is
+  // called for a WebAuthn credential.
+  // Expected argument:
+  // event: (string) Describes a type of event.
+  //
+  // For some events there are more expected arguments described below.
+
   base::Value* body = message.body();
   if (!body || !body->is_dict()) {
     return;
@@ -79,11 +66,27 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (*event == "getRequested") {
-    LogEvent(WebAuthenticationIOSContentAreaEvent::kGetRequested);
-  } else if (*event == "createRequested") {
-    LogEvent(WebAuthenticationIOSContentAreaEvent::kCreateRequested);
+  PasskeyTabHelper* passkey_tab_helper =
+      PasskeyTabHelper::FromWebState(web_state);
+  CHECK(passkey_tab_helper);
+
+  // For those events there are no more expected arguments.
+  if (*event == "getRequested" || *event == "createRequested") {
+    passkey_tab_helper->LogEventFromString(*event);
+    return;
   }
 
-  // TODO(crbug.com/369629469): Log other types of events.
+  // Expected arguments for "getResolved" event:
+  // credential_id: (string) base64url encoded identifer of the credential.
+  // rp_id: (string) The relying party's identifier.
+  if (*event == "getResolved") {
+    const std::string* credential_id = dict.FindString("credential_id");
+    const std::string* rp_id = dict.FindString("rp_id");
+    if (credential_id && !credential_id->empty() && rp_id && !rp_id->empty()) {
+      passkey_tab_helper->HandleGetResolvedEvent(*credential_id, *rp_id);
+    }
+    return;
+  }
+
+  // TODO(crbug.com/369629469): Handle other types of events.
 }

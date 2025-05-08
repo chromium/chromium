@@ -18,6 +18,8 @@
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "components/webauthn/ios/features.h"
+#import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
@@ -116,6 +118,7 @@
 #import "ios/chrome/browser/web/model/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
@@ -305,6 +308,11 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       PasswordTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
       AutofillTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
     ]);
+
+    if (base::FeatureList::IsEnabled(kIOSPasskeyShim)) {
+      PasskeyTabHelper::CreateForWebState(
+          web_state, IOSPasskeyModelFactory::GetForProfile(profile));
+    }
   }
 
   if (!for_lens_overlay) {

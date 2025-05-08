@@ -67,6 +67,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // APIs still working with shim injected. It is infeasible in JS tests since
 // navigator.credentials APIs for public key credentials require some user
 // interaction with system UI.
+// TODO(crbug.com/396929469): Similarly to previous TODO, if feasible, add tests
+// for the get events logged on resolved promises.
 class PasskeyControllerJavaScriptTest : public web::JavascriptTest {
  protected:
   PasskeyControllerJavaScriptTest()

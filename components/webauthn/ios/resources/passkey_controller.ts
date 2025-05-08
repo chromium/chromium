@@ -22,14 +22,29 @@ const cachedNavigatorCredentials: CredentialsContainer = navigator.credentials;
  * Chromium-specific implementation of CredentialsContainer.
  */
 const credentialsContainer: CredentialsContainer = {
-  get: function(options?: CredentialRequestOptions|undefined):
-      Promise<Credential|null> {
-        // Only process WebAuthn requests.
-        if (options?.publicKey) {
-          sendWebKitMessage(HANDLER_NAME, {'event': 'getRequested'});
-        }
-        return cachedNavigatorCredentials.get(options);
-      },
+  get: function(options?: CredentialRequestOptions): Promise<Credential|null> {
+    // Only process WebAuthn requests.
+    if (!options?.publicKey) {
+      return cachedNavigatorCredentials.get(options);
+    }
+
+    sendWebKitMessage(HANDLER_NAME, {'event': 'getRequested'});
+
+    return cachedNavigatorCredentials.get(options).then((credential) => {
+      if (credential && credential instanceof PublicKeyCredential) {
+        // rpId is an optional member of publicKey. Default value (caller's
+        // origin domain) should be used if it is not specified
+        // (https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-rpid).
+        const rpId = options!.publicKey!.rpId ?? document.location.host;
+        sendWebKitMessage(HANDLER_NAME, {
+          'event': 'getResolved',
+          'credential_id': credential.id,
+          'rp_id': rpId,
+        });
+      }
+      return credential;
+    });
+  },
   create: function(options?: CredentialCreationOptions|undefined):
       Promise<Credential|null> {
         // Only process WebAuthn requests.

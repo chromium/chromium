@@ -300,9 +300,17 @@ chromium-metrics-reviews@google.com.
     Page requested a new WebAuthn credential using the
     navigator.credentials.create API.
   </int>
+  <int value="2" label="GetResolvedGpm">
+    WebAuthn credential get request was successfully resolved with Google
+    Password Manager as an authenticator.
+  </int>
+  <int value="3" label="GetResolvedNonGpm">
+    WebAuthn credential get request was successfully resolved with different
+    authenticator than Google Password Manager.
+  </int>
 </enum>
 
-<!-- LINT.ThenChange(//components/webauthn/ios/passkey_java_script_feature.mm) -->
+<!-- LINT.ThenChange(//components/webauthn/ios/passkey_tab_helper.mm) -->
 
 <enum name="WebAuthenticationMacOSPasskeysPermission">
   <int value="0" label="Requested permission during a create() call"/>
