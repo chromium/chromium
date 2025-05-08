@@ -32,7 +32,6 @@ class TabStripModel;
 class TranslateBubbleController;
 class ToastController;
 class ToastService;
-class DataSharingOpenGroupHelper;
 class DownloadToolbarUIController;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -197,10 +196,6 @@ class BrowserWindowFeatures {
     return extension_side_panel_manager_.get();
   }
 
-  DataSharingOpenGroupHelper* data_sharing_open_group_helper() {
-    return data_sharing_open_group_helper_.get();
-  }
-
   DownloadToolbarUIController* download_toolbar_ui_controller() {
     return download_toolbar_ui_controller_.get();
   }
@@ -285,8 +280,6 @@ class BrowserWindowFeatures {
   // tab-scoped extension side-panel manager.
   std::unique_ptr<extensions::ExtensionSidePanelManager>
       extension_side_panel_manager_;
-
-  std::unique_ptr<DataSharingOpenGroupHelper> data_sharing_open_group_helper_;
 
   std::unique_ptr<media_router::CastBrowserController> cast_browser_controller_;
 

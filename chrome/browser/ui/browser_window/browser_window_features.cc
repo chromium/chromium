@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -238,15 +237,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   if ((browser->is_type_normal() || browser->is_type_app()) &&
       base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
     toast_service_ = std::make_unique<ToastService>(browser);
-  }
-
-  collaboration::CollaborationService* service =
-      collaboration::CollaborationServiceFactory::GetForProfile(
-          browser->profile());
-  if (service && service->GetServiceStatus().IsAllowedToJoin() &&
-      tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    data_sharing_open_group_helper_ =
-        std::make_unique<DataSharingOpenGroupHelper>(browser);
   }
 }
 
