@@ -357,21 +357,12 @@ public class FakeServerHelper {
                                 .addCollaboration(mNativeFakeServer, collaborationId));
     }
 
-    /** Removes collaboration from fake sync server. */
+    /** Adds collaboration from fake sync server. */
     public void removeCollaboration(String collaborationId) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .removeCollaboration(mNativeFakeServer, collaborationId));
-    }
-
-    /** Adds collaboration group to fake sync server. */
-    public void addCollaborationGroupToFakeServer(String collaborationId) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        FakeServerHelperJni.get()
-                                .addCollaborationGroupToFakeServer(
-                                        mNativeFakeServer, collaborationId));
     }
 
     @NativeMethods
@@ -454,8 +445,5 @@ public class FakeServerHelper {
         void addCollaboration(long fakeServer, @JniType("std::string") String collaborationId);
 
         void removeCollaboration(long fakeServer, @JniType("std::string") String collaborationId);
-
-        void addCollaborationGroupToFakeServer(
-                long fakeServer, @JniType("std::string") String collaborationId);
     }
 }
