@@ -41,6 +41,8 @@ class MLTensor;
 class MLTensorDescriptor;
 class MLContextLostInfo;
 class MLOpSupportLimits;
+class GPUBuffer;
+class GPUDevice;
 
 class MODULES_EXPORT MLContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -94,6 +96,11 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                 const MLNamedTensors& inputs,
                 const MLNamedTensors& outputs,
                 ExceptionState& exception_state);
+
+  ScriptPromise<GPUBuffer> exportToGPU(ScriptState* script_state,
+                                       GPUDevice* device,
+                                       MLTensor* tensor,
+                                       ExceptionState& exception_state);
 
   MLGraphBuilder* CreateWebNNGraphBuilder(ScriptState* script_state,
                                           ExceptionState& exception_state);

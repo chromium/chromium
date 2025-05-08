@@ -57,7 +57,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // ml_tensor.idl
   V8MLOperandDataType dataType() const;
   Vector<uint32_t> shape() const;
-  bool importableToWebGPU() const;
+  bool exportableToGPU() const;
   bool readable() const;
   bool writable() const;
 

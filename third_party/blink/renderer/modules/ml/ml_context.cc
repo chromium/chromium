@@ -1027,7 +1027,7 @@ ScriptPromise<MLTensor> MLContext::createTensor(
   // this mapping.
   static_assert(base::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 2);
   webnn::MLTensorUsage usage;
-  if (descriptor->importableToWebGPU()) {
+  if (descriptor->exportableToGPU()) {
     usage.Put(webnn::MLTensorUsageFlags::kWebGpuInterop);
   }
   if (descriptor->readable()) {
@@ -1191,6 +1191,38 @@ void MLContext::DidCreateWebNNTensor(
   tensors_.insert(tensor);
 
   resolver->Resolve(tensor);
+}
+
+ScriptPromise<GPUBuffer> MLContext::exportToGPU(
+    ScriptState* script_state,
+    GPUDevice* device,
+    MLTensor* tensor,
+    ExceptionState& exception_state) {
+  webnn::ScopedTrace scoped_trace("MLContext::exportToGPU");
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return EmptyPromise();
+  }
+  if (!context_remote_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Context is lost.");
+    return EmptyPromise();
+  }
+  if (tensor->context() != this) {
+    exception_state.ThrowTypeError(
+        "The source tensor was not created by this context.");
+    return EmptyPromise();
+  }
+  if (!tensor->exportableToGPU()) {
+    exception_state.ThrowTypeError(
+        "The source tensor cannot be exported to WebGPU.");
+    return EmptyPromise();
+  }
+  // TODO(crbug.com/345352987): Implement MLTensor's exportToGPU.
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "MLContext::exportToGPU is not supported.");
+  return EmptyPromise();
 }
 
 }  // namespace blink
