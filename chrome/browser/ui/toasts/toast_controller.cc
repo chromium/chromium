@@ -70,9 +70,6 @@ bool ToastController::IsShowingToast() const {
 }
 
 bool ToastController::CanShowToast(ToastId toast_id) const {
-  if (!base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
-    return false;
-  }
   if (base::FeatureList::IsEnabled(toast_features::kToastRefinements) &&
       static_cast<toasts::ToastAlertLevel>(
           g_browser_process->local_state()->GetInteger(
@@ -235,8 +232,7 @@ void ToastController::ShowToast(ToastParams params) {
       current_toast_spec->action_button_string_id().has_value() ||
       current_toast_spec->has_menu();
   base::TimeDelta timeout =
-      is_actionable ? toast_features::kToastTimeout.Get()
-                    : toast_features::kToastWithoutActionTimeout.Get();
+      is_actionable ? kToastWithActionTimeout : kToastDefaultTimeout;
 
   toast_close_timer_.Start(
       FROM_HERE, timeout,

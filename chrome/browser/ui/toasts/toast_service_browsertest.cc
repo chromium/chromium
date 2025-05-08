@@ -40,8 +40,7 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {toast_features::kToastFramework, commerce::kCompareConfirmationToast,
-         commerce::kProductSpecifications,
+        {commerce::kCompareConfirmationToast, commerce::kProductSpecifications,
          plus_addresses::features::kPlusAddressesEnabled,
          plus_addresses::features::kPlusAddressFullFormFill,
          safe_browsing::kEsbAsASyncedSetting,

@@ -11,22 +11,11 @@
 
 namespace toast_features {
 
-// Base feature
-BASE_DECLARE_FEATURE(kToastFramework);
-
 BASE_DECLARE_FEATURE(kToastRefinements);
 
 // Enables all toast features queried through `toast_features::IsEnabled` which
 // is used for demo mode.
 extern const base::FeatureParam<bool> kToastDemoMode;
-
-// The amount of time a toast should show before automatically
-// closing.
-extern const base::FeatureParam<base::TimeDelta> kToastTimeout;
-
-// The amount of time a toast without an action should show before
-// automatically closing.
-extern const base::FeatureParam<base::TimeDelta> kToastWithoutActionTimeout;
 
 // Individual toasts
 BASE_DECLARE_FEATURE(kLinkCopiedToast);

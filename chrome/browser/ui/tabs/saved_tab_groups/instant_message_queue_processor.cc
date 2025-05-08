@@ -49,10 +49,6 @@ InstantMessageQueueProcessor::~InstantMessageQueueProcessor() = default;
 
 void InstantMessageQueueProcessor::Enqueue(InstantMessage message,
                                            SuccessCallback success_callback) {
-  if (!base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
-    return;
-  }
-
   if (message.level !=
       collaboration::messaging::InstantNotificationLevel::BROWSER) {
     // Only handle browser notifications.
@@ -206,9 +202,8 @@ base::TimeDelta InstantMessageQueueProcessor::GetMessageInterval() {
   // to show the next message.
   // TODO(crbug.com/390814333): Determine the correct heuristic for
   // time-between-messages.
-  return base::Seconds(1) +
-         std::max(toast_features::kToastTimeout.Get(),
-                  toast_features::kToastWithoutActionTimeout.Get());
+  return base::Seconds(1) + std::max(ToastController::kToastDefaultTimeout,
+                                     ToastController::kToastWithActionTimeout);
 }
 
 void InstantMessageQueueProcessor::ProcessQueueAfterMessageShown() {

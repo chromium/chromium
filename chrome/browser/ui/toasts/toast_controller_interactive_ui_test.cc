@@ -118,9 +118,8 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {toast_features::kToastFramework, toast_features::kToastRefinements,
-         toast_features::kLinkCopiedToast, toast_features::kImageCopiedToast,
-         toast_features::kReadingListToast,
+        {toast_features::kToastRefinements, toast_features::kLinkCopiedToast,
+         toast_features::kImageCopiedToast, toast_features::kReadingListToast,
          toast_features::kPinnedTabToastOnClose,
          plus_addresses::features::kPlusAddressesEnabled,
          plus_addresses::features::kPlusAddressFullFormFill},

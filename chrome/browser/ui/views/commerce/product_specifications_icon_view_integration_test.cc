@@ -56,7 +56,6 @@ class ProductSpecificationsIconViewIntegrationTest
     std::vector<base::test::FeatureRef> enabled_features = {
         commerce::kProductSpecifications};
     if (GetParam()) {
-      enabled_features.push_back(toast_features::kToastFramework);
       enabled_features.push_back(commerce::kCompareConfirmationToast);
     }
     test_features_.InitWithFeatures(enabled_features, /*disabled_features*/ {});

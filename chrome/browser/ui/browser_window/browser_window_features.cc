@@ -234,8 +234,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     }
   }
 
-  if ((browser->is_type_normal() || browser->is_type_app()) &&
-      base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
+  if (browser->is_type_normal() || browser->is_type_app()) {
     toast_service_ = std::make_unique<ToastService>(browser);
   }
 }

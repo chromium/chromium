@@ -129,11 +129,8 @@ class CollaborationMessagingObserverBrowserTest
  public:
   CollaborationMessagingObserverBrowserTest() {
     features_.InitWithFeatures(
-        {
-            tab_groups::kTabGroupSyncServiceDesktopMigration,
-            data_sharing::features::kDataSharingFeature,
-            toast_features::kToastFramework,
-        },
+        {tab_groups::kTabGroupSyncServiceDesktopMigration,
+         data_sharing::features::kDataSharingFeature},
         {});
   }
   ~CollaborationMessagingObserverBrowserTest() override = default;

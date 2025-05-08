@@ -124,9 +124,7 @@ class ClearBrowsingDataHandlerUnitTest : public testing::Test {
 };
 
 void ClearBrowsingDataHandlerUnitTest::SetUp() {
-  feature_list_.InitWithFeatures({toast_features::kToastFramework,
-                                  toast_features::kClearBrowsingDataToast},
-                                 {});
+  feature_list_.InitWithFeatures({toast_features::kClearBrowsingDataToast}, {});
 
   TestingProfile::Builder builder;
   profile_ = builder.Build();

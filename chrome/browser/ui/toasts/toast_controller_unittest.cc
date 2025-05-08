@@ -44,9 +44,6 @@ class TestToastController : public ToastController {
 class ToastControllerUnitTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        toast_features::kToastFramework,
-        {{toast_features::kToastWithoutActionTimeout.name, "8s"}});
     toast_registry_ = std::make_unique<ToastRegistry>();
   }
 
@@ -145,8 +142,7 @@ TEST_F(ToastControllerUnitTest, ToastAutomaticallyCloses) {
   EXPECT_TRUE(controller->IsShowingToast());
 
   // The toast should stop showing after reaching toast timeout time.
-  task_environment().FastForwardBy(
-      toast_features::kToastWithoutActionTimeout.Get());
+  task_environment().FastForwardBy(ToastController::kToastDefaultTimeout);
   EXPECT_FALSE(controller->IsShowingToast());
 }
 
@@ -164,7 +160,7 @@ TEST_F(ToastControllerUnitTest, ToastWithActionButtonAutomaticallyCloses) {
   EXPECT_TRUE(controller->IsShowingToast());
 
   // The toast should stop showing after reaching toast timeout time.
-  task_environment().FastForwardBy(toast_features::kToastTimeout.Get());
+  task_environment().FastForwardBy(ToastController::kToastDefaultTimeout);
   EXPECT_FALSE(controller->IsShowingToast());
 }
 
@@ -188,7 +184,7 @@ TEST_F(ToastControllerUnitTest, CloseTimerResetsWhenToastShown) {
 
   // The toast should still be showing because we didn't reach the time out time
   // yet.
-  task_environment().FastForwardBy(toast_features::kToastTimeout.Get() / 2);
+  task_environment().FastForwardBy(ToastController::kToastDefaultTimeout / 2);
   EXPECT_TRUE(controller->IsShowingToast());
 
   // Show a different toast before the link copied toast times out.
@@ -199,6 +195,6 @@ TEST_F(ToastControllerUnitTest, CloseTimerResetsWhenToastShown) {
 
   // The image copied toast should still be showing even though the link copied
   // toast should have timed out by now.
-  task_environment().FastForwardBy(toast_features::kToastTimeout.Get() / 2);
+  task_environment().FastForwardBy(ToastController::kToastDefaultTimeout / 2);
   EXPECT_TRUE(controller->IsShowingToast());
 }

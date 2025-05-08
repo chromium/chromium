@@ -93,7 +93,6 @@ class TestInstantMessageQueueProcessor : public InstantMessageQueueProcessor {
 class InstantMessageQueueProcessorTest : public testing::Test {
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(toast_features::kToastFramework);
     processor_ = std::make_unique<TestInstantMessageQueueProcessor>();
   }
 
@@ -107,7 +106,6 @@ class InstantMessageQueueProcessorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestInstantMessageQueueProcessor> processor_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(InstantMessageQueueProcessorTest, IgnoresUnsupportedEvents) {

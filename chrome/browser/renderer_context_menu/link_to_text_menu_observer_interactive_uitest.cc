@@ -89,9 +89,7 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
  public:
   LinkToTextMenuObserverTest() {
     scoped_features_.InitWithFeatures(
-        {toast_features::kLinkToHighlightCopiedToast,
-         toast_features::kToastFramework},
-        {});
+        {toast_features::kLinkToHighlightCopiedToast}, {});
   }
 
   void SetUpOnMainThread() override {

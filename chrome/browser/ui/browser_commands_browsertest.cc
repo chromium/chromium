@@ -52,7 +52,6 @@ class BrowserCommandsTest : public InProcessBrowserTest {
         {
             features::kTabOrganization,
             features::kTabstripDeclutter,
-            toast_features::kToastFramework,
             toast_features::kReadingListToast,
             toast_features::kLinkCopiedToast,
         },

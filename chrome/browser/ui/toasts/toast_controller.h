@@ -98,10 +98,12 @@ class ToastController : public views::WidgetObserver,
   void WebContentsDestroyed() override;
 
   views::Widget* GetToastWidgetForTesting() { return toast_widget_; }
-
   toasts::ToastView* GetToastViewForTesting() { return toast_view_; }
 
   base::OneShotTimer* GetToastCloseTimerForTesting();
+
+  static constexpr base::TimeDelta kToastDefaultTimeout = base::Seconds(4);
+  static constexpr base::TimeDelta kToastWithActionTimeout = base::Seconds(8);
 
  private:
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
