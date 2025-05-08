@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/network/mdns_responder.h"
 
 #include <algorithm>
@@ -364,7 +359,7 @@ scoped_refptr<net::IOBufferWithSize> CreateResolutionResponse(
   DCHECK(response.io_buffer() != nullptr);
   auto buf =
       base::MakeRefCounted<net::IOBufferWithSize>(response.io_buffer_size());
-  memcpy(buf->data(), response.io_buffer()->data(), response.io_buffer_size());
+  buf->span().copy_from(response.io_buffer()->first(response.io_buffer_size()));
   return buf;
 }
 
@@ -382,7 +377,7 @@ scoped_refptr<net::IOBufferWithSize> CreateNegativeResponse(
   DCHECK(response.io_buffer() != nullptr);
   auto buf =
       base::MakeRefCounted<net::IOBufferWithSize>(response.io_buffer_size());
-  memcpy(buf->data(), response.io_buffer()->data(), response.io_buffer_size());
+  buf->span().copy_from(response.io_buffer()->first(response.io_buffer_size()));
   return buf;
 }
 
@@ -404,7 +399,7 @@ CreateResponseToMdnsNameGeneratorServiceQuery(
   DCHECK(response.io_buffer() != nullptr);
   auto buf =
       base::MakeRefCounted<net::IOBufferWithSize>(response.io_buffer_size());
-  memcpy(buf->data(), response.io_buffer()->data(), response.io_buffer_size());
+  buf->span().copy_from(response.io_buffer()->first(response.io_buffer_size()));
   return buf;
 }
 
