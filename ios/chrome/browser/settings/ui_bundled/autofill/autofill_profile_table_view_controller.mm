@@ -297,6 +297,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.title = title;
   item.detailText = subTitle;
 
+  item.deletable = YES;
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSupportForHomeAndWork)) {
     autofill::AutofillProfile::RecordType recordType =
@@ -304,10 +305,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
     if (recordType == autofill::AutofillProfile::RecordType::kAccountHome) {
       item.trailingDetailText =
           l10n_util::GetNSString(IDS_IOS_PROFILE_RECORD_TYPE_HOME);
+      item.deletable = NO;
     } else if (recordType ==
                autofill::AutofillProfile::RecordType::kAccountWork) {
       item.trailingDetailText =
           l10n_util::GetNSString(IDS_IOS_PROFILE_RECORD_TYPE_WORK);
+      item.deletable = NO;
     }
   }
 
@@ -539,9 +542,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return NO;
   }
 
-  // Only profile data cells are editable.
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  return [item isKindOfClass:[AutofillProfileItem class]];
+  if (![self isItemTypeForIndexPathAddress:indexPath]) {
+    return NO;
+  }
+
+  AutofillProfileItem* item = base::apple::ObjCCastStrict<AutofillProfileItem>(
+      [self.tableViewModel itemAtIndexPath:indexPath]);
+
+  return [item isDeletable];
 }
 
 - (void)tableView:(UITableView*)tableView
