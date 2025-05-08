@@ -676,7 +676,7 @@ void UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA(
   VLOG(1) << "Starting an OTA installation of the enterprise companion app.";
   RegistrationRequest registration;
   registration.app_id = enterprise_companion::kCompanionAppId;
-  registration.version = base::Version("0.0.0.0");
+  registration.version = base::Version(kNullVersion);
   RegisterApp(
       registration,
       base::BindOnce([](int registration_result) {})
@@ -754,7 +754,7 @@ void UpdateServiceImplImpl::RegisterApp(
                          ->GetProductVersion(request.app_id)
                          .IsValid() &&
                     request.version.IsValid() &&
-                    request.version > base::Version("0") &&
+                    request.version > base::Version(kNullVersion) &&
                     !config_->GetUpdaterPersistedData()->GetEulaRequired();
   config_->GetUpdaterPersistedData()->RegisterApp(request);
   if (send_event) {
