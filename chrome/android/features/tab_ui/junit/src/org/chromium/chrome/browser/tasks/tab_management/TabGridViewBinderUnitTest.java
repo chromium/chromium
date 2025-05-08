@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -59,7 +60,11 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridViewBinder.OnPeripheralClickListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -466,6 +471,26 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_ACTION_BUTTON_DATA);
 
         verify(mViewGroup).setTabActionButtonTint(any());
+    }
+
+    @Test
+    public void bindTabWithActionButtonData_setOnClickListenerAndOnPeripheralClickListener() {
+        TabActionButtonData tabActionButtonData =
+                new TabActionButtonData(
+                        TabActionButtonType.CLOSE,
+                        new TabActionListener() {
+                            @Override
+                            public void run(View view, int tabId) {}
+
+                            @Override
+                            public void run(View view, String syncId) {}
+                        });
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, tabActionButtonData);
+
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_ACTION_BUTTON_DATA);
+
+        verify(mActionButton).setOnClickListener(any());
+        verify(mActionButton).setOnTouchListener(isA(OnPeripheralClickListener.class));
     }
 
     private void assertImageMatrix(

@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -21,6 +25,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -41,6 +46,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -194,6 +200,8 @@ class TabGridViewBinder {
             TabActionListener tabActionListener = data == null ? null : data.tabActionListener;
             setNullableClickListener(
                     tabActionListener, view.fastFindViewById(R.id.action_button), model);
+            setNullablePeripheralClickListener(
+                    tabActionListener, view.fastFindViewById(R.id.action_button), model);
 
             boolean showOverflowButton =
                     data == null ? false : data.type == TabActionButtonType.OVERFLOW;
@@ -287,15 +295,36 @@ class TabGridViewBinder {
         if (listener == null) {
             view.setOnClickListener(null);
         } else {
-            view.setOnClickListener(
-                    v -> {
-                        if (propertyModel.containsKey(TabProperties.TAB_GROUP_SYNC_ID)) {
-                            listener.run(v, propertyModel.get(TabProperties.TAB_GROUP_SYNC_ID));
-                        } else {
-                            listener.run(v, propertyModel.get(TabProperties.TAB_ID));
-                        }
-                    });
+            view.setOnClickListener(v -> runTabActionListener(listener, v, propertyModel));
         }
+    }
+
+    /**
+     * Sets an {@link OnPeripheralClickListener} on the given view to intercept clicks from
+     * peripherals.
+     *
+     * <p>Note that this method cannot replace {@link #setNullableClickListener(TabActionListener,
+     * View, PropertyModel)} as an {@link android.view.View.OnClickListener} is needed to handle
+     * clicks not from peripherals, accessibility actions, and the "confirm" key event.
+     *
+     * @param tabActionListener the {@link TabActionListener} to run when a click is detected.
+     * @param view the View to receive clicks.
+     * @param propertyModel contains data to determine how to run the {@link TabActionListener}.
+     */
+    static void setNullablePeripheralClickListener(
+            @Nullable TabActionListener tabActionListener,
+            @NonNull View view,
+            @NonNull PropertyModel propertyModel) {
+        if (tabActionListener == null) {
+            view.setOnTouchListener(null);
+            return;
+        }
+
+        view.setOnTouchListener(
+                new OnPeripheralClickListener(
+                        view,
+                        /* onClickRunnable= */ () ->
+                                runTabActionListener(tabActionListener, view, propertyModel)));
     }
 
     static void setNullableLongClickListener(
@@ -307,13 +336,20 @@ class TabGridViewBinder {
         } else {
             view.setOnLongClickListener(
                     v -> {
-                        if (propertyModel.containsKey(TabProperties.TAB_GROUP_SYNC_ID)) {
-                            listener.run(v, propertyModel.get(TabProperties.TAB_GROUP_SYNC_ID));
-                        } else {
-                            listener.run(v, propertyModel.get(TabProperties.TAB_ID));
-                        }
+                        runTabActionListener(listener, v, propertyModel);
                         return true;
                     });
+        }
+    }
+
+    private static void runTabActionListener(
+            @NonNull TabActionListener tabActionListener,
+            @NonNull View view,
+            @NonNull PropertyModel propertyModel) {
+        if (propertyModel.containsKey(TabProperties.TAB_GROUP_SYNC_ID)) {
+            tabActionListener.run(view, propertyModel.get(TabProperties.TAB_GROUP_SYNC_ID));
+        } else {
+            tabActionListener.run(view, propertyModel.get(TabProperties.TAB_ID));
         }
     }
 
@@ -539,5 +575,45 @@ class TabGridViewBinder {
     static void setThumbnailFetcherForTesting(ThumbnailFetcher fetcher) {
         sThumbnailFetcherForTesting = fetcher;
         ResettersForTesting.register(() -> sThumbnailFetcherForTesting = null);
+    }
+
+    /**
+     * An {@link OnTouchListener} to detect a click from peripherals.
+     *
+     * <p>If a {@link MotionEvent} comes from a peripheral, this listener will consume it. Then, if
+     * the event completes a click action, the {@code onClickRunnable} will be run.
+     *
+     * <p>If a {@link MotionEvent} doesn't come from a peripheral, this listener is a no-op. It
+     * won't consume or interpret the event.
+     */
+    @VisibleForTesting
+    static final class OnPeripheralClickListener implements OnTouchListener {
+
+        @NonNull private final GestureDetector mGestureDetector;
+
+        OnPeripheralClickListener(@NonNull View view, @NonNull Runnable onClickRunnable) {
+            mGestureDetector =
+                    new GestureDetector(
+                            view.getContext(),
+                            new GestureDetector.SimpleOnGestureListener() {
+
+                                @Override
+                                public boolean onSingleTapUp(@NonNull MotionEvent e) {
+                                    onClickRunnable.run();
+                                    return true;
+                                }
+                            });
+        }
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (!MotionEventUtils.isMouseEvent(event)) {
+                return false;
+            }
+
+            mGestureDetector.onTouchEvent(event);
+            return true;
+        }
     }
 }
