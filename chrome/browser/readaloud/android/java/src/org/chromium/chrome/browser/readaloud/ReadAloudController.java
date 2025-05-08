@@ -45,6 +45,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -1518,6 +1519,7 @@ public class ReadAloudController
 
     @Override
     public void setPlaybackModeAndApplyToPlayback(PlaybackMode mode) {
+        TrackerFactory.getTrackerForProfile(getProfile()).notifyEvent("read_aloud_playback_mode_clicked");
         ReadAloudPrefs.setPlaybackMode(getPrefService(), mode);
 
         if (mActivePlaybackTabSupplier.get() != null && mPlayback != null) {

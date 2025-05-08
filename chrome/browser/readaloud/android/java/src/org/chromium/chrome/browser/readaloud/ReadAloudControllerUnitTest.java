@@ -65,6 +65,8 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -190,6 +192,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private NativePage mNativePage;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private FullscreenManager mFullscreenManager;
+    @Mock private Tracker mTracker;
     private GlobalRenderFrameHostId mGlobalRenderFrameHostId = new GlobalRenderFrameHostId(1, 1);
     public UserActionTester mUserActionTester;
     private HistogramWatcher mHighlightingEnabledOnStartupHistogram;
@@ -219,6 +222,7 @@ public class ReadAloudControllerUnitTest {
 
     @Before
     public void setUp() {
+        TrackerFactory.setTrackerForTests(mTracker);
         mDefaultLocale = Locale.getDefault();
 
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
@@ -1735,6 +1739,8 @@ public class ReadAloudControllerUnitTest {
 
         // Set mode and restart.
         mController.setPlaybackModeAndApplyToPlayback(PlaybackMode.OVERVIEW);
+
+        verify(mTracker).notifyEvent(eq("read_aloud_playback_mode_clicked"));
 
         // Pref is updated.
         verify(mPrefService)
