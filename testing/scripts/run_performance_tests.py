@@ -803,6 +803,15 @@ class CrossbenchTest(object):
       self.options.passthrough_args.remove(wpr_arg)
     return [_create_network_json('wpr', path=archive, wpr_go_bin=wpr_go)]
 
+  def _check_for_embedder_arg(self):
+    embedder_arg = _get_arg(self.options.passthrough_args, '--embedder=')
+    if embedder_arg:
+      embedder_package_name = embedder_arg.split('=', 1)[1]
+      # This will affect browser arg, but is not to be passed by itself
+      self.options.passthrough_args.remove(embedder_arg)
+      return embedder_package_name
+    return None
+
   def _find_browser(self, browser_arg):
     # Replacing --browser with the generated self.browser.
     self.options.passthrough_args = [
@@ -821,7 +830,9 @@ class CrossbenchTest(object):
     if not possible_browser:
       raise ValueError(f'Unable to find Chrome browser of type: {browser_arg}')
     if self.is_android:
-      browser_app = possible_browser.settings.package
+      # Check for an arg with embedder package name to override browser (WV)
+      browser_app = (self._check_for_embedder_arg()
+                     or possible_browser.settings.package)
       android_json = self.ANDROID_HJSON % (browser_app, ADB_TOOL)
       self.browser = self.CHROME_BROWSER % android_json
     else:

@@ -399,6 +399,19 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     network_dict = json.loads(crosebench_test.network[0].split('=', 1)[1])
     self.assertDictEqual(network_dict, expected_dict)
 
+  def testCrossbenchFindBrowserFromEmbedder(self):
+    fake_args = (
+        _create_crossbench_args('android-webview-trichrome-google-bundle') +
+        ['--embedder=org.foo.bar'])
+    options = run_performance_tests.parse_arguments(fake_args)
+
+    crossbench_test = run_performance_tests.CrossbenchTest(options, 'dir')
+
+    expected_hjson = crossbench_test.ANDROID_HJSON % (
+        'org.foo.bar', run_performance_tests.ADB_TOOL)
+    expected_browser = crossbench_test.CHROME_BROWSER % expected_hjson
+    self.assertEqual(crossbench_test.network, expected_browser)
+
 
 def _create_crossbench_args(browser='./chrome'):
   return [
