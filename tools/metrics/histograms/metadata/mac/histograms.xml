@@ -24,7 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mac.AppClonefileError" enum="MacErrno"
     expires_after="2025-08-03">
-  <owner>bur@google.com</owner>
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The `errno` from the `clonefile` syscall. This histogram is emitted once at
@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mac.AppCodeSignCloneCount" units="count"
     expires_after="2025-10-05">
-  <owner>bur@google.com</owner>
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The current count of app clones in the code sign clone temp dir. This
@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mac.AppCodeSignCloneCreationTime" units="ms"
     expires_after="2025-09-14">
-  <owner>bur@google.com</owner>
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The time it took in milliseconds to create the browser app code sign clone.
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mac.AppCodeSignCloneExists" enum="MacCloneExists"
     expires_after="2025-08-03">
-  <owner>bur@google.com</owner>
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The existence of the clone on disk. This histogram is emitted up to two
@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mac.AppFileSystemType" enum="MacFileSystemType"
     expires_after="2025-09-14">
-  <owner>bur@google.com</owner>
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The file system type where the running instance of Chrome is installed. This
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mac.AppHardLinkError" enum="MacErrno"
     expires_after="2025-10-05">
-  <owner>bur@google.com</owner>
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The `errno` from the `link` syscall. This histogram is emitted once at
@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mac.AppUpgradeCodeSignatureValidationStatus"
     enum="MacSecurityFrameworkOSStatus" expires_after="2025-09-14">
-  <owner>bur@google.com</owner>
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The dynamic code signature validation status of Chrome with a pending Chrome
