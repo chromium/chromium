@@ -44,7 +44,11 @@ Status Device::SetUp(const std::string& package,
                      const std::string& args,
                      bool use_running_app,
                      bool keep_app_data_dir,
-                     int* devtools_port) {
+                     int* devtools_port,
+                     const std::string& prefs_file,
+                     const base::Value::Dict* custom_prefs,
+                     const std::string& local_state_file,
+                     const base::Value::Dict* custom_local_state) {
   if (!active_package_.empty())
     return Status(kUnknownError,
         active_package_ + " was launched and has not been quit");
@@ -136,6 +140,27 @@ Status Device::SetUp(const std::string& package,
             kUnknownError,
             "Failed to set Chrome's command line file on device " + serial_,
             status);
+    }
+
+    if (custom_prefs) {
+      status = adb_->SetPreferences(serial_, prefs_file, custom_prefs);
+
+      if (status.IsError())
+        return Status(kUnknownError,
+                      "Failed to set Chrome's preferences file on device " +
+                          serial_,
+                      status);
+    }
+
+    if (custom_local_state) {
+      status =
+          adb_->SetLocalState(serial_, local_state_file, custom_local_state);
+
+      if (status.IsError())
+        return Status(kUnknownError,
+                      "Failed to set Chrome's local state file on device " +
+                          serial_,
+                      status);
     }
 
     status = adb_->Launch(serial_, package,

@@ -83,6 +83,18 @@ class FakeAdb : public Adb {
     *socket_name = "@webview_devtools_remote_0";
     return Status(kOk);
   }
+
+  Status SetPreferences(const std::string& device_serial,
+                        const std::string& path,
+                        const base::Value::Dict* custom_prefs) override {
+    return Status(kOk);
+  }
+
+  Status SetLocalState(const std::string& device_serial,
+                       const std::string& path,
+                       const base::Value::Dict* custom_local_state) override {
+    return Status(kOk);
+  }
 };
 
 class ClearAppDataCalledFakeAdb : public FakeAdb {

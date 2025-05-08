@@ -32,6 +32,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_result_codes.h"
@@ -118,6 +119,8 @@ const char* const kAndroidSwitches[] = {
 const char kEnableCrashReport[] = "enable-crash-reporter-for-testing";
 const base::FilePath::CharType kDevToolsActivePort[] =
     FILE_PATH_LITERAL("DevToolsActivePort");
+
+const char kTempAndroidUserDataDirFormat[] = "/data/data/%s/temp_profile_%s";
 
 enum ChromeType { Remote, Desktop, Android, Replay };
 
@@ -822,12 +825,44 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
   }
   for (auto excluded_switch : capabilities.exclude_switches)
     switches.RemoveSwitch(excluded_switch);
+
+  // We intentionally store the paths as string and not as base::FilePath,
+  // in order to make sure the paths are formatted for android, and not for
+  // the host OS.
+  std::string user_data_dir;
+  if (switches.HasSwitch("user-data-dir")) {
+    base::FilePath::StringType user_data_dir_value =
+        switches.GetSwitchValueNative("user-data-dir");
+    if (user_data_dir_value.empty()) {
+      return Status(kInvalidArgument, "user data dir can not be empty");
+    }
+
+#if BUILDFLAG(IS_WIN)
+    user_data_dir = base::WideToUTF8(user_data_dir_value);
+#else
+    user_data_dir = user_data_dir_value;
+#endif
+  } else if (capabilities.prefs.get() || capabilities.local_state.get()) {
+    user_data_dir = base::StringPrintf(
+        kTempAndroidUserDataDirFormat, capabilities.android_package.c_str(),
+        base::Uuid::GenerateRandomV4().AsLowercaseString().c_str());
+    switches.SetSwitch("user-data-dir", user_data_dir);
+  }
+
+  std::string preferences_path =
+      base::StringPrintf("%s/%s/%s", user_data_dir.c_str(),
+                         chrome::kInitialProfile, chrome::kPreferencesFilename);
+  std::string local_state_path = base::StringPrintf(
+      "%s/%s", user_data_dir.c_str(), chrome::kLocalStateFilename);
+
   status = device->SetUp(
       capabilities.android_package, capabilities.android_activity,
       capabilities.android_process, capabilities.android_device_socket,
       capabilities.android_exec_name, switches.ToString(),
       capabilities.android_use_running_app,
-      capabilities.android_keep_app_data_dir, &devtools_port);
+      capabilities.android_keep_app_data_dir, &devtools_port, preferences_path,
+      capabilities.prefs.get(), local_state_path,
+      capabilities.local_state.get());
   if (status.IsError()) {
     device->TearDown();
     return WrapStatusIfNeeded(status, kSessionNotCreated);

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/values.h"
 
 class Adb;
 class Status;
@@ -32,7 +33,11 @@ class Device {
                const std::string& args,
                bool use_running_app,
                bool keep_app_data_dir,
-               int* port);
+               int* devtools_port,
+               const std::string& prefs_file = std::string(),
+               const base::Value::Dict* custom_prefs = nullptr,
+               const std::string& local_state_file = std::string(),
+               const base::Value::Dict* custom_local_state = nullptr);
 
   Status TearDown();
 

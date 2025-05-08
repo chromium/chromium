@@ -12,6 +12,8 @@
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -25,11 +27,48 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+#include "chrome/test/chromedriver/chrome/util.h"
+#include "chrome/test/chromedriver/chrome/user_data_dir.h"
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/net/adb_client_socket.h"
 #include "net/base/net_errors.h"
 
 namespace {
+
+Status OverridePreferenceJson(const std::string &template_string,
+                             const base::Value::Dict *custom_prefs,
+                             std::string *prefs_str) {
+  auto parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(template_string);
+  if (!parsed_json.has_value()) {
+    return Status(kUnknownError, "cannot parse internal JSON template: " +
+                                     parsed_json.error().message);
+  }
+
+  base::Value::Dict *prefs = parsed_json->GetIfDict();
+  if (!prefs)
+    return Status(kUnknownError, "malformed prefs dictionary");
+
+  if (custom_prefs) {
+    for (const auto item : *custom_prefs) {
+      if (!prefs->SetByDottedPath(item.first, item.second.Clone())) {
+        return Status(kUnknownError, base::StringPrintf("Invalid key - %s",
+                                                        item.first.c_str()));
+      }
+    }
+  }
+
+  return SerializeAsJson(*prefs, prefs_str);
+}
+
+std::optional<std::string> GetDirName(const std::string& path) {
+  std::string::size_type pos = path.find_last_of('/');
+  if (pos == std::string::npos) {
+    return std::nullopt;
+  }
+
+  return path.substr(0, pos);
+}
 
 // This class is bound in the callback to AdbQuery and isn't freed until the
 // callback is run, even if the function that creates the buffer times out.
@@ -337,6 +376,60 @@ Status AdbImpl::GetSocketByPattern(const std::string& device_serial,
                 "Failed to get sockets matching: " + grep_pattern);
 }
 
+Status AdbImpl::SetPreferences(const std::string& device_serial,
+                               const std::string& path,
+                               const base::Value::Dict* custom_prefs) {
+  std::string prefs_str;
+
+  Status status =
+      OverridePreferenceJson(kPreferences, custom_prefs, &prefs_str);
+  if (!status.IsOk()) {
+    return status;
+  }
+
+  status = SendFile(device_serial, path, prefs_str);
+  if (!status.IsOk()) {
+    return status;
+  }
+
+  const std::optional<std::string> dir_name = GetDirName(path);
+  if (!dir_name.has_value()) {
+    return Status(kUnknownError,
+                  "Failed to get directory name from path: " + path);
+  }
+
+  // Since the user data dir may be created by pushing the file, we need to
+  // add write permissions to it, so that the browser can write to it.
+  return AddWritePermissions(device_serial, dir_name.value());
+}
+
+Status AdbImpl::SetLocalState(const std::string& device_serial,
+                              const std::string& path,
+                              const base::Value::Dict* custom_local_state) {
+  std::string prefs_str;
+
+  Status status =
+      OverridePreferenceJson(kLocalState, custom_local_state, &prefs_str);
+  if (!status.IsOk()) {
+    return status;
+  }
+
+  status = SendFile(device_serial, path, prefs_str);
+  if (!status.IsOk()) {
+    return status;
+  }
+
+  const std::optional<std::string> dir_name = GetDirName(path);
+  if (!dir_name.has_value()) {
+    return Status(kUnknownError,
+                  "Failed to get directory name from path: " + path);
+  }
+
+  // Since the user data dir may be created by pushing the file, we need to
+  // add write permissions to it, so that the browser can write to it.
+  return AddWritePermissions(device_serial, dir_name.value());
+}
+
 Status AdbImpl::ExecuteCommand(
     const std::string& command, std::string* response) {
   scoped_refptr<ResponseBuffer> response_buffer = new ResponseBuffer;
@@ -365,4 +458,24 @@ Status AdbImpl::ExecuteHostShellCommand(
   return ExecuteCommand(
       "host:transport:" + device_serial + "|shell:" + shell_command,
       response);
+}
+
+Status AdbImpl::SendFile(const std::string& device_serial,
+                         const std::string& file_path,
+                         const std::string& content) {
+  std::string response;
+  scoped_refptr<ResponseBuffer> response_buffer = new ResponseBuffer;
+  VLOG(1) << "Sending file: " << file_path;
+  io_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&SendFileOnIOThread, device_serial, file_path,
+                                content, response_buffer, port_));
+  Status status = response_buffer->GetResponse(&response, base::Seconds(30));
+  return status;
+}
+
+Status AdbImpl::AddWritePermissions(const std::string& device_serial,
+                                    const std::string& path) {
+  std::string response;
+  std::string command = "chmod +w " + path;
+  return ExecuteHostShellCommand(device_serial, command, &response);
 }
