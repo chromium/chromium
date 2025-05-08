@@ -2069,6 +2069,8 @@ static_library("test_support") {
     "http/http_transaction_test_util.h",
     "http/mock_http_cache.cc",
     "http/mock_http_cache.h",
+    "http/no_vary_search_cache_storage_mock_file_operations.cc",
+    "http/no_vary_search_cache_storage_mock_file_operations.h",
     "http/no_vary_search_cache_test_utils.cc",
     "http/no_vary_search_cache_test_utils.h",
     "http/transport_security_state_test_util.cc",
