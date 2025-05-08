@@ -45,8 +45,9 @@ IdentityProviderData::IdentityProviderData(
 
 IdentityProviderData::~IdentityProviderData() = default;
 
-RelyingPartyData::RelyingPartyData(const std::string& rp_for_display)
-    : rp_for_display(rp_for_display) {}
+RelyingPartyData::RelyingPartyData(const std::string& rp_for_display,
+                                   const std::string& iframe_for_display)
+    : rp_for_display(rp_for_display), iframe_for_display(iframe_for_display) {}
 RelyingPartyData::RelyingPartyData(const RelyingPartyData& other) = default;
 RelyingPartyData::~RelyingPartyData() = default;
 

@@ -190,6 +190,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     std::optional<blink::mojom::Format> format;
     IdentityProviderDataPtr data;
     gfx::Image decoded_idp_brand_icon;
+    // nullopt if the server did not send a value or if the FedCmIframeOrigin
+    // flag is not enabled.
+    std::optional<bool> client_matches_top_frame_origin;
   };
 
   struct IdentityProviderLoginUrlInfo {
@@ -520,6 +523,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::vector<IdentityRequestAccountPtr>& accounts);
 
   RpMode GetRpMode() const { return rp_mode_; }
+
+  RelyingPartyData CreateRpData() const;
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;

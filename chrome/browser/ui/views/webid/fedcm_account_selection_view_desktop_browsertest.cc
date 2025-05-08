@@ -56,8 +56,8 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
         /*labels=*/std::vector<std::string>())};
     accounts_[0]->identity_provider = idps_[0];
     account_selection_view()->Show(
-        content::RelyingPartyData("rp-example.com"), idps_, accounts_, mode,
-        blink::mojom::RpMode::kPassive,
+        content::RelyingPartyData("rp-example.com", /*iframe_for_display=*/""),
+        idps_, accounts_, mode, blink::mojom::RpMode::kPassive,
         /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
   }
 
@@ -328,8 +328,8 @@ class FedCmMixin {
         /*labels=*/std::vector<std::string>())};
     accounts_[0]->identity_provider = idps_[0];
     account_selection_view_->Show(
-        content::RelyingPartyData("rp-example.com"), idps_, accounts_, mode,
-        blink::mojom::RpMode::kPassive,
+        content::RelyingPartyData("rp-example.com", /*iframe_for_display=*/""),
+        idps_, accounts_, mode, blink::mojom::RpMode::kPassive,
         /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
   }
 

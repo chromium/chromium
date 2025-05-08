@@ -1527,6 +1527,8 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
                      client_metadata.brand_icon_url, rp_brand_icon},
       idp_info->rp_context, idp_info->format, disclosure_fields,
       /*has_login_status_mismatch=*/false);
+  idp_info->client_matches_top_frame_origin =
+      client_metadata.client_matches_top_frame_origin;
   for (auto& account : accounts) {
     account->identity_provider = idp_info->data;
   }
@@ -1833,9 +1835,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // so invocations after this method should assume that the members may have
   // been cleaned up.
   if (!request_dialog_controller_->ShowAccountsDialog(
-          std::move(content::RelyingPartyData(
-              GetTopFrameOriginForDisplay(GetEmbeddingOrigin()))),
-          idp_data_for_display_, accounts_,
+          CreateRpData(), idp_data_for_display_, accounts_,
           identity_selection_type_ == kExplicit ? SignInMode::kExplicit
                                                 : SignInMode::kAuto,
           rp_mode_, new_accounts_,
@@ -1923,9 +1923,7 @@ void FederatedAuthRequestImpl::NotifyAutofillSuggestionAccepted(
   // probably refactor the API to support this use case, rather than overload
   // an unintended use.
   if (!request_dialog_controller_->ShowAccountsDialog(
-          std::move(content::RelyingPartyData(
-              GetTopFrameOriginForDisplay(GetEmbeddingOrigin()))),
-          idp_data_for_display_, {}, SignInMode::kExplicit,
+          CreateRpData(), idp_data_for_display_, {}, SignInMode::kExplicit,
           blink::mojom::RpMode::kActive, selected,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()),
@@ -3913,6 +3911,23 @@ bool FederatedAuthRequestImpl::FilterAccountsWithDomainHint(
   }
   fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "DomainHint");
   return IsFedCmShowFilteredAccountsEnabled() || accounts_remaining > 0u;
+}
+
+RelyingPartyData FederatedAuthRequestImpl::CreateRpData() const {
+  // We want to show the iframe origin if any IDP requests it.
+  bool show_iframe_origin = false;
+  for (const auto& entry : idp_infos_) {
+    if (!entry.second->client_matches_top_frame_origin.value_or(true)) {
+      show_iframe_origin = true;
+      break;
+    }
+  }
+  std::string iframe_origin;
+  if (show_iframe_origin) {
+    iframe_origin = FormatOriginForDisplay(origin());
+  }
+  return RelyingPartyData(GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
+                          iframe_origin);
 }
 
 }  // namespace content

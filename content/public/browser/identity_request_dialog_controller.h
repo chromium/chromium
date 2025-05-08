@@ -130,11 +130,15 @@ class CONTENT_EXPORT IdentityProviderData
 // endpoints themselves.
 struct CONTENT_EXPORT RelyingPartyData {
  public:
-  explicit RelyingPartyData(const std::string& rp_for_display);
+  RelyingPartyData(const std::string& rp_for_display,
+                   const std::string& iframe_for_display);
   RelyingPartyData(const RelyingPartyData& other);
   ~RelyingPartyData();
 
   std::string rp_for_display;
+  // The formatted iframe origin. Empty if the iframe is same-site with
+  // `rp_for_display`.
+  std::string iframe_for_display;
   gfx::Image rp_icon;
 };
 
