@@ -205,7 +205,7 @@ class AddressEditorMediator {
                         .with(FOOTER_MESSAGE, getRecordTypeNoticeText())
                         .with(DELETE_CONFIRMATION_TITLE, getDeleteConfirmationTitle())
                         .with(DELETE_CONFIRMATION_TEXT, getDeleteConfirmationText())
-                        .with(SHOW_REQUIRED_INDICATOR, false)
+                        .with(SHOW_REQUIRED_INDICATOR, true)
                         .with(
                                 EDITOR_FIELDS,
                                 buildEditorFieldList(

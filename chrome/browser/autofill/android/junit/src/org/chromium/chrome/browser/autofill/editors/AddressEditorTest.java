@@ -11,8 +11,8 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -271,7 +271,7 @@ public class AddressEditorTest {
             @Nullable String expectedRecordTypeNotice) {
         assertNotNull(editorModel);
 
-        assertFalse(editorModel.get(SHOW_REQUIRED_INDICATOR));
+        assertTrue(editorModel.get(SHOW_REQUIRED_INDICATOR));
         assertEquals(expectedDeleteTitle, editorModel.get(DELETE_CONFIRMATION_TITLE));
         assertEquals(expectedDeleteText, editorModel.get(DELETE_CONFIRMATION_TEXT));
         assertEquals(expectedRecordTypeNotice, editorModel.get(FOOTER_MESSAGE));
