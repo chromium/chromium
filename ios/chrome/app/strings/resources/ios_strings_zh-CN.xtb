@@ -369,7 +369,7 @@
 <translation id="2468444275314013497">您的浏览器看起来很安全</translation>
 <translation id="2473876017985765807">您已经保存了在 <ph name="WEBSITE" /> 上使用的密码</translation>
 <translation id="247430852844518481">您可以设置提醒，以便日后再次访问此页面</translation>
-<translation id="2479148705183875116">转到“设置”</translation>
+<translation id="2479148705183875116">前往“设置”</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484459871750294497">如何启用此功能？</translation>
 <translation id="2493269659028026145">立即使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />锁定</translation>
@@ -806,7 +806,7 @@
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> 的更多选项</translation>
 <translation id="4455710003856931944">滑动边缘即可返回或前进。</translation>
 <translation id="4460014764210899310">取消分组</translation>
-<translation id="446314443268698477">使用相机或照片购买、翻译和识别所见内容。</translation>
+<translation id="446314443268698477">使用相机拍照或从相册中选择照片，从而购买、翻译和识别所见内容。</translation>
 <translation id="4469324811108161144">备注最多可以包含 <ph name="CHARACTER_LIMIT" /> 个字符。</translation>
 <translation id="4471472356135655769">无法导出密码</translation>
 <translation id="4473608001744970767">隐藏“跟踪价格”</translation>
@@ -1539,7 +1539,7 @@
 <translation id="7460698861522306757">请求切换到移动版网站</translation>
 <translation id="7465351360025415755">随时掌握重要资讯</translation>
 <translation id="7468373585447318060">及时了解您跟踪的所有商品的降价情况。</translation>
-<translation id="746872191028309255">使用相机或图库购买所见内容。</translation>
+<translation id="746872191028309255">使用相机拍照或从图库中选择照片，从而购买所见内容。</translation>
 <translation id="7471557245617580330">创建新标签页</translation>
 <translation id="7473891865547856676">不用了</translation>
 <translation id="7476548258282096076">此卡片会显示您最常访问的网站。</translation>

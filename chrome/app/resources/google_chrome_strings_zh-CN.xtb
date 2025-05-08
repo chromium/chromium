@@ -485,7 +485,7 @@
 <translation id="7450541714075000668">文本已复制</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{贵组织会在 Chrome 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
 <translation id="7477130805345743099">Chrome 会在使用不安全的连接加载网站前向您发出警告</translation>
-<translation id="7481213027396403996">获享 Chrome 的最强安全保护</translation>
+<translation id="7481213027396403996">获享 Chrome 最强大的安全保护</translation>
 <translation id="749228101751499733">登录后，您可以在 Chrome 中使用 Google 账号中的密码等信息。使用 <ph name="SHORTCUT" /> 可以更改 Google 服务设置。</translation>
 <translation id="7496017508659652909">Chrome 会预加载网页，以便您更快速地浏览和搜索内容。<ph name="BEGIN_LINK" />详细了解预加载网页<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google 更新程序服务</translation>

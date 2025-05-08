@@ -862,7 +862,7 @@
 <translation id="2470767536994572628">当您修改注释时，此文档会恢复为单页视图和原始方向</translation>
 <translation id="2471632709106952369">比较表格</translation>
 <translation id="2473810985261856484">法律服务</translation>
-<translation id="2479148705183875116">转到“设置”</translation>
+<translation id="2479148705183875116">前往“设置”</translation>
 <translation id="2479410451996844060">搜索网址无效。</translation>
 <translation id="2480300195898055381">保存到 Google 账号 <ph name="USER_EMAIL" /></translation>
 <translation id="248064299258688299">扩展程序<ph name="EXTENSION_NAME" />提示：</translation>
@@ -1082,7 +1082,7 @@
 <translation id="2915068235268646559">崩溃时间：<ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">绘画</translation>
 <translation id="2916038427272391327">关闭其他程序</translation>
-<translation id="2918484639460781603">转到“设置”</translation>
+<translation id="2918484639460781603">前往“设置”</translation>
 <translation id="2919185931486062599">打猎与射击</translation>
 <translation id="2922350208395188000">无法核实服务器证书。</translation>
 <translation id="2922792708490674">{0,plural, =1{此文件已被禁止下载}other{<ph name="FILE_COUNT" /> 个文件已被禁止下载}}</translation>

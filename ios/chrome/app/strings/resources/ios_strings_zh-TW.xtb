@@ -584,7 +584,7 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
 <translation id="3504377992102007712">設定</translation>
 <translation id="35083190962747987">開啟 ${url}</translation>
-<translation id="3511519535430890904">新增安全瀏覽保護功能</translation>
+<translation id="3511519535430890904">新增瀏覽防護功能</translation>
 <translation id="3517216995152707259">刪除瀏覽資料並不會登出 Google 帳戶。必須<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />，才能登出帳戶。</translation>
 <translation id="3519792890877853853">這張資訊卡會針對已開啟分頁中的產品顯示評論</translation>
 <translation id="3519905498307021260">{count,plural, =1{開啟分頁}other{開啟 {count} 個分頁}}</translation>
@@ -1125,7 +1125,7 @@
 <translation id="5738887413654608789">可讓你找到與目前周遭環境相關的網頁。</translation>
 <translation id="573974402615125334">如要分享、加入分頁群組並在其中協作，請同步處理歷史記錄和分頁</translation>
 <translation id="5740123193752401435">搜尋分頁…</translation>
-<translation id="5744274077973758795">已開啟 <ph name="FEATURE_NAME" />通知功能</translation>
+<translation id="5744274077973758795">已開啟「<ph name="FEATURE_NAME" />」通知</translation>
 <translation id="574762237186762643">活動</translation>
 <translation id="5749158352074143502">繼續使用這個分頁</translation>
 <translation id="5753021559215751319">儲存密碼</translation>
@@ -1319,7 +1319,7 @@
 <translation id="6507973708545996744">只要登入帳戶，即可在所有裝置上取用自己的閱讀清單。</translation>
 <translation id="6518133107902771759">驗證</translation>
 <translation id="6518861084553706202">系統將關閉分頁並刪除資料 (可能包括密碼、瀏覽記錄和 Cookie 等等)。</translation>
-<translation id="6523575793810663688">操作說明</translation>
+<translation id="6523575793810663688">顯示操作說明</translation>
 <translation id="6524082013156754186">儲存到帳戶</translation>
 <translation id="6524918542306337007">無法使用無痕模式</translation>
 <translation id="6527303717912515753">分享</translation>

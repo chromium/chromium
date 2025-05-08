@@ -897,7 +897,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5161254044473106830">Titel krävs</translation>
 <translation id="5161262286013276579">Bekräftelseark för nyckel har öppnats</translation>
 <translation id="5163361352003913350"><ph name="NAME" /> är valt just nu. Välj ett konto.</translation>
-<translation id="5167637873777016814">Tryck snabbt två gånger och håll kvar fingret för att avsluta inkognito</translation>
+<translation id="5167637873777016814">Dubbeltryck och håll kvar fingret för att avsluta inkognito</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5171045022955879922">Sök eller ange webbadress</translation>
 <translation id="5174700554036517242">Fliken är tillbaka till ursprunglig höjd</translation>
@@ -1638,7 +1638,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8387617938027387193">Verifiera din identitet</translation>
 <translation id="8393700583063109961">Skicka meddelande</translation>
 <translation id="8396098434728053815">Dela även ljud från flikar</translation>
-<translation id="8398389123831319859">Tryck snabbt två gånger och håll kvar fingret för att byta till inkognito</translation>
+<translation id="8398389123831319859">Dubbeltryck och håll kvar fingret för att byta till inkognito</translation>
 <translation id="8402673309244746971">Öppna Följer</translation>
 <translation id="8413126021676339697">Visa fullständig historik</translation>
 <translation id="8413795581997394485">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. När du besöker en webbplats skickas en obfuskerad del av webbadressen till Google via en integritetsserver som döljer din IP-adress. Om en webbplats gör något misstänkt skickas också fullständiga webbadresser och delar av sidinnehållet.</translation>

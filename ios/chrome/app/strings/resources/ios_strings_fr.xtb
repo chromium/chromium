@@ -457,7 +457,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Heure</translation>
 <translation id="284581348330507117">Créez des mots de passe uniques</translation>
-<translation id="2856883624744451946">Nommez le groupe</translation>
+<translation id="2856883624744451946">Nom du groupe</translation>
 <translation id="2858204748079866344">Pour protéger votre vie privée, Chrome ne renseigne pas automatiquement le champ du mot de passe.</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (plus sur les appareils synchronisés)}one{# site (plus sur les appareils synchronisés)}other{# sites (plus sur les appareils synchronisés)}}</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -1075,7 +1075,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />".</translation>
 <translation id="5578795271662203820">Rechercher l'image sur <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Masquer "Liste de lecture"</translation>
-<translation id="5585019845078534178">Fiches</translation>
+<translation id="5585019845078534178">Cartes</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="559567008082979829">Activer la suppression de vos téléchargements au bout d'un mois.</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
@@ -1627,7 +1627,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7839994177130598711">Les membres de votre famille peuvent désormais se connecter à <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> avec votre nom d'utilisateur et votre mot de passe en utilisant le Gestionnaire de mots de passe de Google.</translation>
 <translation id="7840771868269352570">Les éléments sélectionnés seront supprimés.</translation>
 <translation id="7841180087127694526">Rechercher le texte copié</translation>
-<translation id="7841418003178675048">Choisissez les fiches à afficher sur la page "Nouvel onglet".</translation>
+<translation id="7841418003178675048">Choisissez les cartes à afficher sur la page "Nouvel onglet".</translation>
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
 <translation id="7846296061357476882">Services Google</translation>
 <translation id="784934925303690534">Période</translation>

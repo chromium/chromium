@@ -742,7 +742,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4508528996305412043">Se abrió el menú de la tarjeta de feed</translation>
 <translation id="4509741852167209430">Se comparten tipos limitados de datos entre sitios para medir el rendimiento de sus anuncios, por ejemplo, si realizaste una compra después de visitar un sitio.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Hace # día}other{Hace # días}}</translation>
-<translation id="451872707440238414">Buscar tus favoritos</translation>
+<translation id="451872707440238414">Buscar en favoritos</translation>
 <translation id="4521489764227272523">Los datos seleccionados se quitaron de Chrome y tus dispositivos sincronizados.
 
 Es posible que tu cuenta de Google tenga otros formularios de historial de navegación, como búsquedas y actividad de otros servicios de Google en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

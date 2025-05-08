@@ -2726,7 +2726,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5720705177508910913">Người dùng hiện tại</translation>
 <translation id="5720895412771013401">Máy tính để bàn</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} và 1 trang web khác}other{{website_1}, {website_2} và {more_count} trang web khác}}</translation>
-<translation id="572328651809341494">Các thẻ gần đây</translation>
+<translation id="572328651809341494">Thẻ gần đây</translation>
 <translation id="5723873695528696965">Điều khiển và lập trình lại thiết bị MIDI</translation>
 <translation id="5725297205162868298">Lối tắt không được bắt đầu bằng ký tự @: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5728246486828755318">Có thể yêu cầu sử dụng tính năng nâng cao của máy in</translation>

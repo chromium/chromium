@@ -457,7 +457,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Tempo</translation>
 <translation id="284581348330507117">Crie senhas exclusivas</translation>
-<translation id="2856883624744451946">Dê um nome ao grupo</translation>
+<translation id="2856883624744451946">Nomeie o grupo</translation>
 <translation id="2858204748079866344">Para proteger sua privacidade, o Chrome não preencherá sua senha automaticamente neste campo.</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (mais nos dispositivos sincronizados)}one{# site (mais nos dispositivos sincronizados)}other{# sites (mais nos dispositivos sincronizados)}}</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -615,7 +615,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3602260545951981695">Escolha "Proteção reforçada"</translation>
 <translation id="3622175633937495219">Pesquisar no histórico (<ph name="COUNT" /> encontrados)</translation>
 <translation id="3625008969091706597">Deslize a borda da tela para voltar.</translation>
-<translation id="362709345066740529">Personalize os cards, o feed e muito mais aqui</translation>
+<translation id="362709345066740529">Personalize os cards, o feed e muito mais</translation>
 <translation id="3630104167004786843">Não receber atualizações</translation>
 <translation id="3631443864840848029">Salve a senha atual para este site.</translation>
 <translation id="3642060527569456384">Os grupos de guias são salvos e atualizados automaticamente em todos os seus dispositivos.</translation>
@@ -851,7 +851,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4632655012900268062">Personalizar cards</translation>
 <translation id="4634124774493850572">Usar senha</translation>
 <translation id="4636930964841734540">Informações</translation>
-<translation id="4641425577292284174">Saiba se você tem as configurações mais seguras ou se precisa revisar algo</translation>
+<translation id="4641425577292284174">Confira se as configurações mais seguras estão habilitadas ou se há algo pendente</translation>
 <translation id="4642472735733036929">Monitoramento de preço interrompido</translation>
 <translation id="4645575059429386691">Gerenciado pelos seus pais</translation>
 <translation id="4647758699119474035">Login feito como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Erro na Conta do Google. Abra o menu de contas.</translation>
@@ -1137,7 +1137,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5779117921996157216">{count,plural, =1{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}one{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}other{Você tem {count} senhas comprometidas que podem colocar sua segurança em risco. Corrija o problema agora para se proteger.}}</translation>
 <translation id="5791632441210678828">Botão para ordenar o feed "Seguindo".</translation>
 <translation id="5803566855766646066">Tem certeza de que você quer descartar este novo card?</translation>
-<translation id="5804012843049740908">Escolha dicas que ajudam você a aproveitar o Chrome ao máximo</translation>
+<translation id="5804012843049740908">Escolha dicas para aproveitar o Chrome ao máximo</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5817176759448082654">Check-up de senha</translation>
 <translation id="5819208479324046259">Gerenciado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1205,7 +1205,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6096965253650248286"><ph name="COUNT" /> encontrado</translation>
 <translation id="6100617279104942061">Login feito como <ph name="USER_EMAIL" />. Abre as configurações.</translation>
 <translation id="6103540626693881831">Criptografia no dispositivo</translation>
-<translation id="611361228753138223">Sites que você acessou recentemente neste dispositivo</translation>
+<translation id="611361228753138223">Os sites acessados recentemente neste dispositivo</translation>
 <translation id="6122191549521593678">On-line</translation>
 <translation id="6122831415929794347">Desativar a Navegação segura?</translation>
 <translation id="6123514585040403489">As guias serão fechadas</translation>
@@ -1745,7 +1745,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="826614135184049678">Sua conta <ph name="USER_NAME" /> foi desconectada como parte da redefinição do iPad. Para fazer login novamente, toque em "Continuar" abaixo.</translation>
 <translation id="8273982424131314219">Você vai preencher informações em <ph name="URL" /></translation>
 <translation id="8275068909952022340">Mais…</translation>
-<translation id="8278488584187265939">Personalizar a página inicial</translation>
+<translation id="8278488584187265939">Personalizar página inicial</translation>
 <translation id="8281781826761538115">Padrão: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Pular</translation>
 <translation id="8282657446819506217">Abrir no grupo de guias</translation>

@@ -385,7 +385,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2538103551183528357">Ausgeblendetes Passwort</translation>
 <translation id="2539748786028143624">Erweiterten Schutz aktivieren…</translation>
 <translation id="2540111494300686866">Dialogfelder unterdrücken</translation>
-<translation id="2542268842667970959">„Sicherheitscheck“ ausblenden</translation>
+<translation id="2542268842667970959">Sicherheitscheck ausblenden</translation>
 <translation id="2547458583188611426">Synchronisierung funktioniert nicht. Gib deine Passphrase ein, um die Synchronisierung zu starten.</translation>
 <translation id="2551153019974022505">Kontofehler</translation>
 <translation id="2559843230610279254">Tabgruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> Tabs.</translation>
@@ -399,7 +399,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2613747923081026172">Gruppe erstellen</translation>
 <translation id="261735223792457154">Alle anzeigen…</translation>
 <translation id="261739049332372104">Wenn du Neuigkeiten zu Inhalten erhalten möchtest, die dich interessieren, kannst du Benachrichtigungen in deinen iOS-Einstellungen aktivieren.</translation>
-<translation id="2623536180761008356">„Sicherheitscheck“ ausblenden</translation>
+<translation id="2623536180761008356">Sicherheitscheck ausblenden</translation>
 <translation id="2625189173221582860">Passwort kopiert</translation>
 <translation id="2626236249646841566">Prüfe deine Verbindung und versuche es noch einmal.</translation>
 <translation id="2635918910848538771">CVC automatisch ausfüllen lassen</translation>
@@ -1286,7 +1286,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6406506848690869874">Synchronisierung</translation>
 <translation id="6410005280995367944">Passwörter in anderen Apps</translation>
 <translation id="6410390304316730527">Safe Browsing schützt dich gegen Angreifer, die dich dazu verleiten möchten, Risiken einzugehen, wie z. B. schädliche Software zu installieren oder personenbezogene Daten wie Passwörter, Telefonnummern oder Kreditkartendaten preiszugeben. Wenn du Safe Browsing deaktivierst, sei besonders vorsichtig, wenn du auf unbekannten oder zweifelhaften Websites surfst.</translation>
-<translation id="6410883413783534063">Öffne Tabs, um mehrere Seiten gleichzeitig zu besuchen</translation>
+<translation id="6410883413783534063">Über Tabs kannst du mehrere Seiten gleichzeitig besuchen</translation>
 <translation id="6416807286621280684">Deine Pakete mit Sendungsverfolgung und Lieferupdates.</translation>
 <translation id="6418346271604475326">PDF wird vorbereitet</translation>
 <translation id="6429213933892582367">Öffne „Passwortoptionen“</translation>
