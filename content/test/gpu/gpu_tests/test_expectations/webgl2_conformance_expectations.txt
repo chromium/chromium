@@ -790,16 +790,9 @@ crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance/extensions/
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/instancedrendering.html [ Failure ]
 
-## Mac ASAN ##
-
-
 ####################
 # Linux failures   #
 ####################
-
-
-## Mesa issues ##
-
 
 ## Linux NVIDIA ##
 
@@ -823,8 +816,6 @@ crbug.com/angleproject/4417 [ android ] conformance2/rendering/framebuffer-rende
 # failing.
 crbug.com/951628 [ android no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
-
-
 # TODO(kbr): flakiness is seen on this configuration with the
 # passthrough command decoder across many different WebGL conformance
 # tests. Limit this blanket suppression to Android P in case this is
@@ -835,8 +826,6 @@ crbug.com/906737 [ android angle-disabled no-passthrough qualcomm ] conformance/
 crbug.com/1176485 [ android qualcomm ] conformance2/glsl3/uint-int-shift-bug.html [ Failure ]
 crbug.com/1027125 [ android angle-disabled no-passthrough qualcomm ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
 
-
-
 ## Pixel 2 ##
 
 crbug.com/906742 [ android-pie android-pixel-2 no-passthrough qualcomm ] conformance2/glsl3/compare-structs-containing-arrays.html [ Failure ]
@@ -846,16 +835,29 @@ crbug.com/angleproject/7421 [ android android-pixel-2 angle-disabled no-passthro
 
 ## Pixel 4 ##
 
-
 crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 
 crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
 
-
-
 ## DrDc being re-enabled ##
 crbug.com/380250262 [ android android-pixel-2 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 crbug.com/380250262 [ android android-pixel-4 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
+
+############################
+# Android Desktop failures #
+############################
+
+# Brya failures
+crbug.com/416483574 [ android android-brya passthrough ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
+crbug.com/416483574 [ android android-brya passthrough ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
+crbug.com/416408899 [ android android-brya passthrough ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
+crbug.com/416408899 [ android android-brya passthrough ] conformance2/extensions/webgl-clip-cull-distance.html [ Failure ]
+crbug.com/416408899 [ android android-brya passthrough ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
+crbug.com/416408899 [ android android-brya passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
+crbug.com/416408899 [ android android-brya passthrough ] conformance2/renderbuffers/framebuffer-test.html [ Failure ]
+crbug.com/416417899 [ android android-brya passthrough ] deqp/functional/gles3/negativebufferapi.html [ Failure ]
+crbug.com/416417899 [ android android-brya passthrough ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
+crbug.com/416417899 [ android android-brya passthrough ] deqp/functional/gles3/shaderoperator/unary_operator_00.html [ Failure ]
 
 #####################
 # ChromeOS failures #

@@ -643,6 +643,14 @@ crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textur
 
 crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
+############################
+# Android Desktop failures #
+############################
+
+# Brya failures
+crbug.com/416483574 [ android android-brya ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
+crbug.com/416483574 [ android android-brya ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
+
 
 ############
 # ChromeOS #
