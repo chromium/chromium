@@ -424,7 +424,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool HasBackdropFilterDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has_backdrop_filter_descendant_;
-    ;
   }
 
   // See
