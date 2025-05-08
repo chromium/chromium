@@ -128,4 +128,27 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
   return suggestions;
 }
 
+void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
+    std::vector<Suggestion>& email_suggestions,
+    const ValuablesDataManager& valuables_manager,
+    const GURL& url) {
+  std::vector<Suggestion> loyalty_card_suggestions =
+      GetLoyaltyCardSuggestions(valuables_manager, url);
+  if (loyalty_card_suggestions.empty()) {
+    return;
+  }
+
+  // TODO(crbug.com/404436027): Replace with i18n string.
+  Suggestion submenu_suggestion =
+      Suggestion(u"Loyalty cards", SuggestionType::kLoyaltyCardEntry);
+  submenu_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  submenu_suggestion.children = loyalty_card_suggestions;
+
+  // There is at least one email, separator and manage addresses suggestion.
+  CHECK(email_suggestions.size() >= 3);
+  email_suggestions.insert(email_suggestions.end() - 1, submenu_suggestion);
+  email_suggestions.insert(email_suggestions.end() - 1,
+                           Suggestion(SuggestionType::kSeparator));
+}
+
 }  // namespace autofill
