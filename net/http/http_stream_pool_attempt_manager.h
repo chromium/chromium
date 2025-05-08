@@ -200,6 +200,8 @@ class HttpStreamPool::AttemptManager
     return ip_endpoint_states_;
   }
 
+  void SetOnCompleteCallbackForTesting(base::OnceClosure callback);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpStreamPoolAttemptManagerTest,
                            GetIPEndPointToAttempt);
@@ -612,6 +614,8 @@ class HttpStreamPool::AttemptManager
   // Set to true when TCP based attempts should be blocked.
   bool should_block_tcp_based_attempt_ = false;
   base::OneShotTimer tcp_based_attempt_delay_timer_;
+
+  base::OnceClosure on_complete_callback_for_testing_;
 
   base::WeakPtrFactory<AttemptManager> weak_ptr_factory_{this};
 };

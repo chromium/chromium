@@ -4139,7 +4139,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // Destroy the failed request. This should destroy the failing attempt manager
   // and should create a new one.
   requester1.ResetRequest();
-  WaitForAttemptManagerComplete(*pool().GetGroupForTesting(stream_key));
+  WaitForAttemptManagerComplete(
+      pool().GetGroupForTesting(stream_key)->attempt_manager());
   ASSERT_FALSE(
       pool().GetGroupForTesting(stream_key)->attempt_manager()->is_failing());
 
@@ -4265,7 +4266,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ResumeMultiplePausedJobsAndFailAgain) {
 
   // Destroy the first request. This should resume paused requests.
   failing_requester1.ResetRequest();
-  WaitForAttemptManagerComplete(*pool().GetGroupForTesting(stream_key));
+  WaitForAttemptManagerComplete(
+      pool().GetGroupForTesting(stream_key)->attempt_manager());
   ASSERT_FALSE(
       pool().GetGroupForTesting(stream_key)->attempt_manager()->is_failing());
 
@@ -4522,7 +4524,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReleaseStreamWhileFailing) {
   HttpStreamKey stream_key = requester1.GetStreamKey();
   requester1.ResetRequest();
   requester2.ResetRequest();
-  WaitForAttemptManagerComplete(*pool().GetGroupForTesting(stream_key));
+  WaitForAttemptManagerComplete(
+      pool().GetGroupForTesting(stream_key)->attempt_manager());
   ASSERT_FALSE(pool().GetOrCreateGroupForTesting(stream_key).attempt_manager());
 }
 
@@ -4865,7 +4868,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DontStartQuicAfterFailure) {
   // Ensure that the attempt manager completes after the request is destroyed.
   requester.ResetRequest();
   WaitForAttemptManagerComplete(
-      *pool().GetGroupForTesting(requester.GetStreamKey()));
+      pool().GetGroupForTesting(requester.GetStreamKey())->attempt_manager());
 }
 
 // Tests that QUIC is not attempted when marked broken.
@@ -6607,7 +6610,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithErrorPendingJobs) {
   for (auto& requester : requesters) {
     requester->ResetRequest();
   }
-  WaitForAttemptManagerComplete(*pool().GetGroupForTesting(stream_key));
+  WaitForAttemptManagerComplete(
+      pool().GetGroupForTesting(stream_key)->attempt_manager());
   EXPECT_FALSE(pool().GetGroupForTesting(stream_key));
   EXPECT_EQ(pool().TotalActiveStreamCount(), 0u);
 }

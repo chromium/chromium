@@ -848,6 +848,12 @@ HttpStreamPool::AttemptManager::CalculateMultiplexedSessionCreationInitiator() {
   return MultiplexedSessionCreationInitiator::kUnknown;
 }
 
+void HttpStreamPool::AttemptManager::SetOnCompleteCallbackForTesting(
+    base::OnceClosure callback) {
+  CHECK(on_complete_callback_for_testing_.is_null());
+  on_complete_callback_for_testing_ = std::move(callback);
+}
+
 void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
   RestrictAllowedProtocols(job->allowed_alpns());
   UpdateTcpBasedAttemptState();
@@ -2059,6 +2065,11 @@ void HttpStreamPool::AttemptManager::MaybeComplete() {
   CHECK(limit_ignoring_jobs_.empty());
   CHECK(ip_based_pooling_disabling_jobs_.empty());
   CHECK(alternative_service_disabling_jobs_.empty());
+
+  if (on_complete_callback_for_testing_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_complete_callback_for_testing_));
+  }
 
   group_->OnAttemptManagerComplete();
   // `this` is deleted.

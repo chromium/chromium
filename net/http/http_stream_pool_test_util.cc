@@ -9,6 +9,7 @@
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_attempt_manager.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_job.h"
 #include "net/log/net_log_with_source.h"
@@ -278,9 +279,10 @@ HttpStreamKey GroupIdToHttpStreamKey(
                        group_id.disable_cert_network_fetches());
 }
 
-void WaitForAttemptManagerComplete(HttpStreamPool::Group& group) {
+void WaitForAttemptManagerComplete(
+    HttpStreamPool::AttemptManager* attempt_manager) {
   base::RunLoop run_loop;
-  group.SetOnAttemptManagerCompleteCallbackForTesting(run_loop.QuitClosure());
+  attempt_manager->SetOnCompleteCallbackForTesting(run_loop.QuitClosure());
   run_loop.Run();
 }
 
