@@ -2541,7 +2541,7 @@
   },
   {
     "name": "enable-accessibility-manage-broadcast-recevier-on-background",
-    "owners": [ "avvall@google.com", "elabadysayed@google.com", "//ui/accessibility/OWNERS" ],
+    "owners": ["elabadysayed@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 145
   },
   {
