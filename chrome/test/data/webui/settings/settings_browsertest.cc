@@ -411,8 +411,7 @@ class SettingsGlicPageLauncherToggleLearnMoreTest : public SettingsBrowserTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicLearnMoreURLConfig,
           {
-              {"glic-shortcuts-launcher-toggle-learn-more-url",
-               "https://google.com/"},
+              {"glic-launcher-toggle-learn-more-url", "https://google.com/"},
           }}},
         /*disabled_features=*/{});
   }
@@ -433,8 +432,7 @@ class SettingsGlicPageLocationToggleLearnMoreTest : public SettingsBrowserTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicLearnMoreURLConfig,
           {
-              {"glic-shortcuts-location-toggle-learn-more-url",
-               "https://google.com/"},
+              {"glic-location-toggle-learn-more-url", "https://google.com/"},
           }}},
         /*disabled_features=*/{});
   }
@@ -456,8 +454,7 @@ class SettingsGlicPageTabAccessToggleLearnMoreTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicLearnMoreURLConfig,
           {
-              {"glic-shortcuts-tab-access-toggle-learn-more-url",
-               "https://google.com/"},
+              {"glic-tab-access-toggle-learn-more-url", "https://google.com/"},
           }}},
         /*disabled_features=*/{});
   }
