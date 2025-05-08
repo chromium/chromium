@@ -18,7 +18,6 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
@@ -102,7 +101,7 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
+    public void declareExtraElements() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
             // TODO(ckitagawa): Add handling for an already shared group.
             if (isAllowedToShare()) {

@@ -5,7 +5,6 @@
 package org.chromium.chrome.test.transit.page;
 
 import org.chromium.base.test.transit.Element;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.content_public.browser.WebContents;
 
@@ -44,14 +43,14 @@ public class CctPageStation extends BasePageStation<CustomTabActivity> {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
+    public void declareExtraElements() {
+        super.declareExtraElements();
 
         if (!mIsNativePage) {
             webContentsElement =
-                    elements.declareEnterConditionAsElement(
+                    declareEnterConditionAsElement(
                             new WebContentsPresentCondition(loadedTabElement));
-            elements.declareEnterCondition(new FrameInfoUpdatedCondition(webContentsElement));
+            declareEnterCondition(new FrameInfoUpdatedCondition(webContentsElement));
         }
     }
 }

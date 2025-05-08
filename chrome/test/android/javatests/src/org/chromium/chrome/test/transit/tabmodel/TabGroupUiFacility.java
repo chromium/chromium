@@ -13,7 +13,6 @@ import android.view.View;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.tab_ui.R;
@@ -50,13 +49,13 @@ public class TabGroupUiFacility<HostStationT extends PageStation> extends Facili
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
+    public void declareExtraElements() {
         // Ensure the tab group UI is visible.
-        mTabGroupUiToolbarView = elements.declareView(viewSpec(BOTTOM_TAB_GROUP_LAYER));
+        mTabGroupUiToolbarView = declareView(viewSpec(BOTTOM_TAB_GROUP_LAYER));
 
         if (!mTabIds.isEmpty()) {
             // Ensure the number of tabs are in group.
-            elements.declareEnterCondition(
+            declareEnterCondition(
                     new TabGroupExistsCondition(
                             mHostStation.isIncognito(), mTabIds, mTabModelSelectorSupplier));
         }

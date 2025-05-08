@@ -43,8 +43,7 @@ public class Elements extends BaseElements {
     /**
      * Builder for {@link Elements}.
      *
-     * <p>Passed to {@link ConditionalState#declareElements(Elements.Builder)}}, which must declare
-     * the ConditionalState's elements by calling the declare___() methods.
+     * <p>Passed to |delayedDeclarations| to add elements with declareElementFactory().
      */
     public static class Builder {
         private @Nullable Elements mOwner;

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -19,8 +18,8 @@ public class SwipingToTabFacility extends Facility<PageStation> {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        elements.declareEnterCondition(
+    public void declareExtraElements() {
+        declareEnterCondition(
                 new LayoutTypeVisibleCondition(
                         mHostStation.getActivityElement(), LayoutType.TOOLBAR_SWIPE));
     }

@@ -15,7 +15,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
@@ -31,36 +30,27 @@ import org.chromium.chrome.test.R;
 public class SnackbarFacility<HostStationT extends Station<?>> extends Facility<HostStationT> {
     public static final String NO_BUTTON = "__NO_BUTTON__";
 
-    private final String mExpectedMessageSubstring;
-    private final String mExpectedButtonText;
     public ViewElement<View> messageElement;
     public ViewElement<View> buttonElement;
 
     public SnackbarFacility(
             @Nullable String expectedMessageSubstring, @Nullable String expectedButtonText) {
-        super();
-        mExpectedMessageSubstring = expectedMessageSubstring;
-        mExpectedButtonText = expectedButtonText;
-    }
-
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        messageElement = elements.declareView(viewSpec(withId(R.id.snackbar_message)));
-        if (mExpectedMessageSubstring != null) {
-            elements.declareEnterCondition(
+        messageElement = declareView(viewSpec(withId(R.id.snackbar_message)));
+        if (expectedMessageSubstring != null) {
+            declareEnterCondition(
                     new ViewElementMatchesCondition(
-                            messageElement, withText(containsString(mExpectedMessageSubstring))));
+                            messageElement, withText(containsString(expectedMessageSubstring))));
         }
 
         ViewSpec<View> buttonSpec = viewSpec(withId(R.id.snackbar_button));
-        if (NO_BUTTON.equals(mExpectedButtonText)) {
-            elements.declareNoView(buttonSpec);
+        if (NO_BUTTON.equals(expectedButtonText)) {
+            declareNoView(buttonSpec);
         } else {
-            buttonElement = elements.declareView(buttonSpec);
-            if (mExpectedButtonText != null) {
-                elements.declareEnterCondition(
+            buttonElement = declareView(buttonSpec);
+            if (expectedButtonText != null) {
+                declareEnterCondition(
                         new ViewElementMatchesCondition(
-                                buttonElement, withText(mExpectedButtonText)));
+                                buttonElement, withText(expectedButtonText)));
             }
         }
     }

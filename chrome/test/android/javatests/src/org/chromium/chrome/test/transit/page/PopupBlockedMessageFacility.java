@@ -6,7 +6,6 @@ package org.chromium.chrome.test.transit.page;
 
 import android.view.View;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.transit.MessageFacility;
 
@@ -17,26 +16,18 @@ import org.chromium.chrome.test.transit.MessageFacility;
  */
 public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
         extends MessageFacility<HostStationT> {
-    private final int mCount;
     public ViewElement<View> titleElement;
     public ViewElement<View> alwaysShowButtonElement;
 
     public PopupBlockedMessageFacility(int count) {
-        mCount = count;
-    }
-
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-
         String title;
-        if (mCount == 1) {
+        if (count == 1) {
             title = "Pop-up blocked";
         } else {
-            title = String.format("%s pop-ups blocked", mCount);
+            title = String.format("%s pop-ups blocked", count);
         }
-        titleElement = elements.declareView(titleViewSpec(title));
-        alwaysShowButtonElement = elements.declareView(primaryButtonViewSpec("Always show"));
+        titleElement = declareView(titleViewSpec(title));
+        alwaysShowButtonElement = declareView(primaryButtonViewSpec("Always show"));
     }
 
     public WebPageStation clickAlwaysAllow() {

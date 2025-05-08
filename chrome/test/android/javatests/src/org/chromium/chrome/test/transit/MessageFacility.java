@@ -12,14 +12,12 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import android.os.Build;
 import android.view.View;
 
-import androidx.annotation.CallSuper;
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.GeneralSwipeAction;
 import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.action.ViewActions;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
@@ -48,16 +46,12 @@ public class MessageFacility<HostStationT extends PageStation> extends Facility<
     public ViewElement<View> bannerElement;
     public ViewElement<View> iconElement;
 
-    @CallSuper
-    @Override
-    public void declareElements(Elements.Builder elements) {
+    public MessageFacility() {
         // Unscoped because other messages can appear and fail the exit condition.
         bannerElement =
-                elements.declareView(
-                        viewSpec(withId(R.id.message_banner)), ViewElement.unscopedOption());
+                declareView(viewSpec(withId(R.id.message_banner)), ViewElement.unscopedOption());
         iconElement =
-                elements.declareView(
-                        viewSpec(withId(R.id.message_icon)), ViewElement.unscopedOption());
+                declareView(viewSpec(withId(R.id.message_icon)), ViewElement.unscopedOption());
     }
 
     /** Dismiss the message banner. */

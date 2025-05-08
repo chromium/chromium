@@ -13,7 +13,6 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.MoreViewConditions.ViewHasChildrenCountCondition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
@@ -50,16 +49,18 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
+    public void declareExtraElements() {
         // 1% visibility is enough because this layout is clipped by being inside scroll view in
         // tablets.
         tilesLayoutElement =
-                elements.declareView(
+                declareView(
                         viewSpec(withId(R.id.mv_tiles_layout)),
                         ViewElement.displayingAtLeastOption(1));
-        elements.declareEnterCondition(
+        declareEnterCondition(
                 new ViewHasChildrenCountCondition(tilesLayoutElement, mSiteSuggestions.size()));
-        super.declareElements(elements);
+
+        // Will call declareItems()
+        super.declareExtraElements();
     }
 
     @Override

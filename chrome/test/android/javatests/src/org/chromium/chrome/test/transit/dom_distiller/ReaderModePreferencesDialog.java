@@ -22,7 +22,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.chromium.base.test.transit.CarryOn;
 import org.chromium.base.test.transit.Condition;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.test.R;
@@ -40,8 +39,7 @@ public class ReaderModePreferencesDialog extends CarryOn {
     public ViewElement<Spinner> fontFamilySpinnerElement;
     public ViewElement<SeekBar> fontSizeSliderElement;
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
+    public ReaderModePreferencesDialog() {
         /*
         DecorView
         ╰── LinearLayout
@@ -64,13 +62,11 @@ public class ReaderModePreferencesDialog extends CarryOn {
                                             ├── @id/font_size | AppCompatSeekBar
                                             ╰── "A" | MaterialTextView
         */
-        darkButtonElement = elements.declareView(viewSpec(Button.class, withText("Dark")));
-        sepiaButtonElement = elements.declareView(viewSpec(Button.class, withText("Sepia")));
-        lightButtonElement = elements.declareView(viewSpec(Button.class, withText("Light")));
-        fontFamilySpinnerElement =
-                elements.declareView(viewSpec(Spinner.class, withId(R.id.font_family)));
-        fontSizeSliderElement =
-                elements.declareView(viewSpec(SeekBar.class, withId(R.id.font_size)));
+        darkButtonElement = declareView(viewSpec(Button.class, withText("Dark")));
+        sepiaButtonElement = declareView(viewSpec(Button.class, withText("Sepia")));
+        lightButtonElement = declareView(viewSpec(Button.class, withText("Light")));
+        fontFamilySpinnerElement = declareView(viewSpec(Spinner.class, withId(R.id.font_family)));
+        fontSizeSliderElement = declareView(viewSpec(SeekBar.class, withId(R.id.font_size)));
     }
 
     public void pickColorLight(Condition condition) {

@@ -24,7 +24,6 @@ import androidx.test.espresso.Espresso;
 
 import org.hamcrest.Matcher;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
@@ -75,23 +74,23 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
+    public void declareExtraElements() {
         dialogElement =
-                elements.declareView(
+                declareView(
                         viewSpec(withId(R.id.visual_data_dialog_layout)),
                         ViewElement.displayingAtLeastOption(80));
-        elements.declareView(
+        declareView(
                 viewSpec(allOf(withId(R.id.visual_data_dialog_title), withText("New tab group"))));
 
         titleInputElement =
-                elements.declareView(
+                declareView(
                         viewSpec(
                                 withId(R.id.title_input_text),
                                 isAssignableFrom(EditText.class),
                                 withText(mTitle)));
 
         // TODO(crbug.com/346377124): Partially cut off in android_30_google_apis_x86.textpb
-        elements.declareView(
+        declareView(
                 viewSpec(withId(R.id.color_picker_container)),
                 ViewElement.displayingAtLeastOption(50));
         @TabGroupColorId List<Integer> colors = TabGroupColorUtils.getTabGroupColorIdList();
@@ -101,18 +100,18 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
             @TabGroupColorId Integer color = colors.get(i);
             if (mSelectedColor != null) {
                 colorElements[i] =
-                        elements.declareView(
+                        declareView(
                                 colorPickerIconSpec(color, color.equals(mSelectedColor)),
                                 ViewElement.newOptions().unscoped().displayingAtLeast(60).build());
             } else {
                 colorElements[i] =
-                        elements.declareView(
+                        declareView(
                                 colorPickerIconSpec(color, /* selected= */ null),
                                 ViewElement.newOptions().unscoped().displayingAtLeast(60).build());
             }
         }
 
-        doneButtonElement = elements.declareView(viewSpec(withId(R.id.positive_button)));
+        doneButtonElement = declareView(viewSpec(withId(R.id.positive_button)));
     }
 
     private ViewSpec<View> colorPickerIconSpec(

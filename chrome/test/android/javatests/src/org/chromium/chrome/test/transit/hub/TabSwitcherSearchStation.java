@@ -21,7 +21,6 @@ import android.view.View;
 
 import org.hamcrest.Matcher;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
@@ -45,12 +44,7 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
     public TabSwitcherSearchStation(boolean isIncognito) {
         super(SearchActivity.class);
         mIsIncognito = isIncognito;
-    }
-
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-        urlBarElement = elements.declareView(viewSpec(UrlBar.class, withId(R.id.url_bar)));
+        urlBarElement = declareView(viewSpec(UrlBar.class, withId(R.id.url_bar)));
     }
 
     public boolean isIncognito() {

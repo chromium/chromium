@@ -8,7 +8,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.transit.page.PageStation;
 
@@ -23,9 +22,9 @@ public class TabSwitcherTabCardFacility extends TabSwitcherCardFacility {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-        closeButtonElement = declareActionButton(elements);
+    public void declareExtraElements() {
+        super.declareExtraElements();
+        closeButtonElement = declareActionButton();
     }
 
     /** Clicks the tab card to show the page. */

@@ -8,7 +8,6 @@ import static org.chromium.base.test.transit.Condition.whether;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.LogicalElement;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
@@ -53,24 +52,22 @@ public class ViewportFitCoverPageStation extends WebPageStation {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
+    public void declareExtraElements() {
+        super.declareExtraElements();
 
         // Ensure the web page elements are drawn and visible.
-        mAvoidBottomElement =
-                elements.declareElement(new HtmlElement(AVOID_BOTTOM_DIV, webContentsElement));
+        mAvoidBottomElement = declareElement(new HtmlElement(AVOID_BOTTOM_DIV, webContentsElement));
         mFullScreenButtonElement =
-                elements.declareElement(
-                        new HtmlElement(FULLSCREEN_MAIN_BUTTON, webContentsElement));
+                declareElement(new HtmlElement(FULLSCREEN_MAIN_BUTTON, webContentsElement));
 
         // Declare requiring EdgeToEdgeController, meaning #setDecorFitsSystemWindows(false)
-        elements.declareEnterCondition(new EdgeToEdgeControllerCondition(mActivityElement));
+        declareEnterCondition(new EdgeToEdgeControllerCondition(mActivityElement));
 
         // Ensure the bottom chin is on display.
         Supplier<BottomControlsStacker> bottomControlsStacker =
-                elements.declareEnterConditionAsElement(
+                declareEnterConditionAsElement(
                         new BottomControlsStackerCondition(mActivityElement));
-        elements.declareElement(
+        declareElement(
                 LogicalElement.uiThreadLogicalElement(
                         "Bottom chin is not on display",
                         this::isBottomChinShowing,

@@ -18,7 +18,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
@@ -68,11 +67,11 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-        menuButtonElement = declareActionButton(elements);
+    public void declareExtraElements() {
+        super.declareExtraElements();
+        menuButtonElement = declareActionButton();
 
-        elements.declareEnterCondition(
+        declareEnterCondition(
                 new TabGroupExistsCondition(
                         mHostStation.isIncognito(),
                         mTabIdsToGroup,

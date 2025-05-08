@@ -16,7 +16,6 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import android.view.View;
 
 import org.chromium.base.test.transit.Condition;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
@@ -40,7 +39,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     public ViewElement<View> switchToIncognitoMenuItemElement;
 
     @Override
-    public void declareElements(Elements.Builder elements) {
+    public void declareExtraElements() {
         appMenuListElement = declareView(viewSpec(withId(R.id.app_menu_list)));
         closeTabMenuItemElement =
                 declareView(appMenuListElement.descendant(withText(R.string.close_tab)));

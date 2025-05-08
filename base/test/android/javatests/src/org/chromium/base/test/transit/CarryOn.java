@@ -14,7 +14,7 @@ import java.util.List;
 
 /** CarryOn is a lightweight, stand-alone ConditionalState not tied to any Station. */
 @NullMarked
-public abstract class CarryOn extends ConditionalState {
+public class CarryOn extends ConditionalState {
 
     private final int mId;
     private final String mName;
@@ -60,14 +60,11 @@ public abstract class CarryOn extends ConditionalState {
 
     /** Convenience method to create a CarryOn from one or more Conditions. */
     public static CarryOn fromConditions(Condition... conditions) {
-        return new CarryOn() {
-            @Override
-            public void declareElements(Elements.Builder elements) {
-                for (Condition condition : conditions) {
-                    elements.declareEnterCondition(condition);
-                }
-            }
-        };
+        CarryOn carryOn = new CarryOn();
+        for (Condition condition : conditions) {
+            carryOn.declareEnterCondition(condition);
+        }
+        return carryOn;
     }
 
     private static class Drop extends Transition {

@@ -13,7 +13,6 @@ import android.util.Pair;
 import android.view.View;
 
 import org.chromium.base.test.transit.Element;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
@@ -48,10 +47,10 @@ public class RegularNewTabPageStation extends PageStation {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
+    public void declareExtraElements() {
+        super.declareExtraElements();
 
-        elements.declareElementFactory(
+        declareElementFactory(
                 mActivityElement,
                 delayedElements -> {
                     if (mActivityElement.get().isTablet()) {
@@ -61,13 +60,13 @@ public class RegularNewTabPageStation extends PageStation {
                     }
                 });
 
-        logoElement = elements.declareView(viewSpec(withId(R.id.search_provider_logo)));
-        searchBoxElement = elements.declareView(viewSpec(withId(R.id.search_box)));
+        logoElement = declareView(viewSpec(withId(R.id.search_provider_logo)));
+        searchBoxElement = declareView(viewSpec(withId(R.id.search_box)));
 
         nativePageElement =
-                elements.declareEnterConditionAsElement(
+                declareEnterConditionAsElement(
                         new NativePageCondition<>(NewTabPage.class, loadedTabElement));
-        elements.declareEnterCondition(
+        declareEnterCondition(
                 SimpleConditions.uiThreadCondition(
                         "Regular NTP is loaded",
                         nativePageElement,

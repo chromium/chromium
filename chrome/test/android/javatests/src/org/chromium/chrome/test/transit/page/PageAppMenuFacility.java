@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import androidx.annotation.CallSuper;
-
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
@@ -39,15 +36,8 @@ public class PageAppMenuFacility<HostPageStationT extends PageStation>
     protected Item<SettingsStation> mSettings;
 
     @Override
-    @CallSuper
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-
-        // TODO: Declare top buttons (forward, reload, bookmark, etc.).
-    }
-
-    @Override
     protected void declareItems(ItemsBuilder items) {
+        // TODO: Declare top buttons (forward, reload, bookmark, etc.).
         // TODO: Declare more common menu items
 
         mNewTab = declareMenuItemToStation(items, NEW_TAB_ID, this::createNewTabPageStation);

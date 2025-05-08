@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 
 import org.hamcrest.Matcher;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
@@ -43,23 +42,23 @@ public abstract class TabSwitcherCardFacility extends Facility<TabSwitcherStatio
 
     @Override
     @CallSuper
-    public void declareElements(Elements.Builder elements) {
+    public void declareExtraElements() {
         Matcher<View> cardTitleMatcher =
                 allOf(withText(mTitle), withId(R.id.tab_title), withParent(withId(R.id.card_view)));
-        titleElement = elements.declareView(viewSpec(cardTitleMatcher));
+        titleElement = declareView(viewSpec(cardTitleMatcher));
 
         ViewSpec<View> cardSpec =
                 viewSpec(isAssignableFrom(TabGridView.class), hasDescendant(cardTitleMatcher));
-        cardViewElement = elements.declareView(cardSpec);
+        cardViewElement = declareView(cardSpec);
 
         if (mCardIndex != null) {
-            elements.declareEnterCondition(
+            declareEnterCondition(
                     new CardAtPositionCondition(
                             mCardIndex, mHostStation.recyclerViewElement, cardViewElement));
         }
     }
 
-    protected ViewElement<View> declareActionButton(Elements.Builder elements) {
-        return elements.declareView(cardViewElement.descendant(withId(R.id.action_button)));
+    protected ViewElement<View> declareActionButton() {
+        return declareView(cardViewElement.descendant(withId(R.id.action_button)));
     }
 }

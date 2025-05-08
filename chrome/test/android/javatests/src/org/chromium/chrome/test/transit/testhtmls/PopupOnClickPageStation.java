@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.testhtmls;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.chrome.test.transit.page.PageStation;
@@ -20,11 +19,8 @@ import org.chromium.content_public.browser.test.transit.HtmlElementSpec;
 public class PopupOnClickPageStation extends WebPageStation {
     public static final String PATH = "/chrome/test/data/android/popup_on_click.html";
 
-    public static final HtmlElementSpec LINK_TO_POPUP = new HtmlElementSpec("link");
-    public static final HtmlElementSpec LINK_TO_POPUP_WITH_BOUNDS =
-            new HtmlElementSpec("link_with_bounds");
-    private HtmlElement mLinkToPopup;
-    private HtmlElement mLinkToPopupWithBounds;
+    public HtmlElement linkToPopup;
+    public HtmlElement linkToPopupWithBounds;
 
     protected <T extends PopupOnClickPageStation> PopupOnClickPageStation(Builder<T> builder) {
         super(builder);
@@ -40,13 +36,15 @@ public class PopupOnClickPageStation extends WebPageStation {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
+    public void declareExtraElements() {
+        super.declareExtraElements();
 
-        mLinkToPopup = elements.declareElement(new HtmlElement(LINK_TO_POPUP, webContentsElement));
-        mLinkToPopupWithBounds =
-                elements.declareElement(
-                        new HtmlElement(LINK_TO_POPUP_WITH_BOUNDS, webContentsElement));
+        linkToPopup =
+                declareElement(new HtmlElement(new HtmlElementSpec("link"), webContentsElement));
+        linkToPopupWithBounds =
+                declareElement(
+                        new HtmlElement(
+                                new HtmlElementSpec("link_with_bounds"), webContentsElement));
     }
 
     /** Opens the same page as a pop-up (in Android, this means in a new tab). */
@@ -57,7 +55,7 @@ public class PopupOnClickPageStation extends WebPageStation {
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return travelToSync(newPage, mLinkToPopup.getClickTrigger());
+        return travelToSync(newPage, linkToPopup.getClickTrigger());
     }
 
     /** Opens a sample page as a pop-up with bounds and expects a new window to open. */
@@ -68,7 +66,7 @@ public class PopupOnClickPageStation extends WebPageStation {
                         .withExpectedUrlSubstring("simple.html")
                         .withExpectedTitle("Simple")
                         .build();
-        return spawnSync(newPage, mLinkToPopupWithBounds.getClickTrigger());
+        return spawnSync(newPage, linkToPopupWithBounds.getClickTrigger());
     }
 
     /**
@@ -78,6 +76,6 @@ public class PopupOnClickPageStation extends WebPageStation {
     public PopupBlockedMessageFacility clickLinkAndExpectPopupBlockedMessage() {
         return enterFacilitySync(
                 new PopupBlockedMessageFacility<PopupOnClickPageStation>(1),
-                mLinkToPopup.getClickTrigger());
+                linkToPopup.getClickTrigger());
     }
 }

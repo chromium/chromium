@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -41,13 +40,13 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
+    public void declareExtraElements() {
+        super.declareExtraElements();
         assert regularTabsButtonElement != null;
-        elements.declareEnterCondition(
+        declareEnterCondition(
                 new ViewElementMatchesCondition(regularTabsButtonElement, isSelected()));
         if (!mRegularTabsExist) {
-            elements.declareView(EMPTY_STATE_TEXT);
+            declareView(EMPTY_STATE_TEXT);
         }
     }
 

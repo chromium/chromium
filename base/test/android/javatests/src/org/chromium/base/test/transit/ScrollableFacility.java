@@ -59,7 +59,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
     @CallSuper
     @Override
-    public void declareElements(Elements.Builder elements) {
+    public void declareExtraElements() {
         mItems = new ArrayList<>();
         declareItems(new ItemsBuilder(mItems));
 
@@ -72,13 +72,13 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
                 switch (item.mPresence) {
                     case Presence.ABSENT:
                         assert item.mViewSpec != null;
-                        elements.declareNoView(item.mViewSpec.getViewMatcher());
+                        declareNoView(item.mViewSpec.getViewMatcher());
                         break;
                     case Presence.PRESENT_AND_ENABLED:
                     case Presence.PRESENT_AND_DISABLED:
                         assert item.mViewSpec != null;
                         assert item.mViewElementOptions != null;
-                        elements.declareView(item.mViewSpec, item.mViewElementOptions);
+                        declareView(item.mViewSpec, item.mViewElementOptions);
                         break;
                     case Presence.MAYBE_PRESENT:
                     case Presence.MAYBE_PRESENT_STUB:
@@ -449,8 +449,8 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         }
 
         @Override
-        public void declareElements(Elements.Builder elements) {
-            viewElement = elements.declareView(mItem.getViewSpec(), mItem.getViewElementOptions());
+        public void declareExtraElements() {
+            viewElement = declareView(mItem.getViewSpec(), mItem.getViewElementOptions());
         }
 
         /** Select the item and trigger its |selectHandler|. */

@@ -14,7 +14,6 @@ import android.view.View;
 
 import androidx.test.espresso.Espresso;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
@@ -48,37 +47,36 @@ public class OmniboxFacility extends Facility<PageStation> {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        elements.declareView(viewSpec(instanceOf(ScrimView.class)));
+    public void declareExtraElements() {
+        declareView(viewSpec(instanceOf(ScrimView.class)));
 
         // Unscoped elements exist in PageStations too.
         // Action buttons are 71% displayed in tablets (though the actual image is fully displayed).
         if (!mIncognito) {
             // Regular tab
-            statusIconElement = elements.declareView(STATUS_ICON, ViewElement.unscopedOption());
-            urlBarElement = elements.declareView(URL_FIELD, ViewElement.unscopedOption());
+            statusIconElement = declareView(STATUS_ICON, ViewElement.unscopedOption());
+            urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
             actionContainerElement =
-                    elements.declareView(
+                    declareView(
                             ACTION_CONTAINER,
                             ViewElement.newOptions().unscoped().displayingAtLeast(50).build());
-            micButtonElement =
-                    elements.declareView(MIC_BUTTON, ViewElement.displayingAtLeastOption(50));
-            elements.declareNoView(DELETE_BUTTON);
+            micButtonElement = declareView(MIC_BUTTON, ViewElement.displayingAtLeastOption(50));
+            declareNoView(DELETE_BUTTON);
         } else {
             if (mHostStation.getActivity().isTablet()) {
                 // Incognito tab in tablet
-                statusIconElement = elements.declareView(STATUS_ICON, ViewElement.unscopedOption());
-                urlBarElement = elements.declareView(URL_FIELD, ViewElement.unscopedOption());
-                elements.declareNoView(ACTION_CONTAINER);
-                elements.declareNoView(MIC_BUTTON);
-                elements.declareNoView(DELETE_BUTTON);
+                statusIconElement = declareView(STATUS_ICON, ViewElement.unscopedOption());
+                urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
+                declareNoView(ACTION_CONTAINER);
+                declareNoView(MIC_BUTTON);
+                declareNoView(DELETE_BUTTON);
             } else {
                 // Incognito tab in phone
-                elements.declareNoView(STATUS_ICON);
-                urlBarElement = elements.declareView(URL_FIELD, ViewElement.unscopedOption());
-                elements.declareNoView(ACTION_CONTAINER);
-                elements.declareNoView(MIC_BUTTON);
-                elements.declareNoView(DELETE_BUTTON);
+                declareNoView(STATUS_ICON);
+                urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
+                declareNoView(ACTION_CONTAINER);
+                declareNoView(MIC_BUTTON);
+                declareNoView(DELETE_BUTTON);
             }
         }
     }

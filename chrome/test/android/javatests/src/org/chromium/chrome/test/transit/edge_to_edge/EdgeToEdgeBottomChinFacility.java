@@ -7,7 +7,6 @@ package org.chromium.chrome.test.transit.edge_to_edge;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Element;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.UiThreadCondition;
@@ -43,19 +42,19 @@ public class EdgeToEdgeBottomChinFacility<CtaStationT extends Station<ChromeTabb
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
+    public void declareExtraElements() {
         edgeToEdgeControllerElement =
-                elements.declareEnterConditionAsElement(
+                declareEnterConditionAsElement(
                         new EdgeToEdgeControllerCondition(mHostStation.getActivityElement()));
         bottomControlsStackerElement =
-                elements.declareEnterConditionAsElement(
+                declareEnterConditionAsElement(
                         new BottomControlsStackerCondition(mHostStation.getActivityElement()));
         bottomChinElement =
-                elements.declareEnterConditionAsElement(
+                declareEnterConditionAsElement(
                         new BottomChinCondition(bottomControlsStackerElement));
 
         if (mExpectPageOptIn != null) {
-            elements.declareEnterCondition(
+            declareEnterCondition(
                     UiThreadCondition.from(
                             "Expected page opt-in edge to edge: " + mExpectPageOptIn,
                             this::isPageOptInEdgeToEdge));

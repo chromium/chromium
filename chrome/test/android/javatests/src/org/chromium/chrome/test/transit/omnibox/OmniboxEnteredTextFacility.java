@@ -8,7 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.view.View;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
@@ -28,15 +27,11 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
     public OmniboxEnteredTextFacility(OmniboxFacility omniboxFacility, String text) {
         mOmniboxFacility = omniboxFacility;
         mText = text;
-    }
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        urlBarElement = elements.declareView(OmniboxFacility.URL_FIELD.and(withText(mText)));
+        urlBarElement = declareView(OmniboxFacility.URL_FIELD.and(withText(mText)));
         deleteButtonElement =
-                elements.declareView(
-                        OmniboxFacility.DELETE_BUTTON, ViewElement.displayingAtLeastOption(50));
-        elements.declareNoView(OmniboxFacility.MIC_BUTTON);
+                declareView(OmniboxFacility.DELETE_BUTTON, ViewElement.displayingAtLeastOption(50));
+        declareNoView(OmniboxFacility.MIC_BUTTON);
     }
 
     /** Enter text into the omnibox. */

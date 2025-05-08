@@ -10,7 +10,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Element;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -63,24 +62,22 @@ public class WebPageStation extends PageStation {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
+    public void declareExtraElements() {
+        super.declareExtraElements();
 
         webContentsElement =
-                elements.declareEnterConditionAsElement(
-                        new WebContentsPresentCondition(loadedTabElement));
-        elements.declareEnterCondition(new FrameInfoUpdatedCondition(webContentsElement));
+                declareEnterConditionAsElement(new WebContentsPresentCondition(loadedTabElement));
+        declareEnterCondition(new FrameInfoUpdatedCondition(webContentsElement));
 
         if (!mIgnoreUrlBar) {
             // TODO(crbug.com/41497463): This should be shared, not unscoped, but the toolbar exists
             // in the tab switcher and it is not completely occluded.
-            urlBarElement = elements.declareView(URL_BAR, ViewElement.unscopedOption());
+            urlBarElement = declareView(URL_BAR, ViewElement.unscopedOption());
         }
 
         // Make sure that the new tab page is not considered a WebPageStation
         List<String> prohibitedUrls = List.of("chrome://newtab", "chrome-native://newtab");
-        elements.declareEnterCondition(
-                new PageUrlDoesNotMatchCondition(prohibitedUrls, loadedTabElement));
+        declareEnterCondition(new PageUrlDoesNotMatchCondition(prohibitedUrls, loadedTabElement));
     }
 
     /** Condition to check the page url does not match any of the prohibited urls. */

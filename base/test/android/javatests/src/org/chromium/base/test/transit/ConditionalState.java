@@ -77,12 +77,24 @@ public abstract class ConditionalState {
      * constructor and/or override this method.
      *
      * @param elements use the #declare___() methods to describe the Elements that define the state.
+     * @deprecated Declare elements in the constructor or in{@link #declareExtraElements()}.
      */
+    @Deprecated
     public void declareElements(Elements.Builder elements) {}
+
+    /**
+     * Declare extra {@link Element}s that define this ConditionalState, such as Views.
+     *
+     * <p>Transit-layer {@link Station}s and {@link Facility}s can declare Elements in their
+     * constructor and/or override this method. This method is called after binding a Facility to a
+     * Station, so some elements are easier to declare here.
+     */
+    public void declareExtraElements() {}
 
     Elements getElements() {
         if (!mDeclareElementsCalled) {
             declareElements(mElements);
+            declareExtraElements();
             mElements.consolidate();
             mDeclareElementsCalled = true;
         }

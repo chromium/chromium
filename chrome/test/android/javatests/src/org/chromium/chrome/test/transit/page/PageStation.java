@@ -16,7 +16,6 @@ import android.widget.ImageButton;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.transit.ViewElement;
@@ -78,10 +77,10 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
+    public void declareExtraElements() {
+        super.declareExtraElements();
 
-        elements.declareEnterCondition(
+        declareEnterCondition(
                 new LayoutTypeVisibleCondition(mActivityElement, LayoutType.BROWSING));
 
         // TODO(crbug.com/41497463): These should be scoped, but for now they need to be unscoped
@@ -89,17 +88,17 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
         // occluded by the tab switcher toolbar, but at least the tab_switcher_button is still
         // visible.
         toolbarElement =
-                elements.declareView(
+                declareView(
                         viewSpec(ToolbarControlContainer.class, withId(R.id.control_container)),
                         ViewElement.unscopedOption());
-        elements.declareView(
+        declareView(
                 viewSpec(HomeButton.class, withId(R.id.home_button)), ViewElement.unscopedOption());
         tabSwitcherButtonElement =
-                elements.declareView(
+                declareView(
                         viewSpec(ToggleTabStackButton.class, withId(R.id.tab_switcher_button)),
                         ViewElement.unscopedOption());
         menuButtonElement =
-                elements.declareView(
+                declareView(
                         viewSpec(ImageButton.class, withId(R.id.menu_button)),
                         ViewElement.unscopedOption());
     }
