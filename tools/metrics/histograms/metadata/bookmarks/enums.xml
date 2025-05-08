@@ -110,6 +110,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Help center"/>
   <int value="21" label="Open bookmark (via double-click / enter)"/>
   <int value="22" label="Open folder (via double-click / enter)"/>
+  <int value="23" label="Open in split view"/>
 </enum>
 
 <!-- LINT.IfChange(BookmarkReorderDropTarget) -->

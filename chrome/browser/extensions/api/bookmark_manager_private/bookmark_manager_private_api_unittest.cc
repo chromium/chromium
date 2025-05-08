@@ -109,7 +109,7 @@ TEST_F(BookmarkManagerPrivateApiUnitTest, RunCutOnPermanentNode) {
 TEST_F(BookmarkManagerPrivateApiUnitTest, RunOpenInNewTabFunction) {
   auto new_tab_function =
       base::MakeRefCounted<BookmarkManagerPrivateOpenInNewTabFunction>();
-  std::string args = base::StringPrintf(R"(["%s", false])", node_id().c_str());
+  std::string args = base::StringPrintf(R"(["%s"])", node_id().c_str());
   ASSERT_TRUE(
       api_test_utils::RunFunction(new_tab_function.get(), args, profile()));
 
@@ -122,7 +122,7 @@ TEST_F(BookmarkManagerPrivateApiUnitTest, RunOpenInNewTabFunctionFolder) {
       base::MakeRefCounted<BookmarkManagerPrivateOpenInNewTabFunction>();
   std::string node_id =
       base::NumberToString(model()->bookmark_bar_node()->id());
-  std::string args = base::StringPrintf(R"(["%s", false])", node_id.c_str());
+  std::string args = base::StringPrintf(R"(["%s"])", node_id.c_str());
   EXPECT_EQ("Cannot open a folder in a new tab.",
             api_test_utils::RunFunctionAndReturnError(new_tab_function.get(),
                                                       args, profile()));
