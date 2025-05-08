@@ -564,7 +564,7 @@ public class CustomTabActivityTest {
     @Feature({"UiCatalogue"})
     @DisabledTest(message = "https://crbug.com/40898152")
     public void testMultipleActionButtons() throws TimeoutException {
-        Bitmap expectedIcon1 = createVectorDrawableBitmap(R.drawable.ic_content_copy_black, 48, 48);
+        Bitmap expectedIcon1 = createVectorDrawableBitmap(R.drawable.ic_content_copy, 48, 48);
         Bitmap expectedIcon2 =
                 createVectorDrawableBitmap(R.drawable.ic_email_googblue_36dp, 48, 48);
         Intent intent = createMinimalCustomTabIntent();

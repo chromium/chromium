@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.Clipboard;
@@ -227,7 +228,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
     private FirstPartyOption createCopyImageWithLinkFirstPartyOption() {
         return new FirstPartyOptionBuilder(ContentType.IMAGE_AND_LINK)
-                .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_image_with_link)
+                .setIcon(R.drawable.ic_content_copy, R.string.sharing_copy_image_with_link)
                 .setShareActionType(ShareCustomAction.COPY_IMAGE_WITH_LINK)
                 .setFeatureNameForMetrics(USER_ACTION_SHARE_COPY_IMAGE_WITH_LINK_SELECTED)
                 .setOnClickCallback(
@@ -278,9 +279,12 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     }
 
     private ChromeCustomShareAction shareActionFromFirstPartyOption(FirstPartyOption option) {
+        Icon icon = Icon.createWithResource(mActivity, option.icon);
+        icon.setTint(SemanticColorUtils.getDefaultIconColor(mActivity));
+
         return new ChromeCustomShareAction(
                 option.featureNameForMetrics,
-                Icon.createWithResource(mActivity, option.icon),
+                icon,
                 mActivity.getResources().getString(option.iconLabel),
                 () -> {
                     ShareMetricsUtils.recordShareUserAction(

@@ -145,7 +145,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                                 this::onShareLink),
                         new Action(
                                 OmniboxDrawableState.forSmallIcon(
-                                        mContext, R.drawable.ic_content_copy_black, true),
+                                        mContext, R.drawable.ic_content_copy, true),
                                 OmniboxResourceProvider.getString(
                                         mContext,
                                         isSearch

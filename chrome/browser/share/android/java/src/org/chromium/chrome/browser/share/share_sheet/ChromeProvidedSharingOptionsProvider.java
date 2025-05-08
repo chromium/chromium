@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.share_sheet;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -131,8 +133,13 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
     private PropertyModel getShareSheetModel(FirstPartyOption option) {
         boolean hideBottomSheetContentOnTap = hideBottomSheetContentOnTap(option);
 
+        Drawable icon = AppCompatResources.getDrawable(mActivity, option.icon);
+        if (icon != null) {
+            icon.setTint(SemanticColorUtils.getDefaultIconColor(mActivity));
+        }
+
         return ShareSheetPropertyModelBuilder.createPropertyModel(
-                AppCompatResources.getDrawable(mActivity, option.icon),
+                icon,
                 mActivity.getResources().getString(option.iconLabel),
                 option.iconContentDescription,
                 (view) -> {
