@@ -22,6 +22,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_RULE_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_RULE_LIST_H_
 
+#include <tuple>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -32,8 +34,10 @@ namespace blink {
 
 class CSSRule;
 class CSSStyleSheet;
+class TreeScope;
 
-using RuleIndexList = GCedHeapVector<std::pair<Member<CSSRule>, int>>;
+using RuleIndexList =
+    GCedHeapVector<std::tuple<Member<CSSRule>, Member<const TreeScope>, int>>;
 
 class CSSRuleList : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();

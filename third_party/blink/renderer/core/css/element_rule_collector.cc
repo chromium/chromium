@@ -1174,7 +1174,8 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
     // will not try to edit them.
     css_rule = rule->CreateCSSOMWrapper(position);
   }
-  EnsureRuleList()->emplace_back(css_rule, matched_rule.SelectorIndex());
+  EnsureRuleList()->emplace_back(css_rule, tree_scope_containing_rule,
+                                 matched_rule.SelectorIndex());
 }
 
 void ElementRuleCollector::SortAndTransferMatchedRules(

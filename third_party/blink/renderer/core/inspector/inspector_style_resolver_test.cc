@@ -51,11 +51,11 @@ TEST_F(InspectorStyleResolverTest, DirectlyMatchedRules) {
   RuleIndexList* matched_rules = resolver.MatchedRules();
   // Some rules are coming for UA.
   EXPECT_EQ(matched_rules->size(), 3u);
-  auto rule = matched_rules->at(2);
+  CSSRule* rule = std::get<0>(matched_rules->at(2));
   EXPECT_EQ(
       "#grid { display: grid; gap: 10px; grid-template-columns: 100px 1fr 20%; "
       "}",
-      rule.first->cssText());
+      rule->cssText());
 }
 
 TEST_F(InspectorStyleResolverTest, ParentRules) {
@@ -88,8 +88,8 @@ TEST_F(InspectorStyleResolverTest, ParentRules) {
   EXPECT_EQ(parent_rules.at(0)->element, grid_container);
   // Some rules are coming from UA.
   EXPECT_EQ(parent_rules.at(0)->matched_rules->size(), 3u);
-  auto rule = parent_rules.at(0)->matched_rules->at(2);
-  EXPECT_EQ(rule.first->cssText(),
+  CSSRule* rule = std::get<0>(parent_rules.at(0)->matched_rules->at(2));
+  EXPECT_EQ(rule->cssText(),
             "#grid-container { display: inline-grid; gap: 5px; "
             "grid-template-columns: 50px 1fr 10%; }");
 }
@@ -146,16 +146,18 @@ TEST_F(InspectorStyleResolverTest, HighlightPseudoInheritance) {
   EXPECT_EQ(
       2u,
       parent_pseudos.at(0)->pseudo_element_rules.at(0)->matched_rules->size());
-  EXPECT_EQ("#middle::highlight(foo) { color: red; }",
-            parent_pseudos.at(0)
-                ->pseudo_element_rules.at(0)
-                ->matched_rules->at(0)
-                .first->cssText());
-  EXPECT_EQ("#middle::highlight(bar) { color: orange; }",
-            parent_pseudos.at(0)
-                ->pseudo_element_rules.at(0)
-                ->matched_rules->at(1)
-                .first->cssText());
+  EXPECT_EQ(
+      "#middle::highlight(foo) { color: red; }",
+      std::get<Member<CSSRule>>(
+          parent_pseudos.at(0)->pseudo_element_rules.at(0)->matched_rules->at(
+              0))
+          ->cssText());
+  EXPECT_EQ(
+      "#middle::highlight(bar) { color: orange; }",
+      std::get<Member<CSSRule>>(
+          parent_pseudos.at(0)->pseudo_element_rules.at(0)->matched_rules->at(
+              1))
+          ->cssText());
 
   // <div>
   EXPECT_EQ(0u, parent_pseudos.at(1)->pseudo_element_rules.size());
@@ -168,11 +170,12 @@ TEST_F(InspectorStyleResolverTest, HighlightPseudoInheritance) {
   EXPECT_EQ(
       1u,
       parent_pseudos.at(2)->pseudo_element_rules.at(0)->matched_rules->size());
-  EXPECT_EQ("#outer::selection { color: limegreen; }",
-            parent_pseudos.at(2)
-                ->pseudo_element_rules.at(0)
-                ->matched_rules->at(0)
-                .first->cssText());
+  EXPECT_EQ(
+      "#outer::selection { color: limegreen; }",
+      std::get<Member<CSSRule>>(
+          parent_pseudos.at(2)->pseudo_element_rules.at(0)->matched_rules->at(
+              0))
+          ->cssText());
 
   // <body>
   EXPECT_EQ(body, parent_pseudos.at(3)->element);

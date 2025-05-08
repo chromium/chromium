@@ -837,8 +837,8 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
 
     // The resolver collects developer and UA rules.
     EXPECT_GT(pseudo_element_rules->size(), 1u);
-    EXPECT_EQ(pseudo_element_rules->back().first->cssText(),
-              test_case.user_rule);
+    CSSRule* rule = std::get<0>(pseudo_element_rules->back());
+    EXPECT_EQ(rule->cssText(), test_case.user_rule);
   }
 
   InspectorStyleResolver parent_resolver(GetDocument().documentElement(),
@@ -871,8 +871,8 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     auto pseudo_element_rules = matched_rules_for_pseudo->matched_rules;
     // The resolver collects developer and UA rules.
     EXPECT_GT(pseudo_element_rules->size(), 1u);
-    EXPECT_EQ(pseudo_element_rules->back().first->cssText(),
-              test_case.user_rule);
+    CSSRule* rule = std::get<0>(pseudo_element_rules->back());
+    EXPECT_EQ(rule->cssText(), test_case.user_rule);
   }
 
   FinishTransition();

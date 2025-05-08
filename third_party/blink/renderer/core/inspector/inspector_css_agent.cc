@@ -237,7 +237,7 @@ HeapVector<Member<CSSStyleRule>> FilterDuplicateRules(
   HeapVector<Member<CSSStyleRule>> uniq_rules;
   HeapHashSet<Member<CSSRule>> uniq_rules_set;
   for (unsigned i = rule_list ? rule_list->size() : 0; i > 0; --i) {
-    CSSRule* rule = rule_list->at(i - 1).first;
+    CSSRule* rule = std::get<0>(rule_list->at(i - 1));
     auto* style_rule = DynamicTo<CSSStyleRule>(rule);
     if (!style_rule || uniq_rules_set.Contains(rule))
       continue;
@@ -1599,8 +1599,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
       resolver.MatchedRules()) {
     HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>
         function_hash_map;
-    CollectReferencedFunctionRules(document,
-                                   *css_style_sheets_for_document_it->value,
+    CollectReferencedFunctionRules(*css_style_sheets_for_document_it->value,
                                    *resolver.MatchedRules(), function_hash_map);
     if (!function_hash_map.empty()) {
       *css_function_rules =
@@ -3847,7 +3846,7 @@ InspectorCSSAgent::BuildArrayForMatchedRuleList(
   HeapHashMap<Member<CSSStyleRule>, std::unique_ptr<Vector<unsigned>>>
       rule_indices;
   for (auto it = rule_list->rbegin(); it != rule_list->rend(); ++it) {
-    CSSRule* rule = it->first;
+    CSSRule* rule = std::get<0>(*it);
     auto* style_rule = DynamicTo<CSSStyleRule>(rule);
     if (!style_rule)
       continue;
@@ -3856,7 +3855,9 @@ InspectorCSSAgent::BuildArrayForMatchedRuleList(
       uniq_rules.push_back(style_rule);
       rule_indices.Set(style_rule, std::make_unique<Vector<unsigned>>());
     }
-    rule_indices.at(style_rule)->push_back(it->second);
+
+    int index = std::get<2>(*it);
+    rule_indices.at(style_rule)->push_back(index);
   }
 
   for (auto it = uniq_rules.rbegin(); it != uniq_rules.rend(); ++it) {
@@ -4461,16 +4462,10 @@ class TransitiveFunctionCollector {
   // TreeScope may or may not be the same as the TreeScope of `dashed_function`.
   std::pair<StyleRuleFunction*, const TreeScope*> LookupFunction(
       const ScopedCSSName& dashed_function) {
-    // TODO(crbug.com/394111301): Do a proper tree-scoped lookup here.
-    // https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference
-    if (ScopedStyleResolver* scoped_resolver =
-            dashed_function.GetTreeScope()->GetScopedStyleResolver()) {
-      StyleRuleFunction* function =
-          scoped_resolver->FunctionForName(dashed_function.GetName());
-      const TreeScope* tree_scope = dashed_function.GetTreeScope();
-      return {function, tree_scope};
-    }
-    return {nullptr, nullptr};
+    StyleEngine& style_engine =
+        dashed_function.GetTreeScope()->GetDocument().GetStyleEngine();
+    return style_engine.FindFunctionAcrossScopes(
+        dashed_function.GetName(), dashed_function.GetTreeScope());
   }
 
   // Note that this implicitly uses HashTraits which compares keys by value
@@ -4483,18 +4478,20 @@ class TransitiveFunctionCollector {
 
 // static
 void InspectorCSSAgent::CollectReferencedFunctionRules(
-    Document& document,
     const HeapHashSet<Member<CSSStyleSheet>>& document_style_sheets,
     const RuleIndexList& rule_list,
     HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>& result) {
   TransitiveFunctionCollector collector;
-  for (const auto& [rule, index] : rule_list) {
-    // TODO(crbug.com/395798203): This should be the originating TreeScope
-    // for `rule`. We don't yet have this information here.
-    const TreeScope& tree_scope = document;
+  for (const auto& [rule, tree_scope, index] : rule_list) {
+    if (!tree_scope) {
+      // The tree-scope is nullptr for UA rules. At-rules are generally
+      // not supported in UA sheets, so there should be no custom function
+      // calls there either.
+      continue;
+    }
     if (const auto* style_rule = DynamicTo<CSSStyleRule>(*rule)) {
       collector.CollectFromPropertySet(
-          tree_scope, style_rule->GetStyleRule()->Properties());
+          *tree_scope, style_rule->GetStyleRule()->Properties());
     }
   }
 

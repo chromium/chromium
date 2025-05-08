@@ -131,7 +131,6 @@ class CORE_EXPORT InspectorCSSAgent final
   // the rule list, and the CSSFunctionRules that resulted from looking up
   // those function references.
   static void CollectReferencedFunctionRules(
-      Document&,
       const HeapHashSet<Member<CSSStyleSheet>>& document_style_sheets,
       const RuleIndexList&,
       HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>&
