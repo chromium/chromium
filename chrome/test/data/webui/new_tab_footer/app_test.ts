@@ -6,6 +6,7 @@ import 'chrome://newtab-footer/app.js';
 
 import type {NewTabFooterAppElement} from 'chrome://newtab-footer/app.js';
 import {NewTabFooterDocumentProxy} from 'chrome://newtab-footer/browser_proxy.js';
+import type {ManagementNotice, NewTabFooterDocumentRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -14,18 +15,22 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 suite('NewTabFooterAppTest', () => {
   let element: NewTabFooterAppElement;
   let handler: TestMock<NewTabFooterHandlerRemote>&NewTabFooterHandlerRemote;
+  let callbackRouter: NewTabFooterDocumentRemote;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(NewTabFooterHandlerRemote);
     NewTabFooterDocumentProxy.setInstance(
         handler, new NewTabFooterDocumentCallbackRouter());
+    callbackRouter = NewTabFooterDocumentProxy.getInstance()
+                         .callbackRouter.$.bindNewPipeAndPassRemote();
   });
 
   async function initializeElement() {
     element = document.createElement('new-tab-footer-app');
     document.body.appendChild(element);
     await microtasksFinished();
+    await handler.whenCalled('updateManagementNotice');
   }
 
   test('Get extension attibution on initialization', async () => {
@@ -42,5 +47,25 @@ suite('NewTabFooterAppTest', () => {
     const attributionLink = attribution.querySelector('a');
     assertEquals(attributionLink!.href, 'chrome://extensions/?id=1234');
     assertEquals(attributionLink!.innerText, 'foo');
+  });
+
+  test('Get management notice on initialization', async () => {
+    // Arrange.
+    await initializeElement();
+    const managementNotice:
+        ManagementNotice = {text: 'Managed by your organization'};
+    callbackRouter.setManagementNotice(managementNotice);
+    await callbackRouter.$.flushForTesting();
+
+    // Assert.
+    // const managementNoticeContainer =
+    //     element.shadowRoot.querySelector('#managementNoticeContainer');
+    // assertTrue(!!managementNoticeContainer);
+    const managementNoticeText =
+        element.shadowRoot.querySelector('#managementNoticeText');
+    assertTrue(!!managementNoticeText);
+
+    assertEquals(
+        managementNoticeText.textContent, 'Managed by your organization');
   });
 });

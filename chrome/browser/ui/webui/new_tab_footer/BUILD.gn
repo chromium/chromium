@@ -23,8 +23,12 @@ source_set("impl") {
     "new_tab_footer_handler.cc",
     "new_tab_footer_ui.cc",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     ":new_tab_footer",
+    "//chrome/browser:browser_process",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/browser/resources/new_tab_footer:resources_grit",
@@ -40,6 +44,7 @@ source_set("unit_tests") {
   deps = [
     ":new_tab_footer",
     "//base/test:test_support",
+    "//chrome/browser/ui:ui_features",
     "//chrome/test:test_support",
   ]
 }

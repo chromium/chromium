@@ -19,7 +19,8 @@
 }
 
 #centerContainer > div > p,
-#centerContainer > div > a {
+#centerContainer > div > a,
+#managementNoticeText > p {
   color: var(--color-new-tab-footer-text);
   display: inline-block;
   font-size: 13px;

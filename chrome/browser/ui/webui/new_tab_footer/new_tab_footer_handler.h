@@ -31,8 +31,11 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler {
   // new_tab_footer::mojom::NewTabFooterHandler:
   void GetNtpExtensionAttribution(
       GetNtpExtensionAttributionCallback callback) override;
+  void UpdateManagementNotice() override;
 
  private:
+  std::string GetManagementNoticeText();
+
   const raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   mojo::Remote<new_tab_footer::mojom::NewTabFooterDocument> document_;

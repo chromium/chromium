@@ -6,11 +6,24 @@
 
 #include <utility>
 
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/web_ui_util.h"
 
 NewTabFooterHandler::NewTabFooterHandler(
     mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
@@ -40,4 +53,35 @@ void NewTabFooterHandler::GetNtpExtensionAttribution(
   ;
   attribution->name = ntp_extension->name();
   std::move(callback).Run(std::move(attribution));
+}
+
+void NewTabFooterHandler::UpdateManagementNotice() {
+  if (!enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_)) {
+    document_->SetManagementNotice(nullptr);
+    return;
+  }
+
+  auto notice = new_tab_footer::mojom::ManagementNotice::New();
+  notice->text = GetManagementNoticeText();
+  document_->SetManagementNotice(std::move(notice));
+}
+
+std::string NewTabFooterHandler::GetManagementNoticeText() {
+  CHECK(enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_));
+
+  // Return "Managed by <label>" if custom label is set.
+  std::string custom_label = g_browser_process->local_state()->GetString(
+      prefs::kEnterpriseCustomLabelForBrowser);
+  if (!custom_label.empty()) {
+    return l10n_util::GetStringFUTF8(IDS_MANAGED_BY,
+                                     base::UTF8ToUTF16(custom_label));
+  }
+
+  // Return "Managed by <management domain>" if a cloud manager is known.
+  // Otherwise return the generic "Managed by your organization" message.
+  std::optional<std::string> cloud_policy_manager = GetDeviceManagerIdentity();
+  return cloud_policy_manager && !cloud_policy_manager->empty()
+             ? l10n_util::GetStringFUTF8(
+                   IDS_MANAGED_BY, base::UTF8ToUTF16(*cloud_policy_manager))
+             : l10n_util::GetStringUTF8(IDS_MANAGED);
 }
