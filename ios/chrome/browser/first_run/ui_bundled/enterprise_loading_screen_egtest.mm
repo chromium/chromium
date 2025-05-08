@@ -114,8 +114,7 @@ constexpr char kEnrollmentToken[] = "enrollment_token";
 
 // Ensures that the loading screen is dismissed when registration and policy
 // fetch succeed.
-// TODO(crbug.com/40255277): Flaky.
-- (void)FLAKY_testLoadingScreenDismissedByPolicyFetchSuccess {
+- (void)testLoadingScreenDismissedByPolicyFetchSuccess {
   [self configureAppWithEnrollmentTokenValid:YES];
   [self verifyLoadingScreenIsDismissed];
   GREYAssertTrue([PolicyAppInterface isCloudPolicyClientRegistered],
@@ -123,8 +122,7 @@ constexpr char kEnrollmentToken[] = "enrollment_token";
 }
 
 // Ensures that the loading screen is dismissed when registration fails.
-// TODO(crbug.com/40255277): Flaky.
-- (void)FLAKY_testLoadingScreenDismissedByRegisterFail {
+- (void)testLoadingScreenDismissedByRegisterFail {
   [self configureAppWithEnrollmentTokenValid:NO];
   [self verifyLoadingScreenIsDismissed];
   GREYAssertFalse(
