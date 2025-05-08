@@ -8,6 +8,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
@@ -15,6 +16,7 @@
 
 namespace {
 base::TimeDelta kPromoAppearanceTimeout = base::Seconds(7);
+NSString* const kDefaultBrowserKey = @"DefaultBrowserUtils";
 
 // Matcher for the title.
 id<GREYMatcher> TitleMatcher() {
@@ -41,21 +43,6 @@ id<GREYMatcher> SecondaryActionMatcher() {
 
 @implementation PostRestoreDefaultBrowserPromoTestCase
 
-- (void)setUp {
-  [[self class] testForStartup];
-  [super setUp];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  // Override trigger requirements to force the promo to appear.
-  config.additional_args.push_back("-NextPromoForDisplayOverride");
-  config.additional_args.push_back(
-      "promos_manager::Promo::PostRestoreDefaultBrowserAlert");
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  return config;
-}
-
 #pragma mark - Helpers
 
 - (void)checkThatCommonElementsAreVisible {
@@ -76,16 +63,49 @@ id<GREYMatcher> SecondaryActionMatcher() {
       assertWithMatcher:grey_notVisible()];
 }
 
+- (void)simulateRestore {
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kSimulatePostDeviceRestore);
+
+  // The post-restore default browser alert is a promo, and promo are
+  // implemented as IPH. All IPH are disabled by default in EGtests. This flag
+  // enable this particular IPH.
+  config.iph_feature_enabled = "IPH_iOSPromoPostRestoreDefaultBrowser";
+
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+}
+
 #pragma mark - Tests
 
-// Verifies that the secondary action button opens dismisses the promo.
-// TODO(crbug.com/40929054): re-enable once test is no longer flaky.
-- (void)DISABLED_testDismiss {
+// Verifies that the promo appears for users who had Chrome set as their default
+// browser before a restore. Verifies that secondary action button dismisses the
+// promo.
+- (void)testPromoAppears {
+  // Simulate setting Chrome as default browser.
+  NSMutableDictionary<NSString*, NSObject*>* storage = [[ChromeEarlGrey
+      userDefaultsObjectForKey:kDefaultBrowserKey] mutableCopy];
+  storage[@"lastHTTPURLOpenTime"] = [NSDate date];
+  [ChromeEarlGrey setUserDefaultsObject:storage forKey:kDefaultBrowserKey];
+
+  [self simulateRestore];
+
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TitleMatcher()
                                               timeout:kPromoAppearanceTimeout];
   [self checkThatCommonElementsAreVisible];
   [[EarlGrey selectElementWithMatcher:SecondaryActionMatcher()]
       performAction:grey_tap()];
+  [self checkThatCommonElementsAreNotVisible];
+
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:kDefaultBrowserKey];
+}
+
+// Verifies that the promo does not appear after a restore if the user did not
+// previously set Chrome as their default browser.
+- (void)testPromoDoesNotAppear_defaultBrowserNotEnabled {
+  [self simulateRestore];
   [self checkThatCommonElementsAreNotVisible];
 }
 
