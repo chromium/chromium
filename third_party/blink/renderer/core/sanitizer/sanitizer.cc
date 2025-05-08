@@ -445,6 +445,11 @@ void Sanitizer::Sanitize(Node* root, bool safe) const {
       case Node::NodeType::kCommentNode:
         action = allow_comments_ ? kKeep : kDrop;
         break;
+      case Node::NodeType::kDocumentTypeNode:
+        // Should only happen when parsing full documents w/ parseHTML.
+        DCHECK(root->IsDocumentNode());
+        action = kKeep;
+        break;
 
       default:
         NOTREACHED();
