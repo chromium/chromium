@@ -15,13 +15,15 @@ found in the LICENSE file.
     android:layout_marginTop="4dp"
     android:layout_marginBottom="8dp"
     android:layout_gravity="top"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:importantForAccessibility="no">
     <LinearLayout
         android:id="@+id/header"
         android:descendantFocusability="afterDescendants"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="true"
+        android:focusable="false"
+        android:importantForAccessibility="no"
         android:orientation="vertical">
         <LinearLayout
             android:descendantFocusability="afterDescendants"

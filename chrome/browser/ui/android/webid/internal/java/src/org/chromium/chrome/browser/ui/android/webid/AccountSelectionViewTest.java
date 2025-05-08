@@ -551,6 +551,16 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         }
     }
 
+    @Test
+    public void testContentDescription() {
+        mModel.set(
+                ItemProperties.CONTINUE_BUTTON,
+                buildContinueButton(mAnaAccount, mIdpMetadata, HeaderType.SIGN_IN));
+        // Check that there is not a period in the content description since one will be appended.
+        assertEquals(
+                "Sign in bottom sheet", mBottomSheetContent.getSheetContentDescription(mContext));
+    }
+
     private RecyclerView getAccounts() {
         return mContentView.findViewById(R.id.sheet_item_list);
     }

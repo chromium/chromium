@@ -6413,16 +6413,16 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Continue as <ph name="NAME">%1$s<ex>Albus (or Albus Dumbledore)</ex></ph>
       </message>
       <message name="IDS_ACCOUNT_SELECTION_CONTENT_DESCRIPTION" desc="Accessibility string read when the Account Selection bottom sheet is opened. It describes the bottom sheet where a user can pick an account." is_accessibility_with_no_ui="true">
-        Sign in bottom sheet.
+        Sign in bottom sheet
       </message>
       <message name="IDS_ACCOUNT_SELECTION_SHEET_HALF_HEIGHT" desc="Accessibility string read when the Account Selection bottom sheet showing a list of the user's accounts is opened at half height. The sheet will occupy the bottom half the screen." is_accessibility_with_no_ui="true">
-        Sign in bottom sheet opened at half height.
+        Sign in bottom sheet opened at half height
       </message>
       <message name="IDS_ACCOUNT_SELECTION_SHEET_FULL_HEIGHT" desc="Accessibility string read when the Account Selection bottom sheet showing a list of the user's accounts is opened at full height. The sheet will occupy the entire screen." is_accessibility_with_no_ui="true">
-        Sign in bottom sheet opened at full height.
+        Sign in bottom sheet opened at full height
       </message>
       <message name="IDS_ACCOUNT_SELECTION_SHEET_CLOSED" desc="Accessibility string read when the Account Selection bottom sheet showing a list of the user's accounts is closed." is_accessibility_with_no_ui="true">
-        Sign in bottom sheet is closed.
+        Sign in bottom sheet is closed
       </message>
       <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_BODY" desc="Body for mismatch dialog which is shown to prompt the user to sign in to a website using an account from an identity provider.">
         You can use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> account on this site. To continue, sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph>.
