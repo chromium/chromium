@@ -16,6 +16,8 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -349,7 +351,9 @@ class TestFetchClientSettingsObject : public FetchClientSettingsObject {
   // These are not used in test, but need to be implemented since they are pure
   // virtual.
   const KURL& BaseUrl() const override { return url; }
-  const SecurityOrigin* GetSecurityOrigin() const override { return nullptr; }
+  const SecurityOrigin* GetSecurityOrigin() const override {
+    return origin_.get();
+  }
   network::mojom::ReferrerPolicy GetReferrerPolicy() const override {
     return network::mojom::ReferrerPolicy::kAlways;
   }
@@ -362,10 +366,19 @@ class TestFetchClientSettingsObject : public FetchClientSettingsObject {
       const override {
     return set;
   }
+  void SetSecurityOrigin(String origin_url, String reference_origin) {
+    KURL origin_kurl(origin_url);
+    scoped_refptr<SecurityOrigin> reference =
+        SecurityOrigin::CreateFromString(reference_origin);
+    origin_ = SecurityOrigin::CreateWithReferenceOrigin(KURL(origin_url),
+                                                        reference.get());
+  }
+  scoped_refptr<SecurityOrigin> GetSecurityOrigin() { return origin_; }
 
  private:
   const KURL url = KURL("https://example.test");
   const InsecureNavigationsSet set;
+  scoped_refptr<SecurityOrigin> origin_;
 };
 
 TEST(MixedContentCheckerTest,
@@ -376,12 +389,17 @@ TEST(MixedContentCheckerTest,
   request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
   TestFetchClientSettingsObject* settings =
       MakeGarbageCollected<TestFetchClientSettingsObject>();
+  settings->SetSecurityOrigin("https://example.test", "");
   // Used to get a non-null document.
   DummyPageHolder holder;
+  holder.GetFrame()
+      .DomWindow()
+      ->GetSecurityContext()
+      .SetSecurityOriginForTesting(settings->GetSecurityOrigin());
 
   MixedContentChecker::UpgradeInsecureRequest(
       request, settings, holder.GetDocument().GetExecutionContext(),
-      mojom::RequestContextFrameType::kTopLevel, nullptr);
+      mojom::RequestContextFrameType::kTopLevel, nullptr, &holder.GetFrame());
 
   EXPECT_FALSE(request.IsAutomaticUpgrade());
   EXPECT_TRUE(request.UpgradeIfInsecure());
@@ -394,12 +412,18 @@ TEST(MixedContentCheckerTest, AutoupgradedMixedContentHasUpgradeIfInsecureSet) {
   request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
   TestFetchClientSettingsObject* settings =
       MakeGarbageCollected<TestFetchClientSettingsObject>();
+  settings->SetSecurityOrigin("https://example.test", "");
+
   // Used to get a non-null document.
   DummyPageHolder holder;
+  holder.GetFrame()
+      .DomWindow()
+      ->GetSecurityContext()
+      .SetSecurityOriginForTesting(settings->GetSecurityOrigin());
 
   MixedContentChecker::UpgradeInsecureRequest(
       request, settings, holder.GetDocument().GetExecutionContext(),
-      mojom::RequestContextFrameType::kTopLevel, nullptr);
+      mojom::RequestContextFrameType::kTopLevel, nullptr, &holder.GetFrame());
 
   EXPECT_TRUE(request.IsAutomaticUpgrade());
   EXPECT_TRUE(request.UpgradeIfInsecure());
@@ -413,12 +437,18 @@ TEST(MixedContentCheckerTest,
   request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
   TestFetchClientSettingsObject* settings =
       MakeGarbageCollected<TestFetchClientSettingsObject>();
+  settings->SetSecurityOrigin("https://example.test", "");
+
   // Used to get a non-null document.
   DummyPageHolder holder;
+  holder.GetFrame()
+      .DomWindow()
+      ->GetSecurityContext()
+      .SetSecurityOriginForTesting(settings->GetSecurityOrigin());
 
   MixedContentChecker::UpgradeInsecureRequest(
       request, settings, holder.GetDocument().GetExecutionContext(),
-      mojom::RequestContextFrameType::kTopLevel, nullptr);
+      mojom::RequestContextFrameType::kTopLevel, nullptr, &holder.GetFrame());
 
   EXPECT_FALSE(request.IsAutomaticUpgrade());
   EXPECT_FALSE(request.UpgradeIfInsecure());
@@ -432,15 +462,76 @@ TEST(MixedContentCheckerTest,
   request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
   TestFetchClientSettingsObject* settings =
       MakeGarbageCollected<TestFetchClientSettingsObject>();
+  settings->SetSecurityOrigin("https://example.test", "");
+
   // Used to get a non-null document.
   DummyPageHolder holder;
+  holder.GetFrame()
+      .DomWindow()
+      ->GetSecurityContext()
+      .SetSecurityOriginForTesting(settings->GetSecurityOrigin());
 
   MixedContentChecker::UpgradeInsecureRequest(
       request, settings, holder.GetDocument().GetExecutionContext(),
-      mojom::RequestContextFrameType::kTopLevel, nullptr);
+      mojom::RequestContextFrameType::kTopLevel, nullptr, &holder.GetFrame());
 
   EXPECT_FALSE(request.IsAutomaticUpgrade());
   EXPECT_FALSE(request.UpgradeIfInsecure());
+}
+
+TEST(MixedContentCheckerTest,
+     AutoupgradeMixedContentInOpaqueOriginIfPrecursorIsSecure) {
+  test::TaskEnvironment task_environment;
+  ResourceRequest request;
+  request.SetUrl(KURL("http://example.test"));
+  request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
+  TestFetchClientSettingsObject* settings =
+      MakeGarbageCollected<TestFetchClientSettingsObject>();
+  // Set the security origin to an opaque one, with a secure precursor.
+  settings->SetSecurityOrigin(
+      "data:text/html,<img src=http://example.test/insecureimage.jpg>",
+      "https://example.test");
+
+  // Used to get a non-null document.
+  DummyPageHolder holder;
+  holder.GetFrame()
+      .DomWindow()
+      ->GetSecurityContext()
+      .SetSecurityOriginForTesting(settings->GetSecurityOrigin());
+
+  MixedContentChecker::UpgradeInsecureRequest(
+      request, settings, holder.GetDocument().GetExecutionContext(),
+      mojom::RequestContextFrameType::kTopLevel, nullptr, &holder.GetFrame());
+
+  EXPECT_TRUE(request.IsAutomaticUpgrade());
+  EXPECT_TRUE(request.UpgradeIfInsecure());
+}
+
+TEST(MixedContentCheckerTest,
+     DontAutoupgradeMixedContentInOpaqueOriginIfPrecursorIsNotSecure) {
+  test::TaskEnvironment task_environment;
+  ResourceRequest request;
+  request.SetUrl(KURL("http://example.test"));
+  request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
+  TestFetchClientSettingsObject* settings =
+      MakeGarbageCollected<TestFetchClientSettingsObject>();
+  // Set the security origin to an opaque one, with a not secure precursor.
+  settings->SetSecurityOrigin(
+      "data:text/html,<img src=http://example.test/insecureimage.jpg>",
+      "http://example.test");
+
+  // Used to get a non-null document.
+  DummyPageHolder holder;
+  holder.GetFrame()
+      .DomWindow()
+      ->GetSecurityContext()
+      .SetSecurityOriginForTesting(settings->GetSecurityOrigin());
+
+  MixedContentChecker::UpgradeInsecureRequest(
+      request, settings, holder.GetDocument().GetExecutionContext(),
+      mojom::RequestContextFrameType::kTopLevel, nullptr, &holder.GetFrame());
+
+  EXPECT_FALSE(request.IsAutomaticUpgrade());
 }
 
 }  // namespace blink
