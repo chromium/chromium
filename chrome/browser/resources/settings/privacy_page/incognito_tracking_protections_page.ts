@@ -37,11 +37,32 @@ export class IncognitoTrackingProtectionsPageElement extends
         value: () =>
             loadTimeData.getBoolean('isFingerprintingProtectionUxEnabled'),
       },
+
+      isIpProtectionDisabledForEnterprise_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isIpProtectionDisabledForEnterprise'),
+      },
+
+      // Mock pref to show disabled toggle with enterprise policy indicator.
+      ipProtectionDisabledForEnterprisePref_: {
+        type: Object,
+        value() {
+          return {
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+            enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+            controlledBy:  chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+          };
+        },
+      },
     };
   }
 
   declare private isIpProtectionAvailable_: boolean;
   declare private isFingerprintingProtectionAvailable_: boolean;
+  declare private isIpProtectionDisabledForEnterprise_: boolean;
+  declare private ipProtectionDisabledForEnterprisePref_: chrome.settingsPrivate.PrefObject<boolean>;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

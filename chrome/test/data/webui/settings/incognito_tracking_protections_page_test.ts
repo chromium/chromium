@@ -30,6 +30,7 @@ suite('IncognitoTrackingProtectionsPageTest', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isFingerprintingProtectionUxEnabled: true,
+      isIpProtectionDisabledForEnterprise: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -128,4 +129,22 @@ suite('IncognitoTrackingProtectionsPageTest', function() {
     assertEquals(
         page.getPref('tracking_protection.ip_protection_enabled.value'), true);
   });
+
+  test(
+      'ippToggleDisabledAndUncheckedWhenIppDisabledForEnterprise',
+      async function() {
+        loadTimeData.overrideValues({
+          isIpProtectionUxEnabled: true,
+          isIpProtectionDisabledForEnterprise: true,
+        });
+        resetRouterForTesting();
+        await createPage();
+
+        const ipProtectionToggle =
+            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#ipProtectionToggle');
+        assertTrue(!!ipProtectionToggle);
+        assertTrue(ipProtectionToggle.disabled);
+        assertFalse(ipProtectionToggle.checked);
+      });
 });

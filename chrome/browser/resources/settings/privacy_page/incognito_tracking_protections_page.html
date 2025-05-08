@@ -26,12 +26,21 @@
       sub-label="$i18n{incognitoTrackingProtectionsBlock3pcsToggleSublabel}">
   </settings-toggle-button>
   <template is="dom-if" if="[[isIpProtectionAvailable_]]">
-    <settings-toggle-button id="ipProtectionToggle"
-        pref="{{prefs.tracking_protection.ip_protection_enabled}}"
-        label="$i18n{incognitoTrackingProtectionsIpProtectionToggleLabel}"
-        sub-label="$i18n{incognitoTrackingProtectionsIpProtectionToggleSublabel}"
-        on-settings-boolean-control-change="onIpProtectionChanged_">
-    </settings-toggle-button>
+    <template is="dom-if" if="[[!isIpProtectionDisabledForEnterprise_]]">
+      <settings-toggle-button id="ipProtectionToggle"
+          pref="{{prefs.tracking_protection.ip_protection_enabled}}"
+          label="$i18n{incognitoTrackingProtectionsIpProtectionToggleLabel}"
+          sub-label="$i18n{incognitoTrackingProtectionsIpProtectionToggleSublabel}"
+          on-settings-boolean-control-change="onIpProtectionChanged_">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" if="[[isIpProtectionDisabledForEnterprise_]]">
+      <settings-toggle-button id="ipProtectionToggle" disabled
+          pref="[[ipProtectionDisabledForEnterprisePref_]]"
+          label="$i18n{incognitoTrackingProtectionsIpProtectionToggleLabel}"
+          sub-label="$i18n{incognitoTrackingProtectionsIpProtectionToggleSublabel}">
+      </settings-toggle-button>
+    </template>
     <div class="settings-columned-section">
       <div class="column">
         <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
