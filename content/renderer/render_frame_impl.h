@@ -1344,11 +1344,6 @@ class CONTENT_EXPORT RenderFrameImpl
   mojo::Remote<blink::mojom::RendererAudioInputStreamFactory>
       audio_input_stream_factory_;
 
-  // This interface handles generated code cache requests both to fetch code
-  // cache when loading resources and to store code caches when code caches are
-  // generated during the JS / Wasm script execution.
-  mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host_;
-
   // The media permission dispatcher attached to this frame.
   std::unique_ptr<MediaPermissionDispatcher> media_permission_dispatcher_;
 
