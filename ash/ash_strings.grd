@@ -6938,6 +6938,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SUNFISH_EDUCATE_TOAST_MESSAGE" desc="The message shown in a toast window to educate the user about the Sunfish feature.">
         Select anything on your screen to search, copy text, and more
       </message>
+      <message name="IDS_ASH_SUNFISH_RESULTS_LOADING_ACCESSIBLE_NAME" desc="The accessible name of the loading image in the Sunfish search results panel while waiting for the results web contents to load.">
+        Results loading
+      </message>
+      <message name="IDS_ASH_SUNFISH_RESULTS_LOADED_ACCESSIBLE_NAME" desc="Text for the accessible name that is announced when the results for the Sunfish search results panel are loaded.">
+        Results loaded
+      </message>
 
       <!-- Scanner -->
       <message name="IDS_ASH_SCANNER_DISCLAIMER_TITLE" desc="Text shown as the title of the suggested actions when searching your screen disclaimer view.">

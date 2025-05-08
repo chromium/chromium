@@ -915,10 +915,11 @@ TEST_F(SunfishTest, DragSearchResultsPanel) {
 
   // The results panel can be dragged by points outside the search results view
   // and searchbox textfield.
-  const gfx::Point draggable_point(search_results_panel->search_results_view()
-                                       ->GetBoundsInScreen()
-                                       .origin() +
-                                   gfx::Vector2d(0, -3));
+  const gfx::Point draggable_point(
+      search_results_panel->animation_view_for_test()
+          ->GetBoundsInScreen()
+          .origin() +
+      gfx::Vector2d(0, -3));
   event_generator->MoveMouseTo(draggable_point);
 
   // Test that dragging the panel to arbitrary points repositions the panel.
@@ -945,7 +946,7 @@ TEST_F(SunfishTest, DragPanelInSession) {
 
   // Start dragging the panel.
   const gfx::Point draggable_point(
-      panel->search_results_view()->GetBoundsInScreen().origin() +
+      panel->animation_view_for_test()->GetBoundsInScreen().origin() +
       gfx::Vector2d(0, -3));
   event_generator->MoveMouseTo(draggable_point);
   event_generator->PressLeftButton();
@@ -1663,7 +1664,8 @@ TEST_F(SunfishTest, SendMultimodalSearch) {
   // Mock getting a new response from the server. Test the panel is updated.
   EXPECT_CALL(*search_results_panel, Navigate(testing::_));
 
-  controller->ShowSearchResultsPanel(gfx::ImageSkia(), GURL("kTestUrl2"));
+  controller->ShowSearchResultsPanel(gfx::ImageSkia());
+  controller->NavigateSearchResultsPanel(GURL("kTestUrl2"));
 }
 
 // Tests that the search results panel is closed when starting a new session.

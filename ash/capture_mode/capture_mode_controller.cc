@@ -14,7 +14,6 @@
 #include "ash/capture_mode/capture_mode_ash_notification_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
-#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_education_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_observer.h"
@@ -712,8 +711,10 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
              : nullptr;
 }
 
-void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
-                                                   GURL url) {
+// TODO(hewer): If the search results panel was already created before a search
+// request, show the loading animation again.
+void CaptureModeController::ShowSearchResultsPanel(
+    const gfx::ImageSkia& image) {
   // We should not use `CanShowSunfishUi` here, as that could change between
   // sending the region and receiving a URL (for example, if the Sunfish policy
   // changes).
@@ -763,7 +764,7 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
   if (!features::IsSunfishLensWebEnabled()) {
     search_results_panel->SetSearchBoxImage(image);
   }
-  search_results_panel->Navigate(url);
+
   if (should_end_session) {
     Stop();
   }
@@ -2068,6 +2069,7 @@ void CaptureModeController::OnImageCapturedForSearch(
     return;
   }
 
+  gfx::ImageSkia image_skia = gfx::ImageSkia();
   if (features::IsSunfishLensWebEnabled()) {
     const gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
     const bool is_standalone_session =
@@ -2083,19 +2085,24 @@ void CaptureModeController::OnImageCapturedForSearch(
         base::BindRepeating(&CaptureModeController::OnLensWebError,
                             weak_ptr_factory_.GetWeakPtr(),
                             image_search_token));
-    return;
+  } else {
+    image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+    // `OnSearchUrlFetched()` will be invoked with `image` when the server
+    // response is fetched.
+    delegate_->SendRegionSearch(
+        bitmap, user_capture_region_,
+        base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            user_capture_region_, image_skia),
+        base::BindRepeating(&CaptureModeController::OnLensTextDetectionComplete,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            image_search_token));
   }
 
-  const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-  // `OnSearchUrlFetched()` will be invoked with `image` when the server
-  // response is fetched.
-  delegate_->SendRegionSearch(
-      bitmap, user_capture_region_,
-      base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
-                          weak_ptr_factory_.GetWeakPtr(), user_capture_region_,
-                          image),
-      base::BindRepeating(&CaptureModeController::OnLensTextDetectionComplete,
-                          weak_ptr_factory_.GetWeakPtr(), image_search_token));
+  // Immediately show the search results panel, with a loading animation in
+  // place of the web contents. We will replace it once we receive the URL from
+  // the server.
+  ShowSearchResultsPanel(image_skia);
 }
 
 void CaptureModeController::OnTextDetectionComplete(
@@ -2208,12 +2215,14 @@ void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,
                                                const gfx::ImageSkia& image,
                                                GURL url) {
   if (captured_region == user_capture_region_) {
-    ShowSearchResultsPanel(image, url);
+    NavigateSearchResultsPanel(url);
   }
 }
 
 void CaptureModeController::OnLensWebError(
     base::WeakPtr<BaseCaptureModeSession> image_search_token) {
+  CloseSearchResultsPanel();
+
   // TODO: crbug.com/406072681 - Show an error message if the session is no
   // longer active, such as in the case of clicking the Search with Lens button
   // in a regular session.
@@ -3011,6 +3020,14 @@ void CaptureModeController::DeleteFileAsync(const base::FilePath& path) {
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&base::DeleteFile, path),
       base::BindOnce(std::move(callback), path));
+}
+
+void CaptureModeController::NavigateSearchResultsPanel(const GURL& url) {
+  if (auto* panel = GetSearchResultsPanel()) {
+    capture_mode_util::TriggerAccessibilityAlert(
+        IDS_ASH_SUNFISH_RESULTS_LOADED_ACCESSIBLE_NAME);
+    panel->Navigate(url);
+  }
 }
 
 }  // namespace ash

@@ -42,6 +42,7 @@
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 
 class PrefRegistrySimple;
 
@@ -150,9 +151,13 @@ class ASH_EXPORT CaptureModeController
   // Returns the search results panel, or nullptr if none exists.
   SearchResultsPanel* GetSearchResultsPanel() const;
 
-  // Shows the results panel with the captured region as `image` and the search
-  // results `url`.
-  void ShowSearchResultsPanel(const gfx::ImageSkia& image, GURL url);
+  // Shows the results panel. `image` is only needed for the thumbnail if the
+  // Lens Web feature flag is disabled.
+  void ShowSearchResultsPanel(const gfx::ImageSkia& image);
+
+  // Navigates the Sunfish search results panel to the given URL, if the panel
+  // is available.
+  void NavigateSearchResultsPanel(const GURL& url);
 
   // Closes the search results panel, or does nothing if it doesn't exist.
   void CloseSearchResultsPanel();

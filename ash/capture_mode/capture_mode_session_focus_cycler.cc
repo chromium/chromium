@@ -633,10 +633,17 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
     SearchResultsPanel* panel =
         CaptureModeController::Get()->GetSearchResultsPanel();
     if (panel) {
-      views::View* web_view = panel->GetWebViewForFocus();
-      CHECK(web_view);
-      web_view->AboutToRequestFocusFromTabTraversal(reverse);
-      web_view->RequestFocus();
+      // The web contents might not be available when we try to focus them, but
+      // we can focus the loading animation instead.
+      if (panel->search_results_view()) {
+        views::View* web_view = panel->GetWebViewForFocus();
+        CHECK(web_view);
+        web_view->AboutToRequestFocusFromTabTraversal(reverse);
+        web_view->RequestFocus();
+      } else {
+        focus_index_ = 0u;
+        panel->GetHighlightableLoadingAnimation()->PseudoFocus();
+      }
     }
   } else if (!current_views.empty()) {
     DCHECK_LT(focus_index_, current_views.size());
@@ -1116,9 +1123,6 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
     case FocusGroup::kSelection:
     case FocusGroup::kPendingSettings:
     case FocusGroup::kPendingRecordingType:
-    // The web contents does not contain any highlightable views, as we want its
-    // `FocusManager` to handle tab traversal and focus.
-    case FocusGroup::kSearchResultsPanelWebContents:
       break;
     case FocusGroup::kTypeSource: {
       CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
@@ -1217,15 +1221,29 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       break;
     }
     case FocusGroup::kSearchResultsPanel: {
+      auto* controller = CaptureModeController::Get();
       auto* search_results_panel_widget =
-          CaptureModeController::Get()->search_results_panel_widget();
+          controller->search_results_panel_widget();
       if (search_results_panel_widget &&
           search_results_panel_widget->IsVisible()) {
-        items = CaptureModeController::Get()
-                    ->GetSearchResultsPanel()
-                    ->GetHighlightableItems();
+        items = controller->GetSearchResultsPanel()->GetHighlightableItems();
       }
       break;
+    }
+    // The web contents are not highlightable, only the animation view. We'll
+    // let `AdvanceFocus` handle the web contents separately.
+    case FocusGroup::kSearchResultsPanelWebContents: {
+      auto* controller = CaptureModeController::Get();
+      auto* search_results_panel_widget =
+          controller->search_results_panel_widget();
+      if (search_results_panel_widget &&
+          search_results_panel_widget->IsVisible()) {
+        auto* animation_view = controller->GetSearchResultsPanel()
+                                   ->GetHighlightableLoadingAnimation();
+        if (animation_view) {
+          items.push_back(animation_view);
+        }
+      }
     }
   }
   return items;

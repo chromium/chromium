@@ -18,6 +18,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
+#include "ash/system/mahi/mahi_animation_utils.h"
+#include "ash/system/mahi/resources/grit/mahi_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -28,6 +30,7 @@
 #include "ui/display/tablet_state.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -226,19 +229,23 @@ SearchResultsPanel::SearchResultsPanel() {
     search_box_view_->SetProperty(views::kMarginsKey, kSearchBoxViewSpacing);
   }
 
-  search_results_view_ =
-      AddChildView(CaptureModeController::Get()->CreateSearchResultsView());
-  search_results_view_->SetProperty(
+  auto* animation_view = AddChildView(
+      views::Builder<views::AnimatedImageView>()
+          // Use an ID instead of saving a `raw_ptr` to avoid a dangling pointer
+          // when we remove this child later.
+          .SetID(capture_mode::kLoadingAnimationViewId)
+          .SetAccessibleName(l10n_util::GetStringUTF16(
+              IDS_ASH_SUNFISH_RESULTS_LOADING_ACCESSIBLE_NAME))
+          .SetAnimatedImage(mahi_animation_utils::GetLottieAnimationData(
+              IDR_MAHI_LOADING_SUMMARY_ANIMATION))
+          .Build());
+  animation_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded));
-
-  // Without the native search box, there needs to be padding between the header
-  // and the web view.
-  if (features::IsSunfishLensWebEnabled()) {
-    search_results_view_->SetProperty(views::kMarginsKey,
-                                      kSearchResultsViewSpacing);
-  }
+  animation_view->Play(mahi_animation_utils::GetLottiePlaybackConfig(
+      *animation_view->animated_image()->skottie(),
+      IDR_MAHI_LOADING_SUMMARY_ANIMATION));
 
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
@@ -256,6 +263,10 @@ SearchResultsPanel::SearchResultsPanel() {
   // is called on them.
   CaptureModeSessionFocusCycler::HighlightHelper::Install(close_button_);
   CaptureModeSessionFocusCycler::HighlightHelper::Get(close_button_)
+      ->SetUpFocusPredicate();
+
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(animation_view);
+  CaptureModeSessionFocusCycler::HighlightHelper::Get(animation_view)
       ->SetUpFocusPredicate();
 
   if (!features::IsSunfishLensWebEnabled()) {
@@ -308,11 +319,35 @@ SearchResultsPanel::GetHighlightableItems() const {
   return highlightable_items;
 }
 
+CaptureModeSessionFocusCycler::HighlightableView*
+SearchResultsPanel::GetHighlightableLoadingAnimation() {
+  auto* animation_view = GetViewByID(capture_mode::kLoadingAnimationViewId);
+  return animation_view ? CaptureModeSessionFocusCycler::HighlightHelper::Get(
+                              animation_view)
+                        : nullptr;
+}
+
 views::View* SearchResultsPanel::GetWebViewForFocus() {
+  CHECK(search_results_view_);
   return search_results_view_->GetInitiallyFocusedView();
 }
 
 void SearchResultsPanel::Navigate(const GURL& url) {
+  if (!search_results_view_) {
+    // Remove the loading animation.
+    auto* animation_view = GetViewByID(capture_mode::kLoadingAnimationViewId);
+    CHECK(animation_view);
+    RemoveChildViewT(animation_view);
+
+    search_results_view_ =
+        AddChildView(CaptureModeController::Get()->CreateSearchResultsView());
+    search_results_view_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                 views::MaximumFlexSizeRule::kUnbounded));
+    search_results_view_->SetProperty(views::kMarginsKey,
+                                      kSearchResultsViewSpacing);
+  }
   search_results_view_->Navigate(url);
 }
 

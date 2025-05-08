@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/wm/system_panel_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -44,11 +45,23 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
 
   AshWebView* search_results_view() const { return search_results_view_; }
   views::Button* close_button() const { return close_button_; }
+  views::View* animation_view_for_test() {
+    return GetViewByID(capture_mode::kLoadingAnimationViewId);
+  }
 
   views::Textfield* GetSearchBoxTextfield() const;
 
+  // Gets the highlightable views for the search results panel, which may
+  // include the close button and the search box textfield. Does not include
+  // the web contents or animation as they need to be handled separately.
   std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
   GetHighlightableItems() const;
+
+  // Gets the highlightable view for the loading animation view. Returns
+  // `nullptr` if the loading animation is not available (i.e., the web contents
+  // are available).
+  CaptureModeSessionFocusCycler::HighlightableView*
+  GetHighlightableLoadingAnimation();
 
   // Gets the inner `WebView` to receive focus events.
   views::View* GetWebViewForFocus();
@@ -91,7 +104,7 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
 
   // Owned by the views hierarchy.
   raw_ptr<SunfishSearchBoxView> search_box_view_ = nullptr;
-  raw_ptr<AshWebView> search_results_view_;
+  raw_ptr<AshWebView> search_results_view_ = nullptr;
   raw_ptr<views::Button> close_button_;
 
   // Observes display and metrics changes.

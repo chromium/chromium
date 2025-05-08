@@ -177,6 +177,9 @@ inline constexpr float kRegionGlowAnimationMaxBlurDp = 32.0f;
 inline constexpr int kRegionGlowMinOutsetDp = 0;
 inline constexpr int kRegionGlowMaxOutsetDp = 6;
 
+// The view ID for the search results panel loading animation.
+inline constexpr int kLoadingAnimationViewId = 1;
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_
