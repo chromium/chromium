@@ -628,6 +628,12 @@
       "src/third_party/android_sdk/public/platform-tools/adb",
     ],
   },
+  "component_storage_test": {
+    "label": "//build/fuchsia/test:component_storage_test",
+    "type": "script",
+    "script": "//build/fuchsia/test/component_storage_test.py",
+    "skip_usage_check": True,
+  },
   "components/media_router/common/providers/cast/certificate": {
     "label": "//components/media_router/common/providers/cast/certificate",
     "type": "additional_compile_target",

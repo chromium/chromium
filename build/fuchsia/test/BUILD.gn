@@ -18,3 +18,9 @@ python_library("gs_util_wrapper") {
     "gs_util_wrapper.py",
   ]
 }
+
+python_library("component_storage_test") {
+  testonly = true
+  pydeps_file = "component_storage_test.pydeps"
+  data_deps = [ "//build/config/fuchsia:deployment_resources" ]
+}

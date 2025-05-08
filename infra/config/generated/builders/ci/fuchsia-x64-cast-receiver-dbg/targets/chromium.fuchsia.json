@@ -1465,6 +1465,26 @@
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
       {
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "component_storage_test",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "component_storage_test",
+        "test_id_prefix": "ninja://build/fuchsia/test:component_storage_test/"
+      },
+      {
         "args": [
           "context_lost",
           "--show-stdout",

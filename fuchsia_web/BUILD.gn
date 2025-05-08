@@ -15,5 +15,6 @@ group("gn_all") {
     "runners:cast_runner",
     "shell",
     "webengine:web_engine",
+    "//build/fuchsia/test:component_storage_test",
   ]
 }

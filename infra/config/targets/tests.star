@@ -715,6 +715,10 @@ targets.tests.gtest_test(
     name = "components_unittests",
 )
 
+targets.tests.isolated_script_test(
+    name = "component_storage_test",
+)
+
 targets.tests.gtest_test(
     name = "compositor_unittests",
 )

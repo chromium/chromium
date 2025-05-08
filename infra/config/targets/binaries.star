@@ -715,6 +715,13 @@ targets.binaries.windowed_test_launcher(
     label = "//components:components_unittests",
 )
 
+targets.binaries.script(
+    name = "component_storage_test",
+    label = "//build/fuchsia/test:component_storage_test",
+    script = "//build/fuchsia/test/component_storage_test.py",
+    skip_usage_check = True,
+)
+
 targets.binaries.windowed_test_launcher(
     name = "compositor_unittests",
     label = "//ui/compositor:compositor_unittests",
