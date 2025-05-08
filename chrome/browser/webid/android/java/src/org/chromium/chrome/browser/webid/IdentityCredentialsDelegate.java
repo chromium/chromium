@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content.browser.webid;
+package org.chromium.chrome.browser.webid;
 
 import android.app.Activity;
 
@@ -10,6 +10,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content.browser.webid.DigitalCredentialsCreationDelegate;
 
 @NullMarked
 public class IdentityCredentialsDelegate {

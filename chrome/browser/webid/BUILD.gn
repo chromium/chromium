@@ -6,11 +6,19 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsPresentationDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java",
+    "android/java/src/org/chromium/chrome/browser/webid/IdentityCredentialsDelegate.java",
+  ]
   deps = [
+    "$google_play_services_package:google_play_services_identity_credentials_java",
+    "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
+    "//base:service_loader_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
@@ -25,12 +33,17 @@ generate_jni("jni_headers") {
 
 robolectric_library("junit") {
   testonly = true
-  sources = [ "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProviderUnitTest.java" ]
+  sources = [
+    "android/junit/src/org/chromium/chrome/browser/webid/DigitalCredentialsPresentationDelegateTest.java",
+    "android/junit/src/org/chromium/chrome/browser/webid/DigitalIdentityProviderUnitTest.java",
+  ]
 
   deps = [
     ":java",
+    "$google_play_services_package:google_play_services_identity_credentials_java",
     "//base:base_junit_test_support",
     "//content/public/android:content_java",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
   ]
 }

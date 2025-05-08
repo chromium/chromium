@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content.browser.webid;
+package org.chromium.chrome.browser.webid;
 
 import static androidx.core.app.ActivityCompat.startIntentSenderForResult;
 
@@ -34,7 +34,7 @@ import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
+import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
 
 import java.util.Arrays;
 import java.util.Objects;

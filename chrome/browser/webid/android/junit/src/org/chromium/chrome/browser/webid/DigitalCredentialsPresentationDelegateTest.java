@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content.browser.webid;
+package org.chromium.chrome.browser.webid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -11,11 +11,11 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.content.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_IDENTITY_TOKEN;
-import static org.chromium.content.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_PROVIDER_DATA;
-import static org.chromium.content.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_REQUEST_JSON;
-import static org.chromium.content.browser.webid.DigitalCredentialsPresentationDelegate.EXTRA_CREDENTIAL_DATA;
-import static org.chromium.content.browser.webid.DigitalCredentialsPresentationDelegate.EXTRA_GET_CREDENTIAL_RESPONSE;
+import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_IDENTITY_TOKEN;
+import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_PROVIDER_DATA;
+import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_REQUEST_JSON;
+import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.EXTRA_CREDENTIAL_DATA;
+import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.EXTRA_GET_CREDENTIAL_RESPONSE;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.content.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
+import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
 
 /** Unit tests for {@link DigitalCredentialsPresentationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -179,8 +179,7 @@ public class DigitalCredentialsPresentationDelegateTest {
                 NullPointerException.class,
                 () -> {
                     DigitalCredentialsPresentationDelegate
-                            .extractDigitalCredentialFromResponseBundle(
-                                    Activity.RESULT_OK, bundle);
+                            .extractDigitalCredentialFromResponseBundle(Activity.RESULT_OK, bundle);
                 });
     }
 
@@ -195,8 +194,7 @@ public class DigitalCredentialsPresentationDelegateTest {
                 JSONException.class,
                 () -> {
                     DigitalCredentialsPresentationDelegate
-                            .extractDigitalCredentialFromResponseBundle(
-                                    Activity.RESULT_OK, bundle);
+                            .extractDigitalCredentialFromResponseBundle(Activity.RESULT_OK, bundle);
                 });
     }
 }
