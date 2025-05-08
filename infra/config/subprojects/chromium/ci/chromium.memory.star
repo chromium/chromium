@@ -691,7 +691,7 @@ linux_memory_builder(
         per_test_modifications = {
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 30,
+                    shards = 35,
                 ),
             ),
             "content_browsertests": targets.mixin(
@@ -708,7 +708,7 @@ linux_memory_builder(
             ),
             "interactive_ui_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 8,
+                    shards = 10,
                 ),
             ),
             "services_unittests": targets.remove(
