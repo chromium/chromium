@@ -78,6 +78,7 @@ proto_library("dom_distiller_proto") {
 # protoc_plugins by generating the json_converter.h file.
 proto_library("json_values_converter_test_proto") {
   visibility = [ ":*" ]
+  generator_visibility = [ ":json_values_converter_tests" ]
   sources = [ "test_sample.proto" ]
   link_deps = [ "//base" ]
   proto_out_dir = "third_party/dom_distiller_js"

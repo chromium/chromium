@@ -91,6 +91,10 @@
 #       absolute paths, such as for third_party or generated .proto files.
 #       http://crbug.com/691451 tracks fixing this.
 #
+#   generator_visiblility (optional)
+#       This is added to visibility of code generation target so that other
+#       targets can depend on them to have generated codes as their inputs.
+#
 # Parameters for compiling the generated code:
 #
 #   force_source_set (Default=false)
@@ -442,26 +446,24 @@ template("proto_library") {
       # This is to propagate input deps for imported proto to ancestor targets.
       foreach(_dep, invoker.deps) {
         _dep = get_label_info(_dep, "label_no_toolchain")
-
-        # TODO(agrieve): Update perfetto to follow naming scheme.
-        if (filter_exclude([ _dep ], [ "//third_party/perfetto/*" ]) == []) {
-          # Protozero does not follow the naming scheme.
-          public_deps += [
-            "${_dep}_input_group",
-            _dep,
-          ]
-        } else {
-          # Depend directly on the _gen targets so as to not unnecessarily block
-          # on compile (by depending on source_set targets).
-          public_deps += [ "${_dep}_gen" ]
-        }
+        public_deps += [ "${_dep}_input_group" ]
       }
     }
   }
 
   # Generate protobuf stubs.
   _action_name = "${target_name}_gen"
+  _template_name = target_name
   action(_action_name) {
+    visibility = [
+      ":$_template_name",
+      ":${_template_name}_js",
+      ":${_template_name}_py_runtime",
+      ":${_template_name}_ts",
+    ]
+    if (defined(invoker.generator_visibility)) {
+      visibility += invoker.generator_visibility
+    }
     script = "//tools/protoc_wrapper/protoc_wrapper.py"
     sources = _sources
     inputs = [
@@ -495,6 +497,11 @@ template("proto_library") {
     }
 
     public_deps = [ ":$_input_group_name" ]
+
+    # |deps| must be other proto_library() targets.
+    if (defined(invoker.deps)) {
+      public_deps += invoker.deps
+    }
 
     args = _relative_sources + [
              # Wrapper should never pick a system protoc.
