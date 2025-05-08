@@ -8,16 +8,13 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace extensions {
 
 using ExtensionI18nTest = ExtensionApiTest;
@@ -27,9 +24,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionI18nTest, I18nBasic) {
   ASSERT_TRUE(RunExtensionTest("i18n")) << message_;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/391920604): Port to desktop Android once ReloadExtension() is
-// supported by ExtensionApiTest.
 IN_PROC_BROWSER_TEST_F(ExtensionI18nTest, I18NUpdate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Create an Extension whose messages.json file will be updated.
@@ -51,12 +45,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionI18nTest, I18NUpdate) {
   ResultCatcher catcher;
 
   // Test that the messages.json file is loaded and the i18n message is loaded.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+  ASSERT_TRUE(NavigateToURL(
+      embedded_test_server()->GetURL("/extensions/test_file.html")));
   EXPECT_TRUE(catcher.GetNextResult());
 
   std::u16string title;
-  ui_test_utils::GetCurrentTabTitle(browser(), &title);
+  GetCurrentTabTitle(&title);
   EXPECT_EQ(u"FIRSTMESSAGE", title);
 
   // Change messages.json file and reload extension.
@@ -66,14 +60,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionI18nTest, I18NUpdate) {
   ReloadExtension(extension->id());
 
   // Check that the i18n message is also changed.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+  ASSERT_TRUE(NavigateToURL(
+      embedded_test_server()->GetURL("/extensions/test_file.html")));
   EXPECT_TRUE(catcher.GetNextResult());
 
-  ui_test_utils::GetCurrentTabTitle(browser(), &title);
+  GetCurrentTabTitle(&title);
   EXPECT_EQ(u"SECONDMESSAGE", title);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // detectLanguage has some custom hooks that handle the asynchronous response
 // manually, so explicitly test that it stays working as expected with promises.

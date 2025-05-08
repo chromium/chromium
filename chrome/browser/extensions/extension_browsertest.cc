@@ -847,6 +847,20 @@ bool ExtensionBrowserTest::NavigateToURL(const GURL& url) {
   return observer.last_navigation_succeeded();
 }
 
+bool ExtensionBrowserTest::GetCurrentTabTitle(std::u16string* title) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    return false;
+  }
+  content::NavigationEntry* last_entry =
+      web_contents->GetController().GetActiveEntry();
+  if (!last_entry) {
+    return false;
+  }
+  title->assign(last_entry->GetTitleForDisplay());
+  return true;
+}
+
 content::WebContents* ExtensionBrowserTest::PlatformOpenURLOffTheRecord(
     Profile* profile,
     const GURL& url) {

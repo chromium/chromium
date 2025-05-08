@@ -237,6 +237,9 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   // navigation finishes. Returns true on success.
   [[nodiscard]] bool NavigateToURL(const GURL& url);
 
+  // Puts the current tab title in |title|. Returns true on success.
+  bool GetCurrentTabTitle(std::u16string* title);
+
   // Opens `url` in an incognito browser window with the incognito profile of
   // `profile`, blocking until the navigation finishes. Returns the WebContents
   // for `url`.
