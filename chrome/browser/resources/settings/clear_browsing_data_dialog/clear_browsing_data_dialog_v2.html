@@ -61,7 +61,8 @@
   <div slot="title">$i18n{clearBrowsingData}</div>
   <div slot="body">
     <!-- TODO(crbug.com/397187800): Update counters on selected time period.-->
-    <settings-clear-browsing-data-time-picker prefs="{{prefs}}">
+    <settings-clear-browsing-data-time-picker id="timePicker" prefs="{{prefs}}"
+        on-selected-time-period-change="onTimePeriodChanged_">
     </settings-clear-browsing-data-time-picker>
     <div id="checkboxContainer">
       <template is="dom-repeat"

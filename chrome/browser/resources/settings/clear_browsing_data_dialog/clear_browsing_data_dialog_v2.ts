@@ -24,6 +24,7 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {BrowsingDataType} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_dialog_v2.html.js';
+import type {SettingsClearBrowsingDataTimePicker} from './clear_browsing_data_time_picker.js';
 
 export interface SettingsClearBrowsingDataDialogV2Element {
   $: {
@@ -32,6 +33,7 @@ export interface SettingsClearBrowsingDataDialogV2Element {
     deleteBrowsingDataDialog: CrDialogElement,
     showMoreButton: CrButtonElement,
     manageOtherGoogleDataRow: HTMLElement,
+    timePicker: SettingsClearBrowsingDataTimePicker,
   };
 }
 
@@ -161,12 +163,16 @@ export class SettingsClearBrowsingDataDialogV2Element extends
         this.getPref(getDataTypePrefName(datatype)).value;
   }
 
+  private onTimePeriodChanged_() {
+    // TODO(crbug.com/397187800): Restart counters.
+  }
+
   private onCancelClick_() {
     this.$.deleteBrowsingDataDialog.close();
   }
 
   private onClearBrowsingDataClick_() {
-    // TODO(crbug.com/397187800): Trigger the deletion.
+    // TODO(crbug.com/397187800): Trigger the deletion and update prefs.
   }
 
   private onShowMoreClick_() {
