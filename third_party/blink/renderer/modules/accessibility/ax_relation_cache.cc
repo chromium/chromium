@@ -457,10 +457,11 @@ void AXRelationCache::UpdateReverseElementAttributeRelations(
   }
 }
 
-base::span<std::pair<QualifiedName, uint32_t>>
+base::span<std::pair<QualifiedName, Element::TinyBloomFilter>>
 AXRelationCache::GetTextRelationAttributes() {
   // Avoid issues with commas within the type name in DEFINE_STATIC_LOCAL().
-  using QualifiedNameArray = std::array<std::pair<QualifiedName, uint32_t>, 3>;
+  using QualifiedNameArray =
+      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 3>;
   DEFINE_STATIC_LOCAL(
       QualifiedNameArray, text_attributes,
       ({{html_names::kAriaLabelledbyAttr,
@@ -563,10 +564,11 @@ void AXRelationCache::UpdateReverseOwnsRelations(Element& source) {
   }
 }
 
-base::span<std::pair<QualifiedName, uint32_t>>
+base::span<std::pair<QualifiedName, Element::TinyBloomFilter>>
 AXRelationCache::GetOtherRelationAttributes() {
   // Avoid issues with commas within the type name in DEFINE_STATIC_LOCAL().
-  using QualifiedNameArray = std::array<std::pair<QualifiedName, uint32_t>, 5>;
+  using QualifiedNameArray =
+      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 5>;
   DEFINE_STATIC_LOCAL(
       QualifiedNameArray, attributes,
       ({{html_names::kAriaControlsAttr,
