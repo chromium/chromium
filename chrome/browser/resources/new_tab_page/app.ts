@@ -5,9 +5,11 @@
 import './iframe.js';
 import './logo.js';
 import '/strings.m.js';
+import 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import 'chrome://resources/cr_components/searchbox/searchbox.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -129,6 +131,7 @@ const AppElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export interface AppElement {
   $: {
+    customizeButtons: CustomizeButtonsElement,
     oneGoogleBarClipPath: HTMLElement,
     logo: LogoElement,
   };
@@ -156,10 +159,7 @@ export class AppElement extends AppElementBase {
       showCustomize_: {type: Boolean},
       showCustomizeChromeText_: {type: Boolean},
 
-      showWallpaperSearch_: {
-        type: Boolean,
-        reflect: true,
-      },
+      showWallpaperSearch_: {type: Boolean},
 
       selectedCustomizeDialogPage_: {type: String},
       showVoiceSearchOverlay_: {type: Boolean},
@@ -232,19 +232,11 @@ export class AppElement extends AppElementBase {
 
       scrolledToTop_: {type: Boolean},
 
-      wallpaperSearchButtonAnimationEnabled_: {
-        type: Boolean,
-        reflect: true,
-      },
+      wallpaperSearchButtonAnimationEnabled_: {type: Boolean},
 
-      wallpaperSearchButtonEnabled_: {
-        type: Boolean,
-      },
+      wallpaperSearchButtonEnabled_: {type: Boolean},
 
-      showWallpaperSearchButton_: {
-        type: Boolean,
-        reflect: true,
-      },
+      showWallpaperSearchButton_: {type: Boolean},
     };
   }
 
@@ -275,7 +267,6 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('oneGoogleBarEnabled');
   protected accessor shortcutsEnabled_: boolean =
       loadTimeData.getBoolean('shortcutsEnabled');
-  private modulesFreShown: boolean;
   protected accessor middleSlotPromoEnabled_: boolean =
       loadTimeData.getBoolean('middleSlotPromoEnabled');
   protected accessor modulesEnabled_: boolean =
@@ -290,7 +281,7 @@ export class AppElement extends AppElementBase {
   protected accessor lazyRender_: boolean;
   protected accessor scrolledToTop_: boolean =
       document.documentElement.scrollTop <= 0;
-  private accessor wallpaperSearchButtonAnimationEnabled_: boolean =
+  protected accessor wallpaperSearchButtonAnimationEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonAnimationEnabled');
   protected accessor wallpaperSearchButtonEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonEnabled');
@@ -606,7 +597,8 @@ export class AppElement extends AppElementBase {
     // completed.
     document.documentElement.setAttribute('lazy-loaded', String(true));
     this.registerHelpBubble(
-        CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, '#customizeButton', {fixed: true});
+        CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID,
+        ['ntp-customize-buttons', '#customizeButton'], {fixed: true});
     this.pageHandler_.maybeShowFeaturePromo(IphFeature.kCustomizeChrome);
     if (this.showWallpaperSearchButton_) {
       this.pageHandler_.incrementWallpaperSearchButtonShownCount();
@@ -701,6 +693,10 @@ export class AppElement extends AppElementBase {
 
   private onShowBackgroundImageChange_() {
     this.backgroundManager_.setShowBackgroundImage(this.showBackgroundImage_);
+  }
+
+  protected onShowCustomizeChange_(e: CustomEvent<boolean>) {
+    this.showCustomize_ = e.detail;
   }
 
   private onThemeChange_() {
@@ -986,14 +982,15 @@ export class AppElement extends AppElementBase {
         case $$(this, '#modules'):
           recordClick(NtpElement.MODULE);
           return;
-        case $$(this, '#customizeButton'):
+        case $$(this.$.customizeButtons, '#customizeButton'):
           recordClick(NtpElement.CUSTOMIZE_BUTTON);
           return;
-        case $$(this, '#wallpaperSearchButton'):
+        case $$(this.$.customizeButtons, '#wallpaperSearchButton'):
           recordClick(NtpElement.WALLPAPER_SEARCH_BUTTON);
           return;
       }
     }
+
     recordClick(NtpElement.OTHER);
   }
 

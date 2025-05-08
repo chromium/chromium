@@ -124,7 +124,7 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
                        NTPWallpaperSearchButtonVisibilityDependsOnSettings) {
-  const DeepQuery kWallpaperSearchButton = {"ntp-app",
+  const DeepQuery kWallpaperSearchButton = {"ntp-app", "ntp-customize-buttons",
                                             "#wallpaperSearchButton"};
 
   RunTestSequence(
@@ -258,7 +258,8 @@ class WallpaperSearchOptimizationGuideInteractiveTest
 
   InteractiveTestApi::MultiStep OpenCustomizeChromeAt(
       const ui::ElementIdentifier& contents_id) {
-    const DeepQuery kCustomizeChromeButton = {"ntp-app", "#customizeButton"};
+    const DeepQuery kCustomizeChromeButton = {
+        "ntp-app", "ntp-customize-buttons", "#customizeButton"};
     return Steps(ClickElement(kNewTabPageElementId, kCustomizeChromeButton),
                  WaitForShow(kCustomizeChromeSidePanelWebViewElementId),
                  InstrumentNonTabWebView(
@@ -267,8 +268,8 @@ class WallpaperSearchOptimizationGuideInteractiveTest
 
   InteractiveTestApi::MultiStep OpenWallpaperSearchAt(
       const ui::ElementIdentifier& contents_id) {
-    const DeepQuery kWallpaperSearchButton = {"ntp-app",
-                                              "#wallpaperSearchButton"};
+    const DeepQuery kWallpaperSearchButton = {
+        "ntp-app", "ntp-customize-buttons", "#wallpaperSearchButton"};
     return Steps(ClickElement(kNewTabPageElementId, kWallpaperSearchButton),
                  WaitForShow(kCustomizeChromeSidePanelWebViewElementId),
                  InstrumentNonTabWebView(
@@ -340,8 +341,9 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                        CustomizeButtonsWorkTogether) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReopenedCustomizeChromeElementId);
 
-  const DeepQuery kCustomizeChromeButton = {"ntp-app", "#customizeButton"};
-  const DeepQuery kWallpaperSearchButton = {"ntp-app",
+  const DeepQuery kCustomizeChromeButton = {"ntp-app", "ntp-customize-buttons",
+                                            "#customizeButton"};
+  const DeepQuery kWallpaperSearchButton = {"ntp-app", "ntp-customize-buttons",
                                             "#wallpaperSearchButton"};
 
   RunTestSequence(
@@ -362,8 +364,9 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                        NTPButtonAnimatesUnderThreshold) {
-  const DeepQuery kCustomizeChromeButton = {"ntp-app", "#customizeButton"};
-  const DeepQuery kWallpaperSearchButton = {"ntp-app",
+  const DeepQuery kCustomizeChromeButton = {"ntp-app", "ntp-customize-buttons",
+                                            "#customizeButton"};
+  const DeepQuery kWallpaperSearchButton = {"ntp-app", "ntp-customize-buttons",
                                             "#wallpaperSearchButton"};
 
   RunTestSequence(
@@ -391,8 +394,9 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                        NTPButtonDoesNotAnimateAboveThreshold) {
-  const DeepQuery kCustomizeChromeButton = {"ntp-app", "#customizeButton"};
-  const DeepQuery kWallpaperSearchButton = {"ntp-app",
+  const DeepQuery kCustomizeChromeButton = {"ntp-app", "ntp-customize-buttons",
+                                            "#customizeButton"};
+  const DeepQuery kWallpaperSearchButton = {"ntp-app", "ntp-customize-buttons",
                                             "#wallpaperSearchButton"};
 
   RunTestSequence(
@@ -440,7 +444,8 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                                    "#submitButton"};
   const DeepQuery kWallpaperSearchResult = {"customize-chrome-app",
                                             "#wallpaperSearchPage", ".result"};
-  const DeepQuery kCustomizeChromeButton = {"ntp-app", "#customizeButton"};
+  const DeepQuery kCustomizeChromeButton = {"ntp-app", "ntp-customize-buttons",
+                                            "#customizeButton"};
   const DeepQuery kSetClassicChromeButton = {
       "customize-chrome-app", "#appearanceElement", "#setClassicChromeButton"};
   const DeepQuery kHistoryCard = {"customize-chrome-app",
@@ -630,8 +635,9 @@ class NTPWallpaperSearchButtonAnimationTest
 
 IN_PROC_BROWSER_TEST_F(NTPWallpaperSearchButtonAnimationTest,
                        AnimatesUnconditionally) {
-  const DeepQuery kCustomizeChromeButton = {"ntp-app", "#customizeButton"};
-  const DeepQuery kWallpaperSearchButton = {"ntp-app",
+  const DeepQuery kCustomizeChromeButton = {"ntp-app", "ntp-customize-buttons",
+                                            "#customizeButton"};
+  const DeepQuery kWallpaperSearchButton = {"ntp-app", "ntp-customize-buttons",
                                             "#wallpaperSearchButton"};
 
   RunTestSequence(

@@ -179,7 +179,8 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
   auto StartTutorial(ui::ElementIdentifier page_id) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleShownEvent);
     StateChange help_bubble_shown;
-    help_bubble_shown.where = {"ntp-app", "help-bubble"};
+    help_bubble_shown.where = {"ntp-app", "ntp-customize-buttons",
+                               "help-bubble"};
     help_bubble_shown.type = StateChange::Type::kExists;
     help_bubble_shown.event = kHelpBubbleShownEvent;
 
@@ -198,7 +199,8 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleHiddenEvent);
     StateChange help_bubble_hidden;
     help_bubble_hidden.type = StateChange::Type::kDoesNotExist;
-    help_bubble_hidden.where = {"ntp-app", "help-bubble"};
+    help_bubble_hidden.where = {"ntp-app", "ntp-customize-buttons",
+                                "help-bubble"};
     help_bubble_hidden.event = kHelpBubbleHiddenEvent;
 
     auto steps = Steps(Do([this]() {

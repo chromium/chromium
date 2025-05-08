@@ -9,6 +9,7 @@
  * things tests need.
  */
 
+export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 export {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 export {SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 export {SearchboxIconElement} from 'chrome://resources/cr_components/searchbox/searchbox_icon.js';

@@ -81,6 +81,7 @@ build_webui("build") {
     "//tools/typescript/definitions/pending.d.ts",
   ]
   ts_deps = [
+    "//chrome/browser/resources/new_tab_shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
@@ -92,6 +93,12 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+
+  ts_path_mappings =
+      [ "chrome://new-tab-page/shared/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/new_tab_shared/tsc/*",
+            target_gen_dir) ]
 
   webui_context_type = "trusted"
   optimize = optimize_webui
@@ -114,6 +121,11 @@ build_webui("build") {
                                 "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
                                 "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
                               ] + mojo_js_files
+    optimize_webui_external_paths =
+        [ "chrome://new-tab-page/shared|" +
+          rebase_path(
+              "$root_gen_dir/chrome/browser/resources/new_tab_shared/tsc",
+              root_build_dir) ]
   }
 }
 

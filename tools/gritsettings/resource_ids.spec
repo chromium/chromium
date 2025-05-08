@@ -516,6 +516,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [4440],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/new_tab_shared/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4450],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox/resources.grd": {
     "META": {"sizes": {"includes": [30]}},
     "includes": [4460],
