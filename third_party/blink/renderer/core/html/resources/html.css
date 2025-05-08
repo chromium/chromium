@@ -1395,10 +1395,6 @@ nobr {
     outline: auto 1px -webkit-focus-ring-color
 }
 
-[interesttarget]:focus-visible {
-  outline: solid 3px -webkit-focus-ring-color;
-}
-
 [popover]:target-of-partial-interest::after {
   content: -internal-partial-interest-content;
   display: block;
