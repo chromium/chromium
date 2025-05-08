@@ -10,7 +10,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
@@ -44,7 +44,7 @@ public class NotificationWrapperBuilderFactory {
 
         ChannelsInitializer channelsInitializer =
                 new ChannelsInitializer(
-                        NotificationManagerProxyImpl.getInstance(),
+                        BaseNotificationManagerProxyFactory.create(),
                         ChromeChannelDefinitions.getInstance(),
                         context.getResources());
 
