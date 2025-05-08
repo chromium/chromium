@@ -29,11 +29,6 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     ScriptForbiddenScope::ThrowScriptForbiddenException(isolate);
     return Abort();
   }
-  if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
-    CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-  } else {
-    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-  }
 
   if constexpr (mode == CallbackInvokeHelperMode::kConstructorCall) {
     // step 3. If ! IsConstructor(F) is false, throw a TypeError exception.

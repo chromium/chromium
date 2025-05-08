@@ -70,11 +70,6 @@ void EventLoop::RunEndOfMicrotaskCheckpointTasks() {
 void EventLoop::PerformMicrotaskCheckpoint() {
   if (ScriptForbiddenScope::IsScriptForbidden())
     return;
-  if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
-    CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-  } else {
-    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-  }
 
   microtask_queue_->PerformCheckpoint(isolate_);
 }

@@ -108,11 +108,6 @@ class ScriptPromiseProperty final
   template <typename PassRejectedType>
   void Reject(PassRejectedType value) {
     CHECK(!ScriptForbiddenScope::IsScriptForbidden());
-    if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
-      CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-    } else {
-      DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-    }
     DCHECK_EQ(GetState(), kPending);
     if (!GetExecutionContext()) {
       return;

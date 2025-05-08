@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -47,6 +48,16 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
   };
 
   static bool IsScriptForbidden() {
+#if DCHECK_IS_ON()
+    bool extended_check = true;
+#else
+    bool extended_check =
+        RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled();
+#endif
+
+    if (extended_check && WillBeScriptForbidden()) {
+      return true;
+    }
     if (!WTF::MayNotBeMainThread()) [[likely]] {
       return g_main_thread_counter_ > 0;
     }
