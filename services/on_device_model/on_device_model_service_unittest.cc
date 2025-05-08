@@ -608,6 +608,34 @@ TEST_F(OnDeviceModelServiceTest, ClassifyTextSafety) {
   EXPECT_THAT(resp2->class_scores, ElementsAre(0.2, 0.2));
 }
 
+TEST_F(OnDeviceModelServiceTest, CloneTextSafety) {
+  FakeFile ts_data("fake_ts_data");
+  FakeFile ts_sp_model("fake_ts_sp_model");
+  TextSafetyLoaderParams params;
+  params.ts_paths.emplace();
+  params.ts_paths->data = ts_data.Path();
+  params.ts_paths->sp_model = ts_sp_model.Path();
+  mojo::Remote<mojom::TextSafetyModel> model;
+  service()->LoadTextSafetyModel(LoadTextSafetyParams(params),
+                                 model.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<mojom::TextSafetySession> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver());
+  {
+    base::test::TestFuture<mojom::SafetyInfoPtr> future;
+    session->ClassifyTextSafety("unsafe text", future.GetCallback());
+    EXPECT_THAT(future.Take()->class_scores, ElementsAre(0.8, 0.8));
+  }
+
+  mojo::Remote<mojom::TextSafetySession> clone;
+  session->Clone(clone.BindNewPipeAndPassReceiver());
+  {
+    base::test::TestFuture<mojom::SafetyInfoPtr> future;
+    clone->ClassifyTextSafety("unsafe text", future.GetCallback());
+    EXPECT_THAT(future.Take()->class_scores, ElementsAre(0.8, 0.8));
+  }
+}
+
 TEST_F(OnDeviceModelServiceTest, PerformanceHint) {
   auto model = LoadModel(ml::ModelBackendType::kGpuBackend,
                          ml::ModelPerformanceHint::kFastestInference);

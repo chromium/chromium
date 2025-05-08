@@ -356,6 +356,11 @@ void FakeTsModel::DetectLanguage(const std::string& text,
   std::move(callback).Run(DummyDetectLanguage(text));
 }
 
+void FakeTsModel::Clone(
+    mojo::PendingReceiver<mojom::TextSafetySession> session) {
+  StartSession(std::move(session));
+}
+
 FakeTsHolder::FakeTsHolder() = default;
 FakeTsHolder::~FakeTsHolder() = default;
 

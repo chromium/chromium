@@ -176,6 +176,7 @@ class FakeTsModel final : public mojom::TextSafetyModel,
                           ClassifyTextSafetyCallback callback) override;
   void DetectLanguage(const std::string& text,
                       DetectLanguageCallback callback) override;
+  void Clone(mojo::PendingReceiver<mojom::TextSafetySession> session) override;
 
  private:
   bool has_safety_model_ = false;

@@ -64,6 +64,7 @@ class TsModel final : public mojom::TextSafetyModel,
                           ClassifyTextSafetyCallback callback) override;
   void DetectLanguage(const std::string& text,
                       DetectLanguageCallback callback) override;
+  void Clone(mojo::PendingReceiver<mojom::TextSafetySession> session) override;
 
   mojom::SafetyInfoPtr ClassifyTextSafety(const std::string& text);
   mojom::LanguageDetectionResultPtr DetectLanguage(std::string_view text);
@@ -142,6 +143,10 @@ void TsModel::ClassifyTextSafety(const std::string& text,
 void TsModel::DetectLanguage(const std::string& text,
                              DetectLanguageCallback callback) {
   std::move(callback).Run(DetectLanguage(text));
+}
+
+void TsModel::Clone(mojo::PendingReceiver<mojom::TextSafetySession> session) {
+  StartSession(std::move(session));
 }
 
 DISABLE_CFI_DLSYM

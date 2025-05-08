@@ -297,6 +297,9 @@ interface TextSafetySession {
   // Detects the language of the text using the language classifier. Returns
   // null if there is no classifier available.
   DetectLanguage@2(string text) => (LanguageDetectionResult? result);
+
+  // Clones the session and any configuration.
+  Clone@3(pending_receiver<TextSafetySession> session);
 };
 
 // A loaded text safety model, that can be shared by multiple features.
