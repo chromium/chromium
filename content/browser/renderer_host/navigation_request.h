@@ -975,14 +975,6 @@ class CONTENT_EXPORT NavigationRequest
   // possible.
   url::Origin GetTentativeOriginAtRequestTime();
 
-  // Same as `GetOriginToCommit()`, except that includes information about how
-  // the origin gets calculated, to help debug if the browser-side calculated
-  // origin for this navigation differs from the origin calculated on the
-  // renderer side.
-  // TODO(crbug.com/40772732): Remove this.
-  std::pair<std::optional<url::Origin>, std::string>
-  GetOriginToCommitWithDebugInfo();
-
   // If this navigation fails with net::ERR_BLOCKED_BY_CLIENT, act as if it were
   // cancelled by the user and do not commit an error page.
   void SetSilentlyIgnoreBlockedByClient() {
@@ -1256,11 +1248,6 @@ class CONTENT_EXPORT NavigationRequest
   const scoped_refptr<NavigationOrDocumentHandle>&
   navigation_or_document_handle() {
     return navigation_or_document_handle_;
-  }
-
-  const std::pair<std::optional<url::Origin>, std::string>&
-  browser_side_origin_to_commit_with_debug_info() {
-    return browser_side_origin_to_commit_with_debug_info_;
   }
 
   // Initializes state which is passed from the old Document to the new Document
@@ -2262,17 +2249,6 @@ class CONTENT_EXPORT NavigationRequest
   // after the final response is received or ready.
   std::optional<url::Origin> GetOriginForURLLoaderFactoryAfterResponse();
 
-  // These functions are the same as their non-WithDebugInfo counterparts,
-  // except that they include information about how the origin gets calculated,
-  // to help debug if the browser-side calculated origin for this navigation
-  // differs from the origin calculated on the renderer side.
-  // TODO(crbug.com/40772732): Remove this.
-  std::pair<url::Origin, std::string>
-  GetOriginForURLLoaderFactoryBeforeResponseWithDebugInfo(
-      network::mojom::WebSandboxFlags sandbox_flags);
-  std::pair<std::optional<url::Origin>, std::string>
-  GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo();
-
   // Computes the CrossOriginIsolationKey to use for committing the navigation.
   // A nullopt result means that either the cross-origin isolation status of the
   // request cannot be determined because we do not have final headers for the
@@ -2354,8 +2330,6 @@ class CONTENT_EXPORT NavigationRequest
   void RecordEarlyRenderFrameHostSwapMetrics();
 
   // Helpers for GetTentativeOriginAtRequestTime and GetOriginToCommit.
-  std::pair<url::Origin, std::string>
-  GetOriginForURLLoaderFactoryUncheckedWithDebugInfo();
   url::Origin GetOriginForURLLoaderFactoryUnchecked();
 
   void MaybeRecordTraceEventsAndHistograms();
@@ -2435,11 +2409,6 @@ class CONTENT_EXPORT NavigationRequest
   blink::mojom::BeginNavigationParamsPtr begin_params_;
   blink::mojom::CommitNavigationParamsPtr commit_params_;
   bool same_origin_ = false;
-  // This member is calculated at ReadyToCommit time. It is used to compare
-  // against renderer calculated origin and browser calculated one at commit
-  // time.
-  std::pair<std::optional<url::Origin>, std::string>
-      browser_side_origin_to_commit_with_debug_info_;
 
   // Stores the NavigationUIData for this navigation until the NavigationHandle
   // is created. This can be null if the embedded did not provide a

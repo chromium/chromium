@@ -766,117 +766,6 @@ bool IsOriginSandboxedWithAllowSameSiteNoneCookiesValue(
          network::mojom::WebSandboxFlags::kNone;
 }
 
-// Verify that |browser_side_origin| and |renderer_side_origin| match.  See also
-// https://crbug.com/888079.
-void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
-    NavigationRequest* navigation_request,
-    const mojom::DidCommitProvisionalLoadParams& params) {
-  DCHECK(navigation_request);
-
-  // This should be called only when a new document is created. Navigations in
-  // the same document and page activations do not create a new document.
-  DCHECK(!navigation_request->IsSameDocument());
-  DCHECK(!navigation_request->IsPageActivation());
-
-  // Ignore for now cases where the NavigationRequest is in an unexpectedly
-  // early state. Triggered by the following tests:
-  // NavigationBrowserTest.OpenerNavigation_DownloadPolicy,
-  // WebContentsImplBrowserTest.NewNamedWindow.
-  if (navigation_request->state() < NavigationRequest::WILL_PROCESS_RESPONSE)
-    return;
-
-  const url::Origin& renderer_side_origin = params.origin;
-  std::pair<std::optional<url::Origin>, std::string>
-      browser_side_origin_and_debug_info =
-          navigation_request->browser_side_origin_to_commit_with_debug_info();
-
-  // For non-opaque origins, we say the browser and renderer calculated origins
-  // match if they are exactly the same.
-  bool origins_match = (browser_side_origin_and_debug_info.first.value() ==
-                        renderer_side_origin);
-
-  // For opaque origins, we can check for equality if the opaque origin is not
-  // newly created in the renderer. If the opaque origin can be known by the
-  // browser,  e.g. if the opaque origin is inherited/copied from another
-  // document, or is from the browser-sent `origin_to_commit`, then the browser
-  // calculated origin must match the one used by the renderer in the end. On
-  // the other hand, if the opaque origin is newly created, e.g. a new sandboxed
-  // opaque origin, we can only match the precursor origin. The renderer will
-  // tell us if the origin is newly created in the renderer or not through
-  // appending "is_newly_created" in the end of `origin_calculation_debug_info`.
-  // See also `DocumentLoader::CalculateOrigin()`.
-  // TODO(crbug.com/40092527): Consider adding a separate boolean that
-  // tracks this instead of piggybacking `origin_calculation_debug_info`.
-  if (renderer_side_origin.opaque() &&
-      browser_side_origin_and_debug_info.first->opaque() &&
-      params.origin_calculation_debug_info.ends_with("is_newly_created")) {
-    origins_match = (renderer_side_origin.GetTupleOrPrecursorTupleIfOpaque() ==
-                     browser_side_origin_and_debug_info.first
-                         ->GetTupleOrPrecursorTupleIfOpaque());
-  }
-
-  // For Blob URLs, it's possible that the renderer thinks the origin is opaque
-  // while the browser thinks it's not opaque if the Blob URL origin is
-  // registered in the BlobURLNullOriginMap by the document that the navigation
-  // is replacing, causing the origin to be de-registered just before the new
-  // document commits. In this case the browser actually has the correct origin,
-  // so just compare the precursor origin of the renderer side.
-  if (params.url.SchemeIsBlob() && renderer_side_origin.opaque() &&
-      params.origin_calculation_debug_info.ends_with("is_newly_created") &&
-      navigation_request->GetRenderFrameHost()
-          ->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
-    origins_match = (renderer_side_origin.GetTupleOrPrecursorTupleIfOpaque() ==
-                     browser_side_origin_and_debug_info.first
-                         ->GetTupleOrPrecursorTupleIfOpaque());
-  }
-
-  // TODO(crbug.com/40092527): Remove the DumpWithoutCrashing below, once
-  // we are sure that the `browser_side_origin` is always the same as the
-  // `renderer_side_origin`.
-  if (!origins_match) {
-    NavigationRequest::ScopedCrashKeys navigation_request_crash_keys(
-        *navigation_request);
-    SCOPED_CRASH_KEY_STRING256(
-        "", "browser_origin",
-        browser_side_origin_and_debug_info.first->GetDebugString());
-    SCOPED_CRASH_KEY_STRING256("", "browser_debug_info",
-                               browser_side_origin_and_debug_info.second);
-    auto* parent_rfh = navigation_request->GetRenderFrameHost()->GetParent();
-    SCOPED_CRASH_KEY_STRING256(
-        "", "parent_rfh_origin",
-        parent_rfh ? parent_rfh->GetLastCommittedOrigin().GetDebugString()
-                   : "");
-    SCOPED_CRASH_KEY_STRING256("", "parent_rs_origin",
-                               parent_rfh ? parent_rfh->browsing_context_state()
-                                                ->current_replication_state()
-                                                .origin.GetDebugString()
-                                          : "");
-
-    SCOPED_CRASH_KEY_STRING256(
-        "", "browser_ready_to_commit_origin",
-        navigation_request->browser_side_origin_to_commit_with_debug_info()
-            .first->GetDebugString());
-    SCOPED_CRASH_KEY_STRING256(
-        "", "browser_ready_to_commit_debug_info",
-        navigation_request->browser_side_origin_to_commit_with_debug_info()
-            .second);
-
-    SCOPED_CRASH_KEY_STRING256("", "renderer_origin",
-                               renderer_side_origin.GetDebugString());
-    SCOPED_CRASH_KEY_STRING256("", "renderer_debug_info",
-                               params.origin_calculation_debug_info);
-    CaptureTraceForNavigationDebugScenario(
-        DebugScenario::kDebugBrowserVsRendererOriginToCommit);
-    base::debug::DumpWithoutCrashing();
-    DCHECK_EQ(browser_side_origin_and_debug_info.first.value(),
-              renderer_side_origin)
-        << "; navigation_request->GetURL() = " << navigation_request->GetURL();
-    return;
-  }
-
-  return;
-}
-
 // A simplified version of Blink's WebFrameLoadType, used to simulate renderer
 // calculations. See CalculateRendererLoadType() further below.
 // TODO(crbug.com/40150370): This should only be here temporarily.
@@ -12233,12 +12122,11 @@ void RenderFrameHostImpl::CommitNavigation(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const ProcessLock process_lock =
       ProcessLock::FromSiteInfo(GetSiteInstance()->GetSiteInfo());
-  auto browser_calc_origin_to_commit =
-      navigation_request->GetOriginToCommitWithDebugInfo();
+  auto browser_calc_origin_to_commit = navigation_request->GetOriginToCommit();
   if (!process_lock.is_error_page() && !is_mhtml_subframe &&
       !policy->CanAccessOrigin(
           GetProcess()->GetDeprecatedID(),
-          browser_calc_origin_to_commit.first.value(),
+          browser_calc_origin_to_commit.value(),
           ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin)) {
     SCOPED_CRASH_KEY_STRING64("CommitNavigation", "lock_url",
                               process_lock.ToString());
@@ -12247,9 +12135,7 @@ void RenderFrameHostImpl::CommitNavigation(
         common_params->url.DeprecatedGetOriginAsURL().spec());
     SCOPED_CRASH_KEY_STRING64(
         "CommitNavigation", "browser_calc_origin",
-        browser_calc_origin_to_commit.first.value().GetDebugString());
-    SCOPED_CRASH_KEY_STRING64("CommitNavigation", "origin_debug_info",
-                              browser_calc_origin_to_commit.second);
+        browser_calc_origin_to_commit.value().GetDebugString());
     SCOPED_CRASH_KEY_BOOL("CommitNavigation", "is_main_frame", is_main_frame());
     // The reason this isn't is_outermost_main_frame is so that the full name of
     // the key does not exceed the 40 character limit.
@@ -14775,8 +14661,7 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
 
   if (!bypass_checks_for_error_page &&
       !ValidateURLAndOrigin(params->url, params->origin,
-                            is_same_document_navigation, navigation_request,
-                            params->origin_calculation_debug_info)) {
+                            is_same_document_navigation, navigation_request)) {
     return false;
   }
 
@@ -14914,8 +14799,7 @@ bool RenderFrameHostImpl::ValidateURLAndOrigin(
     const GURL& url,
     const url::Origin& origin,
     bool is_same_document_navigation,
-    NavigationRequest* navigation_request,
-    std::string origin_calculation_debug_info) {
+    NavigationRequest* navigation_request) {
   // WebView's allow_universal_access_from_file_urls setting allows file origins
   // to access any other origin and bypass normal commit checks. If new
   // documents in the same process and origin may also bypass these checks after
@@ -14988,8 +14872,7 @@ bool RenderFrameHostImpl::ValidateURLAndOrigin(
                   << " lock '" << process->GetProcessLock().ToString() << "'";
       VLOG(1) << "Blocked URL " << url.spec();
       LogCannotCommitUrlCrashKeys(url, origin, is_same_document_navigation,
-                                  navigation_request,
-                                  origin_calculation_debug_info);
+                                  navigation_request);
 
       // Kills the process.
       bad_message::ReceivedBadMessage(process,
@@ -15171,9 +15054,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     //   DidCommitSameDocumentNavigation).
     // TODO(crbug.com/40150370): Make this a CHECK instead once we're
     // sure we never hit this case.
-    LogCannotCommitUrlCrashKeys(
-        params->url, params->origin, is_same_document_navigation,
-        navigation_request.get(), params->origin_calculation_debug_info);
+    LogCannotCommitUrlCrashKeys(params->url, params->origin,
+                                is_same_document_navigation,
+                                navigation_request.get());
     base::debug::DumpWithoutCrashing();
   }
 
@@ -15196,9 +15079,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
           params->url, frame_tree_node_->is_on_initial_empty_document());
   if (!navigation_request && !is_synchronous_about_blank_commit &&
       !is_same_document_navigation) {
-    LogCannotCommitUrlCrashKeys(
-        params->url, params->origin, is_same_document_navigation,
-        navigation_request.get(), params->origin_calculation_debug_info);
+    LogCannotCommitUrlCrashKeys(params->url, params->origin,
+                                is_same_document_navigation,
+                                navigation_request.get());
 
     bad_message::ReceivedBadMessage(
         GetProcess(),
@@ -16045,9 +15928,6 @@ void RenderFrameHostImpl::SendCommitNavigation(
 
   base::ElapsedTimer timer;
   DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
-  CHECK_EQ(commit_params->origin_to_commit,
-           navigation_request->browser_side_origin_to_commit_with_debug_info()
-               .first.value());
   IncreaseCommitNavigationCounter();
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
   mojo::PendingRemote<blink::mojom::CodeCacheHost>
@@ -16222,9 +16102,6 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
         subresource_loader_factories,
     const blink::DocumentToken& document_token,
     blink::mojom::PolicyContainerPtr policy_container) {
-  CHECK_EQ(commit_params->origin_to_commit,
-           navigation_request->browser_side_origin_to_commit_with_debug_info()
-               .first.value());
   DCHECK(navigation_client && navigation_request);
   DCHECK_NE(GURL(), common_params->url);
   DCHECK_NE(net::OK, error_code);
@@ -16660,8 +16537,7 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
     const GURL& url,
     const url::Origin& origin,
     bool is_same_document_navigation,
-    NavigationRequest* navigation_request,
-    std::string& origin_calculation_debug_info) {
+    NavigationRequest* navigation_request) {
   LogRendererKillCrashKeys(GetSiteInstance()->GetSiteInfo());
 
   // Temporary instrumentation to debug the root cause of renderer process
@@ -16788,12 +16664,6 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
   base::debug::SetCrashKeyString(
       is_on_initial_empty_document_key,
       base::ToString(frame_tree_node_->is_on_initial_empty_document()));
-
-  static auto* const origin_calculation_debug_info_key =
-      base::debug::AllocateCrashKeyString("origin_calculation_debug_info",
-                                          base::debug::CrashKeySize::Size256);
-  base::debug::SetCrashKeyString(origin_calculation_debug_info_key,
-                                 origin_calculation_debug_info);
 
   if (navigation_request && navigation_request->IsNavigationStarted()) {
     static auto* const is_renderer_initiated_key =
@@ -17443,10 +17313,6 @@ void RenderFrameHostImpl::
   DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(browser_transition,
                                                      params.transition));
   DCHECK_EQ(browser_history_list_was_cleared, params.history_list_was_cleared);
-
-  // TODO(crbug.com/40092527): The origin computed from the browser must
-  // match the one reported from the renderer process.
-  VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(request, params);
 
   if (!everything_except_origin_matches) {
     // It's possible to get here when everything except the origin matches.

@@ -214,9 +214,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
           code_cache_host,
       CrossVariantMojoRemote<mojom::blink::CodeCacheHostInterfaceBase>
           code_cache_host_for_background) override;
-  WebString OriginCalculationDebugInfo() const override {
-    return origin_calculation_debug_info_;
-  }
   bool HasLoadedNonInitialEmptyDocument() const override;
   bool IsForDiscard() const override;
 
@@ -700,11 +697,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       content_security_notifier_;
 
   const scoped_refptr<SecurityOrigin> origin_to_commit_;
-
-  // Information about how `origin_to_commit_` was calculated, to help debug if
-  // it differs from the origin calculated on the browser side.
-  // TODO(https://crbug.com/1220238): Remove this.
-  AtomicString origin_calculation_debug_info_;
 
   blink::BlinkStorageKey storage_key_;
 

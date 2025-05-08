@@ -119,11 +119,6 @@ struct DidCommitProvisionalLoadParams {
   // removed, then this will no longer be needed.
   url.mojom.Url? initiator_base_url;
 
-  // Information about how `origin` was calculated, to help debug if it differs
-  // from the origin calculated on the browser side.
-  // TODO(crbug.com/40772732): Remove this.
-  string origin_calculation_debug_info;
-
   // The 'Permissions-Policy' headers applied to the document.
   // https://w3c.github.io/webappsec-permissions-policy/#permissions-policy-http-header-field
   // Note: For backward compatibility, this field also contains
