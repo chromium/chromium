@@ -13,7 +13,7 @@ import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 suite('SpeechController', () => {
   let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
-  let onPause: boolean;
+  let onStop: boolean;
   let isSpeechActiveChanged: boolean;
   let isAudioCurrentlyPlayingChanged: boolean;
   let onPreviewVoicePlaying: boolean;
@@ -31,12 +31,12 @@ suite('SpeechController', () => {
     SpeechBrowserProxyImpl.setInstance(speech);
     isSpeechActiveChanged = false;
     isAudioCurrentlyPlayingChanged = false;
-    onPause = false;
+    onStop = false;
     onPreviewVoicePlaying = false;
     onEngineStateChange = false;
     const speechListener = {
-      onPause() {
-        onPause = true;
+      onStop() {
+        onStop = true;
       },
 
       onIsSpeechActiveChange() {
@@ -79,7 +79,7 @@ suite('SpeechController', () => {
 
     assertTrue(isSpeechActiveChanged);
     assertTrue(isAudioCurrentlyPlayingChanged);
-    assertFalse(onPause);
+    assertFalse(onStop);
     assertNotEquals(state, speechController.getState());
     assertTrue(speechController.isSpeechActive());
     assertTrue(speechController.isSpeechTreeInitialized());
@@ -105,7 +105,7 @@ suite('SpeechController', () => {
 
     assertTrue(isSpeechActiveChanged);
     assertTrue(isAudioCurrentlyPlayingChanged);
-    assertFalse(onPause);
+    assertFalse(onStop);
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isSpeechTreeInitialized());
     assertEquals(PauseActionSource.DEFAULT, speechController.getPauseSource());
@@ -302,12 +302,25 @@ suite('SpeechController', () => {
 
     speechController.stopSpeech(source);
 
-    assertTrue(onPause);
+    assertTrue(onStop);
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isAudioCurrentlyPlaying());
     assertEquals(source, speechController.getPauseSource());
     assertEquals(1, speech.getCallCount('pause'));
     assertEquals(0, speech.getCallCount('cancel'));
+  });
+
+  test('stopSpeech with button click logs play session', () => {
+    const source = PauseActionSource.BUTTON_CLICK;
+    speechController.onPlay();
+    speechController.setIsSpeechActive(true);
+
+    speechController.stopSpeech(source);
+    assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLength'));
+
+    // Calling it again without playing should not log again.
+    speechController.stopSpeech(source);
+    assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLength'));
   });
 
   test('stopSpeech without button click cancels', () => {
@@ -317,12 +330,13 @@ suite('SpeechController', () => {
 
     speechController.stopSpeech(source);
 
-    assertTrue(onPause);
+    assertTrue(onStop);
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isAudioCurrentlyPlaying());
     assertEquals(source, speechController.getPauseSource());
     assertEquals(0, speech.getCallCount('pause'));
     assertEquals(1, speech.getCallCount('cancel'));
+    assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
   });
 
   test('onSpeechInterrupted while repositioning keeps playing speech', () => {
@@ -332,7 +346,7 @@ suite('SpeechController', () => {
 
     speechController.onSpeechInterrupted();
 
-    assertFalse(onPause);
+    assertFalse(onStop);
     assertTrue(speechController.isAudioCurrentlyPlaying());
     assertTrue(speechController.isSpeechActive());
     assertTrue(speechController.isSpeechBeingRepositioned());
@@ -344,7 +358,7 @@ suite('SpeechController', () => {
 
     speechController.onSpeechInterrupted();
 
-    assertTrue(onPause);
+    assertTrue(onStop);
     assertEquals(
         PauseActionSource.ENGINE_INTERRUPT, speechController.getPauseSource());
     assertFalse(speechController.isAudioCurrentlyPlaying());
@@ -353,5 +367,16 @@ suite('SpeechController', () => {
     assertEquals(
         chrome.readingMode.engineInterruptStopSource,
         await metrics.whenCalled('recordSpeechStopSource'));
+  });
+  test('onSpeechFinished', () => {
+    speechController.onPlay();
+    speechController.setIsSpeechActive(true);
+
+    speechController.onSpeechFinished();
+
+    assertTrue(onStop);
+    assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLength'));
+    assertEquals(1, metrics.getCallCount('recordSpeechStopSource'));
+    assertFalse(speechController.isSpeechActive());
   });
 });

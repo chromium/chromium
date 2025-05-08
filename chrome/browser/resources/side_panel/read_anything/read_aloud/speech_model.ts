@@ -8,6 +8,7 @@ export enum PauseActionSource {
   VOICE_PREVIEW,
   VOICE_SETTINGS_CHANGE,
   ENGINE_INTERRUPT,
+  SPEECH_FINISHED,
 }
 
 export interface SpeechPlayingState {
@@ -67,6 +68,9 @@ export class SpeechModel {
   // last position so we can check if it's still in the new page.
   private lastReadingPosition_: ReadingPosition|null = null;
 
+  // Used for logging play time.
+  private playSessionStartTime_: number|null = null;
+
   reset(): void {
     this.speechPlayingState_ = {
       isSpeechTreeInitialized: false,
@@ -78,6 +82,14 @@ export class SpeechModel {
     };
     this.speechEngineState_ = SpeechEngineState.NONE;
     this.previewVoicePlaying_ = null;
+  }
+
+  getPlaySessionStartTime(): number|null {
+    return this.playSessionStartTime_;
+  }
+
+  setPlaySessionStartTime(time: number|null): void {
+    this.playSessionStartTime_ = time;
   }
 
   getLastPosition(): ReadingPosition|null {

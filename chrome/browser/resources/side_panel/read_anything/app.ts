@@ -131,9 +131,6 @@ export class AppElement extends AppElementBase implements
 
   protected accessor localeToDisplayName_: {[locale: string]: string} = {};
 
-  // Metrics captured for logging.
-  private playSessionStartTime: number = -1;
-
   private notificationManager_ = VoiceNotificationManager.getInstance();
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
@@ -210,7 +207,6 @@ export class AppElement extends AppElementBase implements
       this.hasContent_ = false;
       this.firstTextNodeSetForReadAloud = null;
       this.nodeStore_.clearDomNodes();
-      this.clearReadAloudState();
     }
 
     this.settingsPrefs_ = {
@@ -490,7 +486,7 @@ export class AppElement extends AppElementBase implements
     this.hasContent_ = false;
     if (this.isReadAloudEnabled_) {
       this.speech_.cancel();
-      this.clearReadAloudState();
+      this.speechController_.clearReadAloudState();
     }
   }
 
@@ -514,7 +510,7 @@ export class AppElement extends AppElementBase implements
     const previousWordBoundaryState = {...this.wordBoundaries_.state};
 
     this.speech_.cancel();
-    this.clearReadAloudState();
+    this.speechController_.clearReadAloudState();
     const container = this.$.container;
 
     // Remove all children from container. Use `replaceChildren` rather than
@@ -894,11 +890,10 @@ export class AppElement extends AppElementBase implements
 
   protected onPlayPauseClick_() {
     if (this.speechController_.isSpeechActive()) {
-      this.logSpeechPlaySession_();
       this.speechController_.stopSpeech(PauseActionSource.BUTTON_CLICK);
     } else {
-      this.playSessionStartTime = Date.now();
       this.playSpeech();
+      this.speechController_.onPlay();
     }
   }
 
@@ -919,12 +914,16 @@ export class AppElement extends AppElementBase implements
     this.previewVoicePlaying_ = this.speechController_.getPreviewVoicePlaying();
   }
 
-  onPause() {
-    // Restore links if they're enabled when speech pauses. Don't restore links
-    // if it's paused from a non-pause button (e.g. voice previews) so the links
-    // don't flash off and on.
-    if (chrome.readingMode.linksEnabled &&
-        this.speechController_.isPausedFromButton()) {
+  onStop() {
+    if (!chrome.readingMode.linksEnabled) {
+      return;
+    }
+
+    // Restore links if they're enabled when speech pauses via button click or
+    // when it finishes the page.
+    const pauseSource = this.speechController_.getPauseSource();
+    if ((pauseSource === PauseActionSource.BUTTON_CLICK) ||
+        pauseSource === PauseActionSource.SPEECH_FINISHED) {
       this.updateLinks_();
     }
   }
@@ -944,16 +943,6 @@ export class AppElement extends AppElementBase implements
     this.resetSpeechPostSettingChange_();
   }
 
-  private logSpeechPlaySession_() {
-    // Don't log a playback session just in case something has gotten out of
-    // sync and we call stopSpeech before playSpeech.
-    if (this.playSessionStartTime > 0) {
-      this.logger_.logSpeechPlaySession(
-          this.playSessionStartTime, this.selectedVoice_);
-      this.playSessionStartTime = -1;
-    }
-  }
-
   protected playNextGranularity_() {
     this.speechController_.setIsSpeechBeingRepositioned(true);
 
@@ -964,7 +953,7 @@ export class AppElement extends AppElementBase implements
     chrome.readingMode.movePositionToNextGranularity();
 
     if (!this.highlightAndPlayMessage()) {
-      this.onSpeechFinished();
+      this.speechController_.onSpeechFinished();
     }
   }
 
@@ -982,7 +971,7 @@ export class AppElement extends AppElementBase implements
 
     if (!this.highlightAndPlayMessage(/*isInterrupted=*/ false,
                                       /*isMovingBackward=*/ true)) {
-      this.onSpeechFinished();
+      this.speechController_.onSpeechFinished();
     }
   }
 
@@ -1014,7 +1003,7 @@ export class AppElement extends AppElementBase implements
           if (!this.highlightAndPlayInterruptedMessage()) {
             // Ensure we're updating Read Aloud state if there's no text to
             // speak.
-            this.onSpeechFinished();
+            this.speechController_.onSpeechFinished();
           }
         }
       }
@@ -1061,7 +1050,7 @@ export class AppElement extends AppElementBase implements
             this.firstTextNodeSetForReadAloud);
         if (!this.highlightAndPlayMessage()) {
           // Ensure we're updating Read Aloud state if there's no text to speak.
-          this.onSpeechFinished();
+          this.speechController_.onSpeechFinished();
         }
       }
     }
@@ -1143,7 +1132,7 @@ export class AppElement extends AppElementBase implements
       // includes the selection.
       this.highlighter_.resetPreviousHighlight();
       if (!this.highlightAndPlayMessage()) {
-        this.onSpeechFinished();
+        this.speechController_.onSpeechFinished();
       }
     }, playFromSelectionTimeout);
 
@@ -1290,7 +1279,7 @@ export class AppElement extends AppElementBase implements
       chrome.readingMode.movePositionToNextGranularity();
       // Continue speaking with the next block of text.
       if (!this.highlightAndPlayMessage()) {
-        this.onSpeechFinished();
+        this.speechController_.onSpeechFinished();
       }
     };
 
@@ -1372,24 +1361,6 @@ export class AppElement extends AppElementBase implements
       }
     }
     return utteranceText;
-  }
-
-  private onSpeechFinished() {
-    this.logger_.logSpeechStopSource(
-        chrome.readingMode.contentFinishedStopSource);
-    this.clearReadAloudState();
-
-    // Show links when speech finishes playing.
-    if (chrome.readingMode.linksEnabled) {
-      this.updateLinks_();
-    }
-    this.logSpeechPlaySession_();
-  }
-
-  private clearReadAloudState() {
-    this.speechController_.reset();
-    this.highlighter_.clearHighlightFormatting();
-    this.wordBoundaries_.resetToDefaultState();
   }
 
   protected onSelectVoice_(
