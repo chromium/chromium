@@ -25,6 +25,8 @@ class OptionalButtonProperties {
     public static final WritableObjectPropertyKey<ButtonData> BUTTON_DATA =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     public static final WritableBooleanPropertyKey IS_ENABLED = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_INCOGNITO_BRANDED =
+            new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<Callback<Integer>> TRANSITION_STARTED_CALLBACK =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Callback<Integer>> TRANSITION_FINISHED_CALLBACK =
@@ -46,6 +48,7 @@ class OptionalButtonProperties {
     public static final PropertyKey[] ALL_KEYS = {
         BUTTON_DATA,
         IS_ENABLED,
+        IS_INCOGNITO_BRANDED,
         TRANSITION_STARTED_CALLBACK,
         TRANSITION_FINISHED_CALLBACK,
         ON_BEFORE_HIDE_TRANSITION_CALLBACK,

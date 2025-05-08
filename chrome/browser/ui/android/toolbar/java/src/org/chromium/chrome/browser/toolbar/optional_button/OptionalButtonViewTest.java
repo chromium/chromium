@@ -144,7 +144,6 @@ public class OptionalButtonViewTest {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.NEW_TAB,
                         /* actionChipLabelResId= */ Resources.ID_NULL,
                         /* tooltipTextResId= */ R.string.new_tab_title,
-                        /* showBackgroundHighlight= */ true,
                         /* hasErrorBadge= */ false);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
@@ -173,7 +172,6 @@ public class OptionalButtonViewTest {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
                         /* actionChipLabelResId= */ Resources.ID_NULL,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showBackgroundHighlight= */ false,
                         /* hasErrorBadge= */ false);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
@@ -201,7 +199,6 @@ public class OptionalButtonViewTest {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
                         /* actionChipLabelResId= */ actionChipLabelResId,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showBackgroundHighlight= */ false,
                         /* hasErrorBadge= */ false);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
@@ -228,7 +225,6 @@ public class OptionalButtonViewTest {
                         /* buttonVariant= */ buttonVariant,
                         0,
                         tooltipTextIdRes,
-                        /* showBackgroundHighlight= */ true,
                         /* hasErrorBadge= */ false);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
@@ -254,7 +250,6 @@ public class OptionalButtonViewTest {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.UNKNOWN,
                         /* actionChipLabelResId= */ Resources.ID_NULL,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showBackgroundHighlight= */ false,
                         /* hasErrorBadge= */ false);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
@@ -827,7 +822,6 @@ public class OptionalButtonViewTest {
                         originalButtonSpec.getButtonVariant(),
                         originalButtonSpec.getActionChipLabelResId(),
                         originalButtonSpec.getHoverTooltipTextId(),
-                        originalButtonSpec.shouldShowBackgroundHighlight(),
                         originalButtonSpec.hasErrorBadge()));
 
         mOptionalButtonView.updateButtonWithAnimation(readerModeButtonData);

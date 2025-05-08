@@ -47,7 +47,16 @@ public class PhoneCaptureStateTokenTest {
 
     private static ButtonData makeButtonDate() {
         // Uses default equals impl, reference quality, to compare. Values do not matter.
-        return new ButtonDataImpl(false, null, null, "", false, null, false, 0, 0, false);
+        return new ButtonDataImpl(
+                /* canShow= */ false,
+                /* drawable= */ null,
+                /* onClickListener= */ null,
+                /* contentDescription= */ "",
+                /* supportsTinting= */ false,
+                /* iphCommandBuilder= */ null,
+                /* isEnabled= */ false,
+                /* buttonVariant= */ 0,
+                /* tooltipTextResId= */ 0);
     }
 
     @Before

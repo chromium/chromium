@@ -97,8 +97,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         /* iphCommandBuilder= */ null,
                         /* isEnabled= */ true,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showBackgroundHighlight= */ false);
+                        /* tooltipTextResId= */ Resources.ID_NULL);
         mConfiguration.screenWidthDp = 420;
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         mProfileSupplier = new ObservableSupplierImpl<>();
@@ -473,7 +472,6 @@ public class AdaptiveToolbarButtonControllerTest {
                 variant,
                 /* actionChipLabelResId= */ 0,
                 /* tooltipTextResId= */ Resources.ID_NULL,
-                /* showBackgroundHighlight= */ false,
                 /* hasErrorBadge= */ false);
     }
 }

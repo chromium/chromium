@@ -73,8 +73,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
                 /* supportsTinting= */ true,
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.PRICE_INSIGHTS,
-                /* tooltipTextResId= */ Resources.ID_NULL,
-                /* showBackgroundHighlight= */ true);
+                /* tooltipTextResId= */ Resources.ID_NULL);
 
         mContext = context;
         mBottomSheetController = bottomSheetController;

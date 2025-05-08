@@ -44,6 +44,8 @@ class OptionalButtonViewBinder {
         } else if (OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE.equals(propertyKey)) {
             view.setIsAnimationAllowedPredicate(
                     model.get(OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE));
+        } else if (OptionalButtonProperties.IS_INCOGNITO_BRANDED.equals(propertyKey)) {
+            view.setIsIncognitoBranded(model.get(OptionalButtonProperties.IS_INCOGNITO_BRANDED));
         }
     }
 }

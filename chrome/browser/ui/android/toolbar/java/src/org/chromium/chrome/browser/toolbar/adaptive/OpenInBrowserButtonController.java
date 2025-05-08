@@ -55,8 +55,7 @@ public class OpenInBrowserButtonController extends BaseButtonDataProvider {
                 /* supportsTinting= */ true,
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER,
-                /* tooltipTextResId= */ R.string.menu_open_in_product,
-                /* showBackgroundHighlight= */ true);
+                /* tooltipTextResId= */ R.string.menu_open_in_product);
         setShouldShowOnIncognitoTabs(true);
         mOpenInBrowserRunnable = openInBrowserRunnable;
         mTrackerSupplier = trackerSupplier;

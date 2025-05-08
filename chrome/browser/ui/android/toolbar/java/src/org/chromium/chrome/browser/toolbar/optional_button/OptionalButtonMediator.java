@@ -44,6 +44,10 @@ class OptionalButtonMediator {
         mModel.set(OptionalButtonProperties.ICON_BACKGROUND_ALPHA, alpha);
     }
 
+    void setIsIncognitoBranded(boolean isIncognitoBranded) {
+        mModel.set(OptionalButtonProperties.IS_INCOGNITO_BRANDED, isIncognitoBranded);
+    }
+
     public void setOnBeforeHideTransitionCallback(Runnable onBeforeHideTransitionCallback) {
         mModel.set(
                 OptionalButtonProperties.ON_BEFORE_HIDE_TRANSITION_CALLBACK,

@@ -212,7 +212,6 @@ public class OptionalBrowsingModeButtonControllerTest {
                 /* iphCommandBuilder= */ null,
                 /* isEnabled= */ true,
                 buttonVariant,
-                /* tooltipTextResId= */ Resources.ID_NULL,
-                /* showBackgroundHighlight= */ false);
+                /* tooltipTextResId= */ Resources.ID_NULL);
     }
 }

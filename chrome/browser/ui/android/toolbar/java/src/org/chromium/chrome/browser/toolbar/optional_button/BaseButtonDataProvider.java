@@ -53,8 +53,6 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      * @param adaptiveButtonVariant Enum value of {@link AdaptiveToolbarButtonVariant}, used for
      *     metrics.
      * @param tooltipTextResId String to show as a tooltip when the button is hovered over.
-     * @param showBackgroundHighlight Whether to use a custom background drawable to handle
-     *     highlight and focus UI states.
      */
     public BaseButtonDataProvider(
             Supplier<Tab> activeTabSupplier,
@@ -65,8 +63,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
             boolean supportsTinting,
             @Nullable IphCommandBuilder iphCommandBuilder,
             @AdaptiveToolbarButtonVariant int adaptiveButtonVariant,
-            @StringRes int tooltipTextResId,
-            boolean showBackgroundHighlight) {
+            @StringRes int tooltipTextResId) {
         mActiveTabSupplier = activeTabSupplier;
         mModalDialogManager = modalDialogManager;
         if (mModalDialogManager != null) {
@@ -103,8 +100,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
                         /* iphCommandBuilder= */ iphCommandBuilder,
                         /* isEnabled= */ true,
                         adaptiveButtonVariant,
-                        tooltipTextResId,
-                        showBackgroundHighlight);
+                        tooltipTextResId);
     }
 
     /**

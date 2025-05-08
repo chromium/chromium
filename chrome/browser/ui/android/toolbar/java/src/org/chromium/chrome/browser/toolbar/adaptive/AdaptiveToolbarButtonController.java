@@ -277,7 +277,6 @@ public class AdaptiveToolbarButtonController
                             receivedButtonSpec.getButtonVariant(),
                             receivedButtonSpec.getActionChipLabelResId(),
                             receivedButtonSpec.getHoverTooltipTextId(),
-                            receivedButtonSpec.shouldShowBackgroundHighlight(),
                             receivedButtonSpec.hasErrorBadge()));
         }
         return mButtonData;

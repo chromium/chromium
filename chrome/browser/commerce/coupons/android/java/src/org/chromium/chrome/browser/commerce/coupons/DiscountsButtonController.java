@@ -45,8 +45,7 @@ public class DiscountsButtonController extends BaseButtonDataProvider {
                 /* supportsTinting= */ true,
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.DISCOUNTS,
-                /* tooltipTextResId= */ Resources.ID_NULL,
-                /* showBackgroundHighlight= */ true);
+                /* tooltipTextResId= */ Resources.ID_NULL);
 
         mBottomSheetController = bottomSheetController;
         mBottomSheetObserver =

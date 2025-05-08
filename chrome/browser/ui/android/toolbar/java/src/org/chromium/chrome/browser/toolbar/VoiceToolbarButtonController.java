@@ -77,8 +77,7 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
                 /* supportsTinting= */ true,
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.VOICE,
-                /* tooltipTextResId= */ R.string.adaptive_toolbar_button_preference_voice_search,
-                /* showBackgroundHighlight= */ true);
+                /* tooltipTextResId= */ R.string.adaptive_toolbar_button_preference_voice_search);
         mTrackerSupplier = trackerSupplier;
         mVoiceSearchDelegate = voiceSearchDelegate;
     }

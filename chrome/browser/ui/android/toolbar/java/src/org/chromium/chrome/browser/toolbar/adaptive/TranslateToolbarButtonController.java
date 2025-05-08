@@ -49,8 +49,7 @@ public class TranslateToolbarButtonController extends BaseButtonDataProvider {
                 /* supportsTinting= */ true,
                 null,
                 AdaptiveToolbarButtonVariant.TRANSLATE,
-                /* tooltipTextResId= */ Resources.ID_NULL,
-                /* showBackgroundHighlight= */ true);
+                /* tooltipTextResId= */ Resources.ID_NULL);
         mTrackerSupplier = trackerSupplier;
     }
 

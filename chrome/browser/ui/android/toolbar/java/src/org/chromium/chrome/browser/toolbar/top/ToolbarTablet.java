@@ -15,7 +15,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityEvent;
@@ -485,20 +484,10 @@ public class ToolbarTablet extends ToolbarLayout {
 
         ButtonSpec buttonSpec = buttonData.getButtonSpec();
 
-        // Set hover highlight for buttons requesting a custom highlight. Set
-        // box hover highlight for the rest of button variants.
-        if (buttonData.getButtonSpec().shouldShowBackgroundHighlight()) {
-            mOptionalButton.setBackgroundResource(
-                    isIncognitoBranded()
-                            ? R.drawable.default_icon_background_baseline
-                            : R.drawable.default_icon_background);
-        } else {
-            TypedValue themeRes = new TypedValue();
-            getContext()
-                    .getTheme()
-                    .resolveAttribute(R.attr.selectableItemBackground, themeRes, true);
-            mOptionalButton.setBackgroundResource(themeRes.resourceId);
-        }
+        mOptionalButton.setBackgroundResource(
+                isIncognitoBranded()
+                        ? R.drawable.default_icon_background_baseline
+                        : R.drawable.default_icon_background);
 
         // Set hover tooltip text for voice search, share and new tab button on tablets.
         if (buttonSpec.getHoverTooltipTextId() != ButtonSpec.INVALID_TOOLTIP_TEXT_ID) {

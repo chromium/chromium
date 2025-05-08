@@ -20,7 +20,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -175,12 +174,7 @@ public class OptionalButtonCoordinator {
 
         // Reset background alpha, in case the IPH onDismiss callback doesn't fire.
         mMediator.setBackgroundAlpha(255);
-        if (buttonData != null) {
-            buttonData.setBackgroundResource(
-                    isIncognito
-                            ? R.drawable.optional_button_background_baseline
-                            : R.drawable.optional_button_background);
-        }
+        mMediator.setIsIncognitoBranded(isIncognito);
         mMediator.updateButton(buttonData);
     }
 

@@ -8,12 +8,10 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 
@@ -24,7 +22,6 @@ import java.util.Objects;
 public class ButtonDataImpl implements ButtonData {
     private boolean mCanShow;
     private boolean mIsEnabled;
-    private @DrawableRes int mBackgroundResId;
 
     private @SuppressWarnings("NullAway.Init") ButtonSpec mButtonSpec;
 
@@ -39,8 +36,7 @@ public class ButtonDataImpl implements ButtonData {
             @Nullable IphCommandBuilder iphCommandBuilder,
             boolean isEnabled,
             @AdaptiveToolbarButtonVariant int buttonVariant,
-            int tooltipTextResId,
-            boolean showBackgroundHighlight) {
+            int tooltipTextResId) {
         this(
                 canShow,
                 drawable,
@@ -51,8 +47,7 @@ public class ButtonDataImpl implements ButtonData {
                 iphCommandBuilder,
                 isEnabled,
                 buttonVariant,
-                tooltipTextResId,
-                showBackgroundHighlight);
+                tooltipTextResId);
     }
 
     public ButtonDataImpl(
@@ -65,13 +60,9 @@ public class ButtonDataImpl implements ButtonData {
             @Nullable IphCommandBuilder iphCommandBuilder,
             boolean isEnabled,
             @AdaptiveToolbarButtonVariant int buttonVariant,
-            @StringRes int tooltipTextResId,
-            boolean showBackgroundHighlight) {
+            @StringRes int tooltipTextResId) {
         mCanShow = canShow;
         mIsEnabled = isEnabled;
-        if (showBackgroundHighlight) {
-            mBackgroundResId = R.drawable.default_icon_background;
-        }
         mButtonSpec =
                 new ButtonSpec(
                         drawable,
@@ -83,7 +74,6 @@ public class ButtonDataImpl implements ButtonData {
                         buttonVariant,
                         actionChipLabelResId,
                         tooltipTextResId,
-                        showBackgroundHighlight,
                         /* hasErrorBadge= */ false);
     }
 
@@ -95,16 +85,6 @@ public class ButtonDataImpl implements ButtonData {
     @Override
     public boolean isEnabled() {
         return mIsEnabled;
-    }
-
-    @Override
-    public void setBackgroundResource(@DrawableRes int resId) {
-        mBackgroundResId = resId;
-    }
-
-    @Override
-    public int getBackgroundResource() {
-        return mBackgroundResId;
     }
 
     @Override
@@ -138,7 +118,6 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getButtonVariant(),
                         currentSpec.getActionChipLabelResId(),
                         currentSpec.getHoverTooltipTextId(),
-                        currentSpec.shouldShowBackgroundHighlight(),
                         currentSpec.hasErrorBadge());
         setButtonSpec(newSpec);
     }
@@ -157,7 +136,6 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getButtonVariant(),
                         newActionChipResourceId,
                         currentSpec.getHoverTooltipTextId(),
-                        currentSpec.shouldShowBackgroundHighlight(),
                         currentSpec.hasErrorBadge());
         setButtonSpec(newSpec);
     }
@@ -176,7 +154,6 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getButtonVariant(),
                         currentSpec.getActionChipLabelResId(),
                         currentSpec.getHoverTooltipTextId(),
-                        currentSpec.shouldShowBackgroundHighlight(),
                         currentSpec.hasErrorBadge());
         setButtonSpec(newSpec);
     }

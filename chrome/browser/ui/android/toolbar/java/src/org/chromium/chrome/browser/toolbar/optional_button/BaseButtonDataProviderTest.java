@@ -60,10 +60,9 @@ public class BaseButtonDataProviderTest {
                     contentDescription,
                     actionChipLabelResId,
                     supportsTinting,
-                    null,
+                    /* iphCommandBuilder= */ null,
                     adaptiveButtonVariant,
-                    Resources.ID_NULL,
-                    false);
+                    /* tooltipTextResId= */ Resources.ID_NULL);
         }
 
         @Override

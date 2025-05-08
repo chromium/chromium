@@ -410,7 +410,6 @@ public final class ToolbarTabletUnitTest {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
                         0,
                         0,
-                        false,
                         /* hasErrorBadge= */ false);
         buttonData.setButtonSpec(buttonSpec);
         mToolbarTablet.updateOptionalButton(buttonData);
@@ -429,7 +428,6 @@ public final class ToolbarTabletUnitTest {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.SHARE,
                         0,
                         R.string.adaptive_toolbar_button_preference_share,
-                        true,
                         /* hasErrorBadge= */ false);
         buttonData.setButtonSpec(buttonSpec);
         mToolbarTablet.updateOptionalButton(buttonData);
@@ -451,7 +449,6 @@ public final class ToolbarTabletUnitTest {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.VOICE,
                         0,
                         R.string.adaptive_toolbar_button_preference_voice_search,
-                        true,
                         /* hasErrorBadge= */ false);
         buttonData.setButtonSpec(buttonSpec);
         mToolbarTablet.updateOptionalButton(buttonData);
@@ -473,7 +470,6 @@ public final class ToolbarTabletUnitTest {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.NEW_TAB,
                         0,
                         R.string.new_tab_title,
-                        true,
                         /* hasErrorBadge= */ false);
         buttonData.setButtonSpec(buttonSpec);
         mToolbarTablet.updateOptionalButton(buttonData);
@@ -501,7 +497,6 @@ public final class ToolbarTabletUnitTest {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
                         0,
                         0,
-                        false,
                         /* hasErrorBadge= */ false);
         buttonData.setButtonSpec(buttonSpec);
         mToolbarTablet.updateOptionalButton(buttonData);
@@ -530,7 +525,6 @@ public final class ToolbarTabletUnitTest {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.SHARE,
                         0,
                         0,
-                        false,
                         /* hasErrorBadge= */ true);
         buttonData.setButtonSpec(buttonSpec);
         mToolbarTablet.updateOptionalButton(buttonData);
@@ -674,7 +668,6 @@ public final class ToolbarTabletUnitTest {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.NEW_TAB,
                         0,
                         R.string.adaptive_toolbar_button_preference_new_tab,
-                        true,
                         /* hasErrorBadge= */ false);
         buttonData.setButtonSpec(buttonSpec);
         mToolbarTablet.updateOptionalButton(buttonData);

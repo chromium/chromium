@@ -239,8 +239,7 @@ public class ToolbarPhoneTest {
                                     null,
                                     false,
                                     AdaptiveToolbarButtonVariant.UNKNOWN,
-                                    0,
-                                    false));
+                                    0));
                     // Make sure the button is visible in the beginning of the test.
                     assertEquals(true, realMenuButtonCoordinator.isVisible());
 
@@ -349,8 +348,7 @@ public class ToolbarPhoneTest {
                         null,
                         true,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
-                        0,
-                        false);
+                        0);
 
         // Show a button, this will inflate the optional button view and create its coordinator.
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
@@ -394,8 +392,7 @@ public class ToolbarPhoneTest {
                         null,
                         true,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
-                        0,
-                        false);
+                        0);
 
         // Show a button, this will inflate the optional button view and create its coordinator.
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
@@ -439,8 +436,7 @@ public class ToolbarPhoneTest {
                         null,
                         true,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
-                        0,
-                        false);
+                        0);
 
         // Show a button, this will inflate the optional button view and create its coordinator.
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
@@ -589,8 +585,7 @@ public class ToolbarPhoneTest {
                         null,
                         true,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
-                        0,
-                        false);
+                        0);
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
         verify(mOptionalButtonCoordinator).updateButton(buttonData, false);
 

@@ -21,7 +21,6 @@ import android.transition.Transition.TransitionListener;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +31,7 @@ import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.TooltipCompat;
@@ -160,6 +160,14 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         setPaddingRelative(paddingStart, getPaddingTop(), getPaddingEnd(), getPaddingBottom());
     }
 
+    public void setIsIncognitoBranded(boolean isIncognitoBranded) {
+        @DrawableRes int backgroundDrawableRes = R.drawable.optional_button_background;
+        if (isIncognitoBranded) {
+            backgroundDrawableRes = R.drawable.optional_button_background_baseline;
+        }
+        mButton.setBackgroundResource(backgroundDrawableRes);
+    }
+
     public void cancelTransition() {
         if (isRunningTransition()) {
             TransitionManager.endTransitions(mTransitionRoot);
@@ -254,20 +262,6 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mLongClickListener = buttonSpec.getOnLongClickListener();
         mButton.setEnabled(buttonData.isEnabled());
         mActionChipLabel.setEnabled(buttonData.isEnabled());
-
-        // Set circular highlight for optional button when button variant is profile, share, voice
-        // search and new tab. Set box highlight for the rest of button variants.
-        int resId = buttonData.getBackgroundResource();
-        if (buttonData.getButtonSpec().shouldShowBackgroundHighlight()
-                && resId != Resources.ID_NULL) {
-            mButton.setBackgroundResource(resId);
-        } else {
-            TypedValue themeRes = new TypedValue();
-            getContext()
-                    .getTheme()
-                    .resolveAttribute(R.attr.selectableItemBackground, themeRes, true);
-            mButton.setBackgroundResource(themeRes.resourceId);
-        }
 
         // Set hover state tooltip text for optional toolbar buttons(e.g. share, voice search, new
         // tab and profile).
