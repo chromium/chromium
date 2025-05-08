@@ -666,8 +666,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 #endif
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
                        MAYBE_GetFileSystemInfo_Success) {
-  // Use the test runner process and binary as test parameters, as it will always
-  // be running.
+  // Use the test runner process and binary as test parameters, as it will
+  // always be running.
   auto test_runner_file_path =
       device_signals::GetProcessExePath(base::Process::Current().Pid());
 
@@ -1113,14 +1113,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportDataMaskingEventTest,
   RunTest(kTestJS);
 }
 
-// TODO(crbug.com/414870123): Flaky on win.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ReportingPolicyEnabled DISABLED_ReportingPolicyEnabled
-#else
-#define MAYBE_ReportingPolicyEnabled ReportingPolicyEnabled
-#endif
 IN_PROC_BROWSER_TEST_F(EnterpriseReportDataMaskingEventTest,
-                       MAYBE_ReportingPolicyEnabled) {
+                       ReportingPolicyEnabled) {
   auto event_validator = event_report_validator_helper_->CreateValidator();
 
   api::enterprise_reporting_private::TriggeredRuleInfo rule_info;
@@ -1137,6 +1131,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportDataMaskingEventTest,
       api::enterprise_reporting_private::EventResult::kEventResultDataMasked;
   event.url = "https://foo.com";
   event.triggered_rule_info.push_back(std::move(rule_info));
+  base::RunLoop run_loop;
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
   event_validator.ExpectDataMaskingEvent("test-user@chromium.org",
                                          profile()->GetPath().AsUTF8Unsafe(),
                                          std::move(event));
@@ -1147,6 +1143,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportDataMaskingEventTest,
       profile()->GetPrefs(), true, {"sensitiveDataEvent"}, {});
 
   RunTest(kTestJS);
+  run_loop.Run();
 }
 
 class EnterpriseOnDataMaskingRulesTriggeredTest
