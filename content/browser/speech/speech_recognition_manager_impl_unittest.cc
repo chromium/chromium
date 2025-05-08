@@ -189,7 +189,7 @@ TEST_F(SpeechRecognitionManagerImplTest, LanguageNotSupportedError) {
   }));
 }
 
-TEST_F(SpeechRecognitionManagerImplTest, RecognitionContextNotSupportedError) {
+TEST_F(SpeechRecognitionManagerImplTest, PhrasesNotSupportedError) {
   SpeechRecognitionSessionConfig config;
   config.on_device = false;
   config.language = "en-US";
@@ -199,8 +199,8 @@ TEST_F(SpeechRecognitionManagerImplTest, RecognitionContextNotSupportedError) {
                           receiver_.BindNewPipeAndPassRemote(), std::nullopt);
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return error_ == media::mojom::SpeechRecognitionErrorCode::
-                         kRecognitionContextNotSupported &&
+    return error_ ==
+               media::mojom::SpeechRecognitionErrorCode::kPhrasesNotSupported &&
            ended_;
   }));
 }
@@ -214,10 +214,10 @@ TEST_F(SpeechRecognitionManagerImplTest, ConfigEventListenerThrowsError) {
 
   EXPECT_CALL(
       listener_,
-      OnRecognitionError(_, media::mojom::SpeechRecognitionError(
-                                media::mojom::SpeechRecognitionErrorCode::
-                                    kRecognitionContextNotSupported,
-                                media::mojom::SpeechAudioErrorDetails::kNone)));
+      OnRecognitionError(
+          _, media::mojom::SpeechRecognitionError(
+                 media::mojom::SpeechRecognitionErrorCode::kPhrasesNotSupported,
+                 media::mojom::SpeechAudioErrorDetails::kNone)));
   EXPECT_CALL(listener_, OnRecognitionEnd(_));
   manager_->CreateSession(config, mojo::NullReceiver(), mojo::NullRemote(),
                           std::nullopt);

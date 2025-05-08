@@ -90,8 +90,7 @@ void SpeechRecognition::setPhrases(SpeechRecognitionPhraseList* phrases) {
   if (phrases->length() > 0 &&
       mode_ == V8SpeechRecognitionMode::Enum::kCloudOnly) {
     ErrorOccurred(media::mojom::blink::SpeechRecognitionError::New(
-        media::mojom::blink::SpeechRecognitionErrorCode::
-            kRecognitionContextNotSupported,
+        media::mojom::blink::SpeechRecognitionErrorCode::kPhrasesNotSupported,
         media::mojom::blink::SpeechAudioErrorDetails::kNone));
     return;
   }
@@ -123,8 +122,7 @@ void SpeechRecognition::setMode(const V8SpeechRecognitionMode& mode) {
   if (phrases_->length() > 0 &&
       mode == V8SpeechRecognitionMode::Enum::kCloudOnly && !started_) {
     ErrorOccurred(media::mojom::blink::SpeechRecognitionError::New(
-        media::mojom::blink::SpeechRecognitionErrorCode::
-            kRecognitionContextNotSupported,
+        media::mojom::blink::SpeechRecognitionErrorCode::kPhrasesNotSupported,
         media::mojom::blink::SpeechAudioErrorDetails::kNone));
     return;
   }

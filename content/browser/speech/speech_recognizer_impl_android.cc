@@ -67,10 +67,10 @@ void SpeechRecognizerImplAndroid::UpdateRecognitionContext(
   }
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   listener()->OnRecognitionError(
-      session_id(), media::mojom::SpeechRecognitionError(
-                        media::mojom::SpeechRecognitionErrorCode::
-                            kRecognitionContextNotSupported,
-                        media::mojom::SpeechAudioErrorDetails::kNone));
+      session_id(),
+      media::mojom::SpeechRecognitionError(
+          media::mojom::SpeechRecognitionErrorCode::kPhrasesNotSupported,
+          media::mojom::SpeechAudioErrorDetails::kNone));
 }
 
 void SpeechRecognizerImplAndroid::StartRecognitionOnUIThread(
