@@ -10194,16 +10194,40 @@ should be able to be added at any place in this file.
   <description>User opted out of document mode through settings.</description>
 </action>
 
+<action name="DomDistiller.Android.DistilledPagePrefsOpened">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <description>User opens distilled page preferences.</description>
+</action>
+
+<action name="DomDistiller.Android.FontFamilyChanged">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <description>
+    User changes the font family in distilled page preferences.
+  </description>
+</action>
+
+<action name="DomDistiller.Android.FontScalingChanged">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <description>
+    User changes the front scaling in distilled page preferences.
+  </description>
+</action>
+
+<action name="DomDistiller.Android.ThemeChanged">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <description>
+    User changes the theme in distilled page preferences.
+  </description>
+</action>
+
 <action name="DomDistiller_DistilledPageOpened">
   <owner>smaslo@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <description>User opens reader mode on a page.</description>
-</action>
-
-<action name="DomDistiller_DistilledPagePrefsOpened">
-  <owner>smaslo@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <description>User opens distilled page preferences.</description>
 </action>
 
 <action name="DomDistiller_ViewOriginal">
