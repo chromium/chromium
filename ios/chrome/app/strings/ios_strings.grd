@@ -1570,6 +1570,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_HIDE_ALT" desc="Alternative button text indicating Track Price ShopCard module can be removed from Magic Stack">
           Hide "Track prices from your tabs"
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_NO_PUSH_PERMISSION_SNACKBAR" desc="Text for Snackbar if user taps 'Track' on Track price ShopCard in Magic Stack but notification permissions are not granted.">
+          Product added to your list of tracked products.
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR" desc="Text for Snackbar if user taps 'Track' on Track price ShopCard in Magic Stack">
           You'll get notified if the price drops on any site.
       </message>

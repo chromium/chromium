@@ -107,6 +107,12 @@ bool ShouldShowItemImmediately() {
       kTabResumptionShowItemImmediately);
 }
 
+enum class ShopCardTrackItemResult {
+  kTrackSuccess,
+  kTrackSuccesNoNotification,
+  kTrackError,
+};
+
 // Salient images should come from gstatic.com.
 const char kGStatic[] = ".gstatic.com";
 
@@ -491,22 +497,25 @@ class TabResumptionMediatorProxy {
   [PushNotificationUtil requestPushNotificationPermission:^(
                             BOOL granted, BOOL promptShown, NSError* error) {
     web::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](__typeof(self) strongSelf, TabResumptionItem* item,
-                          BOOL granted, BOOL promptShown, NSError* error) {
-                         if (error || !granted) {
-                           [strongSelf onTracked:NO item:item];
-                           return;
-                         }
-                         [strongSelf
-                             onNotificationPermissionVerifiedOrGranted:item];
-                       },
-                       weakSelf, item, granted, promptShown, error));
+        FROM_HERE,
+        base::BindOnce(
+            [](__typeof(self) strongSelf, TabResumptionItem* item, BOOL granted,
+               BOOL promptShown, NSError* error) {
+              if (error) {
+                [strongSelf onTracked:ShopCardTrackItemResult::kTrackError
+                                 item:item];
+                return;
+              }
+              [strongSelf onNotificationPermissionVerifiedOrGranted:item
+                                                            granted:granted];
+            },
+            weakSelf, item, granted, promptShown, error));
   }];
   [self.delegate removeTabResumptionModule];
 }
 
-- (void)onNotificationPermissionVerifiedOrGranted:(TabResumptionItem*)item {
+- (void)onNotificationPermissionVerifiedOrGranted:(TabResumptionItem*)item
+                                          granted:(BOOL)granted {
   id<SystemIdentity> identity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   _pushNotificationService->SetPreference(
@@ -517,16 +526,25 @@ class TabResumptionMediatorProxy {
   bool isNewBookmark = bookmark == nullptr;
   __weak TabResumptionMediator* weakSelf = self;
 
-  auto completionHandler =
-      ^(TabResumptionItem* tabResumptionItem, bool success) {
-        [weakSelf onTracked:success item:tabResumptionItem];
-      };
+  auto completionHandler = ^(TabResumptionItem* tabResumptionItem,
+                             bool success) {
+    if (success) {
+      [weakSelf
+          onTracked:granted
+                        ? ShopCardTrackItemResult::kTrackSuccess
+                        : ShopCardTrackItemResult::kTrackSuccesNoNotification
+               item:tabResumptionItem];
+    } else {
+      [weakSelf onTracked:ShopCardTrackItemResult::kTrackError
+                     item:tabResumptionItem];
+    }
+  };
 
   if (!bookmark) {
     const bookmarks::BookmarkNode* defaultFolder =
         _bookmarkModel->account_mobile_node();
     if (!defaultFolder) {
-      [self onTracked:NO item:item];
+      [self onTracked:ShopCardTrackItemResult::kTrackError item:item];
       return;
     }
     bookmark = _bookmarkModel->AddURL(
@@ -540,16 +558,16 @@ class TabResumptionMediatorProxy {
       item.shopCardData.productInfo);
 }
 
-- (void)onTracked:(BOOL)success item:(TabResumptionItem*)item {
-  [self.dispatcher showSnackbarMessage:[self snackbarMessage:success
-                                                        item:item]];
+- (void)onTracked:(ShopCardTrackItemResult)result
+             item:(TabResumptionItem*)item {
+  [self.dispatcher showSnackbarMessage:[self snackbarMessage:result item:item]];
 }
 
-- (MDCSnackbarMessage*)snackbarMessage:(BOOL)success
+- (MDCSnackbarMessage*)snackbarMessage:(ShopCardTrackItemResult)result
                                   item:(TabResumptionItem*)item {
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
 
-  if (success) {
+  if (result != ShopCardTrackItemResult::kTrackError) {
     // Tracking was successful. Give option to go to price tracking menu.
     action.handler = ^{
       [self.dispatcher showPriceTrackedItems];
@@ -557,11 +575,11 @@ class TabResumptionMediatorProxy {
   } else {
     // Failed to track - try again.
     action.handler = ^{
-      [self onNotificationPermissionVerifiedOrGranted:item];
+      [self trackShopCardItem:item];
     };
   }
 
-  if (success) {
+  if (result != ShopCardTrackItemResult::kTrackError) {
     action.title = l10n_util::GetNSString(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR_ACTION);
     action.accessibilityLabel = l10n_util::GetNSString(
@@ -576,9 +594,12 @@ class TabResumptionMediatorProxy {
   }
 
   MDCSnackbarMessage* message;
-  if (success) {
+  if (result == ShopCardTrackItemResult::kTrackSuccess) {
     message = CreateSnackbarMessage(l10n_util::GetNSString(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR));
+  } else if (result == ShopCardTrackItemResult::kTrackSuccesNoNotification) {
+    message = CreateSnackbarMessage(l10n_util::GetNSString(
+        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_NO_PUSH_PERMISSION_SNACKBAR));
   } else {
     message = CreateSnackbarMessage(l10n_util::GetNSString(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR));
