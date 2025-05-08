@@ -103,6 +103,8 @@ TEST(AudioDeviceDescriptionTest, IsLoopbackDevice) {
       AudioDeviceDescription::kLoopbackWithoutChromeId));
   EXPECT_TRUE(AudioDeviceDescription::IsLoopbackDevice(
       AudioDeviceDescription::kApplicationLoopbackDeviceId));
+  EXPECT_TRUE(AudioDeviceDescription::IsLoopbackDevice(
+      AudioDeviceDescription::kLoopbackAllDevicesId));
   EXPECT_FALSE(AudioDeviceDescription::IsLoopbackDevice(
       AudioDeviceDescription::kDefaultDeviceId));
 }
@@ -120,6 +122,21 @@ TEST(AudioDeviceDescriptionTest, IsApplicationLoopbackDevice) {
       AudioDeviceDescription::kLoopbackWithoutChromeId));
   EXPECT_FALSE(AudioDeviceDescription::IsApplicationLoopbackDevice(
       AudioDeviceDescription::kDefaultDeviceId));
+}
+
+TEST(AudioDeviceDescriptionTest, IsLoopbackAllDevices) {
+  EXPECT_TRUE(AudioDeviceDescription::IsLoopbackAllDevices(
+      AudioDeviceDescription::kLoopbackAllDevicesId));
+  EXPECT_FALSE(AudioDeviceDescription::IsLoopbackAllDevices(
+      AudioDeviceDescription::kDefaultDeviceId));
+  EXPECT_FALSE(AudioDeviceDescription::IsLoopbackAllDevices(
+      AudioDeviceDescription::kCommunicationsDeviceId));
+  EXPECT_FALSE(AudioDeviceDescription::IsLoopbackAllDevices(
+      AudioDeviceDescription::kLoopbackInputDeviceId));
+  EXPECT_FALSE(AudioDeviceDescription::IsLoopbackAllDevices(
+      AudioDeviceDescription::kLoopbackWithMuteDeviceId));
+  EXPECT_FALSE(AudioDeviceDescription::IsLoopbackAllDevices(
+      AudioDeviceDescription::kApplicationLoopbackDeviceId));
 }
 
 }  // namespace media

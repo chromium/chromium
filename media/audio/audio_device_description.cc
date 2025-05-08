@@ -22,6 +22,8 @@ const char AudioDeviceDescription::kLoopbackWithMuteDeviceId[] =
     "loopbackWithMute";
 const char AudioDeviceDescription::kLoopbackWithoutChromeId[] =
     "loopbackWithoutChrome";
+const char AudioDeviceDescription::kLoopbackAllDevicesId[] =
+    "loopbackAllDevicesId";
 const char AudioDeviceDescription::kApplicationLoopbackDeviceId[] =
     "applicationLoopback";
 
@@ -72,6 +74,7 @@ bool AudioDeviceDescription::IsLoopbackDevice(std::string_view device_id) {
   return device_id == kLoopbackInputDeviceId ||
          device_id == kLoopbackWithMuteDeviceId ||
          device_id == kLoopbackWithoutChromeId ||
+         device_id == kLoopbackAllDevicesId ||
          IsApplicationLoopbackDevice(device_id);
 }
 
@@ -79,6 +82,11 @@ bool AudioDeviceDescription::IsLoopbackDevice(std::string_view device_id) {
 bool AudioDeviceDescription::IsApplicationLoopbackDevice(
     std::string_view device_id) {
   return base::StartsWith(device_id, kApplicationLoopbackDeviceId);
+}
+
+// static
+bool AudioDeviceDescription::IsLoopbackAllDevices(std::string_view device_id) {
+  return device_id == kLoopbackAllDevicesId;
 }
 
 // static
