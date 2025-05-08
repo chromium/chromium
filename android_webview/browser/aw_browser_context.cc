@@ -160,7 +160,6 @@ void MigrateProfileData(base::FilePath cache_path,
   migrate_context_storage_data("QuotaManager-journal");
   migrate_context_storage_data("Service Worker");
   migrate_context_storage_data("VideoDecodeStats");
-  migrate_context_storage_data("databases");
   migrate_context_storage_data("shared_proto_db");
   migrate_context_storage_data("webrtc_event_logs");
 }
