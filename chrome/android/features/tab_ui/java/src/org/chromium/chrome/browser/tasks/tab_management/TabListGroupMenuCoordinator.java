@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -66,7 +67,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
     TabListMediator.TabActionListener getTabActionListener() {
         return new TabListMediator.TabActionListener() {
             @Override
-            public void run(View view, int tabId) {
+            public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
                 @Nullable TabModel tabModel = getTabModel();
                 if (tabModel == null) return;
 
@@ -86,7 +87,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             }
 
             @Override
-            public void run(View view, String syncId) {
+            public void run(View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {
                 // Intentional no-op.
             }
         };

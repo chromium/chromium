@@ -18,6 +18,7 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.Size;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -208,12 +209,16 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 public TabActionListener openTabGridDialog(@NonNull String syncId) {
                     return new TabActionListener() {
                         @Override
-                        public void run(View view, int tabId) {
+                        public void run(
+                                View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
                             // Intentional no-op.
                         }
 
                         @Override
-                        public void run(View view, String syncId) {
+                        public void run(
+                                View view,
+                                String syncId,
+                                @Nullable MotionEvent triggeringMotionEvent) {
                             TabSwitcherPaneBase tabSwitcherPaneBase =
                                     (TabSwitcherPaneBase)
                                             mPaneManagerSupplier

@@ -32,12 +32,15 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.ContextThemeWrapper;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+
+import androidx.annotation.Nullable;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -480,10 +483,16 @@ public final class TabGridViewBinderUnitTest {
                         TabActionButtonType.CLOSE,
                         new TabActionListener() {
                             @Override
-                            public void run(View view, int tabId) {}
+                            public void run(
+                                    View view,
+                                    int tabId,
+                                    @Nullable MotionEvent triggeringMotionEvent) {}
 
                             @Override
-                            public void run(View view, String syncId) {}
+                            public void run(
+                                    View view,
+                                    String syncId,
+                                    @Nullable MotionEvent triggeringMotionEvent) {}
                         });
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, tabActionButtonData);
 

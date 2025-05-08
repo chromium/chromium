@@ -347,9 +347,15 @@ class TabGridViewBinder {
             @NonNull View view,
             @NonNull PropertyModel propertyModel) {
         if (propertyModel.containsKey(TabProperties.TAB_GROUP_SYNC_ID)) {
-            tabActionListener.run(view, propertyModel.get(TabProperties.TAB_GROUP_SYNC_ID));
+            tabActionListener.run(
+                    view,
+                    propertyModel.get(TabProperties.TAB_GROUP_SYNC_ID),
+                    /* triggeringMotionEvent= */ null);
         } else {
-            tabActionListener.run(view, propertyModel.get(TabProperties.TAB_ID));
+            tabActionListener.run(
+                    view,
+                    propertyModel.get(TabProperties.TAB_ID),
+                    /* triggeringMotionEvent= */ null);
         }
     }
 

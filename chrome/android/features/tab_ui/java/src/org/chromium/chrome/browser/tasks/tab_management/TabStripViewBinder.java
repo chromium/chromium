@@ -63,13 +63,19 @@ class TabStripViewBinder {
                             TabActionButtonData data =
                                     model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
                             assert data.type != TabActionButtonData.TabActionButtonType.OVERFLOW;
-                            data.tabActionListener.run(v, model.get(TabProperties.TAB_ID));
+                            data.tabActionListener.run(
+                                    v,
+                                    model.get(TabProperties.TAB_ID),
+                                    /* triggeringMotionEvent= */ null);
                         });
             } else {
                 button.setOnClickListener(
                         v -> {
                             model.get(TabProperties.TAB_CLICK_LISTENER)
-                                    .run(v, model.get(TabProperties.TAB_ID));
+                                    .run(
+                                            v,
+                                            model.get(TabProperties.TAB_ID),
+                                            /* triggeringMotionEvent= */ null);
                         });
             }
             setContentDescription(view, model);

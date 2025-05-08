@@ -28,6 +28,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.Size;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
@@ -185,13 +186,27 @@ class TabListMediator implements TabListNotificationHandler {
         boolean isReorderAction(int action);
     }
 
-    /** Interface for implementing a {@link Runnable} that takes a tabId for a generic action. */
+    /** Interface for implementing a generic tab action. */
     public interface TabActionListener {
-        /** Run the action for the given view and tabId. */
-        void run(View view, int tabId);
+        /**
+         * Runs the action for the given {@code view} and {@code tabId}.
+         *
+         * @param view {@link View} for the tab.
+         * @param tabId ID of the tab.
+         * @param triggeringMotionEvent {@link MotionEvent} that triggered the action; it will be
+         *     {@code null} if the action is not a result of direct interpretation of {@link
+         *     MotionEvent}s. For example, this parameter will be {@code null} if the action is run
+         *     by a {@link android.view.View.OnClickListener} where {@link MotionEvent} is not
+         *     available.
+         */
+        void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent);
 
-        /** Run the action for the given view and tab group sync id. */
-        void run(View view, String syncId);
+        /**
+         * Runs the action for the given {@code view} and tab group {@code syncId}.
+         *
+         * @see #run(View, int, MotionEvent)
+         */
+        void run(View view, String syncId, @Nullable MotionEvent triggeringMotionEvent);
     }
 
     /**
@@ -392,7 +407,7 @@ class TabListMediator implements TabListNotificationHandler {
     private final TabActionListener mTabSelectedListener =
             new TabActionListener() {
                 @Override
-                public void run(View view, int tabId) {
+                public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
                     if (mModelList.indexFromTabId(tabId) == TabModel.INVALID_TAB_INDEX) return;
 
                     mNextTabId = tabId;
@@ -429,7 +444,8 @@ class TabListMediator implements TabListNotificationHandler {
                 }
 
                 @Override
-                public void run(View view, String syncId) {
+                public void run(
+                        View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {
                     // Intentional no-op.
                 }
 
@@ -462,7 +478,7 @@ class TabListMediator implements TabListNotificationHandler {
     private final TabActionListener mSelectableTabOnClickListener =
             new TabActionListener() {
                 @Override
-                public void run(View view, int tabId) {
+                public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
                     SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate =
                             getTabSelectionDelegate();
                     assert selectionDelegate != null;
@@ -490,7 +506,8 @@ class TabListMediator implements TabListNotificationHandler {
                 }
 
                 @Override
-                public void run(View view, String syncId) {
+                public void run(
+                        View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {
                     SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate =
                             getTabSelectionDelegate();
                     assert selectionDelegate != null;
@@ -1153,7 +1170,8 @@ class TabListMediator implements TabListNotificationHandler {
         mTabClosedListener =
                 new TabActionListener() {
                     @Override
-                    public void run(View view, int tabId) {
+                    public void run(
+                            View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
                         // TODO(crbug.com/40638921): Consider disabling all touch events during
                         // animation.
                         if (mModelList.indexFromTabId(tabId) == TabModel.INVALID_TAB_INDEX) return;
@@ -1192,7 +1210,8 @@ class TabListMediator implements TabListNotificationHandler {
                     }
 
                     @Override
-                    public void run(View view, String syncId) {
+                    public void run(
+                            View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {
                         int index = mModelList.indexFromSyncId(syncId);
                         if (index == TabModel.INVALID_TAB_INDEX) return;
 
@@ -1244,7 +1263,8 @@ class TabListMediator implements TabListNotificationHandler {
         TabActionListener swipeSafeTabActionListener =
                 new TabActionListener() {
                     @Override
-                    public void run(View view, int tabId) {
+                    public void run(
+                            View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
                         // The DefaultItemAnimator is prone to crashing in combination with the
                         // swipe animation when closing the last tab. Avoid this issue by disabling
                         // the default item animation for the duration of the removal of the last
@@ -1260,7 +1280,7 @@ class TabListMediator implements TabListNotificationHandler {
                             mRecyclerViewItemAnimationToggle.setDisableItemAnimations(true);
                         }
 
-                        mTabClosedListener.run(view, tabId);
+                        mTabClosedListener.run(view, tabId, /* triggeringMotionEvent= */ null);
 
                         // It is necessary to post the restoration as otherwise any animation
                         // triggered by removing the tab will still use the animator as they are
@@ -1276,7 +1296,8 @@ class TabListMediator implements TabListNotificationHandler {
                     }
 
                     @Override
-                    public void run(View view, String syncId) {
+                    public void run(
+                            View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {
                         // Swipe is disabled in the {@link ArchivedTabsDialogCoordinator}
                         // implementation of the TabListMediator. Intentional no-op.
                     }

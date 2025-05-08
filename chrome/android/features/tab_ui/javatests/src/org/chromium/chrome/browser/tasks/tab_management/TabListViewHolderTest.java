@@ -47,6 +47,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
 import androidx.core.widget.ImageViewCompat;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
@@ -216,13 +217,14 @@ public class TabListViewHolderTest {
     private TabListMediator.TabActionListener mMockCloseListener =
             new TabListMediator.TabActionListener() {
                 @Override
-                public void run(View view, int tabId) {
+                public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
                     mCloseClicked.set(true);
                     mCloseTabId.set(tabId);
                 }
 
                 @Override
-                public void run(View view, String syncId) {}
+                public void run(
+                        View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {}
             };
     private AtomicBoolean mCloseClicked = new AtomicBoolean();
     private AtomicInteger mCloseTabId = new AtomicInteger();
@@ -230,13 +232,14 @@ public class TabListViewHolderTest {
     private TabListMediator.TabActionListener mMockSelectedListener =
             new TabListMediator.TabActionListener() {
                 @Override
-                public void run(View view, int tabId) {
+                public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
                     mSelectClicked.set(true);
                     mSelectTabId.set(tabId);
                 }
 
                 @Override
-                public void run(View view, String syncId) {}
+                public void run(
+                        View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {}
             };
     private AtomicBoolean mSelectClicked = new AtomicBoolean();
     private AtomicInteger mSelectTabId = new AtomicInteger();
@@ -244,13 +247,14 @@ public class TabListViewHolderTest {
     private TabListMediator.TabActionListener mMockCreateGroupButtonListener =
             new TabListMediator.TabActionListener() {
                 @Override
-                public void run(View view, int tabId) {
+                public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
                     mCreateGroupButtonClicked.set(true);
                     mCreateGroupTabId.set(tabId);
                 }
 
                 @Override
-                public void run(View view, String syncId) {}
+                public void run(
+                        View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {}
             };
     private AtomicBoolean mCreateGroupButtonClicked = new AtomicBoolean();
     private AtomicInteger mCreateGroupTabId = new AtomicInteger();

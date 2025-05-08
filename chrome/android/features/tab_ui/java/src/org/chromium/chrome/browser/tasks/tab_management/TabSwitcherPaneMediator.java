@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -50,13 +51,14 @@ public class TabSwitcherPaneMediator
     private final TabActionListener mTabGridDialogOpener =
             new TabActionListener() {
                 @Override
-                public void run(View view, int tabId) {
+                public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
                     openTabGroupDialog(tabId);
                     RecordUserAction.record("TabGridDialog.ExpandedFromSwitcher");
                 }
 
                 @Override
-                public void run(View view, String syncId) {
+                public void run(
+                        View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {
                     // Intentional no-op.
                 }
             };
