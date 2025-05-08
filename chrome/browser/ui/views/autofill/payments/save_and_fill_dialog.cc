@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/payments/save_and_fill_dialog_views.h"
+#include "chrome/browser/ui/views/autofill/payments/save_and_fill_dialog.h"
 
-#include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller.h"
-#include "components/constrained_window/constrained_window_views.h"
-#include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -19,9 +14,14 @@
 
 namespace autofill {
 
-SaveAndFillDialogViews::SaveAndFillDialogViews(
+SaveAndFillDialog::SaveAndFillDialog(
     base::WeakPtr<SaveAndFillDialogController> controller)
     : controller_(controller) {
+  // Set the ownership of the delegate, not the View. The View is owned by the
+  // Widget as a child view.
+  // TODO(crbug.com/338254375): Remove the following line once this is the
+  // default state for widgets.
+  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   SetModalType(ui::mojom::ModalType::kChild);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
@@ -33,21 +33,9 @@ SaveAndFillDialogViews::SaveAndFillDialogViews(
   InitViews();
 }
 
-SaveAndFillDialogViews::~SaveAndFillDialogViews() = default;
+SaveAndFillDialog::~SaveAndFillDialog() = default;
 
-base::WeakPtr<SaveAndFillDialogView> SaveAndFillDialogViews::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-base::WeakPtr<SaveAndFillDialogView> CreateAndShowSaveAndFillDialog(
-    base::WeakPtr<SaveAndFillDialogController> controller,
-    content::WebContents* web_contents) {
-  SaveAndFillDialogViews* dialog_view = new SaveAndFillDialogViews(controller);
-  constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
-  return dialog_view->GetWeakPtr();
-}
-
-void SaveAndFillDialogViews::AddedToWidget() {
+void SaveAndFillDialog::AddedToWidget() {
   if (controller_->IsUploadSaveAndFill()) {
     GetBubbleFrameView()->SetTitleView(
         std::make_unique<TitleWithIconAfterLabelView>(
@@ -61,11 +49,11 @@ void SaveAndFillDialogViews::AddedToWidget() {
   }
 }
 
-std::u16string SaveAndFillDialogViews::GetWindowTitle() const {
+std::u16string SaveAndFillDialog::GetWindowTitle() const {
   return controller_ ? controller_->GetWindowTitle() : std::u16string();
 }
 
-void SaveAndFillDialogViews::InitViews() {
+void SaveAndFillDialog::InitViews() {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()->GetDistanceMetric(

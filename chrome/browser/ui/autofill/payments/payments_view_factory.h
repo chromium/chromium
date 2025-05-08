@@ -89,7 +89,7 @@ std::unique_ptr<BnplTosView> CreateAndShowBnplTos(
 // "Save and Fill" suggestion in the credit card dropdown menu. It presents
 // a centered modal dialog where the user can conveniently save a new
 // credit card and simultaneously fill it into the form with a single click.
-base::WeakPtr<SaveAndFillDialogView> CreateAndShowSaveAndFillDialog(
+std::unique_ptr<SaveAndFillDialogView> CreateAndShowSaveAndFillDialog(
     base::WeakPtr<SaveAndFillDialogController> controller,
     content::WebContents* web_contents);
 #endif  // !BUILDFLAG(IS_ANDROID)

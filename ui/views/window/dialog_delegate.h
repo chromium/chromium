@@ -117,7 +117,7 @@ class AutofillProgressDialogViews;
 class BnplTosDialog;
 class CardUnmaskOtpInputDialogViews;
 class EditAddressProfileView;
-class SaveAndFillDialogViews;
+class SaveAndFillDialog;
 class WebauthnDialogView;
 
 namespace payments {
@@ -754,7 +754,7 @@ class VIEWS_EXPORT DialogDelegateView : public DialogDelegate, public View {
   friend class ::autofill::BnplTosDialog;
   friend class ::autofill::CardUnmaskOtpInputDialogViews;
   friend class ::autofill::EditAddressProfileView;
-  friend class ::autofill::SaveAndFillDialogViews;
+  friend class ::autofill::SaveAndFillDialog;
   friend class ::autofill::WebauthnDialogView;
   friend class ::autofill::payments::PaymentsWindowUserConsentDialogView;
   friend class ::autofill::payments::SelectBnplIssuerDialog;

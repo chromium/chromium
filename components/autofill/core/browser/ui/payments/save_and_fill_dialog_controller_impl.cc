@@ -15,7 +15,7 @@ SaveAndFillDialogControllerImpl::SaveAndFillDialogControllerImpl() = default;
 SaveAndFillDialogControllerImpl::~SaveAndFillDialogControllerImpl() = default;
 
 void SaveAndFillDialogControllerImpl::ShowDialog(
-    base::OnceCallback<base::WeakPtr<SaveAndFillDialogView>()>
+    base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
         create_and_show_view_callback) {
   dialog_view_ = std::move(create_and_show_view_callback).Run();
   CHECK(dialog_view_);
