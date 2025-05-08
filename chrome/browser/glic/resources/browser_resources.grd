@@ -89,9 +89,16 @@ found in the LICENSE file.
       <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" translateable="false" desc="This is the menu item for showing the glic UI.">
         Open glic
       </message>
-      <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" translateable="false" desc="This is the menu item for customizing the keyboard shortcut.">
-        Customize keyboard shortcut
-      </message>
+      <if expr="is_win or is_linux">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" translateable="false" desc="This is the menu item for customizing the keyboard shortcut.">
+          Customize keyboard shortcut
+        </message>
+      </if>
+      <if expr="is_macosx">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" translateable="false" desc="This is the menu item for customizing the keyboard shortcut.">
+          Customize Keyboard Shortcut...
+        </message>
+      </if>
       <if expr="is_macosx">
         <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the glic icon from the menu bar.">
           Disable glic in menu bar
