@@ -63,7 +63,7 @@
 #include "base/android/build_info.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 extern const int kCcompressedProtocolJSON;
 #endif
 
@@ -694,9 +694,7 @@ void DevToolsHttpHandler::OnJsonRequest(
 }
 
 void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
-  NOTREACHED();
-#else
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   scoped_refptr<base::RefCountedMemory> bytes =
       GetContentClient()->GetDataResourceBytes(kCcompressedProtocolJSON);
   CHECK(bytes) << "Could not load protocol";
@@ -709,7 +707,9 @@ void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
       FROM_HERE, base::BindOnce(&ServerWrapper::SendResponse,
                                 base::Unretained(server_wrapper_.get()),
                                 connection_id, response));
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 }
 
 void DevToolsHttpHandler::RespondToJsonList(int connection_id,
@@ -741,12 +741,12 @@ void DevToolsHttpHandler::OnDiscoveryPageRequest(int connection_id) {
 
 void DevToolsHttpHandler::OnFrontendResourceRequest(
     int connection_id, const std::string& path) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
-  Send404(connection_id);
-#else
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   Send200(connection_id,
           content::DevToolsFrontendHost::GetFrontendResource(path),
           GetMimeType(path));
+#else
+  Send404(connection_id);
 #endif
 }
 
