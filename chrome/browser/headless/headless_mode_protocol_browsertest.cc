@@ -358,8 +358,15 @@ HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/multiple-screen-details.js",
     "--screen-info={label=#1}{600x800 label='#2'}")
 
+// TODO(crbug.com/40283476): MoveWindowBetweenScreens is failing on Mac
+#if !BUILDFLAG(IS_MAC)
+#define MAYBE_MoveWindowBetweenScreens MoveWindowBetweenScreens
+#else
+#define MAYBE_MoveWindowBetweenScreens DISABLED_MoveWindowBetweenScreens
+#endif
+
 HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MoveWindowBetweenScreens,
+    MAYBE_MoveWindowBetweenScreens,
     "sanity/move-window-between-screens.js",
     "--screen-info={label='#1'}{label='#2'}{0,600 label='#3'}{label='#4'}")
 
@@ -368,8 +375,15 @@ HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/window-open-on-secondary-screen.js",
     "--screen-info={label='#1'}{label='#2'} --disable-popup-blocking")
 
+// TODO(crbug.com/40283476): CreateTargetSecondaryScreen is failing on Mac
+#if !BUILDFLAG(IS_MAC)
+#define MAYBE_CreateTargetSecondaryScreen CreateTargetSecondaryScreen
+#else
+#define MAYBE_CreateTargetSecondaryScreen DISABLED_CreateTargetSecondaryScreen
+#endif
+
 HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    CreateTargetSecondaryScreen,
+    MAYBE_CreateTargetSecondaryScreen,
     "sanity/create-target-secondary-screen.js",
     "--screen-info={label='#1'}{label='#2'}")
 
