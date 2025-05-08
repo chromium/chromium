@@ -724,8 +724,6 @@ class GraphBuilderTflite final {
       const mojom::ElementWiseBinary& binary);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(const mojom::Elu& elu);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Pool2d& pool2d);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Transpose& transpose);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Tanh& tanh);
@@ -765,16 +763,12 @@ class GraphBuilderTflite final {
   std::optional<OperationId> IsNextOpQuantize(
       OperandId output_operand_id,
       SupportedDataTypes supported_quantized_types);
-  // Check if the input of DequantizeLinear is (u)int8, the output of
-  // QuantizeLinear has been validated (u)int8 in `IsNextOpQuantize`, and its
-  // scale and zero point are scalar values.
+  // Check if the input is dequantized from (u)int8, and its scale and zero
+  // point are scalar values.
   //
   // Used by DQ->op->Q fusion to satisfy XNNPACK delegate's validation in
   // `CheckTensorFloat32OrQUInt8Type`.
-  template <typename OpType>
-    requires(std::is_same_v<OpType, mojom::DequantizeLinear> ||
-             std::is_same_v<OpType, mojom::QuantizeLinear>)
-  bool IsInts8AndScalarScale(const OpType& op);
+  bool IsInts8AndScalarScale(const mojom::DequantizeLinear& dequantize_linear);
 
   bool IsSerializedWithMismatchQuantizeParameters(
       OperandId operand_id,
