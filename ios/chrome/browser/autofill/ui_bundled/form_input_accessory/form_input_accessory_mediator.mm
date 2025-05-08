@@ -553,9 +553,7 @@ bool IsStateless() {
   // happened within the same document. If reset, the keyboard accessory
   // suggestions can suddenly disappear if a form field is still focused.
   // See crbug.com/339851686.
-  if (base::FeatureList::IsEnabled(
-          kSkipKeyboardAccessoryResetForSameDocumentNavigation) &&
-      navigation->IsSameDocument()) {
+  if (navigation->IsSameDocument()) {
     return;
   }
   [self reset];

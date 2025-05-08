@@ -21,7 +21,3 @@ BASE_FEATURE(kThrottleFormInputAccessorySuggestionRefresh,
 BASE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground,
              "FormInputAccessorySkipInputViewReloadInBackground",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSkipKeyboardAccessoryResetForSameDocumentNavigation,
-             "SkipKeyboardAccessoryResetForSameDocumentNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
