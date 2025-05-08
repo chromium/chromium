@@ -7,6 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
+    "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsCreationDelegateImplementation.java",
     "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsPresentationDelegate.java",
     "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java",
     "android/java/src/org/chromium/chrome/browser/webid/IdentityCredentialsDelegate.java",
@@ -17,8 +18,10 @@ android_library("java") {
     "//base:base_java",
     "//base:service_loader_java",
     "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_credentials_credentials_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
