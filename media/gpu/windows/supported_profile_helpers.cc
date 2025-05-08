@@ -332,8 +332,12 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
         continue;
       }
       if (profile_id == DXVA_ModeAV1_VLD_Profile1) {
-        supported_resolutions[AV1PROFILE_PROFILE_HIGH] = GetResolutionsForGUID(
-            video_device_wrapper, profile_id, kModernResolutions);
+        // DXVA spec for high profile (section 7.2) does not include NV12 as
+        // mandatory format, here we only test 8b-444 (AYUV) and skip check of
+        // Y410.
+        supported_resolutions[AV1PROFILE_PROFILE_HIGH] =
+            GetResolutionsForGUID(video_device_wrapper, profile_id,
+                                  kModernResolutions, DXGI_FORMAT_AYUV);
         continue;
       }
       if (profile_id == DXVA_ModeAV1_VLD_Profile2) {
