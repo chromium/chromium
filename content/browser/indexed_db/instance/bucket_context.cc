@@ -494,24 +494,18 @@ void BucketContext::QueueRunTasks() {
 void BucketContext::RunTasks() {
   task_run_queued_ = false;
 
-  Status status;
   for (auto db_it = databases_.begin(); db_it != databases_.end();) {
     Database& db = *db_it->second;
+    Status status = db.RunTasks();
+    if (!status.ok()) {
+      OnDatabaseError(status, {});
+      return;
+    }
 
-    Database::RunTasksResult tasks_result;
-    std::tie(tasks_result, status) = db.RunTasks();
-    switch (tasks_result) {
-      case Database::RunTasksResult::kDone:
-        ++db_it;
-        continue;
-
-      case Database::RunTasksResult::kError:
-        OnDatabaseError(status, {});
-        return;
-
-      case Database::RunTasksResult::kCanBeDestroyed:
-        databases_.erase(db_it);
-        break;
+    if (db.CanBeDestroyed()) {
+      db_it = databases_.erase(db_it);
+    } else {
+      ++db_it;
     }
   }
   if (CanClose() && closing_stage_ == ClosingState::kClosed) {

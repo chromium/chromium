@@ -196,7 +196,7 @@ void Database::RegisterAndScheduleTransaction(Transaction* transaction) {
                           transaction->mutable_locks_receiver()));
 }
 
-std::tuple<Database::RunTasksResult, Status> Database::RunTasks() {
+Status Database::RunTasks() {
   // First execute any pending tasks in the connection coordinator.
   ConnectionCoordinator::ExecuteTaskResult task_state;
   Status status;
@@ -206,7 +206,8 @@ std::tuple<Database::RunTasksResult, Status> Database::RunTasks() {
   } while (task_state == ConnectionCoordinator::ExecuteTaskResult::kMoreTasks);
 
   if (task_state == ConnectionCoordinator::ExecuteTaskResult::kError) {
-    return {RunTasksResult::kError, status};
+    CHECK(!status.ok());
+    return status;
   }
 
   bool transactions_removed = true;
@@ -245,7 +246,8 @@ std::tuple<Database::RunTasksResult, Status> Database::RunTasks() {
         std::tie(task_result, transaction_status) = txn->RunTasks();
         switch (task_result) {
           case Transaction::RunTasksResult::kError:
-            return {RunTasksResult::kError, transaction_status};
+            CHECK(!transaction_status.ok());
+            return transaction_status;
           case Transaction::RunTasksResult::kCommitted:
           case Transaction::RunTasksResult::kAborted:
             if (txn->mode() ==
@@ -271,10 +273,7 @@ std::tuple<Database::RunTasksResult, Status> Database::RunTasks() {
       }
     }
   }
-  if (CanBeDestroyed()) {
-    return {RunTasksResult::kCanBeDestroyed, Status::OK()};
-  }
-  return {RunTasksResult::kDone, Status::OK()};
+  return Status::OK();
 }
 
 Status Database::ForceCloseAndRunTasks(const std::string& message) {

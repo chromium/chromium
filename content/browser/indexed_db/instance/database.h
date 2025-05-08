@@ -11,7 +11,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -78,8 +77,7 @@ class CONTENT_EXPORT Database {
 
   const list_set<Connection*>& connections() const { return connections_; }
 
-  enum class RunTasksResult { kDone, kError, kCanBeDestroyed };
-  std::tuple<RunTasksResult, Status> RunTasks();
+  Status RunTasks();
   void RegisterAndScheduleTransaction(Transaction* transaction);
 
   // The database object (this object) must be kept alive for the duration of
@@ -195,6 +193,8 @@ class CONTENT_EXPORT Database {
     connections_.insert(connection);
   }
 
+  bool CanBeDestroyed();
+
  protected:
   friend class Transaction;
   friend class ConnectionCoordinator::ConnectionRequest;
@@ -281,8 +281,6 @@ class CONTENT_EXPORT Database {
   // This can only be called when the given connection is closed and no longer
   // has any transaction objects.
   void ConnectionClosed(Connection* connection);
-
-  bool CanBeDestroyed();
 
   std::vector<PartitionedLockManager::PartitionedLockRequest>
   BuildLockRequestsFromTransaction(Transaction* transaction) const;
