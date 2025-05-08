@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
@@ -38,7 +39,6 @@
 
 using base::Time;
 using metrics::OmniboxEventProto;
-using OmniboxFieldTrial::kLocalHistoryZeroSuggestRelevanceScore;
 
 namespace {
 
@@ -244,8 +244,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Input) {
       "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2", 0);
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches(
-      {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+  ExpectMatches({{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance}});
 
   // Following histograms should be logged when zero-prefix suggestions are
   // allowed and the keyword search terms database is queried.
@@ -281,8 +280,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, NonIncognito) {
       .WillRepeatedly(testing::Return(false));
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches(
-      {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+  ExpectMatches({{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance}});
 }
 
 // Tests that suggestions are allowed in the eligibile entry points.
@@ -299,7 +297,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
 
     // Local history zero-prefix suggestions are enabled by default.
     ExpectMatches(
-        {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+        {{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance}});
   }
   {
     // Disable local history zero-prefix suggestions beyond NTP.
@@ -334,7 +332,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
 #endif
     // Local history zero-prefix suggestions are enabled for on-focus SRP.
     ExpectMatches(
-        {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+        {{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance}});
   }
 }
 
@@ -350,8 +348,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, DefaultSearchProvider) {
   });
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches(
-      {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+  ExpectMatches({{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance}});
 
   template_url_service->SetUserSelectedDefaultSearchProvider(
       other_search_provider);
@@ -381,8 +378,8 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Normalization) {
 
   StartProviderAndWaitUntilDone();
   ExpectMatches(
-      {{"سلام دنیا", kLocalHistoryZeroSuggestRelevanceScore.Get()},
-       {"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get() - 1}});
+      {{"سلام دنیا", omnibox::kLocalHistoryZeroSuggestRelevance},
+       {"hello world", omnibox::kLocalHistoryZeroSuggestRelevance - 1}});
 }
 
 // Tests that the suggestions are ranked correctly.
@@ -408,9 +405,8 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Ranking) {
   // More recent searches are ranked higher when searches are just as frequent.
   StartProviderAndWaitUntilDone();
   ExpectMatches(
-      {{"more recent search", kLocalHistoryZeroSuggestRelevanceScore.Get()},
-       {"less recent search",
-        kLocalHistoryZeroSuggestRelevanceScore.Get() - 1}});
+      {{"more recent search", omnibox::kLocalHistoryZeroSuggestRelevance},
+       {"less recent search", omnibox::kLocalHistoryZeroSuggestRelevance - 1}});
 
   // More frequent searches are ranked higher when searches are nearly as old.
   LoadURLs({
@@ -421,9 +417,8 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Ranking) {
 
   StartProviderAndWaitUntilDone();
   ExpectMatches(
-      {{"less recent search", kLocalHistoryZeroSuggestRelevanceScore.Get()},
-       {"more recent search",
-        kLocalHistoryZeroSuggestRelevanceScore.Get() - 1}});
+      {{"less recent search", omnibox::kLocalHistoryZeroSuggestRelevance},
+       {"more recent search", omnibox::kLocalHistoryZeroSuggestRelevance - 1}});
 }
 
 // Tests that the provider supports deletion of matches.
@@ -446,9 +441,9 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
   });
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()},
-                 {"not to be deleted",
-                  kLocalHistoryZeroSuggestRelevanceScore.Get() - 1}});
+  ExpectMatches(
+      {{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance},
+       {"not to be deleted", omnibox::kLocalHistoryZeroSuggestRelevance - 1}});
 
   // The keyword search terms database should be queried for the search terms
   // submitted to the default search provider.
@@ -467,12 +462,12 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
   // Make sure the deletion takes effect immediately in the provider before the
   // history service asynchronously performs the deletion or even before the
   // provider is started again.
-  ExpectMatches({{"not to be deleted",
-                  kLocalHistoryZeroSuggestRelevanceScore.Get() - 1}});
+  ExpectMatches(
+      {{"not to be deleted", omnibox::kLocalHistoryZeroSuggestRelevance - 1}});
 
   StartProviderAndWaitUntilDone();
   ExpectMatches(
-      {{"not to be deleted", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+      {{"not to be deleted", omnibox::kLocalHistoryZeroSuggestRelevance}});
 
   // Wait until the history service performs the deletion.
   history::BlockUntilHistoryProcessesPendingRequests(
@@ -485,7 +480,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
 
   StartProviderAndWaitUntilDone();
   ExpectMatches(
-      {{"not to be deleted", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+      {{"not to be deleted", omnibox::kLocalHistoryZeroSuggestRelevance}});
 
   history::URLDatabase* url_db =
       client_->GetHistoryService()->InMemoryDatabase();

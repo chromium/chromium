@@ -82,6 +82,10 @@ class UnscopedExtensionProviderDelegateImpl
   // incoming later with a stale request ID.
   int current_request_id_ = 0;
 
+  // The first relevance score to assign to the suggestions for the current
+  // request for suggestions.
+  int first_suggestion_relevance_ = 0;
+
   // Current list of matches received from the extensions. Used to update the
   // list of matches in the provider.
   std::vector<AutocompleteMatch> extension_suggest_matches_;

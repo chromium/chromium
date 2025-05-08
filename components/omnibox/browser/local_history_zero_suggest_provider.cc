@@ -36,6 +36,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/search.h"
@@ -211,8 +212,7 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
       "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2",
       db_query_timer.Elapsed());
 
-  int relevance =
-      OmniboxFieldTrial::kLocalHistoryZeroSuggestRelevanceScore.Get();
+  int relevance = omnibox::kLocalHistoryZeroSuggestRelevance;
   for (const auto& result : results) {
     SearchSuggestionParser::SuggestResult suggestion(
         /*suggestion=*/result->normalized_term,

@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -119,9 +120,6 @@ void LogOmniboxZeroSuggestRequest(const RemoteRequestEvent request_event,
       request_event);
 }
 
-// Relevance value to use if it was not set explicitly by the server.
-const int kDefaultZeroSuggestRelevance = 100;
-
 // Called in StoreRemoteResponse() and ReadStoredResponse() to determine if the
 // zero suggest cache is being used to store ZPS responses received from the
 // remote Suggest service for the given |result_type|.
@@ -168,7 +166,8 @@ bool StoreRemoteResponse(const std::string& response_json,
 
   if (!SearchSuggestionParser::ParseSuggestResults(
           *response_data, input, client->GetSchemeClassifier(),
-          /*default_result_relevance=*/kDefaultZeroSuggestRelevance,
+          /*default_result_relevance=*/
+          omnibox::kDefaultRemoteZeroSuggestRelevance,
           /*is_keyword_result=*/false, results)) {
     return false;
   }
@@ -225,7 +224,8 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
 
   if (!SearchSuggestionParser::ParseSuggestResults(
           *response_data, input, client->GetSchemeClassifier(),
-          /*default_result_relevance=*/kDefaultZeroSuggestRelevance,
+          /*default_result_relevance=*/
+          omnibox::kDefaultRemoteZeroSuggestRelevance,
           /*is_keyword_result=*/false, results)) {
     return false;
   }

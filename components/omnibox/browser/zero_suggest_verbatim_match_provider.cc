@@ -16,6 +16,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -23,14 +24,6 @@
 
 namespace {
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
-
-// Verbatim Match is placed in a dedicated SECTION_MOBILE_VERBATIM.
-// While there are no other occupants of this section, the Relevance score
-// remains important, because the Verbatim Match may get de-duplicated to other,
-// higher ranking suggestions listed later on the list.
-// Keep the relevance high to ensure matching suggestions listed later are
-// merged to the Verbatim Match, not the other way around.
-const int kVerbatimMatchRelevanceScore = 1602;
 
 // Returns whether specific context is eligible for a verbatim match.
 // Only offer verbatim match on a site visit and SRP (no NTP etc).
@@ -123,9 +116,9 @@ void ZeroSuggestVerbatimMatchProvider::CreateVerbatimMatch(
   verbatim_input.set_prevent_inline_autocomplete(true);
   verbatim_input.set_allow_exact_keyword_match(false);
 
-  AutocompleteMatch match =
-      VerbatimMatchForURL(this, client_, verbatim_input, input.current_url(),
-                          std::move(page_title), kVerbatimMatchRelevanceScore);
+  AutocompleteMatch match = VerbatimMatchForURL(
+      this, client_, verbatim_input, input.current_url(), std::move(page_title),
+      omnibox::kVerbatimMatchZeroSuggestRelevance);
   // Make sure the URL is formatted the same was as most visited sites.
   auto format_types = AutocompleteMatch::GetFormatTypes(false, false);
   match.suggestion_group_id = omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX;

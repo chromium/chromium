@@ -36,6 +36,7 @@
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -53,15 +54,8 @@
 
 namespace {
 
-// Relevance for pedal-like action matches to be provided when not in keyword
-// mode and input is empty.
-constexpr int kAdvertActionRelevance = 10000;
-
 // The internal default verbatim match relevance.
-constexpr int kDefaultMatchRelevance = 1500;
-
-// Relevance value to use if it was not set explicitly by the server.
-constexpr int kDefaultSuggestResultRelevance = 100;
+constexpr int kDefaultVerbatimMatchRelevance = 1500;
 
 // Populates |results| with the response if it can be successfully parsed for
 // |input|. Returns true if the response can be successfully parsed.
@@ -82,7 +76,7 @@ bool ParseRemoteResponse(const std::string& response_json,
 
   return SearchSuggestionParser::ParseSuggestResults(
       *response_data, input, client->GetSchemeClassifier(),
-      /*default_result_relevance=*/kDefaultSuggestResultRelevance,
+      /*default_result_relevance=*/omnibox::kDefaultRemoteZeroSuggestRelevance,
       /*is_keyword_result=*/true, results);
 }
 
@@ -309,8 +303,8 @@ void ContextualSearchProvider::ConvertSuggestResultsToAutocompleteMatches(
 void ContextualSearchProvider::AddPageSearchActionMatches(
     const AutocompleteInput& input) {
   // These matches are effectively pedals that don't require any query matching.
-  AutocompleteMatch match(this, kAdvertActionRelevance, false,
-                          AutocompleteMatchType::PEDAL);
+  AutocompleteMatch match(this, omnibox::kContextualActionZeroSuggestRelevance,
+                          false, AutocompleteMatchType::PEDAL);
   match.contents_class = {{0, ACMatchClassification::NONE}};
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
@@ -341,7 +335,7 @@ void ContextualSearchProvider::AddDefaultVerbatimMatch(
   const TemplateURL* template_url = GetKeywordTemplateURL();
   std::u16string text = base::CollapseWhitespace(input.text(), false);
 
-  AutocompleteMatch match(this, kDefaultMatchRelevance, false,
+  AutocompleteMatch match(this, kDefaultVerbatimMatchRelevance, false,
                           AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   if (text.empty()) {
     // Inert/static keyword mode helper text match for empty input. This match
@@ -369,7 +363,7 @@ void ContextualSearchProvider::AddDefaultVerbatimMatch(
         /*subtypes=*/{omnibox::SUBTYPE_CONTEXTUAL_SEARCH},
         /*from_keyword=*/true,
         /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
-        /*relevance=*/kDefaultMatchRelevance,
+        /*relevance=*/kDefaultVerbatimMatchRelevance,
         /*relevance_from_server=*/false,
         /*input_text=*/text);
     match = CreateSearchSuggestion(

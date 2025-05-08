@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
@@ -451,7 +452,7 @@ void FeaturedSearchProvider::AddGeminiIPHMatch() {
       /*matched_term=*/u"@gemini",
       /*iph_link_text=*/u"",
       /*iph_link_url=*/{},
-      /*relevance=*/kIPHRelevance,
+      /*relevance=*/omnibox::kIPHZeroSuggestRelevance,
       /*deletable=*/true);
 }
 
@@ -498,7 +499,7 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchIPHMatch() {
               /*matched_term=*/u"",
               /*iph_link_text=*/u"",
               /*iph_link_url=*/{},
-              /*relevance=*/kIPHRelevance,
+              /*relevance=*/omnibox::kIPHZeroSuggestRelevance,
               /*deletable=*/true);
 }
 
@@ -584,7 +585,7 @@ void FeaturedSearchProvider::AddHistoryScopePromoIphMatch() {
               /*matched_term=*/u"@history",
               /*iph_link_text=*/u"",
               /*iph_link_url=*/{},
-              /*relevance=*/kIPHRelevance,
+              /*relevance=*/omnibox::kIPHZeroSuggestRelevance,
               /*deletable=*/true);
 }
 
@@ -604,6 +605,6 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsScopePromoIphMatch() {
       /*matched_term=*/u"@history",
       /*iph_link_text=*/u"",
       /*iph_link_url=*/{},
-      /*relevance=*/kIPHRelevance,
+      /*relevance=*/omnibox::kIPHZeroSuggestRelevance,
       /*deletable=*/true);
 }

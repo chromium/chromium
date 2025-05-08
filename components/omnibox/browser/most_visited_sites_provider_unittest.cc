@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -257,7 +258,7 @@ void MostVisitedSitesProviderTest::CheckMatchesEquivalentTo(
   } else if (ui_type == ExpectedUiType::kIndividualTiles) {
     ASSERT_EQ(data.size(), NumMostVisitedMatches())
         << "Unexpected number of TILE matches";
-    int expected_relevance = 1600;  // kMostVisitedTilesIndividualHighRelevance
+    int expected_relevance = omnibox::kMostVisitedTilesZeroSuggestHighRelevance;
     for (const auto& match : result) {
       if (data[match_index].is_search) {
         EXPECT_EQ(match.type, AutocompleteMatchType::TILE_REPEATABLE_QUERY);
@@ -277,12 +278,6 @@ void MostVisitedSitesProviderTest::CheckMatchesEquivalentTo(
       EXPECT_EQ(expected_relevance, match.relevance)
           << "Invalid Match Relevance at position " << match_index;
       ++match_index;
-      // Degrade relevance of partially visible and invisible matches.
-      if (match_index == 4 &&
-          ui::GetDeviceFormFactor() ==
-              ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE) {
-        expected_relevance = 100;  // kMostVisitedTilesIndividualLowRelevance
-      }
       --expected_relevance;
     }
   }
@@ -300,7 +295,7 @@ void MostVisitedSitesProviderTest::CheckDesktopMatchesEquivalentTo(
   size_t match_index = 0;
   ASSERT_EQ(url_limit, NumMostVisitedMatches())
       << "Unexpected number of TILE matches";
-  int expected_relevance = 1600;  // kMostVisitedTilesIndividualHighRelevance
+  int expected_relevance = omnibox::kMostVisitedTilesZeroSuggestHighRelevance;
   for (const auto& match : result) {
     EXPECT_EQ(match.type, AutocompleteMatchType::TILE_MOST_VISITED_SITE);
     EXPECT_TRUE(match.subtypes.contains(

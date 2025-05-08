@@ -26,7 +26,8 @@ class Section {
   explicit Section(size_t limit,
                    Groups groups,
                    omnibox::GroupConfigMap& group_configs,
-                   omnibox::GroupConfig_SideType side_type);
+                   omnibox::GroupConfig_SideType side_type =
+                       omnibox::GroupConfig_SideType_DEFAULT_PRIMARY);
   virtual ~Section();
   // Returns `matches` ranked and culled according to `sections`. All `matches`
   // should have `suggestion_group_id` set and be sorted by relevance.
@@ -55,9 +56,8 @@ class Section {
   omnibox::GroupConfig_SideType side_type_;
 };
 
-// Base section for ZPS limits and grouping. Ensures that matches with higher
-// relevance scores do not fill up the section if others with lower scores are
-// expected to be placed earlier based on their `Group`'s position.
+// Base section for ZPS limits and grouping. Asserts that matches are sorted by
+// their `Group`s position.
 class ZpsSection : public Section {
  public:
   ZpsSection(size_t limit,
@@ -65,6 +65,21 @@ class ZpsSection : public Section {
              omnibox::GroupConfigMap& group_configs,
              omnibox::GroupConfig_SideType side_type =
                  omnibox::GroupConfig_SideType_DEFAULT_PRIMARY);
+  // Section:
+  void InitFromMatches(ACMatches& matches) override;
+};
+
+// Base section for ZPS limits and grouping where local history zero-prefix
+// suggestions are enabled. Sorts the matches by their `Group`s position to
+// ensure zero-prefix suggestions from local history backfill remote
+// personalized zero-prefix suggestions.
+// TODO(crbug.com/409810808): Find a more general solution for accommodating
+// local history backfill and remove this class.
+class ZpsSectionWithLocalHistory : public ZpsSection {
+ protected:
+  explicit ZpsSectionWithLocalHistory(size_t limit,
+                                      Groups groups,
+                                      omnibox::GroupConfigMap& group_configs);
   // Section:
   void InitFromMatches(ACMatches& matches) override;
 };
@@ -121,7 +136,7 @@ class AndroidHubNonZPSSection : public Section {
 //  - up to 1 clipboard suggestion.
 //  - up to 15 personalized suggestions.
 //  - up to 5 trending search suggestions.
-class AndroidNTPZpsSection : public ZpsSection {
+class AndroidNTPZpsSection : public ZpsSectionWithLocalHistory {
  public:
   explicit AndroidNTPZpsSection(omnibox::GroupConfigMap& group_configs);
 };
@@ -155,7 +170,7 @@ class AndroidWebZpsSection : public ZpsSectionWithMVTiles {
 // suggestion being the IPH).
 //  - up to 8 personalized suggestions.
 //  - up to 8 trending search suggestions.
-class DesktopNTPZpsSection : public ZpsSection {
+class DesktopNTPZpsSection : public ZpsSectionWithLocalHistory {
  public:
   explicit DesktopNTPZpsSection(omnibox::GroupConfigMap& group_configs,
                                 size_t limit);
@@ -217,10 +232,6 @@ class DesktopWebURLZpsSection : public ZpsSection {
 //  - up to `limit` page related or personalized search suggestions.
 //  - up to `contextual_action_limit` contextual search action suggestions.
 //  - up to `contextual_search_limit` contextual search suggestions.
-// TODO(crbug.com/409810808): Extending `ZpsSection` would reorder the matches
-// demoting contextual search suggestions in `ZpsSection::InitFromMatches()`.
-// This is not the desired behavior as those matches should take precedence over
-// the other search suggestions, despite visually appearing after them.
 class DesktopWebSearchZpsSection : public Section {
  public:
   explicit DesktopWebSearchZpsSection(omnibox::GroupConfigMap& group_configs,
@@ -276,7 +287,7 @@ class DesktopNonZpsSection : public Section {
 //  - up to 1 clipboard suggestion.
 //  - up to `psuggest_count` personalized suggestions.
 //  - up to `max_trending_queries` trending suggestions.
-class IOSNTPZpsSection : public ZpsSection {
+class IOSNTPZpsSection : public ZpsSectionWithLocalHistory {
  public:
   explicit IOSNTPZpsSection(omnibox::GroupConfigMap& group_configs);
 };
@@ -318,7 +329,7 @@ class IOSLensMultimodalZpsSection : public ZpsSection {
 // - up to 10 suggestions total.
 //  - up to 1 clipboard suggestion.
 //  - up to 10 personalized suggestions.
-class IOSIpadNTPZpsSection : public ZpsSection {
+class IOSIpadNTPZpsSection : public ZpsSectionWithLocalHistory {
  public:
   explicit IOSIpadNTPZpsSection(size_t trends_count,
                                 size_t total_count,

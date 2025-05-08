@@ -82,13 +82,6 @@ BASE_FEATURE(kDisambiguateTabMatchingForEntitySuggestions,
              "DisambiguateTabMatchingForEntitySuggestions",
              ENABLED);
 
-// Used to adjust the relevance for the local history zero-prefix suggestions.
-// If enabled, the relevance is determined by this feature's companion
-// parameter, OmniboxFieldTrial::kLocalHistoryZeroSuggestRelevanceScore.
-BASE_FEATURE(kAdjustLocalHistoryZeroSuggestRelevanceScore,
-             "AdjustLocalHistoryZeroSuggestRelevanceScore",
-             DISABLED);
-
 // Enables omnibox focus as a trigger for zero-prefix suggestions on web and
 // SRP, subject to the same requirements and conditions as on-clobber
 // suggestions.

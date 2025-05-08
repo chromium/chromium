@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
@@ -48,12 +49,6 @@ namespace {
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 
 const size_t kMaxClipboardSuggestionShownNumTimesSimpleSize = 20;
-
-// Clipboard suggestion is placed either in a dedicated
-// SECTION_MOBILE_CLIPBOARD, or SECTION_PERSONALIZED_ZERO_SUGGEST.
-// The score for the former is irrelevant, but for the latter we need to be
-// confident the suggestion shows up on top.
-const int kClipboardMatchRelevanceScore = 1600;
 
 bool IsMatchDeletionEnabled() {
   return base::FeatureList::IsEnabled(
@@ -447,7 +442,7 @@ void ClipboardProvider::AddImageMatchCallback(
 }
 
 AutocompleteMatch ClipboardProvider::NewBlankURLMatch() {
-  AutocompleteMatch match(this, kClipboardMatchRelevanceScore,
+  AutocompleteMatch match(this, omnibox::kClipboardMatchZeroSuggestRelevance,
                           IsMatchDeletionEnabled(),
                           AutocompleteMatchType::CLIPBOARD_URL);
 
@@ -466,7 +461,7 @@ AutocompleteMatch ClipboardProvider::NewClipboardURLMatch(const GURL& url) {
 }
 
 AutocompleteMatch ClipboardProvider::NewBlankTextMatch() {
-  AutocompleteMatch match(this, kClipboardMatchRelevanceScore,
+  AutocompleteMatch match(this, omnibox::kClipboardMatchZeroSuggestRelevance,
                           IsMatchDeletionEnabled(),
                           AutocompleteMatchType::CLIPBOARD_TEXT);
   // Any path leading here should first verify whether
@@ -495,7 +490,7 @@ std::optional<AutocompleteMatch> ClipboardProvider::NewClipboardTextMatch(
 }
 
 AutocompleteMatch ClipboardProvider::NewBlankImageMatch() {
-  AutocompleteMatch match(this, kClipboardMatchRelevanceScore,
+  AutocompleteMatch match(this, omnibox::kClipboardMatchZeroSuggestRelevance,
                           IsMatchDeletionEnabled(),
                           AutocompleteMatchType::CLIPBOARD_IMAGE);
   // Any path leading here should first verify whether
