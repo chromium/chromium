@@ -674,8 +674,7 @@ void AwContentBrowserClient::CreateThrottlesForNavigation(
     // NavigationThrottles that don't delay or cancel navigations (e.g.
     // throttles that are only observing callbacks without affecting navigation
     // behavior) should be added before MetricsNavigationThrottle.
-    registry.AddThrottle(page_load_metrics::MetricsNavigationThrottle::Create(
-        &navigation_handle));
+    page_load_metrics::MetricsNavigationThrottle::CreateAndAdd(registry);
   }
   // Use Synchronous mode for the navigation interceptor, since this class
   // doesn't actually call into an arbitrary client, it just posts a task to

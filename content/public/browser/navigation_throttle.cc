@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "content/browser/renderer_host/navigation_request.h"
 
 namespace content {
@@ -59,7 +60,12 @@ NavigationThrottle::ThrottleCheckResult::ThrottleCheckResult(
 NavigationThrottle::ThrottleCheckResult::~ThrottleCheckResult() {}
 
 NavigationThrottle::NavigationThrottle(NavigationHandle* navigation_handle)
-    : navigation_handle_(navigation_handle) {}
+    : navigation_handle_(navigation_handle) {
+  CHECK(navigation_handle_);
+}
+
+NavigationThrottle::NavigationThrottle(NavigationThrottleRegistry& registry)
+    : navigation_handle_(&registry.GetNavigationHandle()) {}
 
 NavigationThrottle::~NavigationThrottle() {}
 

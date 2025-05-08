@@ -885,11 +885,8 @@ class AdsPageLoadMetricsObserverTest
   // SubresourceFilterTestHarness::
   void AppendCustomNavigationThrottles(
       content::NavigationThrottleRegistry& registry) override {
-    content::NavigationHandle& navigation_handle =
-        registry.GetNavigationHandle();
-    if (navigation_handle.IsInMainFrame()) {
-      registry.AddThrottle(
-          MetricsNavigationThrottle::Create(&navigation_handle));
+    if (registry.GetNavigationHandle().IsInMainFrame()) {
+      MetricsNavigationThrottle::CreateAndAdd(registry);
     }
   }
 

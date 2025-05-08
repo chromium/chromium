@@ -21,10 +21,8 @@ PageLoadMetricsTestContentBrowserClient::
 
 void PageLoadMetricsTestContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
-  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
-  if (navigation_handle.IsInMainFrame()) {
-    registry.AddThrottle(page_load_metrics::MetricsNavigationThrottle::Create(
-        &navigation_handle));
+  if (registry.GetNavigationHandle().IsInMainFrame()) {
+    page_load_metrics::MetricsNavigationThrottle::CreateAndAdd(registry);
   }
 }
 

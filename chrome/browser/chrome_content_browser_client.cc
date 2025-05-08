@@ -5396,15 +5396,14 @@ void ChromeContentBrowserClient::RemovePresentationObserver(
 
 void ChromeContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
-  // MetricsNavigationThrottle requires that it runs before NavigationThrottles
-  // that may delay or cancel navigations, so only NavigationThrottles that
-  // don't delay or cancel navigations (e.g. throttles that are only observing
-  // callbacks without affecting navigation behavior) should be added before
-  // MetricsNavigationThrottle.
   content::NavigationHandle& handle = registry.GetNavigationHandle();
   if (handle.IsInMainFrame()) {
-    registry.AddThrottle(
-        page_load_metrics::MetricsNavigationThrottle::Create(&handle));
+    // MetricsNavigationThrottle requires that it runs before
+    // NavigationThrottles that may delay or cancel navigations, so only
+    // NavigationThrottles that don't delay or cancel navigations (e.g.
+    // throttles that are only observing callbacks without affecting navigation
+    // behavior) should be added before MetricsNavigationThrottle.
+    page_load_metrics::MetricsNavigationThrottle::CreateAndAdd(registry);
   }
 
 #if BUILDFLAG(IS_ANDROID)
