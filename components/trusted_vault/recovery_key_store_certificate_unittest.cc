@@ -37,7 +37,8 @@ static constexpr std::string_view kCertXml =
     <cert>MIIDOzCCASOgAwIBAgIRALohAkmP2SJK75Xsk8FsngUwDQYJKoZIhvcNAQELBQAwOTE3MDUGA1UEAxMuR29vZ2xlIENsb3VkIEtleSBWYXVsdCBTZXJ2aWNlIEludGVybWVkaWF0ZSBDQTAeFw0yMzA5MDUyMTUwNThaFw0yNTA0MDkwMDAwMDBaMDIxMDAuBgNVBAMTJ0dvb2dsZSBDbG91ZCBLZXkgVmF1bHQgU2VydmljZSBFbmRwb2ludDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABOHSWq/RFpU1VnCCCmPcTDeJT3t3+27+BjFOdsC8/hcnbFUKwHt6Tt0uiHV3LP/aO0/DHYC8Kdb/KAMC+ai+aJ2jEDAOMAwGA1UdEwEB/wQCMAAwDQYJKoZIhvcNAQELBQADggIBALz6PK44f46capH7isFvHMdTosG3DIV4QP70zLtGtGBM+57RKU0UYLtgdtKfCCwQVIgru9PfMdNdbxKojI96cfB/QxsH5H/96iUET+EnvvQ63NMSnLtOp7H4UceBujpXeSLN0yRNr59JS+mLtyL5+5KjHgtOM7tpxJ3eP1tx8NnE30TE0BoeTQyoKu0wfHVsc5+Fs3EWJUpgV+Z0/KJFoy3M2Z0DHZxfn6fg+/xYxn8ttkMhlZXhJMjNqtcGmlwLYktmsG5LlsQNimXwGl9olVviEZwcHGUzHw8QWszoKzn+TgTgv76m2eZ5MwJeN1JnaLb+1gQtgKRpnG8TFxWGC/TIHUqLow/GruH2TSlLPr6l6ed+QjG01sAN5cdI7OR84D8W1F0vb8fVOr7kjf7N3qLDNQXDCRUUKHlRVanIt6h+kT1ctlM51+QmRhDsAkzY/3lFrXDySnQk18vlzTyA+QgqmvfNkPhgCp/fpgtWJFaPL9bJWaMaW/soXRUf26F6RMLK43EihdoVMtUAvmCIKUQyI88X6hJxEhWLyy/8Y45nAFk5CgXuzV2doOJTSITtJligTy1IuczH75bmp87c5ZPp51vUO4WYXuwffTCoQ8UYSYbNxxqKOfFkILnM1WoGAzCrVt5aKOyGPILzOsOS8X0EeQ9YF6Mvaf2iFljc2o30</cert>
     <cert>MIIDOzCCASOgAwIBAgIRALohAkmP2SJK75Xsk8FsngUwDQYJKoZIhvcNAQELBQAwOTE3MDUGA1UEAxMuR29vZ2xlIENsb3VkIEtleSBWYXVsdCBTZXJ2aWNlIEludGVybWVkaWF0ZSBDQTAeFw0yMzA5MDUyMTUwNThaFw0yNTA0MDkwMDAwMDBaMDIxMDAuBgNVBAMTJ0dvb2dsZSBDbG91ZCBLZXkgVmF1bHQgU2VydmljZSBFbmRwb2ludDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABNeVqPpEctoVzN48WNefTpJEmRrrbpXoWRhHwH/AOYmQgXR6xX/AE1/qeen8fMj4Lnyb8KPveZjXvTlFq2mdBHGjEDAOMAwGA1UdEwEB/wQCMAAwDQYJKoZIhvcNAQELBQADggIBAEQIGwhKa7MDq+Wt5p7fvv1AXhX4HxpgkKv5xbuMWCcw6R8zTYQ4hF/XHegIEqjmwWFxEvD95Lu3oLz4gMEoZVywBt2QFb1wkWUjdeT9oy5YbrJiLm9evhMFWyjnu2h9OVqxCVvarVx35ZySThDr2n3CYntLSKyTSdVlzCsdcCOj1UFkqMe73gOUZFMkXETUoINlFYwX6NP5V1Moy8OjsSNa6/8zyYwivm3rQlj3GUEhSlX+0ib+IXYpcrDFF7/6+G8lWBAHmKGwGR6kpAQ7Zg7KEjY0gSYWOr86oJIMFzeXVjaqhwGXK2tO+JBTPZSf4zljke+QCDN1uZjscgpOOXcBvT3LqLDaz2TSen4EMXhD56lYrq/970a1ol7B26nNAjJr1Q2ZyH4kXgBnK/b7AjYzNhTx0k0o7zRdh4tMeNkxhHgpBQ7d8VM81lZJg95n5SuOvJkJlEsPus9nJ1QeKAAjLV+Hp4n+xEImnvwnPEeE9vo07KHeHsCaBFVVan+9VKMiFEnYO+JdA8DwVTwTHHRH2T2OcEF+oo6m9nZZgGZbcovftryoOetJRY8E2JG+j5ScVWwnh5QcWhP1oOqsZdFWbKmJyxbN0qhKRWB1l6xZipMTj4RYzrZtwXNWdJIudC1Lkr6GgMn2UybLPc4xDH5FLWDtLN7griLweFrniuAQ</cert>
   </endpoints>
-</certificate>)";
+</certificate>
+)";
 
 static constexpr std::string_view kSigXml =
     R"(<?xml version="1.0" encoding="UTF-8"?>
@@ -48,7 +49,8 @@ static constexpr std::string_view kSigXml =
   </intermediates>
   <certificate>MIIFGTCCAwGgAwIBAgIRAOUOMMnP/H98t0zAwO3YjxIwDQYJKoZIhvcNAQELBQAwOTE3MDUGA1UEAxMuR29vZ2xlIENsb3VkIEtleSBWYXVsdCBTZXJ2aWNlIEludGVybWVkaWF0ZSBDQTAeFw0yMzA5MDUyMTUxMDBaFw0yODA5MDYyMTUxMDBaMDUxMzAxBgNVBAMTKkdvb2dsZSBDbG91ZCBLZXkgVmF1bHQgU2VydmljZSBTaWduaW5nIEtleTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANqoaDjGHUrdnO6raw9omQ+xnhSxqwTSY2dlC83an+F9JNlL/CHjvn+kyKP7rP57k4y9+9REqjvk+zaR6rQjzP6m2FbYf/kXsmS8ohtTXsmI9NTvobGCGZOYwFbB28yxoOiXA2A91cG+Rt/KmetMcGphFE0/9PGZg9JSmWiGLDJEvgG4ckz6fmL/orhbC/V1K3ArNZ2eJ8Sw29eMo62XpJqvmi+6BrFS3edcJNC1dUpC/ixP73G1J5XDVb60no4JolG1N7Utug/WlPr88eI7LdV05sMfRfX+ta4TrIK7yJ1urGuOVsIDBGFjsfgpRTlwiG829D9uGhRSAE8GzVCFiVF8AfQwlEtgahwg23QzWRaKYo6qeRMCw1hNURF31hQ5bgQeKcaS98x6MkzszBOT2aFiK0EWBzwsJLI3KadRYUMcKa3AFXSv7QLGkAU+Ivas/m3Mt0s7KQnIzjsYbOqiC895WsylxaQyMy5xvVKp0gYjmK2YtgfXo59hznqns1FzeR4fBsbKsh+NnWXzcJ8cEg8jbk0nxAz0reMj1IN25Wb1WDfUCiTy+9V6dfFLQFQ6KYDb/bbIRyPk4g176gWK9agVrHrhiQsDVstSN/cAgLBVUFi1oeLzZ0SwB4wCXuP8SmEVrGl3zxxv3szgUxwfm+elaZ0BrA5deSenJdhV1QQ3AgMBAAGjIDAeMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMA0GCSqGSIb3DQEBCwUAA4ICAQDuLSK5nov/grmYNc8CTnrKNZ1w8p5Wbi9QThzJXoSV1BuFklXNX4GlgjZ04eS5ns/lUCdqByx0K2ZGX24wzZX0sSUQ+74Fq5uDINm6ESPV46y6hXvqIotLYIrgpl7Z2Ej7D6JT5fPYzAncUQd8Z9LuNMMt/rG8IlfSN6yOuZnAxI8wKtCrp23QugtqYKHyfxCN/HzCMEs1XP7qhgolnmLoTqU9j2HlPPESmH4+St4w7QPVQWARQ2S0hdtT4dhjmkqeDBojBjkGn9fS+vsOKsH3CDTt3A0pFI66xQ9TwT5mHCIIkAxGzc/DzPtpTUz6XBhtWNyI59adbCHfOtWWNjpriYvTbOm1ZZL6DXsaFJIbYX0Cmh6unonuvZ2c1Pu6nnVxR1HamIdtDZjvgbyFRJ4wCWpMhAU9WVJSotz57OXf/CvbBI0gfhl/EmWtKsGiDryPjphILWrnO55V6G6HJgk6xpzcjZzSnWpf5UF9RGjUaZNwOtxma/57pM8o5vTCeaOrq/3dKUWO2JBgxkOG+/ZCOe0E0Q2CwCCWTtf4ReaUIbeYQTj4cfR4eaj6Z8euytwEM2UQCep+HXJdOxv6/eHRXPK21Alt0crWmhZ8J7hZyeZ/24a3in8hqg9X9wxZXPghXo4W3My3Tn+dP2m36RiBQOCHSoYWMRINZccj9284GQ==</certificate>
   <value>n6kI2dGZKz5CGbXnbz79m51QTDt+WszzNOvcqXsGm6g3ObmpjkghTU3wPmrJ0c5zUD1l4QQEmTKRBIACgK7Sp64JdC4IGP5y+z8HhXPslP3Dc5aySOk4b++m7AIbkAuw63SbPD8L2nQ20CMNiaVVBqZJ0uWUV04qN8IOll1L8NbeZLhjFUcx9riYBrzWOr9uis5IANkfPTFgFyPFjqFk9XrbVpPcNCRtz7Pew+L7OW5z7sh5rW8iZmjhhV/e4VDTgYBFq/Js5W4yalRI9uuEXLJqG1/US4L5cMnJoZOxPmz48an0ug/Pi8yV9cIq+xvER/XaeeUG53Fqy9cn2qG6ROwxH109toaLx3TZaLjdVh7wcJCLtOY6WngHksQbIyU1mDYzz7uWItCss2Nb0NbZ+QMn3k1GxDGIwlY/HXdt7OihPQWLRM2H/QRqlI9p8i1L+DaPrhyGrGHzYKN8z9qGZYx1AsQUWQCR0YeXvlxjtSvBEPtWkfEE0RrZPJtFh+bvrD55Id7XapnGKKXYMmYf9KbDJ3GMD1aT6xgMhlAhtltN5vNg08LSH5Ma4TXhmNpKny5JQqlAUTby1wIhgdElQSdU0jYpmle8N0wsuLoX+e3bHFKxWVkrwvXDC0v2wqH5mzm8FLhxXZDA2ApnGT+eOC1gjd8qTuouzm5GuMhjvig=</value>
-</signature>)";
+</signature>
+)";
 
 static constexpr base::Time kValidCertificateDate =
     base::Time::FromSecondsSinceUnixEpoch(1740614400);
@@ -335,6 +337,38 @@ TEST_F(RecoveryKeyStoreCertificateTest,
   EXPECT_FALSE(certificate);
 }
 
+TEST_F(RecoveryKeyStoreCertificateTest, Internals_VerifySignature) {
+  std::vector<std::string> intermediates = {std::string(GetIntermediate1()),
+                                            std::string(GetIntermediate2())};
+  auto certificate = internal::VerifySignatureChain(
+      GetCertificate(), intermediates, kValidCertificateDate);
+  ASSERT_TRUE(certificate);
+  EXPECT_TRUE(internal::VerifySignature(std::move(certificate), kCertXml,
+                                        GetSignature()));
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest, Internals_VerifySignatureNotValid) {
+  std::vector<std::string> intermediates = {std::string(GetIntermediate1()),
+                                            std::string(GetIntermediate2())};
+  auto certificate = internal::VerifySignatureChain(
+      GetCertificate(), intermediates, kValidCertificateDate);
+  ASSERT_TRUE(certificate);
+  std::string invalid_signature(GetSignature());
+  invalid_signature[0] = 'X';
+  EXPECT_FALSE(internal::VerifySignature(std::move(certificate), kCertXml,
+                                         invalid_signature));
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest, Internals_VerifySignatureNotBase64) {
+  std::vector<std::string> intermediates = {std::string(GetIntermediate1()),
+                                            std::string(GetIntermediate2())};
+  auto certificate = internal::VerifySignatureChain(
+      GetCertificate(), intermediates, kValidCertificateDate);
+  ASSERT_TRUE(certificate);
+  EXPECT_FALSE(internal::VerifySignature(std::move(certificate), kCertXml,
+                                         "not base 64"));
+}
+
 TEST_F(RecoveryKeyStoreCertificateTest, ParseSuccess) {
   EXPECT_TRUE(RecoveryKeyStoreCertificate::Parse(kCertXml, kSigXml,
                                                  kValidCertificateDate));
@@ -362,6 +396,14 @@ TEST_F(RecoveryKeyStoreCertificateTest, Parse_BadChain) {
 </signature>)";
   EXPECT_FALSE(RecoveryKeyStoreCertificate::Parse(kCertXml, kBadSigXml,
                                                   kValidCertificateDate));
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest, Parse_BadSignature) {
+  std::string sig_xml_bad_signature(kSigXml);
+  size_t signature_index = sig_xml_bad_signature.find(GetSignature());
+  sig_xml_bad_signature[signature_index] = 'X';
+  EXPECT_FALSE(RecoveryKeyStoreCertificate::Parse(
+      kCertXml, sig_xml_bad_signature, kValidCertificateDate));
 }
 
 }  // namespace

@@ -12,7 +12,9 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
+#include "crypto/signature_verifier.h"
 #include "net/cert/time_conversions.h"
+#include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/pki/cert_issuer_source_static.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
@@ -321,6 +323,38 @@ std::shared_ptr<const bssl::ParsedCertificate> VerifySignatureChain(
   return certificate;
 }
 
+bool VerifySignature(std::shared_ptr<const bssl::ParsedCertificate> certificate,
+                     std::string_view cert_xml,
+                     std::string_view signature_b64) {
+  std::optional<std::vector<uint8_t>> signature =
+      base::Base64Decode(signature_b64);
+  if (!signature) {
+    return false;
+  }
+  size_t size_bits;
+  net::X509Certificate::PublicKeyType type;
+  net::X509Certificate::GetPublicKeyInfo(certificate->cert_buffer(), &size_bits,
+                                         &type);
+  crypto::SignatureVerifier::SignatureAlgorithm algo;
+  switch (type) {
+    case net::X509Certificate::PublicKeyType::kPublicKeyTypeECDSA:
+      algo = crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+      break;
+    case net::X509Certificate::PublicKeyType::kPublicKeyTypeRSA:
+      algo = crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
+      break;
+    case net::X509Certificate::PublicKeyType::kPublicKeyTypeUnknown:
+      return false;
+  }
+  crypto::SignatureVerifier signature_verifier;
+  if (!net::x509_util::SignatureVerifierInitWithCertificate(
+          &signature_verifier, algo, *signature, certificate->cert_buffer())) {
+    return false;
+  }
+  signature_verifier.VerifyUpdate(base::as_byte_span(cert_xml));
+  return signature_verifier.VerifyFinal();
+}
+
 }  // namespace internal
 
 // static
@@ -338,6 +372,10 @@ std::optional<RecoveryKeyStoreCertificate> RecoveryKeyStoreCertificate::Parse(
                                      parsed_sig_xml->intermediates,
                                      current_time);
   if (!signing_certificate) {
+    return std::nullopt;
+  }
+  if (!internal::VerifySignature(std::move(signing_certificate), cert_xml,
+                                 parsed_sig_xml->signature)) {
     return std::nullopt;
   }
   std::optional<std::vector<std::string>> endpoints =

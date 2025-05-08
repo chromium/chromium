@@ -62,6 +62,12 @@ std::shared_ptr<const bssl::ParsedCertificate> VerifySignatureChain(
     base::span<std::string> intermediates_b64,
     base::Time current_time);
 
+// Verifies a signature by `certificate` over `cert_xml`. Returns true if the
+// signature matches, false otherwise.
+bool VerifySignature(std::shared_ptr<const bssl::ParsedCertificate> certificate,
+                     std::string_view cert_xml,
+                     std::string_view signature_b64);
+
 }  // namespace internal
 
 // Represents a certificate chain from the recovery key store.
