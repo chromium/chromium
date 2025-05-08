@@ -217,13 +217,15 @@ TEST_F(CookieSettingsBaseTest, ShouldNotDeleteNoThirdPartyDomainMatch) {
 TEST_F(CookieSettingsBaseTest, CookieAccessNotAllowedWithBlockedSetting) {
   CallbackCookieSettings settings(CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
-      url_, site_for_cookies_, origin_, net::CookieSettingOverrides()));
+      url_, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 }
 
 TEST_F(CookieSettingsBaseTest, CookieAccessAllowedWithAllowSetting) {
   CallbackCookieSettings settings(CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
-      url_, site_for_cookies_, origin_, net::CookieSettingOverrides()));
+      url_, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 }
 
 TEST_F(CookieSettingsBaseTest, CookieAccessAllowedWithNonNoncePartitionKey) {
@@ -255,19 +257,22 @@ TEST_F(CookieSettingsBaseTest, ThirdPartyCookiesOverriden) {
   net::CookieSettingOverrides overrides{};
   overrides.Put(net::CookieSettingOverride::kForceDisableThirdPartyCookies);
 
-  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(url_, site_for_cookies_,
-                                                 origin_, overrides));
-  EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
-      kThirdPartyURL, site_for_cookies_, origin_, overrides));
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
-      kThirdPartyURL, site_for_cookies_, origin_,
-      net::CookieSettingOverrides()));
+      url_, site_for_cookies_, origin_, overrides,
+      /*cookie_partition_key=*/std::nullopt));
+  EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
+      kThirdPartyURL, site_for_cookies_, origin_, overrides,
+      /*cookie_partition_key=*/std::nullopt));
+  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
+      kThirdPartyURL, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 }
 
 TEST_F(CookieSettingsBaseTest, CookieAccessAllowedWithSessionOnlySetting) {
   CallbackCookieSettings settings(CONTENT_SETTING_SESSION_ONLY);
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
-      url_, site_for_cookies_, origin_, net::CookieSettingOverrides()));
+      url_, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 }
 
 TEST_F(CookieSettingsBaseTest, LegacyCookieAccessSemantics) {

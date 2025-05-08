@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -602,19 +603,19 @@ TEST_F(HostContentSettingsMapTest, HostTrimEndingDotCheck) {
 
   EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
       host_ending_with_dot, site_for_cookies, origin,
-      net::CookieSettingOverrides()));
+      net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
   host_content_settings_map->SetContentSettingDefaultScope(
       host_ending_with_dot, GURL(), ContentSettingsType::COOKIES,
       CONTENT_SETTING_DEFAULT);
   EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
       host_ending_with_dot, site_for_cookies, origin,
-      net::CookieSettingOverrides()));
+      net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
   host_content_settings_map->SetContentSettingDefaultScope(
       host_ending_with_dot, GURL(), ContentSettingsType::COOKIES,
       CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(cookie_settings->IsFullCookieAccessAllowed(
       host_ending_with_dot, site_for_cookies, origin,
-      net::CookieSettingOverrides()));
+      net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetContentSetting(
