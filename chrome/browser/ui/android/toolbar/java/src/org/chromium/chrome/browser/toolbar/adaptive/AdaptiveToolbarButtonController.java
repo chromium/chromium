@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor.UiState;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
+import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
@@ -176,6 +177,20 @@ public class AdaptiveToolbarButtonController
                 : "must not provide NONE button provider";
 
         mButtonDataProviderMap.put(variant, buttonProvider);
+    }
+
+    /**
+     * Invoke Price Insights UI. TODO(crbug.com/391931899): Consider making this method generic to
+     * support other button variants.
+     */
+    public void runPriceInsightsAction() {
+        var buttonDataProvider =
+                mButtonDataProviderMap.get(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS);
+        if (buttonDataProvider instanceof BaseButtonDataProvider toolbarButtonProvider) {
+            toolbarButtonProvider.onClick(new View(mContext)); // Param is not used.
+        } else {
+            assert false : "PriceInsightButtonController must inherit BaseButtonDataProvider!";
+        }
     }
 
     @Override

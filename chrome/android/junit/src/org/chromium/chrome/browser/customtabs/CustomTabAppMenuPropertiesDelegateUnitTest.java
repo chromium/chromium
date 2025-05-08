@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
+import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -165,11 +166,48 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
+                        /* contextualPageActionControllerSupplier */ () -> null,
                         /* hasClientPackage= */ false);
         Menu menu = createMenu(context, delegate.getAppMenuLayoutId());
         delegate.prepareMenu(menu, null);
         assertTrue(isMenuVisible(menu, R.id.enable_price_tracking_menu_id));
         assertFalse(isMenuVisible(menu, R.id.disable_price_tracking_menu_id));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_ADAPTIVE_BUTTON})
+    public void enablePriceInsightsMenu() {
+        ContextualPageActionController cpac = mock(ContextualPageActionController.class);
+        doReturn(true).when(cpac).hasPriceInsights();
+
+        Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        var delegate =
+                new CustomTabAppMenuPropertiesDelegate(
+                        context,
+                        mActivityTabProvider,
+                        mMultiWindowModeStateDispatcher,
+                        mTabModelSelector,
+                        mToolbarManager,
+                        mDecorView,
+                        mBookmarkModelSupplier,
+                        mVerifier,
+                        CustomTabsUiType.AUTH_TAB,
+                        /* menuEntries= */ new ArrayList<String>(),
+                        /* isOpenedByChrome= */ true,
+                        /* showShare= */ true,
+                        /* showStar= */ true,
+                        /* showDownload= */ true,
+                        /* isIncognitoBranded= */ false,
+                        /* isOffTheRecord= */ false,
+                        /* isStartIconMenu= */ true,
+                        mReadAloudControllerSupplier,
+                        () -> cpac,
+                        /* hasClientPackage= */ false);
+        Menu menu = createMenu(context, delegate.getAppMenuLayoutId());
+        delegate.prepareMenu(menu, null);
+        assertTrue(isMenuVisible(menu, R.id.price_insights_menu_id));
     }
 
     @Test
@@ -197,6 +235,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
+                        /* contextualPageActionControllerSupplier */ () -> null,
                         /* hasClientPackage= */ false);
         Menu menu = createMenu(context, delegate.getAppMenuLayoutId());
         delegate.prepareMenu(menu, null);
@@ -236,6 +275,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
+                        /* contextualPageActionControllerSupplier */ () -> null,
                         /* hasClientPackage= */ false);
         Menu menu = createMenu(context, delegate.getAppMenuLayoutId());
         delegate.prepareMenu(menu, null);

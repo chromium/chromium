@@ -287,9 +287,19 @@ public class AdaptiveToolbarUiCoordinator {
         return mButtonDataProviders;
     }
 
+    /** Returns {@link ContextualPageActionController} used for adaptive toolbar button. */
+    public ContextualPageActionController getContextualPageActionController() {
+        return mContextualPageActionController;
+    }
+
     /** Returns {@link VoiceToolbarButtonController} used for voice search button. */
     public VoiceToolbarButtonController getVoiceToolbarButtonController() {
         return mVoiceToolbarButtonController;
+    }
+
+    /** Invokes Price Insights UI. */
+    public void runPriceInsightsAction() {
+        mAdaptiveToolbarButtonController.runPriceInsightsAction();
     }
 
     /** Destroy internally used objects. */

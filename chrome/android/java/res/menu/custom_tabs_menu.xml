@@ -66,6 +66,10 @@ found in the LICENSE file.
         <item android:id="@+id/disable_price_tracking_menu_id"
             android:title="@string/disable_price_tracking_menu_item"
             android:icon="@drawable/price_tracking_enabled_filled" />
+        <item android:id="@+id/price_insights_menu_id"
+            android:title="@string/price_insights_title"
+            android:icon="@drawable/ic_trending_down_24dp"
+            android:visible="false" />
         <item android:id="@+id/universal_install"
             android:title="@string/menu_add_to_homescreen"
             android:orderInCategory="2" />

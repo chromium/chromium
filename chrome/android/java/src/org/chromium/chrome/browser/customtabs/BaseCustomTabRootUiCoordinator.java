@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
+import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -567,6 +568,14 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     public CustomTabHistoryIphController getHistoryIphController() {
         return mCustomTabHistoryIphController;
+    }
+
+    public ContextualPageActionController getContextualPageActionController() {
+        return mAdaptiveToolbarUiCoordinator.getContextualPageActionController();
+    }
+
+    public void runPriceInsightsAction() {
+        mAdaptiveToolbarUiCoordinator.runPriceInsightsAction();
     }
 
     @Override

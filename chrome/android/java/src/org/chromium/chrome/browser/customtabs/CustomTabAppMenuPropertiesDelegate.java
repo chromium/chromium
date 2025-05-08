@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
+import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -68,6 +69,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final List<String> mMenuEntries;
     private final Map<String, Integer> mTitleToItemIdMap = new HashMap<String, Integer>();
     private final Map<Integer, Integer> mItemIdToIndexMap = new HashMap<Integer, Integer>();
+    private final Supplier<ContextualPageActionController> mContextualPageActionControllerSupplier;
 
     private boolean mHasClientPackage;
 
@@ -91,6 +93,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean isOffTheRecord,
             boolean isStartIconMenu,
             Supplier<ReadAloudController> readAloudControllerSupplier,
+            Supplier<ContextualPageActionController> contextualPageActionControllerSupplier,
             boolean hasClientPackage) {
         super(
                 context,
@@ -112,6 +115,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         mIsIncognitoBranded = isIncognitoBranded;
         mIsOffTheRecord = isOffTheRecord;
         mIsStartIconMenu = isStartIconMenu;
+        mContextualPageActionControllerSupplier = contextualPageActionControllerSupplier;
         mHasClientPackage = hasClientPackage;
     }
 
@@ -284,6 +288,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 // TODO(crbug.com/391931899): Also check the dev-controlled flag
                 updatePriceTrackingMenuItemRow(
                         startPriceTrackingMenuItem, stopPriceTrackingMenuItem, currentTab);
+                var cpaController = mContextualPageActionControllerSupplier.get();
+                if (cpaController != null) {
+                    menu.findItem(R.id.price_insights_menu_id)
+                            .setVisible(cpaController.hasPriceInsights());
+                }
             }
 
             boolean showOpenWith = currentTab.isNativePage() && currentTab.getNativePage().isPdf();

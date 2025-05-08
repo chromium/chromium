@@ -308,6 +308,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                             getTabCreator(getCurrentTabModel().isIncognito()))
                     .show(tab, ChromePageInfoHighlight.noHighlight());
             return true;
+        } else if (id == R.id.price_insights_menu_id) {
+            getBaseCustomTabRootUiCoordinator().runPriceInsightsAction();
         } else if (id == R.id.open_history_menu_id) {
             // The menu is visible only when the app-specific history is enabled. Assert that.
             assert HistoryManager.isAppSpecificHistoryEnabled();

@@ -68,6 +68,7 @@ public class ContextualPageActionController {
     private ObservableSupplier<Tab> mTabSupplier;
     private final AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private CurrentTabObserver mCurrentTabObserver;
+    private SignalAccumulator mSignalAccumulator;
 
     // The action provider backends.
     protected final List<ActionProvider> mActionProviders = new ArrayList<>();
@@ -140,6 +141,15 @@ public class ContextualPageActionController {
         removeProviders();
     }
 
+    /**
+     * @return Whether the page is price insights eligible. The eligibility represents the most
+     *     recent price insights state, which could be from a previous page load or tab. Default is
+     *     false.
+     */
+    public boolean hasPriceInsights() {
+        return mSignalAccumulator == null ? false : mSignalAccumulator.hasPriceInsights();
+    }
+
     private void removeProviders() {
         for (ActionProvider provider : mActionProviders) {
             provider.destroy();
@@ -167,27 +177,27 @@ public class ContextualPageActionController {
 
     private void collectSignals(Tab tab) {
         if (mActionProviders.isEmpty()) return;
-        final SignalAccumulator signalAccumulator =
+        mSignalAccumulator =
                 new SignalAccumulator(new Handler(Looper.getMainLooper()), tab, mActionProviders);
-        signalAccumulator.getSignals(() -> findBestAction(signalAccumulator));
+        mSignalAccumulator.getSignals(this::findBestAction);
     }
 
-    private void findBestAction(SignalAccumulator signalAccumulator) {
+    private void findBestAction() {
         Tab tab = getValidActiveTab();
         if (tab == null) return;
         InputContext inputContext = new InputContext();
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_INPUT,
-                ProcessedValue.fromFloat(signalAccumulator.hasPriceTracking() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(mSignalAccumulator.hasPriceTracking() ? 1.0f : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT,
-                ProcessedValue.fromFloat(signalAccumulator.hasReaderMode() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(mSignalAccumulator.hasReaderMode() ? 1.0f : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT,
-                ProcessedValue.fromFloat(signalAccumulator.hasPriceInsights() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(mSignalAccumulator.hasPriceInsights() ? 1.0f : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT,
-                ProcessedValue.fromFloat(signalAccumulator.hasDiscounts() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(mSignalAccumulator.hasDiscounts() ? 1.0f : 0.0f));
         inputContext.addEntry("url", ProcessedValue.fromGURL(tab.getUrl()));
 
         ContextualPageActionControllerJni.get()
